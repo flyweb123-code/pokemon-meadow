@@ -632,6 +632,11 @@ const SAY_GEN = {
 };
 const SAY_PART = { '이': ['이', '가'], '을': ['을', '를'], '은': ['은', '는'], '과': ['과', '와'], '이랑': ['이랑', '랑'], '아': ['아', '야'] };
 function sayFill(t, V) { return t.replace(/\{(\w+)(?:\|([가-힣]+))?\}/g, (m, k, p) => { const w = V[k] ?? ''; return p && SAY_PART[p] ? w + (jong(w) ? SAY_PART[p][0] : SAY_PART[p][1]) : w; }); }
+/* 이벤트 끝난 직후 도전자 대사 (경완 2026-11-09 '이벤트 끝난 직후에 오는 도전자들은 처음에 해당 이벤트에 맞는 대사'): evDone 이 g.evAft = {id, n:3} → 다음 도전자 3명의 첫 마디 */
+const EV_SAY = {
+  rocket: { i: ['로켓단이 체육관을 점거했다는 소식 들었어요! 관장님이 쫓아내셨다면서요?', '로켓단 간부를 이기셨다고요? 그 실력, 저도 직접 겪어 볼래요!', '체육관 다시 열었네요! 로켓단 때문에 문 닫은 줄 알고 걱정했어요.', '잡혀갔던 트레이너분들 다 구해 오셨다면서요? 정말 대단해요!', '로켓단 아지트까지 쳐들어가셨다는 게 진짜예요?', '마을에 로켓단 이야기가 쫙 퍼졌어요. 그 관장님이 맞죠?'],
+    w: ['역시 로켓단을 혼자 물리친 관장님이에요!', '로켓단이 왜 졌는지 알겠어요…', '소문보다 더 세시네요!'], l: ['로켓단은 이기셨어도 저한텐 졌네요!', '로켓단이랑 싸우느라 지치셨나 봐요?'] },
+};
 function chalSay(c, g) {
   const C = SAY_CLS[c.tr] || {}, d = c.diff ? 1 : 0, h = new Date().getHours(), tm = h < 5 ? 3 : h < 11 ? 0 : h < 17 ? 1 : h < 21 ? 2 : 3, gi = gradeOf(g.rep || 0).i;
   const ld = c.team?.[c.team.length - 1]?.[0], V = { me: trName() || '관장', ty: TYPE_KO[g.ty] || '', gym: g.nm || '체육관', mon: SPECIES[ld]?.n || '포켓몬', stk: g.stk | 0, gr: GRADES[gi]?.[1] || '체육관' };
@@ -639,7 +644,8 @@ function chalSay(c, g) {
   if (d && (c.f || 0) > .55) P.push([SAY_GEN.strong, 2]); if ((g.stk | 0) >= 3) P.push([SAY_GEN.stk, 2]); if (gi >= 3) P.push([SAY_GEN.gr, 1.5]);
   const Q = P.filter(x => x[0]?.length), src = pickW(Q.map(x => x[0]), Q.map(x => x[1])), L = [pick(src)];
   if (Math.random() < .4) { const R = [SAY_GEN.ex, SAY_GEN.ex, SAY_GEN.ty, (g.stk | 0) >= 3 && SAY_GEN.stk].filter(x => x && x !== src), b = pick(pick(R)); if (b !== L[0]) L.push(b); }   // 가끔 한 마디 더
-  return { i: L.map(t => sayFill(t, V)), w: sayFill(pick(Math.random() < .4 && C.w ? C.w : SAY_GEN.w[d]), V), l: sayFill(pick(Math.random() < .4 && C.l ? C.l : SAY_GEN.l[d]), V) };
+  const E = g.evAft?.n > 0 && EV_SAY[g.evAft.id]; if (E) { L.splice(0, L.length, pick(E.i)); }   /* 이벤트 직후: 첫 마디는 이벤트 이야기, 이기고 지는 말도 반쯤 */
+  return { i: L.map(t => sayFill(t, V)), w: sayFill(pick(E && Math.random() < .5 ? E.w : Math.random() < .4 && C.w ? C.w : SAY_GEN.w[d]), V), l: sayFill(pick(E && Math.random() < .5 ? E.l : Math.random() < .4 && C.l ? C.l : SAY_GEN.l[d]), V) };
 }
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 30, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·주급 값은 작업실 밸런스 (게임 10.78)
@@ -904,6 +910,7 @@ function staffFight(c) {
 const BYE_LOST = ['다음엔 더 강해져서 다시 올게요!', '{me} 관장님, 정말 강하시네요… 많이 배웠어요.', '으으, 분해! 꼭 다시 도전할 거야!', '포켓몬들이랑 더 수련하고 올게요. 그때 또 붙어요!', '역시 소문대로 대단한 체육관이네요.', '오늘은 졌지만 좋은 배틀이었어요. 고마워요!'];
 const BYE_WON = ['좋은 배틀이었어요! 다음에도 또 올게요.', '이 체육관, 앞으로가 더 기대되는데요?', '히히, 이겼다! 친구들한테 자랑해야지!', '{me} 관장님 포켓몬도 꽤 강했어요. 다음엔 모르겠는걸요?', '이번엔 제가 이겼네요. 다음 배틀도 기대할게요!', '좋은 승부였어요. 그럼 이만!'];
 function arrive(c) {
+  rollWeek(c.t);   /* v20.03 경완 '결산 트레이너 주급 대비 수익이 이번 주 기준으로 잡힘': 밀린 도전자는 그 시각의 주에 기록 (예전엔 입장 시각으로 먼저 주를 넘겨서 지난주 몫이 이번 주로 감) */
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`; dayRec(c.t).n++;
   let beat = 0;
   if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
@@ -934,7 +941,7 @@ function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
 function rollWeek(now) {
   const g = st(), k = wkOf(now);
   if (!g.wk) { g.wk = { k, w: 0, l: 0, b: 0, g: 0, r: 0 }; return; }
-  if (g.wk.k === k) return;
+  if (g.wk.k >= k) return;
   const o = g.wk, sc = o.w * 3 + o.b * 2 + Math.max(0, o.r), G = gradeOf(g.rep || 0), r = seeded('wk' + o.k), base = 6 + G.i * 14;
   const L = RIVAL_GYMS.map(n => ({ n, s: Math.round(base * (.3 + r() * 1.6)) })); L.push({ n: g.nm, s: sc, me: 1 }); L.sort((a, b) => b.s - a.s || (b.me ? 1 : -1));
   g.rpt = { ...o, sc, rank: L.findIndex(x => x.me) + 1, of: L.length, top: L.slice(0, 3).map(x => [x.n, x.s, x.me ? 1 : 0]), seen: 0, sf: rptSf(o) };
@@ -1046,7 +1053,7 @@ function tick0(now) {
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
   (g.q || []).forEach(c => { if (c.named && !c.boss) c.exp = 0; });
-  rollWeek(now);
+  if (!g.wk) rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.schV = 2; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
   let guard = 0;
@@ -1059,7 +1066,7 @@ function tick0(now) {
   if ((g.schV | 0) < 2) { g.schV = 2; g.sch = mkSch(today, now); }   // v15.61: 오늘 남은 시간표도 새 빈도(3시간 칸마다 2~3명)로 바로
   while (g.sch.length && g.sch[0] <= now) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
   if (g.pull && g.pull <= now) { const t = g.pull; g.pull = 0; qLeave(t); arrive(mkChal(t)); }   // 사용 기록이 쌓이기 전 접속하면 당겨 온 도전자 (beta gymPull, 경완 2026-10-30)
-  qLeave(now);
+  qLeave(now); rollWeek(now);
   payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
@@ -1121,7 +1128,7 @@ async function challenge(picked) {
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
     const CR = chalRoute(D, [e]); await walk(e, CR.path); e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
-    const CS = N ? null : chalSay(c, g), line = N ? N.ln[0].replace('{me}', me) : CS.i[0];   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
+    const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
     const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
@@ -1878,7 +1885,7 @@ function infoPop() {
 }
 // ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
 // S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
-const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'fb1', 'shelf'];   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'fb1', 'shelf', 'evd'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
 const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
 const gUsedTy = () => new Set(gList().map(x => x.ty));
 // 휴업 중이던 시간은 없던 셈 (도전자·주급·면접·훈련 시계를 그만큼 민다)
@@ -2710,11 +2717,8 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     return res || {}; } };
 /* 실제 발동 (경완 2026-11-07 '유저별로 반복 X, 특정 층마다'): 이벤트마다 정해진 체육관 등급(g.gmax)에 처음 닿은 뒤 들어올 때 한 번.
    승급 축하·배지 창이 남아 있으면 그게 먼저 (다음 입장 때 시작). 점거 중(g.ev.cur)엔 도전자·주급·면접·훈련장 시계가 멈추고, 끝나면 그만큼 민다 */
-const EV_LIVE = false;   // 경완이 2·3·4장을 확인하면 켠다 (그 전엔 운영자 시험만)
-const EV_AT = { rocket: 2 };   // 이벤트 id → 등급 (0 새내기 1 동네 2 떠오르는 …)
-function evDue() { const g = st(); if (!EV_LIVE || !g?.d || g.shutAt || tutEnd || g.newBdg || g.q?.some(c => c.boss) || !(g.sf || []).length) return null;
-  return Object.keys(EV_AT).find(id => !(g.evd || {})[id] && (g.gmax | 0) >= EV_AT[id]) || null; }
-function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) return; const dt = Math.max(0, now - (g.ev?.t0 || now)); delete g.ev; g.evd = g.evd || {}; g.evd[id] = now;
+function evDue() { const g = st(); if (!g?.d || tutEnd) return null; return GA.evDue?.(g) || null; }   // 켜기·평판 문턱·다음 실행부터 = beta.html gymEvDue (필드 체육관 아이콘 R 딱지와 같은 조건)
+function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) return; const dt = Math.max(0, now - (g.ev?.t0 || now)); delete g.ev; g.evd = g.evd || {}; g.evd[id] = now; g.evAft = { id, n: 3 };
   g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
   (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt; (g.tr || []).forEach(e => { if (e.t) e.t = now; });
   g.vis = now; glog('in', `로켓단을 물리치고 <b>${esc(g.nm)}</b>${jong(g.nm) ? '을' : '를'} 되찾았다!`, now); tick(now); setAt(now); save(); }

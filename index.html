@@ -2142,7 +2142,7 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #ibag.ibag-fonly #ibagTabs{display:none}
 #btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}
 /*gym-hook*/#btnGym{left:74px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnGym:active{transform:translate(1px,1px)}#btnGym .mdot{top:-2px;right:-2px;width:9px;height:9px;box-shadow:0 0 0 2px #20202c}#btnGym .gy-cnt{position:absolute;right:-5px;bottom:-4px;min-width:16px;height:16px;padding:0 3px;box-sizing:border-box;border-radius:3px;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px #fff}#btnGym.ding svg{animation:gymDing 1.3s ease-out;transform-origin:50% 100%}@keyframes gymDing{0%,100%{transform:none}6%{transform:rotate(-12deg) scale(1.12)}14%{transform:rotate(10deg) scale(1.12)}22%{transform:rotate(-8deg) scale(1.08)}30%{transform:rotate(5deg)}38%{transform:none}44%{transform:rotate(-10deg) scale(1.1)}52%{transform:rotate(8deg) scale(1.1)}60%{transform:rotate(-5deg)}68%{transform:rotate(3deg)}78%{transform:none}}   /* v12.20 띵(1)·동(2) 두 번 흔들림 */
-#btnGym.lock>svg:not(.gy-lk){filter:grayscale(1) brightness(1.15);opacity:.7}#btnGym.lock .mdot{display:none}#btnGym .gy-lk{display:none;position:absolute;right:-4px;bottom:-4px;width:20px;height:22px}#btnGym.lock .gy-lk{display:block}#btnGym.lock{animation:none!important}#btnGym>svg:not(.gy-lk){transition:filter .7s,opacity .7s}#btnGym.unlk .gy-lk{display:block;animation:gyUnlk .9s ease-in forwards}#btnGym.unlk{animation:gyPop .5s .45s ease-out}@keyframes gyUnlk{0%{transform:none}25%{transform:translateY(-4px) rotate(-14deg) scale(1.15)}100%{transform:translate(6px,-22px) rotate(-35deg);opacity:0}}@keyframes gyPop{0%,100%{transform:none}40%{transform:scale(1.18)}}   /* v12.46 경완: 베테랑 트레이너 전엔 잠금 */body.fview #btnGym{visibility:hidden!important}   /* 체육관 모드: 운영자 '체육관 모드 보이기'를 켠 기기만 */
+#btnGym.lock>svg:not(.gy-lk){filter:grayscale(1) brightness(1.15);opacity:.7}#btnGym.lock .mdot{display:none}#btnGym .gy-lk{display:none;position:absolute;right:-4px;bottom:-4px;width:20px;height:22px}#btnGym.lock .gy-lk{display:block}#btnGym.lock{animation:none!important}#btnGym>svg:not(.gy-lk){transition:filter .7s,opacity .7s}#btnGym.unlk .gy-lk{display:block;animation:gyUnlk .9s ease-in forwards}#btnGym.unlk{animation:gyPop .5s .45s ease-out}@keyframes gyUnlk{0%{transform:none}25%{transform:translateY(-4px) rotate(-14deg) scale(1.15)}100%{transform:translate(6px,-22px) rotate(-35deg);opacity:0}}@keyframes gyPop{0%,100%{transform:none}40%{transform:scale(1.18)}}   /* v12.46 경완: 베테랑 트레이너 전엔 잠금 */#btnGym .gy-ev{position:absolute;right:-8px;bottom:-7px;width:22px;height:22px;box-sizing:border-box;border-radius:3px;border:2px solid #e2313b;box-shadow:0 0 0 2px #20202c;background:#14141c url(gym/img/ev/rocket/r_emb.png?v=2) center/12px 11px no-repeat;image-rendering:pixelated;animation:gyEvB 2.4s ease-in-out infinite;transform-origin:50% 100%}#btnGym .gy-ev::after{content:'';position:absolute;inset:-4px;border-radius:inherit;border:2px solid #ff4a55;animation:gyEvR 2.4s ease-out infinite;opacity:0;pointer-events:none}#btnGym.evon .gy-cnt{display:none}@keyframes gyEvB{0%,60%,100%{transform:none}70%{transform:translateY(-3px) rotate(-8deg)}80%{transform:translateY(0) rotate(6deg)}90%{transform:rotate(-3deg)}}@keyframes gyEvR{0%,55%{transform:scale(.8);opacity:0}65%{opacity:.9}100%{transform:scale(1.7);opacity:0}}   /* v20.05 로켓단 점거 R 딱지 (v20.07 경완 B안: 주신 도트 R·검정 네모·빨간 테두리, 도전자 수 자리 우하단) (도전자 점·수는 숨김, 점거 중엔 도전자 안 옴) */body.fview #btnGym{visibility:hidden!important}   /* 체육관 모드: 운영자 '체육관 모드 보이기'를 켠 기기만 */
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
@@ -2456,7 +2456,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
         <div class="op-row"><span>베타 판 쓰기 (이 기기만)</span><button class="op-sw" id="betaSw" role="switch" aria-checked="false"><i></i></button></div>
         <div class="set-btns one"><button class="lk-btn main" id="gymReset">체육관 초기화</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="gymSim">체육관 시뮬레이터</button></div>   <!-- 경완 2026-10-28: 지원서·도전자 등을 바로 불러 보는 시험판. 나오면 원래 체육관으로 되돌림 -->
-        <div class="mgt-row"><span>체육관 이벤트</span><select id="gevId" aria-label="이벤트"><option value="rocket">로켓단 점거</option></select><select id="gevCh" aria-label="장"><option value="0">처음(점거)부터</option><option value="1">1장부터</option><option value="2">2장부터</option><option value="3">3장부터</option></select><button class="lk-btn main" id="gevGo">해 보기</button></div>   <!-- 2026-11-07 경완 체육관 이벤트 스토리: 시뮬레이터 안에서 이벤트를 바로 시작 (나오면 체육관 그대로) -->
+        <div class="mgt-row"><span>체육관 이벤트</span><select id="gevId" aria-label="이벤트"><option value="rocket">로켓단 점거</option></select><select id="gevCh" aria-label="장"><option value="0">처음(점거)부터</option><option value="1">1장부터</option><option value="2">2장부터</option><option value="3">3장부터</option></select><button class="lk-btn main" id="gevGo">해 보기</button></div><div class="set-btns one"><button class="lk-btn main" id="gevFld">필드에서부터 해 보기</button></div>   <!-- v20.09 경완: 필드 R 딱지·사이렌·아지트 곡부터 시험 → 체육관 아이콘 누르면 위에서 고른 장으로 시험 시작 (본 계정 그대로) -->   <!-- 2026-11-07 경완 체육관 이벤트 스토리: 시뮬레이터 안에서 이벤트를 바로 시작 (나오면 체육관 그대로) -->
         <div class="set-btns one"><button class="lk-btn main" id="updNow">배포된 최신 판 바로 받기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="newsPv">업데이트 알림창 미리 보기</button></div>
         <div class="set-btns one"><button class="lk-btn main" id="pushOpen">공지 푸시 쓰기</button></div>   <!-- v14.49 경완: 공지 푸시는 새 팝업 창에서 쓰고, 내 기기에 먼저 보내 보기 -->
@@ -2973,7 +2973,7 @@ async function bgmDecode(blob) {
 function bgmSrcStop() { const x = bgm.src; bgm.src = null; if (x) { try { x.stop(); } catch (e) {} try { x.disconnect(); } catch (e) {} } }
 // 곡 위치 기억: 오디오를 새로 만들어도 멈췄던 자리부터 이어서 튼다
 const bgmPos = () => { if (!bgm.src || !actx || !bgm.buf) return bgm.pos || 0; const t = actx.currentTime - bgm.t0, L = bgm.buf.gbLoop; if (L && t > L[1]) return L[0] + (t - L[0]) % (L[1] - L[0]); return (t % bgm.buf.duration + bgm.buf.duration) % bgm.buf.duration; };
-function bgmSrcStart(off = bgm.pos || 0) {
+function bgmSrcStart(off = bgm.pos || 0) { if (window.GymBGM?.name === 'rgAjito' && !inGym()) try { window.GymBGM.stop(.4); } catch (e) {}   // 미니게임·미리 듣기 곡이 나오면 점거 곡은 멈춤
   if (!VISIT && window.__inVisit && !bgm.preview) return;   // v15.31 경완: 친구 필드에 가 있으면 내 필드 곡은 끔
   if (otherAud && !bgm.preview) return;   // v13.34: 다른 앱 영상·음악이 나오는 동안엔 배경 음악을 틀지 않는다
   if (bgm.src || !bgm.buf || ((inGym() || frMus) && !bgm.preview)) return; try { if (campMus.on && !bgm.preview) return; } catch (e) {}   /* v9.19 경완: 모닥불 노래 중엔 배경 음악이 다시 켜지지 않게 (곡을 받아 오던 게 늦게 끝나거나 무작위 다음 곡이 겹치던 것) — 노래가 끝나면 campBgm(false) 가 이어 튼다 */
@@ -3019,7 +3019,7 @@ function bgmNg(b) { const ng = b.ng || 1; if (!VISIT) return ng; try { const my 
 function bufLoud(b) { const N = b.numberOfChannels, L = b.length, st = 16; let s = 0, n = 0; for (let c = 0; c < N; c++) { const d = b.getChannelData(c); for (let i = 0; i < L; i += st) { s += d[i] * d[i]; n++; } } return Math.sqrt(s / Math.max(1, n)); }
 async function gbmBuf(id) { const b = await gbmBuf0(id); if (b && b.ng == null) { const r = bufLoud(b); b.ng = r > 1e-4 ? Math.min(3, Math.max(.35, BGM_RMS / r)) : 1; } return b; }   // v12.01: 4세대 곡은 nds.js
 for (const t of TRACKS) bgm.have.add(t.id); bgm.have.add('intro'); bgm.have.add('title');
-async function bgmPlay(id, pos) {
+async function bgmPlay(id, pos) { if (evMus && !bgm.intro && !bgm.preview) { evMusPlay(); return; }
   if (VISIT && !window.__vBgmOk) return;
   if (bgm.id === id && bgm.buf) { if (pos != null) bgm.pos = pos; bgmSrcStart(); return; }
   bgm.id = id; bgmSrcStop(); bgm.buf = null; bgm.pos = pos || 0;
@@ -3037,7 +3037,7 @@ function bgmStop() { bgmSrcStop(); bgm.id = null; bgm.buf = null; }
 // v12.16 경완 '무작위 재생일 때 포켓몬들 다 자는 새벽엔 잔잔한, 낮엔 발랄한 음악': 필드 포켓몬 절반 넘게 자거나 23~6시면 잔잔, 8~19시면 발랄, 그 사이엔 아무거나. 그 분위기 곡이 없으면 가진 곡 전부
 const bgmMood = () => { const h = hour(), M = S.mons || [], z = M.length ? M.filter(m => m.state === 'sleep').length / M.length : 0; return z > .5 || h >= 23 || h < 6 ? 'c' : h >= 8 && h < 19 ? 'b' : ''; };
 function bgmRandId(not) { const L0 = TRACKS.filter(t => S.tracks.includes(t.id) && !S.trOff?.includes(t.id) && bgm.have.has(t.id)), md = bgmMood(), Lm = md ? L0.filter(t => t.m === md) : L0, L = (Lm.length ? Lm : L0).map(t => t.id); const M = L.length > 1 ? L.filter(x => x !== not) : L; return M[Math.floor(Math.random() * M.length)] || S.bgm || 'azalea'; }
-function bgmStart() { if (bgm.preview || VISIT && !window.__vBgmOk) return;   /* v15.16 경완 '음악 겹침': 놀러간 창은 부모 로딩 화면이 걷힌 뒤에만 곡 */ if (bgm.intro) { if (bgmOn) bgmPlay(bgm.intro); else bgmStop(); return; }   // v5.42: 타이틀·오프닝 곡(bgm.intro)이 정해져 있으면 그 곡만
+function bgmStart() { if (bgm.preview || VISIT && !window.__vBgmOk) return; if (evMus && !bgm.intro) { evMusPlay(); return; }   /* 로켓단 점거 중엔 필드 곡 대신 FR 로켓단 아지트 */   /* v15.16 경완 '음악 겹침': 놀러간 창은 부모 로딩 화면이 걷힌 뒤에만 곡 */ if (bgm.intro) { if (bgmOn) bgmPlay(bgm.intro); else bgmStop(); return; }   // v5.42: 타이틀·오프닝 곡(bgm.intro)이 정해져 있으면 그 곡만
   if (bgmOn) bgmPlay(S.bgmRand ? (bgm.id && bgm.buf ? bgm.id : bgmRandId()) : S.bgm || 'azalea'); else bgmStop(); }
 // 상점 미리 듣기: 15초 듣고 원래 곡으로 돌아간다
 // 끝날 때쯤 2초 동안 소리가 줄고, 원래 곡은 멈췄던 자리부터 소리를 키우며 다시 튼다
@@ -3093,7 +3093,8 @@ function tenseStop(sec = 1) {
 let mgGameOn = false;   // v6.13 경완: 미니게임 판이 도는 동안(준비·카운트다운 포함)은 화면을 눌러도 메뉴 곡을 다시 틀지 않는다 — 점프하려고 누를 때마다 메뉴 곡이 게임 음악 위에 겹쳐 나왔다
 function bgmKick() {
   if (!bgmOn || document.hidden || bgm.preview || mgGameOn) return;
-  if (bgm.intro) { if (bgm.buf && bgm.id === bgm.intro) bgmSrcStart(); else if (bgm.id !== bgm.intro) bgmStart(); return; }   // v5.42: 타이틀·오프닝 동안 화면을 누르면 필드 곡으로 바뀌던 것
+  if (bgm.intro) { if (bgm.buf && bgm.id === bgm.intro) bgmSrcStart(); else if (bgm.id !== bgm.intro) bgmStart(); return; }
+  if (evMus) { if (window.GymBGM?.name !== 'rgAjito') evMusPlay(); return; }   // v5.42: 타이틀·오프닝 동안 화면을 누르면 필드 곡으로 바뀌던 것
   if (bgm.buf && bgm.id === (S.bgm || 'azalea')) bgmSrcStart();
   else if (bgm.id !== (S.bgm || 'azalea')) bgmStart();
 }
@@ -3126,7 +3127,7 @@ setTimeout(gymPull, 5000); document.addEventListener('visibilitychange', () => {
 const gymSnd = () => window.GymBGM ? Promise.resolve() : (gymSnd.p = gymSnd.p || new Promise(ok => { const x = document.createElement('script'); x.src = 'gym/bgm.js?v=' + encodeURIComponent(APP_VER); x.onload = x.onerror = () => { gymSnd.p = null; ok(); }; document.head.appendChild(x); }));
 const buySnd = () => { gymSnd().then(() => window.GymBGM?.se('DP_REGI')).catch(() => {}); };   // 구매 소리 = 체육관 상점과 같은 플라티나 계산대 소리로 통일 (경완 2026-11-08)
 let gymDingBusy = 0;
-async function gymDing() { if (gymDingBusy) return; gymDingBusy = 1;
+async function gymDing() { if (gymDingBusy || $('#btnGym')?.classList.contains('evon')) return;   /* 로켓단 R 딱지가 붙어 있으면 도전자 띵동·흔들기 없음 (점거 중엔 도전자 안 옴) */ gymDingBusy = 1;
   try { await gymSnd();
     await window.GymBGM?.se('DP_PINPON');
     gymShake(); if (!gymFldSeen()) gymDingPend = 1;   // v12.78 경완: 꾸미기·다른 화면에서 띵동을 들었으면 필드로 돌아왔을 때 한 번 더 흔들어 눈치 채게
@@ -6123,7 +6124,7 @@ function drawSprite(m, dt) {
 // ---------- update ----------
 // v10.04 경완 '타이어 그네 뒤로 걸어도 뒤로 안 가지네': 밤에 빛나는 포켓몬(S 랭크·누른 포켓몬)은 밤 그늘 위(+1100)로 올라가 뒤에 있는 소품까지 앞질렀다 → 그 포켓몬 앞에 겹친 소품도 같이 올리고 밤빛 필터로 똑같이 어둡게 (앞뒤 순서는 그대로)
 let pnlT = 0;
-function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright || o.shade) && !o.hidden && o.el.isConnected && o.el.style.visibility !== 'hidden');
+function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright || o.shade && !o.shP) && !o.hidden && o.el.isConnected && o.el.style.visibility !== 'hidden');
   const P = [...itemsEl.children].filter(e => e.classList.contains('prop') && (L.length || e.pnl)).map(e => { const x = parseFloat(e.style.left), y = parseFloat(e.style.top), W = e.offsetWidth / 2; return { e, z: e.pnl ? e.z0 : +e.style.zIndex, x0: x - W, x1: x + W, y0: y - e.offsetHeight, y1: y, up: false }; }).sort((a, b) => a.z - b.z);
   if (L.length) for (const q of P) q.up = L.some(o => q.z > o.y && q.x0 < o.x + (o.w || 50) / 2 && q.x1 > o.x - (o.w || 50) / 2 && q.y0 < o.y - Math.max(o.xl || 0, -(o.vOy || 0)) && q.y1 > o.y - Math.max(o.xl || 0, -(o.vOy || 0)) - (o.h || 60))   /* v18.80 경완 '포켓몬이 소품 위로 걸어감': 밤빛 필터로 같이 올라간(+1100) 앞쪽 포켓몬도, 날아서 떠 있는 몸 자리도 셈 */
     || P.some(r => r.up && r.z < q.z && q.x0 < r.x1 && q.x1 > r.x0 && q.y0 < r.y1 && q.y1 > r.y0);   /* v10.08 경완 '그루터기 뒤 덤불이 앞으로 나옴': 올린 소품 앞에 겹친 소품도 같이 올려 앞뒤 순서를 지킨다 (덤불에 숨은 포켓몬은 셈하지 않음) */
@@ -6239,9 +6240,9 @@ function render(m, now) {
   { const br = skyDark > .25 && !m.hidden && (S.sel === m || lookMon === m) && !m.pet; if (br !== !!m.bright) { m.bright = br; m.el.classList.toggle('selflit', !!m.lit && !br); } }   /* 어두울 때 누른 포켓몬은 쓰다듬을 때처럼 그 포켓몬만 밝게 */
   const upOf = o => o.lit || o.bright;
   /* 밝게 보이는 포켓몬만 밤 그늘 위로 올린다. 그 바로 앞(아래쪽)에 겹친 포켓몬도 함께 올리되 밤빛 필터로 똑같이 어둡게 해서, 앞뒤 순서는 그대로 둔다 */
-  const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12);
+  m.shP = false; const shade = !upOf(m) && !m.pet && skyDark > .25 && S.mons.some(o => o !== m && upOf(o) && !o.hidden && m.y > o.y && m.y - o.y < (o.h || 60) + (m.h || 60) && Math.abs(m.x - o.x) < ((o.w || 50) + (m.w || 50)) / 2 + 12) || (m.shP = !upOf(m) && !m.pet && !!m.scp?.G?.el?.pnl);   /* v20.06 경완 '스프링 타던 포켓몬이 스프링 뒤로': 밤에 밝은 포켓몬과 겹쳐 탄 소품이 밤 그늘 위(+1100)로 올라가면 탄 포켓몬도 같이 올린다 */
   if (shade !== !!m.shade) { m.shade = shade; m.el.classList.toggle('nightf', shade); }
-  { let z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); if (m.propSit && m.pzB != null && z >= m.pzB) z = m.pzB - 1; if (m.propSit && m.pzF && z < m.pzF) z = m.pzF; if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
+  { let z = Math.round(m.y) + (m.zAdd || 0) + (m.perch ? 2 : 0) + (m.pet ? 5000 : 0) + (upOf(m) || shade || m.tuLit ? 1100 : 0); { const pzB = m.pzB != null && m.scp?.G?.el?.pnl ? m.pzB + 1100 : m.pzB; if (m.propSit && pzB != null && z >= pzB) z = pzB - 1; } if (m.propSit && m.pzF && z < m.pzF) z = m.pzF; if (m.rZ !== z) { m.rZ = z; m.el.style.zIndex = z; } }
   { const oa = MON_OFFA[m.form]?.[m.anName] || 0, ox = Array.isArray(oa) ? oa[0] : 0, oy = Array.isArray(oa) ? oa[1] : oa;   // v5.79 경완: 동작별 그림 위치 [좌우, 위아래] (좌우는 기본 그림 = 왼쪽 볼 때 기준)
   let ty = (wet ? m.h * .38 : wetUp ? Math.max(0, m.h * .38 - m.xl) : m.flop ? m.h * .42 : m.sp === 129 && !m.held ? m.h * .24 : 0) - Math.max(0, m.lift + (scR ? 0 : MON_FLYA[m.form]?.[m.anName] || 0)) - bob + oy;   // v9.34 경완: 떠 있는 포켓몬도 소품에 탈 땐 떠 있기 0
   if (rdOn) { const r = rideTy(m, m.rdH); if (r != null) { ty = r; m.lift = m.xl || 0; } }
@@ -7958,7 +7959,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
   const loadGymJs = () => window.Gym ? Promise.resolve() : new Promise((ok, no) => { const v = encodeURIComponent(APP_VER), c = document.createElement('link'); c.rel = 'stylesheet'; c.href = `gym/gym.css?v=${v}`; document.head.appendChild(c);
     const s = document.createElement('script'); s.src = `gym/gym.js?v=${v}`; s.onload = () => window.Gym ? ok() : no(new Error('gym')); s.onerror = no; document.head.appendChild(s); });
   // 게임 본체는 함수 안에 있어서 gym.js 가 쓸 것만 꺼내 준다 (늦게 정의되는 것도 있어 getter)
-  window.GA = { light: () => fieldLight(), bolt: (el, w) => stormBolt(el, w),   /* v17.77 경완: 훈련장도 필드처럼 시간·날씨 (곱하기 색·어두운 정도·조명·비·눈) */ cardPager: (p, o) => cardPager(p, o), frHr: sp => FR_TABLE[0][1] * fldMul(sp),   /* v16.42 경완 '훈련 친밀도는 필드 기준': 잘 돌본 필드와 같은 시간당 친밀도 */
+  window.GA = { evDue: g => gymEvDue(g), light: () => fieldLight(), bolt: (el, w) => stormBolt(el, w),   /* v17.77 경완: 훈련장도 필드처럼 시간·날씨 (곱하기 색·어두운 정도·조명·비·눈) */ cardPager: (p, o) => cardPager(p, o), frHr: sp => FR_TABLE[0][1] * fldMul(sp),   /* v16.42 경완 '훈련 친밀도는 필드 기준': 잘 돌본 필드와 같은 시간당 친밀도 */
   get S() { return S; }, get SP_OFF() { return SP_OFF; }, get SPECIES() { return SPECIES; }, get TYPE_KO() { return TYPE_KO; }, get TYPE_C() { return TYPE_C; }, get RANKS() { return RANKS; }, get LEARN() { return LEARN; },
     tyIcon: (...a) => tyIcon(...a), sfx: (...a) => { if (document.getElementById('mg')?.hidden === false) return; sfx(...a); },   /* v18.68: 미니게임 중엔 체육관 쪽 소리도 안 남 */ save: () => save(), trOf: () => trOf(), useH: () => S.useH, esc: s => esc(s), menuDots: () => menuDots(), addGold: n => addGold(n), renderGold: () => renderGold(),
     boxOf: id => boxOf(id), removeMon: (m, q) => removeMon(m, q), log: (...a) => log(...a), ivSum: p => ivSum(p), rankOf: p => rankOf(p), addFr: (id, n) => addFr(id, n), haptic: n => haptic(n), rumble: (st, g) => rumble(st, g) };
@@ -7999,7 +8000,11 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
   const out0 = GA.gymOut; GA.gymOut = () => { if (window.gymSimOn) simBack(); out0(); };
   $('#gevGo').onclick = () => { if (window.Gym?.isOpen?.()) return; const b = $('#gevGo'); if (!S.gym?.d) { b.textContent = '체육관을 먼저 열어 주세요'; setTimeout(() => { b.textContent = '해 보기'; }, 1800); return; } window.gymEvTest = $('#gevId').value; window.gymEvCh = +$('#gevCh').value || 0; $('#gymSim').onclick(); };   // 체육관 이벤트 시험 (2026-11-07)
   $('#gymSim').onclick = () => { if (window.Gym?.isOpen?.()) return; sfx('tap'); try { localStorage.setItem(SIMK, JSON.stringify({ gym: S.gym || null, gold: S.gold })); } catch (e) { return; }
-    window.gymSimOn = 1; S.gold = Math.max(S.gold, 100000); hideSheets(); $('#btnGym').onclick(); }; }
+    window.gymSimOn = 1; S.gold = Math.max(S.gold, 100000); hideSheets(); $('#btnGym').onclick(); };
+  const gevFldTx = () => { const b = $('#gevFld'); if (b) b.textContent = window.gymEvFld ? '필드 시험 취소' : '필드에서부터 해 보기'; };
+  $('#gevFld').onclick = () => { if (window.Gym?.isOpen?.()) return; const b = $('#gevFld'); if (!S.gym?.d) { b.textContent = '체육관을 먼저 열어 주세요'; setTimeout(gevFldTx, 1800); return; } sfx('tap');
+    if (window.gymEvFld) { window.gymEvFld = null; gevFldTx(); menuDots(); return; } window.gymEvFld = { id: $('#gevId').value, ch: +$('#gevCh').value || 0 }; gevFldTx(); hideSheets(); menuDots(); };   /* v20.09 경완: 필드 시험 — 딱지·사이렌·아지트 곡은 화면에서만, 저장엔 아무것도 안 씀 */
+  const bg0 = $('#btnGym').onclick; $('#btnGym').onclick = () => { const f = window.gymEvFld; if (f && !window.Gym?.isOpen?.() && !gymLocked()) { window.gymEvFld = null; gevFldTx(); menuDots(); window.gymEvTest = f.id; window.gymEvCh = f.ch; $('#gymSim').onclick(); return; } return bg0(); }; }
 /*gym-hook3*/
 GA.audio = () => audio(); GA.bgmGain = () => { if (!audio()) return null; bgmRoute(); return bgm.gain; }; GA.bgmOn = () => bgmOn; GA.cry = (sp, d, r, k) => playCry(sp, d, r, k);
 /*gym-hook4*/
@@ -8069,7 +8074,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '20.02';   /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '20.10';   /* v20.10 경완: 탑 쌓기 베타 설정 버튼(운영자) — 시안 설정·물리 테스트 4개, 바꾼 판은 기록·보상 없음 */   /* v20.09 경완: 운영자 모드 '필드에서부터 해 보기' — 필드 R 딱지·사이렌·아지트 곡부터, 아이콘 누르면 시험 이벤트 (본 계정 그대로) */   /* v20.08 경완 2번: 로켓단 점거 딱지 떠 있는 동안 필드 곡 = FR 로켓단 아지트(evMus), 해결되면 원래 필드 곡 */   /* v20.06 경완: 밤에 다른 포켓몬과 겹칠 때 몬스터볼 스프링 탄 포켓몬이 스프링 뒤로 가던 것 */   /* v20.03 경완: 주간 결산 트레이너 수익이 그 주에 잡히게 */ /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -10662,8 +10667,8 @@ function stackOpen() { const m = mgMon; if (!m) return;
   mgGameOn = true; try { bgmStop(); mgMus.stop(.2); } catch (e) {} try { window.__stAC?.close?.(); } catch (e) {} try { window.__stAC = new (window.AudioContext || window.webkitAudioContext)(); window.__stAC.resume?.(); } catch (e) { window.__stAC = null; }   /* v19.79 경완 'BGM 클릭해야 시작': 시작하기를 누르는 순간 소리를 열어 두고 게임이 그걸 씀 */
   const ty = mgTy(m), rk = mgRank(m), BX = boxOf(m.pid), fh = BX ? Math.max(0, Math.min(5, Math.floor((BX.fr || 0) / 51))) : 2, R = mgRecG('stack'), sa = stSA();   /* 목숨 = 1 + 친밀도 하트 (장애물 넘기와 같음) */
   const f = String(m.form), ck = Math.floor((parseInt(f) - 1) / 50), [spU, spK] = RFORM[f] ? ['rf.json?v=2', RFORM[f].fk] : [CHUNK_SZ.length ? `s${ck}.json?v=${CHUNK_CACHE}` : `s${ck}.json`, f];   /* 도우미 = 함께 놀 포켓몬 (던전 그림 원본 묶음) */
-  box.stM = m; box.stStart({ ty, rk, fh, nm: m.name, best: R.best | 0, gpp: ST_GPP(), sat: sa[0], sab: sa[1], spU, spK }); }
-function stackEnd(m, d) { const sc = Math.max(0, d.sc | 0), T = !!m.test, R = mgRecG('stack'), prev = R.best | 0, nb = !T && sc > prev, PZ = ST_PASS[mgRank(m)] || {};
+  box.stM = m; box.stStart({ ty, rk, fh, nm: m.name, best: R.best | 0, gpp: ST_GPP(), sat: sa[0], sab: sa[1], spU, spK, tst: IS_BETA && opAcct() ? 1 : 0 }); }   /* tst = 베타 운영자 설정 버튼 (본 게임 배포 때 지울 것) */
+function stackEnd(m, d) { const sc = Math.max(0, d.sc | 0), T = !!m.test || !!d.tst,   /* 설정 버튼으로 바꾼 판 = 기록·보상 없음 */ R = mgRecG('stack'), prev = R.best | 0, nb = !T && sc > prev, PZ = ST_PASS[mgRank(m)] || {};
   const by = !T ? (Pb => ({ sp: SPECIES[+m.form] ? +m.form : Pb?.sp || m.sp, sx: Pb?.sex || '', nm: m.name, sh: Pb?.shiny ? 1 : 0, p: Pb ? frPV(Pb) : undefined }))(boxOf(m.pid)) : undefined;   // 랭킹에 기록 낸 포켓몬
   if (!T) { R.n = (R.n || 0) + 1; if (nb) { R.best = sc; R.by = by; } try { mqRecS(m, sc, +d.h || 0, d.pf | 0); } catch (er) {} }
   const W0 = mgWkRec(R), prevW = W0.best; if (!T && sc > W0.best) R.w = { k: W0.k, best: sc, by };   // 이번 주 기록 (랭킹)
@@ -12543,12 +12548,28 @@ function gymLocked() { return trLevel(S.unlocked?.size || 0).i < 4; }   // v12.4
 // g.at 이 도전자 시각이 아니면(주간 보고서·새날) 예전처럼 그 시각부터 점
 // v14.78 경완 '도전자가 있었는데 아이콘에 숫자가 없었던': 기다리는 시간(2~4시간)을 2시간으로만 쳐서 2시간 넘게 기다리는 도전자가 빠졌음 → 도착 시각으로 정해지는 같은 값 (gym/gym.js qWait 와 같은 식)
 function gymWait(t) { const x = Math.sin((t % 1e9) * 12.9898) * 43758.5453; return (2 + 2 * (x - Math.floor(x))) * 36e5; }
+/* 체육관 이벤트 발동 (경완 2026-11-09 '평판 180부터, 달성한 그 화면에선 말고 앱 껐다가 들어와서 체육관 들어가면'):
+   평판이 처음 문턱을 넘은 걸 본 실행(PK_BOOT)을 g.evArm 에 적어 두고, 그 다음 실행부터만 발동. 점거 중(g.ev.cur)이면 그 이벤트 */
+const PK_BOOT = Date.now(), GYM_EV_LIVE = false, GYM_EV_REP = { rocket: 180 };   // GYM_EV_LIVE: 경완이 다 확인하면 켠다
+function gymEvDue(g) { if (window.gymEvFld && g?.d) return window.gymEvFld.id; if (!(GYM_EV_LIVE || window.gymEvPrev) || !g?.d) return null; if (g.ev?.cur) return g.ev.test ? null : g.ev.cur;
+  for (const [id, r] of Object.entries(GYM_EV_REP)) { if ([g, ...(Array.isArray(g.shelf) ? g.shelf : [])].some(x => (x?.evd || {})[id]) || (g.rep || 0) < r) continue;   /* 계정당 한 번: 쉬는 체육관(shelf)에서 이미 본 이벤트면 안 나옴 (경완 2026-11-09) */ if (!g.evArm) g.evArm = PK_BOOT;
+    if (g.evArm === PK_BOOT || g.shutAt || g.newBdg || g.q?.some(c => c.boss) || !(g.sf || []).length) return null; return id; }
+  return null; }
+/* 로켓단 점거 중 필드 곡 (경완 2026-11-09 '2번', 해결되면 원래대로): R 딱지가 붙어 있는 동안 필드 곡 = FR 로켓단 아지트 (GymBGM rgAjito) */
+var evMus;   // var·초기값 없음: bgmStart 가 이 줄보다 먼저 불려도 되게
+function evMusPlay() { bgmSrcStop(); if (!bgmOn || inGym() || frMus) return; gymSnd().then(() => { if (evMus && bgmOn && !inGym() && !bgm.intro && !bgm.preview && !frMus) try { window.GymBGM?.play('rgAjito'); } catch (e) {} }); }
+function evMusSet(on) { on = !!on && !VISIT; if (on === !!evMus) return; evMus = on ? 1 : 0;
+  if (inGym()) return; if (on) evMusPlay(); else { try { if (window.GymBGM?.name === 'rgAjito') window.GymBGM.stop(.8); } catch (e) {} bgm.fadeIn = 1.5; setTimeout(() => { if (!evMus && !inGym()) bgmStart(); }, 900); } }
+var gymEvSnd;   // 0(없음)  · 1 울려야 함 · 2 울림
+setInterval(() => { if (gymEvSnd !== 1 || !gymFldSeen()) return; gymEvSnd = 2; gymSnd().then(() => { window.GymBGM?.se('HG_AJITO_SIREN'); gymShake(); haptic(1); }).catch(() => {}); }, 700);
+function gymEvIco() { const b = $('#btnGym'); if (!b) return; const on = !!gymEvDue(S.gym) && !gymLocked(); b.classList.toggle('evon', on); const e = b.querySelector('.gy-ev'); if (on && !gymEvSnd) gymEvSnd = 1; if (!on) gymEvSnd = 0; evMusSet(on);   /* 딱지가 처음 붙으면 필드에서 아지트 사이렌 + 흔들기 한 번 (경완 2026-11-09 1번) */
+  if (on && !e) b.insertAdjacentHTML('beforeend', '<i class="gy-ev" aria-label="로켓단이 체육관을 점거했어요"></i>'); else if (!on && e) e.remove(); }
 function gymDotLite(g, now = Date.now()) { if (!g?.d) return false; const live = t => !!t && t <= now && now < t + gymWait(t), chAt = t => (g.q || []).some(c => c.t === t) || (g.sch || []).includes(t) || g.pull === t;
   return (g.q || []).some(c => c.id > (g.qSeen | 0) && (c.exp || Infinity) > now) || (g.sch || []).some(live) || live(g.pull) || (!!g.at && now >= g.at && !chAt(g.at)); }
 function gymQN(g, now) { const E = (g.q || []).map(c => c.exp || Infinity); for (const t of [...(g.sch || []), g.pull || 0].filter(t => t && t <= now).sort((a, b) => a - b)) { for (let i = E.length; i--;) if (E[i] <= t) E.splice(i, 1); E.push(t + gymWait(t)); } return E.filter(e => e > now).length; }
-function menuDots() { try { $('#btnGym')?.classList.toggle('lock', gymLocked() || !!S.gymUnlk); } catch (e) {} const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
+function menuDots() { try { $('#btnGym')?.classList.toggle('lock', gymLocked() || !!S.gymUnlk); } catch (e) {} try { gymEvIco(); } catch (e) {} const set = (b, on) => { let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot" aria-label="새 소식"></i>'); else if (!on && d) d.remove(); };
   set($('#openRun'), !tuNoEgg && S.bag.some(e => e.isNew) || S.eggs.some(e => (e.km >= e.need && !e.rs) || e.nwI) || (!tuNoEgg && !S.gaSeen));   /* v19.14 경완: 알 뽑기 새 기능 빨간 점 (알 뽑기 탭을 보면 사라짐) */   /* v5.57 경완: 자동 채우기로 부화기에 바로 들어간 새 알도 빨간 점 (부화기 탭 점과 같은 조건) */ set($('#openMgr'), S.box.some(p => p.nw) || !!S.dexDot); set($('#openFld'), S.buds.some(b => b.nw || budNew(b))); { const b = $('#btnBag'); if (b) { itemSeenClamp(); set(b, itemNewK().length > 0); } }   /* v4.87 경완: 진화 준비된 짝꿍이 있으면 빨간 점 (진화할 때까지) */
-  set($('#openShop'), fpDot() || SHOP_TABS.some(shopNewIn)); if (frH) { let fq = false; try { fq = frReqNew(); } catch (e) {} let vb = false; try { vb = Visit.unread() > 0; } catch (e) {} for (const id of ['#openSet', '#pfFrIc', '#frReqIc']) { const b = $(id); if (b) set(b, fq || (vb && id !== '#frReqIc')); } }   /* v12.66 경완: 받은 친구 요청 = 프로필 메뉴·친구 버튼·요청 아이콘 빨간 점 */ for (const t of SHOP_TABS) { const b = document.querySelector(`#shopTabs [data-st="${t}"]`), d = b && b.querySelector('.dot'), on = shopNewIn(t) || (t === 'fashion' && fpDot()); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } { const b = $('#btnGym'); if (b) set(b, !!window.gymDot?.() || (!window.Gym && gymDotLite(S.gym))); if (b) { const g = S.gym, now = Date.now(), n = g?.d ? gymQN(g, now) : 0; let c = b.querySelector('.gy-cnt'); if (n > 0 && !b.classList.contains('lock')) { if (!c) { c = document.createElement('b'); c.className = 'gy-cnt'; b.appendChild(c); } c.textContent = n > 9 ? '9+' : n; } else c?.remove(); }   /* v12.82 경완: 기다리는 도전자 수를 체육관 아이콘 우하단에 작게 */ } 
+  set($('#openShop'), fpDot() || SHOP_TABS.some(shopNewIn)); if (frH) { let fq = false; try { fq = frReqNew(); } catch (e) {} let vb = false; try { vb = Visit.unread() > 0; } catch (e) {} for (const id of ['#openSet', '#pfFrIc', '#frReqIc']) { const b = $(id); if (b) set(b, fq || (vb && id !== '#frReqIc')); } }   /* v12.66 경완: 받은 친구 요청 = 프로필 메뉴·친구 버튼·요청 아이콘 빨간 점 */ for (const t of SHOP_TABS) { const b = document.querySelector(`#shopTabs [data-st="${t}"]`), d = b && b.querySelector('.dot'), on = shopNewIn(t) || (t === 'fashion' && fpDot()); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } { const b = $('#btnGym'); if (b) set(b, b.classList.contains('evon') || !!window.gymDot?.() || (!window.Gym && gymDotLite(S.gym))); if (b) { const g = S.gym, now = Date.now(), n = g?.d ? gymQN(g, now) : 0; let c = b.querySelector('.gy-cnt'); if (n > 0 && !b.classList.contains('lock')) { if (!c) { c = document.createElement('b'); c.className = 'gy-cnt'; b.appendChild(c); } c.textContent = n > 9 ? '9+' : n; } else c?.remove(); }   /* v12.82 경완: 기다리는 도전자 수를 체육관 아이콘 우하단에 작게 */ } 
   for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexDot]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
 function renderBox() {
@@ -13086,6 +13107,9 @@ function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MON
 const GRADE = [null,
   { n: '일반', km: 2.5 }, { n: '우수', km: 5 }, { n: '레어', km: 7.5 }, { n: '에픽', km: 10 }, { n: '전설', km: 15 }];
 let MAX_EGGS = 15;
+/* v20.04 경완: 알 뽑기 타입 알은 뽑기 점수 가중치만큼 부화거리도 (모든 타입·노말·벌레 10점 = 그대로). GA_COST 와 같은 표 (그건 뒤에 선언돼서 따로 둠) */
+const EGG_TYC = (() => { const c = {}; [16].forEach(t => c[t] = 18); [18, 9, 8, 10, 5, 17].forEach(t => c[t] = 15); [11, 12, 6, 14, 13, 2, 3, 15, 4].forEach(t => c[t] = 12); return c; })();
+const eggNeed = e => { const b = GRADE[e.g]?.km || 0, t = e.gk ? e.ct || e.lt : 0, c = t ? EGG_TYC[t] || 10 : 10; return Math.round(b * (c / 10) * 100) / 100; };
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
 const POOL = [[], [], [], [], [], []], COMMON = new Set();
@@ -14288,7 +14312,7 @@ function gotLog(got, how, place) {
 function unincubate(e) {
   if (!S.eggs.includes(e) || S.bag.length >= MAX_BAG) return false;
   S.eggs = S.eggs.filter(x => x !== e);
-  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.thR) b.thR = 1; if (e.sh) b.sh = 1; if (e.lt) b.lt = e.lt; if (e.ct) b.ct = e.ct; if (e.gc) b.gc = 1; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
+  const b = { id: e.id, g: e.g, t: e.t || Date.now(), km: e.km || 0, sp: e.sp }; if (e.place) b.place = e.place; if (e.tags) b.tags = e.tags; if (e.spN) b.spN = e.spN; if (e.spT) b.spT = e.spT; if (e.thR) b.thR = 1; if (e.sh) b.sh = 1; if (e.lt) b.lt = e.lt; if (e.ct) b.ct = e.ct; if (e.gc) b.gc = 1; if (e.gk) b.gk = 1; if (e.nq && !e.nt) b.isNew = true; S.bag.push(b);
   save(); return true;
 }
 // 가방의 알을 부화기로 옮긴다
@@ -14296,7 +14320,7 @@ function incubate(e) {
   if (e.tst) return false;   // v17.75: 알 뽑기 시험 가방 알은 부화기에 못 넣는다
   if (S.eggs.length >= MAX_EGGS || !S.bag.includes(e)) return false;
   S.bag = S.bag.filter(x => x !== e);
-  const x = { id: e.id, g: e.g, km: e.km || 0, need: GRADE[e.g].km, isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}), ...(e.thR ? { thR: 1 } : {}), ...(e.sh ? { sh: 1 } : {}), ...(e.lt ? { lt: e.lt } : {}), ...(e.ct ? { ct: e.ct } : {}), ...(e.gc ? { gc: 1 } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
+  const x = { id: e.id, g: e.g, km: e.km || 0, need: eggNeed(e), isNew: true, nwI: true, t: e.t, place: e.place, tags: e.tags, sp: e.sp, ...(e.spN ? { spN: e.spN } : {}), ...(e.spT ? { spT: e.spT } : {}), ...(e.thR ? { thR: 1 } : {}), ...(e.sh ? { sh: 1 } : {}), ...(e.lt ? { lt: e.lt } : {}), ...(e.ct ? { ct: e.ct } : {}), ...(e.gc ? { gc: 1 } : {}), ...(e.gk ? { gk: 1 } : {}) }; if (e.isNew && !e.nt) x.nq = 1; S.eggs.push(x);   // v5.56 경완: 알리기 전에 부화기로 옮겨진 알(자동 채우기)도 '새 소식'에 나오게
   save(); return true;
 }
 // v3.90 경완: 자동 채우기를 켜 두면 부화기가 빌 때 가방에서 높은 등급 → 많이 간 거리 → 먼저 주운 알 순으로 채운다 (처음엔 꺼짐)
@@ -14956,7 +14980,7 @@ function eggView(e, bag) {   // v4.51 경완: 부화기에서 고른 알을 한 
   // v5.77 경완: 정보 카드처럼 좌우로 밀거나 옆을 눌러 부화기의 다른 알로 넘긴다
   const fill = k => { const x = L[k]; if (!x) return; const rd = !bag && x.km >= x.need; if (bag && x.isNew) { x.isNew = false; save(); } if (bag && bagHl !== x.id) { bagHl = x.id; renderBag(); }   /* v12.91 경완: 보고 있는 가방 알 칸에 부화기처럼 테두리 */
     hatchStage.innerHTML = '<i class="ehalo"></i>' + eggHtml(x.g, 'wob' + (x.sh ? ' shx' : ''), x.lt || x.ct);
-    const need = bag ? GRADE[x.g].km : x.need, km = x.km || 0;
+    const need = bag ? eggNeed(x) : x.need, km = x.km || 0;
     m.innerHTML = `<b class="evg">${x.ct ? tyIcon(x.ct) : ''}${x.sh ? `<span class="evsh">${eggName(x)}${SH_ICO}</span>` : eggName(x)}</b>${bag ? '' : ` <span class="state${rd ? ' ready' : ''}">${rd ? '부화 준비 완료' : '부화 중'}</span>`}<div class="prog"><i style="width:${Math.min(100, km / need * 100)}%"></i></div>${fmtKm(km)} / ${need}km${bag ? ' 쌓임' : ` · 앞으로 <b>${fmtKm(Math.max(0, need - km))}</b>km`}<div class="evd">${x.gc ? `${eggGotDay(x)}<span style="white-space:nowrap">알 뽑기에서 뽑은 알</span>` : !x.spN && giftOf(x.place) !== null ? `${eggGotDay(x)}<span style="white-space:nowrap">${giftOf(x.place) ? `${esc(giftOf(x.place))}에게 선물 받은 알` : '선물했다가 돌아온 알'}</span>` : x.place || x.spN ? `${eggGotDay(x)}${esc(eggPlace(x))} 근처에서 <span style="white-space:nowrap">주운 알</span>` : x.t ? `${eggGotDay(x)}<span style="white-space:nowrap">주운 알</span>` : '주운 곳 기록 없음'}<br>${x.sh ? '색다른 빛이 느껴진다' : x.ct ? `${TYPE_KO[x.ct]}의 기운이 느껴진다` : themeHint(x)}</div>`;   /* v18.82 경완: 이로치 알은 기운 줄에 '색다른 빛', 이름 옆 이로치 아이콘(글자 자리는 그대로) */
     $('#hlHl').hidden = k <= 0; $('#hlHr').hidden = k >= L.length - 1;
     if (bag) { arm = 0; dl.classList.remove('arm'); dl.textContent = '버리기'; const full = S.eggs.length >= MAX_EGGS; inB.disabled = full; inB.textContent = full ? '부화기가 꽉 찼어요' : '부화기에 넣기'; } };
@@ -15305,11 +15329,11 @@ function renderBag() {
   $('#bagTabs').innerHTML = [0, 1, 2, 3, 4, 5].map(g => `<button role="tab" data-g="${g}" aria-selected="${g === bagG}">${g ? GRADE[g].n : '전체'}<b>${cnt(g)}</b>${nw(g) ? '<i class="dot"></i>' : ''}</button>`).join('');
   document.querySelectorAll('#bagSort [data-sort]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sort === bagSort)); $('#bagSort').dataset.dir = bagDir;
   const list = S.bag.filter(e => !bagG || e.g === bagG).slice().reverse();
-  if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / GRADE[b.g].km - (a.km || 0) / GRADE[a.g].km || (b.km || 0) - (a.km || 0));
+  if (bagSort === 'km') list.sort((a, b) => (b.km || 0) / eggNeed(b) - (a.km || 0) / eggNeed(a) || (b.km || 0) - (a.km || 0));
   if (bagSort === 'grade') list.sort((a, b) => b.g - a.g || b.t - a.t);
   if (bagDir === 'a') list.reverse();   // v17.83 경완: 같은 정렬을 한 번 더 누르면 오름차순 (등급순 오름 = 낮은 등급 → 오래된 순)
   if (!S.bag.includes(bagSel)) bagSel = null;
-  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel || (!bagMul && e.id === bagHl)}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${GRADE[e.g].km}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
+  $('#bagGrid').innerHTML = list.length ? list.slice(0, 300).map(e => `<button class="bslot${bagMul?.has(e.id) ? ' on' : ''}" data-id="${e.id}" aria-current="${e === bagSel || (!bagMul && e.id === bagHl)}">${bagMul ? '<i class="chk"></i>' : ''}${e.isNew ? '<span class="newtag">NEW</span>' : ''}${eggHtml(e.g, '' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<span>${e.lt ? LT_ADJ[e.lt] : GRADE[e.g].n}</span><div class="prog sm"><i style="width:${Math.min(100, (e.km || 0) / eggNeed(e) * 100)}%"></i></div><span class="km">${fmtKm1(e.km || 0)}/${eggNeed(e)}km</span><span class="pl">${e.place ? esc(e.place.replace(/^(\S+ )?\S+(동|읍|면|리|\d가) (?=\S)/, '')) : fmtWhen(e.t)}</span></button>`).join('')
     : `<div class="bag-empty">${S.bag.length ? '이 등급 알이 없어요' : '움직이면 알을 주울 수 있어요'}</div>`;
   document.querySelector('.rtab[data-tab="bag"]').classList.toggle('none', !S.bag.length);   // 알이 하나도 없으면 안내 문구를 남은 공간 정중앙에
   $('#bagMulti').setAttribute('aria-pressed', !!bagMul); $('#bagMulti').textContent = bagMul ? '취소' : '선택';
@@ -15320,7 +15344,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${eggName(e)}</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / GRADE[e.g].km * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${GRADE[e.g].km}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big wob' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${eggName(e)}</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / eggNeed(e) * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${eggNeed(e)}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -15387,7 +15411,7 @@ function gaUse(s) { while (s.in.length && gaInPt(s) > s.pt) s.in.shift(); if (!s
 const gaPts = ids => S.bag.reduce((a, e) => a + (ids.has(e.id) ? GA_PT[e.g] || 0 : 0), 0);
 function gaRoll(t) { const s = gaSt(); let r = Math.random(), g = 2; for (const [x, p] of GA_ODDS) if ((r -= p) < 0) { g = x; break; }
   s.pity = (s.pity || 0) + 1; if (g >= 4) s.pity = 0; else if (s.pity >= GA_PITY) { g = 4; s.pity = 0; }
-  const e = { id: S.eid++, g, t: Date.now(), isNew: true, km: 0, place: '알 뽑기', gc: 1, nt: 1 }; if (GT) e.tst = 1;   // v17.90 경완: 뽑은 알은 '알을 주웠다' 알림창 안 띄움. v17.98: 이 주석이 tst 줄을 가려 시험 알이 계정 가방에 들어가던 것 고침
+  const e = { id: S.eid++, g, t: Date.now(), isNew: true, km: 0, place: '알 뽑기', gc: 1, gk: 1, nt: 1 };   /* gk: 타입 부화거리 가중치 (이 버전 뒤 뽑은 알만) */ if (GT) e.tst = 1;   // v17.90 경완: 뽑은 알은 '알을 주웠다' 알림창 안 띄움. v17.98: 이 주석이 tst 줄을 가려 시험 알이 계정 가방에 들어가던 것 고침
   if (!t) { e.sp = rollEgg(e); return e; }
   for (; g < 5; g++) { const L = eggBase().filter(sp => (SPECIES[sp]?.t || []).includes(t) && !SP_OFF.has(sp) && spInEgg(g, sp) > 0); if (!L.length) continue;
     const W = L.map(sp => spInEgg(g, sp)); let q = Math.random() * W.reduce((a, b) => a + b, 0), i = 0; while (i < L.length - 1 && (q -= W[i]) > 0) i++;
@@ -16002,7 +16026,7 @@ function uiIn(L) {
   if (Object.keys(U).length) LAYOUT.ui = U; else delete LAYOUT.ui; applyUi(); }
 function applyUi() { for (const k in UI_EL) { const e = $(UI_EL[k]), v = LAYOUT.ui?.[k]; if (e) e.style.translate = v ? `${v[0]}px ${v[1]}px` : ''; } }
 // 부화기 알의 필요 거리를 지금 등급 거리로 (쌓인 km 는 그대로)
-function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = GRADE[e.g].km; }); }
+function syncNeed() { S.eggs?.forEach(e => { if (GRADE[e.g]) e.need = eggNeed(e); }); }
 function applyBal(b) {
   const num = v => typeof v === 'number' && isFinite(v), arr = (A, v) => { if (Array.isArray(v) && v.length === A.length) A.splice(0, A.length, ...v); };
   arr(DUP_G, b.DUP_G); arr(NEW_EGG_G, b.NEW_EGG_G); if (Array.isArray(b.FR_TABLE) && b.FR_TABLE.every(r => r.length === 2)) FR_TABLE.splice(0, FR_TABLE.length, ...b.FR_TABLE);

@@ -32,10 +32,10 @@ const PART = {
   hsEyeRiv: [578240, 6976, 'hg'], hsWin1: [860000, 3164, 'hg'], hsWin3: [868960, 6180, 'hg'],
   hbSeF: [1937472, 5088, 'hg'], hwSeF: [7948960, 95352, 'hg'], hbThlon: [2029760, 5180, 'hg'], hwThlon: [8398272, 99384, 'hg'],   // v19.77 하트골드 필드 효과음 (뛰어내리기·문·부딪힘, 경완 2026-11-08)
   hseDANSA: [1544416, 60, 'hg'], hseDANSA4: [1557024, 176, 'hg'], hseDANSA5: [1529696, 60, 'hg'], hseUFO_JUMP: [1679584, 176, 'hg'], hseDOOR: [1543424, 168, 'hg'], hseDOOR_OPEN: [1543616, 164, 'hg'], hseDOOR_CLOSE: [1543808, 168, 'hg'], hseDOOR_CLOSE2: [1544000, 164, 'hg'], hseDOOR10: [1544192, 156, 'hg'], hseDOOR_OPEN5: [1536480, 184, 'hg'], hseHIKIDO_OPEN: [1700800, 328, 'hg'], hseWALL_HIT: [1542880, 152, 'hg'], hseWALL_HIT2: [1543040, 152, 'hg'], hseKABEHIT: [1689824, 280, 'hg'],
-  hseSELECT: [1199552, 120, 'hg'], hseKAIDAN2: [1543200, 208, 'hg'], hsePINPON: [1539168, 56, 'hg'], hsePC_ON: [1544480, 88, 'hg'], hseELEBETA: [1545152, 52, 'hg'], hseKATI: [1539520, 96, 'hg'], hseBOWA: [1541984, 104, 'hg'], hmeASA: [1169568, 732, 'hg'],   // v19.8x 남은 GBA 효과음도 하트골드로 (경완 2026-11-08)
+  hseSELECT: [1199552, 120, 'hg'], hseKAIDAN2: [1543200, 208, 'hg'], hsePINPON: [1539168, 56, 'hg'], hsePC_ON: [1544480, 88, 'hg'], hseELEBETA: [1545152, 52, 'hg'], hseKATI: [1539520, 96, 'hg'], hseBOWA: [1541984, 104, 'hg'], hbSeB: [1942560, 5108, 'hg'], hwSeB: [8044320, 85568, 'hg'], hseAJITO_SIREN: [1667872, 828, 'hg'], hseALERT: [1509792, 48, 'hg'], hseALERT3: [1520288, 120, 'hg'], hseALERT4: [1520416, 368, 'hg'], hseBEEP: [1560992, 52, 'hg'], hseDODON: [1659936, 96, 'hg'], hseGSDODON: [1673184, 96, 'hg'], hseDOKU_TRAP: [1669184, 728, 'hg'], hseDOKU2: [1545088, 64, 'hg'], hmeASA: [1169568, 732, 'hg'],   // v19.8x 남은 GBA 효과음도 하트골드로 (경완 2026-11-08)
   hsEyeRoc: [665472, 3252, 'hg'], hsVsRoc: [741344, 10192, 'hg'], hsAjito: [528256, 4868, 'hg'], hbD9: [1924000, 4580, 'hg'], hwD9: [7893664, 4872, 'hg'], hsNibi: [354464, 6804, 'hg'], hbF16: [1838656, 4592, 'hg'], hwF16: [7568928, 6072, 'hg'],   // 체육관 이벤트 로켓단 (2026-11-07): SEQ_GS_EYE_ROCKET·VS_ROCKET·D_AJITO
 };
-const BANK = { hF: { b: 'hbSeF', w: ['hwBasic', 'hwSeF'] }, hT: { b: 'hbThlon', w: ['hwBasic', 'hwThlon'] }, field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
+const BANK = { hF: { b: 'hbSeF', w: ['hwBasic', 'hwSeF'] }, hB2: { b: 'hbSeB', w: ['hwBasic', 'hwSeB'] }, hT: { b: 'hbThlon', w: ['hwBasic', 'hwThlon'] }, field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
   hB: { b: 'hbBasic', w: ['hwBasic'] }, h1: { b: 'hbBa1', w: ['hwBasic', 'hwBa1'] }, h2: { b: 'hbBa2', w: ['hwBasic', 'hwBa2'] }, h3: { b: 'hbBa3', w: ['hwBasic', 'hwBa3'] }, h5: { b: 'hbBa5', w: ['hwBasic', 'hwBa5'] }, hD9: { b: 'hbD9', w: ['hwBasic', 'hwD9'] }, hF16: { b: 'hbF16', w: ['hwBasic', 'hwF16'] } };
 // 곡 이름 → 악보, 악기 묶음, 곡 볼륨(원본 SEQ 정보 값)
 const SONG = {
@@ -74,7 +74,7 @@ const SONG = {
   emEyeTenno: { gba: 'mus_encounter_elite_four' }, emEyeChamp: { gba: 'mus_encounter_champion' }, emEyeF: { gba: 'mus_encounter_female' }, emEyeInt: { gba: 'mus_encounter_intense' }, emEyeRiv: { gba: 'mus_encounter_brendan' },
   emWinGym: { gba: 'mus_victory_gym_leader' }, emWinLeague: { gba: 'mus_victory_league' }, emWinTrain: { gba: 'mus_victory_trainer' },
   // 파이어레드 (v19.18 경완 전설 전당 연출): 따라와(오박사 데려가기), 전당 방, 전당 등록
-  rgFollow: { gba: 'mus_rg_follow_me' }, rgPallet: { gba: 'mus_rg_slow_pallet' }, rgHof: { gba: 'mus_rg_hall_of_fame' }, rgEyeRoc: { gba: 'mus_rg_encounter_rocket' },   // 파이어레드 로켓단 만남 (로켓단 이벤트 아테나 모니터 장면, 경완 2026-11-08)
+  rgFollow: { gba: 'mus_rg_follow_me' }, rgPallet: { gba: 'mus_rg_slow_pallet' }, rgHof: { gba: 'mus_rg_hall_of_fame' }, rgEyeRoc: { gba: 'mus_rg_encounter_rocket' }, rgAjito: { gba: 'mus_rg_rocket_hideout' }, rgSilph: { gba: 'mus_rg_silph' }, rgTower: { gba: 'mus_rg_poke_tower' },   // 파이어레드 로켓단 만남 (로켓단 이벤트 아테나 모니터 장면, 경완 2026-11-08)
 };
 
 // ---------- 받아 오기·저장 ----------
