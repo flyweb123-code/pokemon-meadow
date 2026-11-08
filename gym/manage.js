@@ -585,8 +585,8 @@ const LINES = {
   money: ['도전자에게서 상금을 두둑이 챙겨 올게요.', '체육관 살림, 제가 있으면 넉넉해질 거예요.', '계산은 빠르고 배틀은 더 빨라요. 수입은 확실히 늘려 드릴게요.', '이긴 배틀은 반드시 돈이 되게 만드는 게 제 방식이에요.', '상금 협상이라면 누구에게도 지지 않아요!'],
   guts: ['절대 물러서지 않아요. 끝까지 버티는 게 제 장점이에요!', '체력이 바닥나도 한 번 더 버팁니다. 그게 근성이죠!', '불리할수록 더 불타오르는 타입이에요.', '지는 건 싫어요. 마지막 한 마리까지 포기 안 해요!', '넘어져도 일어나는 건 자신 있어요. 포켓몬들도 그렇게 키웠고요.'],
   grow: ['아직 부족하지만, 배틀할수록 강해지는 타입이에요!', '하루하루 늘고 있어요. 지켜봐 주세요!', '경험이 적은 대신 배우는 속도는 누구보다 빨라요.', '이 체육관에서 크게 성장하고 싶어요!', '지금은 새싹이지만 금방 큰 나무가 될게요.'],
-  thrift: ['월급은 조금만 주셔도 괜찮아요. 일하게만 해 주세요!', '돈보다 배울 수 있는 곳이 좋아요. 월급은 적당히만요.', '도시락 싸 오고 걸어서 출근해요. 큰돈은 필요 없어요!', '아껴 쓰는 건 자신 있어요. 체육관 비품도 소중히 쓸게요.', '적게 받아도 일은 성실하게! 그게 제 신조예요.'],
-  lazy: ['음… 가끔 낮잠을 자지만, 월급은 아주 조금이면 돼요.', '서두르지 않는 편이에요. 대신 월급은 정말 조금만 주세요.', '하아암… 배틀할 땐 깨어 있을게요. 아마도요.', '느긋하게 일하는 대신 욕심도 없어요.', '날씨 좋은 날엔 조금 늦을 수도 있어요. 그래도 괜찮죠?'],
+  thrift: ['주급은 조금만 주셔도 괜찮아요. 일하게만 해 주세요!', '돈보다 배울 수 있는 곳이 좋아요. 주급은 적당히만요.', '도시락 싸 오고 걸어서 출근해요. 큰돈은 필요 없어요!', '아껴 쓰는 건 자신 있어요. 체육관 비품도 소중히 쓸게요.', '적게 받아도 일은 성실하게! 그게 제 신조예요.'],
+  lazy: ['음… 가끔 낮잠을 자지만, 주급은 아주 조금이면 돼요.', '서두르지 않는 편이에요. 대신 주급은 정말 조금만 주세요.', '하아암… 배틀할 땐 깨어 있을게요. 아마도요.', '느긋하게 일하는 대신 욕심도 없어요.', '날씨 좋은 날엔 조금 늦을 수도 있어요. 그래도 괜찮죠?'],
 };
 const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) * 2654435761 | 0) || 0; return `${HELLO[n % HELLO.length]} ${L[(n >>> 3) % L.length]}`; };
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
@@ -601,7 +601,7 @@ setInterval(() => document.querySelectorAll('.cv-left[data-exp]').forEach(e => {
 /* v16.35 경완 '지원서·고용 관리 없을 때 문구 화면 중앙 정렬 줄나눔 가독성': 그림 + 굵은 한 줄 + 설명 두 줄, 남은 자리 한가운데 */
 const SF_IC = { mail: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M1 3h14v11H1z"/><path fill="#fffdf4" d="M2 4h12v9H2z"/><path fill="#383848" d="M3 5h1v1H3zM4 6h1v1H4zM5 7h1v1H5zM6 8h1v1H6zM7 9h2v1H7zM9 8h1v1H9zM10 7h1v1h-1zM11 6h1v1h-1zM12 5h1v1h-1z"/><path fill="#e84a3a" d="M7 10h2v2H7z"/></svg>',
   crew: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M5 1h6v1h1v4h-1v1H5V6H4V2h1zM3 8h10v1h1v6H2V9h1z"/><path fill="#ffd8b0" d="M5 3h6v3H5z"/><path fill="#e84a3a" d="M5 2h6v1H5z"/><path fill="#4a7ad8" d="M3 9h10v5H3z"/><path fill="#fffdf4" d="M7 9h2v3H7z"/></svg>' };
-/* v16.40 경완 '오늘 630G인데 이번 주 90G?': 이번 주(s.eg)는 월급날에 0으로 돌아가서 오늘보다 작을 수 있었다 → 둘 다 일지(g.days)에서 오늘 / 최근 7일(오늘 포함)로 */
+/* v16.40 경완 '오늘 630G인데 이번 주 90G?': 이번 주(s.eg)는 주급날에 0으로 돌아가서 오늘보다 작을 수 있었다 → 둘 다 일지(g.days)에서 오늘 / 최근 7일(오늘 포함)로 */
 const sfEarn = x => { const g = st(), nm = `${x.cls} ${x.nm}`, t0 = K.dayStart(Date.now()); let d1 = 0, d7 = 0; try { K.dayRec(); } catch (e) {} for (const [k, d] of Object.entries(g.days || {})) { const v = d?.sf?.[nm]?.g || 0; if (!v) continue; const kk = +k; if (kk === t0) d1 += v; if (kk > t0 - 7 * K.DAY) d7 += v; } return [d1, d7]; };
 const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" src="${K.trSrc(x.tr)}"></div>`;
 const sfEmpty = (ic, t, d) => `<div class="sf-void">${ic ? `<span class="sf-void-ic">${SF_IC[ic]}</span>` : ''}<b>${t}</b><p>${d}</p></div>`;
@@ -614,18 +614,18 @@ function drawStaff() {
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
-      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 월급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 주급</dt><dd>7일에 <b>${x.wage}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : sfEmpty('', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
-   /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 월급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
+   /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 주급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '<i class="sfc-rib y">훈련장 코치</i>' : '<i class="sfc-rib">대기 중</i>';
   const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', K.inGym(s) && s.yard ? '<em class="y">훈련장 코치</em>' : ''].join('');
       return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
       <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
-      <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>월급 (7일)</small><b class="pay">${s.wage}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
+      <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
     : sfEmpty('crew', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
   sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap"><span><small>고용</small><b>${g.sf.length}<em>/${max}명</em></b></span><span><small>훈련장 코치</small><b>${yN}<em>/${YARD_SF}명</em></b></span></span></div>${tabs}${sfT === 'cand' ? cand : list}`;
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
@@ -638,7 +638,7 @@ function drawStaff() {
     if (b.dataset.sf) return sfDetail(g.sf[+b.dataset.sf]);
   };
 }
-// 고용 트레이너 자세히 (경완 2026-10-27 '고용한 트레이너 카드 누르면 상세 정보'): 전신·특성·포켓몬·전적·월급과 배치 단추
+// 고용 트레이너 자세히 (경완 2026-10-27 '고용한 트레이너 카드 누르면 상세 정보'): 전신·특성·포켓몬·전적·주급과 배치 단추
 /* v16.68 경완 '고용 트레이너 상세카드에 자리 바꾸기 없애고, 체육관 홈에서 트레이너 누르면 뜨는 카드(같은 카드)에 자리 바꾸기': home = 홈에서 연 카드 */
 function sfDetail(s, home) {
   const g = st(), now = Date.now(); if (!s) return; const i = g.sf.indexOf(s), yN = g.sf.filter(x => x.yard).length, lv = Math.round(K.teamLv(s.team));
@@ -654,7 +654,7 @@ function sfDetail(s, home) {
     <p class="sd2-h">기록</p>
     <div class="sd2-rec">   <!-- v16.63 경완 '기록 부분 보기 쉽게': 네 칸 막대 대신 한 줄씩 (이름 · 값 · 설명) -->
       <div><span>전적</span><b>${W}승 ${L}패</b><em>${W + L ? `승률 <b class="${wr >= .5 ? 'up' : 'dn'}">${Math.round(wr * 100)}%</b>` : '아직 없어요'}</em></div>
-      <div><span>월급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
+      <div><span>주급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
       <div><span>번 돈</span><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b><em>최근 7일 · 오늘 ${tg.toLocaleString()}G</em></div>
       <div><span>고용</span><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><em>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G` : '첫 주예요'}</em></div></div>
     <div class="gy-btns sd-btns${bn === 3 ? ' three' : ''}"><button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>${gb ? `<button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button>` : ''}
@@ -664,7 +664,7 @@ function sfDetail(s, home) {
       if (a === 'gym') { close(); return K.sfPlace(s, home ? () => {} : () => { K.openTab?.('staff'); }); }   // 홈에서 연 카드는 자리 바꾼 뒤 홈 그대로
       if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : 1; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s, home); }
       if (a === 'up') { const k = g.sf.indexOf(s); if (k > 0) { [g.sf[k - 1], g.sf[k]] = [g.sf[k], g.sf[k - 1]]; K.save(); } close(); redraw(); K.renderHome(); return sfDetail(s); }
-      if (a === 'fire') { close();   /* v16.41 경완 '해고할 때는 지금까지 일한 수당은 챙겨줘야 함': 이번 월급 주기에서 일한 날만큼 (쉬는 중이면 일 안 했으니 없음) */
+      if (a === 'fire') { close();   /* v16.41 경완 '해고할 때는 지금까지 일한 수당은 챙겨줘야 함': 이번 주급 주기에서 일한 날만큼 (쉬는 중이면 일 안 했으니 없음) */
         const wd = s.rest ? 0 : Math.max(1, Math.min(7, Math.ceil((now - (s.pay - 7 * K.DAY)) / K.DAY - .01))), amt = s.rest ? 0 : Math.round(s.wage * wd / 7);
         pop(`${sfFace(s)}<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} <b>${esc(s.nm)}</b>${K.jong(s.nm) ? '을' : '를'} 해고해요.${amt ? `<br>지금까지 일한 <b>${wd}일치 수당 ${amt.toLocaleString()}G</b>를 줘요.` : ''}</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">${amt ? `${amt.toLocaleString()}G 주고 해고` : '해고'}</button></div>`,
         (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s, home); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; window.pkGold?.('wage', amt); } catch (e) {} }
@@ -681,11 +681,11 @@ function hire(c) {
   const g = st(); if (!c) return;
   if (g.sf.length >= K.staffMax()) return pop(`<div class="sf-face full">${g.sf.slice(0, 5).map(x => `<img alt="" src="${K.trSrc(x.tr)}">`).join('')}</div><h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 <b>${g.sf.length}/${K.staffMax()}명</b>이에요.<br>체육관 등급을 올리거나<br>한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
   /* v15.60 경완: 고용할지 한 번 묻고, 고용하면 효과음과 함께 고용 관리 탭으로 */
-  pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 월급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
+  pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 주급 <b>${c.wage}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return;
-    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 월급 ${c.wage}G가 필요해요.`); try { window.pkGold?.('wage', c.wage); } catch (e) {} try { K.dayRec().p += c.wage; } catch (e) {}
+    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 주급 ${c.wage}G가 필요해요.`); try { window.pkGold?.('wage', c.wage); } catch (e) {} try { K.dayRec().p += c.wage; } catch (e) {}
     const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
-    K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>월급 ${c.wage}G</small>`); K.save();
+    K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>주급 ${c.wage}G</small>`); K.save();
     try { const M = window.GymBGM; M?.fan ? M.fan('ME_FANFA1') : M?.se('ME_FANFA1'); } catch (e) {}
     sfT = 'sf'; redraw(); K.renderHome();
   });

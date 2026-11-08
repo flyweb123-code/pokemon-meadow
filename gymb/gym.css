@@ -2583,7 +2583,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-top .gy-plate::before{content:'';position:absolute;z-index:2;left:calc(50% - 28px);width:56px;top:50%;height:60px;margin-top:-30px;box-sizing:border-box;border-block:3px solid var(--frame);background:linear-gradient(180deg,#fff 0,#fff 8%,var(--win) 9%,var(--win) 84%,var(--g2) 85%);filter:drop-shadow(0 3px 0 rgba(0,0,0,.4));pointer-events:none}   /* v15.51 경완: 배지 뒤 타이틀 리본은 늘 이어져 있게 */
 #gym .gy-plate.pf-on .gy-bd{z-index:5}   /* v15.51 경완: 승급 배지가 나올 때 평판 게이지보다 앞 */
 #gym .gy-storew .st-empty{position:fixed;left:0;right:0;top:50%;transform:translateY(-50%);margin:0;text-align:center;line-height:1.6;pointer-events:none}   /* v15.56 경완: 창고가 비었을 때 문구는 화면 정중앙 */
-#gym .sf-card .sf-st .sf-pay{color:#b07a10;font-style:normal}   /* v15.60 경완: 고용 관리 슬롯에 월급 */
+#gym .sf-card .sf-st .sf-pay{color:#b07a10;font-style:normal}   /* v15.60 경완: 고용 관리 슬롯에 주급 */
 #gym .ts-win>.win{display:flex;flex-direction:column}#gym .ts-win .ts-grid{flex:1;grid-auto-rows:1fr;padding-bottom:10px}#gym .ts-win .ts-slot{min-height:76px;height:auto}   /* v15.60 경완: 훈련장 슬롯은 창을 꽉 채우고 크기를 같게 */
 /* v15.66 경완: 창고는 꾸미기 오른쪽, 그 자리(오른쪽 위)엔 체육관 일지 */
 #gym .gy-store.gy-sq.gy-sq{left:calc(var(--si-left,env(safe-area-inset-left)) + 64px)!important;right:auto!important}
@@ -3197,7 +3197,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes lgTw{0%,100%{scale:.2;opacity:0}50%{scale:1;opacity:1}}
 @keyframes lgWob{0%,100%{rotate:0deg}20%{rotate:-14deg}40%{rotate:12deg}60%{rotate:-8deg}80%{rotate:5deg}}
 @keyframes lgFl{0%{opacity:.95}100%{opacity:0}}
-/* v19.08 경완 주간 보고서: 결산 장부 + 트레이너별 월급 대비 수익 (aw-pop 틀) */
+/* v19.08 경완 주간 보고서: 결산 장부 + 트레이너별 주급 대비 수익 (aw-pop 틀) */
 #gym .gy-pop.aw-wrap .win:has(.wr-pop){max-width:372px;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 #gym .wr-pop{gap:9px}
 #gym .wr-hd{background:repeating-linear-gradient(135deg,#2f6a4e 0 10px,#377758 10px 20px);padding-bottom:10px}
@@ -3245,3 +3245,17 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .wr-now span{display:inline-flex;align-items:center;flex-wrap:wrap}
 #gym .wr-now .coin{width:11px;height:11px}
 #gym .wr-empty{margin:0 14px;font-size:13px;line-height:1.6;text-align:center;color:#50505e}
+/* v19.10 경완 '넘기게': 쪽 넘기기 — 모든 쪽을 한 칸에 겹쳐 두어 창 높이가 안 바뀜 */
+#gym .wr-pgs{display:grid;touch-action:pan-y}
+#gym .wr-pg{grid-area:1/1;display:flex;flex-direction:column;gap:9px;visibility:hidden}
+#gym .wr-pg.on{visibility:visible;animation:wrPg .18s steps(3,end)}
+@keyframes wrPg{from{opacity:.2;translate:10px 0}}
+#gym .wr-pg>*{margin-inline:14px}
+#gym .wr-pg>.wr-h{margin-bottom:-4px}
+#gym .wr-h small{font-size:10px;color:#9090a0;margin-left:4px}
+#gym .wr-dots{display:flex;justify-content:center;gap:6px;margin:0}
+#gym .wr-dots i{width:8px;height:8px;background:#c8c8d4;cursor:pointer}
+#gym .wr-dots i.on{background:#20202c}
+#gym .wr-btns button[disabled]{opacity:.4}
+@media (prefers-reduced-motion:reduce){#gym .wr-pg.on{animation:none}}
+#gym .wr-pop>.wr-pgs{margin-inline:0}
