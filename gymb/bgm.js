@@ -254,7 +254,7 @@ const GymBGM = {
   free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } if (gworker) { try { gworker.terminate(); } catch (e) {} gworker = null; } },
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
-  se: (nm, o) => sePlay(nm, o).catch(() => {}),
+  se: (nm, o) => { window.GymBGM && (window.GymBGM.seT = performance.now()); return sePlay(nm, o).catch(() => {}); },   // seT: v18.99 저절로 뜨는 알림창이 소리를 냈는지 보려고
   // 나고 있는 효과음·팡파르 끊기 (팡파르면 배경 곡도 바로 다시 키움)
   seStop(nm) { for (const s of seLive.get(nm) || []) { try { s.stop(); } catch (e) {} } seLive.delete(nm); fanEnd.get(nm)?.(); },
   // 팡파르(본가 Sound_PlayFanfare): 배경 곡을 잠깐 줄이고 끝까지 튼 뒤 다시 키운다. 끝나면 풀리는 Promise
