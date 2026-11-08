@@ -1475,7 +1475,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
         // v17.57 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
         // v17.59 경완: 추천할 게 없거나(이미 지닌 도구가 추천) 고를 수 없으면 추천 칸 자체를 안 띄움 — 추천을 먼저 고른 다음 창을 연다
         return recIt(P).then(r => { if (r === m.it) r = null; const inSt = r && S.gym?.itm?.[r] > 0;
-        const recBox = !r ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
+        const recBox = !r || (!inSt && window.gymEvLu) ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
         const recFill = () => {};
         const recAct = (b, c2, w) => { const r = w.querySelector('.it-recb')?.dataset.it; if (!r) return false;
           if (b === 'rgive') { c2(); giveIt(P, r); close(); monPop(P.id, fromBox, null, lst); return true; }
@@ -1747,6 +1747,7 @@ function recNat(P, m = gm(P)) {
 function natRec(rn, m) {
   if (!rn || rn === m.nat) return '';   // v17.59 경완: 이미 추천 성격이면 추천 칸 안 띄움
   const g = S.gym || {}, own = g.mint?.[rn] > 0, nt = D.nt[rn] || ['', '', ''];
+  if (!own && window.gymEvLu) return '';   // v19.61 경완: 이벤트 안 라인업 화면에선 체육관 상점으로 못 감
   const body = rn === m.nat ? '<small class="it-recw">지금 성격이 추천 성격이에요</small>'
     : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small>${own ? `<em class="it-note">창고에 ${esc(mintNm(rn))} · 누르면 먹여요</em>` : ''}</span>${own ? '' : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
   return `<div class="it-rec"><span class="it-recl">추천 성격</span><div class="it-recb">${body}</div></div>`;

@@ -233,7 +233,7 @@ GymEv.def({
       R('boy', 6, 4, 'l', 'mart', '소년 민재', ['로켓단이 체육관을\n차지했다면서요?\n관장님, 힘내세요!'], 1);
       const nurse = R('nurse', 7, 2, 'd', 'center', '간호순', ['포켓몬 센터에 어서 오세요!']);
       R('gentleman', 4, 7, 'u', 'center', '신사 고상해', ['로켓단이 마을 길을\n다 막아 버렸어.\n이래서야 어디도 못 가겠군.'], 1);
-      R('youngster', 1, 2, 'd', 'center', '반바지 꼬마 동구', ['저기 PC 로 같이 다닐 포켓몬을\n바꿀 수 있대요!'], 1);
+      R('youngster', 1, 2, 'd', 'center', '반바지 꼬마 동구', ['저기 PC 로 포켓몬 라인업을\n바꿀 수 있대요!'], 1);
       R('gba_kid', 10, 7, 'u', 'center', '꼬마 겜돌이', ['밖에 로켓단이 무서워서\n여기서 게임만 하고 있어요.']);
       R('balding_man', 1, 2, 'd', 'house1', '아저씨 철수', ['우리 집 앞에도 로켓단이\n서성거려서 밖에 나가질 못하겠어.'], 1);
       R('worker_m', 16, 5, 'l', 'museum', '박물관 직원 수진', ['죄송해요, 오늘은 박물관 문을\n일찍 닫으려고 해요.', '로켓단이 화석을 노린다는\n소문이 있어서요...']);
@@ -266,7 +266,9 @@ GymEv.def({
       // 콩이 모자: 찾아 주면 다시 쓴다 (경완 2026-11-08). 보는 방향마다 앞·옆·뒤 그림 (경완 2026-11-08 '모자 방향에 따라 달리 보이게')
       const HATF = { d: `hat_d.png?${VB}`, u: `hat_u.png?${VB}`, l: `hat.png?${VA}`, r: `hat.png?${VA}` };
       const kongHat = () => { if (kong.hatEl) return; const e = document.createElement('i'); e.className = 'ev-hat'; Object.assign(e.style, { position: 'absolute', left: 2 * F.k + 'px', top: 13 * F.k + 'px', width: 12 * F.k + 'px', height: 8 * F.k + 'px', backgroundSize: '100% 100%', imageRendering: 'pixelated' }); kong.el.appendChild(e); kong.hatEl = e;
-        const p0 = kong.put; kong.put = () => { p0(); e.style.backgroundImage = `url(${IM}ev/rocket/${HATF[kong.f] || HATF.d})`; }; kong.put(); };
+        // 방향 바꿀 때 새 그림을 그제야 불러와 잠깐 모자가 사라지던 것 (경완 2026-11-08): 세 방향 그림을 미리 불러 두고, 바뀔 때만 바꿈
+        Object.values(HATF).forEach(f => { const im = new Image(); im.src = `${IM}ev/rocket/${f}`; (kong.hatIm = kong.hatIm || []).push(im); });
+        let cur = ''; const p0 = kong.put; kong.put = () => { p0(); const u = `url(${IM}ev/rocket/${HATF[kong.f] || HATF.d})`; if (u !== cur) { cur = u; e.style.backgroundImage = u; } }; kong.put(); };
       if (A.has('kong')) kongHat();
       const kongOn = on => { kong.on = on; kong.el.hidden = !on; if (hat) hat.style.visibility = on ? '' : 'hidden'; };
       if (!A.has('dol')) kongOn(false);
@@ -293,13 +295,13 @@ GymEv.def({
       // 마을 사람 부탁: 사람은 사정과 힌트만, 부탁 창은 그 장애물(나무·바위·상자)에 말 걸었을 때 (경완 2026-11-08). 해결하면 그 사람이 와서 고마움·단서.
       //   다시 말 걸면 들려줬던 주요 힌트를 계속 말한다
       const say = async (W, L) => { for (const t of L) await S.say(t, { who: W }); S.hide(true); };
-      // 변장했을 때: 진행에 필요한 사람(돌쇠·미소·간호순·콩이)만 관장인 걸 알아보고, 나머지는 끝까지 로켓단인 줄 안다 (경완 2026-11-08)
+      // 변장했을 때: 진행에 필요한 사람(돌쇠·미소·간호순·콩이·힌트 주는 만복)만 관장인 걸 알아보고, 나머지는 끝까지 로켓단인 줄 안다 (경완 2026-11-08)
       const DSAY = {
         '할아버지 돌쇠': ['이놈! 또 무슨 짓을 하러...\n...아니, 관장 양반 아닌가?', '허허, 감쪽같구먼.'],
         '점원 미소': ['히익, 또 오셨...\n...어? 관장님이세요?', '휴, 로켓단인 줄 알았어요...'],
+        '아저씨 만복': ['히익, 로켓단...!\n...아, 관장님이었군요.\n깜짝 놀랐잖아요.'],
         '간호순': ['어머, 로켓단...!?\n...아, 관장님이셨군요.\n깜짝 놀랐어요.'] };
       const FOOL = {
-        '아저씨 만복': () => [A.has('miso') ? '히익, 로켓단...!\n우, 우리 집엔 아무것도 없어요!' : '히익, 로켓단...!\n마트 점원 미소 씨 좀\n그만 괴롭혀요!'],
         '소년 준이': () => [A.has('miso') ? '로켓단 무서워...\n저리 가요!' : '로, 로켓단이다...!\n미소 누나네 마트엔\n또 왜 가요!?'],
         '반바지 꼬마 태호': () => A.has('miso') ? ['히익! 로켓단이 또 왔다!\n이번엔 뭘 사 가려고요...!?'] : ['히익! 로켓단이 또 왔다!', '사, 상자는 저 통로에\n그대로 있어요...!'],
         '소년 민재': () => ['로켓단이다...!\n관장님이 꼭 혼내 줄 거야!'],
@@ -310,8 +312,8 @@ GymEv.def({
         '박물관 직원 수진': () => ['로, 로켓단...!\n화석은 절대 못 드려요!'],
         '할아버지 석주': () => ['이 녀석, 또 화석을 노리고 왔구나!\n어림없다!'],
         '연구원 지민': () => ['로켓단은 화석에\n손대지 마세요!'] };
-      const fool = async s => { if (!disg(A) || !FOOL[s.nm]) return false; if (!s.fz) { s.fz = 1; F.bub(s, '!', 700); A.se('se_pin'); await wait(500); } await say(s.nm, FOOL[s.nm]()); return true; };
-      const dz = async s => { if (!disg(A) || s.dz || !DSAY[s.nm]) return; s.dz = 1; F.bub(s, '!', 700); A.se('se_pin'); await wait(500); for (const t of DSAY[s.nm]) await S.say(t, { who: s.nm }); };
+      const fool = async s => { if (!disg(A) || !FOOL[s.nm]) return false; await say(s.nm, FOOL[s.nm]()); return true; };
+      const dz = async s => { if (!disg(A) || s.dz || !DSAY[s.nm]) return; s.dz = 1; for (const t of DSAY[s.nm]) await S.say(t, { who: s.nm }); };
       const HINT = {
         kong: ['모자 찾아 줘서 고마워요!', '그 옷 입으니까 관장님도\n진짜 로켓단 같아요! 히히.'],
         dol: ['그 녀석들, 밤마다 마을 남쪽\n빈집에 들락날락하더구먼.', '그 집은 오래전에 비었는데\n불빛이 새어 나오더란 말이지.'],
@@ -434,7 +436,7 @@ GymEv.def({
             if (b?.kind === 'bar') return me1('(로켓단 상자가 계단을\n꽉 막고 있다...)', '(위층에는 못 올라갈 것 같다.)');
             if (F.cur === 'main' && TREE.has(k)) return treeLook();
             if (F.cur === 'house' && k === '5,1') return tvLook();
-            if (F.cur === 'center' && LK.center?.[k] === 'pc') { await me1('(PC 로 같이 다닐 포켓몬을\n바꿀 수 있다.)'); return F.palPick(); }
+            if (F.cur === 'center' && LK.center?.[k] === 'pc') { await me1('(PC 로 라인업을\n바꿀 수 있다.)'); return F.luOpen(); }
             const t = lookText(LK[F.cur], LOOK[F.cur], x, y); if (t) await me1(...[].concat(t)); },
           warp: async w => { if (w.id === 'gym') return me1('(체육관 문이 안에서 굳게 잠겨 있다...)');
             if (w.id === 'stairs') return 'in';
