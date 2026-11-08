@@ -258,7 +258,7 @@ const GymBGM = {
   // 체육관에서 나가면 메모리를 비운다
   free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } if (gworker) { try { gworker.terminate(); } catch (e) {} gworker = null; } },
   // 효과음: 미리 만들어 두기 / 틀기
-  sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} if (ctx) L.forEach(n => seGet(ctx, n).catch(() => {})); },
+  sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} return ctx ? Promise.all(L.map(n => seGet(ctx, n).catch(() => {}))) : Promise.resolve(); },   // 다 만들어지면 풀림 (v19.73)
   se: (nm, o) => { window.GymBGM && (window.GymBGM.seT = performance.now()); return sePlay(nm, o).catch(() => {}); },   // seT: v18.99 저절로 뜨는 알림창이 소리를 냈는지 보려고
   // 나고 있는 효과음·팡파르 끊기 (팡파르면 배경 곡도 바로 다시 키움)
   seStop(nm) { for (const s of seLive.get(nm) || []) { try { s.stop(); } catch (e) {} } seLive.delete(nm); fanEnd.get(nm)?.(); },
