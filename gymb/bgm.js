@@ -71,7 +71,7 @@ const SONG = {
   emEyeTenno: { gba: 'mus_encounter_elite_four' }, emEyeChamp: { gba: 'mus_encounter_champion' }, emEyeF: { gba: 'mus_encounter_female' }, emEyeInt: { gba: 'mus_encounter_intense' }, emEyeRiv: { gba: 'mus_encounter_brendan' },
   emWinGym: { gba: 'mus_victory_gym_leader' }, emWinLeague: { gba: 'mus_victory_league' }, emWinTrain: { gba: 'mus_victory_trainer' },
   // 파이어레드 (v19.18 경완 전설 전당 연출): 따라와(오박사 데려가기), 전당 방, 전당 등록
-  rgFollow: { gba: 'mus_rg_follow_me' }, rgPallet: { gba: 'mus_rg_slow_pallet' }, rgHof: { gba: 'mus_rg_hall_of_fame' }, rgSilph: { gba: 'mus_rg_silph' },   // 실프주식회사 (로켓단 이벤트 아테나 모니터 장면, 경완 2026-11-08)
+  rgFollow: { gba: 'mus_rg_follow_me' }, rgPallet: { gba: 'mus_rg_slow_pallet' }, rgHof: { gba: 'mus_rg_hall_of_fame' }, rgEyeRoc: { gba: 'mus_rg_encounter_rocket' },   // 파이어레드 로켓단 만남 (로켓단 이벤트 아테나 모니터 장면, 경완 2026-11-08)
 };
 
 // ---------- 받아 오기·저장 ----------
