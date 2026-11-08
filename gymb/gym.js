@@ -1876,9 +1876,9 @@ const wrD = t => { const d = new Date(t); return `${d.getMonth() + 1}월 ${d.get
 function reportPop(any) {
   const g = st(), r = g.rpt, w = g.wk || {};
   if (!r && !any) return;
-  const G = n => (n | 0).toLocaleString(), now = `<p class="wr-now"><b>이번 주 지금까지</b><span>${w.w || 0}승 ${w.l || 0}패 · 막은 도전자 ${w.b || 0}명 · <i class="coin"></i>${G(w.g)}G</span></p>`;
+  const G = n => (n | 0).toLocaleString();
   let body;
-  if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 주급만큼 일했는지를 정리해 드려요.</p>${now}`;
+  if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 주급만큼 일했는지를 정리해 드려요.</p>`;
   else {
     const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.out ? 0 : x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
     const k0 = r.k || weekStart(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
@@ -1889,7 +1889,7 @@ function reportPop(any) {
         <em class="wr-d">${x.co ? `<small>주급</small>−${G(x.wg)}G` : d >= 0 ? `<small>${x.wg ? `주급의 ${Math.round((x.e || 0) / x.wg * 10) / 10}배` : '이득'}</small>+${G(d)}G` : `<small>주급보다</small>−${G(-d)}G`}</em></li>`; };
     // v19.10 경완 '다 들어가게 줄이지 말고 넘기게': 1쪽 결산, 2쪽부터 트레이너 3명씩 — 점·이전/다음으로 넘김 (밀어서도)
     const PG = [`<div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>
-      <div class="wr-led"><p><span>관장 배틀</span><b class="p">+${G(mine)}G</b></p>${L.length ? `<p><span>트레이너가 번 골드</span><b class="p">+${G(sg)}G</b></p><p><span>트레이너 주급</span><b class="m">−${G(wg)}G</b></p>` : ''}<p class="sum"><span>순이익</span><b class="${net < 0 ? 'm' : 'p'}"><i class="coin"></i>${net < 0 ? '−' : '+'}${G(Math.abs(net))}G</b></p></div>${now}`];
+      <div class="wr-led"><p><span>관장 배틀</span><b class="p">+${G(mine)}G</b></p>${L.length ? `<p><span>트레이너가 번 골드</span><b class="p">+${G(sg)}G</b></p><p><span>트레이너 주급</span><b class="m">−${G(wg)}G</b></p>` : ''}<p class="sum"><span>순이익</span><b class="${net < 0 ? 'm' : 'p'}"><i class="coin"></i>${net < 0 ? '−' : '+'}${G(Math.abs(net))}G</b></p></div>`];   // v19.11 경완: '이번 주 지금까지' 뺌 (월요일마다 뜨니까)
     const PER = 3, NP = Math.ceil(L.length / PER);
     for (let k = 0; k < NP; k++) PG.push(`<h5 class="wr-h">트레이너별 주급 대비 수익${NP > 1 ? ` <small>${k + 1} / ${NP}</small>` : ''}</h5><ul class="aw-l wr-l">${L.slice(k * PER, k * PER + PER).map(row).join('')}</ul>`);
     body = `<div class="aw-hd wr-hd"><small>주간 보고서 · ${wrD(k0)} ~ ${wrD(k0 + 6 * DAY)}</small><b>지난주 체육관 결산</b><div class="wr-bd">${bdHtml(g.ty, gradeOf(g.rep || 0).i + 1)}</div></div>
