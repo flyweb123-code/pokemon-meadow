@@ -16,6 +16,7 @@ const PART = {
   bField: [1628096, 3984], bBattle: [1632096, 3820],
   sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672], sEyeElite: [941696, 6000], sEyeChamp: [964096, 6632],
   sLab: [838560, 3556],
+  sDendo: [791296, 5100],   // v18.92 SEQ_BLD_DENDO 전당 (전설 알 지급 전당 등록 연출, 경완 '전당 등록처럼 웅장하게')
   sLeague: [784384, 6912], bDungeon: [1635936, 3948], wDungeon: [7096288, 34312],   // SEQ_D_LEAGUE 포켓몬리그 (승급 심사 화면, 경완 2026-11-04 'bgm 웅장하게')
   sTsure: [1160800, 5228],   // SEQ_TSURETEKE 같이 걷는 곡 (친밀도 만점 창, 경완 2026-10-31)   // SEQ_KENKYUJO 연구소 (튜토리얼, 경완 2026-10-29)
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
@@ -37,7 +38,8 @@ const BANK = { field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bB
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
   lab: { s: 'sLab', bank: 'field', vol: 127 },
-  league: { s: 'sLeague', bank: 'dungeon', vol: 100 },   // 승급 심사 화면 (포켓몬리그)
+  league: { s: 'sLeague', bank: 'dungeon', vol: 100 },
+  dendo: { s: 'sDendo', bank: 'dungeon', vol: 112 },     // 전당 (전설의 체육관 전당 등록)   // 승급 심사 화면 (포켓몬리그)
   tsure: { s: 'sTsure', bank: 'B', vol: 125 },          // 친밀도 만점 창            // 처음 연출·튜토리얼 (연구소 곡)
   train: { s: 'sBaTrain', bank: 'battle', vol: 88 },      // 트레이너 배틀
   gymBattle: { s: 'sBaGym', bank: 'battle', vol: 88 },    // 체육관 관장 배틀

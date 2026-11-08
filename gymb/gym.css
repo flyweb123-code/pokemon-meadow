@@ -3147,3 +3147,53 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li>.bdw,#gym .gy-perk>li>.g-emb{grid-row:1/span 5}
 #gym .gy-perk>li>h6.pk-gh{grid-column:2;margin:6px 0 0;font-size:11px;letter-spacing:1px;color:#8a5a10}
 #gym .gy-perk>li>h6.pk-gh+ul{margin-top:2px}
+
+/* v18.92 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 웅장하게': 전설 알 지급 = 명예의 전당 등록 연출 (legEggPop) */
+#gym.lgOn .gy-dlg{z-index:62}
+#gym .hof{position:absolute;inset:0;z-index:60;overflow:hidden;pointer-events:auto;opacity:0;transition:opacity .8s;color:#fff}
+#gym .hof.hOn{opacity:1}#gym .hof.hBye{opacity:0;transition:opacity .9s}
+#gym .hof-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#2a2050 0,#120d26 45%,#04030a 100%)}
+#gym .hof-sp{position:absolute;inset:0;opacity:0;transition:opacity 1.2s}#gym .hof.hLit .hof-sp,#gym .hof.hTtl .hof-sp{opacity:1}
+#gym .hof-sp i{position:absolute;width:10px;height:10px;margin:-5px;background:#fff6c8;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);animation:lgTw 2.2s ease-in-out infinite both}
+#gym .hof-beam{position:absolute;top:-10%;width:46%;height:105%;background:linear-gradient(180deg,rgba(255,246,200,.55),rgba(255,236,160,.12) 70%,transparent);clip-path:polygon(42% 0,58% 0,100% 100%,0 100%);opacity:0;transition:opacity .8s;transform-origin:50% 0;mix-blend-mode:screen}
+#gym .hof-beam.l{left:2%;rotate:-22deg;animation:hofSwL 5s ease-in-out infinite alternate}#gym .hof-beam.r{right:2%;rotate:22deg;animation:hofSwR 5s ease-in-out infinite alternate}
+#gym .hof.hLit .hof-beam{opacity:1}
+#gym .hof-floor{position:absolute;left:50%;top:64%;width:300px;height:70px;margin:-35px 0 0 -150px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,240,190,.6),rgba(255,220,140,.2) 50%,transparent 72%);opacity:0;transition:opacity .8s}#gym .hof.hLit .hof-floor{opacity:1}
+#gym .hof-ttl{position:absolute;left:0;right:0;top:36%;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;scale:.85;transition:opacity .9s,scale 1.4s cubic-bezier(.2,1,.3,1);text-align:center}
+#gym .hof.hTtl .hof-ttl{opacity:1;scale:1}
+#gym .hof-ttl small{font-size:13px;letter-spacing:3px;color:#d8c8ff}
+#gym .hof-ttl b{font-size:38px;letter-spacing:6px;color:#ffe48a;text-shadow:0 3px 0 #8a5a10,0 0 18px rgba(255,214,90,.8),0 0 40px rgba(255,190,60,.5)}
+#gym .hof-st{position:absolute;left:0;right:0;top:20%;height:44%;display:grid;place-items:end center}
+#gym .hof-pk{grid-area:1/1;display:grid;place-items:end center;width:200px;height:200px;scale:1.5;transform-origin:50% 100%}
+#gym .hof-pk.in{animation:hofIn .7s cubic-bezier(.2,1.2,.4,1) both}#gym .hof-pk.out{animation:hofOut .38s ease-in both}
+#gym .hof-pk span,#gym .hof-mini>span{display:grid;place-items:end center}
+#gym .hof-pk i,#gym .hof-mini i{width:120px;height:120px;background:0 0/240px 120px no-repeat;image-rendering:pixelated}#gym .hof-pk i.fa,#gym .hof-mini i.fa{background-repeat:no-repeat}
+#gym .hof-pk img,#gym .hof-mini img{display:block;image-rendering:pixelated}
+#gym .hof-pk span{filter:drop-shadow(0 0 10px rgba(255,240,190,.55))}
+#gym .hof-cap{position:absolute;left:50%;top:70%;translate:-50% 0;min-width:220px;padding:10px 22px 12px;border:3px solid #e6c260;border-radius:6px;background:linear-gradient(#2c2450,#1a1432);box-shadow:0 0 0 2px #5a3e10,0 0 24px rgba(255,214,90,.35);display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0;scale:.9;transition:opacity .35s,scale .45s cubic-bezier(.2,1.4,.4,1);text-align:center;white-space:nowrap}
+#gym .hof-cap.on{opacity:1;scale:1}
+#gym .hof-cap i{font-style:normal;font-size:11px;letter-spacing:2px;color:#c8b8f0}#gym .hof-cap b{font-size:20px;color:#ffe48a;text-shadow:0 2px 0 #5a3e10}#gym .hof-cap em{font-style:normal;font-size:13px;color:#fff}#gym .hof-cap small{font-size:11px;color:#a898d0}
+#gym .hof-cap.fin{top:72%}
+#gym .hof-all{position:relative;width:100%;height:100%;display:grid;place-items:end center}
+#gym .hof-tr{position:relative;z-index:2;width:160px;height:160px;image-rendering:pixelated;filter:drop-shadow(0 0 12px rgba(255,240,190,.6));animation:hofIn .8s cubic-bezier(.2,1.2,.4,1) both}
+#gym .hof-mini{position:absolute;bottom:18px;left:50%;--a:calc((var(--n) - (var(--c) - 1) / 2));translate:calc(var(--a) * 62px - 50%) calc(-1 * (2.5 - (var(--a) * var(--a)) * .2) * 14px);scale:.72;transform-origin:50% 100%;opacity:.95;animation:hofFd .7s ease-out calc(var(--n) * .12s) both}
+@keyframes hofFd{from{opacity:0;filter:brightness(3)}to{opacity:.95;filter:none}}
+#gym .hof.hEgg .hof-all{filter:brightness(.55);transition:filter .8s}
+#gym .hof-pil{position:absolute;left:50%;top:0;width:120px;height:62%;margin-left:-60px;background:linear-gradient(90deg,transparent,rgba(255,250,220,.75) 35%,#fff 50%,rgba(255,250,220,.75) 65%,transparent);opacity:0;scale:.2 1;transition:opacity .6s,scale .8s cubic-bezier(.2,1.3,.4,1);mix-blend-mode:screen}
+#gym .hof.hDrop .hof-pil{opacity:.85;scale:1 1}#gym .hof.hGot .hof-pil{opacity:0;transition:opacity 1.2s}
+#gym .hof-ray{position:absolute;left:50%;top:31%;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,120,.5) 0 8deg,transparent 8deg 22deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 66%);mask:radial-gradient(circle,#000 16%,transparent 66%);opacity:0;scale:.2;transition:opacity .6s,scale 1s cubic-bezier(.2,1.3,.4,1);animation:lgSpin 14s linear infinite}
+#gym .hof.hGot .hof-ray{opacity:1;scale:1}
+#gym .hof-egg{position:absolute;left:50%;top:-20%;width:108px;height:132px;margin:-66px 0 0 -54px;z-index:3;transition:top 1.8s cubic-bezier(.25,.1,.25,1)}
+#gym .hof.hDrop .hof-egg{top:31%;animation:hofFl 1.8s ease-in-out}
+#gym .hof-egg .egg{width:100%!important;height:100%!important;filter:drop-shadow(0 0 12px rgba(255,236,150,.95))}
+#gym .hof.hWob .hof-egg{animation:lgWob .8s ease-in-out}
+#gym .hof.hGot .hof-egg .egg{filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 34px rgba(255,220,110,.95)) brightness(1.12)}
+#gym .hof-flash{position:absolute;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none}#gym .hof.hGot .hof-flash{animation:lgFl .8s ease-out}
+@keyframes hofIn{0%{opacity:0;translate:0 24px;filter:brightness(3)}60%{opacity:1;filter:brightness(1.6)}100%{opacity:1;translate:0 0;filter:none}}
+@keyframes hofOut{to{opacity:0;translate:-40px 0}}
+@keyframes hofSwL{from{rotate:-30deg}to{rotate:-12deg}}@keyframes hofSwR{from{rotate:30deg}to{rotate:12deg}}
+@keyframes hofFl{0%{rotate:-6deg}50%{rotate:6deg}100%{rotate:0deg}}
+@keyframes lgSpin{to{rotate:360deg}}
+@keyframes lgTw{0%,100%{scale:.2;opacity:0}50%{scale:1;opacity:1}}
+@keyframes lgWob{0%,100%{rotate:0deg}20%{rotate:-14deg}40%{rotate:12deg}60%{rotate:-8deg}80%{rotate:5deg}}
+@keyframes lgFl{0%{opacity:.95}100%{opacity:0}}
