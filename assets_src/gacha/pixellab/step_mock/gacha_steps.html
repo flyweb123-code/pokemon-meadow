@@ -126,19 +126,34 @@ const AMP=[.35,.6,.95,1.35,1.85];
 const HOLD_MS=[1100,1500,1800,2100];
 /* vibration grows with the step; phones that refuse it simply stay silent */
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
-const BUZZ=[,[30],[40,40,40],[60,40,60,40,60],[90,40,90,40,90,40,160]];
-function shake(){clearInterval(sh);sh=setInterval(()=>{place(shk);const a=shk*2.6;mw.style.left=56+(Math.random()-.5)*a+'px';mw.style.top=217+(Math.random()-.5)*a+'px';if(shk>.2&&Math.random()<.4+shk*.15)S.rattle()},55)}
-const still=()=>{clearInterval(sh);shk=0;place();mw.style.left='56px';mw.style.top='217px'};
+const BUZZ=[,[30],[70,40,70],[110,40,110,40,110],[160,50,160,50,160,50,380]];
+function shake(){clearInterval(sh);sh=setInterval(()=>{place(shk);const a=shk*2.6;mw.style.left=56+(Math.random()-.5)*a+'px';mw.style.top=217+(Math.random()-.5)*a+'px';},55)}
+const still=()=>{clearInterval(sh);stopRumble();shk=0;place();mw.style.left='56px';mw.style.top='217px'};
 function clear(){tok++;still();fx.innerHTML='';st.classList.remove('quake');glow.style.opacity=0;mw.classList.remove('lit');mw.style.removeProperty('--lc');out.className='';out.style.opacity=0;out.innerHTML='';$('#res')?.remove();$('#lv').textContent=''}
 async function stepUp(i){const s=STEP[i];mw.style.setProperty('--lc',s.c);mw.classList.remove('lit');void mw.offsetWidth;mw.classList.add('lit');glow.style.background=`radial-gradient(circle at 50% 70%,${s.c},transparent 72%)`;glow.style.opacity=.8;
- const f=el('flash');f.style.background=s.c;setTimeout(()=>f.remove(),430);S.hit();S.jing([523*2**((i-1)/4),784*2**((i-1)/4)],.06,'square',.06);quake(160+i*60);shk=AMP[i-1];buzz(BUZZ[i-1]);$('#lv').textContent=`${i-1}단계`;$('#lv').style.color=s.c}
+ const f=el('flash');f.style.background=s.c;setTimeout(()=>f.remove(),430);S.hit();STEPSFX[i]();rumble(i-1);quake(160+i*60);shk=AMP[i-1];buzz(BUZZ[i-1]);$('#lv').textContent=`${i-1}단계`;$('#lv').style.color=s.c}
+
+/* continuous rattle: looped noise through a band-pass, pulsed by a tremolo; each step raises pitch, speed and volume */
+let rum=null;
+const RUMS=[{f:650,r:9,v:.05},{f:900,r:12,v:.065},{f:1250,r:15,v:.08},{f:1700,r:19,v:.095},{f:2300,r:24,v:.11}];
+function rumble(k){const a=ac;if(!a)return;const p=RUMS[k];if(!rum){const len=a.sampleRate*2,b=a.createBuffer(1,len,a.sampleRate),c=b.getChannelData(0);for(let i=0;i<len;i++)c[i]=Math.random()*2-1;
+ const s=a.createBufferSource();s.buffer=b;s.loop=true;const q=a.createBiquadFilter();q.type='bandpass';q.Q.value=1.4;const g=a.createGain();g.gain.value=0;const m=a.createGain();m.gain.value=0;
+ const lfo=a.createOscillator();lfo.type='square';const lg=a.createGain();lfo.connect(lg).connect(m.gain);s.connect(q).connect(m).connect(g).connect(a.destination);s.start();lfo.start();rum={s,q,g,m,lfo,lg}}
+ const n=a.currentTime;rum.q.frequency.setTargetAtTime(p.f,n,.05);rum.lfo.frequency.setTargetAtTime(p.r,n,.05);rum.lg.gain.setTargetAtTime(.5,n,.05);rum.m.gain.setTargetAtTime(.5,n,.05);rum.g.gain.setTargetAtTime(p.v,n,.06)}
+function stopRumble(){if(!rum||!ac)return;const r=rum,n=ac.currentTime;r.g.gain.setTargetAtTime(0,n,.05);setTimeout(()=>{try{r.s.stop();r.lfo.stop()}catch(e){}},300);rum=null}
+/* a different chime for every step */
+const STEPSFX=[,()=>{},
+ ()=>{tone(784,0,.16,'triangle',.08);tone(1047,.08,.22,'triangle',.08)},
+ ()=>{[659,880,1175].forEach((f,i)=>tone(f,i*.07,.18,'square',.05));noise(0,.25,.06,800,3000)},
+ ()=>{S.rise();[740,988,1245,1480].forEach((f,i)=>tone(f,.12+i*.07,.2,'square',.055));tone(110,0,.35,'sine',.18,60)},
+ ()=>{tone(80,0,.6,'sine',.24,40);noise(0,.35,.12,300);[[784,988,1175],[1047,1319,1568]].forEach((c,i)=>c.forEach(f=>tone(f,.1+i*.18,i?.6:.2,'square',.04)))}];
 const NAME=[,'일반','우수','레어','에픽','전설'];
 async function result(g){still();glow.style.opacity=0;mw.classList.remove('lit');st.classList.remove('quake');
  out.innerHTML=eggH(g);out.className='pop';S.pop();await w(760);
  out.style.opacity=0;out.className='';const r=document.createElement('div');r.id='res';r.innerHTML=`${eggH(g)}<p>${NAME[g]} 알이 나왔다!</p><button id="again">한 번 더</button>`;st.appendChild(r);if(g>=4)S.jing([784,988,1175,1568],.09);else S.jing([659,880],.09);busy=false;go.disabled=false;$('#again').onclick=play}
 async function play(){if(busy&&!$('#res'))return;au();clear();busy=true;go.disabled=true;const g=pick==='r'?roll():pick,t=tok;
  for(let i=0;i<12;i++)setTimeout(()=>{knobA+=30;knob.style.transform=`rotate(${knobA}deg)`;S.tick(i)},i*72);
- shake();shk=AMP[0];buzz(20);await w(900);
+ shake();rumble(0);shk=AMP[0];buzz(20);await w(900);
  /* 우수 = 1 step, 레어 = 2, 에픽 = 3, 전설 = 4; each step lasts a little longer than the one before */
  for(let i=2;i<=g;i++){await stepUp(i);await w(HOLD_MS[i-2])}
  if(g==5){await w(200);const f=el('flash');setTimeout(()=>f.remove(),430);S.fan4()}
