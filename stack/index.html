@@ -2140,7 +2140,7 @@ html.bootBlk body::after{content:'';position:fixed;inset:0;z-index:6440;backgrou
 #ibag.ibag-fonly #ibagTabs{display:none}
 #btnMapEdit{left:20px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}
 /*gym-hook*/#btnGym{left:74px;top:110px;position:absolute;z-index:25;padding:0;border:0;background:none;cursor:pointer;line-height:0;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35));-webkit-tap-highlight-color:transparent}#btnGym:active{transform:translate(1px,1px)}#btnGym .mdot{top:-2px;right:-2px;width:9px;height:9px;box-shadow:0 0 0 2px #20202c}#btnGym .gy-cnt{position:absolute;right:-5px;bottom:-4px;min-width:16px;height:16px;padding:0 3px;box-sizing:border-box;border-radius:3px;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px #fff}#btnGym.ding svg{animation:gymDing 1.3s ease-out;transform-origin:50% 100%}@keyframes gymDing{0%,100%{transform:none}6%{transform:rotate(-12deg) scale(1.12)}14%{transform:rotate(10deg) scale(1.12)}22%{transform:rotate(-8deg) scale(1.08)}30%{transform:rotate(5deg)}38%{transform:none}44%{transform:rotate(-10deg) scale(1.1)}52%{transform:rotate(8deg) scale(1.1)}60%{transform:rotate(-5deg)}68%{transform:rotate(3deg)}78%{transform:none}}   /* v12.20 띵(1)·동(2) 두 번 흔들림 */
-#btnGym.lock>svg:not(.gy-lk){filter:grayscale(1) brightness(1.15);opacity:.7}#btnGym.lock .mdot{display:none}#btnGym .gy-lk{display:none;position:absolute;right:-4px;bottom:-4px;width:20px;height:22px}#btnGym.lock .gy-lk{display:block}#btnGym.lock{animation:none!important}#btnGym>svg:not(.gy-lk){transition:filter .7s,opacity .7s}#btnGym.unlk .gy-lk{display:block;animation:gyUnlk .9s ease-in forwards}#btnGym.unlk{animation:gyPop .5s .45s ease-out}@keyframes gyUnlk{0%{transform:none}25%{transform:translateY(-4px) rotate(-14deg) scale(1.15)}100%{transform:translate(6px,-22px) rotate(-35deg);opacity:0}}@keyframes gyPop{0%,100%{transform:none}40%{transform:scale(1.18)}}   /* v12.46 경완: 베테랑 트레이너 전엔 잠금 */body.fview #btnGym{visibility:hidden!important}   /* 체육관 모드: 운영자 '체육관 모드 보이기'를 켠 기기만 */
+#btnGym.lock>svg:not(.gy-lk){filter:grayscale(1) brightness(1.15);opacity:.7}#btnGym.lock .mdot{display:none}#btnGym .gy-lk{display:none;position:absolute;right:-4px;bottom:-4px;width:20px;height:22px}#btnGym.lock .gy-lk{display:block}#btnGym.lock{animation:none!important}#btnGym>svg:not(.gy-lk){transition:filter .7s,opacity .7s}#btnGym.unlk .gy-lk{display:block;animation:gyUnlk .9s ease-in forwards}#btnGym.unlk{animation:gyPop .5s .45s ease-out}@keyframes gyUnlk{0%{transform:none}25%{transform:translateY(-4px) rotate(-14deg) scale(1.15)}100%{transform:translate(6px,-22px) rotate(-35deg);opacity:0}}@keyframes gyPop{0%,100%{transform:none}40%{transform:scale(1.18)}}   /* v12.46 경완: 베테랑 트레이너 전엔 잠금 */#btnGym .gy-ev{position:absolute;right:-8px;bottom:-7px;width:22px;height:22px;box-sizing:border-box;border-radius:3px;border:2px solid #e2313b;box-shadow:0 0 0 2px #20202c;background:#14141c url(gym/img/ev/rocket/r_emb.png?v=2) center/12px 11px no-repeat;image-rendering:pixelated;animation:gyEvB 2.4s ease-in-out infinite;transform-origin:50% 100%}#btnGym .gy-ev::after{content:'';position:absolute;inset:-4px;border-radius:inherit;border:2px solid #ff4a55;animation:gyEvR 2.4s ease-out infinite;opacity:0;pointer-events:none}#btnGym.evon .gy-cnt{display:none}@keyframes gyEvB{0%,60%,100%{transform:none}70%{transform:translateY(-3px) rotate(-8deg)}80%{transform:translateY(0) rotate(6deg)}90%{transform:rotate(-3deg)}}@keyframes gyEvR{0%,55%{transform:scale(.8);opacity:0}65%{opacity:.9}100%{transform:scale(1.7);opacity:0}}   /* v20.05 로켓단 점거 R 딱지 (v20.07 경완 B안: 주신 도트 R·검정 네모·빨간 테두리, 도전자 수 자리 우하단) (도전자 점·수는 숨김, 점거 중엔 도전자 안 옴) */body.fview #btnGym{visibility:hidden!important}   /* 체육관 모드: 운영자 '체육관 모드 보이기'를 켠 기기만 */
 #gymLoad{position:fixed;inset:0;z-index:9800;display:grid;place-items:center;background:#181a2c;color:#f8f8f8;opacity:0;transition:opacity .35s;pointer-events:none}#gymLoad.on{opacity:1;pointer-events:auto}#gymLoad[hidden]{display:none}
 #gymLoad .gl-box{display:flex;flex-direction:column;align-items:center;gap:18px;width:min(300px,80vw)}
 #gymLoad .gl-road{position:relative;width:100%;height:76px;border-bottom:4px solid #46508a;background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(255,255,255,.08) 14px 28px) bottom/100% 8px no-repeat}
@@ -2352,6 +2352,17 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 .emb body{padding:0;min-height:0;overflow:hidden;height:100%}
 .emb .dm-head,.emb .dm-set,.emb .iph-sb,.emb .iph-di,.emb .iph-hi{display:none}
 .emb .demo{max-width:none;padding:0}
+.dm-ph{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
+.dm-ph button{font:inherit;font-size:12px;border:2px solid #20202c;background:#fff;color:#20202c;padding:6px 0;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.25);touch-action:manipulation}
+.dm-ph button:active{transform:translateY(2px);box-shadow:none}
+.dm-ph button.on{background:#9fe0a0}
+.st-setb[hidden],.st-setp[hidden]{display:none}
+.st-setb:not([hidden])+.ed-x{margin-left:0}
+.st-setw .dm-rk{flex:none;width:100%}
+.st-setp{position:absolute;inset:0;z-index:40;background:rgba(20,20,30,.5);display:flex;align-items:center;justify-content:center;padding:calc(var(--sat,0px) + 12px) 12px calc(var(--sab,0px) + 12px)}
+.st-setw{width:100%;max-height:100%;overflow:auto;-webkit-overflow-scrolling:touch}
+.st-seth{display:flex;align-items:center;justify-content:space-between;background:#ffe27a;border:3px solid #20202c;border-bottom:0;padding:6px 8px;color:#20202c;font-size:14px}
+.emb .st-setw .dm-set{display:block;margin:0}
 .emb .iph-wrap,.emb .iph,.emb .iph-scr{position:fixed;inset:0;width:auto;height:auto!important;border-radius:0;padding:0;background:none;box-shadow:none;transform:none!important}
 .emb .iph .ed-hud{padding-top:calc(10px + var(--sat,0px))}
 .emb .iph .st-ht{top:calc(64px + var(--sat,0px))}
@@ -2367,17 +2378,19 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
 <body>
 <div class="demo">
   <div class="dm-head"><b>포켓몬 탑 쌓기</b> 시안 · 액티브 기술 18개를 골라 직접 써 보세요</div>
-  <div class="dm-set">
+  <div class="dm-set" id="dmSet">
     <div class="dm-row"><span class="dm-lb">함께 할 포켓몬 타입 (액티브 기술)</span><div class="dm-ty" id="dmTy"></div></div>
     <div class="dm-row"><span class="dm-lb">친밀도 하트 (목숨 = 1 + 하트, 장애물 넘기와 같음)</span><div class="dm-rk" id="dmFh"></div></div>
     <div class="dm-row"><span class="dm-lb">랭크 (한 판에 쓰는 횟수)</span><div class="dm-rk" id="dmRk"></div><button class="dm-btn" id="dmRe" type="button">다시 하기</button><button class="dm-btn" id="dmBuild" type="button">탑 쌓기</button><button class="dm-btn" id="dmMus" type="button">음악 끄기</button></div>
+    <div class="dm-row"><span class="dm-lb">물리 테스트 (켠 판은 기록·보상 없음)</span><div class="dm-ph" id="dmPh"><button type="button" data-k="flat">윗면 평평하게</button><button type="button" data-k="glue">멈추면 굳기</button><button type="button" data-k="low">무게 아래로</button><button type="button" data-k="damp">흔들림 줄이기</button></div></div>
     <div class="dm-desc" id="dmDesc"></div>
   </div>
   <div class="iph-wrap" id="iphW"><div class="iph" id="iph"><div class="iph-scr">
   <div class="iph-sb"><span>9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.3C13.3 1.4 10.8.4 8 .4S2.7 1.4.8 3.3L2 4.6c1.6-1.5 3.7-2.4 6-2.4zm0 3.6c1.3 0 2.6.5 3.5 1.4l1.2-1.3C11.5 4.7 9.8 4 8 4s-3.5.7-4.7 1.9l1.2 1.3c.9-.9 2.2-1.4 3.5-1.4zM8 9.4l2.2-2.3C9.6 6.6 8.8 6.3 8 6.3s-1.6.3-2.2.8z"/></svg><svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" opacity=".45"/></svg></span></div><div class="iph-di"></div><div class="iph-hi"></div>
   <div class="st-frame" id="fr">
     <canvas class="st-cv" id="cv"></canvas>
-    <div class="ed-hud"><div class="ed-sbox"><b class="ed-tag">점수</b><b class="ed-sc" id="sc">0점</b><span class="ed-best" id="best"></span><span class="ed-hg" id="hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div><button type="button" class="ed-x" id="quit">그만하기</button></div>
+    <div class="ed-hud"><div class="ed-sbox"><b class="ed-tag">점수</b><b class="ed-sc" id="sc">0점</b><span class="ed-best" id="best"></span><span class="ed-hg" id="hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div><button type="button" class="ed-x st-setb" id="stSetB" hidden>설정</button><button type="button" class="ed-x" id="quit">그만하기</button></div>
+    <div class="st-setp" id="stSetP" hidden><div class="st-setw" id="stSetW"><div class="st-seth"><b>설정 (베타 테스트)</b><button type="button" class="dm-btn" id="stSetX">닫기</button></div></div></div>
     <div class="st-ht" id="ht"></div>
     <div class="st-hint" id="hint"></div>
     <button type="button" class="ed-ab" id="ab"><span class="ed-abp"><canvas id="abc" width="84" height="84"></canvas></span><span class="ed-abx"><b id="abn"></b><span class="ed-abd" id="abd"></span></span></button>
@@ -2470,6 +2483,10 @@ const hull = P => { P.sort((a, b) => a[0] - b[0] || a[1] - b[1]); const cr = (o,
   up.pop(); lo.pop(); return lo.concat(up); };
 const simp = (H, n) => { H = H.slice(); while (H.length > n) { let bi = 0, ba = 1e9; for (let i = 0; i < H.length; i++) { const a = H[(i + H.length - 1) % H.length], b = H[i], c = H[(i + 1) % H.length]; const ar = Math.abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])); if (ar < ba) { ba = ar; bi = i; } } H.splice(bi, 1); } return H; };
 const TU = Object.assign({ minW: 0, deep: 0, deepLD: 2, deepAD: 8 }, window.__tune || {});
+/* 베타 설정(운영자) 물리 테스트 — 본 게임 배포 때 지울 것 */
+const TS = { flat: 0, glue: 0, low: 0, damp: 0 }; try { Object.assign(TS, JSON.parse(localStorage.getItem('st-phys') || '{}')); } catch (e) {}
+let tstRun = 0, tstCfg = 0;
+const lowCom = p => { const b = p.b, I = p.I || IMG[p.n]; let by = 0; for (const f of I.F) by = Math.max(by, f.r ? f.r : f.y + f.hy); const md = { mass: 0, center: V(0, 0), I: 0 }; b.getMassData(md); const c = md.center, Ic = md.I - md.mass * (c.x * c.x + c.y * c.y), ny = c.y + (m(by * p.s) - c.y) * .45; b.setMassData({ mass: md.mass, center: V(c.x, ny), I: Ic + md.mass * (c.x * c.x + ny * ny) }); };   /* 오뚝이처럼 무게 중심을 바닥 쪽으로 45% */
 /* 카드·기술 버튼·도우미 = 실제 게임처럼 필드(PMD) 그림 (s*.json 아틀라스: 동작 [y, w, h, 칸 수, 발 x, 발 y, 칸 시간]) */
 const PM = {}; const pmdLoad = () => Promise.all(Object.keys(A.pmd || {}).map(async n => { const im = await loadImg(A.pmd[n].i); if (im) PM[n] = { im, a: A.pmd[n].a }; }));
 const pmdA = (n, an) => { const p = PM[n]; if (!p) return null; for (const k of [].concat(an, 'Idle')) if (p.a[k]) return p.a[k]; return null; };
@@ -2499,9 +2516,14 @@ async function prep(n) {
   if (round) { const r = (cw + chh) / 4 * .96, ccx = (X0 + X1) / 2, ccy = (Y0 + Y1) / 2; let ar2 = 0, em = 0; for (let y = Math.floor(ccy - r); y < ccy + r; y++) for (let x = Math.floor(ccx - r); x < ccx + r; x++) if ((x + .5 - ccx) ** 2 + (y + .5 - ccy) ** 2 < r * r) { ar2++; if (!al(x, y)) em++; } if (em / ar2 > .2) round = false; }   /* 원 판정이 그림보다 커서 빈 곳이 20% 넘으면(코스모그·큐아링) 띠 상자로 */
   const kind = round ? 'round' : asp >= 1.45 ? 'flat' : asp <= 1 / 1.45 ? 'tall' : 'normal';
   let cx = 0, cy = 0, ar = 0, F, H;
-  if (round) { const r = (cw + chh) / 4 * .96; cx = (X0 + X1) / 2; cy = (Y0 + Y1) / 2; F = [{ r }]; H = Array.from({ length: 12 }, (_, i) => [cx + Math.cos(i / 12 * 6.283) * r, cy + Math.sin(i / 12 * 6.283) * r]); }
+  let Ff;
+  if (round) { const r = (cw + chh) / 4 * .96; cx = (X0 + X1) / 2; cy = (Y0 + Y1) / 2; F = [{ r }]; Ff = [{ r }, { hx: r * .72, hy: r * .2, x: 0, y: -r * .78 }, { hx: r * .72, hy: r * .2, x: 0, y: r * .78 }];   /* 설정 '윗면 평평하게': 둥근 것은 위·아래에 평평한 판 */ H = Array.from({ length: 12 }, (_, i) => [cx + Math.cos(i / 12 * 6.283) * r, cy + Math.sin(i / 12 * 6.283) * r]); }
   else { for (const [x0, x1, ya, yb] of B) { const a = (x1 - x0) * (yb - ya); ar += a; cx += (x0 + x1) / 2 * a; cy += (ya + yb) / 2 * a; } cx /= ar; cy /= ar;
     F = B.map(([x0, x1, ya, yb]) => ({ hx: (x1 - x0) / 2, hy: (yb - ya) / 2 + .3, x: (x0 + x1) / 2 - cx, y: (ya + yb) / 2 - cy }));
+    { const Wm = Math.max(...B.map(b => b[1] - b[0])), Xc = (X0 + X1) / 2, yT = Y0 + (Y1 - Y0) * .35, rows = new Map(), Bf = [];   /* 설정 '윗면 평평하게': 위쪽 35% 줄은 줄마다 상자 하나로, 몸통 폭의 80% 이상 */
+      for (const b of B) { if (b[2] >= yT) { Bf.push(b); continue; } const k = b[2].toFixed(2), r = rows.get(k); if (r) { r[0] = Math.min(r[0], b[0]); r[1] = Math.max(r[1], b[1]); } else rows.set(k, b.slice()); }
+      for (const r of rows.values()) { const w2 = Math.max(r[1] - r[0], Wm * .8) / 2, c = Math.max(X0 + w2, Math.min(X1 - w2, (r[0] + r[1]) / 2 * .5 + Xc * .5)); Bf.push([c - w2, c + w2, r[2], r[3]]); }
+      Ff = Bf.map(([x0, x1, ya, yb]) => ({ hx: (x1 - x0) / 2, hy: (yb - ya) / 2 + .3, x: (x0 + x1) / 2 - cx, y: (ya + yb) / 2 - cy })); }
     const RW = []; for (const b of B) { const l = RW.find(z => Math.abs(z[2] - b[2]) < .02); if (l) { l[0] = Math.min(l[0], b[0]); l[1] = Math.max(l[1], b[1]); l[3] = Math.max(l[3], b[3]); } else RW.push(b.slice()); }
     H = []; for (const b of RW) H.push([b[1], b[2]], [b[1], b[3]]); for (const b of RW.slice().reverse()) H.push([b[0], b[3]], [b[0], b[2]]); }
   /* 크기: 그림 크기와 실제 키(SPECIES h)를 섞음 — 작은 포켓몬은 작게, 큰 포켓몬은 크게 */
@@ -2510,7 +2532,7 @@ async function prep(n) {
   const o = document.createElement('canvas'); o.width = w + 2; o.height = h + 2; const og = o.getContext('2d'); const sil = document.createElement('canvas'); sil.width = w; sil.height = h; const sg = sil.getContext('2d'); sg.drawImage(im, 0, 0); sg.globalCompositeOperation = 'source-in'; sg.fillStyle = '#20202c'; sg.fillRect(0, 0, w, h);
   for (const [dx, dy] of [[0, 1], [2, 1], [1, 0], [1, 2]]) og.drawImage(sil, dx, dy); og.drawImage(im, 1, 1);   /* 경완: 덧그린 테두리 1칸 (2칸은 두껍고, 없는 것보다 덧그린 게 나음) */
   const wh = document.createElement('canvas'); wh.width = w; wh.height = h; const wg = wh.getContext('2d'); wg.drawImage(im, 0, 0); wg.globalCompositeOperation = 'source-in'; wg.fillStyle = '#fff'; wg.fillRect(0, 0, w, h);
-  return IMG[n] = { im, o, wh, w, h, cx, cy, k: kk, kind, F, H: H.map(([x, y]) => [x - cx, y - cy]) };
+  return IMG[n] = { im, o, wh, w, h, cx, cy, k: kk, kind, F, Ff, H: H.map(([x, y]) => [x - cx, y - cy]) };
 }
 
 // ---------- 화면 ----------
@@ -2646,9 +2668,10 @@ const msk = () => {};   /* 경완: 기술 쓸 때 글 상자 안 뜨게 */
 const msg = (t, ms = 1400) => { const h = $('hint'); h.textContent = t; h.classList.add('on'); clearTimeout(msg.t); msg.t = setTimeout(() => h.classList.remove('on'), ms); };
 
 function reset() {
+  tstRun = tstCfg || Object.values(TS).some(Boolean) ? 1 : 0;
   world = new pl.World({ gravity: V(0, 20) }); slabs = []; base = null; P = []; walls = []; props = []; strings = []; vines = []; welds = []; parts = []; flt = []; rings = []; fxs = [];
   ground = world.createBody({ type: 'static', position: V(m(W / 2), m(GY + 200)) }); ground.createFixture(pl.Box(m(W * 3), m(200)), { friction: .8 }); ground.isGround = 1;
-  mkBase(BASE_W0); sc = 0; lmax = 1 + fh; lives = lmax; gen++; t0g = performance.now(); paused = false; down = null; ax = W / 2; $('mgPop').hidden = true; nPlaced = 0; nPerfect = 0; nHard = 0; combo = 0; maxH = 0; camY = GY - VH + 150; camT = camY; shake = 0; dead = false; waitT = 0; uses = USES[rk]; used = 0; armed = null; mist = aqua = frz = goo = 0; hv = null; banner = null; drag = null; ghostP = null; wind = null; selK = null; charm = null; ghostDrop = 0; portal = null; webs = []; selT = 0; muds = []; roots = []; flyPlan = null; relY = null; aimYd = null; beams = []; efx = []; goos = []; jel = 0; gFire(false);
+  mkBase(BASE_W0); sc = 0; lmax = 1 + fh; lives = lmax; gen++; t0g = performance.now(); paused = !!($('stSetP') && !$('stSetP').hidden); down = null; ax = W / 2; $('mgPop').hidden = true; nPlaced = 0; nPerfect = 0; nHard = 0; combo = 0; maxH = 0; camY = GY - VH + 150; camT = camY; shake = 0; dead = false; waitT = 0; uses = USES[rk]; used = 0; armed = null; mist = aqua = frz = goo = 0; hv = null; banner = null; drag = null; ghostP = null; wind = null; selK = null; charm = null; ghostDrop = 0; portal = null; webs = []; selT = 0; muds = []; roots = []; flyPlan = null; relY = null; aimYd = null; beams = []; efx = []; goos = []; jel = 0; gFire(false);
   $('hint').classList.remove('on'); cur = pick(); nxt = pick(); nxt2 = pick(); nxt3 = pick(); $('nx').classList.toggle('yj', pv('yj')); nxDraw(0); mode = 'aim'; rot = 0; rotD = 0; introStart();
   world.on('begin-contact', c => { const a = c.getFixtureA().getBody(), b = c.getFixtureB().getBody(); for (const [x, y] of [[a, b], [b, a]]) { const p = x.pk; if (!p || p.landed || p.ghost) continue; if (y.isGround) p.hitG = 1; else if (y.pk || y.isBase || y.isProp) { p.touch = p.touch || now0; p.on = y; if (!p.mist && !p.heat) p.dmp = 1; } } });
   hud(); abDraw(); nxDraw(); if (!last) last = performance.now(); BGM.stop(); bgmGo();
@@ -2662,7 +2685,8 @@ function release() {
   const p = { n: cur, I, b, s: ss, H: I.H, t: now0, landed: false, gone: false, miss: false };
   const ar0 = I.F.reduce((s, f) => s + (f.r ? 3.14 * f.r * f.r : 4 * f.hx * f.hy), 0) * ss * ss; const fd = { density: TU.dn ? Math.pow(1600 / ar0, TU.dn) : 1, friction: (TU.fr || 1.3) * (pv('suc') ? 1.3 : 1), restitution: 0 };   /* 흡반 */ if (mist > now0) { fd.restitution = 0; fd.friction = 1.2; p.mist = 1; b.setLinearDamping(2.2); b.setAngularDamping(3); }
   if (goo > now0) { fd.friction = 2.2; fd.restitution = 0; }
-  for (const f of I.F) b.createFixture(f.r ? pl.Circle(m(f.r * ss)) : pl.Box(m(f.hx * ss), m(f.hy * ss), V(m(f.x * ss), m(f.y * ss)), 0), fd); b.pk = p; p.fd = fd; P.push(p);
+  for (const f of (TS.flat && I.Ff ? I.Ff : I.F)) b.createFixture(f.r ? pl.Circle(m(f.r * ss)) : pl.Box(m(f.hx * ss), m(f.hy * ss), V(m(f.x * ss), m(f.y * ss)), 0), fd); b.pk = p; p.fd = fd; P.push(p);
+  if (TS.low) lowCom(p); if (TS.damp) { b.setGravityScale(.75); p.tsd = 1; }   /* 설정 '무게 아래로'·'흔들림 줄이기' */
   if (armed === 'ghost') { p.ghost = 1; fxAll(b, f => f.setSensor(true)); b.setGravityScale(.22); b.setLinearVelocity(V(0, 1.5)); ghostP = p; msg('화면을 누른 자리에서 나타나요', 2200); }
   else if (armed === 'heat') { p.heat = 1; b.setGravityScale(.12); b.setLinearDamping(1.5); b.setAngularDamping(6); }
   else if (armed === 'elec') { p.psy = 1; p.el = 1; b.setLinearVelocity(V(0, 0)); b.setGravityScale(.15); b.setLinearDamping(3); b.setAngularDamping(8); }   /* 경완: 예전 에스퍼 능력(사뿐히)을 전기로, 보이는 효과는 전기 */
@@ -2713,7 +2737,7 @@ function missPiece(p, why) {
 }
 const HEART_R = '<svg viewBox="0 0 7 6" width="20" height="18" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a1e28" d="M1 0h2v1h1V0h2v1h1v3H6v1H5v1H2V5H1V4H0V1h1z"/><path fill="#ff4a78" d="M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z"/><path fill="#ffc0d0" d="M1 1h1v1H1z"/></svg>';
 function end() { if (dead) return; dead = true; down = null; BGM.stop(.6); gFire(false); const prev = best, nb = sc > best && sc > 0; if (nb) best = sc; hud(); SFX[nb ? 'perfect' : 'miss']();
-  if (window.__EMB) { try { parent.postMessage({ t: 'stEnd', sc, n: nPlaced, h: +maxH.toFixed(1), pf: nPerfect, hd: nHard, used, sec: Math.round((performance.now() - t0g) / 1000) }, '*'); } catch (e) {} return; }   /* 게임 안: 기록창·보상은 미니게임 창(다른 미니게임과 같은 기록창)이 */
+  if (window.__EMB) { try { parent.postMessage({ t: 'stEnd', tst: tstRun, sc, n: nPlaced, h: +maxH.toFixed(1), pf: nPerfect, hd: nHard, used, sec: Math.round((performance.now() - t0g) / 1000) }, '*'); } catch (e) {} return; }   /* 게임 안: 기록창·보상은 미니게임 창(다른 미니게임과 같은 기록창)이 */
   /* 골드·친밀도는 시안용 숫자 (실제 한 판 시간 기록이 쌓이면 1분당 골드를 다른 미니게임과 맞춤) */
   const goldV = Math.floor((Math.floor(sc / 3) + (nb && prev > 0 ? 20 : 0)) * (pv('pick') ? 1.1 : 1)), frV = Math.floor(sc / 300 * (pv('fg') ? 1.2 : 1));   /* F 픽업 골드 +10%, E 프렌드가드 친밀도 +20% */
   const res = `<div class="mg-rec">${nb && prev > 0 ? '<i class="mg-nb">최고 기록!</i>' : ''}<b><em data-cnt="${sc}">0</em>점</b></div>
@@ -3141,9 +3165,10 @@ function step(dt) {
   if (frz && frz <= now0) { const fz = P.filter(p => p.frz); for (const p of fz) { p.frz = 0; if (!p.gone && !p.miss) { p.b.setDynamic(); p.b.setAwake(true); } } fzPend = fz; frz = 0; }   /* 얼어 있는 동안은 서로 닿음 정보가 없어서, 한 번 움직인 뒤(다음 step) 붙임 */   /* 얼음이 녹으며 그 모양대로 붙음 */
   if (goo && goo <= now0) { for (const p of P) if (p.goo) { p.goo = 0; if (!p.gone && !p.miss) { /* 끈적임은 이미 쌓인 포켓몬엔 남김 */ p.b.setAngularDamping(1.2); p.b.setLinearDamping(.1); } } goo = 0; }
   if (TU.deep) { const L = P.filter(q => q.landed && !q.gone && !q.miss).sort((a, b) => a.b.getPosition().y - b.b.getPosition().y); L.forEach((q, i) => { const d = i >= TU.deep; if (d !== !!q.deep) { q.deep = d; q.b.setLinearDamping(d ? TU.deepLD : .4); q.b.setAngularDamping(d ? TU.deepAD : 3.5); } }); }
-  if (TU.glue) for (const p of P) { if (!p.landed || p.gone || p.miss || p.glued || !p.on || p.on.isProp) continue; const v = p.b.getLinearVelocity(); if (Math.hypot(v.x, v.y) + Math.abs(p.b.getAngularVelocity()) > .15) { p.rest = 0; continue; } p.rest = p.rest || now0; if (now0 - p.rest > TU.glue) { p.glued = 1; const a = p.on, pt = p.b.getPosition(); world.createJoint(pl.WeldJoint({ frequencyHz: TU.gHz || 0, dampingRatio: .7 }, a, p.b, pt)); } }
+  const GLU = TS.glue ? 1000 : TU.glue; if (GLU) for (const p of P) { if (!p.landed || p.gone || p.miss || p.glued || !p.on || p.on.isProp) continue; const v = p.b.getLinearVelocity(); if (Math.hypot(v.x, v.y) + Math.abs(p.b.getAngularVelocity()) > .15) { p.rest = 0; continue; } p.rest = p.rest || now0; if (now0 - p.rest > GLU) { p.glued = 1; const a = p.on, pt = p.b.getPosition(); world.createJoint(pl.WeldJoint({ frequencyHz: TU.gHz || 0, dampingRatio: .7 }, a, p.b, pt)); } }
   for (const p of P) if (p.dmp === 1) { p.dmp = 2; const fat = pv('fat') && rnd0(p.I || IMG[p.n]); const suc = pv('suc'); if (pv('flt')) { const v = p.b.getLinearVelocity(); const fk = TU.flt || .98; p.b.setLinearVelocity(V(v.x * fk, v.y * fk)); p.b.setAngularVelocity(p.b.getAngularVelocity() * fk); for (let ce = p.b.getContactList(); ce; ce = ce.next) { const o = ce.other; if (o && o.pk && o.pk.landed) { const w = o.getLinearVelocity(); const ok2 = TU.flt2 || .94; o.setLinearVelocity(V(w.x * ok2, w.y * ok2)); o.setAngularVelocity(o.getAngularVelocity() * ok2); } } }   /* 필터: 닿는 순간 충격을 흡수 */ p.b.setLinearDamping(p.sticky ? 1.5 : suc ? (TU.sucL || .65) : fat ? (TU.fatL || .6) : .4); p.b.setAngularDamping(p.sticky ? 6 : suc ? (TU.sucA || 4.3) : fat ? (TU.fatA || 7) : 3.5); if (fat) p.fat = 1; if (suc) p.suc = now0; }   /* 흡반: 닿는 순간 착 달라붙듯 미끄러짐이 확 줄어듦 */
   for (const p of P) if (p.suc && p.landed && now0 - p.suc > 600) { p.suc = 0; p.b.setLinearDamping(.5); p.b.setAngularDamping(p.fat ? 7 : 4); }   /* 두꺼운지방: 둥근 포켓몬 덜 굴러감 */
+  if (TS.damp) for (const p of P) if (p.tsd && p.landed && !p.gone && !p.miss) { if (p.tsd === 1) { p.tsd = 2; p.b.setGravityScale(1); } if (p.b.getAngularDamping() < 7) p.b.setAngularDamping(7); if (p.b.getLinearDamping() < .8) p.b.setLinearDamping(.8); }   /* 설정 '흔들림 줄이기' */
   for (const p of P) if (p.mist && p.landed && !p.mistOff) { p.mistOff = 1; p.b.setLinearDamping(.05); p.b.setAngularDamping(.6); }
   for (const p of P) if (p.heat && (p.landed || p.touch)) { p.heat = 0; p.b.setGravityScale(1); p.b.setLinearDamping(.1); p.b.setAngularDamping(1.2); }
   rockStep();
@@ -3225,15 +3250,24 @@ const setFh = n => { fh = n; [...dmFh.children].forEach(b => b.classList.toggle(
 dmFh.addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (b) { SFX.pop(); setFh(+b.dataset.f); reset(); } });
 dmTy.innerHTML = Array.from({ length: 18 }, (_, i) => `<button type="button" data-t="${i + 1}">${tyIcon(i + 1)}${TYPE_KO[i + 1]}</button>`).join('');
 dmRk.innerHTML = 'FEDCBAS'.split('').map(r => `<button type="button" data-r="${r}">${r}</button>`).join('');
-const desc = () => { const s = SK[ty]; $('dmDesc').innerHTML = `<b>${tyIcon(ty)}${TYPE_KO[ty]} · ${s.n}</b> — ${s.d}<br><small>랭크 ${rk} 패시브: ${PSV.filter(z => z.r === rk).map(z => `<b>${z.r} ${z.n}</b>(${z.d})`).join(' · ')}</small><br><small>랭크 ${rk}: 한 판에 ${USES[rk]}번 · 목숨 ${1 + fh}개 (1 + 친밀도 하트 ${fh}) · 끌어서 자리를 고르고 툭 눌러 놓아요. 화면 양옆을 꾹 누르면 그쪽으로 움직여요. 아래 ↺ ↻ 버튼을 꾹 누른 만큼 돌아가요. 세대별 대표·귀여운 포켓몬 ${A.P.length}마리가 그림 모양·키대로 나와요.</small>`; };
+const desc = () => { const s = SK[ty]; $('dmDesc').innerHTML = `<b>${tyIcon(ty)}${TYPE_KO[ty]} · ${s.n}</b> — ${s.d}<br><small>랭크 ${rk} 패시브: ${PSV.filter(z => z.r === rk).map(z => `<b>${z.r} ${z.n}</b>(${z.d})`).join(' · ')}</small><br><small>랭크 ${rk}: 한 판에 ${USES[rk]}번 · 목숨 ${1 + fh}개 (1 + 친밀도 하트 ${fh}) · 끌어서 자리를 고르고 툭 눌러 놓아요. 화면 양옆을 꾹 누르면 그쪽으로 돌아가요. 아래 ↺ ↻ 버튼을 꾹 누른 만큼 돌아가요. 세대별 대표·귀여운 포켓몬 ${A.P.length}마리가 그림 모양·키대로 나와요.</small>`; };
 const setTy = t => { ty = t; [...dmTy.children].forEach(b => b.classList.toggle('on', +b.dataset.t === t)); desc(); used = 0; armed = null; abDraw(); };
 const setRk = r => { rk = r; const nxe = $('nx'); if (nxe) { nxe.classList.toggle('yj', pv('yj')); if (typeof nxt3 !== 'undefined' && nxt3 == null && typeof pick === 'function' && IMG) {} } [...dmRk.children].forEach(b => b.classList.toggle('on', b.dataset.r === r)); uses = USES[r]; used = 0; desc(); abDraw(); };
 dmTy.addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (b) { SFX.pop(); setTy(+b.dataset.t); } });
 dmRk.addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b) { SFX.pop(); setRk(b.dataset.r); } });
-$('dmRe').addEventListener('click', () => { SFX.pop(); reset(); });
+$('dmRe').addEventListener('click', () => { SFX.pop(); setP(0); reset(); });
+/* 베타 설정 버튼 (운영자만, 부모가 cfg.tst 를 줄 때) — 시안 설정 + 물리 테스트. 본 게임 배포 때 지울 것 */
+const dmPh = $('dmPh'), phDraw = () => [...dmPh.children].forEach(b => b.classList.toggle('on', !!TS[b.dataset.k]));
+dmPh.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; SFX.pop(); TS[b.dataset.k] = TS[b.dataset.k] ? 0 : 1; try { localStorage.setItem('st-phys', JSON.stringify(TS)); } catch (er) {} phDraw(); reset(); });
+phDraw();
+for (const el of [dmTy, dmRk, dmFh]) el.addEventListener('click', e => { if (e.target.closest('button')) { tstCfg = 1; tstRun = 1; } });
+let pz0 = false; const setP = on => { const el = $('stSetP'); if (!el || el.hidden === !on) return; el.hidden = !on; if (on) { pz0 = paused; paused = true; } else paused = pz0; };
+$('stSetB').addEventListener('click', e => { e.stopPropagation(); SFX.pop(); setP(1); });
+$('stSetX').addEventListener('click', () => { SFX.pop(); setP(0); });
+$('stSetP').addEventListener('pointerdown', e => e.stopPropagation());
 $('dmMus').addEventListener('click', () => { au(); BGM.en = !BGM.en; $('dmMus').textContent = BGM.en ? '음악 끄기' : '음악 켜기'; if (BGM.en) BGM.start(); else BGM.stop(.3); });
 /* 시안 전용: 기술을 바로 써 볼 수 있게 탑을 7층쯤 미리 쌓음 (화면 밖에서 빠르게 돌린 뒤 실제 시간으로 돌아옴) */
-$('dmBuild').addEventListener('click', () => { SFX.pop(); reset(); intro = null; $('mgCard').hidden = true; simOn = true; simT = performance.now() + tOff;
+$('dmBuild').addEventListener('click', () => { SFX.pop(); setP(0); reset(); tstRun = 1; intro = null; $('mgCard').hidden = true; simOn = true; simT = performance.now() + tOff;
   lives = 99; const OFS = [-52, 52, 0, -30, 30, -55, 55, 0, -18, 18, -40, 40, 0]; for (let k = 0; k < 26 && live().length < 11; k++) { let w = 0; while (mode !== 'aim' && w++ < 900) step(1 / 60); ax = cxl(W / 2 + OFS[k % OFS.length] + (Math.random() - .5) * 10); rot = 0; release(); for (let i = 0; i < 110; i++) step(1 / 60); }
   let w = 0; while (mode !== 'aim' && w++ < 900) step(1 / 60); for (let i = 0; i < 240; i++) step(1 / 60); lives = lmax; dead = false; combo = 0; lifeDraw(lives); hud(); tOff = simT - performance.now(); simOn = false; tAcc = 0; });
 
@@ -3241,7 +3275,7 @@ $('dmBuild').addEventListener('click', () => { SFX.pop(); reset(); intro = null;
 function embInit() { document.documentElement.classList.add('emb'); return new Promise(ok => { const on = async e => { const d = e.data; if (!d || d.t !== 'stInit') return; removeEventListener('message', on); const c = d.cfg;
     document.documentElement.style.setProperty('--sat', (c.sat || 0) + 'px'); document.documentElement.style.setProperty('--sab', (c.sab || 0) + 'px'); window.__GPP = c.gpp || 9; best = c.best | 0; try { if (parent.__stAC) { ac = parent.__stAC; if (ac.state === 'suspended') ac.resume(); } } catch (er) {}   /* 경완 'BGM 클릭해야 시작': 미니게임 창에서 시작하기를 누를 때 열어 둔 소리를 그대로 써서 바로 곡이 나옴 */
     if (c.spU && c.spK) try { const j = await (await fetch(c.spU)).json(), o = j[c.spK]; if (o && o.i && o.a) { const im = await loadImg(o.i); if (im) { PM.me = { im, a: typeof o.a === 'string' ? JSON.parse(o.a) : o.a }; A.H[c.ty - 1] = 'me'; A.nm.me = c.nm || ''; delete PBB.me; } } } catch (er) {}
-    setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); ok(); };
+    setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); if (c.tst) { $('stSetW').appendChild($('dmSet')); $('stSetB').hidden = false; } ok(); };
   addEventListener('message', on); parent.postMessage({ t: 'stReady' }, '*'); });
 }
 addEventListener('message', e => { const d = e.data; if (!d || !window.__EMB) return; if (d.t === 'stAgain') { $('mgPop').hidden = true; reset(); } if (d.t === 'stMute') { try { BGM.stop(.2); } catch (er) {} } });
