@@ -2680,10 +2680,13 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     for (const k of kinds) {
       if (k === 'it') Object.entries(B.HOLD).forEach(([id, x]) => { if (x[1] <= cap && !B.itHave(id) && !no.has(id)) out.push({ k, id, nm: x[0], img: B.itImg(id), d: x[2] }); });
       if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: B.mintD?.(id) || '먹이면 성격이 바뀌어요' }); });
-      if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); }); }
+      if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); });
+      // 기술머신·기술레코드: 지금 라인업 포켓몬이 배울 수 있고 아직 모르는 기술만 (경완 2026-11-08). 기술머신은 이미 가진 건 빼고
+      if (k === 'tm') { await B.loadData?.(); const D = B.D, W = new Map(); luAll().forEach(P => (D?.sp[P.sp]?.tm || []).forEach(i => { const x = D.mv[i]; if (!x || no.has(x[0]) || B.gm(P).mv.includes(x[0]) || (!B.isTR(x[0]) && (g.tms?.[x[0]] | 0) > 0)) return; if (x[3] !== 2 && (x[4] || 0) < 60) return; (W.get(x[0]) || W.set(x[0], []).get(x[0])).push(P); }));
+        W.forEach((L, id) => { const x = B.mvOf(id), kd = B.tmKind(id); out.push({ k, id, nm: `${kd} ${x[1]}`, img: `${IMG}bt/tm_${x[2]}.png`, d: `${L.slice(0, 3).map(P => SPECIES[P.sp]?.n || '').join(', ')}${L.length > 3 ? ' 등' : ''}${jong(SPECIES[L[Math.min(2, L.length - 1)].sp]?.n || '') ? '이' : '가'} 배울 수 있어요${B.isTR(id) ? ' (한 번 가르치면 없어져요)' : ''}` }); }); } }
     return out.length ? out[Math.random() * out.length | 0] : null; },
   giveLoot: L => { if (window.gymEvTest || !L) return; const g = st();
-    if (L.k === 'it') { g.itm = g.itm || {}; g.itm[L.id] = Math.max(1, g.itm[L.id] | 0); } else if (L.k === 'mint') { g.mint = g.mint || {}; g.mint[L.id] = (g.mint[L.id] | 0) + 1; } else if (L.k === 'deco') { g.own = g.own || {}; g.own[L.id] = 1; }
+    if (L.k === 'it') { g.itm = g.itm || {}; g.itm[L.id] = Math.max(1, g.itm[L.id] | 0); } else if (L.k === 'mint') { g.mint = g.mint || {}; g.mint[L.id] = (g.mint[L.id] | 0) + 1; } else if (L.k === 'deco') { g.own = g.own || {}; g.own[L.id] = 1; } else if (L.k === 'tm') { g.tms = g.tms || {}; g.tms[L.id] = (g.tms[L.id] | 0) + 1; }
     glog('tr', `로켓단 아지트에서 <b>${esc(L.nm)}</b>${jong(L.nm) ? '을' : '를'} 찾았다.`); save(); },
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
@@ -2695,7 +2698,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
     if (!my.length) return { won: true, none: 1 };
     const team = o.team.map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
-    try { res = await GB().run({ my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', noRun: true, meBackUrl: await fitSrc('trb') }); }   // 이벤트 배틀은 기권 못 함 (경완 2026-11-08)
     finally { document.body.classList.remove('gymBattle'); }
     if (res?.won && o.g && !window.gymEvTest) addG(o.g);
     return res || {}; } };

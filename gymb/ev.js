@@ -59,6 +59,9 @@ const CSS = `
 #gym .ev-pk{position:absolute;right:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
 #gym .ev-fld~.gy-kang.tw-talk .gy-k-box{width:auto;margin:0 calc(var(--si-right,env(safe-area-inset-right,0px)) + 8px) var(--evmb,77px) calc(var(--si-left,env(safe-area-inset-left,0px)) + 8px)}   /* 대사창 자리 = 체육관 아래 메뉴가 있을 때 대사창 자리 (경완 2026-11-08) */
 #gym .ev-luw{z-index:975}#gym .ev-lux{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:976;border:0;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 #18181f}#gym .ev-lux:active{transform:translateY(3px);box-shadow:none}#gym.evlu .gy-pop,#gym.evlu .gy-boxw{z-index:985}#gym .ev-luw [data-go]{display:none}   /* v19.61 이벤트 안 라인업 화면 */
+#gym .ev-luw>h3{min-height:34px;line-height:34px;margin:0 0 10px;padding-right:72px}#gym .ev-lux{top:calc(var(--si-top,env(safe-area-inset-top,0px)) + 14px);right:calc(var(--si-right,env(safe-area-inset-right,0px)) + 14px);height:34px;padding:0 14px}
+#gym .ev-luw>*{width:100%;max-width:460px;margin-left:auto;margin-right:auto}#gym .ev-luw [data-box]{display:none}#gym .ev-luw .lu-row2{grid-template-columns:1fr}   /* 이벤트에선 포켓몬 박스 없음, 정렬 다시 (경완 2026-11-08) */
+#gym .ev-luw.tired .lu-slot[data-p]{filter:grayscale(1) brightness(.92);opacity:.55}#gym .ev-luw.tired>h3::after{content:'모두 지쳐 있어요 · 포켓몬 센터에서 회복해요';word-break:keep-all;display:block;margin:6px -72px 0 0;line-height:1.4;padding:8px 10px;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;text-align:center}   /* 졌을 때: 슬롯 흐리게 */
 #gym .ev-pk:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
 /* v19.29 경완 2026-11-08: 같이 다니는 포켓몬 고르기 창(넣어 두기), 주운 것 가운데 창(상점 그림 + 효과) */
 #gym .ev-pkw .win{max-width:340px}#gym .ev-pkw h4{margin:0;font-size:16px}
@@ -149,6 +152,13 @@ const CSS = `
 #gym .ev-crt>div{position:relative;width:100%;height:100%;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#2a4a6a,#0a1420 75%);transform-origin:50% 50%}
 #gym .ev-crt img{position:absolute;left:50%;top:50%;width:160px;height:160px;margin:-84px 0 0 -80px;image-rendering:pixelated;filter:brightness(0) drop-shadow(0 0 2px rgba(120,190,255,.9)) drop-shadow(0 0 6px rgba(80,150,255,.6));opacity:.92}   /* v19.52 경완: 정체를 감춘 실루엣 */
 #gym .ev-crt>div::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 4px);animation:evTv .18s steps(2) infinite}
+#gym .ev-crt>.crt-bk{position:absolute;inset:10px;border-radius:10px;background:#000}   /* 화면이 꺼져도 모니터 검은 바탕은 남게 (경완 2026-11-08) */
+#gym .ev-crt>div>i{position:absolute;left:0;right:0;height:18%;top:-20%;background:linear-gradient(transparent,rgba(170,210,255,.22) 40%,rgba(255,255,255,.35) 50%,rgba(170,210,255,.22) 60%,transparent);animation:crtBand 1.9s linear infinite;pointer-events:none}
+#gym .ev-crt img{animation:crtGl 2.3s steps(1) infinite}
+#gym .ev-crt>div{animation:crtFl .12s steps(2) infinite}
+@keyframes crtBand{0%{top:-20%}100%{top:110%}}
+@keyframes crtGl{0%,100%{translate:0 0;opacity:.92}8%{translate:-5px 0;opacity:.6}9%{translate:4px 0;opacity:.85}10%{translate:0 0;opacity:.92}46%{translate:0 0}47%{translate:6px 1px;opacity:.5}48%{translate:-3px 0;opacity:.8}49%{translate:0 0;opacity:.92}77%{translate:0 0}78%{translate:-7px 0;opacity:.55}80%{translate:0 0;opacity:.92}}
+@keyframes crtFl{0%{filter:brightness(1)}50%{filter:brightness(1.12)}}   /* 지지직 계속 (경완 2026-11-08) */
 #gym .ev-crt b{position:absolute;right:8px;top:6px;font:900 11px/1 Arial,sans-serif;color:#ff5060;letter-spacing:.5px}
 `;
 let cssOn = false;
@@ -209,7 +219,7 @@ function tools(I, def) {
     test: !!window.gymEvTest, retry: (g.ev?.try | 0) > 0 || !!g.ev?.seen?.[g.ev?.ch],   // 한 번 본 장(센터로 돌아갔다 다시 온 것 포함)은 장 제목·처음 대사 건너뜀
     lv: () => I.lv(),
     // 필드 맵 열기 (검은 화면 뒤에서 만들고 F.show 로 밝힌다)
-    field: o => { const F = field(I, o); return F; },
+    field: o => { const F = field(I, o); F.tired = () => !!A.tired; return F; },   // 졌을 때(센터 가기 전) 라인업 화면을 흐리게
     // 이벤트 배틀: o = { tr 그림, cls, nm, team [[종, 레벨]], tier, say {win,lose}, g 골드, music }. 이기면 true
     battle: async o => { const r = await I.battle(o); return !!(r?.won || r?.cut); },
     // 곧바로 까만 화면 (장을 이어서 시작할 때 체육관이 비치지 않게)
@@ -388,7 +398,7 @@ function field(I, o) {
   // 같이 다니는 포켓몬 고르기 (라인업에서, 넣어 두기도 됨). 고르면 F.onPal(P 또는 null)
   // [포켓몬] = 체육관 라인업 화면 그대로 (라인업·순서·기술·도구, 경완 2026-11-08). 체육관 상점으로 가는 버튼만 없음. 닫으면 라인업 첫 번째가 같이 다님
   F.luOpen = async () => { const L0 = I.luLead?.()?.id || 0; const w = document.createElement('div'); w.className = 'gy-sheet ev-luw'; w.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>';
-    const x = document.createElement('button'); x.type = 'button'; x.className = 'ev-lux'; x.textContent = '닫기'; root.appendChild(w); root.appendChild(x); root.classList.add('evlu'); window.gymEvLu = 1; I.gse?.('DP_WIN_OPEN', .8);
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'ev-lux'; x.textContent = '닫기'; if (F.tired?.()) w.classList.add('tired'); root.appendChild(w); root.appendChild(x); root.classList.add('evlu'); window.gymEvLu = 1; I.gse?.('DP_WIN_OPEN', .8);
     try { await I.luTab?.(w); } catch (e) { console.error(e); }
     await new Promise(ok => { x.onclick = e => { e.stopPropagation(); I.sfx?.('tap'); ok(); }; });
     w.remove(); x.remove(); root.querySelectorAll('.gy-boxw,.gy-pop').forEach(q => q.remove()); root.classList.remove('evlu'); window.gymEvLu = 0;
@@ -566,7 +576,7 @@ function field(I, o) {
     requestAnimationFrame(tick); });
   F.setMap('main');
   try { window.GymBGM?.sePrep?.(['se_door', 'se_sliding_door', 'se_exit', 'se_select', 'se_pin', 'se_wall_hit', 'se_unlock']); } catch (e) {}   // 본가 문·매트 소리를 미리 만들어 둠: 처음 들어갈 때 늦게(또는 안) 나던 것 (경완 2026-11-08 '마트 들어갈 때·나갈 때 효과음')
-  if (/[?&]debug/.test(location.search)) window.__evF = F;   // 시험용 (주소에 ?debug 일 때만)
+  if (/[?&]debug/.test(location.search)) { window.__evF = F; window.__evI = I; }   // 시험용 (주소에 ?debug 일 때만)
   return F;
 }
 
@@ -579,7 +589,7 @@ window.GymEv = {
   // 이벤트 하나를 지금 장부터 끝까지 (또는 아직 없는 장까지) 진행한다. 끝나면 true
   async run(I, id, ch0) {
     css(); await load(id); const def = DEF[id]; if (!def) return false;
-    const g = I.st(); g.ev = g.ev || {}; if (g.ev.cur !== id) { g.ev.cur = id; g.ev.ch = 0; g.ev.seen = {}; g.ev.t0 = Date.now(); } if (ch0 != null) { g.ev.ch = ch0; g.ev.seen = {}; } I.save();
+    const g = I.st(); g.ev = g.ev || {}; if (g.ev.cur !== id) { g.ev.cur = id; g.ev.ch = 0; g.ev.seen = {}; g.ev.t0 = Date.now(); } if (ch0 != null) { g.ev.ch = ch0; g.ev.seen = {}; const gk = def.skipGot?.(ch0); if (gk) { g.ev.got = g.ev.got || {}; gk.forEach(k => { g.ev.got[k] = 1; }); } } I.save();   // 운영자 시험에서 중간 장부터: 앞 장에서 얻었을 것(변장 등)을 채워 줌
     try { (def.songs || []).forEach(n => window.GymBGM?.prep(n)); } catch (e) {}
     while (g.ev.ch < def.ch.length) {
       const A = tools(I, def); (g.ev.seen = g.ev.seen || {})[g.ev.ch] = 1; let r; try { r = await def.ch[g.ev.ch](A); } catch (e) { console.error(e); r = 'stop'; }
