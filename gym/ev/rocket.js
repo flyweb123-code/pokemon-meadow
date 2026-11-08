@@ -562,7 +562,7 @@ GymEv.def({
       // 붙잡힌 트레이너·안내원은 밧줄에 묶인 채 (경완 2026-11-08)
       const rope = s => { const e = document.createElement('i'); e.className = 'ev-rope'; s.el.appendChild(e); s.rope = e; };
       [...caps, guy].forEach(rope);
-      const safe = F.obst(`${IM}ev/rocket/safe.png?${VA}`, 22, 8, { h: 24, kind: 'safe' });
+      const safe = F.obst(`${IM}ev/rocket/safe.png?${VA}`, 22, 8, { h: 24, kind: 'safe' }); const safeO = new Image(); safeO.src = `${IM}ev/rocket/safe_o.png?${VA}`;   // 열린 그림 미리 받아 둠: 바꿀 때 잠깐 사라지던 것 (경완 2026-11-08)
       // 람다 방 안쪽 기계 사이 모니터 (본가 실프 주식회사 타일셋 그림). 아테나가 연락할 때 켜짐
       const mon = F.pic(`${IM}ev/rocket/mon.png?${VC}`, 19, 2); mon.style.zIndex = 23;
       F.cam(me.x, me.y); A.music('hgAjito'); await A.black(false); await F.show();
@@ -631,7 +631,7 @@ GymEv.def({
       A.music(null); await wait(300); A.se('se_pin'); I.haptic?.(0);
       mon.style.backgroundImage = `url(${IM}ev/rocket/mon_on.png?${VC})`; const glow = F.pic('', 19 + 3 / 16, 2 + 2 / 16, 10, 10); glow.classList.add('ev-tv'); glow.style.backgroundImage = ''; glow.style.zIndex = 24;
       F.bub(boss, '!', 900); [boss, ...KS.map(x => x[0])].forEach(k => k.on !== false && k.turn('u')); await F.camTo(19, 5, 600); await wait(500);
-      await S.say('삐빅... 삐빅...', { who: '모니터' }); S.hide(true); await wait(200);
+      await S.say('삐빅... 삐빅...', { who: '모니터' }); S.hide(true); await wait(200); A.music('rgSilph');   // 아테나: 본가 실프주식회사 곡 (경완 2026-11-08 'bgm 적절한걸로')
       const W = '???';
       await crt(A, async () => {
         await S.say('...치직... 람다.\n거기까지 해라.', { who: W });
@@ -676,7 +676,7 @@ GymEv.def({
         const r3 = await F.play({
           can: ([x, y]) => !!(F.obAt(x, y) || lookText(LK4, null, x, y)),
           look: async ([x, y]) => { if (F.obAt(x, y)?.kind === 'safe') return safeLook(); const t = lookText(LK4, null, x, y); if (t) await me1(...[].concat(t)); },
-          talk: async s2 => { if (s2 === guy) { if (!A.has('c4safe')) { await S.say(SAFE, { who: '안내원' }); }
+          talk: async s2 => { if (s2 === guy) { if (!A.has('c4safe')) { await S.say(SAFE, { who: '안내원' }); await S.say('돌아가기 전에\n저 금고부터 확인해 봐요!', { who: '안내원' }); S.hide(true); return; }   // 금고 안 보고는 못 돌아감 (경완 2026-11-08)
               const y = await S.ask('체육관으로 돌아갈까요?', { who: '안내원' }, '돌아간다', '조금 더 있기'); S.hide(true); if (y) return 'home'; return; }
             const i = caps.indexOf(s2); await S.say(i >= 0 ? '관장님, 구해 주셔서\n정말 고마워요!' : '...', { who: i >= 0 ? nm0(i) : '' }); S.hide(true); },
           warp: async () => me1('(모두 함께 체육관으로 돌아가자.\n안내원에게 말 걸면 돼.)'),

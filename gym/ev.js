@@ -85,7 +85,7 @@ const CSS = `
 #gym :is(.ev-ask,.ev-rw) button:active{transform:translateY(4px);box-shadow:0 0 0 transparent}
 /* 보상 창 (v18.54 경완 '이벤트 해결 창 디자인 좀 더'): 승급 보상창처럼 빛 무대 + 이벤트 문장 + 되찾은 동료들 + 보상 줄 */
 #gym .ev-rw{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:0 18px}
-#gym .ev-rw>.win{max-width:340px;width:100%;padding:12px 12px 14px;text-align:center;animation:evRw .45s cubic-bezier(.2,1.4,.4,1) both}
+#gym .ev-rw>.win{max-width:340px;width:100%;padding:12px 12px 14px;text-align:center;animation:gyPop .28s ease-out both}   /* 다른 알림창과 같은 팝업 모션 (경완 2026-11-08) */
 @keyframes evRw{0%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:none}}
 #gym .ev-rw .rw-hd{position:relative;height:176px;margin:-6px -6px 4px;border-radius:6px;overflow:hidden;background:radial-gradient(circle at 50% 38%,var(--c1,#7a1c28) 0,var(--c2,#26070c) 62%,#0c0204 100%)}
 #gym .ev-rw .rw-hd .bsa-ray{top:38%;width:320px;height:320px;margin:-160px 0 0 -160px}
@@ -229,7 +229,7 @@ function tools(I, def) {
       root.appendChild(w); I.haptic?.(1);
       I.fitSrc?.('ow').then(u => { const m = w.querySelector('.rw-crew .me'); if (u && m) m.style.backgroundImage = `url(${u})`; }).catch(() => {});
       setTimeout(() => { try { window.GymBGM?.se?.('DP_KON', { gain: 1.3 }); } catch (e) {} I.haptic?.(0); }, 1050);   // 해결! 도장 쾅
-      setTimeout(() => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} I.confetti?.(); }, 1300);
+      try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} setTimeout(() => I.confetti?.(), 120);   // 팡파르는 창이 뜨는 순간 (경완 2026-11-08 '뜰 때 빵빠레 타이밍')
       const gn = w.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 1700, T = 900, f2 = now => { const q = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(R.g * (1 - (1 - q) ** 3)).toLocaleString()}G`; if (q < 1 && gn.isConnected) requestAnimationFrame(f2); }; requestAnimationFrame(f2); }
       // 의상 보상은 해결 창을 닫으면 따로 크게 보여 준다 (경완 2026-11-07 '로켓단 제복은 옷 잘 보이게 새로운 창으로')
       // 의상 그림은 해결 창 뜰 때 미리 받아 두고, 의상 창은 그림이 준비된 뒤에 연다 (경완 2026-11-08 '스프라이트 바로 안 뜸')
@@ -462,7 +462,7 @@ function field(I, o) {
     b.moveTo = async (nx, ny, ms = 420) => { blk(false); const dx = nx - b.x, dy = ny - b.y; await anim(ms, q => { e.style.translate = `${dx * 16 * k * q}px ${dy * 16 * k * q - Math.sin(q * Math.PI) * 6 * k}px`; }); e.style.translate = ''; b.x = nx; b.y = ny; Object.assign(e.style, { left: (sp > 1 ? nx * 16 : nx * 16 + (16 - w) / 2) * k + 'px', top: ((ny + 1) * 16 - h) * k + 'px' }); b.put(); blk(true); };
     b.put = () => { e.style.zIndex = zOf(b.y, b.y, 3); }; b.put();
     b.shake = () => { e.classList.remove('shk'); void e.offsetWidth; e.classList.add('shk'); };
-    b.img = u => { e.style.backgroundImage = `url(${u})`; };
+    b.img = u => { const im = new Image(), set = () => { e.style.backgroundImage = `url(${u})`; }; im.src = u; if (im.complete && im.naturalWidth) set(); else { im.onload = set; im.onerror = set; } };   // 새 그림이 다 받아진 뒤에 바꿈 (금고 문 열 때 잠깐 사라지던 것)
     b.clear = async (how = 'break', dir) => { b.on = false; blk(false);
       if (how === 'break' && fr > 1) { for (let i = 1; i < fr; i++) { e.style.backgroundPosition = `${-i * w * k}px 0`; await wait(90); } await wait(120); e.remove(); return; }
       if (how === 'push' && dir) { const [dx, dy] = DIR[dir]; await anim(260, q => { e.style.translate = `${dx * 16 * k * q}px ${dy * 16 * k * q}px`; }); }
