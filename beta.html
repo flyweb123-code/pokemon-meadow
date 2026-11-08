@@ -10662,8 +10662,8 @@ function stackOpen() { const m = mgMon; if (!m) return;
   mgGameOn = true; try { bgmStop(); mgMus.stop(.2); } catch (e) {} try { window.__stAC?.close?.(); } catch (e) {} try { window.__stAC = new (window.AudioContext || window.webkitAudioContext)(); window.__stAC.resume?.(); } catch (e) { window.__stAC = null; }   /* v19.79 경완 'BGM 클릭해야 시작': 시작하기를 누르는 순간 소리를 열어 두고 게임이 그걸 씀 */
   const ty = mgTy(m), rk = mgRank(m), BX = boxOf(m.pid), fh = BX ? Math.max(0, Math.min(5, Math.floor((BX.fr || 0) / 51))) : 2, R = mgRecG('stack'), sa = stSA();   /* 목숨 = 1 + 친밀도 하트 (장애물 넘기와 같음) */
   const f = String(m.form), ck = Math.floor((parseInt(f) - 1) / 50), [spU, spK] = RFORM[f] ? ['rf.json?v=2', RFORM[f].fk] : [CHUNK_SZ.length ? `s${ck}.json?v=${CHUNK_CACHE}` : `s${ck}.json`, f];   /* 도우미 = 함께 놀 포켓몬 (던전 그림 원본 묶음) */
-  box.stM = m; box.stStart({ ty, rk, fh, nm: m.name, best: R.best | 0, gpp: ST_GPP(), sat: sa[0], sab: sa[1], spU, spK }); }
-function stackEnd(m, d) { const sc = Math.max(0, d.sc | 0), T = !!m.test, R = mgRecG('stack'), prev = R.best | 0, nb = !T && sc > prev, PZ = ST_PASS[mgRank(m)] || {};
+  box.stM = m; box.stStart({ ty, rk, fh, nm: m.name, best: R.best | 0, gpp: ST_GPP(), sat: sa[0], sab: sa[1], spU, spK, tst: IS_BETA && opAcct() ? 1 : 0 }); }   /* tst = 베타 운영자 설정 버튼 (본 게임 배포 때 지울 것) */
+function stackEnd(m, d) { const sc = Math.max(0, d.sc | 0), T = !!m.test || !!d.tst,   /* 설정 버튼으로 바꾼 판 = 기록·보상 없음 */ R = mgRecG('stack'), prev = R.best | 0, nb = !T && sc > prev, PZ = ST_PASS[mgRank(m)] || {};
   const by = !T ? (Pb => ({ sp: SPECIES[+m.form] ? +m.form : Pb?.sp || m.sp, sx: Pb?.sex || '', nm: m.name, sh: Pb?.shiny ? 1 : 0, p: Pb ? frPV(Pb) : undefined }))(boxOf(m.pid)) : undefined;   // 랭킹에 기록 낸 포켓몬
   if (!T) { R.n = (R.n || 0) + 1; if (nb) { R.best = sc; R.by = by; } try { mqRecS(m, sc, +d.h || 0, d.pf | 0); } catch (er) {} }
   const W0 = mgWkRec(R), prevW = W0.best; if (!T && sc > W0.best) R.w = { k: W0.k, best: sc, by };   // 이번 주 기록 (랭킹)
