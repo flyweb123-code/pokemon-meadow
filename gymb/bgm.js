@@ -260,6 +260,8 @@ const GymBGM = {
   // 팡파르(본가 Sound_PlayFanfare): 배경 곡을 잠깐 줄이고 끝까지 튼 뒤 다시 키운다. 끝나면 풀리는 Promise
   async fan(nm) { const g = cur.g, c = cur.ctx; const dz = (to, s) => { try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} };
     if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => { const t = setTimeout(r, d * 1000 + 80); fanEnd.set(nm, () => { clearTimeout(t); r(); }); }); fanEnd.delete(nm); if (g && c && cur.g === g) dz(1, .3); },
+  // v19.18: 배경 곡 볼륨만 to(0~1)로 s초 동안 (곡은 계속 돎, fan 이 끝나면 1로)
+  duck(to, s = .5) { const g = cur.g, c = cur.ctx; if (!g || !c) return; try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} },
   get name() { return cur.want; },
   SONG,
 };
