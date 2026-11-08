@@ -265,7 +265,7 @@ function draw(S) {
 // ---------- 방출기 자리 정하기 (원본 배틀 콜백) ----------
 function callback(S, e, cb, prm) {
   let pi = 0; const take = n => { const v = []; for (let i = 0; i < n; i++) v.push(prm[pi++] || 0); return v; };
-  const at = S.atk, df = 1 - at, nP = t => WP.n[t];
+  const at = S.atk, df = S.self ? at : 1 - at, nP = t => WP.n[t];
   if (cb === 3 || cb === 21 || cb === 19) { const p = nP(at); setPos(e, p[0], p[1], p[2]); return; }
   if (cb === 4 || cb === 20) { const p = nP(df); setPos(e, p[0], p[1], p[2]); return; }
   if (cb === 1) { const p = nP(1); setPos(e, p[0], p[1], p[2]); return; }
@@ -340,7 +340,7 @@ function revUp(v) { if (!v.n) return false; v.ax = (v.ax + v.dx) & 0xFFFF; v.ay 
 const active = e => e.P.length > 0 && e.P[0].age !== e.P[0].life;
 function startTask(S, ev) {
   const k = ev[0], v = ev.slice(2), e = S.slot[v[0]]; if (!e || !S.E.includes(e)) return;
-  const at = S.atk, df = 1 - at, dir = at === 0 ? 1 : -1;
+  const at = S.atk, df = S.self ? at : 1 - at, dir = at === 0 ? 1 : -1;
   if (k === 'pr') {
     const [, sx, ex, sy, ey, rx, ry, n, mode] = v, b = WP.n[mode ? df : at], R = rev(DEG(sx), DEG(ex), DEG(sy), DEG(ey), rx, ry, n);
     revUp(R); setPos(e, b[0] + S2W(R.x), b[1] + S2W(R.y));
@@ -375,9 +375,9 @@ function kill(S, e) { const i = S.E.indexOf(e); if (i >= 0) S.E.splice(i, 1); re
 
 // ---------- 한 번의 기술 연출 ----------
 // ev: mvfx.json 의 'p' 'pl' 'pq' 'pr' 'pu' 사건, atk: 공격하는 쪽 'p'|'e', F: 1프레임 ms
-function start(canvas, ev, atk, F, ver) {
+function start(canvas, ev, atk, F, ver, self) {   // self: 자기에게 쓰는 기술 — 맞는 쪽 = 쓰는 쪽 (v19.18 달빛)
   const names = [...new Set(ev.filter(e => e[0] === 'p').map(e => e[3]))];
-  const S = { E: [], T: [], slot: {}, atk: atk === 'p' ? 0 : 1, g: canvas.getContext('2d'), f: 0, dead: false, D: {} };
+  const S = { E: [], T: [], slot: {}, atk: atk === 'p' ? 0 : 1, self: !!self, g: canvas.getContext('2d'), f: 0, dead: false, D: {} };
   S.count = ps => S.E.reduce((n, e) => n + (e.ps === ps ? e.P.length + e.C.length : 0), 0);
   const ready = Promise.all(names.map(n => load(n, ver).then(d => { S.D[n] = d; }).catch(() => {})));
   const Q = ev.filter(e => e[0][0] === 'p').slice().sort((a, b) => a[1] - b[1]);
