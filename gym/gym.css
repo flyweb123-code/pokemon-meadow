@@ -3363,3 +3363,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ts-win .ts-slot .tsc-out,#gym .ts-slot .tsc-out{top:4px;right:4px;transform:none;padding:5px 8px;font-size:15px;font-weight:400;line-height:1;color:var(--dim);background:none;border:0;box-shadow:none}
 #gym .ts-slot .tsc-out:active{translate:none;color:var(--frame)}
 #gym .tsc-mid{padding-right:22px}
+/* v19.65 경완 '추천할 기술머신·기술레코드 없을 때 문구는 여백 정중앙': 남은 칸을 채우고 그 가운데 */
+#gym .gy-sheet>.sp-body:has(>.sp-recnone){flex:1;display:flex;flex-direction:column}
+#gym .sp-recnone{margin:auto!important;text-align:center;padding:0 16px}
