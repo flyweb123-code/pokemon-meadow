@@ -2472,13 +2472,14 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
   pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData?.()), thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
   giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
   // 숨은 상점 물건: kinds 중에서 안 가진 것 하나 (cap 골드 이하). skip = 이번 이벤트에서 이미 나온 것
   loot: async (kinds = ['it', 'mint', 'deco'], cap = 4000, skip = []) => { await loadJs('gymb/battle.js', 'GymBattle'); const B = GB(), g = st(), G = gradeOf(g.rep || 0).i, no = new Set(skip), out = [];
     for (const k of kinds) {
       if (k === 'it') Object.entries(B.HOLD).forEach(([id, x]) => { if (x[1] <= cap && !B.itHave(id) && !no.has(id)) out.push({ k, id, nm: x[0], img: B.itImg(id), d: x[2] }); });
-      if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: '먹이면 성격이 바뀌어요' }); });
+      if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: B.mintD?.(id) || '먹이면 성격이 바뀌어요' }); });
       if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); }); }
     return out.length ? out[Math.random() * out.length | 0] : null; },
   giveLoot: L => { if (window.gymEvTest || !L) return; const g = st();
