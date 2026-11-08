@@ -1297,7 +1297,7 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
 // 탭하면 바로 넘어가는 기다림 (전당 연출은 길어서 누르면 다음 장면으로)
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
 // 전설 연출 때 안내원이 관장에게 와서 서는 칸 (맵 id → [x, y]), 없으면 자동 (경완이 편집 페이지에서 골라 줌)
-const LEG_GU = {};
+const LEG_GU = { cerulean: [8, 10], vermilion: [4, 5], celadon: [5, 7], fuchsia: [8, 10], dojo: [7, 7], lab: [9, 3] };   // 2026-11-08 경완이 고름 (바위 계단은 자동 자리 그대로)
 async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
