@@ -857,7 +857,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 #skyFx .sun{width:30px;height:30px;margin:-15px 0 0 -15px;filter:drop-shadow(0 0 6px rgba(255,220,120,.8))}
 #skyFx .moon{width:24px;height:24px;margin:-12px 0 0 -12px;filter:drop-shadow(0 0 5px rgba(255,250,210,.6))}
 #skyFx .star{width:2px;height:2px;background:#fff;animation:twk 2.6s ease-in-out infinite}@keyframes twk{50%{opacity:.25}}
-#skyFx .cloud{animation:cloudM linear infinite}@keyframes cloudM{from{transform:translateX(-120px)}to{transform:translateX(480px)}}
+#skyFx .cloud{animation:cloudM linear infinite}#skyLeg{position:absolute;left:0;top:0;width:360px;height:80px;overflow:hidden;pointer-events:none;z-index:1001}#skyLeg>i{position:absolute;display:block;image-rendering:pixelated}#skyLeg .leg{left:0;top:0;background-repeat:no-repeat;will-change:transform}#skyLeg .legd{width:2px;height:2px;border-radius:1px;animation:legD var(--d,1.8s) ease-out forwards}@keyframes legD{to{opacity:0;transform:translate(var(--dx,0),var(--dy,10px)) scale(.5)}}@keyframes cloudM{from{transform:translateX(-120px)}to{transform:translateX(480px)}}
 .prop.nightf{filter:url(#nightF)}.prop{position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated;background-size:100% 100%;transform:translate(-50%,-100%);transform-origin:50% 100%}
 /* v9.68 경완 '열매나무·횃대·그루터기·덤불처럼 모든 소품 밑에 그림자, 어떤 필드에도 묻게 반투명': 소품 밑 그림자 (땅 높이 z 1, 포켓몬·소품보다 아래) */
 .psh{position:absolute;pointer-events:none;transform:translate(-50%,-50%);border-radius:50%;z-index:1;background:radial-gradient(closest-side,rgba(20,40,10,.26),rgba(20,40,10,.2) 70%,rgba(20,40,10,0))}
@@ -2206,7 +2206,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
       <canvas id="bg" width="1920" height="1200"></canvas>
       <canvas id="meZone" width="360" height="600" hidden></canvas><div id="items"></div>
       <div id="mons"></div>
-      <div id="night"></div><div id="tuShade" hidden></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
+      <div id="night"></div><div id="skyLeg"></div><div id="tuShade" hidden></div><svg width="0" height="0" style="position:absolute"><filter id="nightF" filterUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800" color-interpolation-filters="sRGB"><feColorMatrix id="nightM" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"/></filter></svg><div id="glows"></div>
       <div id="propFx"></div><div id="meLayer" hidden><i class="me-foot" id="meFoot" hidden></i><button class="me-x" id="meX" type="button" aria-label="소품 빼기" hidden><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h2v1h1v1h1V1h1V0h2v2H6v1H5v1h1v1h1v2H5V6H4V5H3v1H2v1H0V5h1V4h1V3H1V2H0z"/></svg></button></div>
       <div id="fx"></div>
     </div>
@@ -4574,6 +4574,7 @@ function arrive(m) {
     return;
   }
   if (g.kind === 'camp') { if (!CAMP || m.camp !== CAMP) return think(m); return campSit(m); }
+  if (g.kind === 'moonG') { if (!MOONG || m.camp !== MOONG) return think(m); return moonSit(m); }
   if (g.kind === 'greet') {
     const o = g.mon; if (!S.mons.includes(o) || o.hidden) return think(m);
     faceTo(m, o.x); setState(m, 'idle', rnd(2.5, 4)); anim(m, 'hop'); addRel(m, o, 1);
@@ -5082,7 +5083,8 @@ function sceneCandidates(a, b) {
     add(1.5, { key: 'g-tag', kind: 'play', mo: 'tag', p: { t: ['잡았다!', '!'] }, roles: [a, b], text: () => `${J(a,'과/와')} ${J(b,'이/가')} 술래잡기를 시작했다.` });
     add(1.2, { key: 'g-side', kind: 'chat', mo: 'side', p: {}, roles: [a, b], text: () => `${J(a,'이/가')} ${N(b)} 옆에 나란히 앉아 쉰다.` });
     { const wx = weather(), h = hour(), sky = wx === 'rain' ? null : h >= 19.5 || h < 5 ? ['달', '☾'] : h < 7 ? ['해돋이', '☀'] : h >= 16.5 ? ['노을', '☀'] : wx === 'cloud' ? ['구름', '☁'] : ['해', '☀'];   /* v17.44 경완: 같이 해·달 보기 — 나란히 앉아 올려다보기 동작 */
-      if (sky) add(1, { key: 'g-sky', kind: 'chat', mo: 'side', p: { sky: sky[1] }, roles: [a, b], text: () => pick([`${J(a,'과/와')} ${J(b,'이/가')} 나란히 앉아 ${J({ name: sky[0] },'을/를')} 올려다본다.`, `${J(a,'이/가')} ${N(b)} 옆에 앉아 함께 ${J({ name: sky[0] },'을/를')} 바라본다.`]) }); }
+      const fullM = sky?.[1] === '☾' && Math.abs(moonPhase() - .5) < .1; if (fullM) sky[0] = '보름달';   /* v19.27 경완 '보름달일 때는 같이 달 보는 상호작용 빈도를 높여': 보름 앞뒤 3일쯤은 6배. '올려다보는 동작 있는 애들만': 둘 다 LookUp 그림이 있을 때만 */
+      if (sky && canLook(a) && canLook(b)) add(fullM ? 6 : 1, { key: 'g-sky', kind: 'chat', mo: 'side', p: { sky: sky[1] }, roles: [a, b], text: () => pick([`${J(a,'과/와')} ${J(b,'이/가')} 나란히 앉아 ${J({ name: sky[0] },'을/를')} 올려다본다.`, `${J(a,'이/가')} ${N(b)} 옆에 앉아 함께 ${J({ name: sky[0] },'을/를')} 바라본다.`]) }); }
   }
   return c;
 }
@@ -5711,7 +5713,7 @@ function doSpecial(m) {
 }
 function tickSpecial(m, dt) {
   const s = m.special;
-  if (s === 'camp') { if (CAMP && m.camp === CAMP) { m.t = 60; return; } m.act.classList.remove('camp'); m.special = null; return think(m); }
+  if (s === 'camp') { if ((CAMP && m.camp === CAMP) || (MOONG && m.camp === MOONG)) { m.t = 60; return; } m.act.classList.remove('camp'); m.special = null; return think(m); }
   if (s === 'sing' && m.t <= 0) {
     ring(m.x, m.y - 20);
     const near = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 220 && o.sp !== 39 && o.sp !== 131);
@@ -6631,7 +6633,7 @@ function buildProps() {
   rainEl.innerHTML = h; fxEl.append(rainEl);
   rainGEl?.remove(); rainGEl = document.createElement('div'); rainGEl.id = 'rainG'; rainGEl.innerHTML = hg; itemsEl.append(rainGEl); rainGEl.classList.toggle('on', rainEl.classList.contains('on'));   /* v4.16 경완: 땅에 튀는 물방울은 포켓몬·소품 아래 (빗줄기만 위) */
   const sf = $('#skyFx'); if (!sf.querySelector('.sun')) { sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 78).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
-  sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; sf.querySelector('.moon').style.backgroundImage = `url(${SPR.moon})`; }   // v3.66 경완: 소품을 옮겨 다시 그릴 때 하늘(구름·별)은 그대로 둔다
+  sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; moonSt = -1; }   // v3.66 경완: 소품을 옮겨 다시 그릴 때 하늘(구름·별)은 그대로 둔다
   treeBerries();
 }
 // 열매나무: 15분마다 한 알씩 열려 6알까지. 포켓몬이 와서 흔들면 실제로 떨어진다
@@ -6866,6 +6868,62 @@ function campStart(c) {
     if (!chorus && el > DUR * .55) { chorus = true; L.forEach((q, i) => setTimeout(() => { if (q.camp !== c) return; q.act.classList.remove('camp'); anim(q, 'hop'); setTimeout(() => { if (q.camp === c) { q.act.classList.remove('hop'); q.act.classList.add('camp'); } }, 650); burst(q, 'note', '♫', 2); }, i * 90)); }
   }, 420);
 }
+/* v19.27 경완 '풀문일 때는 전체 포켓몬 모여서 달 보는 상호작용': 보름날 밤(달 모양이 꽉 찬 날, 비 안 올 때) 한 번, 올려다보는 그림이 있는 깨어 있는 포켓몬이 다 모여
+   필드 위쪽에 줄지어 앉아 보름달을 올려다본다(LookUp, 없으면 Sit). 헤엄치는 포켓몬은 물에서 올려다본다. 모닥불과 같은 m.camp 자리 표시를 써서 다른 상호작용·소품이 끼어들지 않게 */
+let MOONG = null;
+const LOOK_UP = new Set('1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 150 151 152 155 156 157 157hisui 158 16 161 165 171 172 176 177 179 180 183 190 191 194 194paldea 197 198 200 203 206 207 215 215hisui 225 228 23 231 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 27 273 274 27alola 28 280 281 286 296 300 301 304 309 310 311 312 315 327 328 333 334 335 341 346 352 353 359 361 37 371 373 37alola 38 380 385 387 39 390 392 393 396 399 399f 4 403 403f 404 404f 406 407 412 417 418 418f 427 431 433 434 439 440 441 446 447 448 453 456 470 471 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 577 582 585 587 58hisui 597 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 727 728 742 744 745 753 757 762 77 772 773 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 906 909 912 921 926 935 94'.split(' ')), canLook = m => LOOK_UP.has(String(m.sk || m.form));   // 원본에 하늘 올려다보는(LookUp) 그림이 있는 그림 키 228개 — 하늘 보기·달 보기는 이 포켓몬만 (경완)
+const moonCycle = () => Math.floor((Date.now() + CLOCK_OFF * 6e4 - Date.UTC(2000, 0, 6, 18, 14)) / 864e5 / 29.530589);
+const moonOk = m => canLook(m) && !m.hidden && !m.held && !m.scp && !m.camp && !m.pin && !m.evolving && !m.ride && !m.perch && awake(m) && m.state !== 'eat' && m.state !== 'interact' && !fedBusy(m);
+function legWatch(sp) {   // v19.27 경완 '칠색조·루기아 지나갈 때 올려다보기 동작 있는 애들은 몇몇이 하늘 올려다보기': 한가한 포켓몬 중 절반쯤(최대 3마리)이 멈춰 올려다본다
+  if (MOONG || CAMP || !$('#skyLeg .leg')) return; const L = S.mons.filter(m => moonOk(m) && (m.state === 'idle' || m.state === 'move')).sort(() => Math.random() - .5), n = Math.min(3, Math.ceil(L.length * rnd(.35, .6))); if (!n) return;
+  const W = L.slice(0, n); W.forEach((m, i) => setTimeout(() => { if (!moonOk(m) || (m.state !== 'idle' && m.state !== 'move')) return; m.goal = null; m.partner = null; setState(m, 'idle', 9); moonUp(m); emote(m, '!', '', 1.6, 'sp-curious');
+    setTimeout(() => { if (m.one?.name === 'LookUp' && m.state === 'idle') emote(m, sp === 250 ? pick(['✦', '♪', '…!']) : pick(['✧', '…', '♪']), 'note', 2.4, 'moon'); }, 2400);
+    setTimeout(() => { if (m.one?.hold === 'end' && m.one.name === 'LookUp') m.one = null; }, 8000); }, i * rnd(400, 900)));
+  log(`${sp === 250 ? '하늘 높이 무지갯빛 가루를 흩뿌리며 무언가 날아간다.' : '밤하늘로 은빛 가루를 흩뿌리며 무언가 날아간다.'} ${NL(W,'이/가')} 멈춰서 하늘을 올려다본다.`, W);
+}
+function moonJoin(g, m) {
+  g.G.push(m); m.camp = g; m.partner = null; m.scene = null; m.goal = null; emote(m, '☾', 'note', 2.2, 'moon');
+  if (T(m).mv === 'swim' || isFish(m.sp)) return moonSit(m);
+  m.moonSeat = moonSeat(g, m); moveTo(m, m.moonSeat, { kind: 'moonG' }, .8); }
+function moonSeat(g, m) {   // 소품·나무·연못·모닥불·화면 버튼 밑이 아닌 빈 땅 중 하늘(위)에 가깝고 가운데에 가까운 자리부터, 서로 떨어져 앉는다
+  const cx = clamp((XL + XR) / 2, XL + 60, XR - 60), F = { w: 40, h: 40 }, U = g.used || (g.used = []); let best = null, bs = 1e9;
+  for (let y = MIN_Y + 30; y <= Math.min(MAX_Y - 40, MIN_Y + 260); y += 8) for (let x = XL + 34; x <= XR - 34; x += 8) {
+    if (U.some(q => ((q.x - x) / 38) ** 2 + ((q.y - y) / 30) ** 2 < 1)) continue;
+    if (scBehind(x, y) || scBehind(x, y + 10) || treeBehind(x, y) || pondValM(F, x, y) < 1.4 || inHud(F, x, y) || (FIRE && Math.hypot(x - FIRE.x, (y - FIRE.y) * 1.4) < 56)) continue;
+    const sc = (y - MIN_Y) + Math.abs(x - cx) * .35; if (sc < bs) { bs = sc; best = { x, y }; } }
+  best = best || { x: clamp(m.x, XL + 34, XR - 34), y: m.y }; U.push(best); return best; }
+function moonGather(force) {
+  if (MOONG || CAMP) return false;
+  const L = S.mons.filter(moonOk); if (L.length < 2 && !force) return false;
+  const g = MOONG = { G: [], ready: new Set(), on: false }; L.forEach(m => moonJoin(g, m));
+  log(pick(['보름달이 환하게 떴다! 필드의 포켓몬들이 하나둘 모여 달을 올려다본다.', '둥근 보름달이 떠오르자 포켓몬들이 약속이라도 한 듯 모여 앉았다.']), L, true);
+  const rec = setInterval(() => { if (MOONG !== g || (g.on && performance.now() - g.t0 > 20000)) return clearInterval(rec); for (const m of S.mons) if (!g.G.includes(m) && moonOk(m)) moonJoin(g, m); }, 1200);   // 먹던 것·소품 놀이를 마친 포켓몬도 뒤따라 모인다 (달 보기가 시작된 뒤 20초까지)
+  setTimeout(() => { if (MOONG === g && !g.on) moonStart(g); }, 22000);   // 늦는 포켓몬은 두고 시작
+  return true;
+}
+function moonUp(m) { const k = m.sk || m.form, P = SPRITES[k]; if (!P || !isPmd(k)) return; if (!P.mx && !P.mxNo) { loadMx(k); return; } if (P.mxNo) { m.backSit = true; return; } const n = ['LookUp', 'Sit'].find(x => P.a[x]); if (!n) { m.backSit = true; return; } if (m.one?.name !== n) m.one = { name: n, t: 0, hold: 'end' }; }   // 하늘 올려다보기 (마지막 장면에서 멈춤). 원본에 올려다보는 그림이 없는 포켓몬(고라파덕 등 870종)은 뒷모습으로 하늘을 바라본다
+function moonSit(m) { const g = MOONG; m.goal = null; m.backSit = false; setState(m, 'special', 60); m.special = 'camp'; g.ready.add(m); moonUp(m);
+  if (!g.on && g.G.every(o => g.ready.has(o) || !S.mons.includes(o) || o.camp !== g) && S.mons.every(o => o.camp === g || o.hidden || !awake(o))) setTimeout(() => { if (MOONG === g && !g.on) moonStart(g); }, 800); }
+function moonLeave(o) { if (o.one?.hold === 'end') o.one = null; o.moonSeat = null; campLeave(o); }
+function moonStart(g) {
+  const live = () => g.G.filter(o => S.mons.includes(o) && o.camp === g && g.ready.has(o) && !o.held && awake(o) && o.state === 'special');
+  if (!live().length) { g.G.forEach(moonLeave); MOONG = null; return; }
+  g.on = true; const t0 = g.t0 = performance.now(), DUR = 32000, cq = live().sort(() => Math.random() - .5).map((o, i, A) => ({ o, t: DUR * (.08 + .8 * (i + rnd(.1, .9)) / A.length) })), seen = new Set(cq.map(q => q.o));
+  const iv = setInterval(() => { const L = live(), el = performance.now() - t0;
+    for (const o of L) if (!o.one) moonUp(o);
+    for (const o of L) if (!seen.has(o)) { seen.add(o); cq.push({ o, t: el + rnd(1, 4) * 1000 }); cq.sort((x, y) => x.t - y.t); }   // 늦게 와서 앉은 포켓몬도 한마디
+    while (cq.length && el >= cq[0].t) { const { o } = cq.shift(); if (!L.includes(o)) continue; emote(o, pick(['☾', '☾', '♪', '…♥', '✦']), 'note', 2.4, 'moon'); if (Math.random() < .35) playCry(o.sp); }
+    if (Math.random() < .5 && L.length) { const o = pick(L); particle(o.x + rnd(-14, 14), o.y - o.h - o.lift - rnd(6, 18), 'sun', pick(['✦', '☾', '✧'])); }
+    if (MOONG !== g || !L.length || el > DUR) { clearInterval(iv); if (MOONG !== g) return; MOONG = null;
+      L.forEach(o => { o.joy = clamp((o.joy ?? 60) + 8); L.forEach(q => { if (q !== o) addRel(o, q, 1); }); });
+      L.forEach((o, i) => setTimeout(() => { moonLeave(o); if (!S.mons.includes(o)) return; anim(o, 'hop'); emote(o, pick(['♥', '☾', '♪']), 'heart', 2, 'moon'); }, i * 110));
+      if (L.length >= 2) log(pick([`${NL(L,'이/가')} 다 같이 보름달을 한참 올려다보았다.`, '보름달 아래에서 포켓몬들이 오래도록 달빛을 받았다.']), L, true);
+      g.G.forEach(o => { if (o.camp === g) moonLeave(o); }); }
+  }, 400);
+}
+setInterval(() => { if (MOONG || CAMP || document.hidden || mvQuiet() || !isNight() || weather() === 'rain' || Math.abs(moonPhase() - .5) > .017 || Math.random() > .12) return;   // 보름 앞뒤 반나절 안의 밤에 한 번
+  const c = moonCycle(); let d = 0; try { d = +localStorage.getItem('pk-moonG'); } catch (e) {} if (d === c) return;
+  if (moonGather()) try { localStorage.setItem('pk-moonG', String(c)); } catch (e) {} }, 30000);
 const CAMP_P = .35;
 // v5.93 경완: 모닥불 노래 동안은 따로 만든 캠프송을 틀고, 끝나면 듣던 곡을 멈춘 자리부터 다시
 function campBgm(on) { try {
@@ -7097,11 +7155,47 @@ function drawSky(h, ov, wx) {
   const g = $('#skyC').getContext('2d');
   for (let y = 0; y < 60; y++) { const t = Math.min(1, Math.floor(y / 4) * 4 / 48); g.fillStyle = `rgb(${T.map((v, j) => Math.round(v + (B[j] - v) * t)).join(',')})`; g.fillRect(0, y, 480, 1); }
 }
+/* v19.27 경완 '하늘에 아주 가끔 칠색조·루기아 날아가는 실루엣': 본가 5세대(블랙·화이트) 움직이는 그림의 날갯짓을 한 색 실루엣 띠로(칠색조 흐린 남회색, 루기아 은빛, 둘 다 안 비침) 줄여(LEG_IMG [가로, 세로, 칸 수, 칸 ms, 그림]) 나무 줄 바로 위 하늘을 25~32초에 (밤 그늘 #night 위 층 #skyLeg 이라 밤에도 은빛이 또렷) 걸쳐 가로지른다.
+   양 끝은 흐려지지 않고 화면 밖으로 그냥 나감, 투명하게 하지 않음(해와 겹쳐 보이지 않게). 칠색조는 무지개빛 가루, 루기아는 은빛 가루를 뿌리고, 가루는 3~4.5초 거의 수평으로 남는다. 나무(#bg) 자리는 가려서 나무 뒤로 지나감. 낮엔 칠색조, 밤엔 루기아, 다음 등장은 1.6~3.2일 뒤(기기에 기억) */
+const LEG_IMG = {"249":[48,29,30,200,"data:image/png;base64,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"],"250":[34,32,21,200,"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAsoAAAAgCAYAAAAL1l6NAAAFLUlEQVR42u2dbY7jIAyGJ9Ger2foUXKUnqEX7PwYVYq6SQngT3gsrbTStCmx38fBEODnB5vSbvfthRcwDG4xDINb7NwWDUE8H9tyJIznY1tweTxQiQsGt3CLwS0Gt9j/tlI95QTwdt9eUn4mXhg6gFsMbjG4xS52lPeiQCAxoa39btQqVlJf6ANu4RZu4RZu4RZu1TvKn0KpCTrTCnajBpK+roFHA7b3NTOCrNHeHj/ALdzCLdxicAu3Mj5eratQqpmcPtOC6iz5ZNDJvo1a7b16XbiFW7iFW7iFW7iVj/2q4Sypykur2pk1eTD6IK8hCy2Vkibcwi0Gt3ALt3Crw+0a1SkWlbal8zES7AzxgluMuMAt3MLtSLbOFqzP6yMOAMLglphgaARu4RZL0VFGnNwjRgzxBzEnhviDe8QixHDVCLjGCk1th2R8n8gbRInfHymZRNvWCW7hFm7hFm7hFm77rsOIMtVfMXF5JTWS6Rg+gVu4hVu4hVu4zcrtmiUYVFN991T6XO/en8Rj7AcI3MIt3MIt3MLtjPFcswiE6lPX56Xf+Pb3lpiWvnP0e1m045EE4RZu4RZuR+DW+zCMK9x+ax/cjsft0hPk23177f9v8fDQqpCjTztEmBqU8mFrItl/L0K8ajT/7dQtCXbgFm7hFm6zc3t2It7+3uEWbq25XTIKRFokUkLQhlkrNtK+PEvyvW3SPlY0WjLVHmWAW7iFW7iNxK2E3uAWbqXjZNpR1hSItEgk/SL1MPeMiaVYtUZven3vOT3VOzIEt3ALt3AbnVsJf0ieVOjNLtzG4PZfhKr66LMa7+F4ASMxhdHqkyttG2lF9jcffQMv8ztacAu3cAu3I3Db2vmW5laqLaPbLNyaTQlFHAG52i5vX2i2J1pcPKcpNSvvrPGBW7iFW7i1bpcnK6V2SBS/UUaV4faaP5aoYo2y6XmEqbGonQAPfXjC6zGNmiUucAu3cAu3kbXSE5PPBWKWHWVPjcDtn5nto1y71cvzsS3vf9Eedl4+iVLpRasyLeMVXVNwC7dwC7dZudVkpIVbTZ9kyB9wW+goa6x4jCK4DKMg0eOicWyq5wKCrIkMbuEWbuEWbm3uI/pCwVEHJ7x9GP4Ia40EcsXBGaCNJrjehRO1C1BGr/Yzj3TBLdzCLdxKcjvKyH+L/r3iAreFjnI0x1iK1Pph2yLYKEnEu8K22uvxKgv7z3gs/oJbuIVbuB2JW2m/SOyoYb1O4f173vqYldu1NWDRK7DeyrU2SNYPrf19eL27FOnBr9WBqNFCZH/ALdzCLdxm41arE9ZyH+978VrIJ63TCBrPwu1aI/S9WKSmD1qDaRHko2rlKLAREmpLXCRGMSQf9j0b30sm9h6/nHWErEeL4BZu4RZuM3MbuYCxjotncQ23FQeOHJ2fbflekXRir3kond3L/jqtW8b0HmRQOtfcK3lcjZvWghWtgx40tabxMIBbuIVbuM3I7VkHKCO3FifYeW7xNzq365WLSL4HIuWM2kpk/1nJkRipU4B6RHt0T6W2SE8/H43cWYIjOaUtceyxNydwC7dwC7cjc+sRmxZupQuoVr1qvVIzA7eLpMO04d5XdLWJXXoxwFllGXGrJM/jbmuPuNTSYaQ9Gc/a4t0GuIVbuIXbkbj9HOkccc/smk6n5ozDyNwuMwhEO5HUVkejw1qKzeiJPUNHCG7hFm7hdnRuZ4+TBQczcLuMDG+k0RiAnS+xY3CLwS3cUsDAbW5uERVGYscwDG4xDIPbA/sFSAMxLixTSg0AAAAASUVORK5CYII="]};
+function legMask(sf) {   // 필드 그림(#bg)의 나무가 있는 곳은 가린다 → 실루엣·가루가 나무 뒤로 (밤 그늘 위 층이라도)
+  try { const bg = $('#bg'), r = sf.getBoundingClientRect(), b = bg.getBoundingClientRect(), W = sf.offsetWidth, H = sf.offsetHeight, k = r.width / W, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d'); g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'destination-out'; g.drawImage(bg, (b.left - r.left) / k, (b.top - r.top) / k, b.width / k, b.height / k);
+    const u = `url(${c.toDataURL()})`; sf.style.maskImage = sf.style.webkitMaskImage = u; sf.style.maskSize = sf.style.webkitMaskSize = '100% 100%'; } catch (e) {} }
+function skyLegend(sp, R) {
+  const sf = $('#skyLeg'), G = LEG_IMG[sp]; if (!sf || !G || sf.querySelector('.leg')) return false;
+  const [w, h, n, fd, src] = G, e = document.createElement('i'), ho = sp === 250;
+  e.className = 'leg'; e.style.cssText = `width:${w}px;height:${h}px;background-image:url(${src});background-size:${w * n}px ${h}px`;
+  legMask(sf); sf.append(e); R = R || (Math.random() < .5 ? 1 : -1);   // 1 = 왼쪽에서 오른쪽으로
+  const x0 = R > 0 ? XL - w - 6 : XR + 6, D = XR - XL + w + 12, dur = rnd(25, 32) * 1000, base = 60 - h + rnd(-3, 0), t0 = performance.now(); let nd = 0;
+  const tick = now => { if (!e.isConnected) return; const t = (now - t0) / dur; if (t >= 1) { e.remove(); return; }
+    e.style.backgroundPosition = `${-(Math.floor((now - t0) / fd) % n) * w}px 0`;
+    const x = x0 + R * D * t, y = base - t * 3 + Math.sin(t * Math.PI * 3) * 1.5; e.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scaleX(${R > 0 ? -1 : 1})`;
+    if (now > nd) { nd = now + 60; for (let k = 0; k < 3; k++) { const d = document.createElement('i'); d.className = 'legd';   // 꼬리 쪽에서 가루가 흩날리며 떨어진다
+      const c = ho ? `hsl(${((now - t0) / 9 + k * 60 + rnd(0, 40)) % 360},100%,${rnd(58, 68).toFixed(0)}%)` : pick(['#f4f7ff', '#d9e2f2', '#c3cede', '#ffffff']);
+      d.style.cssText = `${ho ? 'width:3px;height:3px;' : ''}background:${c};box-shadow:0 0 2px ${c},0 0 5px ${c};left:${(x + w * (R > 0 ? rnd(.05, .4) : rnd(.6, .95))).toFixed(1)}px;top:${(y + h * rnd(.35, .8)).toFixed(1)}px;--dx:${(-R * rnd(6, 18)).toFixed(1)}px;--dy:${rnd(1, 5).toFixed(1)}px;--d:${rnd(3.2, 4.6).toFixed(2)}s`;
+      d.addEventListener('animationend', () => d.remove()); sf.insertBefore(d, e); } }
+    requestAnimationFrame(tick); };
+  requestAnimationFrame(tick); setTimeout(() => legWatch(sp), rnd(2.5, 5) * 1000); return true;
+}
+setInterval(() => { let nx = 0; try { nx = +localStorage.getItem('pk-legNext') || 0; } catch (e) {} const now = Date.now(), set = v => { try { localStorage.setItem('pk-legNext', String(v)); } catch (e) {} };
+  if (!nx) return set(now + rnd(.5, 2) * 864e5);   // 처음엔 반나절~이틀 뒤
+  if (now < nx || document.hidden || mvQuiet() || weather() === 'rain' || Math.random() > .15) return;   // 때가 되면 앱을 보고 있는 동안 몇 분 안에
+  const h = hour(); if (skyLegend(h >= 6.5 && h < 18 ? 250 : 249)) set(now + rnd(1.6, 3.2) * 864e5); }, 30000);
+/* v19.27 경완 '달 모양도 주기에 따라': 실제 날짜의 달 모양(삭 → 초승달 → 상현 → 보름 → 하현 → 그믐, 29.53일)을 12×12 도트로 그린다. 오른쪽부터 차고 왼쪽부터 기운다(우리나라에서 보는 쪽), 안 비친 쪽은 안 보임 */
+const MOON_C = {};
+function moonPhase() { return (((Date.now() + CLOCK_OFF * 6e4 - Date.UTC(2000, 0, 6, 18, 14)) / 864e5 / 29.530589) % 1 + 1) % 1; }
+function moonSpr(st) { if (MOON_C[st]) return MOON_C[st]; const ph = st / 24, k = Math.cos(2 * Math.PI * ph), R = 5.6, c = 5.5;
+  const lit = (x, y) => { const dy = y - c, ry = Math.sqrt(Math.max(0, R * R - dy * dy)), dx = x - c; if (dx * dx + dy * dy > R * R) return -1; return ((ph < .5 ? dx : -dx) >= k * ry - .25) ? 1 : 0; };
+  return MOON_C[st] = sprCanvas(12, 12, px => { for (let y = 0; y < 12; y++) for (let x = 0; x < 12; x++) { const v = lit(x + .5, y + .5); if (v < 0) continue;
+    if (!v) continue; const edge = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => lit(x + .5 + a, y + .5 + b) !== 1); px(x, y, 1, 1, edge ? '#d8c890' : '#fff6c8'); } }); }
+let moonSt = -1;
 function skyBodies(h, wx, dark) {
   const sf = $('#skyFx'); if (!sf.firstChild) return; const sun = sf.querySelector('.sun'), moon = sf.querySelector('.moon');
   const arc = (t, el, op) => { const x = XL + 40 + (XR - XL - 80) * t, y = 92 - Math.sin(Math.PI * t) * 46; el.style.left = x.toFixed(0) + 'px'; el.style.top = y.toFixed(0) + 'px'; el.style.opacity = op.toFixed(2); };
   const cov = wx === 'rain' ? .08 : wx === 'cloud' ? .45 : 1;
   const ts = (h - 6) / 12.6; if (ts > 0 && ts < 1) arc(ts, sun, Math.min(1, ts * 8, (1 - ts) * 8) * cov); else sun.style.opacity = 0;
+  { const st = Math.round(moonPhase() * 24) % 24; if (st !== moonSt) { moonSt = st; moon.style.backgroundImage = `url(${moonSpr(st)})`; } }
   const tm = ((h + 24 - 18.6) % 24) / 11.4; if (tm > 0 && tm < 1) arc(tm, moon, Math.min(1, tm * 8, (1 - tm) * 8) * (wx === 'rain' ? .15 : wx === 'cloud' ? .55 : 1)); else moon.style.opacity = 0;
   const so = wx === 'clear' ? clamp((dark - .35) * 2, 0, 1) : wx === 'cloud' ? clamp((dark - .35), 0, .4) : 0; sf.querySelectorAll('.star').forEach(s => s.style.opacity = so.toFixed(2));
   const want = wx === 'rain' ? 7 : wx === 'cloud' ? 6 : 2, cl = [...sf.querySelectorAll('.cloud')];
@@ -7509,7 +7603,7 @@ function fit() {
 // v3.87 경완: 화면이 맵보다 넓으면(XL<0) 맵 그림·하늘·밤 그늘을 화면 끝까지 늘린다. 가운데 원래 맵은 그대로
 function wideBg() { const ox = XL < 0 ? Math.ceil(-XL / 2) : 0, aw = ox ? ox + W / 2 + Math.ceil((XR - W) / 2) + 1 : 0, key = ox + ',' + aw;
   const ext = el => { if (!el) return; if (ox) { el.style.left = XL + 'px'; el.style.right = 'auto'; el.style.width = (XR - XL) + 'px'; } else el.style.left = el.style.right = el.style.width = ''; };
-  ext($('#skyC')); ext($('#skyFx')); ext($('#night'));
+  ext($('#skyC')); ext($('#skyFx')); ext($('#night')); ext($('#skyLeg'));
   const c = $('#bg'); if (ox) Object.assign(c.style, { left: -ox * 2 + 'px', right: 'auto', width: aw * 2 + 'px' }); else c.style.left = c.style.right = c.style.width = '';
   if (key === (BGX ? BGX.ox + ',' + BGX.w : '0,0')) return; BGX = ox ? { ox, w: aw } : null; try { if (SPR.tree) drawBg(); } catch (e) {} }
 // after the window changes, bring everyone (and fallen berries) back into view
@@ -7822,7 +7916,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '19.26';   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ const APP_VER = '19.27';   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
