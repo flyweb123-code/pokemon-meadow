@@ -871,7 +871,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 #night{animation:fireK 3s ease-in-out infinite}
 /* v9.72 경완 '빛 엔진': 밤 그늘 위에 광원마다 색 빛을 더하는 빛 레이어 */
 #lightC{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1001;mix-blend-mode:screen}
-.mon .shadow,.psh{translate:var(--shx,0px) 0}
+.mon .shadow,.psh{translate:var(--shx,0px) 0}.mon>.shadow,.psh{filter:opacity(var(--shw,1))}.mon.nightf>.shadow{filter:url(#nightF) opacity(var(--shw,1))}
 /* v17.88 경완 '그림자 엔진 필드에도': 해가 낮을수록(아침·노을) 포켓몬 그림자는 해 반대쪽으로 길게, 소품·나무는 그림 모양 그대로 검게 본떠 땅에 눕힌 그림자(.pcs) */
 /* v18.44 경완 '필드에서 그림자 엔진 포켓몬이랑 트레이너 그림자엔 적용 x': .mon .shadow 는 해 따라 늘이지 않고 발밑 타원 그대로 (소품만 그림자 엔진) */
 .pcs{position:absolute;left:0;top:0;z-index:1;pointer-events:none;font-style:normal;image-rendering:pixelated;background-size:100% 100%;background-repeat:no-repeat;transform-origin:50% 100%;transform:translate(-50%,-100%) scaleY(var(--sks,-.4)) skewX(var(--ska,0deg));opacity:var(--cso,0);transition:transform 2s,opacity 2s}
@@ -3270,6 +3270,10 @@ const pondV1 = (P, x, y) => { const dx = (x - P.x) / P.rx, dy = (y - P.y) / P.ry
 // v8.95 경완: 연못이 여러 개 — 물 안인지는 가장 가까운 연못으로, 물가·헤엄 자리도 가장 가까운 연못 기준
 const nearPond = (x, y) => { let b = LAYOUT.pond, bv = pondV1(b, x, y); for (const P of LAYOUT.ponds || []) { const v = pondV1(P, x, y); if (v < bv) { bv = v; b = P; } } return b; };
 const pondVal = (x, y) => pondV1(nearPond(x, y), x, y);
+/* v18.77 경완 '호수 위 그림자 옅게, 모든 그림자에': 소품 그림자(v18.11 castL)와 같은 비율 — 연못 타원(가로 .94·세로 .9) 안 85% 까지 .3, 가장자리로 갈수록 1 */
+const pondShK = (x, y) => { let k = 1; for (const o of ALLP('pond')) { if (!o || !o.rx) continue; const dx = (x - o.x) / (o.rx * .94), dy = (y - o.y) / (o.ry * .9), d = Math.sqrt(dx * dx + dy * dy); if (d < 1) k = Math.min(k, d <= .85 ? .3 : .3 + .7 * (d - .85) / .15); } return Math.round(k * 20) / 20; };
+function pshPond() { for (const e of document.querySelectorAll('.psh')) { const k = pondShK(parseFloat(e.style.left) || 0, parseFloat(e.style.top) || 0); if (e.shW !== k) { e.shW = k; if (k === 1) e.style.removeProperty('--shw'); else e.style.setProperty('--shw', k); } } }
+setInterval(() => { if (!document.hidden) try { pshPond(); } catch (e) {} }, 800);
 /* v18.12 경완 '육지 포켓몬이 호수 가장자리에 설 때 호수 위에 있는 것처럼': 몸 가운데(발)만 물 밖이라 옆 물가에선 몸 반쪽이 물 위에 떠 보였다 → 걷는 포켓몬은 몸 폭만큼 연못을 넓혀 본다 */
 const pondPad = m => m && m.el && m.sp != null && pondWalk(m) ? Math.min(36, (m.w || 32) * .42) : 0;
 const pondValM = (m, x, y) => { const P = nearPond(x, y), e = pondPad(m), dx = (x - P.x) / (P.rx + e), dy = (y - P.y) / (P.ry + e * .12); return dx * dx + dy * dy; };
@@ -6041,6 +6045,7 @@ function render(m, now) {
   const bob = flyer && !grounded && !m.szb && !m.scp && !rdOn && liftBase(m.sp) + fly0 > 2 ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && !floatM(m) && !(m.xl > 6) && (m.wet ? pv < 1.0 : pv < .94), wetUp = !flyer && !floatM(m) && !wet && m.xl > 6 && pv < .94;   /* v9.35 경완 '물속 포켓몬 염력으로 띄울 때 잘린 채로 올라감': 들어 올리면 물 밖으로 나온 온몸 (물에 잠긴 만큼은 천천히 올라온다) */   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
   if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
+  { const k = m.shEl && !wet ? pondShK(m.x + (m.shX || 0) * (m.face || 1), m.y) : 1; if (m.shW !== k) { m.shW = k; if (k === 1) m.el.style.removeProperty('--shw'); else m.el.style.setProperty('--shw', k); } }   // v18.77: 연못 위(떠서 지나가는 포켓몬 등) 발밑 그림자도 옅게
   if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held && !m.scp && !m.propSit; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
   { const v = `translate(${m.x.toFixed(1)}px,${m.y.toFixed(1)}px)`; if (m.rTf !== v) { m.rTf = v; m.el.style.transform = v; } }   /* v6.07 발열: 바뀐 값만 다시 쓴다 */
@@ -7770,7 +7775,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.76';   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.77';   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
