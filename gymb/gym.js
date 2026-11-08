@@ -1298,11 +1298,127 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
 // 전설 연출 때 안내원이 관장에게 와서 서는 칸 (맵 id → [x, y]), 없으면 자동 (경완이 편집 페이지에서 골라 줌)
 const LEG_GU = { cerulean: [8, 10], vermilion: [4, 5], celadon: [5, 7], fuchsia: [8, 10], dojo: [7, 7], lab: [9, 3] };   // 2026-11-08 경완이 고름 (바위 계단은 자동 자리 그대로)
+// v19.47 경완 '전체 차례 대사 다 만들어줘 마지막 체육관까지': 4~18번째 따로, 18번째 = 엔딩. v19.45 경완 '두 번째 전설 체육관부터는 연출 흐름은 똑같이, 대사만 바꿔 가며': N = 지금까지 받은 전설 알(전설의 체육관) 수
+function legLines(N, E, ty) {
+  if (N <= 1) return {
+    in: [`헉… 헉… ${E}!<br>소식 듣자마자 연구소에서<br>한달음에 달려왔단다!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>문 닫기 직전이던 그 체육관이<br>여기까지 오다니, 감격스럽구나!`, '자, 지금 나랑 같이 갈 데가 있단다!<br>자세한 건 가 보면 알아.<br>잔말 말고 따라오게!'],
+    hof: ['여기가 바로 명예의 전당이란다.', '리그 협회가 인정한 최고의 체육관과\n함께 싸운 포켓몬들의 이름이\n영원히 새겨지는 곳이지.', `오늘부터 ${E}의 이름도\n이곳에 남게 된다네!`, '자, 저 기록 기계에\n함께 싸운 포켓몬들의 몬스터볼을\n하나씩 올려 보게!'], rec: '좋아, 기록이 시작됐구먼!',
+    back: [`${E}, 다시 한번 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`, '하지만 이게 끝이 아니란다!<br>세상엔 아직 관장을 기다리는<br>다른 타입 체육관들이 잔뜩 있지.', '다른 타입 체육관도 열어서<br>전설의 체육관을 하나씩 늘려 가 보게!<br>자네라면 할 수 있어!'],
+    ban: ['관장님!! 전설의 체육관이라니…!<br>제가 여기서 일한 보람이 있어요…<br>흑흑…', '허허, 자네도 그동안 고생 많았네.', '그럼… 저도 명예의 전당에<br>이름이 올라가는 건가요?!', '…자네는 안내원이잖나.', '그, 그럼 안내원의 전당은요?!', '그런 건 없네.', '허허허! 농담일세, 농담.<br>자네 이름은 내 연구 노트에<br>아주 크게 적어 두지!', '강박사님…!<br>(…노트에 적히는 거였구나.)'],
+    bye: '그럼 난 연구소로 돌아가 보마!<br>둘 다 앞으로도 이 체육관을<br>잘 부탁하네!', after: ['…… …… ……', '…그때 대학원을 오는 게 아니었는데.'] };
+  if (N === 2) return {
+    in: [`헉… 헉… ${E}!<br>또 해냈다는 소식에<br>이번에도 한달음에 달려왔단다!`, `${ty} 타입까지 <b>전설의 체육관</b>이라니…<br>전설이 둘이라니, 내 연구 노트가<br>모자랄 지경이구먼!`, '자, 어딘지는 이제 알겠지?<br>그래, 거기란다!<br>얼른 따라오게!'],
+    hof: ['다시 왔구먼. 명예의 전당이란다.', '저 벽에 자네 이름이\n하나 남아 있지?\n오늘 그 옆자리가 생기겠구먼.', `${E}의 이름이 이번엔\n${ty} 타입으로 한 번 더 새겨진다네!`, '자, 방법은 기억하지?\n함께 싸운 포켓몬들의 몬스터볼을\n하나씩 올려 보게!'], rec: '좋아, 두 번째 기록이 시작됐구먼!',
+    back: [`${E}, 두 번째 전설이라니 대단하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 이번에도 잘 품어 주렴!`, '이쯤 되면 리그 협회에서도<br>자네 이름 모르는 사람이 없겠어.', '그래도 아직 열지 않은<br>타입 체육관이 남아 있지!<br>어디까지 가나 보세나!'],
+    ban: ['관장님!! 또 전설이에요!<br>이번엔 안 울려고 했는데…<br>흑흑…', '허허, 결국 또 우는구먼.', '강박사님, 이번에야말로<br>저도 명예의 전당에…!', '자네는 여전히 안내원이잖나.', '그, 그럼 안내원 명예의 복도는요?!', '복도도 없네.', '허허허! 대신 연구 노트에<br>자네 이름을 두 줄로 적어 두지!', '두 줄…!<br>(…한 줄 늘었다.)'],
+    bye: '그럼 난 또 연구소로 돌아가 보마!<br>다음 전설 소식도<br>기다리고 있겠네!', after: ['…… …… ……', '…노트 말고 월급 명세서에 적어 주시지.'] };
+  if (N === 3) return {
+    in: [`헉… 헉… ${E}!<br>요즘은 전화만 울려도<br>자네 소식인 줄 안다니까!`, `${ty} 타입 <b>전설의 체육관</b>…<br>벌써 세 번째구먼!<br>이젠 놀라는 것도 익숙해졌어.`, '…는 거짓말이고<br>여전히 가슴이 두근거린다네!<br>자, 가세나!'],
+    hof: ['명예의 전당이란다.\n…이제 설명은 필요 없겠지?', '벽에 자네 이름이 벌써 둘.\n전당 관리인이 자네 칸을\n따로 만들어야겠다더구먼.', `오늘은 ${ty} 타입으로\n${E}의 이름이 세 번째로 남는다네!`, '자, 몬스터볼을\n하나씩 올려 보게!\n이젠 눈 감고도 하겠구먼.'], rec: '좋아, 세 번째 기록이 시작됐구먼!',
+    back: [`${E}, 세 번째 전설 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`, '이러다간 연구소보다 이 체육관에<br>내가 더 자주 오겠구먼.', '다음 전설도 기대하겠네!<br>자네라면 또 해낼 거야!'],
+    ban: ['관장님!! 세 번째예요!<br>이젠 손수건을 늘 들고 다녀요…<br>흑흑…', '허허, 준비성 하나는 대단하구먼.', '강박사님! 세 번이면 저도<br>전당에 한 줄 정도는…!', '자네는 끝까지 안내원이잖나.', '그, 그럼 안내원 명예의 의자라도요?!', '의자는 자네 앉으라고 있는 걸세.', '허허허! 연구 노트엔<br>벌써 자네 전용 쪽을 만들어 두었지!', '전용 쪽…!<br>(…쪽수가 늘었다.)'],
+    bye: '그럼 난 연구소로 돌아가 보마!<br>둘 다 무리하지 말고<br>이 체육관을 잘 부탁하네!', after: ['…… …… ……', '…다음엔 전당 말고 휴가를 주셨으면.'] };
+  const ORD = ['', '첫', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟'], O = (ORD[N] || N) + ' 번째';
+  const mk = (i, h, rec, b, n, bye, af) => ({ in: i, hof: h, rec: rec || `좋아, ${O} 기록이 시작됐구먼!`, back: b, ban: n, bye, after: ['…… …… ……', af] });
+  const K0 = `${E}, ${O} 전설 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`, BALL = '자, 몬스터볼을\n하나씩 올려 보게!';
+  if (N === 4) return mk(
+    [`헉… 헉… ${E}!<br>네 번째 전설이라는 소식에<br>이번에도 뛰어왔단다!`, `${ty} 타입 <b>전설의 체육관</b>까지…<br>이젠 자네 체육관 이름만 들어도<br>다들 고개를 끄덕인다네!`, '자, 늘 가던 그곳으로!<br>오늘도 따라오게!'],
+    ['명예의 전당이란다.\n이젠 자네 집처럼 익숙하겠구먼.', '벽에 자네 이름이 벌써 셋.\n오늘 하나 더 늘어나겠지.', `${ty} 타입으로\n${E}의 이름이 네 번째로 남는다네!`, BALL], 0,
+    [K0, '자네 덕에 내 연구 노트가<br>전설 이야기로 꽉 찼어.', '남은 타입도 기대하겠네!<br>어디까지 가는지 끝까지 보겠어!'],
+    ['관장님!! 네 번째 전설이에요!<br>이젠 우는 것도 체육관 전통이에요…<br>흑흑…', '허허, 그 전통은 자네만 지키는 것 같구먼.', '강박사님, 그럼 이번엔<br>안내원 명예의 계단이라도…!', '…자네는 안내원이잖나.', '계단 한 칸만요! 맨 아래 칸이라도!', '계단은 걸으라고 있는 걸세.', '허허허! 연구 노트엔<br>자네 이름을 세 줄로 늘려 두지!', '세 줄…!<br>(…줄 단위로 늘어나는구나.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>둘 다 앞으로도 이 체육관을<br>잘 부탁하네!', '…그래도 대학원보단 여기가 낫나.');
+  if (N === 5) return mk(
+    [`헉… 헉… ${E}!<br>다섯 번째 전설!<br>내가 손가락으로 세어 봤다네!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>한 손이 꽉 찼구먼!<br>이제 다른 손을 쓸 차례야!`, '자, 따라오게!<br>이번엔 내가 안 넘어지고 뛰어 보지!'],
+    ['명예의 전당에 또 왔구먼.\n입구 경비원이 이젠\n자네한테 먼저 인사하더라니까.', '벽의 자네 이름이 넷.\n오늘 다섯이 되면\n한 줄이 꽉 찬다네.', `${ty} 타입으로\n${E}의 이름이 다섯 번째로 남는다네!`, BALL], 0,
+    [K0, '다섯 타입의 전설이라니,<br>리그 협회 회의에서도<br>자네 얘기뿐이라더구먼.', '아직 열세 타입이나 남았지!<br>천천히, 하지만 꾸준히 가 보게!'],
+    ['관장님!! 다섯 번째예요!<br>이번엔 꽃다발까지 준비했어요…<br>흑흑…', '허허, 우는 건 여전하구먼.', '강박사님! 그럼 전당 입구에<br>안내원 명예의 화분이라도…!', '…자네는 안내원이잖나.', '작은 화분 하나면 돼요!<br>제가 물도 줄게요!', '화분엔 꽃을 심게, 자네 말고.', '허허허! 대신 연구 노트에<br>자네 꽃다발 얘기도 적어 두지!', '꽃다발 얘기…!<br>(…주인공이 꽃다발이 됐다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>꽃은 관장 책상에 꽂아 두게!', '…꽃다발값은 제 월급에서 나갔는데.');
+  if (N === 6) return mk(
+    [`헉… 헉… ${E}!<br>여섯 번째 전설이라니!<br>연구소 직원들이 박수를 쳤다네!`, `${ty} 타입 <b>전설의 체육관</b>…<br>이쯤 되면 자네 체육관은<br>살아 있는 교과서야!`, '자, 오늘도 그곳으로!<br>내 걸음이 점점 빨라지는구먼!'],
+    ['명예의 전당이란다.\n오늘따라 조명이 더 밝은 것 같지 않나?', '벽의 자네 이름이 다섯.\n둘째 줄의 첫 칸이\n오늘 채워진다네.', `${ty} 타입으로\n${E}의 이름이 여섯 번째로 남는다네!`, BALL], 0,
+    [K0, '자네가 처음 체육관 문을 열던 날이<br>엊그제 같은데 말이야.', '그날 낡은 간판 앞에서<br>망설이던 얼굴이 생각나는구먼.<br>허허허!'],
+    ['관장님!! 여섯 번째예요!<br>제가 오늘을 위해 사진기를 샀어요…<br>흑흑…', '허허, 이번엔 사진기구먼.', '강박사님! 그럼 전당에<br>제 사진 한 장만 걸어 주세요!', '…자네는 안내원이잖나.', '증명사진 크기면 돼요!', '찍어 줄 순 있지만 걸진 않네.', '허허허! 대신 그 사진은<br>내 연구 노트 맨 앞에 붙여 두지!', '연구 노트 맨 앞…!<br>(…책갈피 대신인 것 같다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>사진은 잘 나왔으면 하나 보내 주게!', '…사진기 할부가 아직 열 달 남았는데.');
+  if (N === 7) return mk(
+    [`헉… 헉… ${E}!<br>일곱 번째 전설!<br>행운의 숫자 아닌가!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>무지개도 일곱 빛깔이지.<br>자네 체육관이 무지개가 됐구먼!`, '자, 무지개 끝으로 가 보세나!<br>…아니, 전당으로!'],
+    ['명예의 전당이란다.\n전당 관리인이 자네 이름을\n새길 끌을 아예 따로 맞췄다더구먼.', '벽의 자네 이름이 여섯.\n오늘은 일곱이 되지.', `${ty} 타입으로\n${E}의 이름이 일곱 번째로 남는다네!`, BALL], 0,
+    [K0, '일곱 타입이면 리그 협회에서도<br>손에 꼽는 관장이라네.', '하지만 자네는 숫자보다<br>포켓몬을 더 아끼는 관장이지.<br>그게 제일 좋단다.'],
+    ['관장님!! 일곱 번째예요!<br>행운의 숫자라 더 눈물이 나요…<br>흑흑…', '허허, 행운이랑 눈물이 무슨 상관인가.', '강박사님! 행운의 날이니까<br>안내원 기념 우표를…!', '…자네는 안내원이잖나.', '우표 한 장이면 편지에<br>붙이고 다닐게요!', '우표는 협회가 정하는 걸세.', '허허허! 대신 내 편지엔<br>꼭 자네 안부를 적어 두지!', '안부…!<br>(…끝에 "그리고 안내원도"가 붙겠지.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>행운이 계속되길 바라네!', '…행운은 왜 늘 관장님한테만 가지.');
+  if (N === 8) return mk(
+    [`헉… 헉… ${E}!<br>여덟 번째 전설!<br>본가 지방 배지 수랑 같구먼!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>배지 여덟 개를 모은 트레이너가<br>리그에 도전하듯 말이야!`, '자, 이번에도 그곳으로!<br>리그 대신 전당이지만!'],
+    ['명예의 전당이란다.\n오늘은 자네 포켓몬들 표정이\n아주 의젓하구먼.', '벽의 자네 이름이 일곱.\n오늘로 여덟이 된다네.', `${ty} 타입으로\n${E}의 이름이 여덟 번째로 남는다네!`, BALL], 0,
+    [K0, '여덟이라… 이젠 내가 체육관에<br>오는 길을 눈 감고도 찾겠어.', '반쯤 왔구먼!<br>남은 길도 같이 가 보세나!'],
+    ['관장님!! 여덟 번째예요!<br>저 손수건이 벌써 네 장째예요…<br>흑흑…', '허허, 손수건 가게를 차려도 되겠구먼.', '강박사님! 그럼 전당 벽 구석에<br>제 이니셜만이라도…!', '…자네는 안내원이잖나.', '아주 작게요!<br>현미경으로 봐야 보일 만큼요!', '그건 낙서라고 한다네.', '허허허! 대신 연구 노트엔<br>자네 이니셜을 크게 써 두지!', '이니셜만…!<br>(…성은 빠졌다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>손수건은 잘 빨아 두게!', '…손수건 대신 휴가를 주셨으면.');
+  if (N === 9) return mk(
+    [`헉… 헉… ${E}!<br>아홉 번째 전설이라니!<br>이제 절반이구먼, 절반!`, `${ty} 타입 <b>전설의 체육관</b>까지…<br>열여덟 타입의 딱 절반을<br>자네가 해냈단다!`, '자, 반환점을 기념하러 가세나!<br>따라오게!'],
+    ['명예의 전당이란다.\n오늘은 특별히\n반환점 기념 꽃가루를 준비했다더구먼.', '벽의 자네 이름이 여덟.\n오늘로 아홉, 딱 절반이야.', `${ty} 타입으로\n${E}의 이름이 아홉 번째로 남는다네!`, BALL], 0,
+    [K0, '절반이라니… 이 늙은이가<br>살아서 이걸 보는구먼.', '하지만 남은 절반이<br>더 어렵다는 걸 잊지 말게!<br>자네라면 해낼 거야!'],
+    ['관장님!! 절반이에요, 절반!<br>저 오늘은 정말 참으려고 했는데…<br>흑흑…', '허허, 절반만 울었구먼.', '강박사님! 절반 기념으로<br>입구에 안내원 동상을…!', '…자네는 안내원이잖나.', '작은 거요! 손바닥만 한 거요!', '입구엔 이미 석상이 둘이나 있지 않나.', '허허허! 대신 연구 노트에<br>자네 그림을 그려 두지!', '그림…!<br>(…졸라맨이다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>남은 절반도 기대하겠네!', '…절반이면 제 월급도 절반 오르나.');
+  if (N === 10) return mk(
+    [`헉… 헉… ${E}!<br>열 번째 전설!<br>두 자릿수라네, 두 자릿수!`, `${ty} 타입 <b>전설의 체육관</b>…<br>이 정도면 자네 체육관은<br>지역 명소야, 명소!`, '자, 명소의 주인을 모시고<br>전당으로 가 보세나!'],
+    ['명예의 전당이란다.\n리그 협회장이 자네 얘기를 듣고\n한번 만나 보고 싶다더구먼.', '벽의 자네 이름이 아홉.\n오늘로 두 자릿수가 되지.', `${ty} 타입으로\n${E}의 이름이 열 번째로 남는다네!`, BALL], 0,
+    [K0, '열 타입이라니…<br>나도 이제 자네한테<br>배울 게 더 많구먼.', '남은 여덟 타입,<br>하나씩 천천히 가 보세나!'],
+    ['관장님!! 열 번째예요!<br>저 오늘을 위해 신청서를 써 왔어요…<br>흑흑…', '허허, 무슨 신청서인가?', '안내원 전당 등록 신청서예요!<br>직접 썼어요!', '…자네는 안내원이잖나.', '그러니까 안내원 전당이요!<br>접수만 해 주세요!', '접수처가 없네.', '허허허! 그 신청서는<br>내 연구 노트 사이에 끼워 두지!', '끼워 두신다…!<br>(…영원히 끼워져 있을 것 같다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>협회장 얘기는 다음에 또 하세!', '…신청서 세 번이나 고쳐 썼는데.');
+  if (N === 11) return mk(
+    [`헉… 헉… ${E}!<br>열한 번째 전설이라니!<br>연구소 달력이 자네 소식으로 가득해!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>이젠 축하 인사를 뭐라고 할지<br>고민이 될 정도라네!`, '그러니 말 대신 발로 축하하지!<br>자, 가세나!'],
+    ['명예의 전당이란다.\n벽 첫 줄이 거의\n자네 이름으로 덮였구먼.', '벽의 자네 이름이 열.\n오늘로 열하나가 된다네.', `${ty} 타입으로\n${E}의 이름이 열한 번째로 남는다네!`, BALL], 0,
+    [K0, '자네 포켓몬들도 이제<br>전당 계단을 척척 오르더구먼.', '남은 일곱 타입도<br>그렇게 척척 가 보게!'],
+    ['관장님!! 열한 번째예요!<br>그동안 신청서 접수처를 알아봤어요…<br>흑흑…', '허허, 그래서 찾았나?', '없어서 제가 접수처를<br>만들면 어떨까 해요!', '…자네는 안내원이잖나.', '그러니까 제가 접수도 받고<br>안내도 하고…!', '그건 자네 일이 하나 느는 거라네.', '허허허! 대신 연구 노트에<br>자네의 성실함을 적어 두지!', '성실함…!<br>(…일만 늘었다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>너무 무리하지는 말게!', '…일만 늘고 월급은 그대로네.');
+  if (N === 12) return mk(
+    [`헉… 헉… ${E}!<br>열두 번째 전설!<br>열두 달 내내 축하해도 모자라겠어!`, `${ty} 타입 <b>전설의 체육관</b>…<br>자네가 처음 고른 타입이<br>문득 생각나는구먼.`, '그때부터 지금까지 쭉 달려왔지.<br>오늘도 같이 가세나!'],
+    ['명예의 전당이란다.\n오늘 오는 길에 보니\n자네 체육관 길 안내 표지판도 생겼더구먼.', '벽의 자네 이름이 열하나.\n오늘로 열둘이 된다네.', `${ty} 타입으로\n${E}의 이름이 열두 번째로 남는다네!`, BALL], 0,
+    [K0, '열두 타입이라니…<br>이젠 내 연구 노트 표지에<br>자네 체육관 이름을 써야겠어.', '남은 여섯 타입도<br>자네 페이스대로 가 보게!'],
+    ['관장님!! 열두 번째예요!<br>저 이번엔 울지 않으려고<br>양파를 안 썰고 왔어요… 흑흑…', '허허, 양파 탓은 아니었구먼.', '강박사님! 연구 노트 표지에<br>제 이름도 작게…!', '…자네는 안내원이잖나.', '귀퉁이에! 아주 작게!', '표지엔 내 얼굴이 들어간다네.', '허허허! 대신 노트 뒤표지에<br>자네 이름을 써 두지!', '뒤표지…!<br>(…바코드 옆이다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>표지판 길 따라 또 오겠네!', '…표지판에도 제 이름은 없던데.');
+  if (N === 13) return mk(
+    [`헉… 헉… ${E}!<br>열세 번째 전설이라니!<br>오늘은 연구소 문도 안 잠그고 왔어!`, `${ty} 타입 <b>전설의 체육관</b>까지…<br>자네 체육관 앞에 도전자 줄이<br>매일 길어진다더구먼!`, '그 줄을 잠깐 뒤로 하고<br>전당으로 가 보세나!'],
+    ['명예의 전당이란다.\n오늘은 전당에 처음 온 관장들이\n자네를 보고 수군거리더구먼.', '벽의 자네 이름이 열둘.\n오늘로 열셋이 되지.', `${ty} 타입으로\n${E}의 이름이 열세 번째로 남는다네!`, BALL], 0,
+    [K0, '새내기 관장들이 자네를<br>보고 배운다더구먼.<br>자네가 이제 선배일세.', '남은 다섯 타입도<br>선배답게 멋지게 가 보게!'],
+    ['관장님!! 열세 번째예요!<br>새내기 관장들이 저한테도<br>인사했어요… 흑흑…', '허허, 그거 잘됐구먼.', '그럼 저한테도 작은 배지<br>하나만 주시면…!', '…자네는 안내원이잖나.', '단추만 한 거라도요!', '배지는 관장 몫이라네.', '허허허! 대신 연구 노트에<br>"인사 잘 받는 안내원"이라 적어 두지!', '인사 잘 받는…!<br>(…칭찬인지 모르겠다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>문 안 잠그고 와서 서둘러야겠어!', '…저도 가끔 문 잠그고 퇴근하고 싶다.');
+  if (N === 14) return mk(
+    [`헉… 헉… ${E}!<br>열네 번째 전설!<br>숨이 차도 기쁨이 더 크다네!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>이제 남은 타입을<br>세는 게 더 빠르구먼!`, '네 타입 남았단 말이지!<br>자, 가세나!'],
+    ['명예의 전당이란다.\n전당 관리인이 자네 칸이 모자라\n벽을 늘리는 공사 중이라더구먼.', '벽의 자네 이름이 열셋.\n오늘로 열넷이 된다네.', `${ty} 타입으로\n${E}의 이름이 열네 번째로 남는다네!`, BALL], 0,
+    [K0, '벽 공사까지 하게 만들다니,<br>자네도 참 대단해.', '남은 네 타입,<br>끝이 보이기 시작하는구먼!'],
+    ['관장님!! 열네 번째예요!<br>벽 공사 소식에 감동했어요…<br>흑흑…', '허허, 자네 벽도 아닌데.', '강박사님! 그럼 공사하는 김에<br>전당 청소 당번으로라도…!', '…자네는 안내원이잖나.', '청소 당번이면 전당에<br>매일 갈 수 있잖아요!', '그건… 협회에 한번 물어보지.', '허허허! 일단 연구 노트엔<br>"청소 지원"이라 적어 두지!', '물어봐 주신다…!<br>(…처음으로 거절이 아니다!)'],
+    '그럼 난 연구소로 돌아가 보마!<br>협회 답장 오면 알려 주지!', '…청소 당번에 설레는 내가 좀 슬프다.');
+  if (N === 15) return mk(
+    [`헉… 헉… ${E}!<br>열다섯 번째 전설!<br>협회 답장보다 자네 소식이 먼저 왔구먼!`, `${ty} 타입 <b>전설의 체육관</b>…<br>남은 건 세 타입뿐이라네!<br>믿기지가 않아!`, '자, 전당으로 가세나!<br>관리인이 벽 공사를 끝냈다더군!'],
+    ['명예의 전당이란다.\n새 벽 냄새가 아직 나는구먼.', '벽의 자네 이름이 열넷.\n오늘로 열다섯이 되지.', `${ty} 타입으로\n${E}의 이름이 열다섯 번째로 남는다네!`, BALL], 0,
+    [K0, '새로 늘린 벽이 벌써<br>자네 이름으로 채워지다니.', '세 타입 남았네!<br>마지막까지 힘내 보게!'],
+    ['관장님!! 열다섯 번째예요!<br>강박사님, 그래서 협회 답장은요?<br>흑흑…', '허허, 그게 말이지…', '저 청소 당번 됐나요?!', '…청소는 이미 로봇이 하더구먼.', '로, 로봇이요…?!', '아주 성실한 로봇이더군.', '허허허! 대신 연구 노트에<br>"로봇보다 성실함"이라 적어 두지!', '로봇보다…!<br>(…비교 대상이 로봇이다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>로봇한테 지지 말게나!', '…로봇은 월급도 안 받겠지.');
+  if (N === 16) return mk(
+    [`헉… 헉… ${E}!<br>열여섯 번째 전설!<br>이제 두 타입밖에 안 남았어!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>여기까지 온 관장은<br>내 평생 처음 본다네!`, '자, 마지막 두 걸음을 앞두고<br>전당으로 가 보세나!'],
+    ['명예의 전당이란다.\n오늘은 조명이 자네 이름 쪽으로\n먼저 켜지는 것 같구먼.', '벽의 자네 이름이 열다섯.\n오늘로 열여섯이 된다네.', `${ty} 타입으로\n${E}의 이름이 열여섯 번째로 남는다네!`, BALL], 0,
+    [K0, '열여섯이라니…<br>이 늙은이 가슴이<br>자꾸만 두근거리는구먼.', '두 타입 남았네!<br>조급해하지 말고, 자네답게!'],
+    ['관장님!! 열여섯 번째예요!<br>이제 끝이 보여서 더 눈물이…<br>흑흑…', '허허, 끝을 생각하니 그런가.', '강박사님! 그럼 로봇 옆자리라도…!', '…자네는 안내원이잖나.', '로봇 옆에 서 있기만 할게요!', '거긴 로봇 충전기 자리라네.', '허허허! 대신 연구 노트 마지막 장은<br>비워 두었네. 왜인지는 비밀이지!', '비밀…!<br>(…뭔가 있다!)'],
+    '그럼 난 연구소로 돌아가 보마!<br>마지막 장은 아직 비밀일세!', '…설마 그 마지막 장도 노트겠지.');
+  if (N === 17) return mk(
+    [`헉… 헉… ${E}!<br>열일곱 번째 전설!<br>이제 단 한 타입 남았다네!`, `${ty} 타입 <b>전설의 체육관</b>까지…<br>${E}, 자네는 정말<br>전설 그 자체가 되어 가는구먼!`, '자, 마지막 하나를 남기고<br>전당으로 가 보세나!'],
+    ['명예의 전당이란다.\n벽에 딱 한 칸이 비어 있지?\n관리인이 일부러 남겨 뒀다더구먼.', '벽의 자네 이름이 열여섯.\n오늘로 열일곱이 되지.', `${ty} 타입으로\n${E}의 이름이 열일곱 번째로 남는다네!`, BALL], 0,
+    [K0, '빈칸 하나만 남았구먼.<br>그 칸이 채워지는 날을<br>나도 손꼽아 기다리겠네.', '마지막 타입은<br>자네가 제일 좋아하는 포켓몬들과<br>함께 가 보게!'],
+    ['관장님!! 열일곱 번째예요!<br>하나만 더! 하나만 더요!<br>흑흑…', '허허, 자네가 더 신났구먼.', '강박사님! 이번엔 진짜<br>마지막으로 여쭤볼게요!', '…자네는 안내원이잖나.', '저도 전당에… 안 되나요…?', '마지막은 다음일세.', '허허허! 다음 전설 날엔<br>자네도 꼭 정장을 입고 오게!', '정장…?!<br>(…무슨 뜻이지?)'],
+    '그럼 난 연구소로 돌아가 보마!<br>다음엔 마지막 전설이구먼!', '…정장은 면접 때 산 것밖에 없는데.');
+  // 열여덟 번째 (마지막): 모든 타입 완성 · 안내원이 드디어 이름을 남김
+  return mk(
+    [`헉… 헉… ${E}!!<br>마지막… 열여덟 번째 전설이라니!<br>연구소 사람들 다 데리고 오고 싶었다네!`, `${ty} 타입 <b>전설의 체육관</b>으로<br>모든 타입의 전설을 이뤘구먼…!<br>이건 역사에 남을 일이야!`, '자, 오늘은 특별한 날이란다!<br>마지막으로 그곳에 가 보세나!'],
+    ['명예의 전당이란다.\n…오늘은 이 말을 하는 것도\n가슴이 벅차는구먼.', '벽에 남은 마지막 빈칸, 보이지?\n오늘 그 칸이 채워진다네.', `${ty} 타입으로\n${E}의 이름이 열여덟 번째로 남는다네!\n모든 타입의 전설이야!`, '자, 마지막 몬스터볼을\n하나씩 올려 보게!\n천천히, 아주 천천히.'],
+    '좋아… 마지막 기록이 시작됐구먼!',
+    [`${E}, 정말 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 마지막까지 잘 품어 주렴!`, '문 닫기 직전이던 그 낡은 체육관이<br>모든 타입의 전설이 되다니…<br>내 연구 인생 최고의 기록일세.', '자네는 이제 이 세상<br>모든 관장의 목표가 되었네.<br>정말, 정말 수고 많았네!'],
+    ['관장님!!! 열여덟 번째…<br>전부예요, 전부…!<br>흐아아앙…!', '허허, 오늘은 나도 울 것 같구먼.', '강박사님… 그동안 귀찮게 해서<br>죄송했어요. 전당은 이제 됐어요…', '…아니, 자네도 이걸 받게.', '이, 이건… 명패…?<br>"안내원의 전당 제1호"…?!', '내가 직접 만들었다네.<br>연구 노트 마지막 장에 쓰려고 아껴 둔 이름이지.', '허허허! 이 체육관이 여기까지 온 건<br>자네가 매일 문 앞에서<br>도전자를 맞아 준 덕분이기도 하니까!', '강박사님…!<br>(…정장 입고 오길 잘했다.)'],
+    '그럼 난 연구소로 돌아가 보마!<br>둘 다, 지금까지 정말 고마웠네!<br>그리고 앞으로도 잘 부탁하네!', '…그때 대학원 오길 잘했다.');
+}
 async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
-  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는';
+  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', TL = legLines(Object.keys(g.legE || {}).length || 1, E, ty);
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['se_wall_hit', 'DP_REGI', 'DP_DOOR', 'se_ball', 'se_door', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
@@ -1319,9 +1435,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
     dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!');
     const CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
-    await say(`헉… 헉… ${E}!<br>소식 듣자마자 연구소에서<br>한달음에 달려왔단다!`);
-    await say(`${ty} 타입 <b>전설의 체육관</b>이라니…<br>문 닫기 직전이던 그 체육관이<br>여기까지 오다니, 감격스럽구나!`);
-    await say('자, 지금 나랑 같이 갈 데가 있단다!<br>자세한 건 가 보면 알아.<br>잔말 말고 따라오게!');
+    for (const h of TL.in) await say(h);
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
     dlg(''); root.classList.add('dhide'); bgmPlay('rgFollow');
     const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
@@ -1338,10 +1452,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await Promise.all([kg.go([[5, 6], [6, 6], [6, 5]], WS), wait(WS).then(() => me.go([[5, 5]], WS))]);
     kg.turn('l'); await wait(200); me.turn('r'); await wait(300);
     const S = A.talk();
-    await S.say('여기가 바로 명예의 전당이란다.');
-    await S.say('리그 협회가 인정한 최고의 체육관과\n함께 싸운 포켓몬들의 이름이\n영원히 새겨지는 곳이지.');
-    await S.say(`오늘부터 ${E}의 이름도\n이곳에 남게 된다네!`);
-    await S.say('자, 저 기록 기계에\n함께 싸운 포켓몬들의 몬스터볼을\n하나씩 올려 보게!'); S.hide(true);
+    for (const h of TL.hof) await S.say(h); S.hide(true);
     me.turn('u'); await wait(400);
     // 본가 FldEff_HallOfFameRecord: 볼을 25프레임마다 하나씩 (SE_BALL) → 32프레임 쉬고 → 볼이 반짝이며 모니터가 켜짐
     const kk = F.k, bw = document.createElement('div'); bw.className = 'hm-balls'; F.map.appendChild(bw);
@@ -1351,7 +1462,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     const mo = document.createElement('i'); mo.className = 'hm-mon'; Object.assign(mo.style, { left: 80 * kk + 'px', top: 9 * kk + 'px', width: 16 * kk + 'px', height: 16 * kk + 'px', backgroundImage: `url(${IMG}ev/hof/mon.png?v=${VER})`, backgroundSize: `${16 * kk}px ${64 * kk}px` }); F.map.appendChild(mo);
     bw.classList.add('fl'); se('DP_KIRAKIRA2'); let mf = 0; const MF = [3, 2, 1, 0, 1, 2], mt = setInterval(() => { mo.style.backgroundPosition = `0 ${-MF[mf++ % 6] * 16 * kk}px`; }, 133);
     await wait(2400); clearInterval(mt); bw.classList.remove('fl'); bw.classList.add('on');
-    await S.say('좋아, 기록이 시작됐구먼!'); S.hide(true);
+    await S.say(TL.rec); S.hide(true);
     // ---- 4. 등록 화면 (본가처럼 도트 그림 느낌) ----
     const SP = Array.from({ length: 14 }, (_, n) => `<i style="left:${(n * 37 + 11) % 100}%;top:${(n * 53 + 7) % 78}%;animation-delay:${(n * .37 % 2.2).toFixed(2)}s"></i>`).join('');
     ov = document.createElement('div'); ov.className = 'hof gba';
@@ -1392,9 +1503,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
     const kt = CR?.path?.at(-1) || D.door; k.x = kt[0]; k.y = kt[1]; k.f = CR?.cf || 'u'; k.el.style.visibility = ''; place(k);
     bgmPlay('gym'); await A.black(false); await wait(300);
-    await say(`${E}, 다시 한번 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`);
-    await say('하지만 이게 끝이 아니란다!<br>세상엔 아직 관장을 기다리는<br>다른 타입 체육관들이 잔뜩 있지.');
-    await say('다른 타입 체육관도 열어서<br>전설의 체육관을 하나씩 늘려 가 보게!<br>자네라면 할 수 있어!');
+    for (const h of TL.back) await say(h);
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
@@ -1405,21 +1514,15 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       const fx = LEG_GU[D.id], to = (fx && A.reach(gu, [fx], [[k.x, k.y]])) || A.reach(gu, nb, [[k.x, k.y]]);   /* v19.39 경완 '안내원 서는 자리 내가 옮겨서': 맵별로 정한 칸이 있으면 그 칸 */ if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
       else { const CP = (CR?.path || D.path.slice(1)).slice(0, -1); gPath = [D.door, ...CP]; if (CP.length) await walk(gu, gPath, 180); }   // 빈 바닥 정보로 길이 안 나오는 맵: 문 → 손님 길을 따라 강박사 뒤까지
       face(gu, meEnt); }
-    await gsay('관장님!! 전설의 체육관이라니…!<br>제가 여기서 일한 보람이 있어요…<br>흑흑…');
+    const B = TL.ban; await gsay(B[0]);
     if (gu) { face(gu, k); face(k, gu); }   /* v19.24 경완: 티키타카 땐 강박사·안내원이 서로 바라봄 */
-    await say('허허, 자네도 그동안 고생 많았네.');
-    await gsay('그럼… 저도 명예의 전당에<br>이름이 올라가는 건가요?!');
-    await say('…자네는 안내원이잖나.');
-    await gsay('그, 그럼 안내원의 전당은요?!');
-    await say('그런 건 없네.');
+    await say(B[1]); await gsay(B[2]); await say(B[3]); await gsay(B[4]); await say(B[5]);
     dlg(''); root.classList.add('dhide'); if (gu) A.bub(gu, '...', 1200); await wait(1300);
-    await say('허허허! 농담일세, 농담.<br>자네 이름은 내 연구 노트에<br>아주 크게 적어 두지!');
-    await gsay('강박사님…!<br>(…노트에 적히는 거였구나.)');
-    await say('그럼 난 연구소로 돌아가 보마!<br>둘 다 앞으로도 이 체육관을<br>잘 부탁하네!');
+    await say(B[6]); await gsay(B[7]); await say(TL.bye);
     dlg(''); root.classList.add('dhide'); meEnt.f = 'd'; place(meEnt);
     await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
     k.el.remove(); ents = ents.filter(x => x !== k); k = null;
-    if (gu) { face(gu, meEnt); await wait(250); await gsay('…… …… ……'); await gsay('…그때 대학원을 오는 게 아니었는데.'); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
+    if (gu) { face(gu, meEnt); await wait(250); for (const h of TL.after) await gsay(h); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
@@ -2275,7 +2378,10 @@ function storyTalk() {
   const box = k.querySelector('.gy-k-box'), nmEl = k.querySelector('.gy-k-nm'), typer = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
   const T = {
     el: k,
-    say: async (t, { who = '강박사', pic = null } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t); },
+    say: async (t, { who = '강박사', pic = null, wait = true } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t, wait); },
+    // 묻기: 대사창에 물음 + 오른쪽 위에 예·아니요 단추 (경완 2026-11-08 '부탁하겠습니까? 창도 대사창으로, 예 아니오는 대사창 우상단에 버튼'). 예면 true
+    ask: async (t, o = {}, yes = '예', no = '아니요') => { await T.say(t, { ...o, wait: false }); return new Promise(ok => { const m = document.createElement('div'); m.className = 'tw-ch tw-yn in-menu'; m.innerHTML = `<button class="win main" type="button" data-i="1">${esc(yes)}</button><button class="win" type="button" data-i="0">${esc(no)}</button>`; box.appendChild(m);
+      m.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); m.remove(); ok(b.dataset.i === '1'); }; }); },
     pic: () => {},   // 경완 2026-11-01: 스토리 대사창엔 강박사 큰 그림을 띄우지 않는다
     hide: on => k.classList.toggle('off', on),
     // 고르기: 대사창 위에 단추 (누를 때까지 기다림)
@@ -2550,6 +2656,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
   pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
   cry: sp => GA.cry?.(sp), ldB: () => loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData?.()), thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
   giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
@@ -2565,7 +2672,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     glog('tr', `로켓단 아지트에서 <b>${esc(L.nm)}</b>${jong(L.nm) ? '을' : '를'} 찾았다.`); save(); },
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
-    if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
+    if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true }; if (window.__evAutoLose && /[?&]debug/.test(location.search)) return { won: false };   // 시험 자동 진행
     // 운영자 시험: 배틀마다 건너뛰기 (경완 2026-11-07 '운영자 모드에서 테스트하는 건 배틀 스킵 버튼')
     if (window.gymEvTest) { const k = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask'; w.innerHTML = `<div class="win"><p>운영자 시험\n<b>${esc(o.cls)} ${esc(o.nm)}</b> 배틀<small>건너뛰면 이긴 걸로(또는 진 걸로) 바로 넘어가요</small></p><div class="bt2 gy-btns"><button type="button" data-a="w">이긴 걸로</button><button type="button" data-a="l">진 걸로</button></div><div class="gy-btns one"><button type="button" class="main" data-a="b">배틀하기</button></div></div>`;
       root.appendChild(w); w.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); w.remove(); ok(b.dataset.a); }; });
