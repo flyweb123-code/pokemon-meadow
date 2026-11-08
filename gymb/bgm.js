@@ -162,7 +162,10 @@ async function bufOf(ctx, name) {
   const b = bufs.get(name); if (b && b.ctx === ctx) return b;
   let r = await make(name);
   if (!r.L) { pcm.delete(name); r = await make(name); }
-  const x = { ctx, buf: toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate };
+  /* v19.38 경완 'bgm 음량 효과음이랑 밸런스': 곡마다 크기(RMS)가 달라 GBA 곡(전당 등)이 훨씬 크게 들림 → 체육관 곡 크기(-19dB)보다 큰 곡만 그만큼 줄인다 */
+  let ss = 0, sn = 0; for (let i = 0; i < r.L.length; i += 7) { ss += r.L[i] * r.L[i] + r.R[i] * r.R[i]; sn += 2; }
+  const db = sn ? 10 * Math.log10(ss / sn + 1e-12) : -99, lg = Math.max(.35, Math.min(1, Math.pow(10, (-19 - db) / 20)));
+  const x = { ctx, buf: toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate, lg };
   r.L = r.R = null; bufs.set(name, x); return x;
 }
 
@@ -193,7 +196,7 @@ async function start(name, { fade = .6 } = {}) {
   const src = ctx.createBufferSource(), g = ctx.createGain();
   src.buffer = B.buf; src.loop = B.loop;
   if (B.loop) { src.loopStart = B.ls; src.loopEnd = B.buf.duration; }
-  const t = ctx.currentTime, off = pos[name] || 0; delete pos[name]; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(1, t + fade);
+  const t = ctx.currentTime, off = pos[name] || 0; delete pos[name]; cur.lg = B.lg || 1; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(cur.lg, t + fade);
   src.connect(g); g.connect(out); src.start(0, off); cur.t0 = t - off;
   src.onended = () => { if (cur.src === src) { cur.src = null; cur.name = null; if (!B.loop) cur.fin = name; } };   // 한 번만 도는 곡(승리 곡)이 끝나면 다시 틀지 않는다
   Object.assign(cur, { name, src, g, ctx, out });
@@ -259,9 +262,9 @@ const GymBGM = {
   seStop(nm) { for (const s of seLive.get(nm) || []) { try { s.stop(); } catch (e) {} } seLive.delete(nm); fanEnd.get(nm)?.(); },
   // 팡파르(본가 Sound_PlayFanfare): 배경 곡을 잠깐 줄이고 끝까지 튼 뒤 다시 키운다. 끝나면 풀리는 Promise
   async fan(nm) { const g = cur.g, c = cur.ctx; const dz = (to, s) => { try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} };
-    if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => { const t = setTimeout(r, d * 1000 + 80); fanEnd.set(nm, () => { clearTimeout(t); r(); }); }); fanEnd.delete(nm); if (g && c && cur.g === g) dz(1, .3); },
+    if (g && c) dz(0, .08); const d = await sePlay(nm).catch(() => 0) || 0; await new Promise(r => { const t = setTimeout(r, d * 1000 + 80); fanEnd.set(nm, () => { clearTimeout(t); r(); }); }); fanEnd.delete(nm); if (g && c && cur.g === g) dz(cur.lg || 1, .3); },
   // v19.18: 배경 곡 볼륨만 to(0~1)로 s초 동안 (곡은 계속 돎, fan 이 끝나면 1로)
-  duck(to, s = .5) { const g = cur.g, c = cur.ctx; if (!g || !c) return; try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to, t + s); } catch (e) {} },
+  duck(to, s = .5) { const g = cur.g, c = cur.ctx; if (!g || !c) return; try { const t = c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(to * (cur.lg || 1), t + s); } catch (e) {} },
   get name() { return cur.want; },
   SONG,
 };
