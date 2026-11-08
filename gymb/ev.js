@@ -137,16 +137,16 @@ const CSS = `
 #gym .ev-rw .rw-fnd{margin:-4px 0 12px;padding:8px 6px 6px;border-radius:8px;background:rgba(120,90,40,.08);animation:rwIn .3s var(--d) ease-out both}
 #gym .ev-rw .rw-fnd p{margin:0 0 6px;font-size:12px;font-weight:700;color:#6a5a40}
 #gym .ev-rw .rw-fnd div{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
-#gym .ev-rw .rw-fnd i{position:relative;width:34px;height:34px;display:grid;place-items:center;border-radius:6px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.12)}
-#gym .ev-rw .rw-fnd i img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
-#gym .ev-rw .rw-fnd i .egg{width:22px;height:27px}
+#gym .ev-rw .rw-fnd>div>i{position:relative;width:34px;height:34px;display:grid;place-items:center;border-radius:6px;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+#gym .ev-rw .rw-fnd>div>i>img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
+#gym .ev-rw .rw-fnd>div>i>.egg{width:22px;height:27px}   /* v19.52 경완: 타입 알 안쪽 lfx <i> 가 칸 모양(흰 네모)으로 커지던 것 */
 #gym .ev-pw .ev-in{width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid #4a4a5a;border-radius:10px;font-family:inherit;font-size:20px;font-weight:700;text-align:center;background:#fff;color:#222;outline:none}#gym .ev-pw .ev-in:focus{border-color:#3a7ae0}
 #gym .ev-fld .ev-rope{position:absolute;left:22%;right:22%;top:56%;height:20%;pointer-events:none;background:repeating-linear-gradient(170deg,#c89850 0 2px,#7a5428 2px 3px,transparent 3px 6px);border-top:1px solid #5a3a18;border-bottom:1px solid #5a3a18;opacity:.95}
 #gym .ev-fld .ev-tv{position:absolute;pointer-events:none;background:linear-gradient(180deg,#d8f4ff,#78c8ff 60%,#4898e8);box-shadow:0 0 8px 3px rgba(140,210,255,.75);animation:evTv .22s steps(2) infinite}
 @keyframes evTv{50%{filter:brightness(1.25)}}
 #gym .ev-crt{position:absolute;left:50%;top:30%;z-index:995;width:216px;height:176px;margin-left:-108px;padding:10px;border-radius:14px;background:#2c2c34;box-shadow:0 0 0 3px #101014,0 6px 0 3px #08080a,0 0 30px rgba(80,160,255,.35);pointer-events:none}
 #gym .ev-crt>div{position:relative;width:100%;height:100%;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 45%,#2a4a6a,#0a1420 75%);transform-origin:50% 50%}
-#gym .ev-crt img{position:absolute;left:50%;top:50%;width:160px;height:160px;margin:-84px 0 0 -80px;image-rendering:pixelated;filter:saturate(.8) brightness(1.05)}
+#gym .ev-crt img{position:absolute;left:50%;top:50%;width:160px;height:160px;margin:-84px 0 0 -80px;image-rendering:pixelated;filter:brightness(0) drop-shadow(0 0 2px rgba(120,190,255,.9)) drop-shadow(0 0 6px rgba(80,150,255,.6));opacity:.92}   /* v19.52 경완: 정체를 감춘 실루엣 */
 #gym .ev-crt>div::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 2px,transparent 2px 4px);animation:evTv .18s steps(2) infinite}
 #gym .ev-crt b{position:absolute;right:8px;top:6px;font:900 11px/1 Arial,sans-serif;color:#ff5060;letter-spacing:.5px}
 `;
@@ -222,7 +222,7 @@ function tools(I, def) {
       // 무대 아래 줄: 나 + 되찾은 트레이너·안내원 (R.crew) 앞모습, 한 명씩 나타나 콩콩
       const crew = [], fw = k => I.owW?.(k) || 32; if (R.crew) { crew.push(['me', I.myOw()]); for (const s of (I.st().sf || []).slice(0, 6)) if (s.ow) crew.push(['', s.ow]); if (I.GUY_OW) crew.push(['', I.GUY_OW]); }
       const cH = crew.map(([c, k], n) => `<i class="${c}" data-ow="${I.esc(k)}" style="--d:${(.3 + n * .12).toFixed(2)}s;width:${fw(k) * 2}px;background-image:url(${I.owSrc(k)});background-size:auto 64px;background-position:0 0"></i>`).join('');
-      const FD = (I.st().ev?.found || []), fnd = FD.length ? `<div class="rw-fnd" style="--d:${dd()}"><p>모험에서 찾은 것 ${FD.length}개</p><div>${FD.map(f => `<i title="${I.esc(f.nm)}">${f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt="" src="${f.img}">`}</i>`).join('')}</div></div>` : '';   // v19.18: 알·상점 물건·선물 (이미 받아 둔 것)
+      const FD = (I.st().ev?.found || []), fnd = FD.length ? `<div class="rw-fnd" style="--d:${dd()}"><p>습득한 아이템 ${FD.length}개</p><div>${FD.map(f => `<i title="${I.esc(f.nm)}">${f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt="" src="${f.img}">`}</i>`).join('')}</div></div>` : '';   // v19.18: 알·상점 물건·선물 (이미 받아 둔 것)
       const w = document.createElement('div'); w.className = 'ev-rw gy-pop pp-pop rw-pop'; w.innerHTML = `<div class="win"><div class="rw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i>${R.embImg ? `<b class="rw-emb"><img alt="" src="${R.embImg}"></b>` : R.emb ? `<b class="rw-emb">${I.esc(R.emb)}</b>` : ''}<b class="rw-stamp">해결!</b><div class="rw-crew">${cH}</div></div>
         <h4 class="pp-t"><small>이벤트 해결</small>${I.esc(def.nm)}</h4>${R.msg ? `<p class="rw-msg">${I.esc(R.msg).replace(/\n/g, '<br>')}</p>` : ''}<ul class="pk-ben">${L.join('')}</ul>${fnd}<div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
       root.appendChild(w); I.haptic?.(1);
@@ -358,6 +358,21 @@ function field(I, o) {
       p.sp.style.translate = lift > 2 * kk ? `0 ${(Math.sin(now / 260) * 4 * kk).toFixed(1)}px` : ''; requestAnimationFrame(loop); };
     requestAnimationFrame(loop); return p; };
   F.palSet = P => F.palOn(P);
+  // 야생 포켓몬이 톡 튀어나와 길을 따라 달아난다 (v19.52 경완 '상자에서 꼬렛이 나와서 도망치게'). path = [[x,y],...], ms = 한 칸
+  F.monRun = async (sp, x, y, path, ms = 140) => { const e = document.createElement('i'); e.className = 'ev-pal'; e.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; map.appendChild(e); const sq = e.lastChild;
+    let M = null; try { M = await I.pmd(sp, 'M'); } catch (x2) {} if (!M?.P) { e.remove(); return; }
+    const o = { x, y, f: 'd' }, kk = k / 2, sc = M.s * kk, A2 = M.P.a, pick = L => L.find(n => A2[n]) || 'Idle'; let an = null, t0 = 0, mv = 0, live = true;
+    const put = () => Object.assign(e.style, { left: o.x * 16 * k + 'px', top: o.y * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', zIndex: zOf(o.x, o.y, 1) });
+    const loop = now => { if (!live || !e.isConnected) return; put(); const nm = pick((mv ? PAN : PID)[o.f] || ['Idle']);
+      if (nm !== an) { an = nm; t0 = now; const a = A2[nm]; Object.assign(sq.style, { backgroundImage: `url("${M.P.i}")`, backgroundSize: `${M.wh[0] * sc}px ${M.wh[1] * sc}px`, width: a[1] * sc + 'px', height: a[2] * sc + 'px', left: (8 * k - a[4] * sc) + 'px', top: (16 * k - (a[5] + (M.P.fy || 0)) * sc) + 'px', transformOrigin: `${a[4] * sc}px 50%` }); }
+      const a = A2[an], du = a[6], tot = du.reduce((q, d) => q + d, 0) / 60, t = ((now - t0) / 1000) % tot; let f = du.length - 1; for (let i = 0, c = 0; i < du.length; i++) { c += du[i] / 60; if (t < c) { f = i; break; } }
+      sq.style.backgroundPosition = `${-f * (a[1] + (M.P.G || 0)) * sc}px ${-a[0] * sc}px`; sq.style.transform = o.f === 'r' ? 'scaleX(-1)' : ''; requestAnimationFrame(loop); };
+    put(); requestAnimationFrame(loop); I.cry?.(sp);
+    await anim(260, (e2, q) => { e.style.translate = `0 ${-Math.sin(q * Math.PI) * 10 * k}px`; }); e.style.translate = ''; await wait(250);
+    for (const [nx, ny, j] of path) { const x0 = o.x, y0 = o.y; o.f = nx > x0 ? 'r' : nx < x0 ? 'l' : ny > y0 ? 'd' : 'u'; mv = 1; const n = Math.max(Math.abs(nx - x0), Math.abs(ny - y0)) || 1;   // j: 뛰어넘기 (사람 머리 위로)
+      if (j) I.gse?.('se_ledge', .7);
+      await anim(ms * n * (j ? 2 : 1), (e2, q) => { o.x = x0 + (nx - x0) * q; o.y = y0 + (ny - y0) * q; if (j) e.style.translate = `0 ${-Math.sin(q * Math.PI) * 18 * k}px`; }); e.style.translate = ''; o.x = nx; o.y = ny; }
+    await e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).finished.catch(() => {}); live = false; e.remove(); };
   // 몬스터볼에서 나오듯 옆에 톡 나와서 나를 보며 울음소리 + 동작 (경완 2026-11-08 '관장 옆으로 나와서 관장 보면서 울음소리랑 같이 동작')
   F.palOut = async P => { const p = await F.palOn(P, true); if (!p) return null; const m = F.me; m.face?.(p);
     p.el.animate([{ opacity: 0, transform: 'scale(.2)', filter: 'brightness(3)' }, { opacity: 1, transform: 'scale(1.1)', filter: 'brightness(1.6)', offset: .6 }, { opacity: 1, transform: 'none', filter: 'none' }], { duration: 420, easing: 'ease-out' });
