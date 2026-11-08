@@ -379,7 +379,7 @@ function fitSrc(kind, fit = st()?.fit) {
   if (kind === 'ow') { const u = `${IMG}fit/ow9/${fit}_${myF() ? 'f' : 'm'}.png`, ck = 'ow9|' + u; if (fitCache[ck]) return fitCache[ck];
     return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => ok(u); im.onerror = () => ok(null); im.src = u; })).then(r => r || recolor()); }
   // v15.39 경완: 배틀 뒷모습도 옷마다 새로 그린 그림 (fit/trb, 80x80). 그림이 없으면 색 바꾸기
-  if (kind === 'trb') { const u = `${IMG}fit/trb/${fit}_${myF() ? 'f' : 'm'}.png`, ck = 'trb|' + u; if (fitCache[ck]) return fitCache[ck];
+  if (kind === 'trb') { const u = `${IMG}fit/trb/${fit}_${myF() ? 'f' : 'm'}.png${VER ? '?v=' + VER : ''}`, ck = 'trb|' + u; if (fitCache[ck]) return fitCache[ck];
     return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => ok(u); im.onerror = () => ok(null); im.src = u; })).then(r => r || recolor()); }
   return recolor();
   function recolor() {

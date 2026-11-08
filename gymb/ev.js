@@ -65,7 +65,7 @@ const CSS = `
 #gym .ev-pkw .lu-pick{margin:0}#gym .ev-pkw .lu-pick button{padding:6px 2px 7px;font-size:12px;font-weight:700;background:#fff;box-shadow:0 3px 0 #c8c8d4,inset 0 0 0 2px rgba(0,0,0,.1)}
 #gym .ev-pkw .lu-pick button.on{box-shadow:0 3px 0 #c8a830,inset 0 0 0 3px #ffd84a}#gym .ev-pkw .lu-pick button:active{transform:translateY(3px);box-shadow:0 0 0 transparent,inset 0 0 0 2px rgba(0,0,0,.1)}
 #gym .ev-pkw .pk-tabs{display:flex;gap:6px}#gym .ev-pkw .pk-tabs button{flex:1;padding:8px 4px;font-size:13px;background:#e4e4ec;box-shadow:0 3px 0 #a8a8b8}#gym .ev-pkw .pk-tabs button.on{background:#3c3c4c;color:#fff;box-shadow:0 3px 0 #18181f}
-#gym .ev-pkw .lu-pick b{font-size:12px}#gym .ev-pkw .lu-pick span{font-size:11px;color:#808090}
+#gym .ev-pkw .pk-none{margin:14px 0;color:#808090;font-size:13px;text-align:center}#gym .ev-pkw .lu-pick b{font-size:12px}#gym .ev-pkw .lu-pick span{font-size:11px;color:#808090}
 #gym .ev-itb .win{animation:awNpop .32s steps(4,end) both;gap:8px}
 #gym .ev-itb h4{margin:0;font-size:17px;color:#303040}#gym .ev-itb h4 small{display:block;font-size:12px;color:#8a6a30;font-weight:700;margin-bottom:3px}
 #gym .ev-itb .ib-pic{width:100px;height:100px;margin:0 auto;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#fff8d8 0,#ffe8a0 52%,rgba(255,232,160,0) 71%)}
@@ -258,7 +258,7 @@ function tools(I, def) {
         root.appendChild(w); const t0 = performance.now(); w.onclick = e => { const b = e.target.closest('button'); if (!b || performance.now() - t0 < 500) return; e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(); }; });
       return L; },
     // 같이 다니는 포켓몬: 고른 것(넣어 두면 없음)을 이 이벤트 동안 기억 (운영자 시험이면 체육관 관장 옆 포켓몬은 안 바뀜)
-    pal: () => I.luLead?.() || I.pal(),   // v19.61 경완: 같이 다니는 포켓몬 = 지금 라인업 첫 번째 (본가 맨 앞 포켓몬처럼)
+    pal: () => { const ev = g.ev || {}; if (ev.palOff) return null; const A0 = I.luAll?.() || [], Q = ev.pal && A0.find(P => P.id === ev.pal); return Q || I.luLead?.() || I.pal(); },   // 포켓몬을 직접 눌러 고른 게 있으면 그것 (경완 2026-11-08), 없으면 라인업 첫 번째   // v19.61 경완: 같이 다니는 포켓몬 = 지금 라인업 첫 번째 (본가 맨 앞 포켓몬처럼)
     setPal: P => { const ev = g.ev || (g.ev = {}); ev.palOff = P ? 0 : 1; if (P) { ev.pal = P.id; I.setPal?.(P.id); } I.save(); },
     // 지면 이 장 처음부터 (벌 없음, 경완 2026-11-07)
     whiteout: async () => { A.music(null); await A.black(true, '눈앞이 캄캄해졌다...!', '서둘러 돌담시티 포켓몬 센터로\n돌아갔다...', true); return 'wo'; },
@@ -345,7 +345,7 @@ function field(I, o) {
     p.put = () => { const mm = F.me; Object.assign(e.style, { left: (p.x + p.dx) * 16 * k + 'px', top: ((p.y + p.dy) * 16 - p.hop) * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', zIndex: p.top ? 5950 : zOf(p.x + p.dx, p.y + p.dy, 1) });
       e.hidden = !p.mv && !p.act && Math.round(p.x) === Math.round(mm.x) && Math.round(p.y) === Math.round(mm.y); };
     e.style.visibility = 'hidden';   // 그림을 다 불러오기 전엔 숨김: 그림자만 먼저 나오던 것 (경완 2026-11-08)
-    e.addEventListener('pointerdown', ev => { ev.stopPropagation(); if (el.classList.contains('lock') || p.act) return; I.sfx?.('tap'); F.pkQ = true; });   // 포켓몬을 눌러도 바꾸기 (경완 2026-11-08)
+    e.addEventListener('pointerdown', ev => { ev.stopPropagation(); if (el.classList.contains('lock') || p.act) return; I.sfx?.('tap'); F.ppQ = true; });   // 포켓몬을 직접 누르면 같이 다니는 포켓몬 고르기 (라인업 1·2·3 탭, 경완 2026-11-08)
     p.put(); let M = null; try { M = await I.pmd(P.sp, P.sex); } catch (x) {} e.style.visibility = ''; if (F.pl !== p || !M) return p;
     if (P.shiny) p.sp.style.filter = `hue-rotate(${I.shinyHue?.(P.sp) || 0}deg)`;
     if (!M.P) { p.sp.classList.add('one'); p.sp.style.backgroundImage = `url("${M.img}")`; const lp = () => { if (F.pl !== p || !e.isConnected) return; p.put(); p.sp.style.transform = p.f === 'r' ? 'scaleX(-1)' : ''; requestAnimationFrame(lp); }; requestAnimationFrame(lp); return p; }
@@ -387,20 +387,20 @@ function field(I, o) {
   F.palIn = async () => { const p = F.pl; if (!p) return; I.gse?.('DP_SUIKOMU', .8); await p.el.animate([{ opacity: 1, transform: 'none', filter: 'none' }, { opacity: 0, transform: 'scale(.2)', filter: 'brightness(3)' }], { duration: 320, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); F.palOff(); };
   // 같이 다니는 포켓몬 고르기 (라인업에서, 넣어 두기도 됨). 고르면 F.onPal(P 또는 null)
   // [포켓몬] = 체육관 라인업 화면 그대로 (라인업·순서·기술·도구, 경완 2026-11-08). 체육관 상점으로 가는 버튼만 없음. 닫으면 라인업 첫 번째가 같이 다님
-  F.luOpen = async () => { const w = document.createElement('div'); w.className = 'gy-sheet ev-luw'; w.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>';
+  F.luOpen = async () => { const L0 = I.luLead?.()?.id || 0; const w = document.createElement('div'); w.className = 'gy-sheet ev-luw'; w.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>';
     const x = document.createElement('button'); x.type = 'button'; x.className = 'ev-lux'; x.textContent = '닫기'; root.appendChild(w); root.appendChild(x); root.classList.add('evlu'); window.gymEvLu = 1; I.gse?.('DP_WIN_OPEN', .8);
     try { await I.luTab?.(w); } catch (e) { console.error(e); }
     await new Promise(ok => { x.onclick = e => { e.stopPropagation(); I.sfx?.('tap'); ok(); }; });
     w.remove(); x.remove(); root.querySelectorAll('.gy-boxw,.gy-pop').forEach(q => q.remove()); root.classList.remove('evlu'); window.gymEvLu = 0;
-    const Q = I.luLead?.(); if ((Q?.id || 0) === (F.pl?.P?.id || 0)) return; if (F.pl) await F.palIn(); if (Q) await F.palOut(Q); F.onPal?.(Q); };
+    const Q = I.luLead?.(); if ((Q?.id || 0) === L0 || (Q?.id || 0) === (F.pl?.P?.id || 0)) return; if (F.pl) await F.palIn(); if (Q) await F.palOut(Q); F.onPal?.(Q); };   // 라인업 첫 번째가 바뀌었을 때만 같이 다니는 포켓몬도 바꿈
   F.palPick = async () => { await I.ldB?.(); const L = I.luAll?.() || [], cur = F.pl?.P;
     if (!L.length) { await F.ask('같이 다닐 수 있는 포켓몬이 없어요.', '체육관 라인업에 포켓몬을 넣어 주세요.', '확인', ''); return; }
     // 라인업 1·2·3 탭 (경완 2026-11-08). 지금 포켓몬이 든 라인업이 먼저
-    const T = (I.lus?.() || []).map((q, i) => ({ i, L: q })).filter(t => t.L.length); if (!T.length) T.push({ i: 0, L });
-    let ti = Math.max(0, T.findIndex(t => cur && t.L.some(P => P.id === cur.id)));
+    const T = [0, 1, 2].map(i => ({ i, L: (I.lus?.() || [])[i] || [] })); if (!T.some(t => t.L.length)) T[0].L = L;   // 라인업 1·2·3 다 보여 줌, 빈 라인업은 비었다고
+    let ti = T.findIndex(t => cur && t.L.some(P => P.id === cur.id)); if (ti < 0) ti = Math.max(0, T.findIndex(t => t.L.length));
     const a = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask ev-pkw';
-      const grid = t => `<div class="lu-pick">${t.L.map(P => `<button type="button" data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${I.thumb?.(P) || ''}<b>${I.esc(I.monNm?.(P) || '')}</b><span>Lv.${I.lvOf?.(P) || ''}</span></button>`).join('')}</div>`;
-      const draw = () => { w.innerHTML = `<div class="win"><h4>같이 다니는 포켓몬</h4>${T.length > 1 ? `<div class="pk-tabs">${T.map((t, j) => `<button type="button" data-t="${j}" class="${j === ti ? 'on' : ''}">라인업 ${t.i + 1}</button>`).join('')}</div>` : ''}${grid(T[ti])}<div class="bt2 gy-btns"><button type="button" data-a="off"${cur ? '' : ' disabled'}>넣어 두기</button><button type="button" data-a="x">닫기</button></div></div>`; I.fillTh?.(w); };
+      const grid = t => !t.L.length ? '<p class="pk-none">이 라인업은 비어 있어요</p>' : `<div class="lu-pick">${t.L.map(P => `<button type="button" data-a="${P.id}" class="${cur && cur.id === P.id ? 'on' : ''}">${I.thumb?.(P) || ''}<b>${I.esc(I.monNm?.(P) || '')}</b><span>Lv.${I.lvOf?.(P) || ''}</span></button>`).join('')}</div>`;
+      const draw = () => { w.innerHTML = `<div class="win"><h4>같이 다니는 포켓몬</h4>${T.length ? `<div class="pk-tabs">${T.map((t, j) => `<button type="button" data-t="${j}" class="${j === ti ? 'on' : ''}">라인업 ${t.i + 1}</button>`).join('')}</div>` : ''}${grid(T[ti])}<div class="bt2 gy-btns"><button type="button" data-a="off"${cur ? '' : ' disabled'}>넣어 두기</button><button type="button" data-a="x">닫기</button></div></div>`; I.fillTh?.(w); };
       draw(); root.appendChild(w); I.gse?.('DP_WIN_OPEN', .8);
       w.onclick = e => { if (e.target === w) { I.sfx?.('tap'); w.remove(); ok('x'); return; } const tb = e.target.closest('button[data-t]'); if (tb) { e.stopPropagation(); I.sfx?.('tap'); ti = +tb.dataset.t; draw(); return; }
         const b = e.target.closest('button[data-a]'); if (!b) return; e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(b.dataset.a); }; });   // 직접 연 창이라 바깥 눌러도 닫힘
@@ -535,7 +535,7 @@ function field(I, o) {
   // 자유롭게 걷기: h.step(칸) 걸은 뒤 · h.talk(사람) A 로 말 걸기 · h.look(칸) 앞에 아무도 없을 때 A 로 살펴보기 · h.warp(문) 문으로 들어가기 · h.room(방) 방을 옮긴 뒤.
   //   무엇이든 값을 돌려주면 끝. 출입구 w.to 는 알아서 들어간다 (w.pre() 가 false 면 못 들어감)
   F.play = (h = {}) => new Promise(done => {
-    let busy = false, end = false, lastMv = 0; F.follow = true; F.lock(false); F.aQ = false; F.quitQ = false; F.pkQ = false;
+    let busy = false, end = false, lastMv = 0; F.follow = true; F.lock(false); F.aQ = false; F.quitQ = false; F.pkQ = false; F.ppQ = false;
     const fin = v => { end = true; F.lock(true); done(v); };
     const run = async f => { busy = true; F.lock(true); let r; try { r = await f(); } catch (e) { console.error(e); } busy = false; if (end) return; if (r !== undefined) fin(r); else F.lock(false); };
     const goW = w => run(async () => { if (w.pre && (await w.pre()) === false) return; if (w.to) { await F.enter(w); return h.room ? h.room(F.cur) : undefined; } return h.warp?.(w); });
@@ -552,7 +552,7 @@ function field(I, o) {
           const pl = F.pl && !F.pl.el.hidden && Math.round(F.pl.x) === tx && Math.round(F.pl.y) === ty;
           // 말 걸기·살펴보기는 버튼 누르는 소리와 같게 (경완 2026-11-08). 앞에 아무것도 없으면 아무 일 없이 계속 걷는다 (경완 2026-11-08 'A 눌러도 이동 끊기지 않게')
           if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); return h.talk(s); }); } else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
-        else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); }
+        else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); } else if (F.ppQ) { F.ppQ = false; run(() => F.palPick()); }
         else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
           if (m.f !== d && !moving) { m.turn(d); busy = true; setTimeout(() => { busy = false; }, TURN); }   // 제자리 돌기 (짧게 누르면 방향만)
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
