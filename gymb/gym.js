@@ -48,7 +48,7 @@ const DESIGNS_FR = [
   { id: 'pewter', ty: 6, pt: 'oreburgh', n: '바위 계단', sub: '회색시티 체육관', w: 13, h: 16, leader: [6, 5], door: [6, 14], guy: [8, 13],
     deco: [[2, 5], [10, 5], [3, 9], [9, 9], [2, 11], [10, 11], [2, 13], [10, 13]],
     path: [[6, 14], [6, 6]], slots: [[7, 10, 'l'], [5, 9, 'r'], [7, 8, 'l'], [5, 8, 'r'], [8, 6, 'l'], [4, 6, 'r'], [9, 8, 'l']], inY: 10, tiny: [[7, 11], [[2, 3], [10, 11]]], cuts: [[9, 11], [9, 11], [9, 11], [9, 11], [9, 11]] },
-  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 18],
+  { id: 'cerulean', ty: 11, pt: 'snowpoint', n: '물 위 다리', sub: '블루시티 체육관', w: 17, h: 20, leader: [8, 6], door: [8, 18], guy: [7, 17],   /* v19.24 경완 '안내원이 체육관 밖에 있음': 문 줄(맨 아래 테두리) → 한 칸 위 다리 위 */
     deco: [[2, 3], [14, 3], [1, 8], [15, 8], [1, 13], [15, 13], [5, 18], [11, 18]],
     path: [[8, 18], [8, 16], [9, 16], [9, 10], [8, 10], [8, 7]], slots: [[8, 13, 'r'], [10, 10, 'l'], [6, 10, 'r'], [9, 8, 'l'], [7, 8, 'r'], [11, 7, 'l'], [5, 7, 'r']], inY: 15, tiny: [[8, 16], [[3, 5], [12, 14]]],
     fix: { t: [[3, 7, 4, 7, 1, 1], [9, 7, 4, 7, 1, 1, 1], [5, 8, 7, 17, 3, .5]], 0: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]], 1: [[9, 8.5, 9, 8, 1, .5], [12, 7, 4, 7, 1, 1, 1], [12, 8, 4, 8, 1, 1, 1], [13, 7, 11, 12, 1, 2]],
@@ -1329,6 +1329,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await A.black(true);
     // ---- 3. 명예의 전당 (본가 파이어레드 맵) ----
     const HJ = await fetch(`${IMG}ev/hof/hof.json?v=${VER}`).then(r => r.json());
+    { const rR = root.getBoundingClientRect(), mR = main.getBoundingClientRect(); root.style.setProperty('--lgB', `${Math.max(0, Math.round(rR.bottom - mR.bottom)) + 8}px`); root.classList.add('lgF'); }   /* v19.24 경완: 전당 화면 대사창·알림창도 하단 메뉴 있을 때 대사창 자리(메뉴 위)에 */
     F = A.field({ nm: '명예의 전당', img: `${IMG}ev/hof/hof.png?v=${VER}`, over: `${IMG}ev/hof/hof_o.png?v=${VER}`, w: HJ.w, h: HJ.h, col: HJ.col, door: {} });
     const me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); const kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 });
     F.cam(5, 6); bgmPlay('rgPallet'); await A.black(false); await F.show();
@@ -1385,7 +1386,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       ov.appendChild(n2); se('DP_PINPON'); GA.haptic?.(1);
       n2.querySelector('.hg-ok').addEventListener('click', e => { e.stopPropagation(); se('DP_DECIDE'); n2.classList.add('bye'); setTimeout(() => { n2.remove(); ok(); }, 260); }, { once: true }); });
     // ---- 5. 체육관으로 돌아옴 ----
-    M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn'); F.el.remove(); F = null;
+    M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn', 'lgF'); F.el.remove(); F = null;
     meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
     const kt = CR?.path?.at(-1) || D.door; k.x = kt[0]; k.y = kt[1]; k.f = CR?.cf || 'u'; k.el.style.visibility = ''; place(k);
     bgmPlay('gym'); await A.black(false); await wait(300);
@@ -1394,11 +1395,16 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await say('다른 타입 체육관도 열어서<br>전설의 체육관을 하나씩 늘려 가 보게!<br>자네라면 할 수 있어!');
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
-      const nb = [[meEnt.x - 1, meEnt.y], [meEnt.x + 1, meEnt.y], [meEnt.x, meEnt.y + 1], [k.x - 1, k.y], [k.x + 1, k.y], [k.x, k.y + 1]].filter(q => !(q[0] === k.x && q[1] === k.y) && !(q[0] === meEnt.x && q[1] === meEnt.y));
+      /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
+      const md = (q, e) => Math.abs(q[0] - e.x) + Math.abs(q[1] - e.y), nb = [];
+      for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const q = [meEnt.x + dx, meEnt.y + dy], a = md(q, meEnt), b = md(q, k); if (a >= 2 && a <= 3 && b >= 2 && q[1] >= meEnt.y) nb.push(q); }
+      const sc2 = q => md(q, meEnt) + md(q, k) * .5 + md(q, gu) * .1 + (q[0] === k.x || q[1] === k.y ? 0 : 3);   // 강박사와 같은 줄·칸이면 서로 똑바로 마주 봄
+      nb.sort((p, q) => sc2(p) - sc2(q));
       const to = A.reach(gu, nb, [[k.x, k.y]]); if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
       else { const CP = (CR?.path || D.path.slice(1)).slice(0, -1); gPath = [D.door, ...CP]; if (CP.length) await walk(gu, gPath, 180); }   // 빈 바닥 정보로 길이 안 나오는 맵: 문 → 손님 길을 따라 강박사 뒤까지
-      gu.f = 'u'; place(gu); }
+      face(gu, meEnt); }
     await gsay('관장님!! 전설의 체육관이라니…!<br>제가 여기서 일한 보람이 있어요…<br>흑흑…');
+    if (gu) { face(gu, k); face(k, gu); }   /* v19.24 경완: 티키타카 땐 강박사·안내원이 서로 바라봄 */
     await say('허허, 자네도 그동안 고생 많았네.');
     await gsay('그럼… 저도 명예의 전당에<br>이름이 올라가는 건가요?!');
     await say('…자네는 안내원이잖나.');
@@ -1411,8 +1417,9 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     dlg(''); root.classList.add('dhide'); meEnt.f = 'd'; place(meEnt);
     await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
     k.el.remove(); ents = ents.filter(x => x !== k); k = null;
+    if (gu) { face(gu, meEnt); await wait(250); await gsay('…관장님, 관장님.<br>(소곤소곤) 강박사님 연구 노트요,<br>사실 반은 점심 메뉴래요.'); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
-  } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn');
+  } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
     if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; place(gu); }
     if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
@@ -1563,7 +1570,7 @@ function renderTop() {
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
   $g('.gy-plate').classList.toggle('full', bsReady(g));   /* v15.42 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
   { const sk = $g('.gy-stk'), n = g.stk | 0; if (sk) { sk.hidden = n < 2; sk.textContent = `${n}연승 중!`; } }   /* 홈 평판 아래 연승 딱지 (경완 2026-11-04 시안 A) */
-  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = G.i; $g('.gy-plate').dataset.g = G.i; $g('.gy-plate').classList.toggle('canup', canBig(g));
+  $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = gi; $g('.gy-plate').dataset.g = gi;   /* v19.24 경완 '승급 전 리본이 승급 후 리본이랑 같음': 승급 연출 전엔 리본 색도 예전 등급 */ $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
 }
 // 새내기 체육관(등급 1)에선 훈련장·트레이너가 잠겨 있다 (경완 2026-10-29 '고용할 수 있는 트레이너가 없으니까')
