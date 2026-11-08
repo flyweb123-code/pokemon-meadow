@@ -2711,10 +2711,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     return res || {}; } };
 /* 실제 발동 (경완 2026-11-07 '유저별로 반복 X, 특정 층마다'): 이벤트마다 정해진 체육관 등급(g.gmax)에 처음 닿은 뒤 들어올 때 한 번.
    승급 축하·배지 창이 남아 있으면 그게 먼저 (다음 입장 때 시작). 점거 중(g.ev.cur)엔 도전자·주급·면접·훈련장 시계가 멈추고, 끝나면 그만큼 민다 */
-const EV_LIVE = false;   // 경완이 2·3·4장을 확인하면 켠다 (그 전엔 운영자 시험만)
-const EV_AT = { rocket: 2 };   // 이벤트 id → 등급 (0 새내기 1 동네 2 떠오르는 …)
-function evDue() { const g = st(); if (!EV_LIVE || !g?.d || g.shutAt || tutEnd || g.newBdg || g.q?.some(c => c.boss) || !(g.sf || []).length) return null;
-  return Object.keys(EV_AT).find(id => !(g.evd || {})[id] && (g.gmax | 0) >= EV_AT[id]) || null; }
+function evDue() { const g = st(); if (!g?.d || tutEnd) return null; return GA.evDue?.(g) || null; }   // 켜기·평판 문턱·다음 실행부터 = beta.html gymEvDue (필드 체육관 아이콘 R 딱지와 같은 조건)
 function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) return; const dt = Math.max(0, now - (g.ev?.t0 || now)); delete g.ev; g.evd = g.evd || {}; g.evd[id] = now;
   g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
   (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt; (g.tr || []).forEach(e => { if (e.t) e.t = now; });
