@@ -3219,8 +3219,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .wr-l{max-height:none;overflow:visible}
 #gym .wr-l li{align-items:stretch;padding:6px 10px 6px 6px;gap:8px}
 #gym .wr-l li.up{box-shadow:inset 3px 0 0 #3aa856,inset 0 0 0 2px #d8d8e4}
-#gym .wr-l li.dn{box-shadow:inset 3px 0 0 #d8584c,inset 0 0 0 2px #d8d8e4;background:#fff6f4}
-#gym .wr-l li.co{background:#f4f6fb}
+#gym .wr-l li.dn{box-shadow:inset 3px 0 0 #d8584c,inset 0 0 0 2px #d8d8e4}
+#gym .wr-l li.co{box-shadow:inset 3px 0 0 #9aa4c4,inset 0 0 0 2px #d8d8e4}   /* v19.09 경완: 줄 모양·바탕 모두 같게, 왼쪽 띠 색만 다름 */
 #gym .wr-l .aw-pic{align-self:center}
 #gym .wr-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;justify-content:center}
 #gym .wr-b p{margin:0}
