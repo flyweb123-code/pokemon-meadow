@@ -232,11 +232,13 @@ function tools(I, def) {
       setTimeout(() => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} I.confetti?.(); }, 1300);
       const gn = w.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 1700, T = 900, f2 = now => { const q = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(R.g * (1 - (1 - q) ** 3)).toLocaleString()}G`; if (q < 1 && gn.isConnected) requestAnimationFrame(f2); }; requestAnimationFrame(f2); }
       // 의상 보상은 해결 창을 닫으면 따로 크게 보여 준다 (경완 2026-11-07 '로켓단 제복은 옷 잘 보이게 새로운 창으로')
-      const fitWin = () => new Promise(ok2 => { if (!R.fit) return ok2(); const v = document.createElement('div'); v.className = 'ev-rw gy-pop pp-pop rw-pop';
-        v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="rw-halo"></i><img class="fw-pic" alt="" src="gym/img/fit/${R.fit}_${f}.png?v=${VER}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
+      // 의상 그림은 해결 창 뜰 때 미리 받아 두고, 의상 창은 그림이 준비된 뒤에 연다 (경완 2026-11-08 '스프라이트 바로 안 뜸')
+      const fitU = R.fit ? `gym/img/fit/${R.fit}_${f}.png?v=${VER}` : '', fitP = !R.fit ? Promise.resolve('') : new Promise(r2 => { const im = new Image(); im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => r2(fitU)); im.onerror = () => { const a = R.fitAlt ? R.fitAlt.replace('$', f) : ''; if (!a) return r2(fitU); const i2 = new Image(); i2.onload = i2.onerror = () => r2(a); i2.src = a; }; im.src = fitU; });
+      const fitWin = () => Promise.race([fitP, wait(2000).then(() => fitU)]).then(src => new Promise(ok2 => { if (!R.fit) return ok2(); const v = document.createElement('div'); v.className = 'ev-rw gy-pop pp-pop rw-pop';
+        v.innerHTML = `<div class="win"><div class="rw-hd fw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="rw-halo"></i><img class="fw-pic" alt="" src="${src}" onerror="this.onerror=null;this.src='${R.fitAlt ? R.fitAlt.replace('$', f) : ''}'"><b class="fw-new">NEW</b></div>
           <h4 class="pp-t"><small>새 의상을 받았다!</small>${I.esc(R.fitNm || '새 의상')}</h4><p class="rw-msg">상점 › 의상에서 언제든 갈아입을 수 있어요</p><div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
         root.appendChild(v); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} I.haptic?.(0);
-        v.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); v.remove(); ok2(); }; });
+        v.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); v.remove(); ok2(); }; }));
       w.querySelector('button').onclick = e => { e.stopPropagation(); I.sfx?.('tap'); w.remove(); fitWin().then(ok); }; }),
     // ---- 손에 넣기 (v19.18 경완 2026-11-08 '알을 줍는 즐거움·상점 아이템 발견·NPC 선물'): 알 또는 상점 물건 하나 ----
     // it = { k:'egg', g 등급 } 또는 { kinds:['it','mint','deco'], cap 골드 } (안 가진 것 중 하나를 그 자리에서 고름). key 를 주면 이 이벤트에서 한 번만
@@ -245,7 +247,7 @@ function tools(I, def) {
     mark: key => { const ev = g.ev || (g.ev = {}); ev.got = ev.got || {}; ev.got[key] = 1; I.save(); },
     got: async (S, it, o = {}) => { const ev = g.ev || (g.ev = {}); ev.got = ev.got || {}; ev.found = ev.found || []; if (o.key && ev.got[o.key]) return null;
       let L; if (it.k === 'x') L = { k: 'x', nm: it.nm, img: it.img, d: it.d };
-      else if (it.k === 'egg') { L = { k: 'egg', g: it.g || 1, nm: `${I.tyNm?.() || ''} 타입 ${I.eggGn?.(it.g || 1) || ''} 알`.trim() }; I.giveEgg?.(L.g, o.from || def.nm); }
+      else if (it.k === 'egg') { L = { k: 'egg', g: it.g || 1, nm: `${I.tyAdj?.() || ''} ${I.eggGn?.(it.g || 1) || ''} 알`.trim() }; I.giveEgg?.(L.g, o.from || def.nm); }
       else { L = await I.loot?.(it.kinds, it.cap, ev.found.map(f => f.id)); if (!L) L = await I.loot?.(['mint'], 0, ev.found.map(f => f.id)); if (!L) return null; I.giveLoot?.(L); }
       if (o.key) ev.got[o.key] = 1; if (L.k !== 'x') ev.found.push({ k: L.k, g: L.g, id: L.id, nm: L.nm, img: L.img }); I.save();
       // 가운데 창: 체육관 상점 그림 + 효과 (경완 2026-11-08 '아이템 주웠을 때는 상점 스프라이트, 중앙 박스에 효과랑 같이'). 저절로 뜨는 창이라 버튼으로만 닫힘 + 팝업 모션 + 팡파르
