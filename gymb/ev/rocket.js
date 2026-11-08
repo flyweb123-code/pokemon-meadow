@@ -23,7 +23,7 @@ async function healFx(A, F) { A.se('DP_KAIFUKU'); await A.wait(700); }   // 본�
 async function fight(A, F, S, s, o) {
   // 지친 채로는 다시 못 싸움: 돌담시티에선 포켓몬 센터에서 회복하고 와야 한다 (경완 2026-11-07)
   if (A.tired) { s.face(F.me); await S.say('(포켓몬들이 지쳐 있다...\n먼저 포켓몬 센터에 가서 회복시키자.)', { who: A.me() }); S.hide(true); return false; }
-  F.lock(true); A.music('hgEyeRoc'); F.bub(s, '!', 900); A.se('se_pin'); await A.wait(1000);
+  F.lock(true); A.music('hgEyeRoc'); F.bub(s, '!', 900); await A.wait(1000);   // 본가: 트레이너가 나를 봤을 땐 효과음 없이 만남 음악만 (SE_PIN 은 대본 속 놀람 '!' 에만, 경완 2026-11-08)
   if (F.sees(s) > 1) await F.come(s); else { s.face(F.me); F.me.face(s); }
   for (const t of s.lost ? ['또 왔냐?\n몇 번을 와도 똑같다고!'] : o.pre) await S.say(t, { who: o.who || G });
   S.hide(true);
