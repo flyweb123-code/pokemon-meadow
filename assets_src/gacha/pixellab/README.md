@@ -40,3 +40,6 @@ layout_mock/F_<red|rings|steps|dots|spark|purple|navy|green|pink>.png, 알은 �
 ## 뽑기 버튼 색 시안 (금색 1 배경, 게이지 14px 내림)
 layout_mock/F_btn_<red|blue|green>_<f|e>.png
 red 면 #d8352c 아래 음영 #a81f1c / blue #2f7fd8, #1f5aa8 / green #2fa45e, #1d7a44
+
+## shiny_mock/ 이로치 알 효과 시안
+shiny_eggs.html. CSS만 사용. 알 모양 마스크는 게임의 EGG_SVG 픽셀로 만든 SVG. 효과: 1 빛 훑기, 2 진주 광택, 3 반점 무지개(@property로 --es 색을 돌림), 4 픽셀 반짝, 5 금빛 테두리(--eo), 6 색 바뀐 알. 게임의 .shx 클래스에 붙이면 됨.
