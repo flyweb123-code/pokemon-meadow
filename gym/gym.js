@@ -970,7 +970,7 @@ const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) |
 const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
   if (GR_GOLD[i] && !noRw) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
   if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
-  if (i === GRADES.length - 1) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>`, `${GA.LT_ADJ?.[g.ty] || ''} 전설 알`, '<b>지급</b>']);   // v13.01 경완: 전설도 크기·트레이너·훈련장을 알 밑에
+  /* v18.87 경완 '전설 체육관은 전설 알 슬롯 없이 등급 혜택만': 전설 알은 강박사가 따로 들고 와서 준다 (legEggPop) */
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
   if (tc(i) !== tc(i - 1)) L.push(['tr', '', '훈련장', ar(tc(i - 1), tc(i), '칸')]);
@@ -1279,8 +1279,10 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
     for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 function legEggPop() { const g = st(), t = g.legN; if (!t) return Promise.resolve(); delete g.legN; save();
-  return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
-    pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">전설의 체육관이 된 기념으로<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
+  /* v18.87 경완 '따로 강박사가 들어와서 전설 알 지급하는 연출': 승급 보상창 다음에 강박사가 들어와 축하하고 알을 건넨 뒤 받는 창 */
+  const nm = trName(), adj = GA.LT_ADJ?.[t] || '';
+  return kang([`${nm ? nm + '!\n' : ''}소식 듣고 한달음에 달려왔단다!`, `${TYPE_KO[t]} 타입 전설의 체육관이라니…\n내가 사람 보는 눈은 정확하구나!`, '이건 리그 협회에서 맡긴\n아주 특별한 알이란다.\n앞으로도 잘 부탁한다!'], { lit: true, skip: false }).then(() => new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+    pop(`<h4>${adj} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">강박사에게서<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); })); }
 // 승급 (경완 2026-10-31): 홈 타이틀 배지가 밝게 빛나다가 번쩍 → 다음 등급 배지로 바뀜 → 축하창 (등급 혜택만, 설명 문구 없음)
 async function badgeGet(ty) {
   const g0 = st(), gN = g0.newG, gi = gN ?? gradeOf(g0.rep || 0).i;
@@ -1675,11 +1677,12 @@ function mgPop() {
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
-    const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'];
-    if (i === GRADES.length - 1) L.unshift(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알 지급`);
-    if (GR_EGG[i]) L.unshift(`<span class="pk-le">${grEggI(i)}</span>${grEggN(i)} ${GR_EGG[i][1]}개`);
-    if (GR_GOLD[i]) L.unshift(`<i class="coin"></i>${GR_GOLD[i].toLocaleString()}G`);   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
-    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div><ul>${L.map(t => `<li>${t}</li>`).join('')}</ul><i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
+    const L = [`체육관 크기 ${i + 1}단계`, SF_MAX[i] ? `트레이너 ${SF_MAX[i]}명 고용` : '트레이너 고용 잠김', i ? `훈련장 ${Math.min(6, i)}칸` : '훈련장 잠김'], R = [];
+    if (GR_GOLD[i]) R.push(`<i class="coin"></i>${GR_GOLD[i].toLocaleString()}G`);
+    if (GR_EGG[i]) R.push(`<span class="pk-le">${grEggI(i)}</span>${grEggN(i)} ${GR_EGG[i][1]}개`);
+    if (i === GRADES.length - 1) R.push(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알`);   /* v18.87 경완 '등급표에 승급 보상이랑 등급 혜택 나눠서': 처음 오를 때 한 번 받는 것 / 그 등급의 혜택 */
+    const ul = (h, A) => A.length ? `<h6 class="pk-gh">${h}</h6><ul>${A.map(t => `<li>${t}</li>`).join('')}</ul>` : '';   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
+    return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   pop(`<h4>${TYPE_KO[g.ty]} 체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)

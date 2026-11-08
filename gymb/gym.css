@@ -3142,3 +3142,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-pop .mp-head>.mp-hd{align-self:stretch;justify-content:space-between}.gy-pop .mp-head>.mp-hd>*{margin-top:0!important;margin-bottom:0!important}
 .gy-pop .mp-xpr{flex:0 0 100%;display:flex;flex-direction:column;gap:3px}.gy-pop .mp-xpr .mp-xp{margin:0!important;width:100%}
 .gy-pop .mp-xpt{display:flex;justify-content:space-between;align-items:baseline}.gy-pop .mp-xpt small{display:inline!important;width:auto!important;font-size:11px;color:var(--dim)}
+
+/* v18.87 경완: 등급표 승급 보상 / 등급 혜택 나눠 보이기 */
+#gym .gy-perk>li>.bdw,#gym .gy-perk>li>.g-emb{grid-row:1/span 5}
+#gym .gy-perk>li>h6.pk-gh{grid-column:2;margin:6px 0 0;font-size:11px;letter-spacing:1px;color:#8a5a10}
+#gym .gy-perk>li>h6.pk-gh+ul{margin-top:2px}
