@@ -1353,7 +1353,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     const SP = Array.from({ length: 14 }, (_, n) => `<i style="left:${(n * 37 + 11) % 100}%;top:${(n * 53 + 7) % 78}%;animation-delay:${(n * .37 % 2.2).toFixed(2)}s"></i>`).join('');
     ov = document.createElement('div'); ov.className = 'hof gba';
     const UP = Array.from({ length: 18 }, (_, n) => `<i style="left:${(n * 41 + 5) % 100}%;--s:${(.6 + (n * 7 % 5) * .18).toFixed(2)};animation-duration:${(5 + n * 1.3 % 4).toFixed(1)}s;animation-delay:-${(n * .83 % 6).toFixed(2)}s"></i>`).join('');   /* v19.21 경완 '더 웅장하게': 올라가는 빛 알갱이 */
-    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-sun"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-beam c"></i><i class="hof-floor"></i><i class="hof-ring"></i><i class="hof-sp">${SP}</i><i class="hof-up">${UP}</i><i class="hof-bar t"></i><i class="hof-bar b"></i>
+    ov.innerHTML = `<i class="hof-bg"></i><i class="hof-sun"></i><i class="hof-beam l"></i><i class="hof-beam r"></i><i class="hof-beam c"></i><i class="hof-floor"></i><i class="hof-ring"></i><i class="hof-sp">${SP}</i><i class="hof-up">${UP}</i>
       <div class="hof-ttl"><small>${ty} 타입 · 전설의 체육관</small><b>명예의 전당</b></div><div class="hof-st"></div><div class="hof-cap"></div><i class="hof-flash"></i>`;
     F.el.appendChild(ov); root.classList.add('lgOn'); void ov.offsetWidth; ov.classList.add('hOn'); M?.stop?.(.6); await wait(800);
     bgmPlay('rgHof'); ov.classList.add('hTtl'); await hofWait(ov, 2600); ov.classList.remove('hTtl'); await wait(500);
