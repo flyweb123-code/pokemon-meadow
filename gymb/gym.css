@@ -3150,7 +3150,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v18.93 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 웅장하게': 전설 알 지급 = 명예의 전당 등록 연출 (legEggPop) */
 #gym.lgOn .gy-dlg{z-index:62}
-#gym.lgF .gy-kang.tw-talk .gy-k-box{margin-bottom:var(--lgB)}   /* v19.24 경완: 전당 화면 대사창도 메뉴 위 대사창 자리 */
 #gym .hof{position:absolute;inset:0;z-index:60;overflow:hidden;pointer-events:auto;opacity:0;transition:opacity .8s;color:#fff}
 #gym .hof.hOn{opacity:1}#gym .hof.hBye{opacity:0;transition:opacity .9s}
 #gym .hof-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#2a2050 0,#120d26 45%,#04030a 100%)}
@@ -3180,7 +3179,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .hof-mini{position:absolute;bottom:18px;left:50%;--a:calc((var(--n) - (var(--c) - 1) / 2));translate:calc(var(--a) * 62px - 50%) calc(-1 * (2.5 - (var(--a) * var(--a)) * .2) * 14px);scale:.72;transform-origin:50% 100%;opacity:.95;animation:hofFd .7s ease-out calc(var(--n) * .12s) both}
 @keyframes hofFd{from{opacity:0;filter:brightness(3)}to{opacity:.95;filter:none}}
 #gym .hof.hEgg .hof-all{filter:brightness(.55);transition:filter .8s}
-#gym .hof-pil{position:absolute;left:50%;top:0;width:120px;height:62%;margin-left:-60px;background:linear-gradient(90deg,transparent,rgba(255,250,220,.75) 35%,#fff 50%,rgba(255,250,220,.75) 65%,transparent);opacity:0;scale:.2 1;transition:opacity .6s,scale .8s cubic-bezier(.2,1.3,.4,1);mix-blend-mode:screen;height:72%;-webkit-mask:linear-gradient(#000 55%,transparent);mask:linear-gradient(#000 55%,transparent)}   /* v19.24 경완 '알 내려올 때 중간에 잘림 선': 빛기둥 끝을 흐리게 */
+#gym .hof-pil{position:absolute;left:50%;top:0;width:120px;height:62%;margin-left:-60px;background:linear-gradient(90deg,transparent,rgba(255,250,220,.75) 35%,#fff 50%,rgba(255,250,220,.75) 65%,transparent);opacity:0;scale:.2 1;transition:opacity .6s,scale .8s cubic-bezier(.2,1.3,.4,1);mix-blend-mode:screen}
 #gym .hof.hDrop .hof-pil{opacity:.85;scale:1 1}#gym .hof.hGot .hof-pil{opacity:0;transition:opacity 1.2s}
 #gym .hof-ray{position:absolute;left:50%;top:31%;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;background:repeating-conic-gradient(rgba(255,226,120,.5) 0 8deg,transparent 8deg 22deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 66%);mask:radial-gradient(circle,#000 16%,transparent 66%);opacity:0;scale:.2;transition:opacity .6s,scale 1s cubic-bezier(.2,1.3,.4,1);animation:lgSpin 14s linear infinite}
 #gym .hof.hGot .hof-ray{opacity:1;scale:1}
@@ -3189,8 +3188,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .hof-egg .egg{width:100%!important;height:100%!important;filter:drop-shadow(0 0 12px rgba(255,236,150,.95))}
 #gym .hof.hWob .hof-egg{animation:lgWob .8s ease-in-out}
 #gym .hof.hGot .hof-egg .egg{filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 34px rgba(255,220,110,.95)) brightness(1.12)}
-#gym .hof-flash{position:absolute;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none}#gym .hof.hGot .hof-flash{animation:hofGf 1.1s ease-in-out}
-@keyframes hofGf{0%{opacity:0}25%{opacity:.85}100%{opacity:0}}
+#gym .hof-flash{position:absolute;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none}#gym .hof.hGot .hof-flash{animation:lgFl .8s ease-out}
 @keyframes hofIn{0%{opacity:0;translate:0 24px;filter:brightness(3)}60%{opacity:1;filter:brightness(1.6)}100%{opacity:1;translate:0 0;filter:none}}
 @keyframes hofOut{to{opacity:0;translate:-40px 0}}
 @keyframes hofSwL{from{rotate:-30deg}to{rotate:-12deg}}@keyframes hofSwR{from{rotate:30deg}to{rotate:12deg}}
@@ -3199,63 +3197,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes lgTw{0%,100%{scale:.2;opacity:0}50%{scale:1;opacity:1}}
 @keyframes lgWob{0%,100%{rotate:0deg}20%{rotate:-14deg}40%{rotate:12deg}60%{rotate:-8deg}80%{rotate:5deg}}
 @keyframes lgFl{0%{opacity:.95}100%{opacity:0}}
-/* v19.18 경완 전설 전당: 본가 등록 기계 볼·모니터, 등록 화면은 도트 그림 느낌 (계단식 움직임·본가 글상자) */
-#gym .hm-balls{position:absolute;inset:0;z-index:5002;pointer-events:none}
-#gym .hm-ball{position:absolute;background-size:100% 100%;image-rendering:pixelated}
-#gym .hm-balls.fl .hm-ball{animation:hmFl .533s steps(1,end) infinite}
-#gym .hm-balls.on .hm-ball{filter:brightness(1.25)}
-@keyframes hmFl{0%{filter:sepia(1) saturate(4) brightness(2.2)}25%{filter:sepia(1) saturate(3) brightness(1.7)}50%{filter:sepia(.6) saturate(2) brightness(1.3)}75%{filter:none}}
-#gym .hm-mon{position:absolute;z-index:5002;pointer-events:none;background-repeat:no-repeat;image-rendering:pixelated;background-position:0 -48px}
-/* v19.21 경완 '명예의 전당 더 웅장하게, 스포트라이트·배경 뚝뚝 안 끊겨도 돼': 부드러운 빛, 뒤에서 도는 금빛 햇살, 올라가는 빛 알갱이, 포켓몬마다 빛 폭발. 포켓몬·트레이너 그림만 도트 그대로 */
-#gym .hof.gba .hof-pk i,#gym .hof.gba .hof-pk img,#gym .hof.gba .hof-tr,#gym .hof.gba .hof-mini i,#gym .hof.gba .hof-mini img{image-rendering:pixelated}
-#gym .hof.gba .hof-bg{background:radial-gradient(ellipse 90% 60% at 50% 42%,#3a2c78 0,#1a1446 38%,#08061a 75%,#020108 100%)}
-#gym .hof.gba .hof-bg::after{content:'';position:absolute;inset:-40px;background-image:linear-gradient(rgba(150,170,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(150,170,255,.07) 1px,transparent 1px);background-size:40px 40px;-webkit-mask:radial-gradient(ellipse at 50% 55%,#000 10%,transparent 70%);mask:radial-gradient(ellipse at 50% 55%,#000 10%,transparent 70%);animation:hofGrid 18s linear infinite}
-@keyframes hofGrid{to{translate:40px 40px}}
-#gym .hof-sun{position:absolute;left:50%;top:44%;width:820px;height:820px;margin:-410px 0 0 -410px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,222,130,.20) 0 6deg,transparent 6deg 15deg);-webkit-mask:radial-gradient(circle,#000 8%,rgba(0,0,0,.5) 30%,transparent 62%);mask:radial-gradient(circle,#000 8%,rgba(0,0,0,.5) 30%,transparent 62%);opacity:0;transition:opacity 1.6s;animation:lgSpin 40s linear infinite}
-#gym .hof.hLit .hof-sun,#gym .hof.hTtl .hof-sun{opacity:1}
-#gym .hof.gba .hof-beam{width:52%;background:linear-gradient(180deg,rgba(255,248,215,.55),rgba(255,232,160,.18) 60%,transparent 92%);clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);filter:blur(3px)}
-#gym .hof.gba .hof-beam.l{animation:hofSwL 7s ease-in-out infinite alternate}#gym .hof.gba .hof-beam.r{animation:hofSwR 7s ease-in-out -3.5s infinite alternate}
-#gym .hof-beam.c{left:24%;width:52%;rotate:0deg;opacity:0;animation:hofBc 4s ease-in-out infinite alternate}
-#gym .hof.hLit .hof-beam.c{opacity:.75}
-@keyframes hofBc{from{scale:.92 1}to{scale:1.08 1}}
-#gym .hof.gba .hof-floor{top:66%;width:340px;height:84px;margin:-42px 0 0 -170px;background:radial-gradient(ellipse,rgba(255,246,210,.85),rgba(255,214,120,.35) 42%,transparent 70%);animation:hofFp 2.4s ease-in-out infinite alternate}
-@keyframes hofFp{from{filter:brightness(.85)}to{filter:brightness(1.2)}}
-#gym .hof-ring{position:absolute;left:50%;top:66%;width:200px;height:50px;margin:-25px 0 0 -100px;border-radius:50%;border:2px solid rgba(255,230,150,.9);box-shadow:0 0 16px rgba(255,214,90,.8),inset 0 0 12px rgba(255,214,90,.6);opacity:0;pointer-events:none}
-#gym .hof.hBurst .hof-ring{animation:hofRg 1.3s cubic-bezier(.1,.7,.3,1) .45s}
-@keyframes hofRg{0%{opacity:1;scale:.3}100%{opacity:0;scale:2.4}}
-#gym .hof.gba .hof-sp i{width:12px;height:12px;margin:-6px;background:#fff8d8;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);filter:drop-shadow(0 0 4px #ffe08a);animation:lgTw 2.6s ease-in-out infinite both}
-#gym .hof-up{position:absolute;inset:0;opacity:0;transition:opacity 1.2s;pointer-events:none}#gym .hof.hLit .hof-up,#gym .hof.hTtl .hof-up{opacity:1}
-#gym .hof-up i{position:absolute;bottom:-10px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#ffe9a8;box-shadow:0 0 8px 2px rgba(255,214,110,.75);scale:var(--s);animation:hofRise linear infinite}
-@keyframes hofRise{0%{translate:0 0;opacity:0}15%{opacity:1}100%{translate:18px -720px;opacity:0}}
-#gym .hof.gba .hof-ttl{transition:opacity 1.2s,scale 2.2s cubic-bezier(.15,1,.3,1),letter-spacing 2.2s}
-#gym .hof.gba .hof-ttl b{font-size:40px;letter-spacing:8px;background:linear-gradient(100deg,#c88a20 0,#ffe48a 30%,#fffbe6 45%,#ffe48a 60%,#c88a20 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 3px 0 #6a4208) drop-shadow(0 0 16px rgba(255,200,80,.7));animation:hofShim 3s ease-in-out infinite}
-@keyframes hofShim{0%{background-position:100% 0}100%{background-position:-50% 0}}
-#gym .hof.gba .hof-pk.in{animation:hofInB 1.1s cubic-bezier(.2,.9,.25,1) both}#gym .hof.gba .hof-pk.out{animation:hofOutB .7s cubic-bezier(.5,0,.8,.4) both}
-@keyframes hofInB{0%{opacity:0;translate:280px 0;filter:brightness(0) invert(1) drop-shadow(0 0 20px #fff)}55%{opacity:1;translate:-6px 0;filter:brightness(0) invert(1) drop-shadow(0 0 24px #fff)}80%{translate:0 0;filter:brightness(1.6) drop-shadow(0 0 18px rgba(255,240,190,.9))}100%{opacity:1;translate:0 0;filter:drop-shadow(0 0 12px rgba(255,240,190,.55))}}   /* v19.31 경완: 오른쪽에서 등장 */
-@keyframes hofOutB{to{opacity:0;translate:-90px 0;scale:1.3;filter:brightness(2) blur(2px)}}
-#gym .hof.gba .hof-pk span{animation:hofBob 2.6s ease-in-out 1.1s infinite alternate}
-@keyframes hofBob{to{translate:0 -6px}}
-#gym .hof.gba .hof-tr{animation:hofInB 1.1s cubic-bezier(.2,.9,.25,1) both;scale:1}
-#gym .hof.hBurst .hof-flash{animation:hofBf 1.1s ease-in-out .3s}
-@keyframes hofBf{0%{opacity:0}30%{opacity:.42}100%{opacity:0}}   /* v19.31 경완: 번쩍일 때 살짝 디졸브 */
-#gym .hof.gba .hof-cap{border-radius:4px;border:3px solid #f3d27a;background:linear-gradient(#2c3a78,#1a2250);box-shadow:0 0 0 3px #3a2808,0 0 28px rgba(255,214,90,.45),inset 0 0 0 2px #5878c8;translate:-50% 14px;transition:opacity .6s,translate .8s cubic-bezier(.2,1,.3,1),scale .8s cubic-bezier(.2,1,.3,1)}
-#gym .hof.gba .hof-cap.on{translate:-50% 0}
-#gym .hof.gba .hof-cap b{color:#fff6d0;text-shadow:2px 2px 0 #102048,0 0 10px rgba(255,220,120,.6)}#gym .hof.gba .hof-cap i{color:#a8c8ff}
-/* 전설 알 받았다 알림창 (하단, 팝업 모션, 버튼으로만 닫힘) */
-#gym .hof-got{position:absolute;left:14px;right:14px;bottom:var(--lgB,14px);z-index:6;display:grid;grid-template-columns:auto 1fr;grid-template-areas:'ic tx' 'ok ok';gap:10px 14px;align-items:center;padding:14px 16px 14px;border:3px solid #f3d27a;border-radius:8px;background:linear-gradient(160deg,#34307a,#1a1648 60%,#120e34);box-shadow:0 0 0 3px #3a2808,0 10px 30px rgba(0,0,0,.55),0 0 36px rgba(255,210,90,.45);overflow:hidden;transform-origin:50% 100%;animation:hgPop .5s cubic-bezier(.2,1.3,.4,1) both;pointer-events:auto}
-#gym .hof-got.bye{animation:hgBye .26s ease-in both}
-@keyframes hgPop{0%{opacity:0;transform:translateY(40px) scale(.3)}60%{opacity:1;transform:translateY(-4px) scale(1.06)}100%{transform:none}}
-@keyframes hgBye{to{opacity:0;transform:translateY(30px) scale(.85)}}
-#gym .hg-shine{position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,250,220,.22) 50%,transparent 65%);background-size:250% 100%;animation:hofShim 2.6s ease-in-out infinite;pointer-events:none}
-#gym .hg-ic{grid-area:ic;position:relative;width:70px;height:78px;display:grid;place-items:center}
-#gym .hg-ic .egg{width:58px!important;height:70px!important;position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(255,236,150,.95))}
-#gym .hg-halo{position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,160,.75),rgba(255,210,90,.2) 50%,transparent 70%);animation:hofFp 1.4s ease-in-out infinite alternate}
-#gym .hg-tx{grid-area:tx;display:flex;flex-direction:column;gap:3px;min-width:0;position:relative}
-#gym .hg-tx small{font-size:11px;letter-spacing:2px;color:#ffd970}
-#gym .hg-tx b{font-size:19px;color:#fff6d0;text-shadow:2px 2px 0 #0e0a2a}
-#gym .hg-tx p{margin:0;font-size:12px;line-height:1.5;color:#d4d0f4}
-#gym .hg-ok{grid-area:ok;position:relative;height:42px;border:0;border-radius:6px;font:inherit;font-size:16px;font-weight:700;color:#4a2c00;background:linear-gradient(#ffe68a,#f2b83a);box-shadow:0 4px 0 #a86e10,0 6px 10px rgba(0,0,0,.35);cursor:pointer;transition:transform .08s,box-shadow .08s}
-#gym .hg-ok:active{transform:translateY(4px);box-shadow:0 0 0 #a86e10,0 2px 4px rgba(0,0,0,.3)}
 /* v19.08 경완 주간 보고서: 결산 장부 + 트레이너별 주급 대비 수익 (aw-pop 틀) */
 #gym .gy-pop.aw-wrap .win:has(.wr-pop){max-width:372px;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 #gym .wr-pop{gap:9px}
