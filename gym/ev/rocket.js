@@ -57,11 +57,11 @@ const WG_L = [
 ];
 // 로켓단 간부 아테나가 모니터로 (경완 2026-11-08 '로켓단 시리즈 예고 뒤에 모니터 켜지면서 아테나 나오는 연출')
 // 모니터 속 간부: 정체는 감춘 실루엣 (경완 2026-11-08 '아테나는 정체 드러내지 않고 실루엣으로'). body() 동안 화면이 켜져 있다
-async function crt(A, body) { const w = document.createElement('div'); w.className = 'ev-crt'; w.innerHTML = `<div><img alt="" src="${IM}pt/tr/hg_ariana.png"><b>● LIVE</b></div>`;
+async function crt(A, body) { const w = document.createElement('div'); w.className = 'ev-crt'; w.innerHTML = `<i class="crt-bk"></i><div><img alt="" src="${IM}pt/tr/hg_ariana.png"><i></i><b>● LIVE</b></div>`;
   A.se('se_select'); A.I.root.appendChild(w); const sc = w.firstElementChild; A.I.haptic?.(0);
   await sc.animate([{ transform: 'scale(1,.02)', filter: 'brightness(4)' }, { transform: 'scale(1,1)', filter: 'brightness(1)' }], { duration: 380, easing: 'ease-out' }).finished.catch(() => {});
   await body();
-  await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('se_select'); w.remove(); }
+  await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('se_select'); await A.wait(450); await w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished.catch(() => {}); w.remove(); }
 // 글자 입력 창 (암호 등): 버튼으로만 닫힘. 그만두면 null
 const askText = (A, t, ph = '') => new Promise(ok => { const I = A.I, w = document.createElement('div'); w.className = 'ev-ask ev-pw';
   w.innerHTML = `<div class="win"><h4>${I.esc(t)}</h4><input type="text" class="ev-in" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${I.esc(ph)}"><div class="bt2 gy-btns"><button type="button" data-a="0">그만두기</button><button type="button" class="main" data-a="1">말한다</button></div></div>`;
@@ -110,6 +110,7 @@ const STOP = [
     pre: ['말실수했잖아... 너 때문이야!\n배틀로 기억을 지워 주마!!'], post: ['말도 안 돼...\n오늘 일진 최악이야...'], beaten: ['아무것도 못 들은 거다?\n알았지?', '...람다 님한텐 비밀이야.'] },
 ];
 GymEv.def({
+  skipGot: ch => ch >= 2 ? ['kong', 'dol', 'suit', 'miso', 'pw', 'gr', 'stairs'] : null,   // 2장부터 시험하면 1장에서 변장까지 한 걸로 (경완 2026-11-08)
   id: 'rocket', ready: true, nm: '로켓단의 체육관 점거', sub: '로켓단이 내 체육관을 빼앗고 트레이너들을 데려갔다!',
   songs: ['hgEyeRoc', 'hgAjito', 'hgVsRoc', 'hgNibi'], imgs: ['pt/ow/hg_rocket_m', 'ev/rocket/heal_ball', 'ev/rocket/heal_mon', 'ev/rocket/ybox', 'pt/ow/hg_rocket_f', 'pt/ow/hg_petrel', 'ev/rocket/crate', 'ev/rocket/machine', 'ev/rocket/pc', 'ev/rocket/ball', 'ev/rocket/rock', 'ev/rocket/hat', 'ev/rocket/safe', 'ev/rocket/hat_d', 'ev/rocket/hat_u', 'ev/rocket/pot', 'ev/rocket/steps', 'ev/rocket/house_e', 'ev/rocket/house_e_o', 'pt/tr/hg_ariana', 'ev/rocket/mon', 'ev/rocket/mon_on'],
   reward: { g: 3000, rep: 30, fit: 'rocket', fitNm: '로켓단 제복', fitAlt: 'gym/img/pt/tr/hg_rocket_$.png', emb: 'R', embImg: `${IM}ev/rocket/r_emb.png?v=2`, hd: ['#7a1c28', '#26070c'], crew: true, msg: '로켓단을 몰아내고\n빼앗긴 체육관과 트레이너들을 모두 되찾았다!' },
@@ -262,7 +263,7 @@ GymEv.def({
       const hide = (key, x, y, it, room) => { if (!A.has(key)) F.hide(x, y, { key, it, room: room || 'main' }); };
       hide('c2e1', 5, 3, { k: 'egg', g: 2 }); ball('c2b1', 10, 5, { kinds: ['mint'] });   // 돌쇠 정원 안
       hide('c2e2', 28, 27, { k: 'egg', g: 1 });   // 꽃밭
-      hide('c2h1', 38, 34, { kinds: ['it'], cap: 3500 });   // 남쪽 풀밭
+      hide('c2h1', 38, 34, { kinds: ['it', 'tm'], cap: 3500 });   // 남쪽 풀밭
       // 빈집: 발자국이 오른쪽 화분까지, 화분을 옮기면 그 자리에 계단
       const POTD = [[10, 5], [9, 5], [8, 6], [9, 6]];
       const pot = F.obst(`${IM}ev/rocket/pot.png?${VB}`, ...(A.has('stairs') ? POTD[0] : [10, 7]), { h: 32, room: 'house', kind: 'pot' });
@@ -483,7 +484,7 @@ GymEv.def({
       const CR = `${IM}ev/rocket/crate.png?v=3`, BALL = `${IM}ev/rocket/ball.png?${VA}`;
       const pile = A.has('c3pile') ? [] : [F.obst(CR, 3, 12, { h: 32, kind: 'crate' }), F.obst(CR, 4, 12, { h: 32, kind: 'crate' })];   // 왼쪽 방 입구를 막은 R 상자 더미
       const ball = (key, x, y, it) => { if (A.has(key)) return null; const b = F.obst(BALL, x, y, { kind: 'ball' }); b.key = key; b.it = it; return b; };
-      const BOXIT = { kinds: ['it', 'mint'], cap: 4000 };
+      const BOXIT = { kinds: ['it', 'mint', 'tm'], cap: 4000 };
       // 복도 끝 R 상자 하나: 부수면 안에 있던 몬스터볼이 보임 (경완 2026-11-08 '상자 밑에 아이템 있을 때는 몬스터볼 스프라이트도')
       const box = A.has('c3box') ? (ball('c3x1', 26, 9, BOXIT), null) : F.obst(CR, 26, 9, { h: 32, kind: 'rbox' });
       // 엘리베이터 발전기: 엘리베이터 바로 앞이 아니라 왼쪽 방 안쪽에 (경완 2026-11-08 '발전기를 좀 다른 데다')
@@ -491,7 +492,7 @@ GymEv.def({
       F.obst(CR, 17, 2, { h: 32, kind: 'bar' }); F.obst(CR, 15, 30, { h: 32, kind: 'bar' });   // 막힌 계단 앞 상자
       const RAT = new Set(['7,13', '7,14']), ratBox = A.has('c3rat') ? null : F.obst(`${IM}ev/rocket/ybox.png?${VA}`, 7, 14, { h: 32, kind: 'rat' });   // 발전기 방 오른쪽 노란 상자 (맵 그림에선 지우고 치울 수 있는 상자로)
       const hide = (key, x, y, it) => { if (!A.has(key)) F.hide(x, y, { key, it }); };
-      ball('c3b1', 6, 17, { kinds: ['it'], cap: 4000 }); hide('c3e1', 1, 18, { k: 'egg', g: 2 });   // 왼쪽 방 안
+      ball('c3b1', 6, 17, { kinds: ['tm', 'it'], cap: 4000 });   // 라인업이 배울 기술머신·기술레코드 (경완 2026-11-08) hide('c3e1', 1, 18, { k: 'egg', g: 2 });   // 왼쪽 방 안
       hide('c3h1', 16, 16, { kinds: ['mint'] });   // 가운데 방 화분 속
       F.cam(me.x, me.y); A.music('hgAjito'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);

@@ -725,7 +725,7 @@ async function run(opts) {
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {} };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {} };
   frHooks(btl); B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
@@ -808,7 +808,7 @@ async function choose(req) {
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; const i = await movePanel(req); if (i == null) continue; return 'move ' + (i + 1); }
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'bag') { await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
-    if (a === 'run') { if (await yesNo(B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
+    if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
 // 이름표 "p1a: 피카츄" → 편
