@@ -32,6 +32,7 @@ const PART = {
   hsEyeRiv: [578240, 6976, 'hg'], hsWin1: [860000, 3164, 'hg'], hsWin3: [868960, 6180, 'hg'],
   hbSeF: [1937472, 5088, 'hg'], hwSeF: [7948960, 95352, 'hg'], hbThlon: [2029760, 5180, 'hg'], hwThlon: [8398272, 99384, 'hg'],   // v19.77 하트골드 필드 효과음 (뛰어내리기·문·부딪힘, 경완 2026-11-08)
   hseDANSA: [1544416, 60, 'hg'], hseDANSA4: [1557024, 176, 'hg'], hseDANSA5: [1529696, 60, 'hg'], hseUFO_JUMP: [1679584, 176, 'hg'], hseDOOR: [1543424, 168, 'hg'], hseDOOR_OPEN: [1543616, 164, 'hg'], hseDOOR_CLOSE: [1543808, 168, 'hg'], hseDOOR_CLOSE2: [1544000, 164, 'hg'], hseDOOR10: [1544192, 156, 'hg'], hseDOOR_OPEN5: [1536480, 184, 'hg'], hseHIKIDO_OPEN: [1700800, 328, 'hg'], hseWALL_HIT: [1542880, 152, 'hg'], hseWALL_HIT2: [1543040, 152, 'hg'], hseKABEHIT: [1689824, 280, 'hg'],
+  hseSELECT: [1199552, 120, 'hg'], hseKAIDAN2: [1543200, 208, 'hg'], hsePINPON: [1539168, 56, 'hg'], hsePC_ON: [1544480, 88, 'hg'], hseELEBETA: [1545152, 52, 'hg'], hseKATI: [1539520, 96, 'hg'],   // v19.8x 남은 GBA 효과음도 하트골드로 (경완 2026-11-08)
   hsEyeRoc: [665472, 3252, 'hg'], hsVsRoc: [741344, 10192, 'hg'], hsAjito: [528256, 4868, 'hg'], hbD9: [1924000, 4580, 'hg'], hwD9: [7893664, 4872, 'hg'], hsNibi: [354464, 6804, 'hg'], hbF16: [1838656, 4592, 'hg'], hwF16: [7568928, 6072, 'hg'],   // 체육관 이벤트 로켓단 (2026-11-07): SEQ_GS_EYE_ROCKET·VS_ROCKET·D_AJITO
 };
 const BANK = { hF: { b: 'hbSeF', w: ['hwBasic', 'hwSeF'] }, hT: { b: 'hbThlon', w: ['hwBasic', 'hwThlon'] }, field: { b: 'bField', w: ['wBasic', 'wField'] }, battle: { b: 'bBattle', w: ['wBasic', 'wBattle'] }, S: { b: 'bSe', w: ['wBasic', 'wSe'] }, B: { b: 'bBasic', w: ['wBasic'] }, F: { b: 'bSeF', w: ['wBasic', 'wSeF'] }, dungeon: { b: 'bDungeon', w: ['wBasic', 'wDungeon'] },
@@ -230,6 +231,9 @@ async function seMake(ctx, nm) {
   const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));
   const r = await work({ seq: blk.slice(e[0], e[0] + e[1]), bankKey: B.b, bank: bk, warKeys: B.w, wars: ws, vol: e[3], gain: 1, trim: true });
   sent.add(B.b); B.w.forEach(w => sent.add(w));
+  // e[5]: 크기 맞추기 (하트골드 필드 효과음은 원본이 작아서 FR 소리 크기에 맞춤), e[6]: 그 초에서 0.08초 동안 줄이며 끊기 (엘리베이터처럼 계속 도는 소리)
+  if (e[5] && e[5] !== 1) for (const C of [r.L, r.R]) for (let i = 0; i < C.length; i++) C[i] *= e[5];
+  if (e[6] && r.L.length > e[6] * r.rate) { const n = Math.round(e[6] * r.rate), f = Math.round(.08 * r.rate); r.L = r.L.slice(0, n); r.R = r.R.slice(0, n); for (let i = 0; i < f; i++) { const q = 1 - i / f; r.L[n - f + i] *= q; r.R[n - f + i] *= q; } }
   return toBuf(ctx, r);
 }
 function seGet(ctx, nm) {
