@@ -16,6 +16,9 @@ const DSX = x => 128 + x * PPU, DSY = y => 96 - y * PPU;
 const MX = 96 / (DSX(2.5) - DSX(-2.5)), MY = (56 - 104) / (DSY(0.75) - DSY(-1.5625));
 const OX = 80 - DSX(-2.5) * MX, OY = 104 - DSY(-1.5625) * MY;
 const KX = PPU * MX, KY = PPU * MY;
+// 위아래 자리 (v19.16 경완 '아쿠아제트·다이빙 효과 밑이 잘림'): 원본은 내 포켓몬 (64,112)·상대 (192,48), 대화창 윗선 144 밑은 가려지게 만들어짐.
+// 크기는 그대로 두고 자리만, 원본 상대 자리(48)→56, 원본 대화창 윗선(144)→우리 잘림선(144)에 오게 펼친다 (예전엔 144 가 128 에 와서 가려질 부분 16줄이 보이다 잘렸음)
+const PY0 = 56 + (112 - 48) * (144 - 56) / (144 - 48), PMY = (56 - PY0) / (DSY(0.75) - DSY(-1.5625)), POY = PY0 - DSY(-1.5625) * PMY;
 const MAX_EM = 20, MAX_PT = 200;
 
 // ---------- 난수 (원본 SPLRandom 그대로) ----------
@@ -244,7 +247,7 @@ function drawP(g, e, p, child) {
   const ti = p.tex, key = child ? `${ti}|${ch.tS}|${ch.tT}|${ch.fS}|${ch.fT}` : `${ti}|${r.tS}|${r.tT}|${r.fS}|${r.fT}`;
   const base = child ? texImg(e.d, ti, ch.tS, ch.tT, ch.fS, ch.fT) : texImg(e.d, ti, r.tS, r.tT, r.fS, r.fT); if (!base) return;
   const img = tinted(e.d, key, base, p.col);
-  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = OY + DSY(p.ep[1] + p.pos[1]) * MY;
+  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY;   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
   g.globalAlpha = a / 31;
   g.setTransform(KX * A[0], -KY * A[1], -KX * B[0], KY * B[1], X, Y);
   g.drawImage(img, px - 1, -py - 1, 2, 2);
