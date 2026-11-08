@@ -14,7 +14,7 @@ h1{font-size:20px;margin:0}
 .chips button:focus-visible,#go:focus-visible{outline:2px solid #fff;outline-offset:2px}
 #fit{position:relative;width:100%;overflow:hidden;border:3px solid #000;box-sizing:border-box}
 #st{position:absolute;left:0;top:0;width:390px;height:786px;transform-origin:0 0;overflow:hidden;background:radial-gradient(circle at 195px 388px,#fffbe0 0,#ffe68a 26%,#e8a92a 60%,#7a4a10 100%);-webkit-user-select:none;user-select:none}
-#st.quake{animation:qk .09s linear infinite}
+#st.quake>:is(#mw,.ui,#tabs,#out){animation:qk2 .09s linear infinite}@keyframes qk2{0%{translate:0 0}25%{translate:-6px 3px}50%{translate:5px -4px}75%{translate:-3px -3px}}
 @keyframes qk{0%{transform:var(--sc) translate(0,0)}25%{transform:var(--sc) translate(-6px,3px)}50%{transform:var(--sc) translate(5px,-4px)}75%{transform:var(--sc) translate(-3px,-3px)}}
 .ui{position:absolute;left:14px;right:14px;display:flex;flex-direction:column;gap:7px}
 #top{top:62px}#bot{bottom:58px}
