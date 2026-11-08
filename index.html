@@ -7398,7 +7398,7 @@ async function bakOpen() {
   el.innerHTML = `<div class="win ipwin bak-win" role="dialog" aria-label="자동 백업"><div class="sheet-head"><h3>자동 백업</h3><button class="opt" data-x>닫기</button></div><p class="bak-note">이 기기 안에 저장이 자동으로 남아요. 최근 2시간은 10분마다, 그 전은 하루 하나씩 14일이에요.</p>`
     + (L.length ? L.map(x => `<div class="iprow bak-row"><div><b>${when(x.t)} <i class="bak-tag">${lab(x.k)}</i></b><span>도감 ${x.dex}종 · 포켓몬 ${x.box}마리 · ${x.gold.toLocaleString()}G</span></div><button class="lk-btn main" data-k="${x.k}">되돌리기</button></div>`).join('') : '<p class="bak-note">아직 백업이 없어요. 조금 놀고 나면 생겨요.</p>') + `</div>`;
   el.hidden = false; sfx('open'); let arm = null;
-  el.onclick = async e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-k]'); if (!b) return; const x = L.find(q => q.k === b.dataset.k); if (!x) return;
+  el.onclick = async e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-k]'); if (!b) return; const x = L.find(q => q.k === b.dataset.k); if (!x) return;
     if (arm !== b) { if (arm) arm.textContent = '되돌리기'; arm = b; sfx('tap'); b.textContent = '한 번 더'; setTimeout(() => { if (arm === b) { arm = null; b.textContent = '되돌리기'; } }, 3000); return; }
     sfx('tap'); try { const o = serialize(), cur = JSON.stringify(o); await bakPut('p' + Date.now(), { t: Date.now(), ...bakSum(o), d: cur }); } catch (e2) {}   // 되돌리기 전 지금 저장도 남겨 두어 다시 돌아올 수 있게
     saveFrozen = true; try { localStorage.setItem(KEY, x.d); } catch (e2) {} location.reload(); };
@@ -7781,7 +7781,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.88';   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.89';   /* v18.89 경완: 알림창·창 위 창은 확인(버튼)으로만 닫힘, 바깥 빈 곳 눌러도 안 닫힘 */   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -7807,7 +7807,7 @@ const frAsk = o => frH ? frH.postMessage(o) : Promise.reject(new Error('아이�
     const say = (t, er) => { n.textContent = t; n.hidden = false; n.classList.toggle('err', !!er); };
     T.oninput = B.oninput = keep; keep();
     const close = () => box.remove();
-    box.onclick = e => { if (e.target === box) return close(); const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+    box.onclick = e => { const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
       if (a === 'x') return close();
       const t = T.value.trim(), m = B.value.trim(); if (!t || !m) return say('제목과 내용을 적어 주세요.', 1);
       if (a === 'test') { const tb = e.target.closest('button'); tb.disabled = true; say('보내는 중…');
@@ -8860,7 +8860,7 @@ async function acctSync() {
 // v12.07: 아이폰 앱(WKWebView)은 confirm·alert 창을 못 띄워서 confirm 이 바로 '취소'가 된다 → 게임 안 창으로 묻는다
 function askPop(msg, yes = '확인', no = '취소') { return new Promise(ok => { const box = frGPop(`<p class="fr-note ask-m"></p>${no ? `<button type="button" class="lk-btn main" data-a="y">${yes}</button><button type="button" class="lk-btn" data-a="n">${no}</button>` : `<button type="button" class="lk-btn main" data-a="y">${yes}</button>`}`);
   box.style.zIndex = 9900; const m = box.querySelector('.ask-m'); m.textContent = msg; m.style.cssText = 'white-space:pre-line;font-size:14px;line-height:1.5;color:var(--win-ink)';
-  box.onclick = e => { const b = e.target.closest('[data-a]'); if (!b && e.target !== box) return; if (!b && no) return; sfx('tap'); box.remove(); ok(b?.dataset.a === 'y' || !no); }; }); }
+  box.onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return;   /* v18.89 경완: 알림창은 버튼으로만 닫힘 (바깥 눌러도 그대로) */ sfx('tap'); box.remove(); ok(b?.dataset.a === 'y' || !no); }; }); }
 const sayPop = msg => askPop(msg, '확인', '');
 // v12.03 경완 '설정에서 로그아웃': 지금 기록을 서버에 올린 뒤, 이 기기의 계정과 기록을 지우고 처음 화면으로 (자동 백업은 남는다)
 $('#acctOut')?.addEventListener('click', async () => {
@@ -8956,7 +8956,7 @@ function openTrView(c) {
       S.friends = (S.friends || []).filter(x => x !== uf.dataset.unfr); (S.frReqDone ||= {})[uf.dataset.unfr] = Date.now(); save(); box.remove(); try { renderFriends(); if (!$('#rank').hidden) renderRank(); } catch (er) {} return; }
     const fq = e.target.closest('[data-frq]'); if (fq) { sfx('tap'); const code = fq.dataset.frq, inc = frReqIn.find(x => x.code === code); fq.disabled = true;
       (inc ? frReqAccept(inc) : frReqSend(code, c)).then(() => { if (fq.isConnected) fq.outerHTML = frReqBtn(code); }).catch(er => { fq.disabled = false; sayPop(er.message || String(er)); }); return; }
-    if (e.target === box || e.target.closest('.tcv-x')) { sfx('tap'); box.remove(); } };
+    if (e.target.closest('.tcv-x')) { sfx('tap'); box.remove(); } };
 }
 // 배틀 그림 (체육관 배틀과 같은 것): 1~649 는 블랙·화이트 움직이는 gif, 없거나 못 받으면 gym/img/pk 2장 그림의 첫 장
 const PK_G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/', PK_G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
@@ -9007,7 +9007,7 @@ function trGrades(k = S.unlocked?.size || 0) {
     ${TR_LV.map(([n, nm], i) => i > L.i ? `<div class="tr-card tg-row lock"><span class="tr-badge"><b>${i === L.i + 1 ? esc(nm) : '???'}</b></span><span class="tg-n">도감 <b>${n.toLocaleString()}</b>마리</span></div>`   // v12.40 경완: 아직 못 연 등급은 딱지·카드 디자인 없이, 이름은 다음 등급만 (그 뒤는 ???)
       : `<div class="tr-card tg-row r${i}${i === L.i ? ' cur' : ''}${i >= 6 ? ' tr-shine' : ''}"><span class="tr-badge"><b>${esc(nm)}</b></span>${i === L.i ? '<span class="tg-st">지금</span>' : ''}<span class="tg-n">도감 <b>${n.toLocaleString()}</b>마리</span></div>`).join('')}
     <button type="button" class="lk-btn main" data-x>확인</button></div>`;
-  document.body.appendChild(pop); pop.onclick = e => { if (e.target === pop || e.target.closest('[data-x]')) { sfx('tap'); pop.remove(); } };
+  document.body.appendChild(pop); pop.onclick = e => { if (e.target.closest('[data-x]')) { sfx('tap'); pop.remove(); } };
 }
 document.addEventListener('click', e => { const row = e.target.closest('.lb-row'), b = e.target.closest('.lb-trb[data-tc]') || (row && !e.target.closest('.lb-pk[data-pv],[data-add],button,a') ? row.querySelector('.lb-trb[data-tc]') : null); if (!b) return;   // v12.24 경완: 랭킹 줄 아무 데나 눌러도 상세카드 (포켓몬 칸·친구 추가는 그대로)
   e.stopPropagation(); let c; try { c = JSON.parse(b.dataset.tc); } catch (er) { return; } const rw = b.closest('.lb-row') || b; if (rw.classList.contains('pressd')) return; sfx('open'); rw.classList.add('pressd'); setTimeout(() => { rw.classList.remove('pressd'); if (rw.classList.contains('me')) openMyCard(); else openTrView(c); }, 110); }, true);   /* v16.59 경완: 랭킹의 내 줄은 프로필 내 카드와 똑같이 (대표 포켓몬 빼기·바꾸기) */   // v16.52 경완: 랭킹 줄 누르면 쏙 들어갔다가 카드
@@ -9153,7 +9153,7 @@ function frNewPop(code, c) { const nm = c?.n || '트레이너';
   document.querySelectorAll('.frn-pop').forEach(b => { if (b.dataset.code === code) b.remove(); });
   const box = frGPop(`<div class="frn-pic">${lbShow({ ...(c || {}), code })}</div><h4 class="frn-t">친구가 되었어요!</h4><p class="fr-note frn-m"><b>${esc(nm)}</b>${hasBat(nm) ? '과' : '와'} 친구가 되었어요.<br>친구 화면에서 친구를 눌러<br>알을 선물할 수 있어요.</p><button type="button" class="lk-btn main" data-a="x">확인</button>`);
   box.classList.add('frn-pop'); box.dataset.code = code; box.style.zIndex = 9950; frPics(box); haptic(1);
-  box.onclick = e => { if (e.target === box || e.target.closest('[data-a=x]')) { box.remove(); try { sfx('tap'); } catch (er) {} } }; }
+  box.onclick = e => { if (e.target.closest('[data-a=x]')) { box.remove(); try { sfx('tap'); } catch (er) {} } }; }
 function frReqNo(r) { (S.frReqDone ||= {})[r.code] = r.t; frReqIn = frReqIn.filter(x => x.code !== r.code); frReqKeep(); save(); menuDots(); }
 const frReqKeep = () => { try { localStorage.setItem('pk-frq', JSON.stringify(frReqIn)); } catch (e) {} };
 const frReqNew = () => frReqIn.some(r => r.t > (S.frReqView || 0));
@@ -9180,7 +9180,7 @@ function frReqDraw() { const box = $('.frq-pop'); if (!box) return;
 function frReqPop() {
   const box = frGPop(`<h4>받은 친구 요청</h4><div class="frq-list"></div><p class="fr-note" data-n hidden></p><button type="button" class="lk-btn" data-a="x">닫기</button>`); box.classList.add('frq-pop');
   frReqDraw(); S.frReqView = Math.max(Date.now(), ...frReqIn.map(r => r.t)); save(); menuDots(); frReqPoll();   // 보면 빨간 점이 꺼진다
-  box.onclick = e => { if (e.target === box || e.target.closest('[data-a=x]')) { sfx('tap'); return box.remove(); }
+  box.onclick = e => { if (e.target.closest('[data-a=x]')) { sfx('tap'); return box.remove(); }
     const ok = e.target.closest('[data-ok]'), no = e.target.closest('[data-no]'), r = frReqIn.find(x => x.code === (ok || no)?.dataset[ok ? 'ok' : 'no']); if (!r) return; sfx('tap');
     if (no) { frReqNo(r); return frReqDraw(); }
     ok.disabled = true; frReqAccept(r).then(frReqDraw).catch(er => { ok.disabled = false; const n = box.querySelector('[data-n]'); n.textContent = er.message || String(er); n.hidden = false; n.classList.add('err'); }); };
@@ -9189,7 +9189,7 @@ function frAddPop() {
   const box = frGPop(`<h4>친구 추가</h4><p class="fr-note">친구에게 받은 친구 코드 8글자를 넣어 주세요.</p><div class="fr-add"><input id="frIn" maxlength="9" placeholder="ABCD-2345" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="친구 코드"><button class="lk-btn main" data-a="add" type="button">추가</button></div><p class="fr-note" data-n hidden></p>
     <p class="fr-note">상대가 요청을 수락하면 친구가 돼요. 랭킹에서 트레이너를 눌러도 요청할 수 있어요.</p><button type="button" class="lk-btn" data-a="x">닫기</button>`);
   const inp = box.querySelector('input'), note = box.querySelector('[data-n]'); setTimeout(() => inp.focus(), 50);
-  box.onclick = async e => { const b = e.target.closest('[data-a]'); if (e.target === box || b?.dataset.a === 'x') { sfx('tap'); return box.remove(); }
+  box.onclick = async e => { const b = e.target.closest('[data-a]'); if (b?.dataset.a === 'x') { sfx('tap'); return box.remove(); }
     if (b?.dataset.a === 'add') { sfx('tap'); if (await frAddCode(frClean(inp.value), note)) { inp.value = ''; setTimeout(() => box.remove(), 1400); } } };
   inp.onkeydown = e => { if (e.key === 'Enter') box.querySelector('[data-a=add]').click(); };
 }
@@ -9200,7 +9200,7 @@ function frCodePop() {
       <button type="button" class="lk-btn" data-a="x">닫기</button>`; };
   const box = frGPop(draw()); frPics(box);
   if (!frMe) frPush(true).then(() => { if (box.isConnected) { box.firstChild.innerHTML = draw(); frPics(box); } }).catch(e => { const n = box.querySelector('[data-n]'); if (n) { n.textContent = e.message || String(e); n.classList.add('err'); } });
-  box.onclick = async e => { const b = e.target.closest('[data-a]'); if (e.target === box || b?.dataset.a === 'x') { sfx('tap'); return box.remove(); }
+  box.onclick = async e => { const b = e.target.closest('[data-a]'); if (b?.dataset.a === 'x') { sfx('tap'); return box.remove(); }
     if (!b) return; sfx('tap');
     if (b.dataset.a === 'copy' && frMe) { try { await navigator.clipboard.writeText(frFmt(frMe)); b.textContent = '복사했어요!'; } catch (er) { prompt('친구 코드', frFmt(frMe)); } setTimeout(() => b.textContent = '코드 복사', 2000); }
     if (b.dataset.a === 'rep') { box.remove(); openMyCard(); } };   // 경완 2026-11-03: 예전 '대표 포켓몬 바꾸기' 대신 내 상세카드(대표 포켓몬·옷 바꾸는 화면)로
@@ -9516,7 +9516,7 @@ async function evoPick(P) {   /* v16.17 경완: 고르는 창 다시 — 칸마�
       const btn = x.ok ? `<button class="lk-btn main" data-go="${x.c}">진화</button>` : o && !x.has ? `<button class="lk-btn" data-buy="${x.it}">상점에서 사요</button>` : `<button class="lk-btn" disabled>${esc(/km 더$/.test(x.why || '') ? x.why : '아직이에요')}</button>`;
       return `<div class="evc${x.ok ? ' ok' : ''}"><div class="evc-pic"><img src="${thumbOf(fKey(x.c, P.sex)) || thumbOf(x.c) || ''}" alt=""></div><b>${esc(d.n)}</b>${rows}${btn}</div>`; }).join('') + `</div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } { const b = e.target.closest('[data-buy]'); if (b) { sfx('tap'); el.hidden = true; shopToItem(b.dataset.buy); return; } }
+  el.onclick = e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } { const b = e.target.closest('[data-buy]'); if (b) { sfx('tap'); el.hidden = true; shopToItem(b.dataset.buy); return; } }
     const g = e.target.closest('[data-go]'); if (!g || g.disabled) return; const x = evoChoices(P).find(y => y.c === +g.dataset.go); if (!x?.ok) return;
     if (x.it) return toolAsk(P, { c: x.c, it: x.it });
     el.hidden = true; if (evolving || hatching) return; const card = !$('#pokePop').hidden; if (card) closePoke(); if (!monPop.hidden) closeMon(); evolveWin(P, card, x.c); };
@@ -9526,7 +9526,7 @@ function toolAsk(P, { c, it }) {   // 도구를 쓸지 한 번 더 묻는다 (�
   const o = ITEM[it], I = itemsOf(), el = $('#itemPop'), q = evoReq(c), nm = q.n > 1 ? `${o.n} ${q.n.toLocaleString()}개` : o.n;
   el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: nm }, '을/를')} 써서 진화시킬까요?</p><span>${esc(nameOf(P))} · 가진 개수 ${I[it] || 0}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (!e.target.closest('[data-yes]')) return;
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (!e.target.closest('[data-yes]')) return;
     el.hidden = true; if (evoNo({ c, it }) !== null || evolving || hatching) return; I[it] -= q.n; if (!I[it]) delete I[it]; if (c === 892) { if (it === 'wscroll') P.fm = 'Rapid_Strike'; else delete P.fm; } S.evoPend = { pid: P.id, to: c, it, n: q.n }; save();   /* 11.73: 도구를 쓴 것과 '진화 중'을 한 번에 저장 → 도중에 끊겨도 다시 켜면 이어서 진화 (evoResume) */
     log(`${esc(nameOf(P))}에게 ${J({ name: nm }, '을/를')} 썼다!`, [], true);
     const card = !$('#pokePop').hidden; if (card) closePoke(); if (!monPop.hidden) closeMon(); evolveWin(P, card, c, it); };
@@ -9599,7 +9599,7 @@ function ibagAsk(o) {
   const el = $('#itemPop'), left = fxLeft(o.id);
   el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${J({ name: o.n }, '을/를')} 쓸까요?</p><span>${left ? `지금 효과에 ${fxMin(o.id)}분이 더해져요` : `${fxMin(o.id)}분 동안 효과가 있어요`}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
   el.hidden = false;
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (!e.target.closest('[data-yes]')) return;
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; return; } if (!e.target.closest('[data-yes]')) return;
     const I = itemsOf(); el.hidden = true; if (!(I[o.id] > 0)) return; I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup');
     $('#ibagMsg').innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); ibagSel = null; save(); renderIBag(); };   /* v9.43 경완: 쓰면 아래 박스는 닫힘 */
 }
@@ -9607,7 +9607,7 @@ function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고�
   const fld = ibagTab === 'field', FN = fld ? Object.fromEntries(fbagList().map(([k, n, src]) => [k, { id: k, n, src }])) : null, IT = fld ? FN : ITEM, I = fld ? { ...(S.fbag || {}) } : itemsOf(), el = $('#itemPop'), one = ids.length === 1 ? IT[ids[0]] : null;   /* v10.06: 필드 탭(가방 필드 소품)도 같은 창으로 버림 */ let n = one ? 1 : 0; const tot = ids.reduce((a, k) => a + (I[k] || 0), 0);
   const draw = () => { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="버리기">${one ? `<img ${fld ? 'class="fpth" ' : ''}src="${fld ? one.src : ITEM_ART[one.a]}" alt=""><p>${J({ name: one.n }, '을/를')} 몇 개 버릴까요?</p><div class="bag-cnt"><button class="lk-btn" data-m>−</button><b>${n}</b><button class="lk-btn" data-p>+</button><button class="opt" data-mx>전부</button></div><span>가진 개수 ${I[one.id]}</span>` : `<p>고른 ${ids.length}종 ${tot}개를 버릴까요?</p><span>${ids.map(k => IT[k].n).join(', ')}</span>`}<span>버린 건 되돌릴 수 없어요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn warn" data-yes>버리기</button></div></div>`; };
   draw(); el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; }
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; return; }
     if (one && e.target.closest('[data-m],[data-p],[data-mx]')) { n = e.target.closest('[data-mx]') ? I[one.id] : Math.max(1, Math.min(I[one.id], n + (e.target.closest('[data-p]') ? 1 : -1))); draw(); return; }
     if (!e.target.closest('[data-yes]')) return; el.hidden = true; let c = 0;
     for (const k of ids) { const d = one ? Math.min(n, I[k] || 0) : (I[k] || 0); if (!d) continue; I[k] -= d; c += d; if (!I[k]) delete I[k]; if (fld) fbagAdd(k, -d); }
@@ -9821,7 +9821,7 @@ function itemPop(P) {
   el.innerHTML = `<div class="win ipwin" role="dialog" aria-label="도구 쓰기"><div class="sheet-head"><h3>도구 쓰기</h3><button class="opt" data-x>닫기</button></div>`
     + L.map(({ c, it }) => { const q = evoReq(c), no = evoNo({ c, it }), buy = (I[it] || 0) < q.n; return `<div class="iprow"><img src="${ITEM_ART[ITEM[it].a]}" alt=""><div><b>${ITEM[it].n}${q.n > 1 ? ` ${q.n.toLocaleString()}개` : ''}</b><span>가진 개수 ${(I[it] || 0).toLocaleString()}${buy && no ? ` · ${no}` : ''}</span></div>${buy ? `<button class="lk-btn main" data-buy="${it}">상점에서 사요</button>` : `<button class="lk-btn main" data-use="${it}" data-c="${c}"${no === null ? '' : ' disabled'}>${no === null ? '쓰기' : no}</button>`}</div>`; }).join('') + `</div>`;   /* v15.58 경완: 진화할 포켓몬 이름(→ ○○)은 스포라 빼고, 모자라면 상점으로 가는 버튼 (예전엔 꺼져 있어 안 눌림) */
   el.hidden = false; sfx('open');
-  el.onclick = e => { const u = e.target.closest('[data-use]'); if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } { const b = e.target.closest('[data-buy]'); if (b) { sfx('tap'); el.hidden = true; shopToItem(b.dataset.buy); return; } } if (!u || u.disabled) return;
+  el.onclick = e => { const u = e.target.closest('[data-use]'); if (e.target.closest('[data-x]')) { el.hidden = true; return; } { const b = e.target.closest('[data-buy]'); if (b) { sfx('tap'); el.hidden = true; shopToItem(b.dataset.buy); return; } } if (!u || u.disabled) return;
     const it = u.dataset.use, c = +u.dataset.c; if (evoNo({ c, it }) !== null) return; toolAsk(P, { c, it }); };
 }
 // ---------- 미니게임 (베타 v5.77 경완): 필드 정보창 조이스틱 → 게임 고르기 → 장애물 넘기 ----------
@@ -11713,7 +11713,7 @@ function fitPop(k, mode) { const el = $('#itemPop'), own = fitsOwn(), has = !k |
   artFit(el); el.hidden = false;
   { const sx = fitSx(), put = (u, dy) => el.querySelectorAll('[data-fow]').forEach(o => { o.style.backgroundImage = `url(${u})`; o.style.translate = `2px ${dy}px`; }); fitOwPre(k, sx, put); }   /* 경완 2026-11-03: 의상 상세카드 오른쪽 프로필 박스 안 필드 그림, 프로필처럼 꽉 차게(4배), 몸 기준 좌우 가운데. v15.05: 의상 탭 열 때 미리 받아 두어 바로 뜸 */
   const off = () => { fitSel = null; ibagWSel = null; mode === 'shop' ? renderFitShop() : renderFitBag(); };
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); off(); return; }
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); off(); return; }
     if (e.target.closest('[data-fwear]:not([disabled])')) { sfx('shiny'); fitWear(k); el.hidden = true; off(); return; }
     if (e.target.closest('[data-fbuy]')) { const p = FITS[k][1], m = el.querySelector('.fp-msg');
       if (S.gold < p) { m.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; m.hidden = false; sfx('wob'); return; }
@@ -11722,7 +11722,7 @@ function fitPop(k, mode) { const el = $('#itemPop'), own = fitsOwn(), has = !k |
 $('#ibagBar').addEventListener('click', e => { if (ibagTab !== 'fit' || !e.target.closest('[data-wear]') || ibagWSel == null) return; sfx('shiny'); fitWear(ibagWSel); ibagWSel = null; renderFitBag(); });
 const fitCloset = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = false; ibagWOnly = true; ibagTab = 'fit'; ibagWSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
 // v9.48 경완: 사면 '샀다!' 를 상점 창 위 팝업으로 — 확인을 누르면 닫힘
-function buyPop(pic, t, sub) { const el = $('#itemPop'); el.innerHTML = `<div class="win ipwin bag-ask buy-ok" role="dialog" aria-label="구매">${pic}<p>${t}</p>${sub ? `<span>${sub}</span>` : ''}<div class="bag-yn"><button class="lk-btn main" data-ok>확인</button></div></div>`; el.hidden = false; el.onclick = e => { if (e.target === el || e.target.closest('[data-ok]')) { el.hidden = true; sfx('tap'); } }; }
+function buyPop(pic, t, sub) { const el = $('#itemPop'); el.innerHTML = `<div class="win ipwin bag-ask buy-ok" role="dialog" aria-label="구매">${pic}<p>${t}</p>${sub ? `<span>${sub}</span>` : ''}<div class="bag-yn"><button class="lk-btn main" data-ok>확인</button></div></div>`; el.hidden = false; el.onclick = e => { if (e.target.closest('[data-ok]')) { el.hidden = true; sfx('tap'); } }; }
 // 상점 도구·아이템 탭: 칸을 누르면 아래 막대에 설명과 사기(아이템은 쓰기도)
 let itemSel = { tool: null, item: null };
 // v7.29 경완: 상점 도구 그림 크기 맞추기 (v7.30 아이템 탭 향로·부적도) — 그림마다 투명 여백을 재서 실제 그림이 같은 크기·가운데로 보이게
@@ -12189,7 +12189,7 @@ async function naPop(P, k) { const o = P.na || natAb(P); if (!o) return; sfx('op
     h = `<h4 class="na-pt">${esc(n[1])}</h4><p class="na-pc">${up ? `<span class="nat-c up">${up} ▲</span><span class="nat-c dn">${dn} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="fr-note na-pd">${up ? `${up}${jongOf(up) ? '이' : '가'} 잘 오르고, ${dn}${jongOf(dn) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>`; }
   else { const d = await abdLoad(); h = `<h4 class="na-pt">${esc(NAB.ab[o.ab] || o.ab)}${o.ha ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="fr-note na-pd">${esc(d[o.ab] || '효과 설명이 아직 없어요.')}</p>`; }
   const box = frGPop(h + '<button type="button" class="lk-btn main" data-a="y">닫기</button>'); box.classList.add('na-pop'); box.style.zIndex = 9900;
-  box.onclick = e => { if (e.target.closest('[data-a]') || e.target === box) { sfx('tap'); box.remove(); } }; }
+  box.onclick = e => { if (e.target.closest('[data-a]')) { sfx('tap'); box.remove(); } }; }
 document.addEventListener('click', e => { const b = e.target.closest('#pokePop .na-b[data-nk]'); if (!b) return; const P = boxOf(pokeId); if (P) naPop(P, b.dataset.nk); });
 // v18.41 경완 '꾸미기 상세카드도 체육관 상세카드 레이아웃처럼 (프로필 박스 왼쪽)': 그림 칸·랭크·짝꿍 표시를 이름 왼쪽 칸으로 옮겨 끼움, 친밀도는 이름 밑
 function ppPark() { const w = $('#pokePop .win'), h = w.querySelector('.dp-head'); w.insertBefore($('#ppPic'), $('#ppBody')); h.prepend($('#ppBudTag')); h.prepend($('#ppRk')); }
@@ -12278,7 +12278,7 @@ $('#ppFree').onclick = () => {
   $('#faQ').innerHTML = `정말 <b>${esc(nameOf(P))}</b>${hasBat(nameOf(P)) ? '을' : '를'}<br>놓아주시겠습니까?`; ask.hidden = false;
   const btns = ask.querySelector('.ask-btns'); btns.hidden = false;
   const close = () => { ask.hidden = true; ask.onclick = null; btns.hidden = false; };
-  $('#faNo').onclick = () => { sfx('tap'); close(); }; ask.onclick = e => { if (e.target === ask) close(); };
+  $('#faNo').onclick = () => { sfx('tap'); close(); }; ask.onclick = null;   /* v18.89 경완: 알림창은 바깥 눌러도 안 닫힘 */
   $('#faYes').onclick = () => {   // 같은 창에 '바이바이- 이름!'을 잠깐 띄웠다가 닫는다
     btns.hidden = true; ask.onclick = null; $('#faQ').innerHTML = `바이바이- <b>${esc(nameOf(P))}</b>!`; ask.querySelector('.ask-pic img')?.classList.add('bye'); sfx('open');
     setTimeout(() => { close(); freeArm = P.id; releasePoke(P); }, 1300);
@@ -13372,7 +13372,7 @@ async function rotomPick(m) { const P = boxOf(m.pid); if (!P) return; await Prom
   el.innerHTML = `<div class="win ipwin evpk rtpk" role="dialog" aria-label="로토무의 가구 상자"><div class="sheet-head"><h3>어느 가전제품에 들어갈까요?</h3><button class="opt" data-x>닫기</button></div><div class="evc-g">`
     + ROTOM_F.map(([f, n, a]) => `<div class="evc${f === cur ? '' : ' ok'}"><div class="evc-pic"><img src="${thumbOf(f ? '479~' + f : fKey(479, P.sex)) || ''}" alt=""${P.shiny ? ' class="shiny"' : ''}></div><b>${n}</b><div class="evc-sp">${a}</div>${f === cur ? '<button class="lk-btn" disabled>지금 모습</button>' : `<button class="lk-btn main" data-f="${f}">바꾸기</button>`}</div>`).join('') + `</div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-f]'); if (!b) return; el.hidden = true; sfx('tap');
+  el.onclick = e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-f]'); if (!b) return; el.hidden = true; sfx('tap');
     const f = b.dataset.f, R = ROTOM_F.find(r => r[0] === f); if (f) P.fm = f; else delete P.fm; save();
     if (!S.mons.includes(m)) return; emote(m, shoutOf(m.sp), '', 1.2, 'shout'); anim(m, 'shake');
     setTimeout(() => { if (!S.mons.includes(m)) return; for (let i = 0; i < 5; i++) particle(m.x + rnd(-14, 14), m.y - m.h / 2 + rnd(-14, 14), 'smoke'); setForm(m, m.sp); fmGlow(m);
@@ -13412,7 +13412,7 @@ function fmItemUse(o) { const L = S.mons.filter(m => m.pid != null && o.fm.sp.in
     el.innerHTML = `<div class="win ipwin evpk rtpk" role="dialog" aria-label="${o.n} 쓰기"><div class="sheet-head"><h3>누구에게 쓸까요?</h3><button class="opt" data-x>닫기</button></div><div class="evc-g">`
       + L.map((m, i) => { const P = boxOf(m.pid); return `<div class="evc ok"><div class="evc-pic"><img src="${thumbOf(m.sk || m.sp) || ''}" alt=""${P.shiny ? ' class="shiny"' : ''}></div><b>${esc(nameOf(P))}</b><button class="lk-btn main" data-m="${i}">고르기</button></div>`; }).join('') + `</div></div>`;
     el.hidden = false; sfx('open');
-    el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-m]'); if (!b) return; sfx('tap'); fmItemOn(o, L[+b.dataset.m]); }; });
+    el.onclick = e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-m]'); if (!b) return; sfx('tap'); fmItemOn(o, L[+b.dataset.m]); }; });
 }
 async function fmItemOn(o, m) { const P = boxOf(m.pid); if (!P) return; const sp = m.sp, cur = P.fm && FM_KO[sp]?.[P.fm] !== undefined ? P.fm : '';
   const go = f => { $('#itemPop').hidden = true; if (f === cur) return; if (o.fm.day && f && !isDay()) { $('#ibagMsg').textContent = '그라시데아꽃은 낮에만 쓸 수 있어요.'; sfx('wob'); return; }
@@ -13427,13 +13427,13 @@ async function fmItemOn(o, m) { const P = boxOf(m.pid); if (!P) return; const sp
   el.innerHTML = `<div class="win ipwin evpk rtpk${F.length > 6 ? ' many' : ''}" role="dialog" aria-label="${o.n}"><div class="sheet-head"><h3>${esc(o.n)}</h3><button class="opt" data-x>닫기</button></div><p class="fm-sub">${esc(nameOf(P))}의 모습을 골라 주세요. 고른 모습으로 바뀌어요.</p><div class="evc-g">`
     + F.map(f => `<div class="evc${f === cur ? '' : ' ok'}"><div class="evc-pic"><img src="${thumbOf(f ? sp + '~' + f : fKey(sp, P.sex)) || ''}" alt=""${P.shiny ? ' class="shiny"' : ''}></div><b>${esc(fmName(sp, f))}</b>${f === cur ? '<button class="lk-btn" disabled>지금 모습</button>' : `<button class="lk-btn main" data-f="${f}">바꾸기</button>`}</div>`).join('') + `</div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-f]'); if (!b) return; sfx('tap'); go(b.dataset.f); };
+  el.onclick = e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-f]'); if (!b) return; sfx('tap'); go(b.dataset.f); };
 }
 // 도구 쓰기 확인 창: 도구 그림 + 무엇으로 바뀌는지
 function fmAsk(o, m, txt, yes) { const el = $('#itemPop'), P = boxOf(m.pid);
   el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 쓰기"><img src="${ITEM_ART[o.a]}" alt=""><p>${esc(nameOf(P))}에게 ${J({ name: o.n }, '을/를')} 쓸까요?</p><span>${txt}</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>쓰기</button></div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (e.target.closest('[data-yes]')) { sfx('tap'); yes(); } }; }
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); return; } if (e.target.closest('[data-yes]')) { sfx('tap'); yes(); } }; }
 // v16.90 경완 '유전자쐐기는 필드에 같이 놓고 도구를 써야 합체, 필드 화면에서 연출': 제크로무 → 블랙큐레무, 레시라무 → 화이트큐레무. 합체한 쪽은 큐레무 안에 (P.fuse), 다시 쓰면 분리
 const FUSE_K = { 644: 'Black', 643: 'White' };
 function dnaUse(o, m) { const P = boxOf(m.pid); if (!P) return;
@@ -13447,7 +13447,7 @@ function dnaUse(o, m) { const P = boxOf(m.pid); if (!P) return;
   el.innerHTML = `<div class="win ipwin evpk rtpk" role="dialog" aria-label="합체할 포켓몬"><div class="sheet-head"><h3>누구와 합체할까요?</h3><button class="opt" data-x>닫기</button></div><div class="evc-g">`
     + L.map((x, i) => { const Q = boxOf(x.pid); return `<div class="evc ok"><div class="evc-pic"><img src="${thumbOf(x.sk || x.sp) || ''}" alt=""${Q.shiny ? ' class="shiny"' : ''}></div><b>${esc(nameOf(Q))}</b><div class="evc-sp">${fmName(646, FUSE_K[x.sp])}</div><button class="lk-btn main" data-m="${i}">고르기</button></div>`; }).join('') + `</div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-m]'); if (b) { sfx('tap'); ask(L[+b.dataset.m]); } }; }
+  el.onclick = e => { if (e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-m]'); if (b) { sfx('tap'); ask(L[+b.dataset.m]); } }; }
 function fuseFlash() { const w = document.createElement('div'); w.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:5800;pointer-events:none;opacity:0;transition:opacity .25s'; document.body.append(w); requestAnimationFrame(() => { w.style.opacity = '.85'; setTimeout(() => { w.style.transition = 'opacity .9s'; w.style.opacity = '0'; setTimeout(() => w.remove(), 950); }, 260); }); }
 async function dnaFuse(m, x) { const P = boxOf(m.pid), Q = boxOf(x.pid), k = FUSE_K[x.sp]; if (!P || !Q) return;
   $('#itemPop').hidden = true; ibagEl.hidden = true; await fmLoad('646~' + k); if (!S.mons.includes(m) || !S.mons.includes(x)) return;
@@ -13542,7 +13542,7 @@ const inYard = id => !!S.gym?.tr?.some(e => e.id === id);
 function yardAsk(P) { return new Promise(ok => { if (!P || !inYard(P.id)) return ok(true); const el = $('#itemPop');
   el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="훈련장에서 데려오기"><p>${J({ name: nameOf(P) }, '은/는')} 체육관 훈련장에서 훈련 중이에요.<br>필드로 보내면 훈련장에서 빠져요. 보낼까요?</p><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>필드로</button></div></div>`;
   el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); ok(false); return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; sfx('tap'); ok(true); }; }); }
+  el.onclick = e => { if (e.target.closest('[data-no]')) { el.hidden = true; sfx('tap'); ok(false); return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; sfx('tap'); ok(true); }; }); }
 // 예전 저장: 필드·도감·짝꿍에 있던 포켓몬을 상자에 한 마리씩 넣는다 (이로치 아님)
 // 2026-10-14 새벽(한국 시각) 런닝이 반영되며 알이 저절로 깨졌던 것을 한 번만 되돌린다 (사용자 요청: 부화기에서 직접 부화)
 function undoAutoHatch() {
@@ -13722,7 +13722,7 @@ function trNameEdit() {
   const ok = () => { const v = [...inp.value.trim()].slice(0, TR_NAME_MAX).join(''); if (!v) { er.hidden = false; inp.focus(); return; }
     el.hidden = true; if (v === t.n) return; t.n = v; S.mons.forEach(m => { m.th = null; }); save(); renderTrainer(); log(`트레이너 이름을 <b>${esc(v)}</b>(으)로 정했다.`); frPush().catch(() => {}); };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); ok(); } });
-  el.onclick = ev => { if (ev.target === el || ev.target.closest('[data-no]')) el.hidden = true; else if (ev.target.closest('[data-ok]')) ok(); };
+  el.onclick = ev => { if (ev.target.closest('[data-no]')) el.hidden = true; else if (ev.target.closest('[data-ok]')) ok(); };
   upd(); el.hidden = false; setTimeout(() => { inp.focus(); inp.select(); }, 50);
 }
 document.querySelector('.tr-nm').addEventListener('click', e => { e.preventDefault(); trNameEdit(); });   // v14.88 경완: 이름 바꾸기는 이름·연필 부분만
