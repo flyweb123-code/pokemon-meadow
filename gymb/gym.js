@@ -1270,7 +1270,7 @@ const into = (x, t) => { if (!x || !t) return; const rg = document.createRange()
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히
   // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장
-  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  try { GA.sfx('newdex'); } catch (e) {}
   return new Promise(ok => { const p = pop(`<h4 class="ul-t"><small>체육관 등급 혜택</small>새 메뉴가 열렸어요!</h4><div class="ul-cards">
       <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
@@ -1384,7 +1384,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     /* v19.21 경완: '전설 알을 받았다!' 는 대사창 말고 하단에 따로 디자인한 알림창 (팝업 모션·효과음, 버튼으로만 닫힘) */
     await wait(500); await new Promise(ok => { const n2 = document.createElement('div'); n2.className = 'hof-got';
       n2.innerHTML = `<i class="hg-shine"></i><div class="hg-ic"><i class="hg-halo"></i>${GA.eggIco?.(t) || ''}</div><div class="hg-tx"><small>전설 알 획득!</small><b>${adj} 전설 알</b><p>${ty} 타입 전설 포켓몬이 태어나요<br>필드의 알 가방에 넣었어요</p></div><button class="hg-ok">좋아!</button>`;
-      ov.appendChild(n2); se('DP_PINPON'); GA.haptic?.(1);
+      ov.appendChild(n2); try { GA.sfx('newdex'); } catch (e) {} GA.haptic?.(1);
       n2.querySelector('.hg-ok').addEventListener('click', e => { e.stopPropagation(); se('DP_DECIDE'); n2.classList.add('bye'); setTimeout(() => { n2.remove(); ok(); }, 260); }, { once: true }); });
     // ---- 5. 체육관으로 돌아옴 ----
     M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn', 'lgF'); F.el.remove(); F = null;
@@ -1399,7 +1399,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
       const md = (q, e) => Math.abs(q[0] - e.x) + Math.abs(q[1] - e.y), nb = [];
       for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const q = [meEnt.x + dx, meEnt.y + dy], a = md(q, meEnt), b = md(q, k); if (a >= 2 && a <= 3 && b >= 2 && q[1] >= meEnt.y) nb.push(q); }
-      const sc2 = q => md(q, meEnt) + md(q, k) * .5 + md(q, gu) * .1 + (q[0] === k.x || q[1] === k.y ? 0 : 3);   // 강박사와 같은 줄·칸이면 서로 똑바로 마주 봄
+      const sc2 = q => md(q, gu) * 10 + md(q, meEnt);   // v19.31 경완 '최단 거리에서 서게': 안내원 자리에서 가장 가까운 칸
       nb.sort((p, q) => sc2(p) - sc2(q));
       const to = A.reach(gu, nb, [[k.x, k.y]]); if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
       else { const CP = (CR?.path || D.path.slice(1)).slice(0, -1); gPath = [D.door, ...CP]; if (CP.length) await walk(gu, gPath, 180); }   // 빈 바닥 정보로 길이 안 나오는 맵: 문 → 손님 길을 따라 강박사 뒤까지
@@ -1418,7 +1418,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     dlg(''); root.classList.add('dhide'); meEnt.f = 'd'; place(meEnt);
     await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
     k.el.remove(); ents = ents.filter(x => x !== k); k = null;
-    if (gu) { face(gu, meEnt); await wait(250); await gsay('…관장님, 관장님.<br>(소곤소곤) 강박사님 연구 노트요,<br>사실 반은 점심 메뉴래요.'); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
+    if (gu) { face(gu, meEnt); await wait(250); await gsay('…… …… ……'); await gsay('…그때 대학원을 오는 게 아니었는데.'); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
@@ -1709,7 +1709,7 @@ function openTab(t, opt) {
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
 const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock';
 function pop(html, onClick) {
-  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1); }, 60); }   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
+  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.31 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
