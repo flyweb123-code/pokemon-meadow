@@ -5141,21 +5141,21 @@ const MOT = {
     tick(sc, a, b) {
       place(a, sc.c.x - 85, sc.c.y); place(b, sc.c.x + 85, sc.c.y); a.face = -1; b.face = 1;
       if (every(sc, 'r', .55)) ring(sc.c.x, sc.c.y - 30, 'warp');
-      if (every(sc, 'p', .18)) particle(sc.c.x + rnd(-110, 110), sc.c.y - rnd(0, 120), 'warp', pick(['✦', '◆', '✧']));
+      if (every(sc, 'pp', .18)) particle(sc.c.x + rnd(-110, 110), sc.c.y - rnd(0, 120), 'warp', pick(['✦', '◆', '✧']));
     } },
   'latis': { dur: 8,
     init(sc, a, b) { sc.c = sceneCenter(a, b, 110); a.xl = b.xl = 26; },
     tick(sc, a, b) {
       const g = sc.mt * 1.3;
       orbit(a, sc.c, g, 110, 40); orbit(b, sc.c, g - .7, 110, 40);
-      if (every(sc, 'p', .14)) { particle(a.x, a.y - a.lift - a.h * .4, 'spark', '✦'); particle(b.x, b.y - b.lift - b.h * .4, 'heart', '·'); }
+      if (every(sc, 'pp', .14)) { particle(a.x, a.y - a.lift - a.h * .4, 'spark', '✦'); particle(b.x, b.y - b.lift - b.h * .4, 'heart', '·'); }
     } },
   'mewtwo-mew': { dur: 8,
     init(sc, a, b) { a.el.classList.add('aura'); b.el.classList.add('aura'); b.xl = 36; sc.c = { x: clamp(a.x, XL + 90, XR - 90), y: clamp(a.y, MIN_Y + 40, MAX_Y - 30) }; },
     tick(sc, a, b) {
       place(a, sc.c.x, sc.c.y); orbit(b, { x: sc.c.x, y: sc.c.y + 2 }, sc.mt * 1.7, 78, 26); faceTo(a, b.x);
       if (every(sc, 'e', 2.2)) { emote(a, '…', '', 1.2, 'sp-ponder'); setTimeout(() => S.mons.includes(b) && emote(b, '?', 'note', 1.2, 'sp-curious'), 700); }
-      if (every(sc, 'p', .3)) particle(b.x + rnd(-8, 8), b.y - b.lift - b.h * .5, 'psy', '·');
+      if (every(sc, 'pp', .3)) particle(b.x + rnd(-8, 8), b.y - b.lift - b.h * .5, 'psy', '·');
     } },
   'gyarados-magikarp': { dur: 8,
     init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); },
@@ -5212,7 +5212,7 @@ const MOT = {
     tick(sc, a, b) {
       place(b, sc.c.x + Math.sin(sc.mt * 1.2) * 26, sc.c.y); faceTo(b, sc.c.x + Math.cos(sc.mt * 1.2) * 99);
       a.x = b.x + sc.side * (b.w * .28 + a.w * .15); a.y = b.y + 1; a.xl = b.h * .42; faceTo(a, b.x); a.zAdd = 1;
-      if (every(sc, 'p', .35)) particle((a.x + b.x) / 2, b.y - b.h * .5, 'spark', '✦');
+      if (every(sc, 'pp', .35)) particle((a.x + b.x) / 2, b.y - b.h * .5, 'spark', '✦');
     } },
   'psyduck-psychic': { dur: 7,
     init(sc, a, b) { a.act.classList.add('headache'); b.el.classList.add('aura'); faceTo(a, b.x); faceTo(b, a.x); },
@@ -5409,7 +5409,7 @@ const TPL = {
     init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); },
     tick(sc, a, b) {
       const on = (sc.mt % 2) < 1.3;
-      if (on && every(sc, 'p', .07)) lineFx(a, b, sc.p.cls || 'splash', pick([].concat(sc.p.t || '')));
+      if (on && every(sc, 'pp', .07)) lineFx(a, b, sc.p.cls || 'splash', pick([].concat(sc.p.t || '')));
       if (on && every(sc, 'k', .9)) { if (!playOnce(a, 'Shoot') && !playOnce(a, 'SpAttack')) strike(a); }   /* v17.44 경완: 물·불꽃·가루 뿜기는 쏘기 동작 */
       if (every(sc, 'h', 1.3)) { if (sc.p.soft) anim(b, 'hop'); else hurt(b); }
     } },
@@ -5443,7 +5443,7 @@ const TPL = {
       place(a, a.x + clamp(b.x + sc.side * Math.max(40, (a.w + b.w) * .4) - a.x, -20 * sc.dt, 20 * sc.dt), a.y + clamp(b.y - a.y, -15 * sc.dt, 15 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
       if (every(sc, 'k', 1.3)) { const act = pick(['hop', 'atk', 'nod']); const run = m => act === 'hop' ? anim(m, 'hop') : act === 'atk' ? strike(m) : anim(m, 'nod'); run(b); setTimeout(() => S.mons.includes(a) && a.partner === b && run(a), 420); }
       if (once(sc, 'q', 4)) emote(b, '?', 'note', 1.6, 'sp-curious');
-      if (sc.p.t && every(sc, 'p', 1.1)) particle(a.x, a.y - a.h, sc.p.cls || 'psy', pick([].concat(sc.p.t)));
+      if (sc.p.t && every(sc, 'pp', 1.1)) particle(a.x, a.y - a.h, sc.p.cls || 'psy', pick([].concat(sc.p.t)));
     } },
   // both just stand there and stare
   stare: { dur: 9,
@@ -5467,7 +5467,7 @@ const TPL = {
     tick(sc, a, b) {
       const up = sc.mt < 5.5 ? Math.min(1, sc.mt / 1.2) : Math.max(0, 1 - (sc.mt - 5.5) / .6);
       b.xl = up * (sc.p.h || 50) + (sc.p.aura ? Math.sin(sc.mt * 2.2) * 7 : Math.sin(sc.mt * (sc.p.bob || 3)) * 6) * up;
-      if (every(sc, 'p', .3)) particle(b.x + rnd(-14, 14), b.y - b.xl - b.h * .2, sc.p.cls || 'psy', pick([].concat(sc.p.t || ['·', '✧'])));
+      if (every(sc, 'pp', .3)) particle(b.x + rnd(-14, 14), b.y - b.xl - b.h * .2, sc.p.cls || 'psy', pick([].concat(sc.p.t || ['·', '✧'])));
       if (sc.chg && sc.mt < 5.8) a.anOvT = performance.now() + 300;   // 장면이 끊기면 곧 원래 동작으로
       if (sc.p.pump && every(sc, 'k', 1)) strike(a);
       if (once(sc, 'land', 6.1)) dustAt(b);
@@ -5494,7 +5494,7 @@ const TPL = {
     init(sc, a, b) { sc.tx = beside(a, b, .38); if (sc.p.aura) a.el.classList.add('aura'); },
     tick(sc, a, b) {
       place(a, a.x + clamp(sc.tx - a.x, -40 * sc.dt, 40 * sc.dt), a.y); faceTo(a, b.x); faceTo(b, a.x);
-      if (every(sc, 'p', .18)) particle(b.x + rnd(-b.w * .4, b.w * .4), b.y - b.h - rnd(0, 20), sc.p.cls || 'spark', pick([].concat(sc.p.t || ['✧', '✦'])));
+      if (every(sc, 'pp', .18)) particle(b.x + rnd(-b.w * .4, b.w * .4), b.y - b.h - rnd(0, 20), sc.p.cls || 'spark', pick([].concat(sc.p.t || ['✧', '✦'])));
       if (every(sc, 'k', 1.5)) strike(a);
       if (once(sc, 'ok', 4.5)) { anim(b, 'hop'); emote(b, '♥', 'heart', 1.5, 'sp-love'); }
     } },
@@ -8022,7 +8022,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '19.34';   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '19.35';   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
