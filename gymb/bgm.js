@@ -162,7 +162,7 @@ async function bufOf(ctx, name) {
   const b = bufs.get(name); if (b && b.ctx === ctx) return b;
   let r = await make(name);
   if (!r.L) { pcm.delete(name); r = await make(name); }
-  /* v19.35 경완 'bgm 음량 효과음이랑 밸런스': 곡마다 크기(RMS)가 달라 GBA 곡(전당 등)이 훨씬 크게 들림 → 체육관 곡 크기(-19dB)보다 큰 곡만 그만큼 줄인다 */
+  /* v19.38 경완 'bgm 음량 효과음이랑 밸런스': 곡마다 크기(RMS)가 달라 GBA 곡(전당 등)이 훨씬 크게 들림 → 체육관 곡 크기(-19dB)보다 큰 곡만 그만큼 줄인다 */
   let ss = 0, sn = 0; for (let i = 0; i < r.L.length; i += 7) { ss += r.L[i] * r.L[i] + r.R[i] * r.R[i]; sn += 2; }
   const db = sn ? 10 * Math.log10(ss / sn + 1e-12) : -99, lg = Math.max(.35, Math.min(1, Math.pow(10, (-19 - db) / 20)));
   const x = { ctx, buf: toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate, lg };

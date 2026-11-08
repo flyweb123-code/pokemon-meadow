@@ -1286,7 +1286,7 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
       <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${ne}개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
-    const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }   /* v19.35 경완 '승급 보상 알림창 딩동 없애줘': 알이 떨어질 때 DP_PINPON 뺌 */ }); }
+    const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }   /* v19.38 경완 '승급 보상 알림창 딩동 없애줘': 알이 떨어질 때 DP_PINPON 뺌 */ }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
 // v18.93 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 가슴이 웅장해지는 연출': 강박사가 헐레벌떡 들어와 관장 앞에서 축하 → 화면이 깜깜해지고 전당 곡 →
 // 스포트라이트 아래 라인업 포켓몬이 한 마리씩 (이름·레벨) → 관장과 모두 함께 '명예의 전당' 등록판 → 하늘에서 전설 알이 빛기둥 타고 내려와 번쩍 '받았다!' → 체육관으로 돌아와 강박사 한마디, 문으로 나감
