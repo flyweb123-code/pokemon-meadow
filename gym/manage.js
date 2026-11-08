@@ -379,10 +379,17 @@ function yLight() {
     e.style.setProperty('--ska', ska.toFixed(1) + 'deg'); e.style.setProperty('--sks', (-(.4 + .15 * (L - 1) / 2.6)).toFixed(2)); e.style.setProperty('--cso', sun ? (.24 * op * (1 - .15 * (L - 1) / 2.6)).toFixed(3) : 0);   /* v18.02 경완: 예전 그림자 진하기 */
     e.style.setProperty('--shl', L.toFixed(2)); e.style.setProperty('--shd', (dir * (L - 1)).toFixed(2)); e.style.setProperty('--sho', (1 - .3 * (L - 1) / 2.6) * op); e.classList.toggle('sunSh', !!sun); }   /* v18.04 경완 '훈련장도 소품 기존 그림자 없애야': 해가 있어 모양 그림자가 생길 땐 기구 밑 예전 타원 그림자를 숨김 */
   const wx = e.querySelector('.ty-wx'); wx.className = 'ty-wx' + (F.snow ? ' snow' : F.wx === 'rain' ? ' rain' + (F.storm ? ' storm' : '') : '');
+  /* v18.63 경완 '훈련장 비 효과가 왜 필드 효과랑 다르지': 줄무늬 배경 대신 필드와 같은 빗줄기 80개(#rain i) + 땅에 튀는 물방울(#rainG b, 포켓몬·기구 아래) + 뇌우 번개(GA.bolt) */
+  { const on = !F.snow && F.wx === 'rain', w = e.clientWidth || 360, hh = e.clientHeight || 600;
+    if (on && !wx.children.length) { let h = ''; for (let i = 0; i < Math.round(80 * w / 360); i++) h += `<i style="left:${(Math.random() * (w + 150)).toFixed(0)}px;animation-delay:${(-Math.random() * .62).toFixed(2)}s;animation-duration:${(.5 + Math.random() * .25).toFixed(2)}s"></i>`; wx.innerHTML = h; wx.style.setProperty('--rh', (hh + 40) + 'px'); }
+    if (!on && wx.children.length) wx.innerHTML = '';
+    let g = Y.L.querySelector(':scope > .ty-rg'); if (on && !g) { g = document.createElement('i'); g.className = 'ty-rg'; let h = ''; for (let i = 0; i < Math.round(26 * w / 360); i++) h += `<b style="left:${(Math.random() * w).toFixed(0)}px;top:${(130 + Math.random() * (hh - 150)).toFixed(0)}px;animation-delay:${(-Math.random() * 2).toFixed(2)}s;animation-duration:${(1.2 + Math.random()).toFixed(2)}s"></b>`; g.innerHTML = h; Y.L.append(g); } else if (!on && g) g.remove();
+    Y.storm = on && !!F.storm; }
 }
 function yardLoop(ts) {
   if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
+  if (Y.storm && !document.hidden) { if (!Y.stT) Y.stT = now + 2.5 + Math.random() * 4; else if (now >= Y.stT) { Y.stT = now + 6 + Math.random() * 12; const wx = Y.el.querySelector('.ty-wx'), w = Y.el.clientWidth || 360; window.GA?.bolt?.(wx, w); if (Math.random() < .3) setTimeout(() => window.GA?.bolt?.(wx, w), 250 + Math.random() * 500); } } else Y.stT = 0;   // v18.63 뇌우면 필드처럼 번개·천둥
   if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
   if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
   for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
