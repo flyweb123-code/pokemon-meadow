@@ -55,3 +55,6 @@ thanks.html. 지금 게임(v18.86 분홍 .frg-ok.ty)과 A 하트 버튼, B 말�
 
 ## glass/ 유리 돔 투명도 시안
 지금 게임 gym/img/ga/machine.png(v19.07)의 돔 알파 170(약 67%), 반짝임 230을 같은 비율로 낮춤: machine_glass54.png(×0.80), machine_glass42.png(×0.62), machine_glass30.png(×0.44). 208x256, 그대로 machine.png 자리에 넣으면 됨. mock_*.png는 금빛 배경 시안 화면.
+
+## news_mock/ 알 뽑기 업데이트 알림창 시안
+news_mock.html: 지금 게임의 알림창 3장(v19.14 newsShow P)과 새 버전 4장. 새 사진 news_new_mach.png(600x634, 금빛 배경 뽑기 화면), news_steps.png(600x600, 전설 4단계 번쩍). 둘 다 시안 화면을 캡처한 것이라 실제 게임 화면과 조금 다를 수 있음. 4장 문구: "좋은 알이면 번쩍!" / 좋은 알이 나올수록 기계가 여러 번 번쩍이고 세게 흔들려요. / 우수 1번 · 레어 2번 · 에픽 3번 · 전설 4번.
