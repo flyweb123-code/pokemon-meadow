@@ -1270,7 +1270,7 @@ const into = (x, t) => { if (!x || !t) return; const rg = document.createRange()
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히
   // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장
-  try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {}
+  try { GA.sfx('newdex'); } catch (e) {}
   return new Promise(ok => { const p = pop(`<h4 class="ul-t"><small>체육관 등급 혜택</small>새 메뉴가 열렸어요!</h4><div class="ul-cards">
       <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
@@ -1632,7 +1632,7 @@ function openTab(t, opt) {
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
 const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock';
 function pop(html, onClick) {
-  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1); }, 60); }   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
+  const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
