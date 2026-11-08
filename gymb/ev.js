@@ -496,6 +496,7 @@ function field(I, o) {
 
 window.GymEv = {
   LIST, DEF,
+  tools: (I, def) => { css(); return tools(I, def); },   // v19.18 체육관 연출(전설 전당)에서 이벤트 도구만 빌려 씀
   def(o) { DEF[o.id] = o; },
   load,
   name: id => DEF[id]?.nm || id,
