@@ -3148,7 +3148,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li>h6.pk-gh{grid-column:2;margin:6px 0 0;font-size:11px;letter-spacing:1px;color:#8a5a10}
 #gym .gy-perk>li>h6.pk-gh+ul{margin-top:2px}
 
-/* v18.92 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 웅장하게': 전설 알 지급 = 명예의 전당 등록 연출 (legEggPop) */
+/* v18.93 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 웅장하게': 전설 알 지급 = 명예의 전당 등록 연출 (legEggPop) */
 #gym.lgOn .gy-dlg{z-index:62}
 #gym .hof{position:absolute;inset:0;z-index:60;overflow:hidden;pointer-events:auto;opacity:0;transition:opacity .8s;color:#fff}
 #gym .hof.hOn{opacity:1}#gym .hof.hBye{opacity:0;transition:opacity .9s}

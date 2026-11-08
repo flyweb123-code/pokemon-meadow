@@ -964,7 +964,7 @@ const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
    알 [등급, 개수]: 떠오르는 일반 5 · 이름난 우수 4 · 인기 레어 3 · 명문 에픽 2 (전설은 원래 타입 전설 알) */
 const GR_GOLD = [0, 1000, 1500, 2500, 4000, 6000, 10000], GR_EGG = [0, 0, [1, 5], [2, 4], [3, 3], [4, 2], 0];
 const grEggT = i => { const E = GR_EGG[i], t = st().ty, g = E && GA.tyEggG ? GA.tyEggG(t, E[0]) : E?.[0]; return E ? (g ? [g, t] : [E[0], 0]) : null; };   // v18.23: 실제로 받는 알 [등급, 타입] (그 타입이 없으면 한 등급 위, 에픽까지 없으면 보통 알)
-const grEggN = i => { const R = grEggT(i); return R ? `${R[1] ? (GA.LT_ADJ?.[R[1]] || TYPE_KO[R[1]]) + ' ' : ''}${GA.EGG_GN?.(R[0]) || ''} 알` : ''; };   // v18.92 경완: 타입 알도 별명 (파릇한 에픽 알)
+const grEggN = i => { const R = grEggT(i); return R ? `${R[1] ? (GA.LT_ADJ?.[R[1]] || TYPE_KO[R[1]]) + ' ' : ''}${GA.EGG_GN?.(R[0]) || ''} 알` : ''; };   // v18.93 경완: 타입 알도 별명 (파릇한 에픽 알)
 const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) || '' : ''; };   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
 const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
@@ -1277,7 +1277,7 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
     const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }
     for (let k = 0; k < ne; k++) setTimeout(() => { try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} }, 250 + k * 180 + 220); }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
-// v18.92 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 가슴이 웅장해지는 연출': 강박사가 헐레벌떡 들어와 관장 앞에서 축하 → 화면이 깜깜해지고 전당 곡 →
+// v18.93 경완 '지급 연출 너무 성의없다' + '전당 등록처럼 가슴이 웅장해지는 연출': 강박사가 헐레벌떡 들어와 관장 앞에서 축하 → 화면이 깜깜해지고 전당 곡 →
 // 스포트라이트 아래 라인업 포켓몬이 한 마리씩 (이름·레벨) → 관장과 모두 함께 '명예의 전당' 등록판 → 하늘에서 전설 알이 빛기둥 타고 내려와 번쩍 '받았다!' → 체육관으로 돌아와 강박사 한마디, 문으로 나감
 function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">강박사에게서<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
