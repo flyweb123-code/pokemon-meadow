@@ -3368,3 +3368,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-recnone{margin:auto!important;text-align:center;padding:0 16px}
 /* 새로 배울 기술 창: 위아래로만 스크롤 (경완 2026-11-08) */
 .gy-pop .win:has(.mv-learn),.mv-learn{overflow-x:hidden!important;overscroll-behavior-x:none;touch-action:pan-y}.mv-learn .mp-mv{min-width:0;max-width:100%;box-sizing:border-box}
+#gym .gy-pop.mec-wrap .mec-fit{position:absolute;right:10px;top:10px;z-index:2;width:38px;height:38px;padding:5px;border:0;border-radius:10px;background:#fff;box-shadow:0 3px 0 #a8a8b8,inset 0 0 0 2px rgba(0,0,0,.12);transition:transform .05s,box-shadow .05s}#gym .gy-pop.mec-wrap .mec-fit:active{transform:translateY(3px);box-shadow:0 0 0 #a8a8b8,inset 0 0 0 2px rgba(0,0,0,.12)}#gym .gy-pop.mec-wrap .mec-fit svg{width:100%;height:100%;display:block}#gym .mec-fts{max-height:52vh;overflow-y:auto;overflow-x:hidden;padding:2px}#gym .mec-fts .ft-pic img{max-height:72px;image-rendering:pixelated}
+/* v19.9x 관장 카드 옷장 단추 (경완 2026-11-08) */

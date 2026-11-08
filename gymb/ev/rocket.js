@@ -59,10 +59,14 @@ const WG_L = [
 // 로켓단 간부 아테나가 모니터로 (경완 2026-11-08 '로켓단 시리즈 예고 뒤에 모니터 켜지면서 아테나 나오는 연출')
 // 모니터 속 간부: 정체는 감춘 실루엣 (경완 2026-11-08 '아테나는 정체 드러내지 않고 실루엣으로'). body() 동안 화면이 켜져 있다
 async function crt(A, body) { const w = document.createElement('div'); w.className = 'ev-crt'; w.innerHTML = `<i class="crt-bk"></i><div><img alt="" src="${IM}pt/tr/hg_ariana.png"><i></i><b>● LIVE</b></div>`;
-  A.se('HG_SELECT'); A.I.root.appendChild(w); const sc = w.firstElementChild; A.I.haptic?.(0);
+  A.se('HG_SELECT'); A.I.root.appendChild(w); const sc = w.querySelector(':scope>div');   /* 화면(검은 바탕 다음 칸): 첫 칸이 검은 바탕이라 꺼지는 효과가 바탕에 걸려 안 보였던 것 (경완 2026-11-08) */ A.I.haptic?.(0);
   await sc.animate([{ transform: 'scale(1,.02)', filter: 'brightness(4)' }, { transform: 'scale(1,1)', filter: 'brightness(1)' }], { duration: 380, easing: 'ease-out' }).finished.catch(() => {});
   await body();
   await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('HG_SELECT'); await A.wait(450); await w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished.catch(() => {}); w.remove(); }
+// 연막 연기: 회색 연기 뭉치가 퍼졌다가 옅어짐 (경완 2026-11-08 '연막 던져서 도망갈 때 펑 + 연기')
+function smoke(F, x, y) { const k = F.k; for (let i = 0; i < 9; i++) { const e = document.createElement('i'), a = i / 9 * Math.PI * 2 + Math.random() * .6, r = (4 + Math.random() * 9) * k, sz = (14 + Math.random() * 10) * k;
+  Object.assign(e.style, { position: 'absolute', left: ((x * 16 + 8) * k - sz / 2) + 'px', top: ((y * 16 - 2) * k - sz / 2) + 'px', width: sz + 'px', height: sz + 'px', borderRadius: '50%', zIndex: 5950, pointerEvents: 'none', background: `radial-gradient(circle at 40% 38%, #f4f4f8, #b8b8c4 55%, rgba(150,150,166,0) 72%)` });
+  F.map.appendChild(e); e.animate([{ transform: 'translate(0,0) scale(.25)', opacity: .95 }, { transform: `translate(${Math.cos(a) * r}px,${Math.sin(a) * r - 4 * k}px) scale(1.25)`, opacity: .9, offset: .35 }, { transform: `translate(${Math.cos(a) * r * 1.5}px,${Math.sin(a) * r * 1.5 - 10 * k}px) scale(1.6)`, opacity: 0 }], { duration: 1100 + Math.random() * 300, easing: 'ease-out', fill: 'forwards' }).finished.then(() => e.remove(), () => e.remove()); } }
 // 글자 입력 창 (암호 등): 버튼으로만 닫힘. 그만두면 null
 const askText = (A, t, ph = '') => new Promise(ok => { const I = A.I, w = document.createElement('div'); w.className = 'ev-ask ev-pw';
   w.innerHTML = `<div class="win"><h4>${I.esc(t)}</h4><input type="text" class="ev-in" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${I.esc(ph)}"><div class="bt2 gy-btns"><button type="button" data-a="0">그만두기</button><button type="button" class="main" data-a="1">말한다</button></div></div>`;
@@ -210,7 +214,7 @@ GymEv.def({
       // 지고 돌아오면 포켓몬 센터 간호순 앞에서 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접')
       const me = F.me = WO ? F.npc(I.myOw(), 7, 4, 'u') : F.npc(I.myOw(), 15, 17, 'd'); if (disg(A)) wear(A, F, true); else I.fitMe(me);
       const lass = ow(A, F, 'lass', 8, 17, 'r'), man = ow(A, F, 'man', 29, 19, 'l'), boy = ow(A, F, 'boy', 33, 13, 'd');
-      const old = ow(A, F, 'old_man_1', 9, 8, 'l'), kong = ow(A, F, `${IM}ev/rocket/ow_little_boy.png?v=3`, 32, 18, 'l', { fw: 16 });
+      const old = ow(A, F, 'old_man_1', 9, 8, 'l'), kong = ow(A, F, `${IM}ev/rocket/ow_little_boy.png?v=3`, 32, 18, 'l', { fw: 16 }); kong.rest = 'd';
       gr = ow(A, F, 'hg_rocket_m', 9, 31, 'd');   // 빈집 앞 조무래기: 변장하고 암호를 대면 비켜 줌
       if (A.has('gr')) { gr.x = 10; gr.y = 31; gr.turn('l'); gr.done = true; gr.put(); }
       // 다른 마을로 가는 길은 로켓단이 막고 있다 (경완 2026-11-07, 첫마디는 저마다 다르게 2026-11-08). 끝까지 말 걸면 짜증 나서 배틀 (이스터에그, 변장 중엔 의심만)
@@ -522,8 +526,8 @@ GymEv.def({
         // 발전기 방 오른쪽 노란 상자: 같이 다니는 포켓몬이 치우면 그 순간 꼬렛이 튀어나와 달아난다 (경완 2026-11-08)
         if (b?.kind === 'rat' || RAT.has(x + ',' + y)) { const rb = ratBox; if (!rb?.on) return me1('(상자가 있던 자리다.\n...꼬렛이 갉아 먹은 부스러기가 떨어져 있다.)'), true;
           await me1('(상자 안에서 뭔가\n부스럭거리는 소리가 난다...?)'); A.se('DP_KON', .6); rb.shake(); await wait(400); if (!(await ask('상자가 너무 무겁다'))) return true;
-          let run = null; await use(7, 14, async () => { A.se('DP_KON', .9); const p = rb.clear('push', F.pl ? dirTo(F.pl, [7, 14]) : 'r'); run = F.monRun(19, 7, 14, [[5, 13, 1], [4, 13], [4, 9], [10, 9]], 110); await p; });
-          if (!run) { const p = rb.clear('push', 'r'); run = F.monRun(19, 7, 14, [[5, 13, 1], [4, 13], [4, 9], [10, 9]], 110); await p; }
+          let run = null; await use(7, 14, async () => { A.se('DP_KON', .9); const p = rb.clear('push', F.pl ? dirTo(F.pl, [7, 14]) : 'r'); run = F.monRun(19, 7, 14, [[5, 13, 1], [4, 13], [4, 9], [27, 9]], 110, true); await p; });
+          if (!run) { const p = rb.clear('push', 'r'); run = F.monRun(19, 7, 14, [[5, 13, 1], [4, 13], [4, 9], [27, 9]], 110, true); await p; }
           A.mark('c3rat'); await run;
           await me1('(상자 밑에서 꼬렛이 튀어나와\n쏜살같이 달아나 버렸다!)', '(로켓단 간식이라도\n훔쳐 먹고 있었나...?)'); return true; }
         if (b?.kind === 'gen') { if (A.has('c3pow')) return me1('(발전기가 웅웅 힘차게 돌고 있다.)'), true;
@@ -652,7 +656,7 @@ GymEv.def({
       await S.say('...옛!\n당장 돌아가겠습니다!', { who: B });
       await S.say('흥, 체육관이랑 트레이너들은\n돌려주마! 운 좋은 줄 알아라!', { who: B }); S.hide(true);
       const gang = [boss, ...KS.map(x => x[0]).filter(k => k.on !== false && !k.el.hidden)];
-      A.se('DP_KON', 1); A.shake?.(); F.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.4)' }, { filter: 'brightness(1)' }], { duration: 500 }); await Promise.all(gang.map(k => k.gone())); await wait(400);
+      A.se('DP_W120', .8); A.shake?.(); A.I.haptic?.(1); gang.forEach(k => smoke(F, k.x, k.y)); await wait(220); await Promise.all(gang.map(k => k.gone())); await wait(700);   // 연막: 펑 소리 + 연기 (경완 2026-11-08)
       await me1('(람다와 문지기들이 연막을 뿌리고\n도망쳐 버렸다...!)', '(방금 모니터 속 그 사람...\n람다보다 높은 간부인 걸까...?)', '(로켓단은 아직\n끝난 게 아닌 것 같다...)');
       // 밧줄 풀어 주기
       A.se('HG_KATI'); for (const c of [...caps, guy]) { c.rope?.remove(); c.rope = null; c.hop = 4; c.put(); setTimeout(() => { c.hop = 0; c.put(); }, 140); await wait(120); }

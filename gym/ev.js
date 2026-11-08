@@ -58,11 +58,12 @@ const CSS = `
 #gym .ev-quit{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s}
 #gym .ev-pk{position:absolute;right:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
 #gym .ev-fld~.gy-kang.tw-talk .gy-k-box{width:auto;margin:0 calc(var(--si-right,env(safe-area-inset-right,0px)) + 8px) var(--evmb,77px) calc(var(--si-left,env(safe-area-inset-left,0px)) + 8px)}   /* 대사창 자리 = 체육관 아래 메뉴가 있을 때 대사창 자리 (경완 2026-11-08) */
-#gym .ev-luw{z-index:975}#gym .ev-lux{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:976;border:0;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 #18181f}#gym .ev-lux:active{transform:translateY(3px);box-shadow:none}#gym.evlu .gy-pop,#gym.evlu .gy-boxw{z-index:985}#gym .ev-luw [data-go]{display:none}   /* v19.61 이벤트 안 라인업 화면 */
+#gym .ev-luw{z-index:975}#gym .ev-lux{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:976;border:0;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 #18181f}#gym .ev-lux:active{transform:translateY(3px);box-shadow:none}#gym.evlu .gy-pop,#gym.evlu .gy-boxw{z-index:985}#gym .ev-luw:not(.evpk) [data-go]{display:none}   /* v19.61 이벤트 안 라인업 화면 */
 #gym .ev-luw>h3{min-height:34px;line-height:34px;margin:0 0 10px;padding-right:72px}#gym .ev-lux{top:calc(var(--si-top,env(safe-area-inset-top,0px)) + 14px);right:calc(var(--si-right,env(safe-area-inset-right,0px)) + 14px);height:34px;padding:0 14px}
 #gym .ev-luw>*{width:100%;max-width:460px;margin-left:auto;margin-right:auto}#gym .ev-luw [data-box]{display:none}#gym .ev-luw .lu-row2{grid-template-columns:1fr}   /* 이벤트에선 포켓몬 박스 없음, 정렬 다시 (경완 2026-11-08) */
 #gym .ev-luw.tired .lu-slot[data-p]{filter:grayscale(1) brightness(.92);opacity:.55}#gym .ev-luw.tired>h3::after{content:'모두 지쳐 있어요 · 포켓몬 센터에서 회복해요';word-break:keep-all;display:block;margin:6px -72px 0 0;line-height:1.4;padding:8px 10px;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;text-align:center}   /* 졌을 때: 슬롯 흐리게 */
 #gym .ev-bag{position:absolute;right:12px;top:calc(92px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
+#gym .ev-pk,#gym .ev-bag{width:4.9em;padding-left:0;padding-right:0;text-align:center}   /* 가방 = 포켓몬 버튼 크기 (경완 2026-11-08) */
 #gym .ev-bag:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
 #gym .ev-quit{background:rgba(196,40,44,.9);box-shadow:0 3px 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)}#gym .ev-quit:active{box-shadow:0 0 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)!important}
 #gym .ev-bagw .win{max-width:340px}#gym .ev-bagw h4{margin:0;font-size:16px}#gym .ev-bagw .bg-h{margin:2px 0 0;font-size:12px;font-weight:700;color:#707084;text-align:left}
@@ -82,6 +83,7 @@ const CSS = `
 #gym .ev-itb h4{margin:0;font-size:17px;color:#303040}#gym .ev-itb h4 small{display:block;font-size:12px;color:#8a6a30;font-weight:700;margin-bottom:3px}
 #gym .ev-itb .ib-pic{width:100px;height:100px;margin:0 auto;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle,#fff8d8 0,#ffe8a0 52%,rgba(255,232,160,0) 71%)}
 #gym .ev-itb .ib-pic img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated;animation:evIbB 1.6s ease-in-out infinite}
+#gym .ev-itb .ib-pic img.tm{position:relative;left:8px;top:8px}#gym .ev-bagw .bg-g img.tm{position:relative;left:4px;top:4px}#gym .rw-fnd img.tm{position:relative;left:12.5%;top:12.5%}   /* 기술머신 그림은 32칸 중 왼쪽 위 20칸에 있어서 가운데로 (경완 2026-11-08) */
 #gym .ev-itb .ib-pic .egg{width:34px;height:42px;transform:scale(1.5)}
 @keyframes evIbB{0%,100%{translate:0 0}50%{translate:0 -4px}}
 #gym .ev-itb .ib-d{margin:0;font-size:13px;line-height:1.5;color:#505060;white-space:pre-line}#gym .ev-itb .ib-t{margin:0;font-size:11px;color:#a0a0b0}
@@ -178,8 +180,13 @@ function tools(I, def) {
   const root = I.root, $g = s => root.querySelector(s), g = I.st(), D = I.dz(), T = () => 16 * I.sc();
   const rOcc = [], rO = () => rOcc.filter(q => q[2].isConnected).map(q => [q[0], q[1]]);
   // 가방 (경완 2026-11-08 '포켓몬 버튼 밑에 가방, 습득한 아이템 확인'): 중요한 물건(def.keys, 눌러서 쓰기) + 이 이벤트에서 주운 것(g.ev.found). 직접 연 창이라 바깥 눌러도 닫힘
+  // 배틀 전 라인업 고르기 (경완 2026-11-08 '체육관 배틀처럼 라인업 고르기 화면 후'): 이벤트 라인업 화면에 '이 라인업으로 결정'
+  const luPick = () => new Promise(async ok => { const w = document.createElement('div'); w.className = 'gy-sheet ev-luw evpk'; w.innerHTML = '<h3>배틀 라인업</h3><p class="gy-lead">불러오는 중…</p>';
+    root.appendChild(w); root.classList.add('evlu'); window.gymEvLu = 1; I.gse?.('DP_WIN_OPEN', .8); let dn = false;
+    const done = i => { if (dn) return; dn = true; w.remove(); root.querySelectorAll('.gy-boxw,.gy-pop').forEach(q => q.remove()); root.classList.remove('evlu'); window.gymEvLu = 0; if (i != null && !A.test) I.save(); ok(i); };
+    try { await I.luTab?.(w, { title: '배틀 라인업', pick: i => done(i) }); } catch (e) { console.error(e); done(null); } });
   const bagOpen = async F => { const K = def.keys?.(A) || [], FD = (g.ev || {}).found || [];
-    const pic = f => f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt="" src="${f.img}">`;
+    const pic = f => f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt=""${f.k === 'tm' ? ' class="tm"' : ''} src="${f.img}">`;
     const a = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask ev-pkw ev-bagw';
       w.innerHTML = `<div class="win"><h4>가방</h4>${K.length ? `<p class="bg-h">중요한 물건</p><div class="bg-g">${K.map((q, i) => `<button type="button" data-k="${i}">${pic(q)}<span>${I.esc(q.nm)}</span>${q.tag ? `<em>${I.esc(q.tag)}</em>` : ''}</button>`).join('')}</div>` : ''}<p class="bg-h">주운 아이템 ${FD.length}개</p>${FD.length ? `<div class="bg-g">${FD.map((f, i) => `<button type="button" data-f="${i}">${pic(f)}<span>${I.esc(f.nm || '')}</span></button>`).join('')}</div>` : '<p class="bg-none">아직 주운 아이템이 없어요</p>'}<p class="bg-d">${K.some(q => q.use) ? '아이템을 누르면 설명이 나와요.\n중요한 물건은 눌러서 쓸 수 있어요.' : '아이템을 누르면 설명이 나와요.'}</p><div class="gy-btns one"><button type="button" data-a="x">닫기</button></div></div>`;
       root.appendChild(w); I.gse?.('DP_WIN_OPEN', .8); const dEl = w.querySelector('.bg-d');
@@ -240,9 +247,10 @@ function tools(I, def) {
     test: !!window.gymEvTest, retry: (g.ev?.try | 0) > 0 || !!g.ev?.seen?.[g.ev?.ch],   // 한 번 본 장(센터로 돌아갔다 다시 온 것 포함)은 장 제목·처음 대사 건너뜀
     lv: () => I.lv(),
     // 필드 맵 열기 (검은 화면 뒤에서 만들고 F.show 로 밝힌다)
-    field: o => { const F = field(I, o); F.tired = () => !!A.tired; F.bag = () => bagOpen(F); return F; },   // 졌을 때(센터 가기 전) 라인업 화면을 흐리게
+    field: o => { const F = field(I, o); F.tired = () => !!A.tired; F.bag = () => bagOpen(F); try { I.ldB?.()?.catch?.(() => {}); } catch (e) {} return F; },   // 졌을 때(센터 가기 전) 라인업 화면을 흐리게
     // 이벤트 배틀: o = { tr 그림, cls, nm, team [[종, 레벨]], tier, say {win,lose}, g 골드, music }. 이기면 true
-    battle: async o => { const r = await I.battle(o); return !!(r?.won || r?.cut); },
+    battle: async o => { const l0 = g.luI; await luPick(); let r; try { r = await I.battle(o); } finally { if (A.test) { g.luI = l0; } }   // 운영자 시험이면 고른 라인업 번호는 되돌림
+      return !!(r?.won || r?.cut); },
     // 곧바로 까만 화면 (장을 이어서 시작할 때 체육관이 비치지 않게)
     blackNow: () => { let b = $g('.ev-black'); if (!b) { b = document.createElement('div'); b.className = 'ev-black'; b.innerHTML = '<b></b><span></span>'; root.appendChild(b); } b.style.transition = 'none'; b.classList.add('on'); void b.offsetWidth; b.style.transition = ''; },
     // 이벤트 보상 창: def.reward { g 골드, rep 평판, fit 의상 } 를 주고 보여 준다
@@ -254,7 +262,7 @@ function tools(I, def) {
       // 무대 아래 줄: 나 + 되찾은 트레이너·안내원 (R.crew) 앞모습, 한 명씩 나타나 콩콩
       const crew = [], fw = k => I.owW?.(k) || 32; if (R.crew) { crew.push(['me', I.myOw()]); for (const s of (I.st().sf || []).slice(0, 6)) if (s.ow) crew.push(['', s.ow]); if (I.GUY_OW) crew.push(['', I.GUY_OW]); }
       const cH = crew.map(([c, k], n) => `<i class="${c}" data-ow="${I.esc(k)}" style="--d:${(.3 + n * .12).toFixed(2)}s;width:${fw(k) * 2}px;background-image:url(${I.owSrc(k)});background-size:auto 64px;background-position:0 0"></i>`).join('');
-      const FD = (I.st().ev?.found || []), fnd = FD.length ? `<div class="rw-fnd" style="--d:${dd()}"><p>습득한 아이템 ${FD.length}개</p><div>${FD.map(f => `<i title="${I.esc(f.nm)}">${f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt="" src="${f.img}">`}</i>`).join('')}</div></div>` : '';   // v19.18: 알·상점 물건·선물 (이미 받아 둔 것)
+      const FD = (I.st().ev?.found || []), fnd = FD.length ? `<div class="rw-fnd" style="--d:${dd()}"><p>습득한 아이템 ${FD.length}개</p><div>${FD.map(f => `<i title="${I.esc(f.nm)}">${f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt=""${f.k === 'tm' ? ' class="tm"' : ''} src="${f.img}">`}</i>`).join('')}</div></div>` : '';   // v19.18: 알·상점 물건·선물 (이미 받아 둔 것)
       const w = document.createElement('div'); w.className = 'ev-rw gy-pop pp-pop rw-pop'; w.innerHTML = `<div class="win"><div class="rw-hd" style="${R.hd ? `--c1:${R.hd[0]};--c2:${R.hd[1]}` : ''}"><i class="bsa-ray"></i><i class="rw-halo"></i>${R.embImg ? `<b class="rw-emb"><img alt="" src="${R.embImg}"></b>` : R.emb ? `<b class="rw-emb">${I.esc(R.emb)}</b>` : ''}<b class="rw-stamp">해결!</b><div class="rw-crew">${cH}</div></div>
         <h4 class="pp-t"><small>이벤트 해결</small>${I.esc(def.nm)}</h4>${R.msg ? `<p class="rw-msg">${I.esc(R.msg).replace(/\n/g, '<br>')}</p>` : ''}<ul class="pk-ben">${L.join('')}</ul>${fnd}<div class="gy-btns one"><button type="button" class="main">좋아!</button></div></div>`;
       root.appendChild(w); I.haptic?.(1);
@@ -286,7 +294,7 @@ function tools(I, def) {
       const d = L.k === 'x' ? L.d || '' : L.k === 'egg' ? `부화하면 ${I.tyNm?.() || ''} 타입 포켓몬이 태어나요.` : `${L.d || ''}${L.d && !A.test ? '\n체육관 창고에 넣었어요.' : ''}`;
       try { window.GymBGM?.fan ? window.GymBGM.fan(L.k === 'egg' ? 'ME_FANFA3' : 'ME_FANFA4') : window.GymBGM?.se?.('ME_FANFA4'); } catch (e) {} I.haptic?.(1);
       await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask ev-itb';
-        w.innerHTML = `<div class="win"><h4><small>${o.giver ? `${I.esc(o.giver)}에게서 받았다!` : '손에 넣었다!'}</small>${I.esc(L.nm)}</h4><i class="ib-pic">${L.k === 'egg' ? I.eggIco?.(L.g) || '' : `<img alt="" src="${L.img}">`}</i><p class="ib-d">${I.esc(d)}</p>${A.test && L.k !== 'x' ? '<p class="ib-t">운영자 시험이라 실제로는 안 받아요</p>' : ''}<div class="gy-btns one"><button type="button" class="main" data-a="1">좋아!</button></div></div>`;
+        w.innerHTML = `<div class="win"><h4><small>${o.giver ? `${I.esc(o.giver)}에게서 받았다!` : '손에 넣었다!'}</small>${I.esc(L.nm)}</h4><i class="ib-pic">${L.k === 'egg' ? I.eggIco?.(L.g) || '' : `<img alt=""${L.k === 'tm' ? ' class="tm"' : ''} src="${L.img}">`}</i><p class="ib-d">${I.esc(d)}</p>${A.test && L.k !== 'x' ? '<p class="ib-t">운영자 시험이라 실제로는 안 받아요</p>' : ''}<div class="gy-btns one"><button type="button" class="main" data-a="1">좋아!</button></div></div>`;
         root.appendChild(w); const t0 = performance.now(); w.onclick = e => { const b = e.target.closest('button'); if (!b || performance.now() - t0 < 500) return; e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(); }; });
       return L; },
     // 같이 다니는 포켓몬: 고른 것(넣어 두면 없음)을 이 이벤트 동안 기억 (운영자 시험이면 체육관 관장 옆 포켓몬은 안 바뀜)
@@ -339,12 +347,15 @@ function field(I, o) {
   const at = (s, x, y) => s.on && !s.el.hidden && here(s) && Math.round(s.x) === x && Math.round(s.y) === y;
   const cAt = (x, y) => x < 0 || y < 0 || x >= o.w || y >= o.h ? '#' : col[y][x];
   F.who = (x, y) => F.sps.find(s => s !== F.me && at(s, x, y));
-  F.solid = (x, y, who) => cAt(x, y) !== '.' || F.block.has(x + ',' + y) || F.sps.some(s => s !== who && (at(s, x, y) || (s.res && s.on && here(s) && s.res[0] === x && s.res[1] === y)));
+  F.solid = (x, y, who) => cAt(x, y) !== '.' || F.block.has(x + ',' + y) || (!who?.ghost && F.sps.some(s => s !== who && (at(s, x, y) || (s.res && s.on && here(s) && s.res[0] === x && s.res[1] === y))));
   // 마을 사람이 제자리 근처(r 칸)를 어슬렁거린다 (경완 2026-11-07 '마을 사람들 좀 움직이고 있게'). 자유롭게 걷는 동안만
   F.wander = (s, r = 2) => { s.home = [s.x, s.y]; s.wr = r; s.wt = performance.now() + 800 + Math.random() * 2500; return s; };
+  // 돌아다니는 사람이 서면 안 되는 칸 (경완 2026-11-08 '건물 입구랑 지나가야 하는 통로 가리지 않게'): 출입구 바로 옆 칸, 폭 한 칸짜리 통로
+  const wNo = (x, y) => { const wl = (a, b) => cAt(a, b) !== '.'; if ([[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => F.warpAt(x + dx, y + dy))) return true;
+    return (wl(x - 1, y) && wl(x + 1, y)) || (wl(x, y - 1) && wl(x, y + 1)); };
   const wanderTick = now => { for (const s of F.sps) { if (!s.wr || s.wb || now < s.wt || !s.on || s.el.hidden || !here(s)) continue; s.wt = now + 1600 + Math.random() * 3200;
     const d = 'udlr'[Math.random() * 4 | 0], [dx, dy] = DIR[d], nx = Math.round(s.x) + dx, ny = Math.round(s.y) + dy, m = F.me;
-    if (Math.random() < .35 || Math.abs(nx - s.home[0]) > s.wr || Math.abs(ny - s.home[1]) > s.wr || F.solid(nx, ny, s) || F.warpAt(nx, ny) || Math.abs(nx - Math.round(m.x)) + Math.abs(ny - Math.round(m.y)) < 2) { s.turn(d); continue; }
+    if (Math.random() < .35 || Math.abs(nx - s.home[0]) > s.wr || Math.abs(ny - s.home[1]) > s.wr || F.solid(nx, ny, s) || F.warpAt(nx, ny) || wNo(nx, ny) || Math.abs(nx - Math.round(m.x)) + Math.abs(ny - Math.round(m.y)) < 2) { s.turn(d); continue; }
     s.wb = true; s.go([[nx, ny]], WALK).then(() => { s.wb = false; }); } };
   // 맵 위 사람: ow 키(본가 걸음 그림) 또는 그림 주소. o2.room = 어느 방에 있는지 (기본 지금 방)
   F.npc = (ow, x, y, f = 'd', o2 = {}) => { const src = /[/.]/.test(ow) ? ow : I.owSrc(ow), fw = o2.fw || (/[/.]/.test(ow) ? 32 : I.owW(ow)); const s = Object.assign({ x, y, f, st: 0, on: true, fw, hop: 0, room: F.cur, el: document.createElement('i') }, o2); s.fw = fw; s.el.className = 'tw-sp'; map.appendChild(s.el);   // o2.fw 가 0 이면 폭 0 으로 덮여 건물 안 사람들이 안 보이던 것 (v19.29)
@@ -394,7 +405,7 @@ function field(I, o) {
     requestAnimationFrame(loop); return p; };
   F.palSet = P => F.palOn(P);
   // 야생 포켓몬이 톡 튀어나와 길을 따라 달아난다 (v19.52 경완 '상자에서 꼬렛이 나와서 도망치게'). path = [[x,y],...], ms = 한 칸
-  F.monRun = async (sp, x, y, path, ms = 140) => { const e = document.createElement('i'); e.className = 'ev-pal'; e.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; map.appendChild(e); const sq = e.lastChild;
+  F.monRun = async (sp, x, y, path, ms = 140, noFade) => { const e = document.createElement('i'); e.className = 'ev-pal'; e.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; map.appendChild(e); const sq = e.lastChild;
     let M = null; try { M = await I.pmd(sp, 'M'); } catch (x2) {} if (!M?.P) { e.remove(); return; }
     const o = { x, y, f: 'd' }, kk = k / 2, sc = M.s * kk, A2 = M.P.a, pick = L => L.find(n => A2[n]) || 'Idle'; let an = null, t0 = 0, mv = 0, live = true;
     const put = () => Object.assign(e.style, { left: o.x * 16 * k + 'px', top: o.y * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', zIndex: zOf(o.x, o.y, 1) });
@@ -407,7 +418,7 @@ function field(I, o) {
     for (const [nx, ny, j] of path) { const x0 = o.x, y0 = o.y; o.f = nx > x0 ? 'r' : nx < x0 ? 'l' : ny > y0 ? 'd' : 'u'; mv = 1; const n = Math.max(Math.abs(nx - x0), Math.abs(ny - y0)) || 1;   // j: 뛰어넘기 (사람 머리 위로)
       if (j) I.gse?.('HG_UFO_JUMP', .7);
       await anim(ms * n * (j ? 2 : 1), (e2, q) => { o.x = x0 + (nx - x0) * q; o.y = y0 + (ny - y0) * q; if (j) e.style.translate = `0 ${-Math.sin(q * Math.PI) * 18 * k}px`; }); e.style.translate = ''; o.x = nx; o.y = ny; }
-    await e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).finished.catch(() => {}); live = false; e.remove(); };
+    if (!noFade) await e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).finished.catch(() => {}); live = false; e.remove(); };   // noFade: 디졸브 없이 달려 나가 사라짐
   // 몬스터볼에서 나오듯 옆에 톡 나와서 나를 보며 울음소리 + 동작 (경완 2026-11-08 '관장 옆으로 나와서 관장 보면서 울음소리랑 같이 동작')
   F.palOut = async P => { const p = await F.palOn(P, true); if (!p) return null; const m = F.me; m.face?.(p);
     p.el.animate([{ opacity: 0, transform: 'scale(.2)', filter: 'brightness(3)' }, { opacity: 1, transform: 'scale(1.1)', filter: 'brightness(1.6)', offset: .6 }, { opacity: 1, transform: 'none', filter: 'none' }], { duration: 420, easing: 'ease-out' });
@@ -440,7 +451,8 @@ function field(I, o) {
     if (a === 'off') { if (!F.pl) return; await F.palIn(); F.onPal?.(null); return; }
     const Q = L.find(P => String(P.id) === a); if (!Q || (cur && cur.id === Q.id)) return;
     if (F.pl) await F.palIn(); await F.palOut(Q); F.onPal?.(Q); };
-  F.trail = (tx, ty, ms, hop) => { const p = F.pl; if (!p || p.act) return; const x0 = p.x, y0 = p.y, dx = tx - x0, dy = ty - y0; if (!dx && !dy) return;
+  F.trail = (tx, ty, ms, hop) => { const p = F.pl; if (!p || p.act) return;
+    if (p.wait) { p.wait = false; p.x = tx; p.y = ty; p.f = F.me.f; p.put(); p.el.hidden = false; p.el.animate?.([{ opacity: 0 }, { opacity: 1 }], { duration: 160 }); return; }   /* 문에서 나온 뒤 첫 걸음에 내 뒤 칸에 나타남 (경완 2026-11-08 '건물 뚫고 나옴') */ const x0 = p.x, y0 = p.y, dx = tx - x0, dy = ty - y0; if (!dx && !dy) return;
     if (Math.abs(dx) + Math.abs(dy) > 2.01) { p.x = tx; p.y = ty; p.put(); return; }   // 방이 바뀌었거나 멀리 떨어졌으면 곧장
     p.f = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); p.mv++;
     anim(ms, (e2, q) => { p.x = x0 + dx * q; p.y = y0 + dy * q; p.hop = hop ? Math.sin(q * Math.PI) * 10 : 0; }).then(() => { p.x = tx; p.y = ty; p.hop = 0; p.mv--; }); };
@@ -451,7 +463,9 @@ function field(I, o) {
   F.MOVE = { 1: ['몸통박치기', 'DP_W036'], 2: ['바위깨기', 'DP_W025'], 3: ['바람일으키기', 'DP_W016'], 4: ['용해액', 'DP_W092'], 5: ['구멍파기', 'DP_W091'], 6: ['바위떨구기', 'DP_W088'], 7: ['연속자르기', 'DP_W015'], 8: ['나이트헤드', 'DP_W109'], 9: ['아이언테일', 'DP_W231'],
     10: ['불꽃세례', 'DP_W052'], 11: ['물대포', 'DP_W055'], 12: ['풀베기', 'DP_W015'], 13: ['전기쇼크', 'DP_W085'], 14: ['염동력', 'DP_W060'], 15: ['얼음뭉치', 'DP_W059'], 16: ['용의숨결', 'DP_W082'], 17: ['깨물어부수기', 'DP_W044'], 18: ['요정의바람', 'DP_W236'] };
   const HC = { 1: '#e8e0c8', 2: '#e07040', 3: '#c8e8ff', 4: '#c070e0', 5: '#d8b060', 6: '#c0a060', 7: '#a8d040', 8: '#8060c0', 9: '#d0d8e8', 10: '#ff8030', 11: '#60b0ff', 12: '#70d050', 13: '#ffe040', 14: '#ff70b0', 15: '#a0f0ff', 16: '#8060ff', 17: '#605060', 18: '#ffb0e0' };
-  F.move = () => F.MOVE[I.ty?.()] || F.MOVE[1];
+  // 같이 다니는 포켓몬이 실제로 배운 공격 기술 (체육관 타입 먼저, 경완 2026-11-08 '배우고 있는 기술로'), 없으면 타입 기본 기술. [이름, 소리, 타입]
+  F.move = () => { const T = I.ty?.() || 1, P = F.pl?.P, L = (P && I.palMv?.(P)) || [], dm = L.filter(x => x && x[3] !== 2 && (x[4] || 0) > 0), m = dm.find(x => x[2] === T) || dm.sort((a, b) => (b[4] || 0) - (a[4] || 0))[0];
+    if (m) return [m[1], (F.MOVE[m[2]] || F.MOVE[1])[1], m[2]]; return [...(F.MOVE[T] || F.MOVE[1]), T]; };
   // 기술 효과 (타입별 도트 조각이 튀거나 피어오름, 경완 2026-11-08 '기술 효과 넣어주고')
   const FXT = { 10: ['#ff5020', '#ffd040', 'up'], 16: ['#7050ff', '#c0a0ff', 'up'], 11: ['#3090ff', '#c0e8ff', 'drop'], 15: ['#a0f0ff', '#ffffff', 'shard'], 13: ['#ffe020', '#fff8a0', 'zap'], 12: ['#40b040', '#a0e070', 'leaf'], 7: ['#90c020', '#d0f080', 'leaf'],
     14: ['#ff60b0', '#ffc0e0', 'ring'], 18: ['#ff90d0', '#ffffff', 'spark'], 8: ['#6040a0', '#b090e0', 'smoke'], 17: ['#403040', '#806878', 'smoke'], 4: ['#a040c0', '#e0a0f0', 'bub'],
@@ -471,17 +485,17 @@ function field(I, o) {
   // 내 앞 칸(tx,ty)에 기술: 내 옆 빈칸으로 나와서 그쪽으로 달려들며 기술 → hit() (부딪히는 순간) → 제자리
   // 칸(tx,ty)에 기술: 그 칸 옆 빈칸 중 가장 가까운 데로 걸어가서 달려들며 기술 → hit() (부딪히는 순간) → 그 자리에서 기다림 (내가 걸으면 다시 따라옴)
   F.palWalk = async pts => { const p = F.pl; for (const [nx, ny] of pts) { const x0 = p.x, y0 = p.y, dx = nx - x0, dy = ny - y0; p.f = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); p.mv++; await anim(170, (e2, q) => { p.x = x0 + dx * q; p.y = y0 + dy * q; }); p.x = nx; p.y = ny; p.mv--; } };
-  F.palAct = async (tx, ty, hit) => { const p = F.pl, m = F.me; if (!p) { await hit?.(); return; } p.act = true;
+  F.palAct = async (tx, ty, hit) => { const p = F.pl, m = F.me; if (!p) { await hit?.(); return; } p.act = true; if (p.wait) { p.wait = false; p.el.hidden = false; }
     let best = null; for (const [dx, dy] of Object.values(DIR)) { const q = [tx + dx, ty + dy]; if (F.solid(q[0], q[1])) continue; const here = Math.round(p.x) === q[0] && Math.round(p.y) === q[1], pt = here ? [] : F.path(p, q); if (pt && (!best || pt.length < best.length)) best = pt; }
     // 옆 빈칸이 없으면(좁은 통로) 내가 한 칸 물러서고 포켓몬이 내 자리로: 관장과 겹치던 것 (경완 2026-11-08)
     if (!best) { const mx = Math.round(m.x), my = Math.round(m.y), bx = mx - Math.sign(tx - mx), by = my - Math.sign(ty - my), adj = Math.abs(tx - mx) + Math.abs(ty - my) === 1;
       if (adj && !F.solid(bx, by, m)) { const f0 = m.f; await m.go([[bx, by]], WALK); m.turn(f0); const pt = F.path(p, [mx, my]); if (pt) best = pt; } }
     if (best) await F.palWalk(best); else p.top = true;
     F.palFace({ x: tx, y: ty }); F.bub(p, '!', 500); I.cry?.(p.P.sp); await wait(650);
-    const [nm, se] = F.move(), lx = (tx - p.x) * .45, ly = (ty - p.y) * .45;
+    const [nm, se, mty] = F.move(), lx = (tx - p.x) * .45, ly = (ty - p.y) * .45;
     p.one = 'Attack'; I.gse?.(se, .9);
     await anim(160, (e2, q) => { p.dx = lx * q; p.dy = ly * q; });
-    const fx = document.createElement('i'); fx.className = 'ev-hit'; fx.style.setProperty('--hc', HC[I.ty?.()] || '#ffe070'); Object.assign(fx.style, { left: (tx * 16 + 8) * k + 'px', top: (ty * 16 + 8) * k + 'px' }); map.appendChild(fx); setTimeout(() => fx.remove(), 420); F.fx(I.ty?.() || 1, tx, ty);
+    const fx = document.createElement('i'); fx.className = 'ev-hit'; fx.style.setProperty('--hc', HC[mty] || '#ffe070'); Object.assign(fx.style, { left: (tx * 16 + 8) * k + 'px', top: (ty * 16 + 8) * k + 'px' }); map.appendChild(fx); setTimeout(() => fx.remove(), 420); F.fx(mty || 1, tx, ty);
     I.haptic?.(1); const hp = hit?.(); await anim(200, (e2, q) => { p.dx = lx * (1 - q); p.dy = ly * (1 - q); }); p.dx = p.dy = 0; await hp; await wait(200); p.top = false; p.one = null;
     const bk = F.path(p, [Math.round(m.x), Math.round(m.y)]); if (bk && bk.length > 1) await F.palWalk(bk.slice(0, -1)); p.act = false; F.palFace(m); };   // 다 하면 내 옆으로 돌아온다
   // 장애물: 그림(여러 칸 가로로 이어 붙인 깨지는 그림이면 fr 장수) 한 칸을 막는다. clear() 로 치운다
@@ -515,10 +529,11 @@ function field(I, o) {
   F.enter = async w => { const me = F.me, isDoor = F.doorAt?.[w.x + ',' + w.y];
     if (isDoor) { await F.door(w.x, w.y, true); me.top = true; await me.go([[w.x, w.y]], WALK); me.el.style.visibility = 'hidden'; me.top = false; await F.door(w.x, w.y, false); }   // 본가처럼 열린 문 위로 보이며 들어가고 다 들어가면 사라짐 (경완 2026-11-07)
     else I.gse?.('HG_KAIDAN2');   // 매트로 나가기 (본가 SE_EXIT)
-    await F.fade(true); const [tx, ty, tf] = w.at; F.setMap(w.to); me.x = tx; me.y = ty; if (F.pl) { F.pl.x = tx; F.pl.y = ty; } me.turn(tf || 'u'); me.el.style.visibility = '';
+    await F.fade(true); const [tx, ty, tf] = w.at; F.setMap(w.to); me.x = tx; me.y = ty; if (F.pl) { F.pl.x = tx; F.pl.y = ty; F.pl.el.hidden = true; } me.turn(tf || 'u'); me.el.style.visibility = '';
     const outDoor = F.doorAt?.[tx + ',' + ty]; if (outDoor) me.el.style.visibility = 'hidden';
     F.follow = true; F.cam(me.x, me.y); await F.fade(false);
-    if (outDoor) { await F.door(tx, ty, true); me.top = true; me.el.style.visibility = ''; const [dx, dy] = DIR[tf || 'd']; await me.go([[tx + dx, ty + dy]], WALK); me.top = false; me.put(); await F.door(tx, ty, false); } };
+    if (outDoor) { await F.door(tx, ty, true); me.top = true; me.el.style.visibility = ''; const [dx, dy] = DIR[tf || 'd']; await me.go([[tx + dx, ty + dy]], WALK); me.top = false; me.put(); await F.door(tx, ty, false); }
+    if (F.pl) { F.pl.x = me.x; F.pl.y = me.y; F.pl.wait = true; F.pl.el.hidden = true; F.pl.put(); } };   // 같이 다니는 포켓몬은 내가 다음에 걸을 때 뒤 칸에 나옴 (큰 포켓몬이 건물 위로 겹치던 것)
   // 본가 트레이너 시야: 보는 방향으로 sight 칸 안에 내가 있으면 그 거리 (벽·사람에 막힘)
   F.sees = s => { if (!s.on || !s.sight || s.done || s.lost || !here(s)) return 0; const [dx, dy] = DIR[s.f]; for (let i = 1; i <= s.sight; i++) { const x = Math.round(s.x) + dx * i, y = Math.round(s.y) + dy * i;
     if (Math.round(F.me.x) === x && Math.round(F.me.y) === y) return i; if (cAt(x, y) !== '.' || F.who(x, y)) return 0; } return 0; };
@@ -529,7 +544,7 @@ function field(I, o) {
     while (q.length) { const [x, y] = q.shift(); if (x === to[0] && y === to[1]) { const out = []; let c = key(x, y); while (c !== key(sx, sy)) { out.unshift([c % o.w, Math.floor(c / o.w)]); c = prev.get(c); } return out; }
       for (const [dx, dy] of Object.values(DIR)) { const nx = x + dx, ny = y + dy, kk = key(nx, ny); if (prev.has(kk) || (F.solid(nx, ny, s) && !(nx === to[0] && ny === to[1]))) continue; if (nx < 0 || ny < 0 || nx >= o.w || ny >= o.h) continue; prev.set(kk, key(x, y)); q.push([nx, ny]); } }
     return null; };
-  F.goTo = async (s, to, ms = 200) => { const p = F.path(s, to); if (p?.length) await s.go(p, ms); };
+  F.goTo = async (s, to, ms = 200) => { let p = F.path(s, to); if (!p?.length && (Math.round(s.x) !== to[0] || Math.round(s.y) !== to[1])) { s.ghost = true; p = F.path(s, to); s.ghost = false; } if (p?.length) await s.go(p, ms); };   // 사람에 막혀 길이 없으면 사람은 지나쳐 감 (람다 방 왼쪽 문지기, 경완 2026-11-08)
   // 사람이 나(또는 t)에게 다가온다: 내 옆 네 칸 중 가장 짧은 길로 가서 나를 본다 (경완 2026-11-07 '최단 거리로')
   F.approach = async (s, t = F.me, ms = 200) => { const tx = Math.round(t.x), ty = Math.round(t.y), [fx, fy] = DIR[t.f] || [0, 0], C = [];
     for (const [dx, dy] of Object.values(DIR)) { const q = [tx + dx, ty + dy], here0 = Math.round(s.x) === q[0] && Math.round(s.y) === q[1]; const p = here0 ? [] : F.solid(q[0], q[1], s) ? null : F.path(s, q); if (p) C.push({ q, p, front: dx === fx && dy === fy }); }
@@ -584,7 +599,7 @@ function field(I, o) {
           const w = F.warpAt(tx, ty);
           const pl = F.pl && !F.pl.el.hidden && Math.round(F.pl.x) === tx && Math.round(F.pl.y) === ty;
           // 말 걸기·살펴보기는 버튼 누르는 소리와 같게 (경완 2026-11-08). 앞에 아무것도 없으면 아무 일 없이 계속 걷는다 (경완 2026-11-08 'A 눌러도 이동 끊기지 않게')
-          if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); return h.talk(s); }); } else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
+          if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); const r = await h.talk(s); if (s.rest) { clearTimeout(s.restT); s.restT = setTimeout(() => { if (s.on !== false && !s.mv) { s.f = s.rest; s.put(); } }, 1800); } return r; }); }   /* s.rest: 말 걸고 나서 조금 뒤 원래 방향으로 (꼬마 콩이, 경완 2026-11-08) */ else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
         else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); } else if (F.ppQ) { F.ppQ = false; run(() => F.palPick()); } else if (F.bgQ) { F.bgQ = false; run(() => F.bag?.()); }
         else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
           if (m.f !== d && !moving) { m.turn(d); busy = true; setTimeout(() => { busy = false; }, TURN); }   // 제자리 돌기 (짧게 누르면 방향만)
