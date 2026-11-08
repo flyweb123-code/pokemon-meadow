@@ -1405,14 +1405,18 @@ function legLines(N, E, ty) {
     [K0, '빈칸 하나만 남았구먼.<br>그 칸이 채워지는 날을<br>나도 손꼽아 기다리겠네.', '마지막 타입은<br>자네가 제일 좋아하는 포켓몬들과<br>함께 가 보게!'],
     ['관장님!! 열일곱 번째예요!<br>하나만 더! 하나만 더요!<br>흑흑…', '허허, 자네가 더 신났구먼.', '강박사님! 이번엔 진짜<br>마지막으로 여쭤볼게요!', '…자네는 안내원이잖나.', '저도 전당에… 안 되나요…?', '마지막은 다음일세.', '허허허! 다음 전설 날엔<br>자네도 꼭 정장을 입고 오게!', '정장…?!<br>(…무슨 뜻이지?)'],
     '그럼 난 연구소로 돌아가 보마!<br>다음엔 마지막 전설이구먼!', '…정장은 면접 때 산 것밖에 없는데.');
-  // 열여덟 번째 (마지막): 모든 타입 완성 · 안내원이 드디어 이름을 남김
-  return mk(
+  // 열여덟 번째 (마지막): 모든 타입 완성. v19.49 경완 '나가기 전에 안내원이 막아서고 이번엔 진짜 전당에 올려 달라고 → 같이 가서 진짜 안내원도 전당에'
+  const T18 = mk(
     [`헉… 헉… ${E}!!<br>마지막… 열여덟 번째 전설이라니!<br>연구소 사람들 다 데리고 오고 싶었다네!`, `${ty} 타입 <b>전설의 체육관</b>으로<br>모든 타입의 전설을 이뤘구먼…!<br>이건 역사에 남을 일이야!`, '자, 오늘은 특별한 날이란다!<br>마지막으로 그곳에 가 보세나!'],
-    ['명예의 전당이란다.\n…오늘은 이 말을 하는 것도\n가슴이 벅차는구먼.', '벽에 남은 마지막 빈칸, 보이지?\n오늘 그 칸이 채워진다네.', `${ty} 타입으로\n${E}의 이름이 열여덟 번째로 남는다네!\n모든 타입의 전설이야!`, '자, 마지막 몬스터볼을\n하나씩 올려 보게!\n천천히, 아주 천천히.'],
+    ['명예의 전당이란다.\n…오늘은 손님이 하나 더 있구먼.', ['안내원', '우와아… 여기가 진짜 명예의 전당…!\n제가 정말 여기에 서 있다니…!'], '벽에 남은 마지막 빈칸, 보이지?\n오늘 그 칸이 채워진다네.\n…그리고 그 옆의 작은 칸 하나도.', ['안내원', '작은 칸…?'], `${ty} 타입으로\n${E}의 이름이 열여덟 번째로 남는다네!\n모든 타입의 전설이야!`, '자, 마지막 몬스터볼을\n하나씩 올려 보게!\n천천히, 아주 천천히.'],
     '좋아… 마지막 기록이 시작됐구먼!',
     [`${E}, 정말 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 마지막까지 잘 품어 주렴!`, '문 닫기 직전이던 그 낡은 체육관이<br>모든 타입의 전설이 되다니…<br>내 연구 인생 최고의 기록일세.', '자네는 이제 이 세상<br>모든 관장의 목표가 되었네.<br>정말, 정말 수고 많았네!'],
-    ['관장님!!! 열여덟 번째…<br>전부예요, 전부…!<br>흐아아앙…!', '허허, 오늘은 나도 울 것 같구먼.', '강박사님… 그동안 귀찮게 해서<br>죄송했어요. 전당은 이제 됐어요…', '…아니, 자네도 이걸 받게.', '이, 이건… 명패…?<br>"안내원의 전당 제1호"…?!', '내가 직접 만들었다네.<br>연구 노트 마지막 장에 쓰려고 아껴 둔 이름이지.', '허허허! 이 체육관이 여기까지 온 건<br>자네가 매일 문 앞에서<br>도전자를 맞아 준 덕분이기도 하니까!', '강박사님…!<br>(…정장 입고 오길 잘했다.)'],
+    ['관장님!!! 저… 진짜 전당에<br>이름이 올라갔어요…!<br>흐아아앙…!', '허허, 오늘은 나도 울 것 같구먼.', '강박사님, 그동안 귀찮게 해서<br>죄송했어요. 그리고…<br>정말 고맙습니다.', '고맙긴. 자네 이름은<br>원래 거기 있어야 했다네.', '그럼… 연구 노트 마지막 장은요?', '그건 여전히 비밀일세.', '허허허! 마지막 장엔<br>오늘 전당에서 찍은<br>우리 셋 사진을 붙일 거라네!', '우리 셋…!<br>(…정장 입고 오길 잘했다.)'],
     '그럼 난 연구소로 돌아가 보마!<br>둘 다, 지금까지 정말 고마웠네!<br>그리고 앞으로도 잘 부탁하네!', '…그때 대학원 오길 잘했다.');
+  // 강박사·관장이 나가기 전에 안내원이 문 앞을 막아섬 (g 안내원, k 강박사, '...' = 강박사 머리 위 말없음)
+  T18.blk = [['g', '자, 잠깐만요!!'], ['g', '강박사님, 관장님…<br>이번이 마지막 전설이잖아요.<br>이번에는… 진짜로요.'], ['g', '저도 명예의 전당에<br>데려가 주세요!'], ['k', '…자네는 안내원이잖나.'],
+    ['g', '알아요. 그래도 문 닫기 직전이던<br>그날부터 매일 이 문 앞에서<br>도전자를 맞았어요. 딱 한 번만요…!'], ['...'], ['k', '…허허. 그래, 오늘은 특별한 날이지.<br>좋네! 자네도 같이 가세!'], ['g', '정말요?! 강박사님 최고예요!<br>(…말해 보길 잘했다!)']];
+  T18.guHof = true; return T18;
 }
 async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
@@ -1439,7 +1443,15 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
     dlg(''); root.classList.add('dhide'); bgmPlay('rgFollow');
     const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
-    if (gu) { const ddx = D.door[0] - gu.x, ddy = D.door[1] - gu.y; gu.f = Math.abs(ddy) >= Math.abs(ddx) ? (ddy > 0 ? 'd' : 'u') : (ddx > 0 ? 'r' : 'l'); place(gu); }   /* 경완: 안내원은 나가는 쪽(문)을 바라봄 */
+    let guGo = false;   // v19.49 열여덟 번째: 안내원이 문 앞을 막아서고 같이 감
+    if (gu && TL.blk) { root.classList.remove('dhide'); A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700); dlg(''); root.classList.add('dhide');
+      const fc = [D.door[0], D.door[1] - 1], fr = [Math.round(k.x), Math.round(k.y)];
+      for (const c of [fc, [fc[0] - 1, fc[1]], [fc[0] + 1, fc[1]], [fc[0], fc[1] - 1]]) if (await A.walkTo(gu, c, 150, [fr, [meEnt.x, meEnt.y]])) break;
+      face(gu, k); face(k, gu);
+      for (const [w, h] of TL.blk) { if (w === '...') { dlg(''); root.classList.add('dhide'); A.bub(k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); }
+      dlg(''); root.classList.add('dhide'); guGo = true;
+      await walk(gu, outRoute(D, gu) || [D.door], 200); doorSe(); gu.el.style.visibility = 'hidden'; await wait(200); }
+    else if (gu) { const ddx = D.door[0] - gu.x, ddy = D.door[1] - gu.y; gu.f = Math.abs(ddy) >= Math.abs(ddx) ? (ddy > 0 ? 'd' : 'u') : (ddx > 0 ? 'r' : 'l'); place(gu); }   /* 경완: 안내원은 나가는 쪽(문)을 바라봄 */
     await Promise.all([walk(k, P, WS).then(() => { doorSe(); k.el.style.visibility = 'hidden'; }), wait(WS).then(() => walk(meEnt, L, WS)).then(() => { doorSe(); meEnt.el.style.visibility = 'hidden'; })]);
     await wait(900);
     await A.black(true);
@@ -1447,13 +1459,13 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     const HJ = await fetch(`${IMG}ev/hof/hof.json?v=${VER}`).then(r => r.json());
     { const rR = root.getBoundingClientRect(), mR = main.getBoundingClientRect(); root.style.setProperty('--lgB', `${Math.max(0, Math.round(rR.bottom - mR.bottom)) + 8}px`); root.classList.add('lgF'); }   /* v19.24 경완: 전당 화면 대사창·알림창도 하단 메뉴 있을 때 대사창 자리(메뉴 위)에 */
     F = A.field({ nm: '명예의 전당', img: `${IMG}ev/hof/hof.png?v=${VER}`, over: `${IMG}ev/hof/hof_o.png?v=${VER}`, w: HJ.w, h: HJ.h, col: HJ.col, door: {} });
-    const me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); const kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 });
+    const me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); const kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 }), hg = guGo ? F.npc(GUY_OW, 4, 12, 'u') : null;
     F.cam(5, 6); bgmPlay('rgPallet'); await A.black(false); await F.show();
-    await Promise.all([kg.go([[5, 6], [6, 6], [6, 5]], WS), wait(WS).then(() => me.go([[5, 5]], WS))]);
-    kg.turn('l'); await wait(200); me.turn('r'); await wait(300);
+    await Promise.all([kg.go([[5, 6], [6, 6], [6, 5]], WS), wait(WS).then(() => me.go([[5, 5]], WS)), hg ? wait(WS * 2).then(() => hg.go([[4, 5]], WS)) : 0]);
+    kg.turn('l'); await wait(200); me.turn('r'); if (hg) hg.turn('r'); await wait(300);
     const S = A.talk();
-    for (const h of TL.hof) await S.say(h); S.hide(true);
-    me.turn('u'); await wait(400);
+    for (const h of TL.hof) await (Array.isArray(h) ? S.say(h[1], { who: h[0] }) : S.say(h)); S.hide(true);
+    me.turn('u'); if (hg) hg.turn('u'); await wait(400);
     // 본가 FldEff_HallOfFameRecord: 볼을 25프레임마다 하나씩 (SE_BALL) → 32프레임 쉬고 → 볼이 반짝이며 모니터가 켜짐
     const kk = F.k, bw = document.createElement('div'); bw.className = 'hm-balls'; F.map.appendChild(bw);
     const BP = [[84, 51], [92, 51], [84, 56], [92, 56], [84, 61], [92, 61]];
@@ -1482,11 +1494,13 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       await hofWait(ov, 3400);   /* v19.21 경완 '포켓몬 별로 지나가는 타이밍 늘려': 2.3초 → 4.1초 */
       el.classList.remove('in'); el.classList.add('out'); cap.classList.remove('on'); await wait(700); el.remove(); }
     const trU = await fitSrc('tr').catch(() => `${IMG}tr/${myOw()}.png`);
-    st0.innerHTML = `<div class="hof-all">${mons.map((P2, n) => `<span class="hof-mini" style="--n:${n};--c:${mons.length}"><span></span></span>`).join('')}<img class="hof-tr" alt="" src="${trU}"></div>`;
+    st0.innerHTML = `<div class="hof-all">${mons.map((P2, n) => `<span class="hof-mini" style="--n:${n};--c:${mons.length}"><span></span></span>`).join('')}<img class="hof-tr" alt="" src="${trU}">${guGo ? `<i class="hof-gu" style="background-image:url(${owSrc(GUY_OW)})"></i>` : ''}</div>`;
     st0.querySelectorAll('.hof-mini>span').forEach((e, n) => { try { GA.pkFront?.(e, { sp: mons[n].sp, sh: mons[n].shiny ? 1 : 0, sx: mons[n].sex }); } catch (x) {} });
     const dt = new Date(), ds = `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`;
     cap.innerHTML = `<i>명예의 전당 등록</i><b>${esc(g.nm || '')}</b><em>관장 ${E}</em><small>${ds}</small>`; cap.classList.add('on', 'fin');
     ov.classList.add('hAll'); se('DP_KIRAKIRA2'); confetti(); await hofWait(ov, 3600);
+    if (guGo) { cap.classList.remove('on'); await wait(400); ov.classList.add('hGu'); ov.classList.remove('hBurst'); void ov.offsetWidth; ov.classList.add('hBurst'); se('DP_KIRAKIRA2');
+      cap.innerHTML = `<i>특별 등록</i><b>안내원의 전당 제1호</b><em>${esc(g.nm || '')} 안내원</em><small>${ds}</small>`; void cap.offsetWidth; cap.classList.add('on'); confetti(); await hofWait(ov, 3600); }
     // 하늘에서 전설 알
     cap.classList.remove('on'); ov.classList.add('hEgg');
     ov.insertAdjacentHTML('beforeend', `<i class="hof-pil"></i><i class="hof-ray"></i><div class="hof-egg">${GA.eggIco?.(t) || ''}</div>`);
@@ -1502,6 +1516,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn', 'lgF'); F.el.remove(); F = null;
     meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
     const kt = CR?.path?.at(-1) || D.door; k.x = kt[0]; k.y = kt[1]; k.f = CR?.cf || 'u'; k.el.style.visibility = ''; place(k);
+    if (gu && guGo && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
     bgmPlay('gym'); await A.black(false); await wait(300);
     for (const h of TL.back) await say(h);
     // ---- 6. 안내원 축하 + 티키타카 ----
@@ -1526,7 +1541,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
-    if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; place(gu); }
+    if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
     if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
 }
 // 승급 (경완 2026-10-31): 홈 타이틀 배지가 밝게 빛나다가 번쩍 → 다음 등급 배지로 바뀜 → 축하창 (등급 혜택만, 설명 문구 없음)

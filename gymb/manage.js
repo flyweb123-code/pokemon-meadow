@@ -37,11 +37,14 @@ function perHour(P) { const m = GB().gm(P), g = GB().growth(P.sp); if (m.lv >= G
 // 훈련장에 배치한 트레이너 (코치): 한 명마다 +25%, 훈련광은 +50%. 고용만 한 훈련광은 +20%
 const coachX = () => { const L = st().sf.filter(s => !s.rest); return 1 + L.reduce((a, s) => a + (s.yard ? (s.trait === 'train' ? .5 : .25) : s.trait === 'train' ? .2 : 0), 0); };
 const YARD_SF = 2;
-// 특별한 기술: 기술머신으로 배우는 기술 중 자기 타입의 공격 기술 하나 (1시간마다 5%)
+// 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
+// gym/egg.json (tools/gym/mkegg.js) 의 4개 중 아직 모르는 것 하나. 4번째는 포켓로그의 레어 알 기술이라 뽑힐 몫을 ¼ 로.
+const SP_P = 1 / 56;   // 훈련 1시간마다 (하루 8시간 × 7일 = 56시간에 1개쯤)
 function special(P) {
-  const D = GB().D, m = GB().gm(P), t = SPECIES[P.sp]?.t || [], L = (D.sp[P.sp]?.tm || []).map(i => D.mv[i]).filter(x => x && x[3] !== 2 && (x[4] || 0) >= 50 && !m.mv.includes(x[0]) && !(m.kn || []).includes(x[0]));
-  const pref = L.filter(x => t.includes(x[2])), pool = pref.length && Math.random() < .5 ? pref : L; if (!pool.length) return null;   // 자기 타입이 아니어도 배운다 (반반)
-  const x = K.pick(pool); GB().teach(m, x[0], null, false); return x;
+  const D = GB().D, m = GB().gm(P), E = GB().EGG?.[P.sp] || [];
+  const L = E.map((id, i) => [id, i === 3 ? .25 : 1]).filter(([id]) => id && GB().mvOf(id) && !m.mv.includes(id) && !(m.kn || []).includes(id));
+  let r = Math.random() * L.reduce((a, x) => a + x[1], 0), pk = null; for (const x of L) { if ((r -= x[1]) <= 0) { pk = x[0]; break; } } pk = pk || L.at(-1)?.[0]; if (!pk) return null;
+  const x = GB().mvOf(pk); GB().teach(m, x[0], null, false); return x;
 }
 const trFr = P => { try { return GA.frHr(P.sp) || .5; } catch (e) { return .5; } };   /* v16.42 경완 '친밀도 오르는건 필드 기준': 잘 돌본 필드와 같은 시간당 속도 (FR_TABLE 맨 위 × 포켓몬별 배수) */
 /* 날짜별 훈련 기록: g.tlog[포켓몬 id] = {하루 시작: {h 시간, x 경험치, lv 오른 레벨, f 친밀도, mv [새 기술]}} (60일) */
@@ -62,7 +65,7 @@ function tickTrain(now) {
       const step = Math.min(1, left), tot = perHour(P) * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * trFr(P); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n, 'keep').learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
-      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < .05) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
+      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < SP_P) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
     }
     R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
     const lv = GB().gm(P).lv;
@@ -530,14 +533,14 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
   const p = pop(`<div class="tp2">${trHead(P, true)}
     <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 오늘 ${Math.floor(T.h)}/8시간 · 훈련 일지 ›</small></span>
-      <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span>${TT.mv.length ? `<button type="button" class="tp2-mvc" data-a="${TT.mv.length > 1 ? 'mvs' : 'i' + TT.mv[0]}"><small>새 기술</small><b class="mv">${TT.mv.length}개 ›</b></button>` : '<span><small>새 기술</small><b>-</b></span>'}</span>
+      <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span><button type="button" class="tp2-mvc" data-a="mvs"><small>새 기술</small><b class="${TT.mv.length ? 'mv' : ''}">${TT.mv.length ? `${TT.mv.length}개 ›` : '- ›'}</b></button></span>
       ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
-      if (a === 'mvs') return mvListPop(TT.mv);
+      if (a === 'mvs') return mvListPop(TT.mv, P);
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
@@ -545,8 +548,21 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
 }
 /* v16.48 경완 '새 기술 박스는 따로 누르면 어떤 기술인지 팝업': 기술 이름 딱지(타입 색) → mvInfo. 여러 개면 목록 창에서 고름 */
 const mvChips = L => L.map(id => { const x = GB().mvOf(id); return `<button type="button" class="mv-chip" data-a="i${id}" style="--tc:${GA.TYPE_C?.[x?.[2]] || '#2a8a3e'}">${esc(GB().mvKo(id))}</button>`; }).join('');
-function mvListPop(L) { pop(`<h4>새로 배운 기술</h4><div class="mp-moves mp-line">${L.map(id => GB().mvOf(id)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
-  (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); }); }
+/* v19.55 경완 '훈련 현황 새 기술 박스 → 새 기술 창: 특별한 기술은 처음엔 실루엣 박스로 가려져 있다가 배울 때마다 하나씩 열림, 기술마다 행 하나로 길게':
+   위 = 특별한 기술(알 기술 4줄, 4번째 레어), 아래 = 훈련 중 레벨업으로 배운 기술. 처음 보는 알 기술(m.egS 에 없음)은 열리는 연출 한 번 */
+function mvListPop(L, P) {
+  const m = P && GB().gm(P), E = (P && GB().EGG?.[P.sp] || []).filter(id => id && GB().mvOf(id)), kn = new Set([...(m?.mv || []), ...(m?.kn || [])]), seen = new Set(m?.egS || []);
+  const lvL = [...new Set(L)].filter(id => !E.includes(id)).map(id => GB().mvOf(id)).filter(Boolean);
+  let nNew = 0; const row = (id, k) => { const x = GB().mvOf(id), rare = k === 3, on = kn.has(id), nw = on && !seen.has(id); if (nw) nNew++;
+    return `<div class="eg-r${rare ? ' rare' : ''}${on ? ' on' : ''}${nw ? ' new' : ''}" style="--d:${nw ? (nNew - 1) * .9 : 0}s">${on ? GB().mvRow(x, 'i' + id) : ''}${!on || nw ? '<i class="eg-cv"><b>???</b><small>아직 익히지 않은 특별한 기술</small></i>' : ''}${rare ? '<em class="eg-rt">레어</em>' : ''}</div>`; };
+  const got = E.filter(id => kn.has(id)).length;
+  const p = pop(`<h4>새로 배운 기술</h4>${E.length ? `<div class="mp-mvh eg-h"><small>특별한 기술</small><span>${got} / ${E.length}</span></div><div class="mp-moves mp-line eg-l">${E.map(row).join('')}</div>` : ''}
+    ${lvL.length ? `<div class="mp-mvh eg-h"><small>레벨업으로 배운 기술</small></div><div class="mp-moves mp-line">${lvL.map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>` : ''}
+    ${!E.length && !lvL.length ? '<p class="gy-msg">아직 새로 배운 기술이 없어요.</p>' : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
+  (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); }); p.classList.add('eg-pop');
+  if (m && nNew) { m.egS = [...new Set([...(m.egS || []), ...E.filter(id => kn.has(id))])]; K.save();
+    for (let i = 0; i < nNew; i++) setTimeout(() => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} GA.haptic?.(1); }, 1150 + i * 900); }
+}
 
 /* v16.41 경완 '해당 박스 누르면 전체 훈련 일지 날짜별로': 날마다 한 줄 (최근 날짜가 위)
    v16.48 경완: 창 크기는 상세카드와 같게, 위에 포켓몬 프로필 상자, 오늘 훈련 상자는 빼고, 새 기술·레벨업이 잘 보이게 (딱지·색 띠, 기술 누르면 기술 창) */
@@ -827,5 +843,28 @@ function shopFit(body) {
       close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; K.fitSet(k); K.save(); redraw(); K.renderHome(); });
   };
 }
-window.GymManage = { tab, tickTrain, redraw, trSend, sfDetail };
+/* v19.53 경완 '기존에 배웠던 특별한 기술 데이터는 다 지워줘': 예전(기술머신 공격기 기준) 특별한 기술을 한 번 지운다 (g.spW).
+   훈련 일지 R.sm·R.cm 과 일지 글('훈련장에서 특별한 기술 <b>이름</b>')로 찾는다. 알 기술 목록에 있는 건 새로 배운 것이라 둔다.
+   쓰던 칸에서 빠지면 레벨업·익힌 기술 중 가장 센 것으로 채운다. */
+function spWipe() {
+  const g = st(); if (!g || g.spW || !GB()?.D) return; const E = GB().EGG || {}, ko = {}; GB().D.mv.forEach(x => { ko[x[1]] ||= x[0]; });
+  const bad = {}, add = (id, mv) => { if (mv) (bad[id] ||= new Set()).add(mv); };
+  for (const [id, T] of Object.entries(g.tlog || {})) for (const R of Object.values(T)) [...(R.sm || []), ...(R.cm || [])].forEach(mv => add(id, mv));
+  const byNm = {}; S.box.forEach(P => { (byNm[nmOf(P)] ||= []).push(P.id); });
+  const spLn = l => { const h = l[2]; if (typeof h !== 'string' || !h.includes('훈련장에서 특별한 기술')) return null; const nm = h.split('훈련장에서')[0].replace(/(이|가) $/, '').replace(/&amp;/g, '&').trim(), mv = ko[(h.match(/특별한 기술 <b>([^<]+)<\/b>/) || [])[1]]; return mv ? [byNm[nm] || [], mv] : null; };
+  for (const l of g.log || []) { const L = spLn(l); if (L) L[0].forEach(id => add(id, L[1])); }
+  let n = 0; const gone = {};
+  for (const [id, set] of Object.entries(bad)) { const P = boxOf(+id) || boxOf(id); if (!P) continue; const egg = E[P.sp] || [], m = GB().gm(P), del = [...set].filter(mv => !egg.includes(mv)); if (!del.length) continue;
+    gone[P.id] = new Set(del); m.kn = (m.kn || []).filter(mv => !del.includes(mv));
+    if (m.mv.some(mv => del.includes(mv))) { m.mv = m.mv.filter(mv => !del.includes(mv)); const pw = mv => { const x = GB().mvOf(mv); return x ? (x[3] === 2 ? 0 : x[4] || 0) : -1; };
+      const c = GB().mvCands(P, m).filter(mv => !del.includes(mv)).sort((a, b) => pw(b) - pw(a)); while (m.mv.length < 4 && c.length) m.mv.push(c.shift()); }
+    n += del.length; }
+  for (const [id, T] of Object.entries(g.tlog || {})) { const G = gone[id] || gone[+id]; if (!G) continue; for (const R of Object.values(T)) { R.mv = (R.mv || []).filter(mv => !G.has(mv)); if (R.sm) R.sm = R.sm.filter(mv => !G.has(mv)); if (R.cm) R.cm = R.cm.filter(mv => !G.has(mv)); } }
+  (g.tr || []).forEach(e => { const G = gone[e.id]; if (G && e.mv) e.mv = e.mv.filter(mv => !G.has(mv)); });
+  if (g.aw?.mv) g.aw.mv = g.aw.mv.filter(([id, mv]) => !gone[id]?.has(mv));
+  g.log = (g.log || []).filter(l => { const L = spLn(l); return !L || !L[0].some(id => gone[id]?.has(L[1])); });
+  g.spW = 1; K.save(); console.log('spWipe', n);
+}
+try { spWipe(); } catch (e) { console.warn('spWipe', e); }
+window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail };
 })();
