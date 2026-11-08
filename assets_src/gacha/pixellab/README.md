@@ -52,3 +52,6 @@ gacha_steps.html. 손잡이가 돌고 기본 흔들림 0.9초 뒤, 등급이 하
 
 ## thanks_mock/ 친구 선물 고마워 버튼 시안
 thanks.html. 지금 게임(v18.86 분홍 .frg-ok.ty)과 A 하트 버튼, B 말풍선 버튼, C 빛 훑기 분홍. 누르면 하트가 날아가고 "고마움을 전했어요"로 바뀜(시안 안 스크립트).
+
+## glass/ 유리 돔 투명도 시안
+지금 게임 gym/img/ga/machine.png(v19.07)의 돔 알파 170(약 67%), 반짝임 230을 같은 비율로 낮춤: machine_glass54.png(×0.80), machine_glass42.png(×0.62), machine_glass30.png(×0.44). 208x256, 그대로 machine.png 자리에 넣으면 됨. mock_*.png는 금빛 배경 시안 화면.
