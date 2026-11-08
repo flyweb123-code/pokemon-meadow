@@ -630,8 +630,8 @@ GymEv.def({
         await S.say('전부 이 람다 님이\n잘 맡아 두겠다! 우하하!', { who: B }); A.mark('c4meet');
       } else await S.say('우하하! 또 왔구먼!\n이번에도 쫓아 보내 주마!', { who: B });
       S.hide(true);
-      const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 2, g: 1000, music: 'hgVsRoc', win: 'winGym',
-        team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 3]],
+      const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 1, g: 1000, music: 'hgVsRoc', win: 'winGym',
+        team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 2]],   /* 이벤트라 너무 어렵진 않게 보통 AI, 그래도 조무래기(쉬움·2~3마리)보다 세게: 4마리·평균/평균/+1/+2·똑똑한 기술 (경완 2026-11-08) */
         say: { win: '우하하!\n관장도 별거 아니구먼!', lose: '이, 이럴 수가...!\n이 람다 님이 지다니!' } });
       // 지면 돌담시티 포켓몬 센터로 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접 가서')
       if (!won) { A.music('hgAjito'); await wait(300); await S.say('우하하! 아직 멀었구먼!\n썩 꺼져라!', { who: B }); S.hide(true); return A.whiteout(); }
