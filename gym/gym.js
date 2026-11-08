@@ -1884,8 +1884,8 @@ function reportPop(any) {
     const k0 = r.k || weekStart(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
     const row = x => { const d = (x.e || 0) - (x.wg || 0), pc = x.wg ? Math.min(100, Math.round((x.e || 0) / x.wg * 100)) : 100, tag = x.co ? '<i class="wr-tag co">훈련장 코치</i>' : x.out ? '<i class="wr-tag out">그만둠</i>' : '';
       return `<li class="${x.co ? 'co' : d >= 0 ? 'up' : 'dn'}"><span class="aw-pic"><img alt="" src="${trSrc(x.tr)}"></span><div class="wr-b"><p class="wr-n"><b>${esc(x.nm)}</b>${tag}</p>
-        <p class="wr-s">${x.co ? '포켓몬 훈련 담당' : `${x.w || 0}명 막음${x.l ? ` · ${x.l}번 짐` : ''}`}</p>
-        ${x.co ? '' : `<div class="wr-bar"><i style="width:${pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>월급 ${G(x.wg)}G</span></p>`}</div>
+        <p class="wr-s">${x.co ? '포켓몬 훈련 담당 · 도전자는 안 받음' : `${x.w || 0}명 막음 · ${x.l || 0}번 짐`}</p>
+        <div class="wr-bar"><i style="width:${x.co ? 0 : pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>월급 ${G(x.wg)}G</span></p></div>
         <em class="wr-d">${x.co ? `<small>월급</small>−${G(x.wg)}G` : d >= 0 ? `<small>${x.wg ? `월급의 ${Math.round((x.e || 0) / x.wg * 10) / 10}배` : '이득'}</small>+${G(d)}G` : `<small>월급보다</small>−${G(-d)}G`}</em></li>`; };
     body = `<div class="aw-hd wr-hd"><small>주간 보고서 · ${wrD(k0)} ~ ${wrD(k0 + 6 * DAY)}</small><b>지난주 체육관 결산</b><div class="wr-bd">${bdHtml(g.ty, gradeOf(g.rep || 0).i + 1)}</div></div>
       <div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>
