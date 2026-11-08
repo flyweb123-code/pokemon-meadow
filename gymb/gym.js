@@ -1296,6 +1296,8 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
     pop(`<h4>${GA.LT_ADJ?.[t] || ''} 전설 알을 받았다!</h4><div class="le-get">${GA.eggIco?.(t) || ''}</div><p class="gy-msg" style="text-align:center">강박사에게서<br><b>${TYPE_KO[t]} 타입 전설 포켓몬</b>이 나오는 알을 받았어요.<br><small>필드의 알 가방에 들어 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); }); }
 // 탭하면 바로 넘어가는 기다림 (전당 연출은 길어서 누르면 다음 장면으로)
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
+// 전설 연출 때 안내원이 관장에게 와서 서는 칸 (맵 id → [x, y]), 없으면 자동 (경완이 편집 페이지에서 골라 줌)
+const LEG_GU = {};
 async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
@@ -1400,7 +1402,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const q = [meEnt.x + dx, meEnt.y + dy], a = md(q, meEnt), b = md(q, k); if (a >= 2 && a <= 3 && b >= 2 && q[1] >= meEnt.y) nb.push(q); }
       const sc2 = q => md(q, gu) * 10 + md(q, meEnt);   // v19.31 경완 '최단 거리에서 서게': 안내원 자리에서 가장 가까운 칸
       nb.sort((p, q) => sc2(p) - sc2(q));
-      const to = A.reach(gu, nb, [[k.x, k.y]]); if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
+      const fx = LEG_GU[D.id], to = (fx && A.reach(gu, [fx], [[k.x, k.y]])) || A.reach(gu, nb, [[k.x, k.y]]);   /* v19.39 경완 '안내원 서는 자리 내가 옮겨서': 맵별로 정한 칸이 있으면 그 칸 */ if (to) await A.walkTo(gu, to, 180, [[k.x, k.y]]);
       else { const CP = (CR?.path || D.path.slice(1)).slice(0, -1); gPath = [D.door, ...CP]; if (CP.length) await walk(gu, gPath, 180); }   // 빈 바닥 정보로 길이 안 나오는 맵: 문 → 손님 길을 따라 강박사 뒤까지
       face(gu, meEnt); }
     await gsay('관장님!! 전설의 체육관이라니…!<br>제가 여기서 일한 보람이 있어요…<br>흑흑…');
