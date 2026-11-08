@@ -2465,6 +2465,20 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
   giveFit: k => { if (window.gymEvTest || !OUTFITS[k]) return; const g = st(); g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); save(); },
   lv: () => myAvg(), evDone: id => evDone(id),
+  // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
+  pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
+  giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
+  // 숨은 상점 물건: kinds 중에서 안 가진 것 하나 (cap 골드 이하). skip = 이번 이벤트에서 이미 나온 것
+  loot: async (kinds = ['it', 'mint', 'deco'], cap = 4000, skip = []) => { await loadJs('gymb/battle.js', 'GymBattle'); const B = GB(), g = st(), G = gradeOf(g.rep || 0).i, no = new Set(skip), out = [];
+    for (const k of kinds) {
+      if (k === 'it') Object.entries(B.HOLD).forEach(([id, x]) => { if (x[1] <= cap && !B.itHave(id) && !no.has(id)) out.push({ k, id, nm: x[0], img: B.itImg(id), d: x[2] }); });
+      if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: '먹이면 성격이 바뀌어요' }); });
+      if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); }); }
+    return out.length ? out[Math.random() * out.length | 0] : null; },
+  giveLoot: L => { if (window.gymEvTest || !L) return; const g = st();
+    if (L.k === 'it') { g.itm = g.itm || {}; g.itm[L.id] = Math.max(1, g.itm[L.id] | 0); } else if (L.k === 'mint') { g.mint = g.mint || {}; g.mint[L.id] = (g.mint[L.id] | 0) + 1; } else if (L.k === 'deco') { g.own = g.own || {}; g.own[L.id] = 1; }
+    glog('tr', `로켓단 아지트에서 <b>${esc(L.nm)}</b>${jong(L.nm) ? '을' : '를'} 찾았다.`); save(); },
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
     if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
