@@ -822,5 +822,28 @@ function shopFit(body) {
       close(); if (a === 'y' && !buy(o.g)) return say('골드가 모자라요.'); if (a === 'y') g.fits[k] = 1; K.fitSet(k); K.save(); redraw(); K.renderHome(); });
   };
 }
-window.GymManage = { tab, tickTrain, redraw, trSend, sfDetail };
+/* v19.53 경완 '기존에 배웠던 특별한 기술 데이터는 다 지워줘': 예전(기술머신 공격기 기준) 특별한 기술을 한 번 지운다 (g.spW).
+   훈련 일지 R.sm·R.cm 과 일지 글('훈련장에서 특별한 기술 <b>이름</b>')로 찾는다. 알 기술 목록에 있는 건 새로 배운 것이라 둔다.
+   쓰던 칸에서 빠지면 레벨업·익힌 기술 중 가장 센 것으로 채운다. */
+function spWipe() {
+  const g = st(); if (!g || g.spW || !GB()?.D) return; const E = GB().EGG || {}, ko = {}; GB().D.mv.forEach(x => { ko[x[1]] ||= x[0]; });
+  const bad = {}, add = (id, mv) => { if (mv) (bad[id] ||= new Set()).add(mv); };
+  for (const [id, T] of Object.entries(g.tlog || {})) for (const R of Object.values(T)) [...(R.sm || []), ...(R.cm || [])].forEach(mv => add(id, mv));
+  const byNm = {}; S.box.forEach(P => { (byNm[nmOf(P)] ||= []).push(P.id); });
+  const spLn = l => { const h = l[2]; if (typeof h !== 'string' || !h.includes('훈련장에서 특별한 기술')) return null; const nm = h.split('훈련장에서')[0].replace(/(이|가) $/, '').replace(/&amp;/g, '&').trim(), mv = ko[(h.match(/특별한 기술 <b>([^<]+)<\/b>/) || [])[1]]; return mv ? [byNm[nm] || [], mv] : null; };
+  for (const l of g.log || []) { const L = spLn(l); if (L) L[0].forEach(id => add(id, L[1])); }
+  let n = 0; const gone = {};
+  for (const [id, set] of Object.entries(bad)) { const P = boxOf(+id) || boxOf(id); if (!P) continue; const egg = E[P.sp] || [], m = GB().gm(P), del = [...set].filter(mv => !egg.includes(mv)); if (!del.length) continue;
+    gone[P.id] = new Set(del); m.kn = (m.kn || []).filter(mv => !del.includes(mv));
+    if (m.mv.some(mv => del.includes(mv))) { m.mv = m.mv.filter(mv => !del.includes(mv)); const pw = mv => { const x = GB().mvOf(mv); return x ? (x[3] === 2 ? 0 : x[4] || 0) : -1; };
+      const c = GB().mvCands(P, m).filter(mv => !del.includes(mv)).sort((a, b) => pw(b) - pw(a)); while (m.mv.length < 4 && c.length) m.mv.push(c.shift()); }
+    n += del.length; }
+  for (const [id, T] of Object.entries(g.tlog || {})) { const G = gone[id] || gone[+id]; if (!G) continue; for (const R of Object.values(T)) { R.mv = (R.mv || []).filter(mv => !G.has(mv)); if (R.sm) R.sm = R.sm.filter(mv => !G.has(mv)); if (R.cm) R.cm = R.cm.filter(mv => !G.has(mv)); } }
+  (g.tr || []).forEach(e => { const G = gone[e.id]; if (G && e.mv) e.mv = e.mv.filter(mv => !G.has(mv)); });
+  if (g.aw?.mv) g.aw.mv = g.aw.mv.filter(([id, mv]) => !gone[id]?.has(mv));
+  g.log = (g.log || []).filter(l => { const L = spLn(l); return !L || !L[0].some(id => gone[id]?.has(L[1])); });
+  g.spW = 1; K.save(); console.log('spWipe', n);
+}
+try { spWipe(); } catch (e) { console.warn('spWipe', e); }
+window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail };
 })();
