@@ -5085,6 +5085,19 @@ function sceneCandidates(a, b) {
     { const wx = weather(), h = hour(), sky = wx === 'rain' ? null : h >= 19.5 || h < 5 ? ['달', '☾'] : h < 7 ? ['해돋이', '☀'] : h >= 16.5 ? ['노을', '☀'] : wx === 'cloud' ? ['구름', '☁'] : ['해', '☀'];   /* v17.44 경완: 같이 해·달 보기 — 나란히 앉아 올려다보기 동작 */
       const fullM = sky?.[1] === '☾' && Math.abs(moonPhase() - .5) < .1; if (fullM) sky[0] = '보름달';   /* v19.27 경완 '보름달일 때는 같이 달 보는 상호작용 빈도를 높여': 보름 앞뒤 3일쯤은 6배. '올려다보는 동작 있는 애들만': 둘 다 LookUp 그림이 있을 때만 */
       if (sky && canLook(a) && canLook(b)) add(fullM ? 6 : 1, { key: 'g-sky', kind: 'chat', mo: 'side', p: { sky: sky[1] }, roles: [a, b], text: () => pick([`${J(a,'과/와')} ${J(b,'이/가')} 나란히 앉아 ${J({ name: sky[0] },'을/를')} 올려다본다.`, `${J(a,'이/가')} ${N(b)} 옆에 앉아 함께 ${J({ name: sky[0] },'을/를')} 바라본다.`]) }); }
+    /* v19.33 경완: 동작 그림이 있는 포켓몬만 — 술래잡기하다 넘어짐·같이 낮잠 깨우기·하늘 놀이 */
+    if (hasAn(a, 'Trip', 'Wake') && hasAn(b, 'Trip', 'Wake')) add(1.2, { key: 'g-trip', kind: 'play', mo: 'trip', p: { t: ['잡았다!', '!'] }, roles: [a, b], text: () => `${J(a,'과/와')} ${J(b,'이/가')} 술래잡기를 시작했다.` });
+    if (hasAn(a, 'Laying', 'Wake') && hasAn(b, 'Laying', 'Wake')) { const h = hour(); add(h >= 12.5 && h < 16 ? 3 : 1.2, { key: 'g-nap', kind: 'care', mo: 'nap', ea: 'z', eb: 'z', roles: [a, b], text: () => pick([`${J(a,'과/와')} ${J(b,'이/가')} 나란히 엎드려 낮잠을 잔다.`, `${J(a,'이/가')} ${N(b)} 옆에 엎드려 같이 꾸벅꾸벅 존다.`]) }); }
+  }
+  for (const [x, y] of [R(a, b), R(b, a)]) { const sw = q => T(q).mv === 'swim', fl = q => winged(q) || T(q).mv === 'hover';
+    if (!sw(y) && hasAn(x, 'Shake') && (weather() === 'rain' || performance.now() - (x.dryT || -1e9) < 9e4)) add(4, { key: 'g-shake', kind: 'play', mo: 'shake', ea: '♪', eb: '…', roles: [x, y], text: () => `${J(x,'이/가')} 몸을 부르르 털어 ${N(y)}에게 물을 튀겼다!` });
+    if (fl(x) && fl(y) && hasAn(x, 'FlapAround') && (hasAn(y, 'Hover') || !hasAn(y, 'FlapAround') || x.sp < y.sp)) add(3, { key: 'g-skyplay', kind: 'play', mo: 'skyplay', ea: '♪', eb: '♪', roles: [x, y], text: () => `${J(x,'이/가')} ${N(y)} 둘레를 빙글빙글 날며 논다.` });
+    else if (fl(x) && fl(y) && hasAn(y, 'Hover') && !hasAn(x, 'FlapAround') && !hasAn(y, 'FlapAround') && x.sp < y.sp) add(2, { key: 'g-skyplay', kind: 'play', mo: 'skyplay', ea: '♪', eb: '♪', roles: [x, y], text: () => `${J(x,'이/가')} 떠 있는 ${N(y)} 둘레를 빙글빙글 날며 논다.` });
+    if (!sw(x) && !sw(y) && hasAn(x, 'Lick')) add(4, { key: 'g-lick', kind: 'play', mo: 'lick', ea: '♪', eb: '!', roles: [x, y], text: () => `${J(x,'이/가')} 혀를 쭉 내밀어 ${J(y,'을/를')} 핥았다! ${J(y,'은/는')} 깜짝 놀라 뒤로 굴렀다.` });
+    if (!sw(x) && !sw(y) && hasAn(x, 'Shock')) add(2.5, { key: 'g-zap', kind: 'play', mo: 'zap', ea: '♪', eb: '!', roles: [x, y], text: () => `${J(x,'이/가')} 장난으로 ${N(y)}에게 찌릿 전기를 흘렸다!` });
+    if (!sw(y) && hasAn(x, 'Gas')) add(.8, { key: 'g-gas', kind: 'play', mo: 'gas', ea: '…', eb: '!', roles: [x, y], text: () => `${J(x,'이/가')} 뿌우- 하고 가스를 뀌었다! ${J(y,'이/가')} 코를 막고 달아난다.` });
+  }
+  {
   }
   return c;
 }
@@ -5236,6 +5249,11 @@ const MOT = {
 // Extra pair scenes name one of these with `mo` and tune it with `p` (particle text/class, heights, ...).
 const beside = (a, b, k = .34) => { const side = a.x < b.x ? -1 : 1; return b.x + side * Math.max(30, (a.w + b.w) * k); };
 const lineFx = (a, b, cls, t) => { const k = Math.random(); particle(a.x + (b.x - a.x) * k + rnd(-4, 4), (a.y - a.h * .5) + ((b.y - b.h * .5) - (a.y - a.h * .5)) * k + rnd(-6, 6), cls, t); };
+/* v19.33 경완 '동작 후보 중 술래잡기 넘어짐·같이 낮잠 깨우기·비 온 뒤 털기·하늘 놀이(빙글빙글)·핥기(혀가 닿게)·찌릿·방귀 장난': 그 동작 그림이 있는 포켓몬만 (mx 동작표) */
+const ANI = Object.fromEntries(Object.entries({Trip:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 150 151 152 155 156 157 157hisui 158 16 161 165 171 172 176 177 179 180 183 190 194 194paldea 197 198 200 203 206 207 215 215hisui 225 228 23 231 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 27 274 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 37 371 373 37alola 38 380 385 387 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 431 433 434 439 440 441 446 447 448 453 456 470 471 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 577 582 585 587 58hisui 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 728 742 744 745 753 757 762 77 772 773 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 906 909 912 921 926 935 94',Wake:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 147 150 151 152 155 156 157 157hisui 158 16 161 162 165 171 172 176 177 179 180 183 190 191 194 194paldea 197 198 200 203 206 207 215 215hisui 220 225 228 23 231 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 263 27 274 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 363 37 371 373 37alola 38 380 385 387 38alola 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 430 431 433 434 439 440 441 446 447 448 453 456 470 471 474 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 573 577 582 585 587 58hisui 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 728 742 744 745 753 757 758 762 77 772 773 775 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 891 906 909 912 921 926 935 94',Laying:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 147 150 151 152 155 156 157 157hisui 158 16 161 162 165 171 172 176 177 179 180 183 190 191 194 194paldea 197 198 200 203 206 207 215 215hisui 216 220 225 228 23 231 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 263 27 274 277 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 363 37 371 373 37alola 38 380 385 387 38alola 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 430 431 433 434 439 440 441 446 447 448 453 456 470 471 474 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 573 577 582 585 587 58hisui 597 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 726 728 742 744 745 753 757 758 762 77 772 773 775 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 891 906 909 912 921 926 935 94 959 976',Head:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 150 151 152 155 156 157 157hisui 158 16 161 165 171 172 176 177 179 180 183 190 191 194 194paldea 197 198 200 203 206 207 215 215hisui 225 228 23 231 235 236 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 27 274 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 37 371 373 37alola 38 380 385 387 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 431 433 434 439 440 441 446 447 448 453 456 470 471 474 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 577 582 585 587 58hisui 597 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 728 742 744 745 753 757 762 77 772 773 777 77galar 782 786 802 807 810 813 814 816 822 827 831 835 83galar 840 852 869 884 906 909 912 915 921 926 935 94',Shake:'1 1011 103 103alola 114 154 154f 2 206 218 219 220 222 222galar 255 270 285 3 304 305 306 339 340 3f 403 403f 404 404f 405 405f 406 410 411 413 420 421 440 470 471 535 569 590 637 684 722 723 724 744 761 80 802 825 846 874 916 927 928 982 988 989',Pain:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 147 150 151 152 155 156 157 157hisui 158 16 161 165 171 172 176 177 179 180 183 190 194 194paldea 197 198 200 203 206 207 215 215hisui 225 228 23 231 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 27 274 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 37 371 373 37alola 38 380 385 387 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 430 431 433 434 439 440 441 446 447 448 453 456 470 471 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 532 543 548 549 557 559 566 568 570 570hisui 571hisui 572 577 578 582 585 587 58hisui 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 728 742 744 745 753 757 758 762 77 772 773 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 89alola 906 909 912 921 926 935 94',FlapAround:'12 12f 16 17 18 187 188 198 247 267 267f 269 276 277 330 349 49 519 580 581 627 628hisui 661 666 821 829 940 941',Hover:'1005 1016 142 146 15 150 165 165f 166 166f 176 177 189 21 22 226 249 250 278 284 291 314 333 334 357 367 385 393 394 395 396 396f 397 397f 398 398f 41 414 415 415f 42 430 458 468 472 480 481 482 521 521f 527 528 567 589 628 662 663 682 711 714 715 731 742 743 822 823 841 875 938 962',Lick:'108 92 93 94 968',TumbleBack:'1 100 100hisui 1010 1016 104 132 133 133f 135 136 140 147 150 151 152 155 156 157 157hisui 158 16 161 165 171 172 176 177 179 180 183 190 194 194paldea 197 198 200 203 206 207 215 215hisui 225 228 23 231 232 235 238 240 246 25 251 252 253 255 258 25f 26 260 261 262 263 27 274 27alola 28 280 281 286 296 300 301 304 309 311 312 315 327 328 333 334 335 341 346 352 353 359 361 37 371 373 37alola 38 380 385 387 39 390 393 396 399 399f 4 403 403f 404 404f 406 412 417 418 418f 427 431 433 434 439 440 441 446 447 448 453 456 470 471 477 48 481 488 489 490 491 492 493 495 498 5 501 506 52 52alola 543 548 549 557 559 568 570 570hisui 571hisui 572 577 582 585 587 58hisui 605 607 610 619 622 624 625 627 63 633 643 648 650 653 654 656 66 662 667 672 677 678 679 684 694 698 7 714 719 722 725 728 742 744 745 75 753 757 762 77 772 773 777 77galar 782 786 802 810 813 814 816 822 827 831 835 83galar 840 852 869 884 906 909 912 921 926 935 94',Shock:'135 172 239 243 25 25f 26 26alola 26f 309 310 311 312 587 694 695 777 796 835 836 849 871 877 922 923 939',Gas:'109 110 110galar'}).map(([k, v]) => [k, new Set(v.split(' '))])), hasAn = (m, ...L) => L.every(n => ANI[n]?.has(String(m.sk || m.form)));
+const anHold = (m, n) => { const k = m.sk || m.form, P = SPRITES[k]; if (!P || !isPmd(k)) return false; const go = () => { if (P.a[n] && S.mons.includes(m) && m.state === 'interact') { m.one = { name: n, t: 0, hold: 'end' }; return true; } return false; }; if (P.a[n]) return go(); loadMx(k).then(go); return false; };   // 그 동작 마지막 장면에서 멈춤
+const anPlay = (m, L) => { m.one = null; return playX(m, L); }, anLoop = (m, n) => { const P = SPRITES[m.sk || m.form]; if (P?.a?.[n]) { m.anOv = n; m.anOvT = performance.now() + 300; } else if (P && !P.mx && !P.mxNo) loadMx(m.sk || m.form); };
+const anPre = (...M) => M.forEach(m => isPmd(m.sk || m.form) && loadMx(m.sk || m.form));
 const TPL = {
   // a works on b's head: trims leaves, pinches, licks, paints, dusts…
   snip: { dur: 7,
@@ -5288,6 +5306,86 @@ const TPL = {
   pat: { dur: 7,
     init(sc, a, b) { const sd = a.x < b.x ? -1 : 1; place(a, clamp(b.x + sd * Math.max(22, (a.w + b.w) * .3), XL + 20, XR - 20), b.y + 1); faceTo(a, b.x); faceTo(b, a.x); emote(a, '♥', 'heart', 2, 'family-pat'); },
     tick(sc, a, b) { faceTo(a, b.x); if (every(sc, 'k', .9)) { anim(b, 'nod'); particle(b.x + rnd(-6, 6), b.y - b.h * .95, 'heart', pick(['♥', '♡'])); } if (once(sc, 'e', 4.6)) { anim(b, 'hop'); emote(b, '♥', 'heart', 2.2, 'family-pat'); } } },
+  // v19.33 경완: 술래잡기하다 넘어짐 — 달아나던 쪽이 발이 걸려 넘어지면 술래가 다가와 끄덕(괜찮아?) → 넘어진 쪽이 일어나 ♪
+  trip: { dur: 15,
+    init(sc, a, b) { TPL.tag.init(sc, a, b); sc.tripAt = rnd(3, 5.5); anPre(a, b); },
+    tick(sc, a, b) {
+      if (!sc.tr) { if (sc.mt >= sc.tripAt && !sc.orb && hasAn(sc.ru, 'Trip', 'Wake')) { const r = sc.ru, c = sc.ch; sc.tr = { r, c, t: sc.mt }; r.anOv = c.anOv = null; anHold(r, 'Trip'); emote(r, '!?', '', 1.2, 'play-lose'); dustAt(r); log(`${J(r,'이/가')} 도망가다 발이 걸려 넘어졌다! ${J(c,'이/가')} 다가가 일으켜 준다.`, [r, c]); return; } return TPL.tag.tick(sc, a, b); }
+      const { r, c, t } = sc.tr, u = sc.mt - t, now = performance.now(); faceTo(r, c.x);
+      if (!sc.near) { const tx = beside(c, r, .3), dx = tx - c.x, dy = r.y - c.y, d = Math.hypot(dx, dy); faceTo(c, r.x); if (d < 5 || u > 4) { sc.near = sc.mt; faceTo(c, r.x); anPlay(c, ['Nod']); emote(c, '!?', '', 1.4, 'sp-curious'); } else { const s2 = Math.min(d, 70 * sc.dt); place(c, c.x + dx / d * s2, c.y + dy / d * s2); c.anOv = 'Walk'; c.anOvT = now + 250; } return; }
+      if (!sc.up && sc.mt - sc.near > 1.4) { sc.up = sc.mt; anPlay(r, ['Wake']); }
+      if (sc.up && once(sc, 'ok', sc.up + 1.2)) { emote(r, '♪', 'note', 1.8, 'pet-done'); anim(c, 'hop'); particle((r.x + c.x) / 2, Math.min(r.y - r.h, c.y - c.h) - 6, 'heart', '♥'); }
+    },
+    end(sc, a, b) { TPL.tag.end(sc, a, b); for (const m of [a, b]) if (m.one?.hold === 'end' && !m.fnt) m.one = null; } },
+  // v19.33 경완: 같이 낮잠 · 깨우기 — 나란히 엎드려 자다가 먼저 깬 쪽이 톡 건드려 깨운다
+  nap: { dur: 14,
+    init(sc, a, b) { const sd = a.x < b.x ? -1 : 1; place(a, clamp(b.x + sd * Math.max(26, (a.w + b.w) * .3), XL + 20, XR - 20), b.y + 1); const f = (a.x + b.x) / 2 < (XL + XR) / 2 ? -1 : 1; a.face = b.face = f; sc.wk = rnd(5, 7); anPre(a, b); anHold(a, 'Laying'); anHold(b, 'Laying'); },
+    tick(sc, a, b) {
+      if (sc.mt < .5) { anHold(a, 'Laying'); anHold(b, 'Laying'); }
+      if (sc.mt < sc.wk + 1.6 && every(sc, 'z', 1.3)) for (const m of sc.mt < sc.wk ? [a, b] : [b]) particle(m.x + rnd(-6, 6), m.y - m.h * .7, 'zz', 'z');
+      if (once(sc, 'w1', sc.wk)) anPlay(a, ['Wake']);
+      if (once(sc, 'w2', sc.wk + 1)) { faceTo(a, b.x); if (!anPlay(a, ['Head', 'Attack'])) anim(a, 'shake'); anim(b, 'shake'); emote(b, '!', '', 1.2, 'wake-noise'); log(`${J(a,'이/가')} 먼저 깨서 ${J(b,'을/를')} 톡 건드려 깨웠다.`, [a, b]); }
+      if (once(sc, 'w3', sc.wk + 1.7)) { anPlay(b, ['Wake']); faceTo(b, a.x); }
+      if (once(sc, 'w4', sc.wk + 3.2)) { emote(b, '♪', 'note', 1.8, 'pet-done'); anPlay(a, ['Nod']); }
+    },
+    end(sc, a, b) { for (const m of [a, b]) if (m.one?.hold === 'end' && !m.fnt) m.one = null; } },
+  // v19.33 경완: 비 온 뒤(비 올 때·연못에서 막 나왔을 때) 몸을 부르르 털어 옆 친구에게 물이 튄다
+  shake: { dur: 7,
+    init(sc, a, b) { sc.tx = beside(a, b, .3); anPre(a, b); },
+    tick(sc, a, b) {
+      if (sc.mt < .6) place(a, a.x + clamp(sc.tx - a.x, -50 * sc.dt, 50 * sc.dt), a.y + clamp(b.y - a.y, -30 * sc.dt, 30 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
+      if (once(sc, 's1', .7)) anPlay(a, ['Shake']);
+      if (sc.mt > .7 && sc.mt < 1.9 && every(sc, 'pf', .06)) { const g = rnd(0, Math.PI * 2); particle(a.x + Math.cos(g) * a.w * .45, a.y - a.h * .5 + Math.sin(g) * a.h * .35, 'splash', '·'); }
+      if (sc.mt > .8 && sc.mt < 1.7 && every(sc, 'q', .1)) lineFx(a, b, 'splash', '·');
+      if (once(sc, 'h1', 1.2)) { if (!anPlay(b, ['Pain'])) hurt(b); emote(b, '!?', '', 1.4, 'sp-startle'); }
+      if (once(sc, 'h2', 2.2)) particle(b.x, b.y - b.h, 'sweat', '💧');
+      if (once(sc, 'e', 3.4)) { emote(a, '♪', 'note', 1.8, 'pet-done'); anim(a, 'hop'); }
+    } },
+  // v19.33 경완 '하늘 놀이 둘레를 빙글빙글 맴도는 느낌으로': 한 마리(b)가 떠서 제자리 맴돌기(Hover), 다른 한 마리(a)가 그 둘레를 빙글빙글 날며 돈다(FlapAround)
+  skyplay: { dur: 12,
+    init(sc, a, b) { sc.c = sceneCenter(a, b, 110); sc.rx = Math.max(70, (a.w + b.w) * .75); sc.g0 = Math.atan2((a.y - sc.c.y) / 26, (a.x - sc.c.x) / sc.rx); anPre(a, b); },
+    tick(sc, a, b) {
+      const k = Math.min(1, sc.mt / 1.2); place(b, b.x + (sc.c.x - b.x) * Math.min(1, sc.dt * 2), b.y + (sc.c.y - b.y) * Math.min(1, sc.dt * 2)); b.xl = 36 * k; anLoop(b, 'Hover');
+      const g = sc.g0 + sc.mt * 1.7, x = b.x + Math.cos(g) * sc.rx, y = b.y + Math.sin(g) * 26; faceTo(a, a.x + -Math.sin(g) * 10); place(a, a.x + (x - a.x) * k, a.y + (y - a.y) * k); a.xl = 52 * k; anLoop(a, 'FlapAround'); if (!a.anOv) { a.anOvT = performance.now() + 300; a.anOv = 'Walk'; }
+      faceTo(b, a.x); if (every(sc, 'n', 1.1)) particle(a.x, a.y - a.xl - a.h, 'note', pick(['♪', '♫'])); if (once(sc, 'e', 6)) emote(b, '♪', 'note', 1.8, 'prop-play');
+    },
+    end(sc, a, b) { a.xl = b.xl = 0; a.anOv = b.anOv = null; } },
+  // v19.33 경완 '혀 위치가 포켓몬에 닿게': 혀 끝(Lick 그림에서 몸 가운데부터 ≈ 몸 폭 1.1배)이 상대 몸에 조금 들어가는 자리에 선다 → 핥으면 상대가 뒤로 굴러 놀란다
+  lick: { dur: 7,
+    init(sc, a, b) { sc.sd = a.x < b.x ? -1 : 1; sc.tx = clamp(b.x + sc.sd * (b.w * .2 + a.w * .98), XL + 20, XR - 20); if (Math.abs(sc.tx - b.x) < a.w * .9) { sc.sd = -sc.sd; sc.tx = clamp(b.x + sc.sd * (b.w * .2 + a.w * .98), XL + 20, XR - 20); } anPre(a, b); },
+    tick(sc, a, b) {
+      if (sc.mt < 1) { place(a, a.x + clamp(sc.tx - a.x, -60 * sc.dt, 60 * sc.dt), a.y + clamp(b.y - a.y, -40 * sc.dt, 40 * sc.dt)); }
+      faceTo(a, b.x); if (sc.mt < 1.4 || sc.mt > 3) faceTo(b, a.x);
+      for (const [k, t] of [['l1', 1], ['l2', 3.4]]) { if (once(sc, k, t)) anPlay(a, ['Lick']); if (once(sc, k + 'h', t + .35)) { if (!anPlay(b, ['TumbleBack', 'Pain'])) hurt(b); emote(b, t < 2 ? '!?' : '으악', '', 1.3, 'sp-startle'); particle(b.x, b.y - b.h * .8, 'sweat', '💧'); } }
+      if (once(sc, 'e', 5)) { emote(a, '♪', 'note', 1.8, 'pet-done'); anim(a, 'hop'); }
+    } },
+  // v19.33 경완: 찌릿 장난 — 전기 포켓몬이 친구에게 찌릿, 맞은 쪽이 아파하다 부르르 턴다
+  zap: { dur: 7,
+    init(sc, a, b) { sc.tx = beside(a, b, .34); anPre(a, b); },
+    tick(sc, a, b) {
+      if (sc.mt < .8) place(a, a.x + clamp(sc.tx - a.x, -50 * sc.dt, 50 * sc.dt), a.y + clamp(b.y - a.y, -30 * sc.dt, 30 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
+      if (once(sc, 's1', .9)) anPlay(a, ['Shock']);
+      if (sc.mt > .9 && sc.mt < 2 && every(sc, 'pf', .05)) lineFx(a, b, 'spark', pick(['✦', '⚡', '·']));
+      if (once(sc, 'h1', 1.4)) { if (!anPlay(b, ['Pain'])) hurt(b); b.act.classList.add('wiggle'); emote(b, '!?', '', 1.3, 'self-shock'); }
+      if (once(sc, 'h2', 2.6)) { b.act.classList.remove('wiggle'); if (!anPlay(b, ['Shake'])) anim(b, 'shake'); }
+      if (sc.mt > 1.4 && sc.mt < 2.6 && every(sc, 'q', .15)) particle(b.x + rnd(-b.w * .3, b.w * .3), b.y - b.h * rnd(.3, .9), 'spark', '✦');
+      if (once(sc, 'e', 3.8)) { emote(a, '♪', 'note', 1.8, 'pet-done'); anim(a, 'hop'); }
+    },
+    end(sc, a, b) { b.act.classList.remove('wiggle'); } },
+  // v19.33 경완: 방귀 장난 (아주 드물게) — 가스를 뀌면 둘레 포켓몬이 뒤로 구르고 흩어진다
+  gas: { dur: 7,
+    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); anPre(a, b); sc.V = [b]; },
+    tick(sc, a, b) {
+      if (once(sc, 'g1', .6)) anPlay(a, ['Gas']);
+      if (sc.mt > .8 && sc.mt < 3 && every(sc, 'pf', .09)) { const g = rnd(0, Math.PI * 2), r = rnd(.2, 1) * (a.w * .5 + 50 * (sc.mt - .8)); particle(a.x + Math.cos(g) * r, a.y - a.h * .3 + Math.sin(g) * r * .4, 'smoke', ''); }
+      if (once(sc, 'h1', 1.3)) { for (const o of S.mons) if (o !== a && o !== b && sc.V.length < 4 && o.state === 'idle' && !o.goal && !o.scp && !o.held && !o.hidden && !o.one && awake(o) && dist(o, a) < 160) { sc.V.push(o); anPre(o); }
+        for (const v of sc.V) { faceTo(v, a.x); if (!anPlay(v, ['TumbleBack', 'Pain'])) hurt(v); emote(v, pick(['!?', '으악', '…!']), '', 1.4, 'ghost-scared'); }
+        if (sc.V.length > 1) log(`${sc.V.slice(1).map(v => N(v)).join(', ')}도 코를 막고 도망갔다.`, sc.V); }
+      if (once(sc, 'h2', 2.4)) for (const v of sc.V.slice(1)) if (S.mons.includes(v) && v.state === 'idle') moveTo(v, { x: clamp(v.x + (v.x < a.x ? -1 : 1) * rnd(110, 170), XL + 30, XR - 30), y: clamp(v.y + rnd(-30, 30), MIN_Y + 10, MAX_Y - 10) }, { kind: 'wander' }, 1.4);
+      if (sc.mt > 2.4 && sc.mt < 4.4) { const d = b.x < a.x ? -1 : 1, nx = b.x + d * 80 * sc.dt; place(b, nx, b.y); b.face = -d; b.anOv = 'Walk'; b.anOvT = performance.now() + 250; }
+      if (once(sc, 'e', 4.6)) { faceTo(b, a.x); emote(b, '#', 'anger', 1.6, 'taunt'); emote(a, '♪', 'note', 1.8, 'pet-done'); }
+    },
+    end(sc, a, b) { b.anOv = null; } },
   // v9.35 경완: 나란히 앉아 쉬기 — 바짝 붙어 같은 쪽을 보며 서로 살짝 기댄다
   side: { dur: 9,
     init(sc, a, b) { const sd = a.x < b.x ? -1 : 1, x = clamp(b.x + sd * Math.max(24, (a.w + b.w) * .28), XL + 20, XR - 20); place(a, x, b.y); const cx = (XL + XR) / 2, f = (a.x + b.x) / 2 < cx ? -1 : 1; a.face = b.face = f; sc.sd = sd; },
@@ -6080,7 +6178,7 @@ function render(m, now) {
   if (m.hj) m.lift = (m.xl || 0) + Math.max(0, fly0);   // v16.31 경완 '후프 다 지나고 마지막에 점프': 높이를 천천히(8%씩) 따라가서 늦게 떴음 + 떠 있기가 음수인 종은 거의 안 떴음 → 후프 점프는 바로   // v9.29: 소품 놀이 중엔 높이를 바로 따라간다
   const bob = flyer && !grounded && !m.szb && !m.scp && !rdOn && liftBase(m.sp) + fly0 > 2 ? Math.sin(now / 260 + m.uid) * 4 : 0;   /* v4.61 경완: 크기 조절 모드에선 둥둥 안 뜬다 */
   const pv = pondVal(m.x, m.y), wet = !flyer && !floatM(m) && !(m.xl > 6) && (m.wet ? pv < 1.0 : pv < .94), wetUp = !flyer && !floatM(m) && !wet && m.xl > 6 && pv < .94;   /* v9.35 경완 '물속 포켓몬 염력으로 띄울 때 잘린 채로 올라감': 들어 올리면 물 밖으로 나온 온몸 (물에 잠긴 만큼은 천천히 올라온다) */   /* 물가 경계에서 젖음/마름이 번갈아 바뀌며 위아래로 튀지 않게 여유를 둔다 */
-  if (wet !== m.wet) { m.wet = wet; m.el.classList.toggle('wet', wet); }
+  if (wet !== m.wet) { if (m.wet && !wet) m.dryT = performance.now(); m.wet = wet; m.el.classList.toggle('wet', wet); }
   { const k = m.shEl && !wet ? pondShK(m.x + (m.shX || 0) * (m.face || 1), m.y) : 1; if (m.shW !== k) { m.shW = k; if (k === 1) m.el.style.removeProperty('--shw'); else m.el.style.setProperty('--shw', k); } }   // v18.77: 연못 위(떠서 지나가는 포켓몬 등) 발밑 그림자도 옅게
   if (m.land && (!isFish(m.sp) || pondVal(m.x, m.y) < .85)) { m.land = false; if (!m.held) { splashAt(m); log(`${J(m,'이/가')} 겨우 호수로 돌아와 첨벙! 한결 편안해 보인다.`, [m]); } }
   { const fl = !!m.land && !m.held && !m.scp && !m.propSit; if (fl !== !!m.flop) { m.flop = fl; m.el.classList.toggle('flop', fl); } }
@@ -6742,7 +6840,15 @@ function scPlay(m, p, a, ride, two, drag) { const r = LAYOUT.sc[p.i], G = r && s
     ride: !!(ride || M.ride || two), t0: performance.now(), x0: m.x, y0: m.y - (m.lift || 0), hitT: -9, spT: 0, MW, MH, ed: two ? clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 60, .6, 7) : clamp(Math.hypot(tx - m.x, ty - m.y + (m.lift || 0)) / 70, .35, 1.4), tw: !!a.x?.two?.at, dotT: 0 };   /* v9.98 경완 '시소 둘이 탈 땐 근처 포켓몬이 와서': 짝은 걸어서 온다 */
   { const q = m.scp; let fx0 = q.x0, fy0 = q.y0; if ((M.fly || M.circ) && Math.hypot(q.tx - fx0, q.ty - fy0) < 40) { fx0 = clamp(q.tx + (m.x < G.cx ? -1 : 1) * (G.W / 2 + MW * .5), XL + 20, XR - 20); fy0 = G.gy + 2; m.x = fx0; m.y = fy0; }   /* 소품 위에 바로 놓였으면 옆 땅에서 날아오른다 */ q.fx0 = fx0; q.fy0 = fy0; q.fd = clamp(Math.hypot(q.tx - fx0, q.ty - fy0) / 110, .9, 2.2); }
   if (ride && G.el?.mpH) G.el.mpH.style.zIndex = Math.round(G.gy) - (ride.inH ? 0 : 2);   // v9.38: 구멍 속에 앉은 작은 포켓몬은 타이어 앞 테두리가 앞, 큰 포켓몬은 타이어 앞에 (기둥 사이)
-  m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); return true; }
+  m.goal = null; m.wp = null; m.propSit = true; m.pzB = null; setState(m, 'idle', M.avoid ? 4.6 : rnd(14, 22)); if (m.scp.ride && !two && !M.push && Math.random() < .4) setTimeout(() => rideInvite(m), rnd(1200, 3200)); return true; }
+/* v19.31 경완 '몬스터볼 스프링도 타이어 그네처럼 누가 타면 밀어주는 상호작용 가끔': 누가 타기 시작하면 40% 로 둘레(380px 안) 한가한 포켓몬 중 그 소품 밀기 동작이 맞는 가장 가까운 하나가 '!' 하고 와서 밀어 준다 (스프링 = 모든 포켓몬, 타이어 그네 = 격투 타입 그대로). 미는 동작·흔들림은 원래 밀기 물리 그대로 */
+function rideInvite(rd) { const q = rd.scp; if (!S.mons.includes(rd) || !q?.ride || !LAYOUT.sc.includes(q.r) || rd.state !== 'idle') return; const A = LAYOUT.scArt[q.r[0]], G = q.G; if (!A) return;
+  if (S.mons.some(k => k !== rd && ((k.scp?.r === q.r && k.scp.M?.push) || (k.goal?.kind === 'scpush' && k.goal.r === q.r)))) return;
+  let best = null, bd = 380, ba = null; for (const o of S.mons) { if (o === rd || o.scp || o.held || o.hj || o.hidden || o.pin || o.evolving || o.camp || o.one || !awake(o) || T(o).mv === 'swim' || (o.pushCd > 0)) continue;
+    if (!(o.state === 'idle' || (o.state === 'move' && (!o.goal || o.goal.kind === 'wander')))) continue; const d = Math.hypot(o.x - G.cx, o.y - G.gy); if (d >= bd) continue;
+    const pa = (A.acts || []).find(a => scSpec(a, A).M.push && scFit(o, a.w || '')); if (pa) { best = o; bd = d; ba = pa; } }
+  if (!best) return; best.pushCd = rnd(40, 80); emote(best, '!', '', 1.6); rd.propUntil = Math.max(rd.propUntil || 0, performance.now() + 6000); rd.t = Math.max(rd.t || 0, 6);
+  moveTo(best, { x: clamp(G.cx + (best.x < G.cx ? -1 : 1) * (G.W / 2 + (best.w || 40) * .4), XL + 20, XR - 20), y: Math.min(MAX_Y, G.gy + 2) }, { kind: 'scpush', r: q.r, a: ba, rd }); }
 function scEnd(m) { const q = m.scp; if (!q) return; if (q.G?.el?.mpH) q.G.el.mpH.style.zIndex = Math.round(q.G.gy) - 2; m.scp = null; m.scAn = null; m.scRot = 0; m.el.style.opacity = '';
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; m.pzF = 0; } if (q.ride || q.back || m.y < q.G.gy) { m.y = Math.max(m.y, q.G.gy + 4); m.x = clamp(m.x, XL + 20, XR - 20); }
   if (!S.mons.some(o => o.scp?.r === q.r)) scFxOff(q.G); }
@@ -7916,7 +8022,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '19.30';   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '19.33';   /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -12647,6 +12753,8 @@ function interMood(m, o) { const sc = m.scene, nm = esc(o.name), w = t => t.repl
     bonk: ['@과/와 힘겨루기하는 중', '@과/와 머리를 맞대고 있다', '@에게 지지 않으려는 중'],
     spray: ['@과/와 물장난하는 중', '@에게 뭔가를 뿜는 중', '@과/와 흠뻑 장난치는 중'],
     wrap: ['@을/를 칭칭 감는 중', '@과/와 꼭 엉켜 있다', '@에게 휘감겨 있다'],
+    trip: ['@과/와 술래잡기하는 중', '@에게서 도망가는 중', '@을/를 일으켜 주는 중'], nap: ['@과/와 같이 낮잠 자는 중', '@ 옆에서 꾸벅꾸벅', '@과/와 나란히 엎드려 있다'], shake: ['@에게 물을 튀기는 중', '@ 때문에 흠뻑 젖었다', '@과/와 물장난하는 중'],
+    skyplay: ['@ 둘레를 빙글빙글 나는 중', '@과/와 하늘에서 노는 중', '@과/와 빙글빙글 노는 중'], lick: ['@을/를 핥는 중', '@에게 핥여서 깜짝', '@에게 장난치는 중'], zap: ['@에게 찌릿 장난 중', '@ 때문에 찌릿했다', '@과/와 장난치는 중'], gas: ['@ 앞에서 가스를 뀌는 중', '@ 때문에 코를 막는 중', '@에게서 달아나는 중'],
     sniff: ['@의 냄새를 맡는 중', '@과/와 킁킁 인사하는 중', '@이/가 궁금해서 킁킁'],
   }, KD = {
     play: ['@과/와 노는 중', '@과/와 함께라 즐겁다', '@과/와 신나게 노는 중'],
