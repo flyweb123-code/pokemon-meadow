@@ -1302,7 +1302,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
   const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는';
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
-  try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['DP_KON', 'DP_REGI', 'DP_DOOR', 'se_ball', 'se_door', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
+  try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['se_wall_hit', 'DP_REGI', 'DP_DOOR', 'se_ball', 'se_door', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
   try {
     await Promise.all([loadJs('gymb/battle.js', 'GymBattle').catch(() => {}), loadJs('gymb/ev.js', 'GymEv')]);
@@ -1310,7 +1310,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     const mons = (luNow().length ? luNow() : [0, 1, 2].map(luOf).find(L => L.length) || []).slice(0, 6);
     // ---- 1. 노크: 쿵쿵쿵! 쿵쿵쿵! (화면이 흔들림) ----
     await wait(600);
-    for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('DP_KON', 1.6); GA.haptic?.(0); A.shake(); await wait(200); } await wait(450); }
+    for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('se_wall_hit', 2); GA.haptic?.(0); A.shake(); await wait(190); }   /* v19.24 경완 '좀 더 문 노크하는 소리로': 본가 GBA 벽에 부딪히는 '쿵' (나무 문 두드림처럼 짧고 둔탁) */ await wait(450); }
     meEnt.f = 'd'; place(meEnt); A.bub(meEnt, '!', 900); if (gu) A.bub(gu, '!', 900); se('DP_REGI', .8); await wait(900);
     await talk('누군가 체육관 문을 세게 두드리고 있다!');
     dlg(''); root.classList.add('dhide'); doorSe(); await wait(180);
