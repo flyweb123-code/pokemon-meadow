@@ -879,6 +879,8 @@ function sfGrow(now) {
     let k = 0; while (now - s.gt >= step && k++ < 30) { s.gt += step; if (!s.rest && teamLv(s.team) < cap) s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(100, cap, m[1] + 1)); }); } }
 }
 // 고용 트레이너가 차례로 도전자와 싸운다 (자동, 레벨·마릿수로 승패 확률)
+// v19.08 경완 '트레이너별로 월급과 수익': 이번 주 트레이너별 기록 g.wk.sf[id] = { nm, tr, wg 월급, e 번 골드, w 막음, l 짐, r 평판 }
+function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})[s.id] ||= { e: 0, w: 0, l: 0, r: 0 }; o.nm = sfName(s); o.tr = s.tr; o.wg = s.wage; return o; }
 function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
@@ -889,7 +891,7 @@ function staffFight(c) {
       if (s.xp >= (s.trait === 'grow' ? 2 : 3)) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
       return { s, lost };
     }
-    s.l = (s.l || 0) + 1; lost.push(s);
+    s.l = (s.l || 0) + 1; wkSf(s).l++; lost.push(s);
   }
   return { s: null, lost };
 }
@@ -907,7 +909,7 @@ function arrive(c) {
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
-      awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
+      { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
       glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
@@ -918,14 +920,19 @@ function arrive(c) {
   c.exp = c.named && !c.boss ? 0 : c.t + (c.boss ? 8 * H : qWait(c.t));   /* v15.85: 이름 있는 트레이너는 기다리는 시간 없음 (exp 0 = 필드 아이콘도 계속 셈) */   // v14.78: 기다리는 시간은 도착 시각으로 정해짐 → 체육관 밖 필드 아이콘 숫자도 같은 값으로 셈   // 도전자마다 기다리는 시간 (경완 2026-10-30: 자정까지 대신)
   g.q.push(c); if (!beat || c.named) glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
-// 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위
+// v19.08: 보고서에 넣을 트레이너 줄 — 지금 있는 트레이너(기록 없어도 0) + 이번 주에 일했다가 나간 트레이너
+function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
+  for (const s of g.sf || []) { const x = R[s.id] || { e: 0, w: 0, l: 0, r: 0 }; delete R[s.id]; L.push({ nm: sfName(s), tr: s.tr, wg: x.wg || s.wage, e: x.e, w: x.w, l: x.l, r: x.r, co: s.yard && !inGym(s) ? 1 : 0 }); }
+  for (const x of Object.values(R)) if (x.nm) L.push({ ...x, out: 1 });
+  return L; }
+// 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위 (v19.08 경완: 화면엔 순위 안 띄움)
 function rollWeek(now) {
   const g = st(), k = weekStart(now);
   if (!g.wk) { g.wk = { k, w: 0, l: 0, b: 0, g: 0, r: 0 }; return; }
   if (g.wk.k === k) return;
   const o = g.wk, sc = o.w * 3 + o.b * 2 + Math.max(0, o.r), G = gradeOf(g.rep || 0), r = seeded('wk' + o.k), base = 6 + G.i * 14;
   const L = RIVAL_GYMS.map(n => ({ n, s: Math.round(base * (.3 + r() * 1.6)) })); L.push({ n: g.nm, s: sc, me: 1 }); L.sort((a, b) => b.s - a.s || (b.me ? 1 : -1));
-  g.rpt = { ...o, sc, rank: L.findIndex(x => x.me) + 1, of: L.length, top: L.slice(0, 3).map(x => [x.n, x.s, x.me ? 1 : 0]), seen: 0 };
+  g.rpt = { ...o, sc, rank: L.findIndex(x => x.me) + 1, of: L.length, top: L.slice(0, 3).map(x => [x.n, x.s, x.me ? 1 : 0]), seen: 0, sf: rptSf(o) };
   glog('wk', `지난주 보고서: ${o.w}승 ${o.l}패 · 막은 도전자 ${o.b}명 · ${o.g.toLocaleString()}G · 랭킹 ${g.rpt.rank}위`, k);
   g.wk = { k, w: 0, l: 0, b: 0, g: 0, r: 0 };
 }
@@ -1617,7 +1624,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.rk-how,.aw-pop,.sh-re,.gy-lock';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock';
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} GA.haptic?.(1); }, 60); }   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
@@ -1850,7 +1857,7 @@ function simPop() {
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
     if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
-    if (a === 'rpt') { g.rpt = g.rpt || { w: 3, l: 1, b: 12, g: 4200, rank: 7, seen: 0 }; return reportPop(true); }
+    if (a === 'rpt') { const k = weekStart(Date.now()) - 7 * DAY; g.rpt = { w: 9, l: 3, b: 21, g: 7350, r: 38, rank: 2, of: 9, top: [], k, seen: 0, sf: (g.sf || []).map((s, i) => ({ nm: sfName(s), tr: s.tr, wg: s.wage, e: [Math.round(s.wage * 2.4), Math.round(s.wage * .6), Math.round(s.wage * 1.1)][i % 3], w: [6, 2, 3][i % 3], l: [1, 3, 2][i % 3], r: 8, co: s.yard && !inGym(s) ? 1 : 0 })) }; return reportPop(true); }   // 시뮬레이터: 예시 숫자
     if (a === 'bdg') return badgeGet(g.ty);
     if (a === 'new') { S.gym = null; save(); clearEnts(); return intro(); }
   });
@@ -1863,16 +1870,31 @@ function badgePop() {
     <p class="bd-tiers">${GRADES.map(([v], i) => `<span class="t${i + 1}">${gShort(i)} ${v}</span>`).join('')}</p>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
-// 주간 보고서·랭킹 (월요일): 지난주 기록 / 이번 주 진행
+// 주간 보고서 (월요일, 체육관에 들어오면 한 번): 지난주 전적·골드 결산·트레이너별 월급 대비 수익 / 이번 주 진행
+// v19.08 경완 '디자인 퀄 높이고, 랭킹 안 띄우고, 트레이너별로 월급과 수익 표시해서 월급 대비 얼마 벌었는지'
+const wrD = t => { const d = new Date(t); return `${d.getMonth() + 1}월 ${d.getDate()}일`; };
 function reportPop(any) {
   const g = st(), r = g.rpt, w = g.wk || {};
   if (!r && !any) return;
-  const cur = `<div class="rk-now"><b>이번 주</b><span>${w.w || 0}승 ${w.l || 0}패 · 막은 도전자 ${w.b || 0}명 · ${(w.g || 0).toLocaleString()}G</span></div>`;
-  const body = r ? `<div class="rk-big"><span>지난주 랭킹</span><b>${r.rank}<small>위 / ${r.of}곳</small></b></div>
-      <ol class="rk-top">${r.top.map(([n, sc, me]) => `<li class="${me ? 'me' : ''}"><span>${esc(n)}</span><b>${sc}점</b></li>`).join('')}</ol>
-      <dl class="gy-info rk-dl"><dt>전적</dt><dd><span>${r.w}승 ${r.l}패 (방어율 ${r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0}%)</span></dd><i></i><dt>막은 도전자</dt><dd><span>${r.b}명</span></dd><i></i><dt>번 골드</dt><dd><span>${(r.g || 0).toLocaleString()}G</span></dd><i></i><dt>평판</dt><dd><span>${r.r >= 0 ? '+' : ''}${r.r}</span></dd><i></i></dl>` : '<p class="gy-msg">첫 주간 보고서는 다음 주 월요일에 와요.</p>';
+  const G = n => (n | 0).toLocaleString(), now = `<p class="wr-now"><b>이번 주 지금까지</b><span>${w.w || 0}승 ${w.l || 0}패 · 막은 도전자 ${w.b || 0}명 · <i class="coin"></i>${G(w.g)}G</span></p>`;
+  let body;
+  if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 월급만큼 일했는지를 정리해 드려요.</p>${now}`;
+  else {
+    const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.out ? 0 : x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
+    const k0 = r.k || weekStart(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
+    const row = x => { const d = (x.e || 0) - (x.wg || 0), pc = x.wg ? Math.min(100, Math.round((x.e || 0) / x.wg * 100)) : 100, tag = x.co ? '<i class="wr-tag co">훈련장 코치</i>' : x.out ? '<i class="wr-tag out">그만둠</i>' : '';
+      return `<li class="${x.co ? 'co' : d >= 0 ? 'up' : 'dn'}"><span class="aw-pic"><img alt="" src="${trSrc(x.tr)}"></span><div class="wr-b"><p class="wr-n"><b>${esc(x.nm)}</b>${tag}</p>
+        <p class="wr-s">${x.co ? '포켓몬 훈련 담당' : `${x.w || 0}명 막음${x.l ? ` · ${x.l}번 짐` : ''}`}</p>
+        ${x.co ? '' : `<div class="wr-bar"><i style="width:${pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>월급 ${G(x.wg)}G</span></p>`}</div>
+        <em class="wr-d">${x.co ? `<small>월급</small>−${G(x.wg)}G` : d >= 0 ? `<small>${x.wg ? `월급의 ${Math.round((x.e || 0) / x.wg * 10) / 10}배` : '이득'}</small>+${G(d)}G` : `<small>월급보다</small>−${G(-d)}G`}</em></li>`; };
+    body = `<div class="aw-hd wr-hd"><small>주간 보고서 · ${wrD(k0)} ~ ${wrD(k0 + 6 * DAY)}</small><b>지난주 체육관 결산</b><div class="wr-bd">${bdHtml(g.ty, gradeOf(g.rep || 0).i + 1)}</div></div>
+      <div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>
+      <div class="wr-led"><p><span>관장 배틀</span><b class="p">+${G(mine)}G</b></p>${L.length ? `<p><span>트레이너가 번 골드</span><b class="p">+${G(sg)}G</b></p><p><span>트레이너 월급</span><b class="m">−${G(wg)}G</b></p>` : ''}<p class="sum"><span>순이익</span><b class="${net < 0 ? 'm' : 'p'}"><i class="coin"></i>${net < 0 ? '−' : '+'}${G(Math.abs(net))}G</b></p></div>
+      ${L.length ? `<h5 class="wr-h">트레이너별 월급 대비 수익</h5><ul class="aw-l wr-l">${L.map(row).join('')}</ul>` : ''}${now}`;
+  }
   if (r) r.seen = 1; setAt(); save();
-  return new Promise(ok => pop(`<h4>주간 보고서</h4>${body}${cur}<p class="gy-msg rk-how">점수 = 이긴 배틀 ×3 + 막은 도전자 ×2 + 올린 평판</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); }));
+  try { GA.sfx('newdex'); } catch (e) {} GA.haptic?.(1);
+  return new Promise(ok => { const p = pop(`<div class="aw-pop wr-pop">${body}<div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => { close(); ok(); }); p.classList.add('aw-wrap'); });
 }
 
 // ---------- 처음 설정: 타입 → 디자인 → 이름 (바꾸기는 그 단계 하나만) ----------
@@ -2506,7 +2528,8 @@ function awMvPop([P, mv, nm, ty], i, n) {
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
 async function later() {
   await wait(700); if (!open) return; const g = st();
-  if (g.newBdg) await badgeGet(g.newBdg);
+  if (g.rpt && !g.rpt.seen) await reportPop();   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
+  if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
 }

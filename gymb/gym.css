@@ -3197,3 +3197,51 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes lgTw{0%,100%{scale:.2;opacity:0}50%{scale:1;opacity:1}}
 @keyframes lgWob{0%,100%{rotate:0deg}20%{rotate:-14deg}40%{rotate:12deg}60%{rotate:-8deg}80%{rotate:5deg}}
 @keyframes lgFl{0%{opacity:.95}100%{opacity:0}}
+/* v19.08 경완 주간 보고서: 결산 장부 + 트레이너별 월급 대비 수익 (aw-pop 틀) */
+#gym .gy-pop.aw-wrap .win:has(.wr-pop){max-width:372px;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+#gym .wr-pop{gap:9px}
+#gym .wr-hd{background:repeating-linear-gradient(135deg,#2f6a4e 0 10px,#377758 10px 20px);padding-bottom:10px}
+#gym .wr-hd small{color:#bfe8cf}
+#gym .wr-hd b{font-size:17px;text-shadow:2px 2px 0 #163a28}
+#gym .wr-bd{margin-top:4px;height:60px;display:grid;place-items:center}
+#gym .wr-bd .bdw img{width:56px;height:56px;image-rendering:pixelated;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.35))}
+#gym .wr-pop .aw-tot b{font-size:17px;gap:2px}
+#gym .wr-sub{font-size:10px!important;color:#9090a0!important}
+#gym .wr-led{display:flex;flex-direction:column;gap:3px;padding:8px 12px;background:#fffdf4;box-shadow:inset 0 0 0 2px #e6dcb8}
+#gym .wr-led p{margin:0;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#5a5a68}
+#gym .wr-led b{font-size:13px}
+#gym .wr-led .p{color:#2a8a3e}
+#gym .wr-led .m{color:#c8443c}
+#gym .wr-led .sum{margin-top:3px;padding-top:6px;border-top:2px dashed #e0d4a8;color:#20202c;font-weight:bold}
+#gym .wr-led .sum b{font-size:16px;display:inline-flex;align-items:center}
+#gym .wr-led .sum .coin{width:14px;height:14px}
+#gym .wr-h{margin:2px 14px -4px;font-size:12px;color:#707080;font-weight:normal}
+#gym .wr-l{max-height:none;overflow:visible}
+#gym .wr-l li{align-items:stretch;padding:6px 10px 6px 6px;gap:8px}
+#gym .wr-l li.up{box-shadow:inset 3px 0 0 #3aa856,inset 0 0 0 2px #d8d8e4}
+#gym .wr-l li.dn{box-shadow:inset 3px 0 0 #d8584c,inset 0 0 0 2px #d8d8e4;background:#fff6f4}
+#gym .wr-l li.co{background:#f4f6fb}
+#gym .wr-l .aw-pic{align-self:center}
+#gym .wr-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;justify-content:center}
+#gym .wr-b p{margin:0}
+#gym .wr-n{display:flex;align-items:center;gap:4px;min-width:0}
+#gym .wr-n b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gym .wr-tag{flex:none;font-style:normal;font-size:10px;padding:0 4px;color:#fff;background:#6a7ab0}
+#gym .wr-tag.out{background:#9a9aa8}
+#gym .wr-s{font-size:11px;color:#707080}
+#gym .wr-bar{height:6px;background:#ececf2;box-shadow:inset 0 0 0 1px #d8d8e4;overflow:hidden}
+#gym .wr-bar i{display:block;height:100%;background:linear-gradient(#ffd85a,#e8a820)}
+#gym .wr-l li.up .wr-bar i{background:linear-gradient(#6ad07c,#3aa856)}
+#gym .wr-m{display:flex;justify-content:space-between;font-size:10px;color:#808090}
+#gym .wr-m span{display:inline-flex;align-items:center}
+#gym .wr-m .coin{width:10px;height:10px}
+#gym .wr-d{flex:none;align-self:center;display:flex;flex-direction:column;align-items:flex-end;font-style:normal;font-size:14px;font-weight:bold;min-width:64px}
+#gym .wr-d small{font-size:10px;font-weight:normal;color:#808090}
+#gym .wr-l li.up .wr-d{color:#2a8a3e}
+#gym .wr-l li.dn .wr-d{color:#c8443c}
+#gym .wr-l li.co .wr-d{color:#707080}
+#gym .wr-now{margin:0 14px;padding:7px 10px;display:flex;flex-direction:column;gap:2px;font-size:11px;color:#707080;background:#f2f2f6}
+#gym .wr-now b{font-size:12px;color:#20202c}
+#gym .wr-now span{display:inline-flex;align-items:center;flex-wrap:wrap}
+#gym .wr-now .coin{width:11px;height:11px}
+#gym .wr-empty{margin:0 14px;font-size:13px;line-height:1.6;text-align:center;color:#50505e}
