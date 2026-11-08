@@ -933,7 +933,7 @@ async function handle(a) {
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); await msg('그러나 실패했다!'); break;   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
     case '-nothing': await wait(750); await msg('그러나 아무 일도 일어나지 않았다!'); break;
-    case '-status': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
+    case '-status': { const s = sideOf(a[2]), X = A(s); if (a.some(x => /^\[from\] item: /.test(x))) await itemFx(s); if (X) { X.st = a[3]; setSt(s, a[3]); } await stFx(s, a[3]); await msg(statusMsg(who(a[2]), a[3])); break; }
     case '-curestatus': { const s = sideOf(a[2]), X = A(s); if (X) { X.st = ''; setSt(s, ''); } await msg(cureMsg(who(a[2]), a[3])); break; }
     case 'cant': if (ST_P[a[3]]) await stFx(sideOf(a[2]), a[3]); await msg(cantMsg(who(a[2]), a[3])); break;
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
@@ -941,7 +941,7 @@ async function handle(a) {
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else if (/^item: /.test(a[3] || '')) await itemFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
@@ -954,10 +954,10 @@ async function handle(a) {
       await msg(`${eun(who(a[2]))} ${T.nm}${jong(T.nm) ? '으로' : '로'} 변신했다!`); break; }
     case '-enditem': { const n = who(a[2]), it = itKo(a[3]), eat = a.includes('[eat]'), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
       if (/stealeat|move: (Knock Off|Thief|Covet|Bug Bite|Pluck|Incinerate)/i.test(from)) { await msg(`${n}의 ${eun(it)} 사라졌다!`); break; }
-      if (eat) { await moveFx(sideOf(a[2]), 'stockpile'); await msg(`${eun(n)} ${eul(it)} 먹었다!`); break; }
-      if (/Focus Sash|Focus Band/.test(a[3])) { await msg(`${eun(n)} ${it}${jong(it) ? '으로' : '로'} 버텼다!`); break; }
+      if (eat) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${eul(it)} 먹었다!`); break; }
+      if (/Focus Sash|Focus Band/.test(a[3])) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${it}${jong(it) ? '으로' : '로'} 버텼다!`); break; }
       if (/Air Balloon/.test(a[3])) { await msg(`${n}의 풍선이 터졌다!`); break; }
-      if (/White Herb|Mental Herb|Power Herb/.test(a[3])) { await msg(`${eun(n)} ${eul(it)} 사용했다!`); break; }
+      if (/White Herb|Mental Herb|Power Herb/.test(a[3])) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${eul(it)} 사용했다!`); break; }
       break; }
     case '-item': { const n = who(a[2]), it = itKo(a[3]), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
       if (/Air Balloon/.test(a[3])) await msg(`${eun(n)} 풍선으로 떠 있다!`);
@@ -991,6 +991,8 @@ const FIELD_T = { 'Electric Terrain': ['발밑에 전기가 흐르기 시작했�
   'Trick Room': ['시공이 뒤틀렸다!', '뒤틀린 시공이 원래대로 돌아왔다!'], Gravity: ['중력이 강해졌다!', '중력이 원래대로 돌아왔다!'], 'Magic Room': ['도구의 효과가 사라지는 공간이 되었다!', '도구의 효과가 원래대로 돌아왔다!'], 'Wonder Room': ['방어와 특수방어가 뒤바뀌는 공간이 되었다!', '방어와 특수방어가 원래대로 돌아왔다!'], 'Mud Sport': ['전기의 위력이 약해졌다!', '흙놀이의 효과가 사라졌다!'], 'Water Sport': ['불꽃의 위력이 약해졌다!', '물놀이의 효과가 사라졌다!'] };
 // 지속 데미지 연출: 씨뿌리기 = 심은 쪽이 흡수, 스텔스록·압정 = 박힘, 조이기류 = 그 기술, 저주·악몽 = 그 기술
 const TRAP = { 'Bind': 'bind', 'Wrap': 'wrap', 'Fire Spin': 'firespin', 'Whirlpool': 'whirlpool', 'Sand Tomb': 'sandtomb', 'Magma Storm': 'magmastorm', 'Clamp': 'clamp', 'Infestation': 'infestation', 'Snap Trap': 'bind', 'Thunder Cage': 'bind' };
+// 지닌 도구가 움직일 때 본가 공통 연출 HELD_ITEM (열매·기합의띠·하양허브·선제공격손톱·생명의구슬·독독구슬 등 모두, v19.19 경완 '도구 효과음도 다 본가 기준으로')
+const itemFx = s => moveFx(s, 'recover', false, '_item');
 async function resFx(s, from, a) {
   const f = from.replace(/^(move|item|ability): /, ''), of = (a.find(x => /^\[of\] /.test(x)) || '').slice(5);
   if (f === 'Leech Seed') return moveFx(of ? sideOf(of) : other(s), 'absorb');
@@ -998,6 +1000,7 @@ async function resFx(s, from, a) {
   if (TRAP[f]) return moveFx(other(s), mvOf(TRAP[f]) && MFX[TRAP[f]] ? TRAP[f] : 'bind');
   if (f === 'Curse' || f === 'Nightmare') return moveFx(other(s), f === 'Curse' ? 'curse' : 'nightmare');
   if (f === 'Sandstorm' || f === 'Hail' || f === 'confusion' || f === 'Recoil') return;
+  if (/^item: (Life Orb|Black Sludge|Sticky Barb)$/.test(from)) return itemFx(s);   // 본가: 지닌 도구로 HP 가 줄 때도 도구 연출, 깜빡임 없음 (subscript_lose_hp_from_item_with_message)
   if (/^(Life Orb|Rocky Helmet|Rough Skin|Iron Barbs|Black Sludge|Sticky Barb|Solar Power|Dry Skin|Bad Dreams|Salt Cure|Aftermath|Liquid Ooze)$/.test(f)) return hitFx(s);
 }
 const HEAL_FX = { 'Leftovers': '_item', 'Black Sludge': '_item', 'Shell Bell': '_item',   /* v19.18 경완 '먹다남은음식 본가 기준?': 본가는 지닌 도구 공통 연출(HELD_ITEM — 빛 모임·흰 번쩍·몸 늘었다 줄었다 2번) */ 'Aqua Ring': 'aquaring', 'Ingrain': 'ingrain', 'Wish': 'wish', 'Grassy Terrain': 'aquaring', 'Rain Dish': 'aquaring', 'Ice Body': 'aquaring', 'Poison Heal': 'aquaring', 'Dry Skin': 'aquaring' };
