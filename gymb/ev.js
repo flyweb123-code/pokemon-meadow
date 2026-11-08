@@ -62,6 +62,15 @@ const CSS = `
 #gym .ev-luw>h3{min-height:34px;line-height:34px;margin:0 0 10px;padding-right:72px}#gym .ev-lux{top:calc(var(--si-top,env(safe-area-inset-top,0px)) + 14px);right:calc(var(--si-right,env(safe-area-inset-right,0px)) + 14px);height:34px;padding:0 14px}
 #gym .ev-luw>*{width:100%;max-width:460px;margin-left:auto;margin-right:auto}#gym .ev-luw [data-box]{display:none}#gym .ev-luw .lu-row2{grid-template-columns:1fr}   /* 이벤트에선 포켓몬 박스 없음, 정렬 다시 (경완 2026-11-08) */
 #gym .ev-luw.tired .lu-slot[data-p]{filter:grayscale(1) brightness(.92);opacity:.55}#gym .ev-luw.tired>h3::after{content:'모두 지쳐 있어요 · 포켓몬 센터에서 회복해요';word-break:keep-all;display:block;margin:6px -72px 0 0;line-height:1.4;padding:8px 10px;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;text-align:center}   /* 졌을 때: 슬롯 흐리게 */
+#gym .ev-bag{position:absolute;right:12px;top:calc(92px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
+#gym .ev-bag:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
+#gym .ev-quit{background:rgba(196,40,44,.9);box-shadow:0 3px 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)}#gym .ev-quit:active{box-shadow:0 0 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)!important}
+#gym .ev-bagw .win{max-width:340px}#gym .ev-bagw h4{margin:0;font-size:16px}#gym .ev-bagw .bg-h{margin:2px 0 0;font-size:12px;font-weight:700;color:#707084;text-align:left}
+#gym .ev-bagw .bg-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:42vh;overflow-y:auto;overflow-x:hidden;padding:2px 2px 5px}
+#gym .ev-bagw .bg-g button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;border:0;border-radius:10px;background:#fff;font-size:11px;font-weight:700;color:#303040;box-shadow:0 3px 0 #c8c8d4,inset 0 0 0 2px rgba(0,0,0,.1);transition:transform .05s,box-shadow .05s;line-height:1.2;word-break:keep-all}
+#gym .ev-bagw .bg-g button:active{transform:translateY(3px);box-shadow:0 0 0 transparent,inset 0 0 0 2px rgba(0,0,0,.1)}#gym .ev-bagw .bg-g button.sel{box-shadow:0 3px 0 #c8a830,inset 0 0 0 3px #ffd84a}
+#gym .ev-bagw .bg-g img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated}#gym .ev-bagw .bg-g .egg{width:22px;height:28px;margin:2px 0}#gym .ev-bagw .bg-g em{font-style:normal;font-size:10px;color:#fff;background:#d04048;border-radius:6px;padding:0 5px}
+#gym .ev-bagw .bg-d{margin:0;min-height:40px;font-size:12px;line-height:1.5;color:#505060;white-space:pre-line;background:#f2f2f6;border-radius:8px;padding:7px 9px;text-align:left}#gym .ev-bagw .bg-d b{color:#303040}#gym .ev-bagw .bg-none{margin:8px 0;color:#909098;font-size:12px}
 #gym .ev-pk:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
 /* v19.29 경완 2026-11-08: 같이 다니는 포켓몬 고르기 창(넣어 두기), 주운 것 가운데 창(상점 그림 + 효과) */
 #gym .ev-pkw .win{max-width:340px}#gym .ev-pkw h4{margin:0;font-size:16px}
@@ -77,7 +86,7 @@ const CSS = `
 @keyframes evIbB{0%,100%{translate:0 0}50%{translate:0 -4px}}
 #gym .ev-itb .ib-d{margin:0;font-size:13px;line-height:1.5;color:#505060;white-space:pre-line}#gym .ev-itb .ib-t{margin:0;font-size:11px;color:#a0a0b0}
 #gym .ev-quit:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
-#gym .ev-fld.lock :is(.ev-pad,.ev-a,.ev-b,.ev-quit,.ev-pk){opacity:0;pointer-events:none}
+#gym .ev-fld.lock :is(.ev-pad,.ev-a,.ev-b,.ev-quit,.ev-pk,.ev-bag){opacity:0;pointer-events:none}
 #gym .ev-ask{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:0 24px}
 #gym .ev-ask .win{max-width:320px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:12px}
 #gym .ev-ask p{margin:0;font-size:15px;line-height:1.55;white-space:pre-line}#gym .ev-ask small{display:block;color:#707080;font-size:12px;margin-top:4px}
@@ -168,6 +177,18 @@ const css = () => { if (cssOn) return; cssOn = true; const s = document.createEl
 function tools(I, def) {
   const root = I.root, $g = s => root.querySelector(s), g = I.st(), D = I.dz(), T = () => 16 * I.sc();
   const rOcc = [], rO = () => rOcc.filter(q => q[2].isConnected).map(q => [q[0], q[1]]);
+  // 가방 (경완 2026-11-08 '포켓몬 버튼 밑에 가방, 습득한 아이템 확인'): 중요한 물건(def.keys, 눌러서 쓰기) + 이 이벤트에서 주운 것(g.ev.found). 직접 연 창이라 바깥 눌러도 닫힘
+  const bagOpen = async F => { const K = def.keys?.(A) || [], FD = (g.ev || {}).found || [];
+    const pic = f => f.k === 'egg' ? I.eggIco?.(f.g) || '' : `<img alt="" src="${f.img}">`;
+    const a = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask ev-pkw ev-bagw';
+      w.innerHTML = `<div class="win"><h4>가방</h4>${K.length ? `<p class="bg-h">중요한 물건</p><div class="bg-g">${K.map((q, i) => `<button type="button" data-k="${i}">${pic(q)}<span>${I.esc(q.nm)}</span>${q.tag ? `<em>${I.esc(q.tag)}</em>` : ''}</button>`).join('')}</div>` : ''}<p class="bg-h">주운 아이템 ${FD.length}개</p>${FD.length ? `<div class="bg-g">${FD.map((f, i) => `<button type="button" data-f="${i}">${pic(f)}<span>${I.esc(f.nm || '')}</span></button>`).join('')}</div>` : '<p class="bg-none">아직 주운 아이템이 없어요</p>'}<p class="bg-d">${K.some(q => q.use) ? '아이템을 누르면 설명이 나와요.\n중요한 물건은 눌러서 쓸 수 있어요.' : '아이템을 누르면 설명이 나와요.'}</p><div class="gy-btns one"><button type="button" data-a="x">닫기</button></div></div>`;
+      root.appendChild(w); I.gse?.('DP_WIN_OPEN', .8); const dEl = w.querySelector('.bg-d');
+      w.onclick = e => { if (e.target === w) { I.sfx?.('tap'); w.remove(); ok(null); return; } const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); I.sfx?.('tap');
+        if (b.dataset.a) { w.remove(); ok(null); return; }
+        if (b.dataset.k != null) { const q = K[+b.dataset.k]; if (q.use) { w.remove(); ok(q); return; } }
+        const q = b.dataset.k != null ? K[+b.dataset.k] : FD[+b.dataset.f]; w.querySelectorAll('.bg-g button.sel').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+        dEl.innerHTML = `<b>${I.esc(q.nm || '')}</b>${q.d ? '\n' + I.esc(q.d) : ''}`; }; });
+    if (a?.use) await a.use(F); };
   const A = {
     I, g, D, def, wait, anim,
     // 맵 위 사람 (본가 걸음 그림)
@@ -219,7 +240,7 @@ function tools(I, def) {
     test: !!window.gymEvTest, retry: (g.ev?.try | 0) > 0 || !!g.ev?.seen?.[g.ev?.ch],   // 한 번 본 장(센터로 돌아갔다 다시 온 것 포함)은 장 제목·처음 대사 건너뜀
     lv: () => I.lv(),
     // 필드 맵 열기 (검은 화면 뒤에서 만들고 F.show 로 밝힌다)
-    field: o => { const F = field(I, o); F.tired = () => !!A.tired; return F; },   // 졌을 때(센터 가기 전) 라인업 화면을 흐리게
+    field: o => { const F = field(I, o); F.tired = () => !!A.tired; F.bag = () => bagOpen(F); return F; },   // 졌을 때(센터 가기 전) 라인업 화면을 흐리게
     // 이벤트 배틀: o = { tr 그림, cls, nm, team [[종, 레벨]], tier, say {win,lose}, g 골드, music }. 이기면 true
     battle: async o => { const r = await I.battle(o); return !!(r?.won || r?.cut); },
     // 곧바로 까만 화면 (장을 이어서 시작할 때 체육관이 비치지 않게)
@@ -254,12 +275,13 @@ function tools(I, def) {
     // it = { k:'egg', g 등급 } 또는 { kinds:['it','mint','deco'], cap 골드 } (안 가진 것 중 하나를 그 자리에서 고름). key 를 주면 이 이벤트에서 한 번만
     // 받은 건 g.ev.found 에 모아 두었다가 해결 창에 한꺼번에 보여 준다. 운영자 시험이면 실제로는 아무것도 안 줌
     has: key => !!(g.ev?.got || {})[key],
+    unmark: key => { const ev = g.ev; if (ev?.got?.[key]) { delete ev.got[key]; I.save(); } },
     mark: key => { const ev = g.ev || (g.ev = {}); ev.got = ev.got || {}; ev.got[key] = 1; I.save(); },
     got: async (S, it, o = {}) => { const ev = g.ev || (g.ev = {}); ev.got = ev.got || {}; ev.found = ev.found || []; if (o.key && ev.got[o.key]) return null;
       let L; if (it.k === 'x') L = { k: 'x', nm: it.nm, img: it.img, d: it.d };
       else if (it.k === 'egg') { L = { k: 'egg', g: it.g || 1, nm: `${I.tyAdj?.() || ''} ${I.eggGn?.(it.g || 1) || ''} 알`.trim() }; I.giveEgg?.(L.g, o.from || def.nm); }
       else { L = await I.loot?.(it.kinds, it.cap, ev.found.map(f => f.id)); if (!L) L = await I.loot?.(['mint'], 0, ev.found.map(f => f.id)); if (!L) return null; I.giveLoot?.(L); }
-      if (o.key) ev.got[o.key] = 1; if (L.k !== 'x') ev.found.push({ k: L.k, g: L.g, id: L.id, nm: L.nm, img: L.img }); I.save();
+      if (o.key) ev.got[o.key] = 1; if (L.k !== 'x') ev.found.push({ k: L.k, g: L.g, id: L.id, nm: L.nm, img: L.img, d: L.k === 'egg' ? `부화하면 ${I.tyNm?.() || ''} 타입 포켓몬이 태어나요.` : L.d || '' }); I.save();
       // 가운데 창: 체육관 상점 그림 + 효과 (경완 2026-11-08 '아이템 주웠을 때는 상점 스프라이트, 중앙 박스에 효과랑 같이'). 저절로 뜨는 창이라 버튼으로만 닫힘 + 팝업 모션 + 팡파르
       const d = L.k === 'x' ? L.d || '' : L.k === 'egg' ? `부화하면 ${I.tyNm?.() || ''} 타입 포켓몬이 태어나요.` : `${L.d || ''}${L.d && !A.test ? '\n체육관 창고에 넣었어요.' : ''}`;
       try { window.GymBGM?.fan ? window.GymBGM.fan(L.k === 'egg' ? 'ME_FANFA3' : 'ME_FANFA4') : window.GymBGM?.se?.('ME_FANFA4'); } catch (e) {} I.haptic?.(1);
@@ -293,7 +315,7 @@ function field(I, o) {
   const root = I.root, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(2, Math.round(W / (12 * 16) * 4) / 4);
   const el = document.createElement('div'); el.className = 'gy-town ev-fld lock';
   el.innerHTML = `<div class="tw-map"><i class="ev-ov"></i></div><b class="ev-loc">${I.esc(o.nm || '')}</b><i class="ev-fade"></i>
-    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="ev-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button>`;
+    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="ev-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button><button type="button" class="ev-bag" aria-label="가방">가방</button>`;
   try { const gm = root.querySelector('.gy-main')?.getBoundingClientRect(), rb = root.getBoundingClientRect(); if (gm && gm.height) root.style.setProperty('--evmb', Math.round(rb.bottom - gm.bottom + 8) + 'px'); } catch (e) {}
   root.appendChild(el); const map = el.firstElementChild, ov = map.firstElementChild, fade = el.querySelector('.ev-fade'), pad = el.querySelector('.ev-pad'), aB = el.querySelector('.ev-a');
   const F = { el, map, k, sps: [], obs: [], hid: [], pl: null, hold: null, aQ: false, quitQ: false, me: null, follow: true, warps: [], block: new Set(), cur: 'main', rooms: Object.assign({}, o.rooms || {}) };
@@ -534,6 +556,7 @@ function field(I, o) {
   // 아이폰 꾹 누르기 돋보기(글자 선택)가 뜨지 않게: 필드 위 터치는 기본 동작을 막고 버튼은 pointer 로만 (경완 2026-11-07)
   el.addEventListener('touchstart', e => { if (e.target.closest('.ev-pad,.ev-a,.ev-b,.tw-map')) e.preventDefault(); }, { passive: false });
   el.querySelector('.ev-pk').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.pkQ = true; };   // 같이 다니는 포켓몬 바꾸기·넣어 두기 (경완 2026-11-08)
+  el.querySelector('.ev-bag').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.bgQ = true; };   // 가방: 주운 아이템 보기 (경완 2026-11-08)
   el.querySelector('.ev-quit').onclick = async e => { e.stopPropagation(); I.sfx?.('tap'); F.lock(true); const y = await F.ask('이벤트를 멈추고 체육관에서 나갈까요?', '다음에 들어오면 이 장 처음부터 이어서 해요.', '나가기', '계속하기'); if (y) F.quitQ = true; else F.lock(false); };
   const KEY = { ArrowUp: 'u', ArrowDown: 'd', ArrowLeft: 'l', ArrowRight: 'r' };
   const kd = e => { if (e.key === 'Shift' || e.key === 'x') F.run = true; if (KEY[e.key]) { e.preventDefault(); if (!el.classList.contains('lock') && !e.repeat) press(KEY[e.key]); } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'z') { if (!el.classList.contains('lock') && !e.repeat && performance.now() - (F.unT || 0) > 400) F.aQ = true; } };
@@ -545,7 +568,7 @@ function field(I, o) {
   // 자유롭게 걷기: h.step(칸) 걸은 뒤 · h.talk(사람) A 로 말 걸기 · h.look(칸) 앞에 아무도 없을 때 A 로 살펴보기 · h.warp(문) 문으로 들어가기 · h.room(방) 방을 옮긴 뒤.
   //   무엇이든 값을 돌려주면 끝. 출입구 w.to 는 알아서 들어간다 (w.pre() 가 false 면 못 들어감)
   F.play = (h = {}) => new Promise(done => {
-    let busy = false, end = false, lastMv = 0; F.follow = true; F.lock(false); F.aQ = false; F.quitQ = false; F.pkQ = false; F.ppQ = false;
+    let busy = false, end = false, lastMv = 0; F.follow = true; F.lock(false); F.aQ = false; F.quitQ = false; F.pkQ = false; F.ppQ = false; F.bgQ = false;
     const fin = v => { end = true; F.lock(true); done(v); };
     const run = async f => { busy = true; F.lock(true); let r; try { r = await f(); } catch (e) { console.error(e); } busy = false; if (end) return; if (r !== undefined) fin(r); else F.lock(false); };
     const goW = w => run(async () => { if (w.pre && (await w.pre()) === false) return; if (w.to) { await F.enter(w); return h.room ? h.room(F.cur) : undefined; } return h.warp?.(w); });
@@ -562,7 +585,7 @@ function field(I, o) {
           const pl = F.pl && !F.pl.el.hidden && Math.round(F.pl.x) === tx && Math.round(F.pl.y) === ty;
           // 말 걸기·살펴보기는 버튼 누르는 소리와 같게 (경완 2026-11-08). 앞에 아무것도 없으면 아무 일 없이 계속 걷는다 (경완 2026-11-08 'A 눌러도 이동 끊기지 않게')
           if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); return h.talk(s); }); } else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
-        else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); } else if (F.ppQ) { F.ppQ = false; run(() => F.palPick()); }
+        else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); } else if (F.ppQ) { F.ppQ = false; run(() => F.palPick()); } else if (F.bgQ) { F.bgQ = false; run(() => F.bag?.()); }
         else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
           if (m.f !== d && !moving) { m.turn(d); busy = true; setTimeout(() => { busy = false; }, TURN); }   // 제자리 돌기 (짧게 누르면 방향만)
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
