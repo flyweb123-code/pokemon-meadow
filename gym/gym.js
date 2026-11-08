@@ -1202,7 +1202,6 @@ function resultPop(c, res, gold, rep, R) {
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
       ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
-    { const oc = p.onclick; p.onclick = e => { if (e.target === p) { p.remove(); return ok(); } oc(e); }; }   // 빈 곳을 눌러 닫아도 확인과 똑같이 (도전자가 떠나지 못하고 갇히던 것, 경완 2026-10-29)
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
       if (won) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} confetti(); }
@@ -1564,7 +1563,7 @@ function openTab(t, opt) {
 // ---------- 팝업 ----------
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
-  p.onclick = e => { if (e.target === p) { close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
+  p.onclick = e => { if (e.target === p) { if (!p.querySelector('button[data-a]')) close(); return; }   /* v18.89 경완: 알림창은 버튼으로만 닫힘 */ const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
 // 전신 카드 (경완 2026-10-27: 홈에서 나·트레이너를 누르면 전신 그림). src 그림, h 이름, sub 아랫줄, btn 단추 html
