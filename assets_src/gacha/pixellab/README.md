@@ -62,3 +62,4 @@ news_mock.html: 지금 게임의 알림창 3장(v19.14 newsShow P)과 새 버전
 ## ticket/ 뽑기권 아이콘 시안 (게임에는 아직 안 넣음)
 PixelLab Create image, Pixen, 64x64, 투명 배경, View None, Highly detailed, 검은 외곽선. 1 몬스터볼 빨강·흰 반반, 2 크림 종이+빨간 띠+알, 3 금색 티켓+알, 4 알 모양 구멍이 실제로 뚫린 빨간 티켓. 3·4는 두 번째 시도(첫 시도는 raw/: 3은 몸통이 비었고, 4는 구멍 대신 체크무늬를 그림). 색만 바꿀 거면 4(빨강 한 색 면적이 가장 넓음)나 3이 쉬움.
 경완이 2번으로 결정. ticket_2_egg.png: 가운데 알을 게임 알(EGG_SVG 일반 알, 18x22 그대로)로 바꿈. type/ticket_<영문 타입>.png 18장: 빨간 띠만 게임 TYPE_C 색으로 바꾸고 원래 띠의 밝고 어두운 정도를 그대로 살림(PixelLab 안 씀). preview_types.png는 확인용 모음. 게임에는 아직 안 넣음.
+type_icon/: 위 뽑기권의 알 가운데에 게임 타입 아이콘(tyIcon, 15x15: TY_BG 원 + TY_GL 흰 무늬)을 (24,24)에 그대로 얹음. ticket_all.png는 빨간 띠 + 어두운 원 안에 흰 도트 글자 ALL. 19장 64x64. preview.png 확인용.
