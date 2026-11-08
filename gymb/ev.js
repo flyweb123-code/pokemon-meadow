@@ -58,6 +58,7 @@ const CSS = `
 #gym .ev-quit{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s}
 #gym .ev-pk{position:absolute;right:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
 #gym .ev-fld~.gy-kang.tw-talk .gy-k-box{width:auto;margin:0 calc(var(--si-right,env(safe-area-inset-right,0px)) + 8px) var(--evmb,77px) calc(var(--si-left,env(safe-area-inset-left,0px)) + 8px)}   /* 대사창 자리 = 체육관 아래 메뉴가 있을 때 대사창 자리 (경완 2026-11-08) */
+#gym .ev-luw{z-index:975}#gym .ev-lux{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:976;border:0;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 #18181f}#gym .ev-lux:active{transform:translateY(3px);box-shadow:none}#gym.evlu .gy-pop,#gym.evlu .gy-boxw{z-index:985}#gym .ev-luw [data-go]{display:none}   /* v19.61 이벤트 안 라인업 화면 */
 #gym .ev-pk:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
 /* v19.29 경완 2026-11-08: 같이 다니는 포켓몬 고르기 창(넣어 두기), 주운 것 가운데 창(상점 그림 + 효과) */
 #gym .ev-pkw .win{max-width:340px}#gym .ev-pkw h4{margin:0;font-size:16px}
@@ -255,7 +256,7 @@ function tools(I, def) {
         root.appendChild(w); const t0 = performance.now(); w.onclick = e => { const b = e.target.closest('button'); if (!b || performance.now() - t0 < 500) return; e.stopPropagation(); I.sfx?.('tap'); w.remove(); ok(); }; });
       return L; },
     // 같이 다니는 포켓몬: 고른 것(넣어 두면 없음)을 이 이벤트 동안 기억 (운영자 시험이면 체육관 관장 옆 포켓몬은 안 바뀜)
-    pal: () => { const ev = g.ev || {}; if (ev.palOff) return null; const L = I.luAll?.() || []; return (ev.pal && L.find(P => P.id === ev.pal)) || I.pal(); },
+    pal: () => I.luLead?.() || I.pal(),   // v19.61 경완: 같이 다니는 포켓몬 = 지금 라인업 첫 번째 (본가 맨 앞 포켓몬처럼)
     setPal: P => { const ev = g.ev || (g.ev = {}); ev.palOff = P ? 0 : 1; if (P) { ev.pal = P.id; I.setPal?.(P.id); } I.save(); },
     // 지면 이 장 처음부터 (벌 없음, 경완 2026-11-07)
     whiteout: async () => { A.music(null); await A.black(true, '눈앞이 캄캄해졌다...!', '서둘러 돌담시티 포켓몬 센터로\n돌아갔다...', true); return 'wo'; },
@@ -383,6 +384,13 @@ function field(I, o) {
   // 넣어 두기: 빛나며 작아져 사라짐
   F.palIn = async () => { const p = F.pl; if (!p) return; I.gse?.('DP_SUIKOMU', .8); await p.el.animate([{ opacity: 1, transform: 'none', filter: 'none' }, { opacity: 0, transform: 'scale(.2)', filter: 'brightness(3)' }], { duration: 320, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); F.palOff(); };
   // 같이 다니는 포켓몬 고르기 (라인업에서, 넣어 두기도 됨). 고르면 F.onPal(P 또는 null)
+  // [포켓몬] = 체육관 라인업 화면 그대로 (라인업·순서·기술·도구, 경완 2026-11-08). 체육관 상점으로 가는 버튼만 없음. 닫으면 라인업 첫 번째가 같이 다님
+  F.luOpen = async () => { const w = document.createElement('div'); w.className = 'gy-sheet ev-luw'; w.innerHTML = '<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>';
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'ev-lux'; x.textContent = '닫기'; root.appendChild(w); root.appendChild(x); root.classList.add('evlu'); window.gymEvLu = 1; I.gse?.('DP_WIN_OPEN', .8);
+    try { await I.luTab?.(w); } catch (e) { console.error(e); }
+    await new Promise(ok => { x.onclick = e => { e.stopPropagation(); I.sfx?.('tap'); ok(); }; });
+    w.remove(); x.remove(); root.querySelectorAll('.gy-boxw,.gy-pop').forEach(q => q.remove()); root.classList.remove('evlu'); window.gymEvLu = 0;
+    const Q = I.luLead?.(); if ((Q?.id || 0) === (F.pl?.P?.id || 0)) return; if (F.pl) await F.palIn(); if (Q) await F.palOut(Q); F.onPal?.(Q); };
   F.palPick = async () => { await I.ldB?.(); const L = I.luAll?.() || [], cur = F.pl?.P;
     if (!L.length) { await F.ask('같이 다닐 수 있는 포켓몬이 없어요.', '체육관 라인업에 포켓몬을 넣어 주세요.', '확인', ''); return; }
     // 라인업 1·2·3 탭 (경완 2026-11-08). 지금 포켓몬이 든 라인업이 먼저
@@ -542,7 +550,7 @@ function field(I, o) {
           const pl = F.pl && !F.pl.el.hidden && Math.round(F.pl.x) === tx && Math.round(F.pl.y) === ty;
           // 말 걸기·살펴보기는 버튼 누르는 소리와 같게 (경완 2026-11-08). 앞에 아무것도 없으면 아무 일 없이 계속 걷는다 (경완 2026-11-08 'A 눌러도 이동 끊기지 않게')
           if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); return h.talk(s); }); } else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
-        else if (F.pkQ) { F.pkQ = false; run(() => F.palPick()); }
+        else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); }
         else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
           if (m.f !== d && !moving) { m.turn(d); busy = true; setTimeout(() => { busy = false; }, TURN); }   // 제자리 돌기 (짧게 누르면 방향만)
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로

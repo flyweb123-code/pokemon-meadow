@@ -2672,7 +2672,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
   pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
   lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
-  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gym/battle.js', 'GymBattle').then(() => GB().loadData?.()), thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
+  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gym/battle.js', 'GymBattle').then(() => GB().loadData?.()), luTab: el => loadJs('gym/battle.js', 'GymBattle').then(() => GB().tab(el, {})), luLead: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).find(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)) || luAll()[0] || null; },   // v19.61 경완: 이벤트 [포켓몬] = 체육관 라인업 화면, 같이 다니는 포켓몬 = 그 라인업 첫 번째 thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
   giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
   // 숨은 상점 물건: kinds 중에서 안 가진 것 하나 (cap 골드 이하). skip = 이번 이벤트에서 이미 나온 것
@@ -2711,11 +2711,11 @@ function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) re
   g.vis = now; glog('in', `로켓단을 물리치고 <b>${esc(g.nm)}</b>${jong(g.nm) ? '을' : '를'} 되찾았다!`, now); tick(now); setAt(now); save(); }
 async function evGo(id0) {
   const test = !!window.gymEvTest, id = test ? window.gymEvTest : id0; busy = true; root.classList.add('pre'); let r = null;
-  const snap = test ? JSON.stringify(S.gym) : null; if (test && S.gym) S.gym.ev = { cur: id, ch: 0, t0: Date.now(), test: 1 };   // test: 시험 도중 앱이 꺼져도 다음에 진짜 점거로 이어지지 않게   // 운영자 시험은 본 계정에 아무것도 안 남긴다: 시작 전 체육관 저장을 통째로 떠 뒀다가 끝나면 되돌림 (경완 2026-11-07)
+  const snap = test ? JSON.stringify(S.gym) : null, boxSnap = test ? JSON.stringify(S.box) : null;   // v19.61: 이벤트 안 라인업 화면에서 기술·도구를 바꿀 수 있어 포켓몬 상자도 떠 둠 if (test && S.gym) S.gym.ev = { cur: id, ch: 0, t0: Date.now(), test: 1 };   // test: 시험 도중 앱이 꺼져도 다음에 진짜 점거로 이어지지 않게   // 운영자 시험은 본 계정에 아무것도 안 남긴다: 시작 전 체육관 저장을 통째로 떠 뒀다가 끝나면 되돌림 (경완 2026-11-07)
   try { await loadJs('gym/ev.js', 'GymEv'); r = await window.GymEv?.run(EV_API, id, test ? (window.gymEvCh | 0) : null); if (!open) return;
     if (r === 'wip') await kang(['이 이벤트의 다음 장은 아직 만드는 중이에요.\n(운영자 시험이라 체육관은 그대로예요)'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false });
   } catch (e) { console.error(e); }
-  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; try { S.gym = JSON.parse(snap); } catch (e) { const g = st(); if (g) delete g.ev; } save(); }
+  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; try { S.gym = JSON.parse(snap); } catch (e) { const g = st(); if (g) delete g.ev; } try { const B = JSON.parse(boxSnap); S.box.splice(0, S.box.length, ...B); } catch (e) {} save(); }
     root.querySelectorAll('.ev-r,.ev-tint,.ev-black,.ev-ttl,.ev-fld,.ev-ask,.ev-rw,.gy-kang.tw-talk,.tw-bub').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
     if (open && r === 'quit') exit(); else if (open) { bgmPlay('gym'); renderHome(); later(); } }
 }
