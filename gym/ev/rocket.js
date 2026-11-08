@@ -59,10 +59,10 @@ const WG_L = [
 // 로켓단 간부 아테나가 모니터로 (경완 2026-11-08 '로켓단 시리즈 예고 뒤에 모니터 켜지면서 아테나 나오는 연출')
 // 모니터 속 간부: 정체는 감춘 실루엣 (경완 2026-11-08 '아테나는 정체 드러내지 않고 실루엣으로'). body() 동안 화면이 켜져 있다
 async function crt(A, body) { const w = document.createElement('div'); w.className = 'ev-crt'; w.innerHTML = `<i class="crt-bk"></i><div><img alt="" src="${IM}pt/tr/hg_ariana.png"><i></i><b>● LIVE</b></div>`;
-  A.se('se_select'); A.I.root.appendChild(w); const sc = w.firstElementChild; A.I.haptic?.(0);
+  A.se('HG_SELECT'); A.I.root.appendChild(w); const sc = w.firstElementChild; A.I.haptic?.(0);
   await sc.animate([{ transform: 'scale(1,.02)', filter: 'brightness(4)' }, { transform: 'scale(1,1)', filter: 'brightness(1)' }], { duration: 380, easing: 'ease-out' }).finished.catch(() => {});
   await body();
-  await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('se_select'); await A.wait(450); await w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished.catch(() => {}); w.remove(); }
+  await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('HG_SELECT'); await A.wait(450); await w.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' }).finished.catch(() => {}); w.remove(); }
 // 글자 입력 창 (암호 등): 버튼으로만 닫힘. 그만두면 null
 const askText = (A, t, ph = '') => new Promise(ok => { const I = A.I, w = document.createElement('div'); w.className = 'ev-ask ev-pw';
   w.innerHTML = `<div class="win"><h4>${I.esc(t)}</h4><input type="text" class="ev-in" maxlength="16" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${I.esc(ph)}"><div class="bt2 gy-btns"><button type="button" data-a="0">그만두기</button><button type="button" class="main" data-a="1">말한다</button></div></div>`;
@@ -416,12 +416,12 @@ GymEv.def({
       // 빈집 TV: 켜면 화면이 빛나고 뉴스 (경완 2026-11-08 '빈 집 tv 랑도 상호작용')
       let tv = null;
       const tvLook = async () => {
-        if (!tv) { A.se('se_select'); tv = F.pic('', 5 + 1 / 16, 1.5, 14, 7, 'floor', 'house'); tv.classList.add('ev-tv'); tv.style.backgroundImage = ''; tv.style.zIndex = 15; await wait(350); await me1('(TV 를 켜 보았다.)'); }
+        if (!tv) { A.se('HG_SELECT'); tv = F.pic('', 5 + 1 / 16, 1.5, 14, 7, 'floor', 'house'); tv.classList.add('ev-tv'); tv.style.backgroundImage = ''; tv.style.zIndex = 15; await wait(350); await me1('(TV 를 켜 보았다.)'); }
         await me1('"...속보입니다. 오늘 아침\n돌담시티 체육관을 수상한 무리가\n점거했다는 소식입니다."', '"...체육관 관장은 현재\n행방이 알려지지 않았으며..."', '(...여기 있는데.)', '"...이어서 날씨입니다.\n돌담시티는 오늘 밤\n맑겠습니다."'); };
       // 빈집 화분: 포켓몬 기술로 옮기면 그 자리에 계단 (경완 2026-11-08). 화분은 나·포켓몬이 없는 칸으로
       const openStairs = async () => {
         F.lock(true); A.se('DP_GASHIN', .9); F.el.animate([{ translate: '0 0' }, { translate: '-6px 2px' }, { translate: '5px -2px' }, { translate: '-3px 1px' }, { translate: '0 0' }], { duration: 300 }); I.haptic?.(1); await wait(500);
-        const e = stairsOn(); e.style.opacity = '0'; e.style.transition = 'opacity .5s'; void e.offsetWidth; e.style.opacity = '1'; A.se('se_unlock'); await wait(600); A.mark('stairs');
+        const e = stairsOn(); e.style.opacity = '0'; e.style.transition = 'opacity .5s'; void e.offsetWidth; e.style.opacity = '1'; A.se('HG_KATI'); await wait(600); A.mark('stairs');
         await me1('(화분이 있던 자리에 지하로\n내려가는 계단이 나타났다!)'); };
       const potLook = async () => { if (stairs) return me1('(커다란 화분이다.\n옆으로 옮겨 두었다.)');
         await me1('(커다란 화분이다.\n...밑에서 찬 바람이\n솔솔 새어 나온다!)', '(발자국도 여기서 끊겨 있다...)'); if (!(await ask('화분이 너무 무거워서\n꿈쩍도 하지 않는다'))) return;
@@ -465,7 +465,7 @@ GymEv.def({
         if (r === 'lose') return A.lose();
         if (r === 'in') break;
       }
-      F.lock(true); await me.go([[10, 7]], 267); A.se('se_exit');
+      F.lock(true); await me.go([[10, 7]], 267); A.se('HG_KAIDAN2');
       S.end(); A.music(null);
       await A.black(true, '어두운 계단이\n땅속 깊이 이어져 있다...', '로켓단 아지트로 내려간다', true);
       await F.close();
@@ -516,7 +516,7 @@ GymEv.def({
         if (b?.kind === 'rbox') { await me1('(R 마크가 찍힌 상자다.\n뚜껑이 단단히 못질되어 있다...)'); if (!(await ask('혼자서는 열 수 없다'))) return true;
           // 상자가 사라지는 순간부터 몬스터볼이 그 밑에 보인다 (경완 2026-11-08)
           await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(250); const p = b.clear('break'); const nb = ball('c3x1', 26, 9, BOXIT); if (nb) nb.el.style.zIndex = parseInt(b.el.style.zIndex) - 1; await p; });
-          if (!F.obAt(26, 9)) ball('c3x1', 26, 9, BOXIT); A.mark('c3box'); A.se('se_pin');
+          if (!F.obAt(26, 9)) ball('c3x1', 26, 9, BOXIT); A.mark('c3box'); A.se('HG_PINPON');
           await me1('(상자가 부서지면서\n안에서 몬스터볼이 굴러 나왔다!)'); return true; }
         if (b?.kind === 'bar') return me1('(R 상자가 계단을 꽉 막고 있다...\n다른 길을 찾아보자.)'), true;
         // 발전기 방 오른쪽 노란 상자: 같이 다니는 포켓몬이 치우면 그 순간 꼬렛이 튀어나와 달아난다 (경완 2026-11-08)
@@ -529,7 +529,7 @@ GymEv.def({
         if (b?.kind === 'gen') { if (A.has('c3pow')) return me1('(발전기가 웅웅 힘차게 돌고 있다.)'), true;
           await me1('(엘리베이터에 전기를 대는\n커다란 발전기다.\n...멈춰 있다.)'); if (!(await ask('혼자서는 돌릴 수 없다'))) return true;
           const el = I.ty?.() === 13; await use(b.x + 1, b.y, async () => { for (let i = 0; i < (el ? 1 : 3); i++) { b.shake(); A.se(el ? 'DP_W085' : 'DP_KON', .7); await wait(360); } });
-          A.se('se_escalator'); b.shake(); A.mark('c3pow');
+          A.se('HG_ELEBETA'); b.shake(); A.mark('c3pow');
           const PN = pn() || '포켓몬'; await me1(!F.pl ? '(발전기를 힘껏 돌렸다!\n...웅웅, 발전기가 돌기 시작했다!)' : el ? `(${PN}의 전기가 발전기에\n가득 들어갔다!)` : `(${PN}${iga(PN)} 발전기를 힘껏 돌렸다!\n...웅웅, 발전기가 돌기 시작했다!)`, '(이제 엘리베이터가 움직일 거야!)'); return true; }
         return false; };
       // 도는 조무래기: 2초마다 방향을 바꾸고, 바꾼 쪽에 내가 있으면 바로 다가온다 (변장 중엔 안 옴)
@@ -542,7 +542,7 @@ GymEv.def({
           talk: async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!s.done && disg(A)) return suspSay(A, F, S, s, o?.sus); if (!s.done) { await meet(s); return wo(); } await againSay(S, s, o); },
           can: ([x, y]) => !!(F.obAt(x, y) || F.hidAt(x, y)?.it || RAT.has(x + ',' + y) || lookText(LK1, null, x, y)),
           look: async ([x, y]) => { if (await pick(x, y)) return; const t = lookText(LK1, null, x, y); if (t) await me1(...[].concat(t)); },
-          warp: async w => { if (w.id === 'lift') { if (!A.has('c3pow')) return me1('(엘리베이터 단추를 눌러도\n아무 반응이 없다...)', '(전기가 끊겨 있는 것 같다.\n어딘가에 발전기가 있을 거야.)'); A.se('se_exit'); return 'lift'; }
+          warp: async w => { if (w.id === 'lift') { if (!A.has('c3pow')) return me1('(엘리베이터 단추를 눌러도\n아무 반응이 없다...)', '(전기가 끊겨 있는 것 같다.\n어딘가에 발전기가 있을 거야.)'); A.se('HG_KAIDAN2'); return 'lift'; }
             return me1(w.id === 'up' ? '(위로 돌아갈 때가 아니야.\n트레이너들을 구해야 해!)' : '(계단이 막혀 있다...\n다른 길을 찾아보자.)'); },
         });
         if (r === 'quit') return 'stop';
@@ -635,7 +635,7 @@ GymEv.def({
       await S.say('크윽...! 체육관 하나 털다가\n이게 무슨 꼴이람!', { who: B });
       await S.say('하지만 기억해 둬라...\n로켓단은 이걸로 끝이 아니다!\n언젠가 그분께서...!', { who: B }); S.hide(true);
       // 람다가 도망가기 전에 모니터가 켜지고 간부(실루엣)가 람다를 불러들인다 (경완 2026-11-08)
-      A.music(null); await wait(300); A.se('se_pin'); I.haptic?.(0);
+      A.music(null); await wait(300); A.se('HG_PC_ON'); I.haptic?.(0);
       mon.style.backgroundImage = `url(${IM}ev/rocket/mon_on.png?${VC})`; const glow = F.pic('', 19 + 3 / 16, 2 + 2 / 16, 10, 10); glow.classList.add('ev-tv'); glow.style.backgroundImage = ''; glow.style.zIndex = 24;
       F.bub(boss, '!', 900); [boss, ...KS.map(x => x[0])].forEach(k => k.on !== false && k.turn('u')); await F.camTo(19, 5, 600); await wait(500);
       await S.say('삐빅... 삐빅...', { who: '모니터' }); S.hide(true); await wait(200); A.music('rgEyeRoc');   // 아테나: 파이어레드 로켓단 만남 곡 (경완 2026-11-08, 실프 곡은 로켓단 곡이 아니라서)
@@ -655,7 +655,7 @@ GymEv.def({
       A.se('DP_KON', 1); A.shake?.(); F.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.4)' }, { filter: 'brightness(1)' }], { duration: 500 }); await Promise.all(gang.map(k => k.gone())); await wait(400);
       await me1('(람다와 문지기들이 연막을 뿌리고\n도망쳐 버렸다...!)', '(방금 모니터 속 그 사람...\n람다보다 높은 간부인 걸까...?)', '(로켓단은 아직\n끝난 게 아닌 것 같다...)');
       // 밧줄 풀어 주기
-      A.se('se_unlock'); for (const c of [...caps, guy]) { c.rope?.remove(); c.rope = null; c.hop = 4; c.put(); setTimeout(() => { c.hop = 0; c.put(); }, 140); await wait(120); }
+      A.se('HG_KATI'); for (const c of [...caps, guy]) { c.rope?.remove(); c.rope = null; c.hop = 4; c.put(); setTimeout(() => { c.hop = 0; c.put(); }, 140); await wait(120); }
       await me1('(모두를 묶고 있던 밧줄을\n풀어 주었다!)');
       A.se('ME_FANFA5', 1);
       const spots = [[18, 9], [20, 9], [17, 9], [21, 9], [18, 10], [20, 10], [17, 10]];
@@ -674,8 +674,8 @@ GymEv.def({
       F.follow = true; await F.camMe(400);
       const safeLook = async () => { if (A.has('c4safe')) return me1('(텅 빈 금고다.)');
         await me1('(R 마크가 찍힌 튼튼한 금고다.\n...람다가 서두르다 제대로\n안 잠근 것 같다.)'); if (!(await ask('문이 너무 뻑뻑하다'))) return;
-        await use(22, 8, async () => { A.se('DP_GASHIN', .9); safe.shake(); await wait(300); A.se('se_unlock'); safe.img(`${IM}ev/rocket/safe_o.png?${VA}`); });
-        if (!F.pl) { A.se('se_unlock'); safe.img(`${IM}ev/rocket/safe_o.png?${VA}`); }
+        await use(22, 8, async () => { A.se('DP_GASHIN', .9); safe.shake(); await wait(300); A.se('HG_KATI'); safe.img(`${IM}ev/rocket/safe_o.png?${VA}`); });
+        if (!F.pl) { A.se('HG_KATI'); safe.img(`${IM}ev/rocket/safe_o.png?${VA}`); }
         await me1('(금고 문이 열렸다!\n안에 알이 하나 들어 있다...!)');
         await A.got(S, { k: 'egg', g: 3 }, { key: 'c4safe', from: '로켓단 금고' }); A.mark('c4safe'); S.hide(true); };
       if (A.has('c4safe')) safe.img(`${IM}ev/rocket/safe_o.png?${VA}`);

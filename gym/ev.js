@@ -354,7 +354,7 @@ function field(I, o) {
       await anim(ms, (e, q) => { s.x = x0 + dx * q; s.y = y0 + dy * q; s.st = q < .5 ? (n % 2 ? 1 : 2) : 0; s.put(); });
       s.x = x0 + dx; s.y = y0 + dy; s.res = null; } s.n = n; s.st = 0; s.put(); };
     // 본가 턱 뛰어내리기: 두 칸을 32프레임에 포물선으로
-    s.jump = async d => { const [dx, dy] = DIR[d], x0 = s.x, y0 = s.y; s.f = d; I.gse?.('se_ledge'); if (s === F.me) F.trail(x0 + dx, y0 + dy, JUMP, 1);
+    s.jump = async d => { const [dx, dy] = DIR[d], x0 = s.x, y0 = s.y; s.f = d; I.gse?.('HG_UFO_JUMP'); if (s === F.me) F.trail(x0 + dx, y0 + dy, JUMP, 1);
       await anim(JUMP, (e, q) => { s.x = x0 + dx * 2 * q; s.y = y0 + dy * 2 * q; s.hop = Math.sin(q * Math.PI) * 10; s.st = q < .5 ? 1 : 2; s.put(); }); s.x = x0 + dx * 2; s.y = y0 + dy * 2; s.hop = 0; s.st = 0; s.put(); };
     s.turn = f => { s.f = f; s.st = 0; s.put(); };
     s.face = t => { const dx = t.x - s.x, dy = t.y - s.y; s.turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u')); };
@@ -405,7 +405,7 @@ function field(I, o) {
     put(); requestAnimationFrame(loop); I.cry?.(sp);
     await anim(260, (e2, q) => { e.style.translate = `0 ${-Math.sin(q * Math.PI) * 10 * k}px`; }); e.style.translate = ''; await wait(250);
     for (const [nx, ny, j] of path) { const x0 = o.x, y0 = o.y; o.f = nx > x0 ? 'r' : nx < x0 ? 'l' : ny > y0 ? 'd' : 'u'; mv = 1; const n = Math.max(Math.abs(nx - x0), Math.abs(ny - y0)) || 1;   // j: 뛰어넘기 (사람 머리 위로)
-      if (j) I.gse?.('se_ledge', .7);
+      if (j) I.gse?.('HG_UFO_JUMP', .7);
       await anim(ms * n * (j ? 2 : 1), (e2, q) => { o.x = x0 + (nx - x0) * q; o.y = y0 + (ny - y0) * q; if (j) e.style.translate = `0 ${-Math.sin(q * Math.PI) * 18 * k}px`; }); e.style.translate = ''; o.x = nx; o.y = ny; }
     await e.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).finished.catch(() => {}); live = false; e.remove(); };
   // 몬스터볼에서 나오듯 옆에 톡 나와서 나를 보며 울음소리 + 동작 (경완 2026-11-08 '관장 옆으로 나와서 관장 보면서 울음소리랑 같이 동작')
@@ -507,14 +507,14 @@ function field(I, o) {
   // 본가 문 애니메이션 (field_door.c): 열기 = 원래 → 1·2·3장, 닫기 = 3·2·1장 → 원래. 열린 문은 사람 위에 그려져 사람이 문 안으로 사라진다
   F.door = async (x, y, open) => { const kd = F.doorAt?.[x + ',' + y], src = kd && o.doorImg?.[kd]; if (!src) return; const key = x + ',' + y; let d = doors[key];
     if (!d) { d = doors[key] = document.createElement('i'); d.className = 'ev-door'; Object.assign(d.style, { left: x * 16 * k + 'px', top: y * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', backgroundImage: `url(${src})`, backgroundSize: `${16 * k}px ${48 * k}px`, zIndex: y * 10 + 8 }); d.hidden = true; map.appendChild(d); }
-    if (open) I.gse?.(/sliding/.test(kd) ? 'se_sliding_door' : 'se_door');   // 본가 GBA 효과음 (field_door.c: 여닫이 SE_DOOR, 미닫이 SE_SLIDING_DOOR, 닫힐 땐 소리 없음)
+    if (open) I.gse?.(/sliding/.test(kd) ? 'HG_DOOR10' : 'HG_DOOR');   // 본가 GBA 효과음 (field_door.c: 여닫이 SE_DOOR, 미닫이 SE_SLIDING_DOOR, 닫힐 땐 소리 없음)
     for (const f of open ? [0, 1, 2] : [1, 0, -1]) { if (f < 0) d.hidden = true; else { d.hidden = false; d.style.backgroundPosition = `0 ${-f * 16 * k}px`; } await wait(DOORF); }
   };
   F.fade = async on => { fade.classList.toggle('on', on); await wait(on ? 420 : 380); };
   // 문·매트로 다른 방에 들어가기: w = { to, at:[x,y,f] }
   F.enter = async w => { const me = F.me, isDoor = F.doorAt?.[w.x + ',' + w.y];
     if (isDoor) { await F.door(w.x, w.y, true); me.top = true; await me.go([[w.x, w.y]], WALK); me.el.style.visibility = 'hidden'; me.top = false; await F.door(w.x, w.y, false); }   // 본가처럼 열린 문 위로 보이며 들어가고 다 들어가면 사라짐 (경완 2026-11-07)
-    else I.gse?.('se_exit');   // 매트로 나가기 (본가 SE_EXIT)
+    else I.gse?.('HG_KAIDAN2');   // 매트로 나가기 (본가 SE_EXIT)
     await F.fade(true); const [tx, ty, tf] = w.at; F.setMap(w.to); me.x = tx; me.y = ty; if (F.pl) { F.pl.x = tx; F.pl.y = ty; } me.turn(tf || 'u'); me.el.style.visibility = '';
     const outDoor = F.doorAt?.[tx + ',' + ty]; if (outDoor) me.el.style.visibility = 'hidden';
     F.follow = true; F.cam(me.x, me.y); await F.fade(false);
@@ -591,14 +591,14 @@ function field(I, o) {
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
           else if (w && !w.mat && (!w.d || w.d === d)) { m.turn(d); goW(w); }
           else if (cAt(tx, ty) === LEDGE[d] && !F.solid(tx + dx, ty + dy, m)) { busy = true; m.jump(d).then(after); }
-          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (F.run && !(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('se_wall_hit'); } }   // 벽에 부딪히는 소리는 달리다 부딪혔을 때만 (경완 2026-11-07 '본가처럼 달리다 부딪혔을 때만')
+          else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (F.run && !(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('HG_WALL_HIT'); } }   // 벽에 부딪히는 소리는 달리다 부딪혔을 때만 (경완 2026-11-07 '본가처럼 달리다 부딪혔을 때만')
           else { busy = true; m.go([[tx, ty]], F.run ? RUN : WALK).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
       requestAnimationFrame(tick); };
     requestAnimationFrame(tick); });
   F.setMap('main');
-  try { window.GymBGM?.sePrep?.(['se_door', 'se_sliding_door', 'se_exit', 'se_select', 'se_pin', 'se_wall_hit', 'se_unlock']); } catch (e) {}   // 본가 문·매트 소리를 미리 만들어 둠: 처음 들어갈 때 늦게(또는 안) 나던 것 (경완 2026-11-08 '마트 들어갈 때·나갈 때 효과음')
+  try { window.GymBGM?.sePrep?.(['HG_DOOR', 'HG_DOOR10', 'HG_KAIDAN2', 'HG_SELECT', 'HG_PINPON', 'HG_UFO_JUMP', 'HG_WALL_HIT', 'HG_KATI']); } catch (e) {}   // 본가 문·매트 소리를 미리 만들어 둠: 처음 들어갈 때 늦게(또는 안) 나던 것 (경완 2026-11-08 '마트 들어갈 때·나갈 때 효과음')
   if (/[?&]debug/.test(location.search)) { window.__evF = F; window.__evI = I; }   // 시험용 (주소에 ?debug 일 때만)
   return F;
 }

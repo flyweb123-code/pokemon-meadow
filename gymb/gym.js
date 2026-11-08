@@ -1424,7 +1424,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
   const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', TL = legLines(Object.keys(g.legE || {}).length || 1, E, ty);
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
-  try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['se_wall_hit', 'DP_REGI', 'DP_DOOR', 'se_ball', 'se_door', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
+  try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR', 'se_ball', 'HG_DOOR', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
   try {
     await Promise.all([loadJs('gymb/battle.js', 'GymBattle').catch(() => {}), loadJs('gymb/ev.js', 'GymEv')]);
@@ -1432,7 +1432,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     const mons = (luNow().length ? luNow() : [0, 1, 2].map(luOf).find(L => L.length) || []).slice(0, 6);
     // ---- 1. 노크: 쿵쿵쿵! 쿵쿵쿵! (화면이 흔들림) ----
     await wait(600);
-    for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('se_wall_hit', 2); GA.haptic?.(0); A.shake(); await wait(190); }   /* v19.24 경완 '좀 더 문 노크하는 소리로': 본가 GBA 벽에 부딪히는 '쿵' (나무 문 두드림처럼 짧고 둔탁) */ await wait(450); }
+    for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('HG_WALL_HIT', 2); GA.haptic?.(0); A.shake(); await wait(190); }   /* v19.24 경완 '좀 더 문 노크하는 소리로': 본가 GBA 벽에 부딪히는 '쿵' (나무 문 두드림처럼 짧고 둔탁) */ await wait(450); }
     meEnt.f = 'd'; place(meEnt); A.bub(meEnt, '!', 900); if (gu) A.bub(gu, '!', 900); se('DP_REGI', .8); await wait(900);
     await talk('누군가 체육관 문을 세게 두드리고 있다!');
     dlg(''); root.classList.add('dhide'); doorSe(); await wait(180);
@@ -2348,7 +2348,7 @@ async function townScene() {
   root.appendChild(el); const map = el.firstChild;
   // 본가(FR) 규칙 (경완 2026-11-07 '이 동작 규칙은 체육관 튜토리얼에도'): 지붕·벽 윗부분은 사람 위에 덮고(tw-ov), 체육관 문은 field_door.c 3장 열림/닫힘
   const dEl = document.createElement('i'); dEl.className = 'tw-door'; dEl.hidden = true; Object.assign(dEl.style, { left: T.door[0] * 16 * k + 'px', top: T.door[1] * 16 * k + 'px', width: 16 * k + 'px', height: 16 * k + 'px', backgroundImage: `url(${IMG}map/door_gym_old.png)`, backgroundSize: `${16 * k}px ${48 * k}px` }); map.appendChild(dEl);
-  const door = async open => { if (open) gse('se_sliding_door');   // 본가 GBA 미닫이 문 소리 (경완 2026-11-07 '본가 효과음'), 닫힐 땐 소리 없음
+  const door = async open => { if (open) gse('HG_DOOR10');   // 본가 GBA 미닫이 문 소리 (경완 2026-11-07 '본가 효과음'), 닫힐 땐 소리 없음
      for (const f of open ? [0, 1, 2] : [1, 0, -1]) { if (f < 0) dEl.hidden = true; else { dEl.hidden = false; dEl.style.backgroundPosition = `0 ${-f * 16 * k}px`; } await wait(67); } };
   const cam = (cx, cy) => { const x = clampN(cx * 16 * k - W / 2, 0, T.w * 16 * k - W), y = clampN(cy * 16 * k - H / 2, 0, T.h * 16 * k - H); map.style.transform = `translate(${-Math.round(x)}px,${-Math.round(y)}px)`; };
   // 마을 위 사람 그림 (내 캐릭터·강박사): x,y 칸, f 방향, st 걸음 칸
