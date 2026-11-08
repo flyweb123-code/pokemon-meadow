@@ -904,6 +904,7 @@ function staffFight(c) {
 const BYE_LOST = ['다음엔 더 강해져서 다시 올게요!', '{me} 관장님, 정말 강하시네요… 많이 배웠어요.', '으으, 분해! 꼭 다시 도전할 거야!', '포켓몬들이랑 더 수련하고 올게요. 그때 또 붙어요!', '역시 소문대로 대단한 체육관이네요.', '오늘은 졌지만 좋은 배틀이었어요. 고마워요!'];
 const BYE_WON = ['좋은 배틀이었어요! 다음에도 또 올게요.', '이 체육관, 앞으로가 더 기대되는데요?', '히히, 이겼다! 친구들한테 자랑해야지!', '{me} 관장님 포켓몬도 꽤 강했어요. 다음엔 모르겠는걸요?', '이번엔 제가 이겼네요. 다음 배틀도 기대할게요!', '좋은 승부였어요. 그럼 이만!'];
 function arrive(c) {
+  rollWeek(c.t);   /* v20.03 경완 '결산 트레이너 주급 대비 수익이 이번 주 기준으로 잡힘': 밀린 도전자는 그 시각의 주에 기록 (예전엔 입장 시각으로 먼저 주를 넘겨서 지난주 몫이 이번 주로 감) */
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`; dayRec(c.t).n++;
   let beat = 0;
   if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
@@ -934,7 +935,7 @@ function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
 function rollWeek(now) {
   const g = st(), k = wkOf(now);
   if (!g.wk) { g.wk = { k, w: 0, l: 0, b: 0, g: 0, r: 0 }; return; }
-  if (g.wk.k === k) return;
+  if (g.wk.k >= k) return;
   const o = g.wk, sc = o.w * 3 + o.b * 2 + Math.max(0, o.r), G = gradeOf(g.rep || 0), r = seeded('wk' + o.k), base = 6 + G.i * 14;
   const L = RIVAL_GYMS.map(n => ({ n, s: Math.round(base * (.3 + r() * 1.6)) })); L.push({ n: g.nm, s: sc, me: 1 }); L.sort((a, b) => b.s - a.s || (b.me ? 1 : -1));
   g.rpt = { ...o, sc, rank: L.findIndex(x => x.me) + 1, of: L.length, top: L.slice(0, 3).map(x => [x.n, x.s, x.me ? 1 : 0]), seen: 0, sf: rptSf(o) };
@@ -1046,7 +1047,7 @@ function tick0(now) {
   [...(g.q || []), ...(g.cands || [])].forEach(c => { if (c.team?.some(m => spOff(m[0]))) c.team = c.team.map(m => spOff(m[0]) ? [pickSp(SPECIES[m[0]]?.t || [], m[1]), m[1]] : m); });   // 이미 와 있는 도전자·지원자도 끈 포켓몬은 바꿈
   if (g.ty) (g.cands || []).forEach(c => { if (c.team?.some(m => !(SPECIES[m[0]]?.t || []).includes(g.ty))) c.team = c.team.map(m => (SPECIES[m[0]]?.t || []).includes(g.ty) ? m : [pickSp([g.ty], m[1]), m[1]]); });   // v15.48 경완: 이미 와 있는 지원서도 체육관 타입 포켓몬으로
   (g.q || []).forEach(c => { if (c.named && !c.boss) c.exp = 0; });
-  rollWeek(now);
+  if (!g.wk) rollWeek(now);
   const today = dayStart(now);
   if (!g.day) { g.day = today; g.schV = 2; g.sch = mkSch(today, now); g.sch.unshift(now + 90e3); }   // 처음: 1분 반 뒤 첫 도전자
   let guard = 0;
@@ -1059,7 +1060,7 @@ function tick0(now) {
   if ((g.schV | 0) < 2) { g.schV = 2; g.sch = mkSch(today, now); }   // v15.61: 오늘 남은 시간표도 새 빈도(3시간 칸마다 2~3명)로 바로
   while (g.sch.length && g.sch[0] <= now) { const t = g.sch.shift(); qLeave(t); arrive(mkChal(t)); }
   if (g.pull && g.pull <= now) { const t = g.pull; g.pull = 0; qLeave(t); arrive(mkChal(t)); }   // 사용 기록이 쌓이기 전 접속하면 당겨 온 도전자 (beta gymPull, 경완 2026-10-30)
-  qLeave(now);
+  qLeave(now); rollWeek(now);
   payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
