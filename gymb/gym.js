@@ -1298,7 +1298,7 @@ function legEggBox(t) { return new Promise(ok => { try { window.GymBGM?.se?.('DP
 const hofWait = (ov, ms) => new Promise(ok => { let d = false; const f = () => { if (d) return; d = true; ov.removeEventListener('click', f); clearTimeout(tm); ok(); }, tm = setTimeout(f, ms); ov.addEventListener('click', f); });
 // 전설 연출 때 안내원이 관장에게 와서 서는 칸 (맵 id → [x, y]), 없으면 자동 (경완이 편집 페이지에서 골라 줌)
 const LEG_GU = { cerulean: [8, 10], vermilion: [4, 5], celadon: [5, 7], fuchsia: [8, 10], dojo: [7, 7], lab: [9, 3] };   // 2026-11-08 경완이 고름 (바위 계단은 자동 자리 그대로)
-// v19.46 경완 '전체 차례 대사 다 만들어줘 마지막 체육관까지': 4~18번째 따로, 18번째 = 엔딩. v19.45 경완 '두 번째 전설 체육관부터는 연출 흐름은 똑같이, 대사만 바꿔 가며': N = 지금까지 받은 전설 알(전설의 체육관) 수
+// v19.47 경완 '전체 차례 대사 다 만들어줘 마지막 체육관까지': 4~18번째 따로, 18번째 = 엔딩. v19.45 경완 '두 번째 전설 체육관부터는 연출 흐름은 똑같이, 대사만 바꿔 가며': N = 지금까지 받은 전설 알(전설의 체육관) 수
 function legLines(N, E, ty) {
   if (N <= 1) return {
     in: [`헉… 헉… ${E}!<br>소식 듣자마자 연구소에서<br>한달음에 달려왔단다!`, `${ty} 타입 <b>전설의 체육관</b>이라니…<br>문 닫기 직전이던 그 체육관이<br>여기까지 오다니, 감격스럽구나!`, '자, 지금 나랑 같이 갈 데가 있단다!<br>자세한 건 가 보면 알아.<br>잔말 말고 따라오게!'],
@@ -2378,7 +2378,10 @@ function storyTalk() {
   const box = k.querySelector('.gy-k-box'), nmEl = k.querySelector('.gy-k-nm'), typer = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
   const T = {
     el: k,
-    say: async (t, { who = '강박사', pic = null } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t); },
+    say: async (t, { who = '강박사', pic = null, wait = true } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t, wait); },
+    // 묻기: 대사창에 물음 + 오른쪽 위에 예·아니요 단추 (경완 2026-11-08 '부탁하겠습니까? 창도 대사창으로, 예 아니오는 대사창 우상단에 버튼'). 예면 true
+    ask: async (t, o = {}, yes = '예', no = '아니요') => { await T.say(t, { ...o, wait: false }); return new Promise(ok => { const m = document.createElement('div'); m.className = 'tw-ch tw-yn in-menu'; m.innerHTML = `<button class="win main" type="button" data-i="1">${esc(yes)}</button><button class="win" type="button" data-i="0">${esc(no)}</button>`; box.appendChild(m);
+      m.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); m.remove(); ok(b.dataset.i === '1'); }; }); },
     pic: () => {},   // 경완 2026-11-01: 스토리 대사창엔 강박사 큰 그림을 띄우지 않는다
     hide: on => k.classList.toggle('off', on),
     // 고르기: 대사창 위에 단추 (누를 때까지 기다림)
@@ -2653,6 +2656,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
   pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
   cry: sp => GA.cry?.(sp), ldB: () => loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData?.()), thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
   giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
@@ -2668,7 +2672,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     glog('tr', `로켓단 아지트에서 <b>${esc(L.nm)}</b>${jong(L.nm) ? '을' : '를'} 찾았다.`); save(); },
   // 이벤트 배틀: 지금 라인업 (비어 있으면 체육관 타입 포켓몬 레벨 높은 순 6마리)
   battle: async o => { await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); const g = st();
-    if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true };   // 시험 자동 진행
+    if (window.__evAutoWin && /[?&]debug/.test(location.search)) return { won: true }; if (window.__evAutoLose && /[?&]debug/.test(location.search)) return { won: false };   // 시험 자동 진행
     // 운영자 시험: 배틀마다 건너뛰기 (경완 2026-11-07 '운영자 모드에서 테스트하는 건 배틀 스킵 버튼')
     if (window.gymEvTest) { const k = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask'; w.innerHTML = `<div class="win"><p>운영자 시험\n<b>${esc(o.cls)} ${esc(o.nm)}</b> 배틀<small>건너뛰면 이긴 걸로(또는 진 걸로) 바로 넘어가요</small></p><div class="bt2 gy-btns"><button type="button" data-a="w">이긴 걸로</button><button type="button" data-a="l">진 걸로</button></div><div class="gy-btns one"><button type="button" class="main" data-a="b">배틀하기</button></div></div>`;
       root.appendChild(w); w.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); w.remove(); ok(b.dataset.a); }; });
