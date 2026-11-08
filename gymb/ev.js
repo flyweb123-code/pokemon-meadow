@@ -145,15 +145,16 @@ const css = () => { if (cssOn) return; cssOn = true; const s = document.createEl
 // 장면 도구: 체육관 안(gymb/gym.js)에서 받은 함수로 만든다
 function tools(I, def) {
   const root = I.root, $g = s => root.querySelector(s), g = I.st(), D = I.dz(), T = () => 16 * I.sc();
+  const rOcc = [], rO = () => rOcc.filter(q => q[2].isConnected).map(q => [q[0], q[1]]);
   const A = {
     I, g, D, def, wait, anim,
     // 맵 위 사람 (본가 걸음 그림)
     npc: (ow, x, y, f = 'd') => I.ent({ ow, x, y, f, n3: I.N3.has(ow) }),
     // 칸 길찾기로 걸어가기 (길이 없으면 곧장)
     // 길이 없으면 움직이지 않는다 (가구·사람을 밟고 지나가던 것, 경완 2026-11-07). 닿으면 true
-    walkTo: async (e, to, spd = 260, occ = []) => { const fx = Math.round(e.x), fy = Math.round(e.y); if (fx === to[0] && fy === to[1]) return true; const p = I.route(D, [fx, fy], to, [...I.occOf([e]), ...occ]); if (!p?.length) return false; await I.walk(e, p, spd); return true; },
+    walkTo: async (e, to, spd = 260, occ = []) => { const fx = Math.round(e.x), fy = Math.round(e.y); if (fx === to[0] && fy === to[1]) return true; const p = I.route(D, [fx, fy], to, [...I.occOf([e]), ...occ, ...rO()]); if (!p?.length) return false; await I.walk(e, p, spd); return true; },
     // 후보 칸 중 걸어서 갈 수 있는 첫 칸 (빈 바닥·소품·사람·석상 피해서)
-    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length) return c; } return null; },   // 후보는 앞에 둔 칸이 먼저 (내 바로 앞 등). 고른 칸까지는 walkTo 가 최단 길로 (경완 2026-11-07 '최단 거리로 가니까 멀찍이 떨어져서 얘기')
+    reach: (e, cands, occ = []) => { const O = [...I.occOf([e]), ...occ, ...rO()], K = q => q[0] + ',' + q[1], bad = new Set(O.map(K)); for (const c of cands) { if (D.free?.[c[1]]?.[c[0]] !== '1' || bad.has(K(c)) || (D.stat || []).some(q => q[0] === c[0] && q[1] === c[1])) continue; if (Math.round(e.x) === c[0] && Math.round(e.y) === c[1]) return c; const p = I.route(D, [Math.round(e.x), Math.round(e.y)], c, O); if (p?.length) return c; } return null; },   // 후보는 앞에 둔 칸이 먼저 (내 바로 앞 등). 고른 칸까지는 walkTo 가 최단 길로 (경완 2026-11-07 '최단 거리로 가니까 멀찍이 떨어져서 얘기')
     turn: (e, f) => { e.f = f; e.st = 0; I.place(e); },
     slide: (e, tx, ty, ms) => { const x0 = e.x, y0 = e.y; return anim(ms, q => { e.x = x0 + (tx - x0) * q; e.y = y0 + (ty - y0) * q; I.place(e); }); },
     // 머리 위 말풍선 ('!', '...')
@@ -162,7 +163,7 @@ function tools(I, def) {
     // 바닥에 놓는 로켓단 소품 (R 상자·깃발)
     rProp: (x, y, kind = 'box') => { const el = document.createElement('i'), s = I.sc(); el.className = 'ev-r' + (kind === 'flag' ? ' flag' : '');
       Object.assign(el.style, kind === 'flag' ? { left: x * 16 * s + 'px', top: (y * 16 - 14) * s + 'px', width: 16 * s + 'px', height: 30 * s + 'px', zIndex: y * 10 + 9 } : { left: (x * 16 + 1) * s + 'px', top: (y * 16 + 1) * s + 'px', width: 14 * s + 'px', height: 14 * s + 'px', zIndex: y * 10 + 8 });
-      el.style.setProperty('--rf', 9 * s + 'px'); $g('.gy-ents').appendChild(el); return el; },
+      el.style.setProperty('--rf', 9 * s + 'px'); $g('.gy-ents').appendChild(el); rOcc.push([x, y, el]); return el; },   // R 상자·깃발 칸은 사람이 피해 감: 밟고 지나가며 R 글자 밑으로 걸어오던 것 (경완 2026-11-08)
     // 소품 그림 (gym/img/ev/<이벤트>/<k>.png): x,y = 왼쪽 아래 칸. 칸 폭만큼 사람이 못 지나감
     prop: (k, x, y) => new Promise(ok => { const src = `gym/img/ev/${def.id}/${k}.png?v=${VER}`, im = new Image(); im.onload = () => ok(I.addProp(src, x, y, im.width, im.height)); im.onerror = () => ok(null); im.src = src; }),
     size: k => new Promise(ok => { const im = new Image(); im.onload = () => ok([Math.ceil(im.width / 16), im.height]); im.onerror = () => ok([1, 16]); im.src = `gym/img/ev/${def.id}/${k}.png?v=${VER}`; }),
