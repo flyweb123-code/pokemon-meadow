@@ -1,6 +1,1037 @@
 {
  "days": [
   {
+   "at": 1794178156174,
+   "theme": "숲속 장난감 가게",
+   "note": "오늘은 숲속 장난감 가게예요! 흔들목마·오뚝이·팽이처럼 건드리면 흔들리는 장난감을 많이 넣어서 밀기 동작이 손맛 나게 했고, 블록 탑·장난감 상자·인형극 무대엔 숨기·창 내밀기를, 돛단배는 연못 위에 띄우게 했어요. 빨강·파랑·노랑 원목 장난감 색으로 맞췄어요.",
+   "items": [
+    {
+     "id": "rocking-horse",
+     "n": "나무 흔들목마",
+     "k": "놀이",
+     "d": "둥근 흔들 다리 위에 빨간 안장을 얹은 원목 흔들목마예요. 노란 갈기와 꼬리가 달려 있고, 앞뒤로 삐걱삐걱 흔들려요.",
+     "fit": "놀이터 옆 평평한 풀밭",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "흔들목마 안장에 올라타 앞뒤로 흔들흔들 타요",
+       "x": {
+        "at": [
+         0.47,
+         0.32
+        ],
+        "m": "ride",
+        "fx": "rock"
+       },
+       "l": [
+        "흔들목마 안장에 올라타 앞뒤로 흔들흔들 탄다.",
+        "흔들목마를 타고 신이 나서 몸을 들썩인다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "누가 타고 있으면 흔들목마 엉덩이를 밀어 크게 흔들어 줘요",
+       "x": {
+        "at": [
+         0.12,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "rock"
+       },
+       "l": [
+        "흔들목마 엉덩이를 힘껏 밀어 크게 흔들어 줬다.",
+        "흔들목마를 밀어 삐걱삐걱 흔들리게 했다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 목마 머리 위에 앉아요",
+       "x": {
+        "at": [
+         0.8,
+         0.12
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "흔들목마 머리 위에 날아올라 앉았다.",
+        "흔들목마 귀 사이에 앉아 쉰다."
+       ]
+      }
+     ],
+     "px": [
+      "........................k......",
+      ".......................kLk.....",
+      ".......................kBSkk...",
+      "......................kyLLLBk..",
+      ".....................kyLLBkBBk.",
+      "....................kYyBBBBSSSk",
+      "....................kykBSSSDSDk",
+      "............kkkkkk.kYykLBBBkkk.",
+      ".........kkkqqqqqqkkykkBBBk....",
+      ".......kkLLLrrrrrsBYykLBBBk....",
+      ".....kkLLLLLssssssBYBLBBBk.....",
+      "....kyyLLLLLLLLLLLLLLBBBk......",
+      "...kykBBBBBBBBBBSSSCSSSDk......",
+      "...kykkBBBBCSSSSSSSDDDDk.......",
+      "..kyYkkBSSSSSSSDCDDDDkBSk......",
+      "..kyYkkBSkBSkDDDDkkBSkBSk......",
+      "...kk.kBSkBSkkkkk.kBSkBSk......",
+      "......kBSkBSk.....kBSkBSk......",
+      "......kBSkBSk.....kBSkBSk......",
+      "......kBSkBSk.....kBSkBSk......",
+      "......kBSkBSkkkkkkkBSkBSk......",
+      ".....kkBSBBSBBBBBBBBSBBSkk.....",
+      ".k.kkBBBBDDDDDDDDDDDDDBBBBkkk..",
+      "kBkBBDDDDkkkkkkkkkkkkkDDDDBBBk.",
+      "kBBDDkkkk.............kkkkDDBk.",
+      "kDDkk.....................kkDk.",
+      ".kk.........................k.."
+     ],
+     "pal": {
+      "L": "#e2b47a",
+      "B": "#c08a52",
+      "S": "#93643a",
+      "D": "#674526",
+      "q": "#f08c78",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "y": "#fbe39a",
+      "Y": "#c8923a",
+      "C": "#cfc2a2",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "roly-poly",
+     "n": "빨간 오뚝이",
+     "k": "놀이",
+     "d": "둥근 빨간 몸통에 웃는 얼굴이 달린 큰 오뚝이예요. 밀면 뒤뚱 넘어갔다가 꼭 다시 일어나요.",
+     "fit": "풀밭 한가운데, 부딪쳐도 괜찮은 곳",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "오뚝이를 주먹으로 쳐서 넘어뜨리려 하지만 오뚝이가 다시 벌떡 일어나요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "오뚝이를 퍽 쳤지만 오뚝이가 다시 벌떡 일어났다.",
+        "오뚝이를 넘어뜨리려고 몇 번이고 친다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "오뚝이를 톡 밀어 보고 뒤뚱거리는 걸 구경해요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "오뚝이를 톡 밀어 보고 뒤뚱거리는 걸 신기해한다.",
+        "오뚝이를 콕 찔러 흔들흔들 움직이게 했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "오뚝이 옆에 기대 앉아 같이 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "오뚝이 옆에 기대 앉아 꾸벅꾸벅 존다.",
+        "오뚝이에 등을 대고 낮잠을 잔다."
+       ]
+      }
+     ],
+     "px": [
+      ".......kkkk......",
+      ".....kkLBBBkk....",
+      "....kLLBBBBBBk...",
+      "...kfffffFFFFk...",
+      "...kffFfFFFFFk...",
+      "...kfFFFFFFGGk...",
+      "...kFFkFFGGkGk...",
+      "...kFpFFGGGGpk...",
+      "...kFFGGSSGGGk...",
+      "...kkGGGGGGGkk...",
+      "..kLHLLGGGLBBBk..",
+      ".kLHLLLLLBBBBBBk.",
+      ".kLLLLLBBBBBBBBk.",
+      "kLLLLLWWWWWBBBBSk",
+      "kLLLBWWWWWWWBSSSk",
+      "kLBBBWWWWWWWSSSSk",
+      "kBBBWWWyyywwwSSDk",
+      "kBBBBWWWYYYwSDDDk",
+      ".kBBBWwwwwwwDDDk.",
+      ".kBBBSwwwwwDDDDk.",
+      "..kSSSSSDDDDDDk..",
+      "...kkSSDDDDDkk...",
+      ".....kkkDkkk.....",
+      "........k........"
+     ],
+     "pal": {
+      "L": "#f08c78",
+      "B": "#d0564a",
+      "S": "#a43c36",
+      "D": "#742a2a",
+      "H": "#f8b4a4",
+      "f": "#fde8d4",
+      "F": "#f4cfae",
+      "G": "#d9a882",
+      "p": "#f0928a",
+      "W": "#fbf6e6",
+      "w": "#cfc2a2",
+      "y": "#eec05a",
+      "Y": "#c8923a",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "spinning-top",
+     "n": "큰 나무 팽이",
+     "k": "놀이",
+     "d": "빨강·파랑 띠를 두른 커다란 원목 팽이예요. 쇠 끝으로 서 있어서 건드리면 비틀비틀 흔들려요.",
+     "fit": "평평한 풀밭, 바위 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "팽이를 톡 쳐서 비틀비틀 흔들리게 해요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "큰 나무 팽이를 톡 쳐서 비틀비틀 흔들리게 했다.",
+        "큰 나무 팽이를 밀어 보고 빙글 기우는 걸 구경한다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "팽이 둘레를 빙글빙글 날며 같이 도는 흉내를 내요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "큰 나무 팽이 둘레를 빙글빙글 날아다닌다.",
+        "큰 나무 팽이처럼 빙글빙글 돌며 난다."
+       ]
+      },
+      {
+       "w": "에스퍼·고스트 타입",
+       "a": "팽이 앞에서 기술을 써서 팽이를 떠오르게 해 흔들어요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "기술을 써서 큰 나무 팽이를 들썩들썩 흔들었다.",
+        "큰 나무 팽이를 염력으로 빙글 기울여 본다."
+       ]
+      }
+     ],
+     "px": [
+      "........krqrrk.......",
+      "........kLBBSk.......",
+      "........kLBBSk.......",
+      "........kLBBSk.......",
+      "....kkkkkLBBSkkkkk...",
+      ".kkkLLLHHHHHHHHLLLkk.",
+      "kLLLLLLLLLLLLLLLLLLDk",
+      "kLLLLLBBBBBBBBSSSDDDk",
+      "kLLLLLBBBBBBBBSSSDDDk",
+      ".kLLLLLBBBBBBSSSSDDk.",
+      "..kqqqqrrrrrrsssssk..",
+      "..kqqqqqrrrrrsssssk..",
+      "...kLLLLBBBBBSSDDk...",
+      "....kLLLBBBBSSDDk....",
+      ".....kbbbccceeek.....",
+      "......kLLBBBSDk......",
+      "......kLLLBBSDk......",
+      ".......kLLBBDk.......",
+      "........kLBSk........",
+      "........kLBSk........",
+      ".........kmnk........",
+      ".........knk.........",
+      "..........k.........."
+     ],
+     "pal": {
+      "L": "#e2b47a",
+      "B": "#c08a52",
+      "S": "#93643a",
+      "D": "#674526",
+      "H": "#f4d4a0",
+      "q": "#f08c78",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "b": "#9cc8ec",
+      "c": "#5f97cf",
+      "e": "#43709f",
+      "m": "#c4cad6",
+      "n": "#626a7e",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "block-tower",
+     "n": "나무 블록 탑",
+     "k": "놀이",
+     "d": "빨강·파랑·노랑·초록 나무 블록을 삐뚤빼뚤 쌓은 탑이에요. 꼭대기에 파란 세모 블록이 지붕처럼 얹혀 있어요.",
+     "fit": "놀이터 구석, 장난감 소품 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "블록을 하나씩 밟고 올라가 꼭대기 세모 블록 옆에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "나무 블록을 하나씩 밟고 탑 꼭대기까지 올라갔다.",
+        "나무 블록 탑 위에 앉아 자랑스럽게 둘러본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "블록 탑을 톡 건드려 보고 흔들리자 깜짝 놀라 물러나요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "나무 블록 탑을 톡 건드렸다가 흔들리자 깜짝 놀랐다.",
+        "나무 블록 탑이 무너질까 조심조심 밀어 본다."
+       ]
+      },
+      {
+       "w": "고스트 타입 / 작은 포켓몬",
+       "a": "블록 탑 뒤에 숨었다가 옆으로 고개만 쏙 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "나무 블록 탑 뒤에 숨어 옆으로 고개만 쏙 내민다.",
+        "나무 블록 탑 뒤에서 까꿍 하고 나타났다."
+       ]
+      }
+     ],
+     "px": [
+      "........kgk........",
+      ".......kefgk.......",
+      "......keeffgk......",
+      ".....keeefffgk.....",
+      "....keeeeffffgk....",
+      "...keeeeefffffgk...",
+      "....kkaaaaaackk....",
+      ".....kabbbbbck.....",
+      ".....kabbWbbck.....",
+      ".....kabWWWbck.....",
+      ".....kabbbbbck.....",
+      "....kkdddddddk.....",
+      "...kiiiiiiimkkkkkk.",
+      "...kijjjjjjmoooooqk",
+      "...kijjWWjjmoppppqk",
+      "...kijjWjjjmopWWpqk",
+      "...kijjWWjjmopWWpqk",
+      "...kijjjjjjmoppppqk",
+      ".kkknnnnnnnnrrrrrrk",
+      "keeeeeeegaaaaaaack.",
+      "keffffffgabbbbbbck.",
+      "kefffWffgabbWWbbck.",
+      "keffWWWfgabbWWbbck.",
+      "keffffffgabbbbbbck.",
+      "keffffffgabbbbbbck.",
+      "khhhhhhhhddddddddk.",
+      ".kkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "a": "#f08c78",
+      "b": "#d0564a",
+      "c": "#a43c36",
+      "d": "#742a2a",
+      "e": "#9cc8ec",
+      "f": "#5f97cf",
+      "g": "#43709f",
+      "h": "#2e4c74",
+      "i": "#fbe39a",
+      "j": "#eec05a",
+      "m": "#c8923a",
+      "n": "#93652a",
+      "o": "#bfe0a8",
+      "p": "#86bc6e",
+      "q": "#5e9450",
+      "r": "#467040",
+      "W": "#fbf6e6",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "windup-robot",
+     "n": "태엽 양철 로봇",
+     "k": "놀이",
+     "d": "네모난 머리와 둥근 눈을 가진 하늘색 양철 로봇 장난감이에요. 옆구리의 금빛 태엽 손잡이가 빙글빙글 돌아요.",
+     "fit": "블록 탑 옆, 장난감 상자 근처",
+     "glow": 0,
+     "mv": {
+      "o": [
+       25,
+       16.5
+      ],
+      "k": "spin",
+      "amp": 1.6,
+      "st": [
+       ".........krrrk..............",
+       "..........kOk...............",
+       ".....kkkkkkOkkkkkk..........",
+       "....keeeeeeeeeeeegk.........",
+       "....kefffffffffffgk.........",
+       "....kefWWWfffWWWfgk.........",
+       "....kefWkWfffWkWfgk.........",
+       "....kefWWWfffWWWfgk.........",
+       "....kefffOOOOOfffgk.........",
+       "....khhhhhhhhhhhhhk.........",
+       ".....kkkkOOOOOkkkk..........",
+       "....kkkkkOOOOOkkkkk.........",
+       ".kkkeeeeeeeeeeeeeegkkk......",
+       "kMMOefffffffffffffgMMOkk....",
+       "kMNOeffMMMMMMMMOffgMNOkk....",
+       "kMNOeffMMNNNNNNOffgMNOkk....",
+       "kMNOeffMNrNyNuNOffgMNOOO....",
+       "kMNOeffMNNNNNNNOffgMNOkk....",
+       "kMNOeffPPPPPPPPPffgMNOkk....",
+       "kPPPefffffffffffffgPPPkk....",
+       "kcccefffffffffffffgccck.....",
+       ".kkkhhhhhhhhhhhhhhhkkk......",
+       "....kkkMMOkkkMMOkkk.........",
+       "......kMNOk.kMNOk...........",
+       "......kMNOk.kMNOk...........",
+       "......kPPPk.kPPPk...........",
+       ".....kaaaackaaaack..........",
+       ".....kdddddkdddddk..........",
+       "......kkkkk.kkkkk..........."
+      ],
+      "mp": [
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "..........................k.",
+       "........................kkyk",
+       "........................yyyk",
+       "........................yyYk",
+       "........................ymk.",
+       "........................ymk.",
+       "........................ymk.",
+       "........................yyYk",
+       "........................yyyk",
+       "........................kkyk",
+       "..........................k.",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................"
+      ]
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "로봇 옆구리 태엽을 툭툭 건드려 빙글빙글 돌려요",
+       "x": {
+        "at": [
+         0.92,
+         1
+        ],
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "태엽 로봇의 태엽을 툭툭 건드려 빙글빙글 돌렸다.",
+        "태엽 로봇의 태엽을 감아 주고 움직이길 기다린다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "로봇 앞에서 전기 기술을 써서 가슴 불빛을 켜 줘요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "태엽 로봇에 찌릿 전기를 넣어 가슴 불빛을 켰다.",
+        "전기 기술로 태엽 로봇을 깨워 보려 한다."
+       ]
+      },
+      {
+       "w": "강철 타입 / 작은 포켓몬",
+       "a": "로봇 옆에 나란히 서서 로봇처럼 뚝딱뚝딱 걸어 봐요",
+       "x": {
+        "at": "side",
+        "m": "walk"
+       },
+       "l": [
+        "태엽 로봇 옆을 로봇처럼 뚝딱뚝딱 걸어 다닌다.",
+        "태엽 로봇 흉내를 내며 뻣뻣하게 걷는다."
+       ]
+      }
+     ],
+     "px": [
+      ".........krrrk..............",
+      "..........kOk...............",
+      ".....kkkkkkOkkkkkk..........",
+      "....keeeeeeeeeeeegk.........",
+      "....kefffffffffffgk.........",
+      "....kefWWWfffWWWfgk.........",
+      "....kefWkWfffWkWfgk.........",
+      "....kefWWWfffWWWfgk.........",
+      "....kefffOOOOOfffgk.........",
+      "....khhhhhhhhhhhhhk.........",
+      ".....kkkkOOOOOkkkk..........",
+      "....kkkkkOOOOOkkkkk.......k.",
+      ".kkkeeeeeeeeeeeeeegkkk..kkyk",
+      "kMMOefffffffffffffgMMOkkyyyk",
+      "kMNOeffMMMMMMMMOffgMNOkkyyYk",
+      "kMNOeffMMNNNNNNOffgMNOkkymk.",
+      "kMNOeffMNrNyNuNOffgMNOOOymk.",
+      "kMNOeffMNNNNNNNOffgMNOkkymk.",
+      "kMNOeffPPPPPPPPPffgMNOkkyyYk",
+      "kPPPefffffffffffffgPPPkkyyyk",
+      "kcccefffffffffffffgccck.kkyk",
+      ".kkkhhhhhhhhhhhhhhhkkk....k.",
+      "....kkkMMOkkkMMOkkk.........",
+      "......kMNOk.kMNOk...........",
+      "......kMNOk.kMNOk...........",
+      "......kPPPk.kPPPk...........",
+      ".....kaaaackaaaack..........",
+      ".....kdddddkdddddk..........",
+      "......kkkkk.kkkkk..........."
+     ],
+     "pal": {
+      "a": "#f2f4f8",
+      "c": "#8e96a8",
+      "d": "#626a7e",
+      "e": "#cfeaf4",
+      "f": "#8cc4d8",
+      "g": "#5e98b2",
+      "h": "#3f6f88",
+      "M": "#f2f4f8",
+      "N": "#c4cad6",
+      "O": "#8e96a8",
+      "P": "#626a7e",
+      "W": "#ffffff",
+      "r": "#d0564a",
+      "y": "#eec05a",
+      "Y": "#c8923a",
+      "m": "#93652a",
+      "u": "#7ad07a",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "bubble-machine",
+     "n": "비눗방울 기계",
+     "k": "놀이",
+     "d": "분홍 상자에 바람개비 날개가 달린 비눗방울 기계예요. 위로 크고 작은 비눗방울이 둥실둥실 떠올라요.",
+     "fit": "풀밭 가운데, 바람 부는 곳",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "떠오르는 비눗방울을 잡으려고 기계 앞에서 폴짝폴짝 뛰어요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "비눗방울을 잡으려고 폴짝폴짝 뛰어오른다.",
+        "비눗방울 하나를 콕 터뜨리고 깜짝 놀랐다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "비눗방울 사이를 빙글빙글 날아다녀요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "비눗방울 사이를 빙글빙글 날아다닌다.",
+        "비눗방울을 피해 요리조리 날아다닌다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "기계 옆에서 거품 기술을 써서 비눗방울을 더 많이 만들어요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "거품을 뿜어 비눗방울 기계보다 더 많은 방울을 만들었다.",
+        "비눗방울 기계 옆에서 거품 기술로 겨룬다."
+       ]
+      }
+     ],
+     "px": [
+      "..kkkk.....kkkk.......",
+      ".kvvvvk...kWvvvk......",
+      "kvWVVvvk..kvVVvk......",
+      "kvVVVVvk..kvVVvk......",
+      "kvVVVVvk..kvvvvk.kk...",
+      "kvvVVvvk...kkkk.kvvk..",
+      ".kvvvvk.kk.....kWVVvk.",
+      "..kkkk.kvvk...kvVVVVvk",
+      "......kvWvvk..kvVVVVvk",
+      "..kkk.kvvvvk...kvVVvk.",
+      ".krrrk.kvvk.....kvvk..",
+      "krkkkrk.kk.kkkkkkkk...",
+      "krkkkrk...kMMMMNNk....",
+      ".krOrk...kMMMMPPNNk...",
+      "..kOk...kMMMMPOPPNNk..",
+      "..kOk...kMMMPPOPPPNk..",
+      ".kkOkkkkkMMPPyyPPPNk..",
+      "kaaaaaaaaMPOOPPOPPNk..",
+      "kabbbbbbbNNPPPPPONNk..",
+      "kabbbbbbbbNNPPPPNNk...",
+      "kabbbbbbbbbNNNNNNck...",
+      "kyyyyyyyyyyyyyyyyyk...",
+      "kYYYYYYYYYYYYYYYYYk...",
+      "kabbbbbbbbbbbbbbbck...",
+      "kabbbbbbbbbbbbbbbck...",
+      "kdddddddddddddddddk...",
+      ".kdddkkkkkkkkkdddk....",
+      "..kkk.........kkk....."
+     ],
+     "pal": {
+      "a": "#fbd0dc",
+      "b": "#f0a0b8",
+      "c": "#c87494",
+      "d": "#985272",
+      "y": "#eec05a",
+      "Y": "#c8923a",
+      "M": "#f2f4f8",
+      "N": "#c4cad6",
+      "O": "#8e96a8",
+      "P": "#626a7e",
+      "r": "#d0564a",
+      "V": "#e0f2fa",
+      "v": "#9ccfe6",
+      "W": "#ffffff",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "toy-chest",
+     "n": "장난감 상자",
+     "k": "놀이",
+     "d": "뚜껑이 열린 원목 장난감 상자예요. 빨간 띠에 노란 별이 그려져 있고, 공·곰 인형·막대 장난감이 삐죽 나와 있어요.",
+     "fit": "블록 탑·로봇 옆, 놀이터 구석",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "장난감 상자 안에 쏙 숨어 장난감 사이로 고개만 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek"
+       },
+       "l": [
+        "장난감 상자 안에 쏙 숨어 고개만 내민다.",
+        "장난감 상자 속 장난감 사이에 파묻혀 있다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "상자 앞에서 스르르 사라졌다가 상자 위로 다시 나타나요",
+       "x": {
+        "at": "front",
+        "m": "blink"
+       },
+       "l": [
+        "장난감 상자 앞에서 스르르 사라졌다 나타났다.",
+        "장난감 상자 위로 불쑥 나타나 장난을 친다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "상자 앞에 앉아 삐죽 나온 장난감을 구경해요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "장난감 상자 앞에 앉아 곰 인형을 빤히 구경한다.",
+        "장난감 상자에서 빨간 공을 꺼내 보려 한다."
+       ]
+      }
+     ],
+     "px": [
+      "...kkkkkkkkkkkkkkkkkkk.",
+      "..kLLLLLLLLLLLLLLLLLLBk",
+      "..kBBBBBBBBBBBBBBBBBBk.",
+      "..kBBBBBBBBBBBBBBBBBBk.",
+      ".kSSSSSSSSSSSSSSSSSSk..",
+      ".kSSSaaSSSyySSSSSSSSk..",
+      "..kkaabbkkEEkkTttTTk...",
+      "..kaaWbbckeekktTTTk....",
+      "..kbbbccckeekkTkUk.....",
+      ".kkkbccckkeekkUUUUkkkk.",
+      "kmLLLLLLLLLLLLLLLLLLLmk",
+      "kLBBBBBBBBBBBBBBBBBBBSk",
+      "kLBBBSBBBBSBBBBSBBBBBSk",
+      "kLqqqqqqqqqyqqqqqqqqqSk",
+      "kLrrrrrrrryyyrrrrrrrrSk",
+      "kLsssssssssysssssssssSk",
+      "kLBBBSBBBBSBBBBSBBBBBSk",
+      "kLBBBBBBBBBBBBBBBBBBBSk",
+      "kLBBBSBBBBSBBBBSBBBBBSk",
+      "kLBBBBBBBBBBBBBBBBBBBSk",
+      "kLBBBBBBBBBBBBBBBBBBBSk",
+      "kmDDDDDDDDDDDDDDDDDDDmk",
+      ".kkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "L": "#e2b47a",
+      "B": "#c08a52",
+      "S": "#93643a",
+      "D": "#674526",
+      "q": "#f08c78",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "a": "#f08c78",
+      "b": "#d0564a",
+      "c": "#a43c36",
+      "W": "#ffffff",
+      "e": "#5f97cf",
+      "E": "#9cc8ec",
+      "y": "#eec05a",
+      "t": "#e8c08e",
+      "T": "#c9925c",
+      "U": "#9a6a3e",
+      "m": "#c4cad6",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "puppet-stage",
+     "n": "인형극 무대",
+     "k": "놀이",
+     "d": "빨간 지붕 간판과 노란 장식 술이 달린 원목 인형극 무대예요. 무대 창에는 빨간 커튼이 걷혀 있고 작은 인형이 인사하고 있어요.",
+     "fit": "풀밭 가장자리, 앉아서 구경할 자리 앞",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "무대 뒤로 들어가 무대 창에 얼굴을 내밀고 인형극 흉내를 내요",
+       "x": {
+        "at": [
+         0.5,
+         0.45
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "인형극 무대 창에 얼굴을 내밀고 인형극 흉내를 낸다.",
+        "인형극 무대 창 너머로 고개를 빼꼼 내밀었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "무대 앞에 앉아 인형극을 구경해요",
+       "x": {
+        "at": "far"
+       },
+       "l": [
+        "인형극 무대 앞에 앉아 인형극을 구경한다.",
+        "인형극 무대 앞에서 다음 장면을 기다린다."
+       ]
+      },
+      {
+       "w": "에스퍼·고스트 타입",
+       "a": "무대 앞에서 기술을 써서 무대 위 인형을 움직여요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "기술로 인형극 무대의 인형을 움직여 춤추게 했다.",
+        "인형극 무대 인형을 염력으로 꾸벅 인사시킨다."
+       ]
+      }
+     ],
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kqqqqqqqqqqqqqqqqqqqqqqqsk",
+      "kqrrrrrrrrrrrrrrrrrrrrrrsk",
+      "kqryyrryyrryyrryyrryyrrrsk",
+      "kqrrrrrrrrrrrrrrrrrrrrrrsk",
+      "kzzzzzzzzzzzzzzzzzzzzzzzzk",
+      ".kYyyYYyyYYyyYYyyYYyyYYyk.",
+      ".kLLLLLLLLLLLLLLLLLLLLLSk.",
+      ".kLBBBBBBBBBBBBBBBBBBBBSk.",
+      ".kLBBBabcNNNNNNNNabcBBBSk.",
+      ".kLBBBabcnnnnnnnnabcBBBSk.",
+      ".kLBBBabcnnnnnnnnabcBBBSk.",
+      ".kLBBBabcnnntnnnnabcBBBSk.",
+      ".kLBBBabcnntttnnnabcBBBSk.",
+      ".kLBBBabcnntkknnnabcBBBSk.",
+      ".kLBBBabcnnnTnnnnabcBBBSk.",
+      ".kLBBBabcnnEEEEnnabcBBBSk.",
+      ".kLBBBabbcneeeenabbcBBBSk.",
+      ".kLBBBabbcneeeenabbcBBBSk.",
+      ".kLBLLLLLLLLLLLLLLLLLLBSk.",
+      ".kLBSSSSSSSSSSSSSSSSSSBSk.",
+      ".kLBBBBBBBBBBBBBBBBBBBBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBbaaabbbaaabbbaaabbBSk.",
+      ".kLBccccccccccccccccccBSk.",
+      ".kDDDDDDDDDDDDDDDDDDDDDDk.",
+      "..kkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "q": "#f08c78",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "z": "#742a2a",
+      "y": "#eec05a",
+      "Y": "#c8923a",
+      "L": "#e2b47a",
+      "B": "#c08a52",
+      "S": "#93643a",
+      "D": "#674526",
+      "n": "#3a2a3e",
+      "N": "#55405a",
+      "a": "#e0645a",
+      "b": "#b8443e",
+      "c": "#86302e",
+      "t": "#f8e0c4",
+      "T": "#dcb490",
+      "e": "#5f97cf",
+      "E": "#9cc8ec",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "marble-run",
+     "n": "구슬 굴리기 탑",
+     "k": "놀이",
+     "d": "나무 기둥 두 개 사이에 초록 레일이 지그재그로 걸린 구슬 굴리기 탑이에요. 알록달록 구슬이 굴러 내려와 아래 파란 그릇에 모여요.",
+     "fit": "블록 탑·장난감 상자 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "나무 기둥을 타고 맨 위 레일까지 올라가요",
+       "x": {
+        "at": [
+         0.17,
+         0.1
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "구슬 굴리기 탑 기둥을 타고 맨 위까지 올라갔다.",
+        "구슬 굴리기 탑 꼭대기에서 구슬이 구르길 기다린다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "탑을 톡 건드려 구슬이 굴러 내려가는 걸 눈으로 따라가요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "구슬 굴리기 탑을 톡 건드려 구슬이 데구루루 굴러가는 걸 구경한다.",
+        "구슬이 그릇에 퐁 떨어지자 기뻐한다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "탑 앞에서 기술을 써서 구슬을 맨 위로 다시 올려 줘요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 구슬을 구슬 굴리기 탑 맨 위로 다시 올려 줬다.",
+        "기술로 구슬을 띄워 레일에 하나씩 올린다."
+       ]
+      }
+     ],
+     "px": [
+      ".kBBBBk..........kBBBBk.",
+      "..kLSk............kLSk..",
+      "..kLSkk..kk.......kLSk..",
+      "..kLSGGkkWrk......kLSk..",
+      "..kLSggGGrrkkk....kLSk..",
+      "..kLShhgggGGGGkkk.kLSk..",
+      "..kLSkkhhhggggGGGkkLSk..",
+      "..kLSk.kkkhhhhgggGGLSk..",
+      "..kLSk....kkkkhhhggLSk..",
+      "..kLSk........kkkhhLSk..",
+      "..kLSk........kkkGGLSk..",
+      "..kLSk....kkkkWuGggLSk..",
+      "..kLSk.kkkGGGGuughhLSk..",
+      "..kLSkkGGGgggghhhkkLSk..",
+      "..kLSGGggghhhhkkk.kLSk..",
+      "..kLSgghhhkkkk....kLSk..",
+      "..kLShhkWyk.......kLSk..",
+      "..kLSGGkyyk.....kkkLSk..",
+      "..kLSggGGGkkkk.kWrkLSk..",
+      "..kLShhgggGGGGkkrrkLSk..",
+      "..kLSkkhhhggggGGGkkLSk..",
+      "..kLSk.kkkhhhhgggGGLSk..",
+      "..kLSk....kkkkhhhggLSk..",
+      "..kLSk...kk.kkkkkhhLSk..",
+      "..kLSk.kkuukyykkkkkLSk..",
+      "..kLSkkeeeeeeeeefkkLSk..",
+      "..kLSkkcccccccccfkkLSk..",
+      ".kkLSkkcccccccccfkkLSkk.",
+      "kLLLLLLLLLLLLLLLLLLLLLSk",
+      "kLBBBBBBBBBBBBBBBBBBBBSk",
+      "kDDDDDDDDDDDDDDDDDDDDDDk",
+      ".kkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "L": "#e2b47a",
+      "B": "#c08a52",
+      "S": "#93643a",
+      "D": "#674526",
+      "G": "#bfe0a8",
+      "g": "#86bc6e",
+      "h": "#5e9450",
+      "r": "#d0564a",
+      "u": "#5f97cf",
+      "y": "#eec05a",
+      "W": "#ffffff",
+      "c": "#5f97cf",
+      "e": "#9cc8ec",
+      "f": "#43709f",
+      "k": "#20202c"
+     }
+    },
+    {
+     "id": "toy-sailboat",
+     "n": "장난감 돛단배",
+     "k": "놀이",
+     "d": "빨간 배에 하얀 돛과 빨간 깃발을 단 나무 장난감 돛단배예요. 연못 위에 띄워 두면 바람 따라 살랑살랑 흔들려요.",
+     "fit": "연못 위",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "헤엄치는 포켓몬 / 물 타입",
+       "a": "돛단배 뒤에서 헤엄치며 코로 밀어 연못을 가로질러요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "장난감 돛단배를 코로 밀며 헤엄친다.",
+        "장난감 돛단배 옆에서 물살을 일으켜 흔들어 준다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 돛대 꼭대기에 앉아 연못을 둘러봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "장난감 돛단배 돛대 꼭대기에 날아와 앉았다.",
+        "장난감 돛단배 위에 앉아 연못 위를 떠다닌다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "돛 옆에서 떠서 날갯짓으로 바람을 일으켜 배를 밀어 줘요",
+       "x": {
+        "at": "side",
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓으로 바람을 일으켜 장난감 돛단배를 밀어 줬다.",
+        "장난감 돛단배 돛에 바람을 불어 넣는다."
+       ]
+      }
+     ],
+     "px": [
+      "...........kkkkkk.......",
+      "..........kSDqrrrk......",
+      "..........kSDrrrsk......",
+      ".........kWSDkkkk.......",
+      "........kWWSDk..........",
+      ".......kWWVSDVk.........",
+      "......kWWVVSDwVk........",
+      ".....kWWwVVSDwVk........",
+      "....kWWwwVVSDwwVk.......",
+      "...kWWwwwVVSDwwVk.......",
+      "..kWWwwwwVVSDwwwVk......",
+      ".kWWwwwwwVVSDwwwVk......",
+      "kWWwwwwwwVVSDwwwwVk.....",
+      "WWwwwwwwwVVSDwwwwVk.....",
+      "WwwwwwwwwVVSDwwwwwVk....",
+      "wwwwwwwwwVVSDkkkkkk.....",
+      "kkkkkkkkkkkSDkkkkkkkkkk.",
+      "kLLLLLLLLLLLLLLLLLLLLLLk",
+      "kyyyyyyyyyyyyyyyyyyyyyyk",
+      ".kkBBBBBBBBBBBBWBWBBSkk.",
+      "...kBBBBBBBBBBBBBBBSk...",
+      "....kDDDDDDDDDDDDDDk....",
+      ".....kkkkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "L": "#f08c78",
+      "B": "#d0564a",
+      "S": "#93643a",
+      "D": "#674526",
+      "q": "#f08c78",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "W": "#ffffff",
+      "w": "#ece6d6",
+      "V": "#cfc6b2",
+      "y": "#eec05a",
+      "k": "#20202c"
+     }
+    }
+   ]
+  },
+  {
    "at": 1794091648604,
    "theme": "숲속 작은 우체국",
    "note": "오늘은 숲속 작은 우체국이에요! 빨간 우체통·비둘기집·소포 더미·배달 자전거까지 빨강·원목·하늘색으로 색을 맞춰서 한데 놓으면 편지가 오가는 마당이 돼요. 날아와 앉기·숨기·미끄럼·기술 쓰기를 고르게 나눠서 비행·전기·에스퍼 타입도 할 일이 생기게 했어요.",
