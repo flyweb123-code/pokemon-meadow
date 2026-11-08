@@ -19,7 +19,7 @@ const gTeam = (A, n, add, seed) => { const L = A.lv() + add; return Array.from({
 const trOf = ow => ow === 'hg_rocket_f' ? 'hg_rocket_f' : 'hg_rocket_m';
 // 조무래기 배틀 한 판: 나를 보면 '!' → 걸어와서 한마디 → 배틀 → 진 대사. 이기면 true
 // 배틀에서 이기고 필드로 돌아오면: 상처약 소리와 함께 포켓몬이 모두 기운을 되찾음
-async function healFx(A, F) { A.se('se_use_item'); await A.wait(500); }   // 본가 상처약 쓸 때 소리(SE_USE_ITEM), 말풍선 없이 (경완 2026-11-07)
+async function healFx(A, F) { A.se('DP_KAIFUKU'); await A.wait(700); }   // 본가 배틀 회복 소리 (경완 2026-11-08 '약물 먹는 효과음이 본가 배틀 효과음이 아닌 것 같은데')
 async function fight(A, F, S, s, o) {
   // 지친 채로는 다시 못 싸움: 돌담시티에선 포켓몬 센터에서 회복하고 와야 한다 (경완 2026-11-07)
   if (A.tired) { s.face(F.me); await S.say('(포켓몬들이 지쳐 있다...\n먼저 포켓몬 센터에 가서 회복시키자.)', { who: A.me() }); S.hide(true); return false; }
@@ -30,12 +30,42 @@ async function fight(A, F, S, s, o) {
   const won = await A.battle({ tr: o.tr || trOf(s.ow), cls: o.cls || '로켓단', nm: o.nm || '조무래기', team: o.team, tier: o.tier | 0, g: o.g || 0, say: o.say, music: 'hgVsRoc', win: o.win });
   if (!won) { A.music(o.song || 'hgAjito'); s.lost = true; await A.wait(300); await S.say('(포켓몬들이 지쳐 버렸다...\n포켓몬 센터에 가서 회복시키자.)', { who: A.me() }); S.hide(true);
     if (A.center) A.tired = true;   // 돌담시티: 직접 센터까지 걸어가서 간호순에게
-    else { await A.black(true, '서둘러 돌담시티 포켓몬 센터에\n다녀왔다...', '포켓몬들이 기운을 되찾았다!', true); await A.black(false); }   // 아지트엔 센터가 없어 다녀온 걸로
+    else A.woQ = true;   // 아지트: 눈앞이 캄캄 → 돌담시티 포켓몬 센터에서 다시 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접 가서')
     return false; }   // 지면 그 자리에서 다시 말 걸어 재도전 (경완 2026-11-07)
   A.music(o.song || 'hgAjito'); s.done = true; await A.wait(300); await healFx(A, F);   // 이기고 돌아오면 회복 소리와 함께 다 회복 (경완 2026-11-07)
+  await prize(A, S, o.g);
   for (const t of o.post || []) await S.say(t, { who: o.who || G });
   S.hide(true); return true;
 }
+// 배틀 상금 (경완 2026-11-08 '배틀 끝나면 골드는 줘'): 실제 플레이는 배틀에서 이미 받음, 운영자 시험은 안 받음
+async function prize(A, S, g) { if (!g) return; await S.say(`(상금 ${g.toLocaleString()}G 를 받았다!)${A.test ? '\n운영자 시험이라 실제로는 안 받아요.' : ''}`, { who: A.me() }); }
+// 로켓단 변장 (경완 2026-11-08 '미션 깨고 로켓단이 두고 간 복장 받아서 변장하고 암호 대면'): 입으면 내 걸음 그림이 조무래기로, 문지기에게 들키면 원래 모습
+const RK_OW = A => A.I.myFem?.() ? 'hg_rocket_f' : 'hg_rocket_m';
+const disg = A => A.has('suit') && !A.has('caught');
+async function wear(A, F, on, fx) { const I = A.I, m = F.me;
+  if (fx) { A.se('DP_KIRAKIRA2'); F.fx(1, m.x, m.y - .4); m.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(3) saturate(0)' }, { filter: 'brightness(1)' }], { duration: 520 }); await A.wait(260); }
+  if (on) { m.src = I.owSrc(RK_OW(A)); m.fw = I.owW(RK_OW(A)); } else { m.src = undefined; m.fw = I.owW(I.myOw()); I.fitMe(m); }
+  m.dis = on; m.put(); if (fx) await A.wait(420); }
+// 변장하고 로켓단에게 말 걸면: 의심만 하고 배틀은 없음 (경완 2026-11-08)
+const SUSP = ['어, 너도 여기 지키러 왔냐?\n여긴 우리로 충분해.', '...잠깐, 너 처음 보는 얼굴인데?\n어느 부대야?', '흠... 수상한데.\n...뭐, 제복 입었으니 됐다.', '신입이면 얼른 아지트로 가 봐.\n람다 님이 찾으실라.'];
+async function suspSay(A, F, S, s, L = SUSP) { if (!s.sn) F.bub(s, '?', 800); s.face(F.me); await S.say(L[(s.sn | 0) % L.length], { who: G }); s.sn = (s.sn | 0) + 1; S.hide(true); }
+// 마을을 돌아다니는 로켓단 (경완 2026-11-08 '마을에서 돌아다니고 있는 로켓단 npc 도 몇 명'): 배틀 없음, 변장하면 대사가 달라짐
+const WG_L = [
+  { n: ['뭘 봐?\n로켓단 처음 보냐?', '이 마을은 이제\n로켓단이 접수했다고! 크크.', '체육관 없는 관장은\n그냥 동네 사람이지~'], d: ['오, 수고한다!\n순찰 중이냐?', '...근데 너 처음 보는 얼굴인데.\n어느 부대야?', '흠... 뭐, 제복 입었으면 됐지.\n람다 님한테 잘 보여라.'] },
+  { n: ['어머, 관장님 아니세요?\n체육관은 잘 있냐고요? 호호!', '우리 아지트가 어디냐고?\n그걸 알려 줄 리가 없잖아!', '저리 가!\n순찰 중이라고!'], d: ['어? 신입이야?\n제복이 좀 커 보이는데?', '...얼굴이 어디서 많이 본 것 같은데.\n기분 탓인가?', '아지트 들어갈 때 암호\n까먹지 마! 또 혼나니까.'] },
+  { n: ['크크, 마트 물건은\n우리가 다 쓸어 갔지!', '관장이 혼자서\n뭘 할 수 있겠어?', '...왜 자꾸 말 걸어?\n배틀은 안 해 준다!'], d: ['어이 신입! 마트에서\n산 거 아지트로 옮겼냐?', '...너 왜 자꾸 두리번거려?\n수상하게...', '뭐, 됐다.\n얼른 일이나 해!'] },
+];
+// 로켓단 간부 아테나가 모니터로 (경완 2026-11-08 '로켓단 시리즈 예고 뒤에 모니터 켜지면서 아테나 나오는 연출')
+async function ariana(A, S, me1) { const w = document.createElement('div'); w.className = 'ev-crt'; w.innerHTML = `<div><img alt="" src="${IM}pt/tr/hg_ariana.png"><b>● LIVE</b></div>`;
+  A.se('se_select'); A.I.root.appendChild(w); const sc = w.firstElementChild; A.I.haptic?.(0);
+  await sc.animate([{ transform: 'scale(1,.02)', filter: 'brightness(4)' }, { transform: 'scale(1,1)', filter: 'brightness(1)' }], { duration: 380, easing: 'ease-out' }).finished.catch(() => {});
+  const W = '로켓단 간부 아테나';
+  await S.say('...치직... 람다,\n또 일을 그르쳤나 보군.', { who: W });
+  await S.say('호호... 그쪽이 소문의\n체육관 관장님?', { who: W });
+  await S.say('이번엔 운이 좋았을 뿐이야.\n로켓단의 계획은\n이제 막 시작됐거든.', { who: W });
+  await S.say('다음엔 이 아테나가\n직접 상대해 주지.\n기대하고 있으렴. 호호호!', { who: W }); S.hide(true);
+  await sc.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1,.02)', filter: 'brightness(4)', offset: .6 }, { transform: 'scale(0,.02)', filter: 'brightness(4)' }], { duration: 380, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {}); A.se('se_select'); w.remove();
+  await me1('(방금 그 사람... 로켓단 간부...?)', '(로켓단은 아직\n끝난 게 아닌 것 같다...)'); }
 // 칸 종류별 살펴보기 문구: frmap.py 가 본가 metatile behavior 로 뽑은 look 종류 (경완 2026-11-07 '표지판도 다 읽을 수 있게, 소품들도 말 걸면 뭔가 뜨게')
 const LOOKT = { bookshelf: '책장에 어려운 책이\n빼곡히 꽂혀 있다.', shelf: '상품이 가지런히 진열되어 있다.\n...몇 칸은 텅 비어 있다.', pc: '컴퓨터다.\n로켓단 소동 때문인지 꺼져 있다.', map: '이 지방 지도다.\n돌담시티가 빨갛게 표시되어 있다.',
   tv: 'TV 에서 뉴스가 나오고 있다.\n"...돌담시티 체육관에\n수상한 집단이..."', cabinet: '그릇이 가지런히 놓인 찬장이다.', kitchen: '부엌이다.\n맛있는 냄새가 난다.', quest: '설문지다.\n"좋아하는 포켓몬을 적어 주세요"',
@@ -54,8 +84,8 @@ function kit(A, F, S, me0) { const I = A.I, pn = () => F.pl?.nm || null, iga = w
   F.onPal = Q => A.setPal(Q);
   const me1 = (...L) => (async () => { for (const t of L) await S.say(t, { who: me0 }); S.hide(true); })();
   const ask = async why => { const p = F.pl;
-    if (!p) { if ((I.luAll?.() || []).length) { await me1(`(${why}...\n같이 다니는 포켓몬이 있으면\n도와줄 텐데.)`, '(오른쪽 위 [포켓몬] 단추로\n포켓몬을 불러내자.)'); return false; } return true; }
-    const mv = F.move()[0], y = await F.ask(`${p.nm}에게 ${mv}${I.jong(mv) ? '을' : '를'}\n부탁하겠습니까?`, '', '네', '아니요'); S.hide(true); return y; };
+    if (!p) { if ((I.luAll?.() || []).length) { await me1(`(${why}...\n같이 다니는 포켓몬이 있으면\n도와줄 텐데.)`); return false; } return true; }
+    const mv = F.move()[0], y = await S.ask(`${p.nm}에게 ${mv}${I.jong(mv) ? '을' : '를'}\n부탁하겠습니까?`, { who: me0 }); S.hide(true); return y; };   // 대사창 + 오른쪽 위 예/아니요 (경완 2026-11-08)
   const use = async (tx, ty, hit) => { if (F.pl) { await S.say(`${pn()}의 ${F.move()[0]}!`, { who: me0 }); S.hide(true); } await F.palAct(tx, ty, hit); };
   const dirTo = (a, b) => { const dx = b[0] - Math.round(a.x), dy = b[1] - Math.round(a.y); return Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); };
   const pick = async (x, y) => { const b = F.obAt(x, y);
@@ -64,7 +94,7 @@ function kit(A, F, S, me0) { const I = A.I, pn = () => F.pl?.nm || null, iga = w
     return false; };
   return { pn, iga, me1, ask, use, dirTo, pick }; }
 const ow = (A, F, k, x, y, f, o) => { const s = F.npc(k, x, y, f, o); s.ow = k; return s; };
-const VA = 'v=19.18';   // v19.18 새 그림(몬스터볼·바위·모자·금고) 캐시
+const VA = 'v=19.18', VB = 'v=19.37';   // v19.18 새 그림(몬스터볼·바위·모자·금고), v19.37 (모자 앞·뒤, 화분, 발자국)
 // 길막 로켓단마다 대사가 다르고, 말을 걸 때마다 달라진다. 끝까지 말 걸면 짜증 나서 배틀 (이스터에그, 경완 2026-11-07)
 const STOP = [
   { lines: ['어이, 거기!\n이쪽은 못 지나간다.', '안 들려? 돌아가라고!', '여긴 로켓단이 접수한 길이야.\n돌아가!', '...너 할 일 없니?', '나도 여기 서 있기 싫거든?\n다리 아파 죽겠는데...', '말 걸지 말라니까!\n집중이 안 되잖아!', '...한 번만 더 말 걸면\n가만 안 둔다?'],
@@ -78,7 +108,7 @@ const STOP = [
 ];
 GymEv.def({
   id: 'rocket', nm: '로켓단의 체육관 점거', sub: '로켓단이 내 체육관을 빼앗고 트레이너들을 데려갔다!',
-  songs: ['hgEyeRoc', 'hgAjito', 'hgVsRoc', 'hgNibi'], imgs: ['pt/ow/hg_rocket_m', 'pt/ow/hg_rocket_f', 'pt/ow/hg_petrel', 'ev/rocket/crate', 'ev/rocket/machine', 'ev/rocket/pc', 'ev/rocket/ball', 'ev/rocket/rock', 'ev/rocket/hat', 'ev/rocket/safe'],
+  songs: ['hgEyeRoc', 'hgAjito', 'hgVsRoc', 'hgNibi'], imgs: ['pt/ow/hg_rocket_m', 'pt/ow/hg_rocket_f', 'pt/ow/hg_petrel', 'ev/rocket/crate', 'ev/rocket/machine', 'ev/rocket/pc', 'ev/rocket/ball', 'ev/rocket/rock', 'ev/rocket/hat', 'ev/rocket/safe', 'ev/rocket/hat_d', 'ev/rocket/hat_u', 'ev/rocket/pot', 'ev/rocket/steps', 'ev/rocket/house_e', 'ev/rocket/house_e_o', 'pt/tr/hg_ariana'],
   reward: { g: 3000, rep: 30, fit: 'rocket', fitNm: '로켓단 제복', fitAlt: 'gym/img/pt/tr/hg_rocket_$.png', emb: 'R', embImg: `${IM}ev/rocket/r_emb.png?v=2`, hd: ['#7a1c28', '#26070c'], crew: true, msg: '로켓단을 몰아내고\n빼앗긴 체육관과 트레이너들을 모두 되찾았다!' },
   ch: [
     // 1장 · 점거당한 체육관
@@ -146,19 +176,22 @@ GymEv.def({
       await A.black(true, '체육관을 로켓단에게\n빼앗겨 버렸다...!', nSf ? `트레이너 ${nSf}명과 안내원이 납치되었다.` : '안내원이 납치되었다.', true);
     },
     // 2장 · 아지트를 찾아서 (돌담시티 = 본가 회색시티 맵) — v19.18 경완 2026-11-08 '배틀을 최소화하고 찾는 재미':
-    //   마을 사람 부탁 셋(관장 옆 포켓몬 기술로 해결 → 선물 + 아지트 단서), 숨은 알·물건, 빈집 앞 조무래기는 암호로 통과(배틀 없음), 화분 밑 비밀 계단
+    //   마을 사람 부탁 셋(관장 옆 포켓몬 기술로 해결 → 단서): 콩이 = 로켓단 제복(변장), 돌쇠 = 아지트 자리(남쪽 빈집), 미소 = 암호. 변장하고 암호를 대면 빈집 앞 조무래기가 비켜 줌.
+    //   빈집: 발자국을 따라 화분을 포켓몬 기술로 옮기면 그 밑에 계단 (v19.37 경완 2026-11-08)
     async A => {
-      const { I, wait, anim } = A, me0 = A.me();
+      const { I, wait, anim } = A, me0 = A.me(), WO = A.woTake();
       A.blackNow();
       const [PW, MT, CT, HS, MU] = await Promise.all(['pewter', 'mart', 'center', 'house', 'museum'].map(MAP));
+      const HE = { ...HS, col: HS.col.map((r, y) => y === 7 ? r.slice(0, 10) + '.' : r) };   // 빈집: 오른쪽 화분은 옮길 수 있는 그림(그 칸은 화분 그림이 막음)
       const mats = (xs, y, to, at) => xs.map(x => ({ x, y, d: 'd', mat: true, to, at }));
       const rooms = {
         mart: room('mart', MT, mats([3, 4, 5], 7, 'main', [28, 18, 'd'])),
-        center: room('center', CT, [...mats([6, 7, 8], 8, 'main', [17, 25, 'd']), { x: 1, y: 6, id: 'up2' }, { x: 11, y: 1, id: 'shut' }]),
+        center: room('center', CT, [...mats([6, 7, 8], 8, 'main', [17, 25, 'd']), { x: 1, y: 6, id: 'up2', off: true }, { x: 11, y: 1, id: 'shut' }]),
         house1: room('house', HS, mats([3, 4, 5], 7, 'main', [33, 11, 'd'])),
-        house: room('house', HS, mats([3, 4, 5], 7, 'main', [9, 30, 'd'])),
-        museum: room('museum', MU, [...mats([13, 14, 15], 9, 'main', [17, 6, 'd']), ...mats([21, 22], 9, 'main', [25, 4, 'd']), { x: 8, y: 8, id: 'up2' }]),
+        house: room('house_e', HE, mats([3, 4, 5], 7, 'main', [9, 30, 'd'])),
+        museum: room('museum', MU, [...mats([13, 14, 15], 9, 'main', [17, 6, 'd']), ...mats([21, 22], 9, 'main', [25, 4, 'd']), { x: 8, y: 8, id: 'up2', off: true }]),
       };
+      [rooms.house, rooms.house1].forEach(r => r.block.delete('5,2'));   // 본가 그림의 TV 앞 칸이 문 칸으로 뽑혀 막혀 있던 것 (TV 앞에서 말 걸기)
       let gr;
       A.center = true;
       const F = A.field({ nm: '돌담시티', img: `${IM}ev/rocket/pewter.png?v=3`, over: `${IM}ev/rocket/pewter_o.png?v=3`, w: PW.w, h: PW.h, col: PW.col, cov: PW.cov, door: PW.door, rooms,
@@ -166,19 +199,24 @@ GymEv.def({
         warps: [{ x: 15, y: 16, d: 'u', id: 'gym' }, { x: 28, y: 18, d: 'u', to: 'mart', at: [4, 7, 'u'] }, { x: 17, y: 25, d: 'u', to: 'center', at: [7, 8, 'u'] }, { x: 33, y: 11, d: 'u', to: 'house1', at: [4, 7, 'u'] },
           { x: 17, y: 6, d: 'u', to: 'museum', at: [14, 9, 'u'] }, { x: 25, y: 4, d: 'u', to: 'museum', at: [21, 9, 'u'] },
           { x: 9, y: 30, d: 'u', to: 'house', at: [4, 7, 'u'], pre: async () => { if (gr.done) return true; await S.say('(문 앞을 로켓단이 막고 있다...)', { who: me0 }); S.hide(true); return false; } }] });
-      const me = F.me = F.npc(I.myOw(), 15, 17, 'd'); I.fitMe(me);
+      // 지고 돌아오면 포켓몬 센터 간호순 앞에서 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접')
+      const me = F.me = WO ? F.npc(I.myOw(), 7, 4, 'u') : F.npc(I.myOw(), 15, 17, 'd'); if (disg(A)) wear(A, F, true); else I.fitMe(me);
       const lass = ow(A, F, 'lass', 8, 17, 'r'), man = ow(A, F, 'man', 29, 19, 'l'), boy = ow(A, F, 'boy', 33, 13, 'd');
       const old = ow(A, F, 'old_man_1', 9, 8, 'l'), kong = ow(A, F, `${IM}ev/rocket/ow_little_boy.png?v=3`, 32, 18, 'l', { fw: 16 });
-      gr = ow(A, F, 'hg_rocket_m', 9, 31, 'd');   // 빈집 앞 조무래기: 암호를 대면 비켜 줌
+      gr = ow(A, F, 'hg_rocket_m', 9, 31, 'd');   // 빈집 앞 조무래기: 변장하고 암호를 대면 비켜 줌
       if (A.has('gr')) { gr.x = 10; gr.y = 31; gr.turn('l'); gr.done = true; gr.put(); }
-      // 다른 마을로 가는 길은 로켓단이 막고 있다 (경완 2026-11-07, 첫마디는 저마다 다르게 2026-11-08). 끝까지 말 걸면 짜증 나서 배틀 (이스터에그)
+      // 다른 마을로 가는 길은 로켓단이 막고 있다 (경완 2026-11-07, 첫마디는 저마다 다르게 2026-11-08). 끝까지 말 걸면 짜증 나서 배틀 (이스터에그, 변장 중엔 의심만)
       const stop = [ow(A, F, 'hg_rocket_f', 21, 37, 'u'), ow(A, F, 'hg_rocket_m', 22, 37, 'u'), ow(A, F, 'hg_rocket_m', 45, 21, 'l'), ow(A, F, 'hg_rocket_f', 45, 22, 'l')];
       [[20, 37], [23, 37], [45, 20], [45, 23]].forEach(([x, y]) => F.block.add(x + ',' + y));
       stop.forEach((s, i) => { s.stop = STOP[i]; s.n = 0; });
       const stopTalk = async s => { const o = s.stop;
+        if (disg(A) && !s.done) return suspSay(A, F, S, s);
         if (s.done) { await S.say(o.beaten[s.n++ % o.beaten.length], { who: G }); S.hide(true); return; }
         if (!s.lost && s.n < o.lines.length) { if (!s.n) { F.bub(s, '!', 700); A.se('se_pin'); await wait(500); } await S.say(o.lines[s.n++], { who: G }); S.hide(true); return; }
         await fight(A, F, S, s, { pre: o.pre, team: gTeam(A, 2, -1, stop.indexOf(s) + 1), g: 200, song: 'hgNibi', say: { win: '흥! 이제 좀\n저리 가라!', lose: '으아악!\n괜히 건드렸다...!' }, post: o.post }); if (s.done) s.n = 0; };
+      // 마을을 돌아다니는 로켓단 셋
+      const wg = [[14, 10, 'd'], [36, 22, 'l'], [24, 33, 'u']].map(([x, y, f], i) => { const s = ow(A, F, GR[(i + 1) % 2], x, y, f); F.wander(s, 2); s.wg = WG_L[i]; s.n = 0; return s; });
+      const wgTalk = async s => { const D0 = disg(A), L = D0 ? s.wg.d : s.wg.n, i = D0 ? (s.dn | 0) : (s.n | 0); if (D0) { if (!s.dn) F.bub(s, '?', 800); s.dn = i + 1; } else s.n = i + 1; await S.say(L[i % L.length], { who: G }); S.hide(true); };
       lass.nm = '소녀 다솜'; man.nm = '아저씨 만복'; old.nm = '할아버지 돌쇠'; boy.nm = '소년 준이'; kong.nm = '꼬마 콩이';
       [man, boy].forEach(s => F.wander(s, 2));
       lass.say = ['마을 사람들한테 물어보세요!\n분명 누군가 봤을 거예요.'];
@@ -201,26 +239,42 @@ GymEv.def({
       const hat = A.has('kong') ? null : F.pic(`${IM}ev/rocket/hat.png?${VA}`, 30.7, 16.1, 12, 8, 'top');
       const rocks = A.has('dol') ? [] : [F.obst(RK, 8, 7, { fr: 4, kind: 'rock' }), F.obst(RK, 7, 7, { fr: 4, kind: 'rock' })];
       const crates = A.has('miso') ? [] : [F.obst(CR, 9, 4, { h: 32, room: 'mart', kind: 'crate' }), F.obst(CR, 9, 6, { h: 32, room: 'mart', kind: 'crate' })];
+      // 막힌 계단 앞엔 로켓단 상자 (경완 2026-11-08 '막혀 있는 계단 앞에는 뭔가 막혀 있는 본가 소품')
+      F.obst(CR, 1, 6, { h: 32, room: 'center', kind: 'bar' }); F.obst(CR, 8, 8, { h: 32, room: 'museum', kind: 'bar' });
       // 숨은 것·떨어진 것 (한 번 주우면 이 장을 다시 해도 안 나옴)
       const ball = (key, x, y, it, room) => { if (A.has(key)) return; const b = F.obst(BALL, x, y, { kind: 'ball', room }); b.key = key; b.it = it; };
       const hide = (key, x, y, it, room) => { if (!A.has(key)) F.hide(x, y, { key, it, room: room || 'main' }); };
       hide('c2e1', 5, 3, { k: 'egg', g: 2 }); ball('c2b1', 10, 5, { kinds: ['mint'] });   // 돌쇠 정원 안
       hide('c2e2', 28, 27, { k: 'egg', g: 1 });   // 꽃밭
       hide('c2h1', 38, 34, { kinds: ['it'], cap: 3500 });   // 남쪽 풀밭
-      F.hide(10, 7, { room: 'house', key: 'pot' });   // 화분 밑 계단
+      // 빈집: 발자국이 오른쪽 화분까지, 화분을 옮기면 그 자리에 계단
+      const POTD = [[10, 5], [9, 5], [8, 6], [9, 6]];
+      const pot = F.obst(`${IM}ev/rocket/pot.png?${VB}`, ...(A.has('stairs') ? POTD[0] : [10, 7]), { h: 32, room: 'house', kind: 'pot' });
+      let stairs = null;
+      const stairsOn = () => { stairs = F.pic(`${IM}ev/rocket/stairs.png?v=3`, 10, 7, 16, 16, 'floor', 'house'); F.rooms.house.warps.push({ x: 10, y: 7, id: 'stairs' }); return stairs; };
+      if (A.has('stairs')) stairsOn();
+      [6, 7, 8, 9].forEach(x => { F.pic(`${IM}ev/rocket/steps.png?${VB}`, x, 7, 16, 16, 'floor', 'house').style.opacity = '.85'; });
+      if (WO) F.setMap('center');
       F.cam(me.x, me.y); A.music('hgNibi'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);
       const K = kit(A, F, S, me0), { me1, ask, use, dirTo, pn, iga } = K;
-      // 콩이 모자: 찾아 주면 다시 쓴다 (경완 2026-11-08)
-      const kongHat = () => { if (kong.hatEl) return; const e = document.createElement('i'); e.className = 'ev-hat'; Object.assign(e.style, { position: 'absolute', left: 2 * F.k + 'px', top: 13 * F.k + 'px', width: 12 * F.k + 'px', height: 8 * F.k + 'px', backgroundImage: `url(${IM}ev/rocket/hat.png?${VA})`, backgroundSize: '100% 100%', imageRendering: 'pixelated' }); kong.el.appendChild(e); kong.hatEl = e; };
+      // 콩이 모자: 찾아 주면 다시 쓴다 (경완 2026-11-08). 보는 방향마다 앞·옆·뒤 그림 (경완 2026-11-08 '모자 방향에 따라 달리 보이게')
+      const HATF = { d: `hat_d.png?${VB}`, u: `hat_u.png?${VB}`, l: `hat.png?${VA}`, r: `hat.png?${VA}` };
+      const kongHat = () => { if (kong.hatEl) return; const e = document.createElement('i'); e.className = 'ev-hat'; Object.assign(e.style, { position: 'absolute', left: 2 * F.k + 'px', top: 13 * F.k + 'px', width: 12 * F.k + 'px', height: 8 * F.k + 'px', backgroundSize: '100% 100%', imageRendering: 'pixelated' }); kong.el.appendChild(e); kong.hatEl = e;
+        const p0 = kong.put; kong.put = () => { p0(); e.style.backgroundImage = `url(${IM}ev/rocket/${HATF[kong.f] || HATF.d})`; }; kong.put(); };
       if (A.has('kong')) kongHat();
       const P0 = A.pal();
-      if (!A.retry) {
+      if (WO) {
+        await F.palOn(P0, true); A.tired = false;   // 옆에 (뒤에 서면 큰 포켓몬이 나를 가림)
+        await S.say('어머, 관장님!\n포켓몬들이 많이 지쳤네요.\n바로 회복시켜 드릴게요.', { who: nurse.nm }); S.hide(true); await A.fan('mus_rg_heal');
+        await S.say('기다리셨습니다!\n포켓몬들이 모두 건강해졌어요.', { who: nurse.nm });
+        await S.say('아지트에 다시 가시는 거죠?\n조심하세요, 관장님!', { who: nurse.nm }); S.hide(true);
+      } else if (!A.retry) {
         await A.title('2장 · 아지트를 찾아서', '트레이너들을 구하러 가자!', 'CHAPTER 2');
         await S.say('(완전히 쫓겨나 버렸다...)', { who: me0 });
         await S.say('(트레이너들과 안내원을 구하려면\n로켓단 아지트부터 찾아야 해!)', { who: me0 }); S.hide(true);
-        // 관장 옆 포켓몬이 옆으로 나와서 나를 보며 울음소리 + 동작 (경완 2026-11-08)
-        if (P0) { await wait(300); await F.palOut(P0); await me1('(뭐!? 너도 나랑\n같이 가 주겠다고?)', '(같이 다닐 포켓몬은 오른쪽 위\n[포켓몬] 단추로 바꿀 수 있어.)'); }
+        // 대표 포켓몬이 내 오른쪽에 나와서 → 같이 가 주겠다고? → 말풍선·기뻐하기 → 고마워 (경완 2026-11-08 순서)
+        if (P0) { await wait(300); await F.palOut(P0); await me1('(뭐!? 너도 나랑\n같이 가 주겠다고?)'); await F.palJoy(); await me1('(고마워!\n같이 트레이너들을 구하러 가자!)'); }
         F.bub(lass, '!', 900); A.se('se_pin'); await wait(900);
         await F.approach(lass, me, 160);
         await S.say('관장님! 괜찮으세요?\n체육관에서 쫓겨나시는 거 봤어요!', { who: lass.nm });
@@ -228,12 +282,12 @@ GymEv.def({
         await S.say('어디로 갔는지는 못 봤는데...\n마을 사람들한테 물어보면\n누군가 봤을지도 몰라요!', { who: lass.nm }); S.hide(true);
       } else await F.palOn(P0);
       const lassGo = () => { if (lass.on) { lass.on = false; lass.el.hidden = true; } };
-      if (A.retry) lassGo();
-      // 마을 사람 부탁: 사람은 사정과 힌트만, 부탁 창은 그 장애물(나무·바위·상자)에 말 걸었을 때 (경완 2026-11-08). 해결하면 그 사람이 와서 고마움·선물·단서.
+      if (A.retry || WO) lassGo();
+      // 마을 사람 부탁: 사람은 사정과 힌트만, 부탁 창은 그 장애물(나무·바위·상자)에 말 걸었을 때 (경완 2026-11-08). 해결하면 그 사람이 와서 고마움·단서.
       //   다시 말 걸면 들려줬던 주요 힌트를 계속 말한다
       const say = async (W, L) => { for (const t of L) await S.say(t, { who: W }); S.hide(true); };
       const HINT = {
-        kong: ['모자 찾아 줘서 고마워요!', '아까 봤는데요, 검은 옷 아저씨들이\n트레이너들을 데리고\n마을 남쪽으로 갔어요!'],
+        kong: ['모자 찾아 줘서 고마워요!', '그 옷 입으니까 관장님도\n진짜 로켓단 같아요! 히히.'],
         dol: ['그 녀석들, 밤마다 마을 남쪽\n빈집에 들락날락하더구먼.', '그 집은 오래전에 비었는데\n불빛이 새어 나오더란 말이지.'],
         miso: ['그 검은 옷 손님들,\n계산하면서 서로 "우하하!"\n하고 인사하더라고요.', '무슨 암호 같은 걸까요?'] };
       const kongTalk = async () => { const W = kong.nm;
@@ -248,8 +302,8 @@ GymEv.def({
         if (A.has('miso')) return say(W, HINT.miso);
         if (miso.ag) return say(W, ['통로에 쌓인 상자 때문에\n안쪽 선반 물건을 꺼낼 수가 없어요...']);
         miso.ag = 1; await say(W, ['어서 오세요...\n아, 관장님! 마침 잘 오셨어요.', '아까 검은 옷 손님들이 물건을 잔뜩\n사 가면서 상자를 통로에\n쌓아 두고 갔어요.', '너무 무거워서 안쪽 선반 물건을\n꺼낼 수가 없어요...']); };
-      // 장애물에 말 걸기
-      const TREE = new Set(['30,17', '31,17']);
+      // 장애물에 말 걸기. 나무는 어느 쪽에서 말 걸어도 (경완 2026-11-08)
+      const TREE = new Set(['30,17', '31,17', '30,18', '31,18']);
       const treeLook = async () => {
         if (A.has('kong') || !hat) return me1('(커다란 나무다.)');
         await me1('(나무 꼭대기에 작은 모자가\n걸려 있다...)'); if (!(await ask('손이 닿지 않는다'))) return;
@@ -259,15 +313,18 @@ GymEv.def({
         F.bub(kong, '!', 800); A.se('se_pin'); await wait(700); kongHat(); A.se('DP_PIRORIRO'); kong.hop = 4; kong.put(); await wait(140); kong.hop = 0; kong.put();
         await F.approach(kong, me, 200);
         await S.say('와아! 제 모자다!\n고마워요, 관장님!', { who: kong.nm });
-        await S.say('이거, 아까 길에서 주운 건데\n관장님 가지세요!', { who: kong.nm });
-        await A.got(S, { kinds: ['it'], cap: 3500 }, { key: 'kong', giver: kong.nm }); A.mark('kong');
-        await say(kong.nm, ['아 참! 모자 찾다가 봤는데요,\n검은 옷 아저씨들이 트레이너들을\n데리고 마을 남쪽으로 갔어요!']);
-        await me1('(마을 남쪽...!)'); };
+        await S.say('아 참! 아까 검은 옷 아저씨가\n저쪽으로 뛰어가다가\n이걸 떨어뜨리고 갔어요.', { who: kong.nm });
+        // 단서 1: 로켓단 제복 → 바로 입고 변장
+        await A.got(S, { k: 'x', nm: '로켓단 제복', img: `${IM}pt/tr/${RK_OW(A)}.png`, d: '로켓단 조무래기가 떨어뜨리고 간 제복.\n입으면 로켓단으로 변장할 수 있다.' }, { key: 'suit', giver: kong.nm }); A.mark('kong');
+        await say(kong.nm, ['그 아저씨들, 트레이너들을 데리고\n마을 남쪽으로 갔어요!']);
+        await me1('(이걸 입으면 로켓단 사이에\n섞여 들어갈 수 있겠어!)');
+        await wear(A, F, true, true); await me1('(로켓단으로 변장했다!)'); };
       const rockLook = async () => {
         await me1('(커다란 바위가 정원 입구를\n막고 있다.)'); if (!(await ask('혼자서는 꿈쩍도 하지 않는다'))) return;
         for (const b of rocks) if (b.on) await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(200); await b.clear('break'); });
         A.mark('dol'); await me1('(바위가 부서졌다!)');
         F.bub(old, '!', 800); A.se('se_pin'); await wait(700); await F.approach(old, me, 240);
+        // 단서 2: 아지트 자리
         await say(old.nm, ['허허, 대단한 포켓몬이구먼!\n정원에 떨어진 건 뭐든 가져가게.', '그러고 보니 그 녀석들...\n밤마다 마을 남쪽 빈집에\n들락날락하더구먼.', '그 집은 오래전에 비었는데\n불빛이 새어 나오더란 말이지.']);
         await me1('(남쪽 빈집...!)'); };
       const crateLook = async () => {
@@ -278,45 +335,58 @@ GymEv.def({
         await S.say('와, 고마워요!\n이제 장사할 수 있겠어요!', { who: miso.nm });
         await S.say('이건 감사의 표시예요.\n체육관에 장식해 주세요!', { who: miso.nm });
         await A.got(S, { kinds: ['deco'], cap: 1500 }, { key: 'miso', giver: miso.nm }); A.mark('miso');
+        // 단서 3: 암호
         await say(miso.nm, ['아, 그러고 보니 그 손님들...\n계산하면서 서로\n"우하하!" 하고 인사하더라고요.', '무슨 암호 같은 걸까요?']);
         A.mark('pw'); await me1('(우하하...\n람다가 웃던 소리랑 똑같다!)'); };
+      // 빈집 앞 조무래기: 변장 + 암호 (경완 2026-11-08). 비킬 땐 내가 서 있지 않은 옆 칸으로
       const grTalk = async () => {
-        if (gr.done) { await S.say('...뭘 봐?\n얼른 들어가라니까.', { who: G }); S.hide(true); return; }
-        if (!A.has('pw')) { await S.say(gr.ag ? '...암호도 모르는 녀석은\n못 들어간다고!' : '뭐야? 여긴 그냥 빈집이야.\n볼일 없으면 저리 가!', { who: G }); gr.ag = 1; S.hide(true); if (A.has('dol') || A.has('kong')) await me1('(이 집이 수상한데...\n들어갈 방법을 찾아보자.)'); return; }
-        await S.say('...멈춰.\n들어가려면 암호를 대라.', { who: G });
+        if (gr.done) { await S.say(disg(A) ? '...뭘 꾸물거려?\n얼른 들어가라니까.' : '...뭘 봐?', { who: G }); S.hide(true); return; }
+        if (!disg(A)) { await S.say(gr.ag ? '또 너냐?\n여긴 그냥 빈집이라니까!' : '뭐야? 여긴 그냥 빈집이야.\n볼일 없으면 저리 가!', { who: G }); gr.ag = 1; S.hide(true);
+          await me1(A.has('dol') ? '(로켓단이 지키고 있는 걸 보면\n여기가 아지트가 틀림없어...)' : '(이 집, 뭔가 수상한데...)', '(마을 사람들에게 말을 걸어서\n단서를 찾아보자.)'); return; }
+        F.bub(gr, '?', 800); await wait(500);
+        await S.say('응? 처음 보는 얼굴인데...\n신입이냐?', { who: G });
+        if (!A.has('pw')) { await S.say('들어가려면 암호를 대라.\n...뭐야, 암호도 몰라?\n신입 교육부터 다시 받고 와!', { who: G }); S.hide(true); await me1('(암호를 알아내야 해...\n마을 사람들에게 더 물어보자.)'); return; }
+        await S.say('들어가려면 암호를 대라.', { who: G });
         const i = await S.choose(['우하하!', '로켓단 만세!', '안녕하세요!']); S.hide(true);
-        if (i !== 0) { await S.say('틀렸다!\n수상한 녀석이군... 저리 가!', { who: G }); S.hide(true); return; }
-        await S.say('...좋아, 들어가라.', { who: G }); S.hide(true);
-        await gr.go([[10, 31]], 220); gr.turn('l'); gr.done = true; A.mark('gr');
-        await S.say('...응? 방금 그거\n체육관 관장 아니었나...?', { who: G }); S.hide(true); };
+        if (i !== 0) { await S.say('틀렸다!\n...수상한 녀석이군. 저리 가!', { who: G }); S.hide(true); return; }
+        await S.say('...좋아, 들어가라.\n신입치곤 제법이군.', { who: G }); S.hide(true);
+        const mx = Math.round(me.x), my = Math.round(me.y), pl = F.pl, ok = ([x, y]) => !(x === mx && y === my) && !F.solid(x, y, gr);
+        const C = [[10, 31], [8, 31]].sort((a, b) => pl ? Math.hypot(b[0] - pl.x, b[1] - pl.y) - Math.hypot(a[0] - pl.x, a[1] - pl.y) : 0), to = C.find(q => ok(q) && !(pl && q[0] === Math.round(pl.x) && q[1] === Math.round(pl.y))) || C.find(ok);   // 포켓몬 반대쪽으로 (큰 포켓몬에 가려지지 않게)
+        if (to) { await gr.go([to], 220); gr.face(me); } gr.done = true; A.mark('gr');
+        await S.say('...근데 저 녀석, 어디서\n본 것 같은데...?', { who: G }); S.hide(true); };
       // 줍기: 몬스터볼(보이는 것) 또는 숨은 것
       const pick = K.pick;
-      let stairs = null;
-      const POT = { '0,7': 0, '0,6': 0, '10,7': 1, '10,6': 1 };
       const LK = { main: PW.look, mart: MT.look, center: CT.look, house1: HS.look, house: HS.look, museum: MU.look };
       const LOOK = {
         main: { '19,7': '돌담 과학 박물관\n"오래된 화석과 우주의 돌을\n만나 보세요!"', '11,16': [`돌담시티 포켓몬 체육관\n관장: ${me0}`, '...그 위에 누가\n"로켓단 접수!" 라고 낙서해 놓았다.'],
           '39,19': '경찰의 알림\n"검은 옷에 R 마크를 단 수상한 무리를\n보면 바로 신고해 주세요!"', '20,30': '트레이너 팁!\n"포켓몬이 지치면\n포켓몬 센터에서 쉬게 해 주자!"', '31,25': '돌담시티\n"단단한 돌담처럼 변함없는 마을"' },
         museum: { '4,4': '프테라 화석이다.\n하늘을 나는 아주 옛날 포켓몬이라고 한다.', '4,7': '투구푸스 화석이다.\n바닷속에 살던 아주 옛날 포켓몬이라고 한다.', '26,1': '포켓몬 잡지다.\n"이달의 관장 인터뷰!"... 내 얼굴이 실려 있다.', '27,1': '포켓몬 잡지다.\n"이달의 관장 인터뷰!"... 내 얼굴이 실려 있다.' },
-        house: { '2,1': '먼지 쌓인 찬장이다.', '3,1': '먼지 쌓인 찬장이다.', '0,1': '부엌이다. 컵라면 그릇이\n잔뜩 쌓여 있다...', '1,1': '부엌이다. 컵라면 그릇이\n잔뜩 쌓여 있다...', '5,1': 'TV 다. 꺼져 있다.', '7,1': '창밖으로 돌담시티가 보인다.', '9,1': '돌담시티 근처 지도다.\n누가 빨간 펜으로 동그라미를 쳐 놓았다.', '10,1': '돌담시티 근처 지도다.\n누가 빨간 펜으로 동그라미를 쳐 놓았다.' } };
+        house: { '2,1': '먼지 쌓인 찬장이다.', '3,1': '먼지 쌓인 찬장이다.', '0,1': '부엌이다. 컵라면 그릇이\n잔뜩 쌓여 있다...', '1,1': '부엌이다. 컵라면 그릇이\n잔뜩 쌓여 있다...', '7,1': '창밖으로 돌담시티가 보인다.', '9,1': '돌담시티 근처 지도다.\n누가 빨간 펜으로 동그라미를 쳐 놓았다.', '10,1': '돌담시티 근처 지도다.\n누가 빨간 펜으로 동그라미를 쳐 놓았다.', '0,7': '평범한 화분이다.', '0,6': '평범한 화분이다.' } };
+      // 빈집 TV: 켜면 화면이 빛나고 뉴스 (경완 2026-11-08 '빈 집 tv 랑도 상호작용')
+      let tv = null;
+      const tvLook = async () => {
+        if (!tv) { A.se('se_select'); tv = F.pic('', 5 + 1 / 16, 1.5, 14, 7, 'floor', 'house'); tv.classList.add('ev-tv'); tv.style.backgroundImage = ''; tv.style.zIndex = 15; await wait(350); await me1('(TV 를 켜 보았다.)'); }
+        await me1('"...속보입니다. 오늘 아침\n돌담시티 체육관을 수상한 무리가\n점거했다는 소식입니다."', '"...체육관 관장은 현재\n행방이 알려지지 않았으며..."', '(...여기 있는데.)', '"...이어서 날씨입니다.\n돌담시티는 오늘 밤\n맑겠습니다."'); };
+      // 빈집 화분: 포켓몬 기술로 옮기면 그 자리에 계단 (경완 2026-11-08). 화분은 나·포켓몬이 없는 칸으로
       const openStairs = async () => {
         F.lock(true); A.se('DP_GASHIN', .9); F.el.animate([{ translate: '0 0' }, { translate: '-6px 2px' }, { translate: '5px -2px' }, { translate: '-3px 1px' }, { translate: '0 0' }], { duration: 300 }); I.haptic?.(1); await wait(500);
-        stairs = F.pic(`${IM}ev/rocket/stairs.png?v=3`, 9, 7); stairs.style.opacity = '0'; stairs.style.transition = 'opacity .5s'; void stairs.offsetWidth; stairs.style.opacity = '1'; A.se('se_unlock'); await wait(600);
-        F.rooms.house.warps.push({ x: 9, y: 7, id: 'stairs' }); F.hid.forEach(h => { if (h.key === 'pot') h.got = true; });
-        await S.say('(화분 옆 바닥이 열리면서\n지하로 내려가는 계단이 나타났다!)', { who: me0 }); S.hide(true);
-      };
-      const potLook = async () => { if (stairs) return me1('(화분 옆으로 계단이 이어져 있다.)');
-        await me1('(화분 밑에서 찬 바람이\n솔솔 새어 나온다...!)');
-        if (!(await ask('화분이 너무 무겁다'))) return;
-        if (F.pl) { await F.palAct(10, 7, async () => { A.se('DP_KON', .8); }); await me1(`(${pn()}${iga(pn())} 화분 밑에 숨겨진\n손잡이를 찾아냈다!)`); }
-        const y2 = await F.ask('손잡이를 당겨 볼까?', '', '당긴다', '그만둔다'); S.hide(true); if (y2) await openStairs(); };
+        const e = stairsOn(); e.style.opacity = '0'; e.style.transition = 'opacity .5s'; void e.offsetWidth; e.style.opacity = '1'; A.se('se_unlock'); await wait(600); A.mark('stairs');
+        await me1('(화분이 있던 자리에 지하로\n내려가는 계단이 나타났다!)'); };
+      const potLook = async () => { if (stairs) return me1('(커다란 화분이다.\n옆으로 옮겨 두었다.)');
+        await me1('(커다란 화분이다.\n...밑에서 찬 바람이\n솔솔 새어 나온다!)', '(발자국도 여기서 끊겨 있다...)'); if (!(await ask('화분이 너무 무거워서\n꿈쩍도 하지 않는다'))) return;
+        const busyAt = (x, y) => F.solid(x, y) || (F.pl && x === Math.round(F.pl.x) && y === Math.round(F.pl.y)) || (x === Math.round(me.x) && y === Math.round(me.y));
+        await use(10, 7, async () => { const to = POTD.find(([x, y]) => !busyAt(x, y) && !busyAt(x, y - 1)) || POTD[0]; A.se('DP_KON', .8); await pot.moveTo(to[0], to[1], 560); A.se('DP_GASHIN', .6); });
+        if (!F.pl) await me1('(힘껏 밀어서 화분을 옮겼다!)');
+        await openStairs(); };
       const key = (x, y) => x + ',' + y;
-      const can = ([x, y]) => { const k = key(x, y); return !!(F.obAt(x, y) || F.hidAt(x, y)?.it || (F.cur === 'main' && TREE.has(k)) || (F.cur === 'house' && POT[k] != null) || (F.cur === 'center' && LK.center?.[k] === 'pc') || lookText(LK[F.cur], LOOK[F.cur], x, y)); };
+      const can = ([x, y]) => { const k = key(x, y); return !!(F.obAt(x, y) || F.hidAt(x, y)?.it || (F.cur === 'main' && TREE.has(k)) || (F.cur === 'house' && k === '5,1') || (F.cur === 'center' && LK.center?.[k] === 'pc') || lookText(LK[F.cur], LOOK[F.cur], x, y)); };
+      let hs = false;
       for (;;) {
         const r = await F.play({
           talk: async s => {
             if (s === gr) return grTalk();
             if (s.stop) return stopTalk(s);
+            if (s.wg) return wgTalk(s);
             if (s === kong) return kongTalk();
             if (s === old) return dolTalk();
             if (s === miso) return misoTalk();
@@ -327,44 +397,52 @@ GymEv.def({
           look: async ([x, y]) => { if (await pick(x, y)) return; const b = F.obAt(x, y), k = key(x, y);
             if (b?.kind === 'rock') return rockLook();
             if (b?.kind === 'crate') return crateLook();
+            if (b?.kind === 'pot') return potLook();
+            if (b?.kind === 'bar') return me1('(로켓단 상자가 계단을\n꽉 막고 있다...)', '(위층에는 못 올라갈 것 같다.)');
             if (F.cur === 'main' && TREE.has(k)) return treeLook();
+            if (F.cur === 'house' && k === '5,1') return tvLook();
             if (F.cur === 'center' && LK.center?.[k] === 'pc') { await me1('(PC 로 같이 다닐 포켓몬을\n바꿀 수 있다.)'); return F.palPick(); }
-            if (F.cur === 'house' && POT[k] === 0) return me1('(평범한 화분이다.)');
-            if (F.cur === 'house' && POT[k] === 1) return potLook();
             const t = lookText(LK[F.cur], LOOK[F.cur], x, y); if (t) await me1(...[].concat(t)); },
           warp: async w => { if (w.id === 'gym') return me1('(체육관 문이 안에서 굳게 잠겨 있다...)');
             if (w.id === 'stairs') return 'in';
-            if (w.id === 'up2' || w.id === 'shut') return me1(w.id === 'up2' ? '(2층은 로켓단 소동 때문에\n지금 막아 두었다고 한다.)' : '(문이 잠겨 있다.)'); },
-          room: async id => { lassGo(); if (id === 'house' && !stairs) { await wait(300); await me1('(아무도 살지 않는 빈집이다...\n그런데 바닥에 발자국이 잔뜩 찍혀 있다.)'); } },
+            if (w.id === 'shut') return me1('(문이 잠겨 있다.)'); },
+          room: async id => { lassGo(); if (id === 'house' && !stairs && !hs) { hs = true; await wait(300); await me1('(아무도 살지 않는 빈집이다...)', '(그런데 바닥에 발자국이 잔뜩 찍혀 있다.\n오른쪽 화분 쪽으로 이어져 있는데...?)'); } },
         });
         if (r === 'quit') return 'stop';
         if (r === 'lose') return A.lose();
         if (r === 'in') break;
       }
-      F.lock(true); await me.go([[9, 7]], 267); A.se('se_exit');
+      F.lock(true); await me.go([[10, 7]], 267); A.se('se_exit');
       S.end(); A.music(null);
       await A.black(true, '어두운 계단이\n땅속 깊이 이어져 있다...', '로켓단 아지트로 내려간다', true);
       await F.close();
     },
-    // 3장 · 로켓단 아지트 (지하 1층) — v19.18 '찾는 재미': 조무래기 시야를 피해 다니기(들키면 배틀), R 상자 더미 치우고 줍기, 멈춘 발전기를 포켓몬 기술로 돌려 엘리베이터
+    // 3장 · 로켓단 아지트 (지하 1층) — v19.18 '찾는 재미': 조무래기 시야를 피해 다니기(들키면 배틀, 변장 중엔 의심만), R 상자 더미 치우고 줍기, 멈춘 발전기를 포켓몬 기술로 돌려 엘리베이터
     async A => {
       const { I, wait } = A, me0 = A.me();
       A.blackNow();
       const M1 = await MAP('b1f'), LK1 = M1.look;
       const F = A.field({ nm: '로켓단 아지트 지하 1층', img: `${IM}ev/rocket/b1f.png?v=3`, over: `${IM}ev/rocket/b1f_o.png?v=3`, w: 28, h: 34, col: B1F, cov: M1.cov,
-        warps: [{ x: 12, y: 2, id: 'up' }, { x: 17, y: 2, id: 'no' }, { x: 15, y: 30, id: 'no' }, ...[23, 24, 25].map(x => ({ x, y: 25, d: 'u', id: 'lift' }))] });
-      const me = F.me = F.npc(I.myOw(), 12, 3, 'd'); I.fitMe(me);
+        warps: [{ x: 12, y: 2, id: 'up' }, { x: 17, y: 2, id: 'no', off: true }, { x: 15, y: 30, id: 'no', off: true }, ...[23, 24, 25].map(x => ({ x, y: 25, d: 'u', id: 'lift' }))] });
+      const me = F.me = F.npc(I.myOw(), 12, 3, 'd'); if (disg(A)) wear(A, F, true); else I.fitMe(me);
       // 문지기 없이 둘만: 왼쪽 복도를 보는 조무래기, 오른쪽 방 입구에서 왼쪽·아래를 번갈아 보는 조무래기 (본가 도는 트레이너)
       const g1 = ow(A, F, 'hg_rocket_m', 4, 9, 'r', { sight: 5 }), g2 = ow(A, F, 'hg_rocket_f', 24, 12, 'l', { sight: 3, spin: ['l', 'd'] });
       const GS = [
-        [g1, { again: ['흥, 한 번 이겼다고\n우쭐대지 마라!', '아지트가 넓다고 길 잃지 마라.\n...아, 내가 왜 걱정을 해 주지?', '엘리베이터?\n발전기가 멈춰서 안 움직일걸. 크크'], pre: ['침입자다!\n여긴 로켓단 아지트라고!'], team: gTeam(A, 2, -2, 1), g: 300, say: { win: '아지트는\n그렇게 만만한 데가 아니야!', lose: '말도 안 돼...!' }, post: ['젠장...\n이래서야 승진은 글렀군...'] }],
-        [g2, { again: ['흥! 다시 말 걸지 마!\n아직 화났거든?', '람다 님은 지하 4층에서\n뺏은 포켓몬 세느라 바쁘셔.', '...관장님 포켓몬, 좀 귀엽던데.\n아니, 아무것도 아니야!'], pre: ['어머, 체육관 관장님이\n직접 오셨네?', '트레이너들은 못 돌려줘!\n전부 람다 님 거라고!'], team: gTeam(A, 2, -1, 3), g: 300, say: { win: '호호,\n얌전히 돌아가시지!', lose: '어머머...!\n이렇게 셀 줄은!' }, post: ['흥! 람다 님은\n나처럼 만만하지 않을걸!'] }],
+        [g1, { key: 'c3g1', again: ['흥, 한 번 이겼다고\n우쭐대지 마라!', '아지트가 넓다고 길 잃지 마라.\n...아, 내가 왜 걱정을 해 주지?', '엘리베이터?\n발전기가 멈춰서 안 움직일걸. 크크'], pre: ['침입자다!\n여긴 로켓단 아지트라고!'], team: gTeam(A, 2, -2, 1), g: 300, say: { win: '아지트는\n그렇게 만만한 데가 아니야!', lose: '말도 안 돼...!' }, post: ['젠장...\n이래서야 승진은 글렀군...'],
+          sus: ['응? 못 보던 얼굴인데...\n신입이냐?', '...뭐, 됐다.\n순찰이나 똑바로 돌아.', '엘리베이터 말이냐?\n발전기가 멈춰서 안 움직여.\n누가 좀 고쳐 놨으면...', '근데 너 어디서 본 것 같은데...\n기분 탓인가?'] }],
+        [g2, { key: 'c3g2', again: ['흥! 다시 말 걸지 마!\n아직 화났거든?', '람다 님은 지하 4층에서\n뺏은 포켓몬 세느라 바쁘셔.', '...관장님 포켓몬, 좀 귀엽던데.\n아니, 아무것도 아니야!'], pre: ['어머, 체육관 관장님이\n직접 오셨네?', '트레이너들은 못 돌려줘!\n전부 람다 님 거라고!'], team: gTeam(A, 2, -1, 3), g: 300, say: { win: '호호,\n얌전히 돌아가시지!', lose: '어머머...!\n이렇게 셀 줄은!' }, post: ['흥! 람다 님은\n나처럼 만만하지 않을걸!'],
+          sus: ['어머, 신입이니?\n제복이 좀 안 맞는 것 같은데?', '람다 님은 지하 4층에 계셔.\n잡아 온 트레이너들도 거기 있고.', '...너 혹시 관장... 아니겠지?\n설마~ 호호.'] }],
       ];
+      GS.forEach(([s, o]) => { if (A.has(o.key)) s.done = true; });
       const CR = `${IM}ev/rocket/crate.png?v=3`, BALL = `${IM}ev/rocket/ball.png?${VA}`;
       const pile = A.has('c3pile') ? [] : [F.obst(CR, 3, 12, { h: 32, kind: 'crate' }), F.obst(CR, 4, 12, { h: 32, kind: 'crate' })];   // 왼쪽 방 입구를 막은 R 상자 더미
-      const box = A.has('c3x1') ? null : F.obst(CR, 26, 9, { h: 32, kind: 'rbox' });   // 복도 끝 R 상자 하나 (안에 물건)
-      const gen = F.obst(`${IM}ev/rocket/machine.png?v=3`, 24, 27, { w: 48, h: 40, span: 3, kind: 'gen' });   // 엘리베이터 발전기
-      const ball = (key, x, y, it) => { if (A.has(key)) return; const b = F.obst(BALL, x, y, { kind: 'ball' }); b.key = key; b.it = it; };
+      const ball = (key, x, y, it) => { if (A.has(key)) return null; const b = F.obst(BALL, x, y, { kind: 'ball' }); b.key = key; b.it = it; return b; };
+      const BOXIT = { kinds: ['it', 'mint'], cap: 4000 };
+      // 복도 끝 R 상자 하나: 부수면 안에 있던 몬스터볼이 보임 (경완 2026-11-08 '상자 밑에 아이템 있을 때는 몬스터볼 스프라이트도')
+      const box = A.has('c3box') ? (ball('c3x1', 26, 9, BOXIT), null) : F.obst(CR, 26, 9, { h: 32, kind: 'rbox' });
+      // 엘리베이터 발전기: 엘리베이터 바로 앞이 아니라 왼쪽 방 안쪽에 (경완 2026-11-08 '발전기를 좀 다른 데다')
+      const gen = F.obst(`${IM}ev/rocket/machine.png?v=3`, 1, 13, { w: 48, h: 40, span: 3, kind: 'gen', low: true });
+      F.obst(CR, 17, 2, { h: 32, kind: 'bar' }); F.obst(CR, 15, 30, { h: 32, kind: 'bar' });   // 막힌 계단 앞 상자
       const hide = (key, x, y, it) => { if (!A.has(key)) F.hide(x, y, { key, it }); };
       ball('c3b1', 6, 17, { kinds: ['it'], cap: 4000 }); hide('c3e1', 1, 18, { k: 'egg', g: 2 });   // 왼쪽 방 안
       hide('c3h1', 16, 16, { kinds: ['mint'] });   // 가운데 방 화분 속
@@ -373,36 +451,40 @@ GymEv.def({
       const K = kit(A, F, S, me0), { me1, ask, use, dirTo, pn, iga } = K; await F.palOn(A.pal());
       if (!A.retry) {
         await A.title('3장 · 로켓단 아지트', '지하 깊은 곳 어딘가에...', 'CHAPTER 3');
-        await me1('(여기가 로켓단 아지트...!)', '(조무래기들 눈에 띄지 않게\n조심조심 지나가자.\n아래로 내려가는 길을 찾아야 해!)');
+        await me1('(여기가 로켓단 아지트...!)', disg(A) ? '(변장했으니 들키지는 않겠지...\n아래로 내려가는 길을 찾아야 해!)' : '(조무래기들 눈에 띄지 않게\n조심조심 지나가자.\n아래로 내려가는 길을 찾아야 해!)');
       }
-      const meet1 = async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!o) return true; return fight(A, F, S, s, o); };
+      const meet1 = async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!o) return true; const ok = await fight(A, F, S, s, o); if (ok) A.mark(o.key); return ok; };
       const meet = s => chain(F, GS, s, meet1);
       const pick = async (x, y) => { if (await K.pick(x, y)) return true; const b = F.obAt(x, y);
         if (b?.kind === 'crate') { await me1('(R 마크가 찍힌 상자가\n잔뜩 쌓여 방 입구를 막고 있다.)'); if (!(await ask('혼자서는 밀 수 없다'))) return true;
           for (const c of pile) if (c.on) await use(c.x, c.y, async () => { A.se('DP_KON', .9); await c.clear('push', F.pl ? dirTo(F.pl, [c.x, c.y]) : 'd'); });
           A.mark('c3pile'); await me1('(방으로 들어가는 길이 열렸다!)'); return true; }
         if (b?.kind === 'rbox') { await me1('(R 마크가 찍힌 상자다.\n뚜껑이 단단히 못질되어 있다...)'); if (!(await ask('혼자서는 열 수 없다'))) return true;
-          await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(250); await b.clear('out'); });
-          await me1('(상자가 부서지면서\n안에서 뭔가 굴러 나왔다!)'); await A.got(S, { kinds: ['it', 'mint'], cap: 4000 }, { key: 'c3x1' }); S.hide(true); return true; }
-        if (b?.kind === 'gen') { if (A.has('c3pow')) return me1('(발전기가 웅웅 힘차게 돌고 있다.)');
+          await use(b.x, b.y, async () => { A.se('DP_GASHIN', .8); b.shake(); await wait(250); await b.clear('break'); });
+          A.mark('c3box'); ball('c3x1', 26, 9, BOXIT); A.se('se_pin');
+          await me1('(상자가 부서지면서\n안에서 몬스터볼이 굴러 나왔다!)'); return true; }
+        if (b?.kind === 'bar') return me1('(R 상자가 계단을 꽉 막고 있다...\n다른 길을 찾아보자.)'), true;
+        if (b?.kind === 'gen') { if (A.has('c3pow')) return me1('(발전기가 웅웅 힘차게 돌고 있다.)'), true;
           await me1('(엘리베이터에 전기를 대는\n커다란 발전기다.\n...멈춰 있다.)'); if (!(await ask('혼자서는 돌릴 수 없다'))) return true;
-          const el = I.ty?.() === 13; await use(b.x, b.y, async () => { for (let i = 0; i < (el ? 1 : 3); i++) { b.shake(); A.se(el ? 'DP_W085' : 'DP_KON', .7); await wait(360); } });
+          const el = I.ty?.() === 13; await use(b.x + 1, b.y, async () => { for (let i = 0; i < (el ? 1 : 3); i++) { b.shake(); A.se(el ? 'DP_W085' : 'DP_KON', .7); await wait(360); } });
           A.se('se_escalator'); b.shake(); A.mark('c3pow');
           const PN = pn() || '포켓몬'; await me1(!F.pl ? '(발전기를 힘껏 돌렸다!\n...웅웅, 발전기가 돌기 시작했다!)' : el ? `(${PN}의 전기가 발전기에\n가득 들어갔다!)` : `(${PN}${iga(PN)} 발전기를 힘껏 돌렸다!\n...웅웅, 발전기가 돌기 시작했다!)`, '(이제 엘리베이터가 움직일 거야!)'); return true; }
         return false; };
-      // 도는 조무래기: 2초마다 방향을 바꾸고, 바꾼 쪽에 내가 있으면 바로 다가온다
+      // 도는 조무래기: 2초마다 방향을 바꾸고, 바꾼 쪽에 내가 있으면 바로 다가온다 (변장 중엔 안 옴)
+      const wo = () => A.woQ ? 'wo' : undefined;
       let spinT = performance.now() + 1800;
       for (;;) {
         const r = await F.play({
-          tick: () => { const t = performance.now(); if (t < spinT) return; spinT = t + 1800; for (const s of GS.map(x => x[0])) if (s.spin && !s.done && s.on) { s.turn(s.spin[(s.spin.indexOf(s.f) + 1) % s.spin.length]); if (F.sees(s)) return () => meet(s).then(() => undefined); } },
-          step: async () => { const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) return (await meet(s)) ? undefined : undefined; },
-          talk: async s => { if (!s.done) return (await meet(s)) ? undefined : undefined; await againSay(S, s, GS.find(x => x[0] === s)?.[1]); },
+          tick: () => { const t = performance.now(); if (t < spinT) return; spinT = t + 1800; for (const s of GS.map(x => x[0])) if (s.spin && !s.done && s.on) { s.turn(s.spin[(s.spin.indexOf(s.f) + 1) % s.spin.length]); if (!disg(A) && F.sees(s)) return () => meet(s).then(wo); } },
+          step: async () => { if (disg(A)) return; const s = GS.map(x => x[0]).find(s => F.sees(s)); if (s) { await meet(s); return wo(); } },
+          talk: async s => { const o = GS.find(x => x[0] === s)?.[1]; if (!s.done && disg(A)) return suspSay(A, F, S, s, o?.sus); if (!s.done) { await meet(s); return wo(); } await againSay(S, s, o); },
           can: ([x, y]) => !!(F.obAt(x, y) || F.hidAt(x, y)?.it || lookText(LK1, null, x, y)),
           look: async ([x, y]) => { if (await pick(x, y)) return; const t = lookText(LK1, null, x, y); if (t) await me1(...[].concat(t)); },
-          warp: async w => { if (w.id === 'lift') { if (!A.has('c3pow')) return me1('(엘리베이터 단추를 눌러도\n아무 반응이 없다...)', '(전기가 끊겨 있는 것 같다.\n근처에 발전기가 있을 거야.)'); A.se('se_exit'); return 'lift'; }
+          warp: async w => { if (w.id === 'lift') { if (!A.has('c3pow')) return me1('(엘리베이터 단추를 눌러도\n아무 반응이 없다...)', '(전기가 끊겨 있는 것 같다.\n어딘가에 발전기가 있을 거야.)'); A.se('se_exit'); return 'lift'; }
             return me1(w.id === 'up' ? '(위로 돌아갈 때가 아니야.\n트레이너들을 구해야 해!)' : '(계단이 막혀 있다...\n다른 길을 찾아보자.)'); },
         });
         if (r === 'quit') return 'stop';
+        if (r === 'wo') return A.whiteout();
         if (r === 'lose') return A.lose();
         if (r === 'lift') break;
       }
@@ -410,18 +492,21 @@ GymEv.def({
       await A.black(true, '엘리베이터를 타고\n지하 4층으로 내려간다...', '람다가 있는 아지트 가장 깊은 곳', true);
       await F.close();
     },
-    // 4장 · 구출 작전 (지하 4층) — v19.18: 문지기는 나를 보면 도망가고, 배틀은 람다 한 판. 이기면 금고(레어 알)·구한 사람들 선물
+    // 4장 · 구출 작전 (지하 4층) — 문지기 둘은 꼭 배틀(변장했으면 알아보고 원래 모습으로), 람다 한 판(지면 돌담시티 센터로), 아테나 모니터, 금고(레어 알)·구한 사람들 선물
     async A => {
       const { I, D, wait } = A, me0 = A.me(), sfs = I.sfList(), all = (I.st().sf || []);
       A.blackNow();
       const M4 = await MAP('b4f'), LK4 = M4.look;
       const F = A.field({ nm: '로켓단 아지트 지하 4층', img: `${IM}ev/rocket/b4f.png?v=3`, over: `${IM}ev/rocket/b4f_o.png?v=3`, w: 24, h: 26, col: B4F, cov: M4.cov, warps: [{ x: 20, y: 23, id: 'lift' }, { x: 21, y: 23, id: 'lift' }, { x: 11, y: 15, id: 'no' }] });
-      const me = F.me = F.npc(I.myOw(), 20, 24, 'd'); I.fitMe(me);
+      const me = F.me = F.npc(I.myOw(), 20, 24, 'd'); if (disg(A)) wear(A, F, true); else I.fitMe(me);
       const k1 = ow(A, F, 'hg_rocket_m', 16, 14, 'r', { sight: 3 }), k2 = ow(A, F, 'hg_rocket_f', 19, 14, 'l', { sight: 3 });
       const boss = ow(A, F, 'hg_petrel', 19, 8, 'd');
       const CAP = [[17, 7], [21, 7], [18, 5], [20, 5], [17, 5], [21, 5]];
       const caps = all.slice(0, CAP.length).map((s, i) => ow(A, F, s.ow, CAP[i][0], CAP[i][1], 'd'));
       const guy = F.guy = ow(A, F, I.GUY_OW, 19, 5, 'd');
+      // 붙잡힌 트레이너·안내원은 밧줄에 묶인 채 (경완 2026-11-08)
+      const rope = s => { const e = document.createElement('i'); e.className = 'ev-rope'; s.el.appendChild(e); s.rope = e; };
+      [...caps, guy].forEach(rope);
       const safe = F.obst(`${IM}ev/rocket/safe.png?${VA}`, 22, 8, { h: 24, kind: 'safe' });
       F.cam(me.x, me.y); A.music('hgAjito'); await A.black(false); await F.show();
       const S = A.talk(); S.hide(true);
@@ -430,22 +515,32 @@ GymEv.def({
         await A.title('4장 · 구출 작전', '모두를 데리고 돌아가자!', 'CHAPTER 4');
         await me1('(이 층 어딘가에\n람다와 트레이너들이 있을 거야...!)');
       }
-      // 문지기 둘: 나를 보면 겁먹고 람다 방으로 달아난다 (배틀 없음)
-      let fled = false;
-      const flee = async () => { if (fled) return; fled = true; F.lock(true); [k1, k2].forEach(k => { k.face(me); F.bub(k, '!', 900); }); A.se('se_pin'); await wait(1000);
-        await S.say('히익! 체육관 관장이다!\n부하들이 다 당했다더니...!', { who: G });
-        await S.say('람다 님께 알려야 해!\n도망쳐!!', { who: G }); S.hide(true);
-        await Promise.all([k1, k2].map(async k => { await F.goTo(k, [k === k1 ? 17 : 18, 11], 130); await k.gone(); }));
+      // 문지기 둘: 무조건 배틀 (경완 2026-11-08). 변장했으면 알아보고 원래 모습으로 돌아감
+      const KS = [[k1, { key: 'c4k1', pre: ['멈춰라!\n여기서부턴 람다 님 방이다!'], team: gTeam(A, 3, 0, 2), g: 400, say: { win: '람다 님께는\n한 발짝도 못 다가간다!', lose: '말도 안 돼...!' }, post: ['크윽...!\n그래도 아직 내 짝이 남았다!'] }],
+        [k2, { key: 'c4k2', pre: ['나까지 이길 수 있을까?\n각오해!'], team: gTeam(A, 3, 0, 4), g: 400, say: { win: '호호,\n여기까지야!', lose: '어머...!\n람다 님...!' }, post: ['람다 님...\n죄송합니다...!'] }]];
+      KS.forEach(([k, o]) => { if (A.has(o.key)) { k.done = true; k.on = false; k.el.hidden = true; } });
+      const gate = async () => { const live = KS.filter(([k]) => !k.done); if (!live.length) return; F.lock(true);
+        if (disg(A)) { live.forEach(([k]) => { k.face(me); F.bub(k, '?', 900); }); await wait(900);
+          await S.say('...거기 신입.\n이 앞은 간부님 방이다.\n아무나 못 들어간다.', { who: G }); await S.say('잠깐... 그 얼굴...\n어디서 많이 봤는데...', { who: G }); S.hide(true);
+          live.forEach(([k]) => F.bub(k, '!', 900)); A.se('se_pin'); await wait(1000);
+          await S.say('체, 체육관 관장이잖아!!\n변장까지 하고 숨어들다니!', { who: G }); S.hide(true);
+          A.mark('caught'); await wear(A, F, false, true); await me1('(들켜 버렸다...!)'); }
+        for (const [k, o] of live) { if (Math.abs(Math.round(k.x) - Math.round(me.x)) + Math.abs(Math.round(k.y) - Math.round(me.y)) > 1) await F.approach(k, me, 200);
+          const ok = await fight(A, F, S, k, o); if (!ok) return 'wo'; A.mark(o.key); await wait(300); }
+        F.lock(true); KS.forEach(([k]) => { k.on = true; k.el.hidden = false; });
+        await S.say('안 되겠다...\n람다 님께 알려야 해!\n도망쳐!!', { who: G }); S.hide(true);
+        await Promise.all(KS.map(async ([k]) => { await F.goTo(k, [k === k1 ? 17 : 18, 11], 130); await k.gone(); }));
         await me1('(문지기들이 안쪽으로\n도망쳐 버렸다...!)'); };
       for (;;) {
         const r = await F.play({
-          step: async ([x, y]) => { if (!fled && (F.sees(k1) || F.sees(k2))) { await flee(); return; } if (y <= 11 && x >= 16) return 'boss'; },
-          talk: async s => { if (s === k1 || s === k2) return flee(); if (s === boss) return 'boss'; },
+          step: async ([x, y]) => { if (KS.some(([k]) => !k.done && F.sees(k))) return gate(); if (y <= 11 && x >= 16) return 'boss'; },
+          talk: async s => { if (s === k1 || s === k2) return gate(); if (s === boss) return 'boss'; },
           can: ([x, y]) => !!(F.obAt(x, y) || lookText(LK4, null, x, y)),
           look: async ([x, y]) => { if (F.obAt(x, y)?.kind === 'safe') return me1('(튼튼해 보이는 금고다.\nR 마크가 찍혀 있다...)'); const t = lookText(LK4, null, x, y); if (t) await me1(...[].concat(t)); },
           warp: async () => me1('(트레이너들을 두고\n돌아갈 수는 없어!)'),
         });
         if (r === 'quit') return 'stop';
+        if (r === 'wo') return A.whiteout();
         if (r === 'lose') return A.lose();
         if (r === 'boss') break;
       }
@@ -459,28 +554,28 @@ GymEv.def({
       S.hide(true); F.bub(boss, '!', 900); A.se('se_pin'); await wait(900);
       await S.say('우하하!\n결국 여기까지 왔구먼!', { who: B });
       S.hide(true); F.follow = false; await F.goTo(me, [19, 9]); me.turn('u'); await F.camTo(19, 8.5, 500);
-      await S.say('부하들이 벌벌 떨며 도망쳐 오더니...\n관장 자리가 괜히 있는 게\n아니었군.', { who: B });
-      await S.say('하지만 여기서 끝이다!\n체육관도, 트레이너도,\n몰려오는 손님들의 포켓몬도...', { who: B });
-      await S.say('전부 이 람다 님이\n잘 맡아 두겠다! 우하하!', { who: B }); S.hide(true);
-      for (;;) {
-        const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 2, g: 1000, music: 'hgVsRoc', win: 'winGym',
-          team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 3]],
-          say: { win: '우하하!\n관장도 별거 아니구먼!', lose: '이, 이럴 수가...!\n이 람다 님이 지다니!' } });
-        if (won) break;
-        A.music('hgAjito'); await wait(300); await S.say('우하하! 아직도 덤빌 셈인가?\n언제든 다시 와 보시지!', { who: B });
-        await me1('(포켓몬들이 지쳐 버렸다...\n포켓몬 센터에 가서 회복시키자.)');
-        await A.black(true, '서둘러 돌담시티 포켓몬 센터에\n다녀왔다...', '포켓몬들이 기운을 되찾았다!', true); await A.black(false); F.camMe(400);
-        const r2 = await F.play({ talk: async s2 => { if (s2 === boss) return 'boss'; await S.say('관장님, 힘내세요!', { who: s2 === guy ? '안내원' : '트레이너' }); S.hide(true); }, warp: async () => me1('(트레이너들을 두고\n돌아갈 수는 없어!)') });
-        if (r2 === 'quit') return 'stop';
-        F.lock(true); A.music('hgEyeRoc'); me.face(boss); await S.say('좋다, 다시 한번\n혼쭐을 내 주마!', { who: B }); S.hide(true);
-      }
-      A.music('hgAjito'); await wait(300);
+      if (!A.retry || !A.has('c4meet')) {
+        await S.say('부하들이 벌벌 떨며 도망쳐 오더니...\n관장 자리가 괜히 있는 게\n아니었군.', { who: B });
+        await S.say('하지만 여기서 끝이다!\n체육관도, 트레이너도,\n몰려오는 손님들의 포켓몬도...', { who: B });
+        await S.say('전부 이 람다 님이\n잘 맡아 두겠다! 우하하!', { who: B }); A.mark('c4meet');
+      } else await S.say('우하하! 또 왔구먼!\n이번에도 쫓아 보내 주마!', { who: B });
+      S.hide(true);
+      const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 2, g: 1000, music: 'hgVsRoc', win: 'winGym',
+        team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 3]],
+        say: { win: '우하하!\n관장도 별거 아니구먼!', lose: '이, 이럴 수가...!\n이 람다 님이 지다니!' } });
+      // 지면 돌담시티 포켓몬 센터로 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접 가서')
+      if (!won) { A.music('hgAjito'); await wait(300); await S.say('우하하! 아직 멀었구먼!\n썩 꺼져라!', { who: B }); S.hide(true); return A.whiteout(); }
+      A.music('hgAjito'); await wait(300); await prize(A, S, 1000);
       await S.say('크윽...! 체육관 하나 털다가\n이게 무슨 꼴이람!', { who: B });
       await S.say('흥, 체육관이랑 트레이너들은\n돌려주마!', { who: B });
       await S.say('하지만 기억해 둬라...\n로켓단은 이걸로 끝이 아니다!\n언젠가 그분께서...!', { who: B }); S.hide(true);
       A.se('DP_KON', 1); A.shake?.(); F.el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(2.4)' }, { filter: 'brightness(1)' }], { duration: 500 }); await boss.gone(); await wait(400);
       await me1('(람다가 연막을 뿌리고\n도망쳐 버렸다...!)');
-      A.music(null); A.se('ME_FANFA5', 1);
+      A.music(null); await wait(500); await ariana(A, S, me1);
+      // 밧줄 풀어 주기
+      A.se('se_unlock'); for (const c of [...caps, guy]) { c.rope?.remove(); c.rope = null; c.hop = 4; c.put(); setTimeout(() => { c.hop = 0; c.put(); }, 140); await wait(120); }
+      await me1('(모두를 묶고 있던 밧줄을\n풀어 주었다!)');
+      A.se('ME_FANFA5', 1);
       const spots = [[18, 9], [20, 9], [17, 9], [21, 9], [18, 10], [20, 10], [17, 10]];
       const run = [...caps].sort((a, b) => b.y - a.y).concat(guy);
       const left = [...spots]; for (const c of run) { const t = F.nearest(c, left); if (!t) { await c.gone(); continue; } left.splice(left.indexOf(t), 1); await F.goTo(c, t, 140); c.face(me); }
@@ -506,8 +601,8 @@ GymEv.def({
         const r3 = await F.play({
           can: ([x, y]) => !!(F.obAt(x, y) || lookText(LK4, null, x, y)),
           look: async ([x, y]) => { if (F.obAt(x, y)?.kind === 'safe') return safeLook(); const t = lookText(LK4, null, x, y); if (t) await me1(...[].concat(t)); },
-          talk: async s2 => { if (s2 === guy) { if (!A.has('c4safe')) { await S.say(SAFE, { who: '안내원' }); S.hide(true); }
-              const y = await F.ask('체육관으로 돌아갈까요?', '', '돌아간다', '조금 더 있기'); S.hide(true); if (y) return 'home'; return; }
+          talk: async s2 => { if (s2 === guy) { if (!A.has('c4safe')) { await S.say(SAFE, { who: '안내원' }); }
+              const y = await S.ask('체육관으로 돌아갈까요?', { who: '안내원' }, '돌아간다', '조금 더 있기'); S.hide(true); if (y) return 'home'; return; }
             const i = caps.indexOf(s2); await S.say(i >= 0 ? '관장님, 구해 주셔서\n정말 고마워요!' : '...', { who: i >= 0 ? nm0(i) : '' }); S.hide(true); },
           warp: async () => me1('(모두 함께 체육관으로 돌아가자.\n안내원에게 말 걸면 돼.)'),
         });
@@ -532,7 +627,9 @@ GymEv.def({
       const S2 = A.talk();
       await S2.say('체육관이 다시\n우리 손에 돌아왔어요!', { who: '안내원' });
       await S2.say('로켓단을 혼자서 물리친 관장님!\n이 소문이 퍼지면 도전자들이\n더 많이 몰려올 거예요!', { who: '안내원' });
-      await S2.say('그리고 이거...\n아지트에서 몰래 챙겨 온 건데요,\n관장님이 가지세요!', { who: '안내원' });
+      // 로켓단 제복: 변장할 때 입었던 걸 그대로 챙겨 와서 이벤트가 끝나면 내 것으로 (경완 2026-11-08)
+      await S2.say('(그러고 보니 변장할 때 입었던\n로켓단 제복... 그대로 챙겨 왔네.)', { who: me0 });
+      await S2.say('(또 쓸 일이 있을지도 몰라.\n잘 간직해 두자!)', { who: me0 });
       await S2.end();
       await A.reward();
     },
