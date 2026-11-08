@@ -751,7 +751,7 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
   body.onclick = (e, b) => { sfx('tap'); if (b.dataset.f) return fPick(b.dataset.f); if (b.dataset.pow) { tmPow = -tmPow; redraw(); return; } if (b.dataset.tm) buyTm(b.dataset.tm, can); };
 }
 /* v19.49 경완: 기술머신(계속 씀)·기술레코드(한 번 쓰면 없어짐) 안내를 색 딱지로 구분, 사기 창에 라인업에서 배울 수 있는 포켓몬 목록(스프라이트) */
-const tmKdBox = id => GB().isTR(id) ? '<div class="tm-kd tr"><i class="tm-kdb">1회용</i><span>기술레코드는 한 번 가르치면 없어져요.</span></div>' : '<div class="tm-kd"><i class="tm-kdb">계속 사용</i><span>기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.</span></div>';
+const tmKdBox = (id, ds) => { const tr = GB().isTR(id); return `<div class="tm-kd${tr ? ' tr' : ''}">${ds ? `<p class="tm-ds">${esc(ds)}</p>` : ''}<div class="tm-kdr"><i class="tm-kdb">${tr ? '1회용' : '계속 사용'}</i><span>${tr ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</span></div></div>`; };   // v19.49 경완: 기술 설명까지 박스 하나로, 설명 글자 진하게
 function tmWho(id, i) {
   const D = GB().D, M = luMons().filter(P => (D.sp[P.sp]?.tm || []).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
@@ -761,7 +761,7 @@ function tmWho(id, i) {
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
   const kd = GB().tmKind(id); if (!GB().isTR(id) && n > 0) return;   /* 기술머신은 한 번 사면 계속 (v15.69) */
-  pop(`<h4${GB().isTR(id) ? ' class="has-own"' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}${GB().isTR(id) ? GB().bagN(n) : ''}</h4><div class="mp-moves one tm-card">${GB().mvRow(x, '')}</div><p class="gy-msg">${esc(x[8] || '')}</p>${tmKdBox(id)}${tmWho(id, i)}
+  pop(`<h4${GB().isTR(id) ? ' class="has-own"' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}${GB().isTR(id) ? GB().bagN(n) : ''}</h4><div class="mp-moves one tm-card">${GB().mvRow(x, '')}</div>${tmKdBox(id, x[8])}${tmWho(id, i)}
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
     if (a === 'x') return close(); if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }

@@ -3319,7 +3319,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .wr-pop>.wr-pgs{margin-inline:0}
 
 /* v19.49 경완: 기술머신·기술레코드 안내 색 딱지 + 사기 창 라인업 배울 수 있는 포켓몬 */
-#gym .tm-kd{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:7px 9px;border:2px solid #3a6fc8;background:#e6effc;font-size:12px;line-height:1.45;color:#22386a;text-align:left}
+#gym .tm-kd{margin:0 0 12px;padding:9px 10px;border:2px solid #3a6fc8;background:#e6effc;font-size:12px;line-height:1.45;color:#22386a;text-align:left}
+#gym .gy-pop .tm-kd p.tm-ds{margin:0 0 8px;padding:0 0 8px;border-bottom:2px dotted rgba(58,111,200,.45);font-size:13px;line-height:1.6;color:var(--ink,#20202c)}#gym .gy-pop .tm-kd.tr p.tm-ds{border-bottom-color:rgba(208,104,44,.45)}
+#gym .tm-kdr{display:flex;align-items:center;gap:8px}
 #gym .tm-kd.tr{border-color:#d0682c;background:#fdeee2;color:#6a3010}
 #gym .tm-kdb{flex:none;padding:2px 6px;background:#3a6fc8;color:#fff;font-style:normal;font-size:11px;line-height:1.3;white-space:nowrap}
 #gym .tm-kd.tr .tm-kdb,#gym .tm-kdl.tr .tm-kdb{background:#d0682c}
