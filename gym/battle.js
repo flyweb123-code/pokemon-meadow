@@ -1346,7 +1346,7 @@ function drawTab() {
   };
 }
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
-  p.onclick = e => { if (e.target === p) { if (!p.querySelector('button[data-a]')) p.remove(); return; }   /* v18.89 경완: 알림창은 버튼으로만 닫힘 */ const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
+  p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
   if (S.gym) document.querySelector('#gym .gy-main').appendChild(p); else { p.style.zIndex = 16; document.querySelector('#gym').appendChild(p); }   // v14.18: 체육관 열기 전(타입 고르기 화면 위)엔 맨 위에
   fillTh(p); return p; }
 // 라인업에서 빼기 전에 묻는 창 (경완 2026-10-29)
