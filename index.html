@@ -2173,6 +2173,22 @@ body.mapEdit:not(.meHas) #items .prop{filter:drop-shadow(1px 0 0 rgba(255,255,25
 #pokePop .pv-hex.pvb .pv-sum{display:none}
 #pokePop .pv-hex{transition:transform .08s,filter .08s}#pokePop .pv-hex:active{transform:scale(.97);filter:brightness(.95)}
 
+/* v18.95 경완 '패치 전에 승급해서 못 받은 보상 지급 알림창 (앱 켜면)': 밀린 체육관 승급 보상 창 (gbkShow) */
+.gbk-pop .fr-gwin{display:flex;flex-direction:column;align-items:stretch;padding:14px 16px 16px;text-align:center;max-height:86vh}
+.gbk-hd{position:relative;height:132px;margin:-14px -16px 8px;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 55%,#3a3470,#1c1838 72%);border-bottom:3px solid var(--frame)}
+.gbk-hd .frg-rays{width:300px;height:300px;margin:-150px;animation-duration:16s}
+.gbk-bd{position:relative;align-self:start;margin-top:10px;display:grid;place-items:center;width:84px;height:84px;animation:gbkIn .6s cubic-bezier(.3,1.6,.5,1) both}.gbk-bd img{width:84px;height:84px;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(255,226,120,.75))}
+.gbk-hd .gbk-eg{position:absolute;bottom:12px;width:26px;height:32px;animation:gbkDrop .55s cubic-bezier(.3,1.6,.5,1) var(--d) both}.gbk-hd .gbk-eg .egg{width:26px;height:32px;filter:drop-shadow(0 0 6px rgba(255,230,140,.85))}
+.gbk-t{margin:4px 0 0;font-size:17px;line-height:1.35;color:#7a4a08;text-wrap:balance}.gbk-t small{display:block;font-size:11px;letter-spacing:1px;color:var(--dim,#8a8a9a)}
+.gbk-m{margin:6px 0 10px;font-size:12px;line-height:1.5;color:var(--win-ink)}
+.gbk-list{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:5px;max-height:34vh;overflow:auto;text-align:left}
+.gbk-list li{display:grid;grid-template-columns:30px 1fr auto;align-items:center;column-gap:8px;padding:5px 8px;border:2px solid #e6c260;border-radius:6px;background:linear-gradient(#fffdf2,#fff3c4)}
+.gbk-list li img{width:30px;height:30px;image-rendering:pixelated}.gbk-list li>span{display:flex;flex-direction:column;min-width:0}.gbk-list li b{font-size:13px;color:#5a3a08}.gbk-list li small{font-size:10px;color:#8a7a5a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gbk-list li em{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-style:normal;font-size:12px;font-weight:700;color:#7a4a08;white-space:nowrap}.gbk-list li em>span{display:inline-flex;align-items:center}
+.gbk-list .coin,.gbk-sum .coin{width:11px;height:11px;margin-right:6px}.gbk-list .egg{width:13px;height:16px;margin-right:4px}
+.gbk-sum{display:flex;justify-content:center;align-items:center;gap:14px;margin:0 0 12px;padding:8px 10px;border-radius:6px;background:#2c2648;color:#fff;font-size:12px}.gbk-sum b{display:inline-flex;align-items:center;font-size:15px;color:#ffe48a}.gbk-sum .egg{width:15px;height:18px;margin-right:6px}
+.gbk-ok{width:100%}
+@keyframes gbkIn{0%{opacity:0;scale:.4}100%{opacity:1;scale:1}}@keyframes gbkDrop{0%{opacity:0;translate:0 -70px}100%{opacity:1;translate:0 0}}
 /* v18.75 경완: 랭크 배지 체육관처럼 프로필 박스 모서리에 딱, 오른쪽 정보(이름·타입·친밀도) 여백 고르게 — 이름 위·친밀도 아래를 그림 칸 위아래에 맞춤 */
 #pokePop .pp-ps .hd-rk{left:3px;top:3px}#pokePop .pp-ps .hd-rk .rk{width:18px;font-size:12px;line-height:15px;margin:0;box-shadow:none;border:0;padding:0!important}
 #pokePop .pp-id{height:108px;display:flex;flex-direction:column;justify-content:flex-start;padding:1px 0 2px;box-sizing:border-box}#pokePop .pp-id>*{margin:0!important}#pokePop .pp-id>.ih-sub{margin-top:2px!important}#pokePop .pp-id>.pv-fr{margin-top:auto!important}   /* v18.79 경완: 타입·종류 줄은 이름 줄에 붙이고 친밀도만 아래 */#pokePop .pp-id .ih-top{min-height:26px}
@@ -7785,7 +7801,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.94';   /* v18.93 경완: 전설 알 지급 = 강박사 + 명예의 전당 등록 연출, 타입 알도 별명(신비한 레어 알) */ /* v18.92 경완: 모르페코는 열매를 다 먹은 뒤에 하얗게 빛나며 원래 폼으로 */   /* v18.91 경완: 저절로 뜨는 알림창만 버튼으로 닫힘, 직접 눌러 연 창은 다시 바깥 눌러도 닫힘 (v18.89 는 전부 버튼으로만) */   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.95';   /* v18.95 경완: 패치 전에 승급해서 못 받은 체육관 승급 보상을 앱 켤 때 한 번에 지급하고 알림창 */ /* v18.93 경완: 전설 알 지급 = 강박사 + 명예의 전당 등록 연출, 타입 알도 별명(신비한 레어 알) */ /* v18.92 경완: 모르페코는 열매를 다 먹은 뒤에 하얗게 빛나며 원래 폼으로 */   /* v18.91 경완: 저절로 뜨는 알림창만 버튼으로 닫힘, 직접 눌러 연 창은 다시 바깥 눌러도 닫힘 (v18.89 는 전부 버튼으로만) */   /* v18.87 경완: 전설 체육관 축하창은 등급 혜택만, 강박사가 들어와 전설 알 지급, 등급표 승급 보상/등급 혜택 나눔 */ /* v18.85 경완: 모르페코가 열매 먹고 원래 폼으로 돌아올 때도 하얗게 빛나며 바뀜 */   /* v18.81 경완: 기술 효과음을 필드 곡·울음소리 크기에 맞춰 1.75배 */   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8745,6 +8761,32 @@ function frThxCheck() { if (!frMe) return; const seen = new Set(S.frTyS ||= []),
   for (const code of S.friends || []) { const c = frCards[code]; if (!Array.isArray(c?.ty)) continue;
     for (const y of c.ty) { if (y?.to !== frMe || !y.id || seen.has(y.id)) continue; seen.add(y.id); S.frTyS.push(y.id); L.push({ nm: c.n || '친구', g: y.g || '알' }); } }
   if (!L.length) return; S.frTyS = S.frTyS.slice(-200); save(); L.forEach(x => log(`${esc(x.nm)}이(가) 내가 보낸 ${esc(x.g)} 선물을 고마워했다.`, [], true)); frThxPop(L); }
+/* v18.95 경완 '이거 패치 전에 승급해서 못 받은 사람한테 보상 다 지급할건데, 지급 보상 알림창 어플 끼면 뜨게': 체육관 등급 보상(v18.20~)이 생기기 전에 오른 등급
+   = 체육관마다(지금 체육관 + 쉬는 체육관 shelf) 심사를 통과한 등급(g.gmax)까지 중 g.grw 에 없는 등급 → 골드·체육관 타입 알을 한 번에 주고 창으로 알림. 금액·알은 gym/gym.js GR_GOLD·GR_EGG 와 같게 */
+const GBK_GOLD = [0, 1000, 1500, 2500, 4000, 6000, 10000], GBK_EGG = [0, 0, [1, 5], [2, 4], [3, 3], [4, 2], 0], GBK_GN = ['새내기 체육관', '동네 체육관', '떠오르는 체육관', '이름난 체육관', '인기 체육관', '명문 체육관', '전설의 체육관'];
+function gbkDue() { const G = S.gym, R = []; if (!G || typeof G !== 'object') return R;
+  for (const g of [G, ...(Array.isArray(G.shelf) ? G.shelf : [])]) { if (!g?.ty || !(g.gmax > 0)) continue;
+    for (let i = 1; i <= Math.min(g.gmax | 0, GBK_GOLD.length - 1); i++) if (!(g.grw || {})[i] && (GBK_GOLD[i] || GBK_EGG[i])) R.push({ g, i }); }
+  return R; }
+function gbkPay() { const R = gbkDue(); if (!R.length) return null; let gold = 0;
+  const rows = R.map(({ g, i }) => { (g.grw = g.grw || {})[i] = 1; const n = GBK_GOLD[i] || 0, E = GBK_EGG[i]; gold += n;
+    const es = E ? GA.tyEggs(g.ty, E[0], E[1], g.nm || '체육관') : []; return { ty: g.ty, nm: g.nm || `${TYPE_KO[g.ty]} 체육관`, i, n, es }; });
+  addGold(gold); save(); log(`체육관 승급 보상을 받았다! ${gold.toLocaleString()}G${rows.some(r => r.es.length) ? `와 알 ${rows.reduce((a, r) => a + r.es.length, 0)}개` : ''}.`, [], true);
+  return { rows, gold }; }
+function gbkPop({ rows, gold }, done) {
+  const bd = (t, i) => `gym/img/badge/${Math.max(1, i + 1)}/${t}.png?v=11`, top = rows.reduce((a, r) => r.i > a.i ? r : a, rows[0]), eggs = rows.flatMap(r => r.es), E = eggs.slice(0, 5);
+  const box = frGPop(`<div class="gbk-hd"><i class="frg-rays"></i><span class="gbk-bd"><img alt="" src="${bd(top.ty, top.i)}"></span>${E.map((e, k) => `<span class="gbk-eg" style="left:calc(50% + ${(k - (E.length - 1) / 2) * 34 - 13}px);--d:${(.45 + k * .12).toFixed(2)}s">${eggHtml(e.g, '', e.lt || e.ct)}</span>`).join('')}</div>
+    <h4 class="gbk-t"><small>체육관 승급 보상</small>못 받은 보상이 도착했어요!</h4>
+    <p class="gbk-m">업데이트 전에 승급해서 받지 못한<br>등급 보상을 모두 드려요.</p>
+    <ul class="gbk-list">${rows.map(r => `<li><img alt="" src="${bd(r.ty, r.i)}"><span><b>${GBK_GN[r.i]}</b><small>${esc(r.nm)}</small></span><em>${r.n ? `<span><i class="coin"></i>${r.n.toLocaleString()}G</span>` : ''}${r.es.length ? `<span>${eggHtml(r.es[0].g, '', r.es[0].ct || r.es[0].lt)}${esc(eggName(r.es[0]))} ${r.es.length}개</span>` : ''}</em></li>`).join('')}</ul>
+    <div class="gbk-sum"><span>합계</span><b><i class="coin"></i>${gold.toLocaleString()}G</b>${eggs.length ? `<b>${eggHtml(eggs[0].g, '', eggs[0].ct || eggs[0].lt)}알 ${eggs.length}개</b>` : ''}</div>
+    <button type="button" class="lk-btn main gbk-ok" data-a="x">모두 받기</button>`);
+  box.classList.add('gbk-pop'); box.style.zIndex = 9950; try { sfx('newdex'); haptic(1); } catch (e) {}
+  box.onclick = e => { if (!e.target.closest('[data-a=x]')) return; try { sfx('pickup'); } catch (er) {} box.remove(); try { renderBag.sig = ''; renderRun(); } catch (er) {} done?.(); };
+  return box; }
+let gbkOn = false;
+function gbkShow() { if (gbkOn) return true; const P = gbkPay(); if (!P) return false; gbkOn = true; gbkPop(P, () => { gbkOn = false; notiSoon(400); }); return true; }
+window.__gbk = { show: gbkShow, due: gbkDue, pop: gbkPop };   // 시험용
 function frThxPop(L) { if (document.body.classList.contains('inTitle') || $('#intro') && !$('#intro').hidden || !$('#noti').hidden || document.querySelector('.fr-gpop')) return setTimeout(() => frThxPop(L), 3000);
   const nm = [...new Set(L.map(x => x.nm))], who = nm.length > 1 ? `<b>${esc(nm[0])}</b> 외 ${nm.length - 1}명` : `<b>${esc(nm[0])}</b>`;
   const box = frGPop(`<h4 class="frg-t">고마워!</h4><p class="frg-m frt-m">${who}${nm.length > 1 || hasBat(nm[0]) ? '이' : '가'} ${L.length > 1 ? `알 선물 ${L.length}개를` : esc(L[0].g) + ' 선물을'} 고마워했어요</p><button type="button" class="lk-btn main frg-ok" data-a="x">확인</button>`);
@@ -14653,7 +14695,7 @@ function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, 
 function notiShow(force) {
   if (notiOpen || document.hidden || inGym() || (tutOn && !force)) return;   // v5.39 경완: 튜토리얼 중엔 튜토리얼이 부를 때만 (알이 먼저 받아지던 것)
   if (hatching || evolving) { notiSoon(2000); return; }
-  if (!$('#news').hidden) return; if (!tutOn && newsDue()) { newsShow(); return; }   /* v14.36 경완: 처음 시작한 사람도 최신 알림창 (튜토리얼 끝난 뒤) */   /* v7.44 경완: 업데이트 알림창이 먼저, 닫으면 알 알림이 이어서 */
+  if (!$('#news').hidden) return; if (!tutOn && newsDue()) { newsShow(); return; } if (gbkOn || document.querySelector('.fr-gpop')) return; if (!tutOn && !document.body.classList.contains('inTitle') && gbkShow()) return;   /* v18.95 업데이트 알림창 다음, 알 알림 전에 밀린 체육관 승급 보상 */   /* v14.36 경완: 처음 시작한 사람도 최신 알림창 (튜토리얼 끝난 뒤) */   /* v7.44 경완: 업데이트 알림창이 먼저, 닫으면 알 알림이 이어서 */
   const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
   const bf = S.bagFull && S.bagFull.n > 0 && S.bagFull.d !== dayKey() ? S.bagFull.n : 0;
   if (!got.length && !rdy.length && !evo.length && !bf) return;
