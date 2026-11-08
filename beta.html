@@ -3690,6 +3690,14 @@ let balBusy = false;
 function balFlush(force) { try { if (balBusy || typeof frH === 'undefined' || !frH) return; const q = balQ(); if (!q.length || (!force && q.length < 10)) return; const ev = q.slice(0, 50); balBusy = true;
   frH.postMessage({ op: 'balLog', beta: typeof IS_BETA !== 'undefined' && IS_BETA ? 1 : 0, ev }).then(r => { if (r && r.ok === false) return; const q2 = balQ(); q2.splice(0, ev.length); try { localStorage.setItem(BAL_K, JSON.stringify(q2)); } catch (e) {} }).catch(() => {}).finally(() => { balBusy = false; }); } catch (e) { balBusy = false; } }
 window.pkBal = (k, d) => { try { let v = ''; try { v = APP_VER; } catch (e) {} const q = balQ(); q.push({ k, t: Date.now(), v, d }); if (q.length > BAL_MAX) q.splice(0, q.length - BAL_MAX); localStorage.setItem(BAL_K, JSON.stringify(q)); balFlush(); } catch (e) {} };
+/* v18.73 경완 '골드 쓴 기록도 넣어줘' (목표: 유저가 골드를 쓰면서 즐기기): 하루마다 시작·끝 잔액, 번 골드(addGold 합), 쓴 곳(분류별 합)·산 물건 개수를 모아 두었다가 날짜가 바뀌면 pkBal('gold') 한 줄 */
+const GL_K = 'pk-gold-day';
+function goldDay(adj) { try { if (typeof S === 'undefined' || !S || typeof S.gold !== 'number' || window.gymSimOn) return null; const d = new Date(), day = d.getFullYear() * 1e4 + (d.getMonth() + 1) * 100 + d.getDate(); let o = null; try { o = JSON.parse(localStorage.getItem(GL_K) || 'null'); } catch (e) {}
+  if (o && o.day !== day) { window.pkBal('gold', { day: o.day, b0: o.b0, b1: o.b1 ?? o.b0, ern: o.ern || 0, sp: o.sp || {}, it: o.it || {} }); o = null; }
+  if (!o) o = { day, b0: S.gold + (adj || 0), b1: S.gold, ern: 0, sp: {}, it: {} }; return o; } catch (e) { return null; } }
+const goldSv = o => { try { o.b1 = S.gold; localStorage.setItem(GL_K, JSON.stringify(o)); } catch (e) {} };
+window.pkGold = (cat, n, id) => { try { n = Math.round(+n || 0); if (!(n > 0)) return; const o = goldDay(cat === 'ern' ? -n : n); if (!o) return; if (cat === 'ern') o.ern += n; else { o.sp[cat] = (o.sp[cat] || 0) + n; if (id) { const k = String(id).slice(0, 40); o.it[k] = (o.it[k] || 0) + 1; } } goldSv(o); } catch (e) {} };
+setInterval(() => { const o = goldDay(); if (o) goldSv(o); }, 10 * 60 * 1000); setTimeout(() => { const o = goldDay(); if (o) goldSv(o); }, 15000);
 document.addEventListener('visibilitychange', () => { if (document.hidden) balFlush(true); }); setInterval(() => balFlush(true), 10 * 60 * 1000); setTimeout(() => balFlush(true), 20000);
 window.addEventListener('error', e => { if (!e.message) return; pkErr(e.message, (e.filename || '').split('/').pop().split('?')[0] + ':' + e.lineno + ':' + e.colno); });
 window.addEventListener('unhandledrejection', e => { const r = e.reason; pkErr('promise: ' + (r?.message || r), r?.stack); });
@@ -7758,7 +7766,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.72';   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.73';   /* v18.73 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -9896,8 +9904,8 @@ const MQ_IC = (() => { const sv = (b) => `<svg viewBox="0 0 12 12" shape-renderi
     kill: sv(P('#20202c', 'M5 0h2v3h1V1h2v2H9v1h3v2H9v1h1v2H8V8H7v4H5V8H4v1H2V7h1V6H0V4h3V3H2V1h2v2h1z') + P('#ff9a3a', 'M6 1v3h1V2h2L8 4h3v1H8v1h1v2H8L7 7v4H6V7H5L4 8H3V6h1V5H1V4h3L3 2h2v2h1z') + P('#fff6c0', 'M5 4h2v2H5z')),
     sp: sv(P('#20202c', 'M3 0h6v1h1v1h1v2h1v4h-1v2h-1v1H9v1H3v-1H2v-1H1V8H0V4h1V2h1V1h1z') + P('#ff4a5a', 'M3 1h6v1h1v1h1v2H1V3h1V2h1z') + P('#ffffff', 'M1 7h10v1h-1v1H9v1H3V9H2V8H1z') + P('#20202c', 'M1 5h10v1H1z') + P('#ffffff', 'M5 4h2v3H5z') + P('#20202c', 'M5 5h2v1H5z')) }; })();
 const MQ_TY = [[1500, 60], [3000, 150], [5000, 300], [7000, 550], [10000, 1000]];   /* v8.19 경완: 타입별 10,000점 = 1,000G 로 다시 맞춤 · 미션 골드는 작업실 밸런스에서 고칠 수 있다 (applyBal MQ_*_G) */   /* v8.16 경완: 미션 골드를 난이도에 맞게 (한 판 3,000점 = 일일 300G 와 같은 값) */   // v8.09 경완: 10,000점 = 1,000G 기준   // 타입별 점수 기록 (그 타입 기술로 한 판 점수) — v8.04 경완: 타입마다 단계가 이어짐
-// v8.04 경완: 일일 미션 (날마다 새로) — 게임 5판, 포켓몬 3종과 함께, 한 판 3,000점
-const MQ_DAY = [{ id: 'd_play', n: '게임 5판 하기', st: d => d.n, need: 5, gold: 50 }, { id: 'd_sp', n: '포켓몬 3종과 함께 하기', st: d => Object.keys(d.sp).length, need: 3, gold: 150 }, { id: 'd_best', n: '한 판 3,000점 넘기기', st: d => d.best, need: 3000, gold: 300 }];   /* v8.16 경완: 일일 미션 5판 50G · 3종 150G · 한 판 3,000점 300G */
+// v8.04 경완: 일일 미션 (날마다 새로) — 게임 5판, 포켓몬 3종과 함께, 한 판 1,000점 (v18.73)
+const MQ_DAY = [{ id: 'd_play', n: '게임 5판 하기', st: d => d.n, need: 5, gold: 50 }, { id: 'd_sp', n: '포켓몬 3종과 함께 하기', st: d => Object.keys(d.sp).length, need: 3, gold: 150 }, { id: 'd_best', n: '한 판 1,000점 넘기기', st: d => d.best, need: 1000, gold: 300 }];   /* v18.73 경완: 3,000 → 1,000점 (실제 한 판 중앙 500점이라 거의 못 깸) */   /* v8.16 경완: 일일 미션 5판 50G · 3종 150G · 한 판 3,000점 300G */
 /* v17.40 경완 '미니게임 미션을 미니게임별로, 카드 랭킹 버튼 왼쪽에 미션 버튼, 진화구슬도 미션·상금': 게임마다 따로 저장(장애물 넘기 M.q · 진화구슬 M.qd).
    진화구슬 상금 = 장애물 넘기와 같은 골드 단계, 기준은 시뮬 점수 비율(보통 한 판 약 5,000점 ≈ 장애물 넘기 3,000점)로 맞춤 */
 const MQ_DAY_D = [{ id: 'd_play', n: '게임 3판 하기', st: d => d.n, need: 3, gold: 50 }, { id: 'd_sp', n: '포켓몬 3종과 함께 하기', st: d => Object.keys(d.sp).length, need: 3, gold: 150 }, { id: 'd_best', n: '한 판 5,000점 넘기기', st: d => d.best, need: 5000, gold: 300 }];
@@ -11607,7 +11615,7 @@ $('#shopBar').addEventListener('click', e => {
   const t = TRACKS.find(x => x.id === shopSel), act = btn.dataset.act;
   if (act === 'buy') {
     if (S.gold < trackPrice(t)) { $('#shopMsg').textContent = `골드가 ${(trackPrice(t) - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-    S.gold -= trackPrice(t); S.tracks.push(t.id); renderGold(); sfx('newdex');
+    S.gold -= trackPrice(t); window.pkGold?.('bgm', trackPrice(t), 'bgm:' + t.id); S.tracks.push(t.id); renderGold(); sfx('newdex');
     /* v4.94 경완: 사면 미리 듣던 곡이 끊기지 않고 그대로 이어진다. 무작위면 무작위 그대로(이 곡이 끝나면 다음 곡), 아니면 산 곡으로 바꾼다 */
     if (!S.bgmRand) S.bgm = t.id;
     if (bgm.preview === t.id) { clearTimeout(bgm.prevT); bgm.preview = null; bgm.ret = null; bgmDuck(1, .4); if (bgm.src && S.bgmRand) { const p = bgmPos(); bgmSrcStop(); bgm.pos = p; bgmSrcStart(); } }
@@ -11639,7 +11647,7 @@ function renderFpShop() { const L = SHOP.field.filter(([k]) => fpInfo(k)).map((r
 $('#fpList').addEventListener('click', e => { const v = e.target.closest('[data-fp]'); if (!v) return; sfx('tap'); shopSee('fashion', v.dataset.fp); fpSel = fpSel === v.dataset.fp ? null : v.dataset.fp; $('#fpMsg').textContent = ''; renderFpShop(); });
 $('#fpBar').addEventListener('click', e => { if (!e.target.closest('[data-act="buy"]')) return; const r = SHOP.field.find(([k]) => k === fpSel), o = r && fpInfo(r[0]), msg = $('#fpMsg'); if (!o) return;
   if (S.gold < r[1]) { msg.textContent = `골드가 ${(r[1] - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-  S.gold -= r[1]; fbagAdd(r[0]); renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img class="fpth" src="${o.src}" alt="">`, `${J({ name: o.n }, '을/를')} 샀다!`, `가방에 ${S.fbag[r[0]]}개`); fpSel = null; renderFpShop(); });
+  S.gold -= r[1]; window.pkGold?.('field', r[1], r[0]); fbagAdd(r[0]); renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img class="fpth" src="${o.src}" alt="">`, `${J({ name: o.n }, '을/를')} 샀다!`, `가방에 ${S.fbag[r[0]]}개`); fpSel = null; renderFpShop(); });
 // v14.84 경완: 의상 = 필드 상점·가방 '의상' 탭 + 프로필 옷장. S.fits 가진 옷, S.fit 입은 옷 ('' 기본). 그림 있는 성별에게만 (체육관 OUTFITS 와 같은 목록)
 const FITS = { red: ['빨간 재킷', 800, 'mf'], leaf: ['하늘 셔츠', 800, 'mf'], brendan: ['호연 모험복', 2500, 'm'], may: ['호연 반다나', 2500, 'mf'], cooltrainer_m: ['엘리트 제복', 1500, 'm'], cooltrainer_f: ['엘리트 드레스', 1500, 'f'], black_belt: ['도복', 1500, 'm'], gentleman: ['정장', 1500, 'mf'], blue: ['라이벌 스타일', 3000, 'mf'], brock: ['바위 관장 옷', 3000, 'mf'], lt_surge: ['군복', 3500, 'm'], koga: ['닌자복', 4000, 'mf'], giovanni: ['보스 정장', 5000, 'mf'], lance: ['드래곤 망토', 6000, 'mf'], misty: ['물 관장 옷', 3000, 'f'] };
 const fitSx = () => S.tr?.sex === 'f' ? 'f' : 'm';
@@ -11662,7 +11670,7 @@ $('#fitBar').addEventListener('click', e => { const k = fitSel, msg = $('#fitMsg
   if (e.target.closest('[data-wear]')) { sfx('shiny'); fitWear(k); renderFitShop(); return; }
   if (!e.target.closest('[data-act="buy"]')) return; const p = FITS[k][1];
   if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-  S.gold -= p; fitsOwn().push(k); save(); renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img src="${fitFront(k)}" alt="">`, `${J({ name: FITS[k][0] }, '을/를')} 샀다!`, '가방 의상 탭에 들어갔어요'); renderFitShop(); });
+  S.gold -= p; window.pkGold?.('fit', p, k); fitsOwn().push(k); save(); renderGold(); sfx('newdex'); msg.textContent = ''; buyPop(`<img src="${fitFront(k)}" alt="">`, `${J({ name: FITS[k][0] }, '을/를')} 샀다!`, '가방 의상 탭에 들어갔어요'); renderFitShop(); });
 let ibagWSel = null;
 function renderFitBag() { const now = fitNow(), L = ['', ...fitsOwn().filter(k => fitOk(k))]; L.forEach(k => fitOwPre(k, fitSx())); if (ibagWSel != null && !L.includes(ibagWSel)) ibagWSel = null;
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => b.setAttribute('aria-selected', b.dataset.bt === 'fit')); ibagEl.classList.remove('ibag-multi'); $('#ibagMulti').hidden = true;
@@ -11681,7 +11689,7 @@ function fitPop(k, mode) { const el = $('#itemPop'), own = fitsOwn(), has = !k |
     if (e.target.closest('[data-fwear]:not([disabled])')) { sfx('shiny'); fitWear(k); el.hidden = true; off(); return; }
     if (e.target.closest('[data-fbuy]')) { const p = FITS[k][1], m = el.querySelector('.fp-msg');
       if (S.gold < p) { m.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; m.hidden = false; sfx('wob'); return; }
-      S.gold -= p; own.push(k); save(); renderGold(); sfx('newdex'); fitSel = null; renderFitShop(); buyPop(`<img src="${fitFront(k)}" alt="">`, `${J({ name: FITS[k][0] }, '을/를')} 샀다!`, '가방 의상 탭에 들어갔어요'); } }; }
+      S.gold -= p; window.pkGold?.('fit', p, k); own.push(k); save(); renderGold(); sfx('newdex'); fitSel = null; renderFitShop(); buyPop(`<img src="${fitFront(k)}" alt="">`, `${J({ name: FITS[k][0] }, '을/를')} 샀다!`, '가방 의상 탭에 들어갔어요'); } }; }
 
 $('#ibagBar').addEventListener('click', e => { if (ibagTab !== 'fit' || !e.target.closest('[data-wear]') || ibagWSel == null) return; sfx('shiny'); fitWear(ibagWSel); ibagWSel = null; renderFitBag(); });
 const fitCloset = () => tabTo(ibagEl, () => { ibagEl.hidden = false; ibagFOnly = false; ibagWOnly = true; ibagTab = 'fit'; ibagWSel = null; ibagMul = false; ibagPick.clear(); $('#ibagMsg').textContent = ''; renderIBag(); });
@@ -11704,7 +11712,7 @@ for (const k of ['tool', 'item']) {
   $(`#${k}List`).addEventListener('click', e => { const v = e.target.closest('[data-it]'); if (!v) return; sfx('tap'); shopSee(k, v.dataset.it); itemSel[k] = itemSel[k] === v.dataset.it ? null : v.dataset.it; $(`#${k}Msg`).textContent = ''; renderItems(k); });
   $(`#${k}Bar`).addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (!b) return; const o = ITEM[itemSel[k]]; if (!o) return; const I = itemsOf(), msg = $(`#${k}Msg`);
     if (b.dataset.act === 'buy') { const bn = +b.dataset.n || 1, p = itemPrice(o.id) * bn; if (S.gold < p) { msg.textContent = `골드가 ${(p - S.gold).toLocaleString()}G 모자라요.`; sfx('wob'); return; }
-      S.gold -= p; I[o.id] = (I[o.id] || 0) + bn; renderGold(); sfx('newdex'); msg.textContent = ''; const bm = bn > 1 ? `${o.n} ${bn}개` : o.n; buyPop(`<img src="${ITEM_ART[o.a]}" alt="">`, `${J({ name: bm }, '을/를')} 샀다!`, `가진 개수 ${I[o.id].toLocaleString()}`); }
+      S.gold -= p; window.pkGold?.('item', p, o.id); I[o.id] = (I[o.id] || 0) + bn; renderGold(); sfx('newdex'); msg.textContent = ''; const bm = bn > 1 ? `${o.n} ${bn}개` : o.n; buyPop(`<img src="${ITEM_ART[o.a]}" alt="">`, `${J({ name: bm }, '을/를')} 샀다!`, `가진 개수 ${I[o.id].toLocaleString()}`); }
     else if (b.dataset.act === 'use' && I[o.id] > 0) { I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup'); msg.innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); }
     itemSel[k] = null; save(); renderItems(k); });
 }
@@ -14010,7 +14018,7 @@ window.pokeRunPlaces = (t0, t1, list) => {
 let RUN_G = 10, MOVE_G = 0, DUP_G = [0, 15, 30, 60, 120, 250], NEW_EGG_G = [0, 40, 80, 150, 300, 600], NEW_G = 50;
 let GYM_G = [40, 100, 300], GYM_SF_PCT = 30,   /* v15.80 경완: 60 → 30 (live.json 값이 있으면 그게 우선) */ WAGE_BASE = 150, WAGE_LV = 5, WAGE_MAX = 600;   // v10.78 경완: 체육관 배틀 골드(쉬움·보통·어려움), 고용 트레이너가 막으면 몇 %, 직원 월급 — 작업실 밸런스에서 (gym.js 가 GA.GYMB 로 읽음)   // 알 등급별: 이미 만난 포켓몬 DUP_G, 새로 만난 포켓몬 NEW_EGG_G (일반·희귀·레어·에픽·전설). NEW_G: 진화로 새로 만난 포켓몬
 function renderGold() { $('#goldN').textContent = /[?&]studio/.test(location.search) ? '∞' : S.gold.toLocaleString(); const g = $('#gold'); g.classList.remove('up'); void g.offsetWidth; g.classList.add('up'); if (!$('#shop').hidden) renderShop(); }
-function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); return n; }
+function addGold(n) { n = Math.round(n); if (!(n > 0)) return 0; S.gold += n; renderGold(); window.pkGold?.('ern', n); return n; }
 function addRun(km, src, t0, t1, eggs) {
   const r = { t: t1 || Date.now(), km, src }; if (t0) r.t0 = t0; if (eggs?.length) r.eggs = eggs.map(e => ({ id: e.id, g: e.g, place: e.place || '' })); S.runs.unshift(r); S.runs.sort((a, b) => b.t - a.t); if (S.runs.length > 60) S.runs.pop();
   // v16.43 경완: 런닝 기록은 없앴다 — 예전 아이폰 앱이 보낸 운동은 같은 시간이 두 번 들어오지 않게 안에서만 기록해 두고, 골드는 움직인 거리(feedKm)로
@@ -15938,7 +15946,7 @@ async function tutFlow() {
   await new Promise(res => { frMaxOpen = true; const fm = $('#frMax'); fm.classList.remove('trup'); $('#frMaxT').textContent = '환영합니다!'; fm.querySelector('.win').setAttribute('aria-label', '환영합니다');
     $('#frMaxBody').innerHTML = `<div class="ns"><p>포켓몬 키우기에<br>오신 것을 환영합니다!</p><div class="small">자유롭게 알을 모으고 부화시켜 보세요.</div></div><div class="ns ns-g"><p>선물로 <b>3,000</b> 골드를 받았다!</p></div>`;
     fm.hidden = false; try { sfx('newdex'); haptic(1); frMaxFw(); } catch (e) {}
-    const done = () => { fm.hidden = true; fm.onclick = null; frMaxOpen = false; S.gold = (S.gold || 0) + 3000; renderGold();   /* v14.49 경완: 신규 유저 3,000 골드 */ try { sfx('pickup'); } catch (e) {} save(); res(); };
+    const done = () => { fm.hidden = true; fm.onclick = null; frMaxOpen = false; S.gold = (S.gold || 0) + 3000; window.pkGold?.('ern', 3000); renderGold();   /* v14.49 경완: 신규 유저 3,000 골드 */ try { sfx('pickup'); } catch (e) {} save(); res(); };
     $('#frMaxOk').onclick = done; fm.onclick = ev => { if (ev.target.id === 'frMax') done(); }; });
   // v5.47 경완: 환영 창을 닫으면 바로 '견습 트레이너' 등급 창 (다음 등급까지 남은 도감 수)
   await wait(350);

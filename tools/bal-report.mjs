@@ -12,6 +12,7 @@ const FLAG = {
   examHi: 90, examLo: 20,      // 승급 심사 통과율(%)
   sfHi: 80, sfLo: 30,          // 트레이너가 도전자를 막는 비율(%)
   mgDayG: 690,                 // 미니게임 하루 골드 중앙값이 이보다 크면 (뉴트럴 시뮬 출퇴근 하루 골드 573~687G, 2026-10-29)
+  goldUse: 40,                 // v18.73 경완 '유저가 돈을 쓰면서 즐기기': 지난 7일 쓴 골드 / 번 골드(%)가 이보다 낮으면 표시
   minN: 10,
 };
 
@@ -58,8 +59,13 @@ function stats(L) {
     ab: [...group(M, r => r.d.ab || '-')].map(([k, A]) => ({ k, n: A.length, p50: q(A.map(r => r.d.sc | 0), .5) })).sort((a, b) => (b.p50 || 0) - (a.p50 || 0)),
   };
   const ed = { n: D.length, people: people(D), score: { p50: q(D.map(r => r.d.sc | 0), .5), p90: q(D.map(r => r.d.sc | 0), .9) }, sec: avg(D.map(r => r.d.t | 0)), goldPlay: avg(D.map(r => r.d.gd | 0)), ab: avg(D.map(r => r.d.ab | 0)) };
+  const Gd = L.filter(r => r.kind === 'gold'), spOf = d => Object.values(d.sp || {}).reduce((a, b) => a + (+b || 0), 0), sum = A => A.reduce((a, b) => a + b, 0);   // v18.73: 하루 한 줄 골드 기록 (잔액·번 돈·쓴 돈)
+  const catM = new Map(), itM = new Map(); for (const r of Gd) { for (const [k, n] of Object.entries(r.d.sp || {})) { const c = catM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); catM.set(k, c); } for (const [k, n] of Object.entries(r.d.it || {})) itM.set(k, (itM.get(k) || 0) + (+n || 0)); }
+  const gold = { n: Gd.length, people: people(Gd), ern: { p50: q(Gd.map(r => r.d.ern | 0), .5), p90: q(Gd.map(r => r.d.ern | 0), .9) }, sp: { p50: q(Gd.map(r => spOf(r.d)), .5), p90: q(Gd.map(r => spOf(r.d)), .9) },
+    spDays: pct(Gd.filter(r => spOf(r.d) > 0).length, Gd.length), useRate: pct(sum(Gd.map(r => spOf(r.d))), sum(Gd.map(r => r.d.ern | 0))), bal: { p50: q(Gd.map(r => r.d.b1 | 0), .5), p90: q(Gd.map(r => r.d.b1 | 0), .9), max: q(Gd.map(r => r.d.b1 | 0), 1) },
+    cats: [...catM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), items: [...itM].sort((a, b) => b[1] - a[1]).slice(0, 12) };
   const vers = [...group(L, r => r.ver || '?')].map(([k, A]) => [k, A.length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return { gym, sf, mg, ed, vers };
+  return { gym, sf, mg, ed, gold, vers };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -72,6 +78,7 @@ for (const c of S.gym.cats) if (c.n >= FLAG.minN) {
 }
 if (S.sf.n >= FLAG.minN && (S.sf.block > FLAG.sfHi || S.sf.block < FLAG.sfLo)) flags.push(`트레이너가 도전자를 막는 비율 ${S.sf.block}%`);
 if (S.mg.n >= FLAG.minN && S.mg.dayGold.p50 > FLAG.mgDayG) flags.push(`미니게임 하루 골드 중앙값 ${S.mg.dayGold.p50}G (출퇴근 하루 골드 약 ${FLAG.mgDayG}G 보다 많음)`);
+if (S.gold.n >= FLAG.minN && S.gold.useRate != null && S.gold.useRate < FLAG.goldUse) flags.push(`번 골드의 ${S.gold.useRate}%만 씀 — 골드가 쌓이기만? (쓸 곳 살펴보기)`);
 if (S.gym.quit > 15 && S.gym.n >= FLAG.minN) flags.push(`체육관 배틀 기권 ${S.gym.quit}%`);
 
 // ---------- 이슈 본문 ----------
@@ -103,6 +110,11 @@ const body = [
   '## 미니게임 (진화구슬 키우기)',
   `${v(S.ed.n)}판 · ${S.ed.people}명 · 한 판 평균 ${v(S.ed.sec)}초 · 기술 평균 ${v(S.ed.ab)}번`,
   `점수: 중앙 ${v(S.ed.score.p50)} · 상위 10% ${v(S.ed.score.p90)} · 골드: 한 판 평균 ${v(S.ed.goldPlay)}G (1분에 ${S.ed.sec ? v(Math.round(S.ed.goldPlay / S.ed.sec * 60)) : '-'}G, 장애물 넘기 1분에 ${S.mg.sec ? v(Math.round(S.mg.goldPlay / S.mg.sec * 60)) : '-'}G)`, '',
+  '## 골드 (한 사람 하루, 다음 날 올라옴)',
+  `${v(S.gold.n)}일치 · ${S.gold.people}명 · 번 골드 중앙 ${v(S.gold.ern.p50)}G (상위 10% ${v(S.gold.ern.p90)}G) · 쓴 골드 중앙 ${v(S.gold.sp.p50)}G (상위 10% ${v(S.gold.sp.p90)}G)`,
+  `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
+  tbl(['쓴 곳', '골드', '명'], S.gold.cats.map(c => [({ item: '진화 도구·아이템', field: '필드 소품', fit: '의상', bgm: '배경 음악', gym: '체육관 상점', wage: '트레이너 월급·수당' })[c.k] || c.k, c.g, c.people])), '',
+  `많이 산 것: ${S.gold.items.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   `버전: ${S.vers.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '<details><summary>숫자 (JSON)</summary>', '', '```json', JSON.stringify({ cur: S, prev: P, flags }, null, 1).slice(0, 50000), '```', '</details>',
 ].join('\n');
