@@ -4830,7 +4830,7 @@ const TYPE_RULES = [
     start: () => { burst(a, 'spark', '✦', 4); burst(b, 'spark', '✦', 4); } })],
   [(a, b) => has(a, WAT) && has(b, WAT), 6, (a, b) => ({ key: 'water-water', kind: 'play',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 신나게 물장구를 친다.`, start: () => { splashAt(a); splashAt(b); } })],
-  [(a, b) => has(a, GRA) && has(b, GRA), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', ea: '☀', eb: '☀',
+  [(a, b) => has(a, GRA) && has(b, GRA) && weather() !== 'rain' && !isNight(), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', ea: '☀', eb: '☀',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 나란히 서서 잎을 펼치고 광합성을 한다.` })],
   [(a, b) => has(a, FIR) && has(b, FIR), 6, (a, b) => ({ key: 'fire-fire', kind: 'show',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 누구 불꽃이 더 큰지 겨룬다!`, start: () => { burst(a, 'flame', '✹', 4); burst(b, 'flame', '✹', 4); } })],
@@ -5583,12 +5583,13 @@ function doSpecial(m) {
   }
   if (sp === 'sun') {
     if (isNight() && m.sp !== 43) return false;
+    if (weather() === 'rain') return false;   // v18.80 경완 '비 오는데 햇볕 쬐는 상호작용': 비 올 땐 햇볕·달빛 쬐기 안 함
     setState(m, 'special', rnd(6, 10)); m.special = 'sun'; emote(m, m.sp === 43 ? '☾' : '☀', 'note', 3, 'sun');
     if (Math.random() < .5) log(m.sp === 43 ? `${J(m,'이/가')} 달빛 아래 잎사귀를 펼친다.` : `${J(m,'이/가')} 햇볕을 쬐며 광합성을 한다.`, [m]);
     return true;
   }
   if (sp === 'moon') {
-    if (!isNight()) return false;
+    if (!isNight() || weather() === 'rain') return false;
     setState(m, 'special', 6); m.special = 'moon'; emote(m, '☾', 'note', 4, 'moon');
     log(`${J(m,'이/가')} 달을 올려다보며 빙글빙글 춤을 춘다.`, [m]);
     return true;
@@ -5943,9 +5944,9 @@ function drawSprite(m, dt) {
 // ---------- update ----------
 // v10.04 경완 '타이어 그네 뒤로 걸어도 뒤로 안 가지네': 밤에 빛나는 포켓몬(S 랭크·누른 포켓몬)은 밤 그늘 위(+1100)로 올라가 뒤에 있는 소품까지 앞질렀다 → 그 포켓몬 앞에 겹친 소품도 같이 올리고 밤빛 필터로 똑같이 어둡게 (앞뒤 순서는 그대로)
 let pnlT = 0;
-function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright) && !o.hidden && o.el.isConnected && o.el.style.visibility !== 'hidden');
+function propNightLift() { const now = performance.now(); if (now - pnlT < 150) return; pnlT = now; const L = S.mons.filter(o => (o.lit || o.bright || o.shade) && !o.hidden && o.el.isConnected && o.el.style.visibility !== 'hidden');
   const P = [...itemsEl.children].filter(e => e.classList.contains('prop') && (L.length || e.pnl)).map(e => { const x = parseFloat(e.style.left), y = parseFloat(e.style.top), W = e.offsetWidth / 2; return { e, z: e.pnl ? e.z0 : +e.style.zIndex, x0: x - W, x1: x + W, y0: y - e.offsetHeight, y1: y, up: false }; }).sort((a, b) => a.z - b.z);
-  if (L.length) for (const q of P) q.up = L.some(o => q.z > o.y && q.x0 < o.x + (o.w || 50) / 2 && q.x1 > o.x - (o.w || 50) / 2 && q.y0 < o.y - (o.xl || 0) && q.y1 > o.y - (o.xl || 0) - (o.h || 60))
+  if (L.length) for (const q of P) q.up = L.some(o => q.z > o.y && q.x0 < o.x + (o.w || 50) / 2 && q.x1 > o.x - (o.w || 50) / 2 && q.y0 < o.y - Math.max(o.xl || 0, -(o.vOy || 0)) && q.y1 > o.y - Math.max(o.xl || 0, -(o.vOy || 0)) - (o.h || 60))   /* v18.80 경완 '포켓몬이 소품 위로 걸어감': 밤빛 필터로 같이 올라간(+1100) 앞쪽 포켓몬도, 날아서 떠 있는 몸 자리도 셈 */
     || P.some(r => r.up && r.z < q.z && q.x0 < r.x1 && q.x1 > r.x0 && q.y0 < r.y1 && q.y1 > r.y0);   /* v10.08 경완 '그루터기 뒤 덤불이 앞으로 나옴': 올린 소품 앞에 겹친 소품도 같이 올려 앞뒤 순서를 지킨다 (덤불에 숨은 포켓몬은 셈하지 않음) */
   for (const { e, up } of P) { if (up === !!e.pnl) continue; if (up) { e.z0 = +e.style.zIndex; e.style.zIndex = e.z0 + 1100; } else if (+e.style.zIndex === e.z0 + 1100) e.style.zIndex = e.z0; e.pnl = up; e.classList.toggle('nightf', up); } }
 function update(m, dt) {
@@ -7780,7 +7781,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-const APP_VER = '18.79';   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
+const APP_VER = '18.80';   /* v18.80 경완: 비 올 땐 햇볕·달빛 쬐기·나란히 광합성 안 함, 밤에 소품 뒤 포켓몬이 소품 위로 그려지던 것 */   /* v18.79 경완: 포켓몬 박스 상세카드 성격 ▲▼ 이 저장에 성격 없는 포켓몬에도 나오게, 타입·종류 줄을 이름 줄에 붙임 */ /* v18.78 경완: 비 오면 횃불도 꺼짐(연기), 불꽃 타입은 꺼진 모닥불·횃불 앞에서 … 실망 */   /* v18.77 경완: 연못 위 포켓몬 그림자·소품 발밑 그림자도 소품 그림자처럼 옅게 */   /* v18.75 경완: 포켓몬 박스 상세카드 랭크 배지 모서리에·성격 ▲▼(+N)·오른쪽 정보 여백 고르게, 체육관 상세카드 경험치 막대 꽉 차게·'경험치' 글자·친밀도 아래 맞춤 */ /* v18.74 경완: 장애물 넘기 일일 미션 한 판 1,000점, 골드 쓴 기록(pkBal gold) */ /*   /* v18.73 경완: 기술 효과음 음량 밸런스 — 소리마다 크기를 재서 맞춤 */   /* v18.72 경완: 진화구슬 골드 1분당 장애물 넘기와 같게 (13점당 1G) */ /*   /* v18.71 경완: 메뉴 열려 있을 때도 필드 기술 소리 안 남 */ /*   /* v18.70 경완: 필드 기술 쓸 때 프레임 끊김 — 효과 그림을 칸마다 잘라 두고 그림 */   /* v18.69 경완: 미니게임 중 필드 기술 소리도 안 남, 진화구슬 골드 더 (한 판 10분) */ /*   /* v18.68 경완: 미니게임 중엔 필드에서 늦게 예약된 효과음·울음소리도 안 남 */ /*   /* v18.67 경완: 진화구슬 그만하기 창에 다시 하기(기록 없이 새 판)·정렬, 기록창 '가장 큰 구슬' 칸 없앰, 랭킹 포켓몬 칸 정가운데 */ /*   /* v18.66 경완: 꾸미기 상세카드 짝꿍 딱지 위 가운데, 만난 날짜·장소 프로필 밑 한 줄, 성격·특성 누르면 상세창 */   /* v18.65 경완: 체육관 비키니 아가씨가 물에 잠긴 반신 그림으로 걸어 들어오던 것 → 파이어레드 땅 위 전신 그림 */ /* v18.64 경완: 꾸미기 상세카드 게임 아이콘 친밀도 줄에 맞춤, 능력치 막대로 바꿔도 박스 크기 그대로, 능력치 화살표 눌러도 안 넘어감 */   /* v18.63 경완: 훈련장 비를 필드 비와 같게 (빗줄기·땅에 튀는 물방울·뇌우 번개) */ /* 알 고르기 자동 선택 버튼 초록 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
