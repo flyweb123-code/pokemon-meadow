@@ -1963,7 +1963,7 @@ const EV_FOE = [0, 84, 168, 252, 336, 420, 510];
 function foeEvs(sp, gi) { const T = EV_FOE[Math.max(0, Math.min(EV_FOE.length - 1, gi | 0))], o = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }; if (!T) return o;
   const pl = evPlan(sp), x = Math.random() < .3 ? pl.alt : pl, K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
   x.k.forEach((k, j) => { o[K[k]] = Math.floor(x.v[j] * T / EV_MAX); }); return o; }
-const evSpend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} try { window.Gym.k.renderGoldG(); } catch (e) {} try { window.pkGold?.('gym', n); } catch (e) {} try { window.Gym.k.dayRec().s += n; } catch (e) {} return true; };
+const evSpend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} try { window.Gym.k.renderGoldG(); } catch (e) {} try { window.pkGold?.('gym', n); } catch (e) {} return true; };
 // 노력치 설정 창 (시안 설정 시연 v34 그대로): − 공짜 → 남은 노력치, + 1당 10G, 영양제 +10 (영양제 몫은 영양제 − 로만), 정산표, 되돌리기 · ○G 내고 저장
 function evPop(P, done) {
   const m = gm(P), sp = P.sp, IV = P.iv || [0, 0, 0, 0, 0, 0], LV = m.lv || 1, N = EV_N, PP = EV_PP, VP = EV_VP, VIT = EV_VIT.map(([k]) => itImg(k)), VN = EV_VIT.map(x => x[1]);
@@ -2070,7 +2070,7 @@ function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
 function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
-    tag: P => `${EV_N[i]} ${evArr(gm(P))[i] | 0}`, pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });
+    pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 window.GymBattle = { evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();

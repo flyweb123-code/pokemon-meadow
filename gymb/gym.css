@@ -3740,3 +3740,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bu-pop.fin .bu-hd{background:repeating-linear-gradient(135deg,#a8741a 0 10px,#bc8424 10px 20px)}#gym .bu-pop.fin .bu-hd small{color:#ffe8b0}#gym .bu-pop.fin .bu-hd b{text-shadow:2px 2px 0 #5a3a08}   /* v20.78 경완 '마지막 단계는 체육관이 완성됐어요!': 금색 머리띠 */
 #gym .sp-itr{justify-content:space-between}   /* v20.80 경완: 도구 탭 왼쪽 항목 필터 · 오른쪽 가격순 */
 #gym .ts-win .ts-slot.tsc .tsc-out{top:9px;right:14px}
+.ty-emo.mvn{left:auto;margin-left:-40px;width:auto;min-width:80px;white-space:nowrap;color:#fff4c0;font-size:12px}.ty-mvh{position:absolute;width:0;height:0;pointer-events:none}   /* v20.81 훈련장 기술 이름 외치기 · 기술 효과 칸 */
