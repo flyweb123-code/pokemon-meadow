@@ -779,7 +779,7 @@ async function run(opts) {
   lowHp(false); M('play', 'gym', { fade: 1.2 });
   // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
   const fd = document.createElement('i'); fd.className = 'bt-fade'; (el.parentElement || document.body).appendChild(fd); void fd.offsetWidth; fd.classList.add('on'); await wait(420);
-  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won: won && !cut, cut, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
+  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won: won && !cut, cut, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {}, eg: B?.egUp || [] }; B = null; return res;
 }
 
 // 쇼다운 기록을 한 줄씩 읽어 화면에 보여 준다. 고를 차례가 오면 아래 화면 메뉴
@@ -1266,14 +1266,18 @@ async function expGain(X) {
 }
 // 새 기술을 배우려는데 기술이 4개일 때 (본가처럼): 잊을 기술을 고르거나 배우기를 포기한다 (경완 2026-10-30 '알아서 잊어버리는데 선택할 수 있게')
 /* v20.85 경완 '배틀 번뜩임은 배틀 중간에': 내 포켓몬이 기술을 쓰고 그 턴이 끝나면(다음 턴 시작 전) 가끔 번뜩임 → 집중 중인 특별한 기술 깨달음 +34% */
+/* v20.85 경완 '번뜩일 때 스프라이트 효과 다시 — 도트 아니어도 되니 퀄 높게': 포켓몬이 하얗게 번쩍 → 금빛 광채, 뒤로 빛줄기 회전, 머리 위 렌즈 플레어 별, 주위 반짝이, 화면 금빛 비네트 */
+function egFx() { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
+  const T = t.getBoundingClientRect(), R = im.getBoundingClientRect(), k = T.width / 256 || 1, cx = (R.left + R.width / 2 - T.left) / k, cy = (R.top + R.height * .55 - T.top) / k, hy = (R.top + R.height * .12 - T.top) / k, hx = (R.left + R.width * .58 - T.left) / k;
+  me.classList.remove('egk'); void me.offsetWidth; me.classList.add('egk'); setTimeout(() => me.classList.remove('egk'), 2200);
+  const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 2400); return e; };
+  add('bt-egv', 0, 0); add('bt-egr', cx, cy, '', $b('.bt-mw.p')); add('bt-egf', hx, hy, '<i></i><b></b><b class="v"></b>'); add('bt-egc', cx, cy); setTimeout(() => B && add('bt-egc', cx, cy), 220);
+  [[-30, -6, .1], [34, 4, .3], [-22, 30, .45], [26, -34, .2], [6, 44, .6], [-40, -38, .38], [44, -12, .7]].forEach(([x, y, dl]) => { const e = add('bt-egt', cx, cy - 8); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px'); e.style.setProperty('--d', dl + 's'); }); }
 async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P) return; const f = egFocus(P), D = B.egDone || (B.egDone = new Set()); if (f < 0 || D.has(pid) || Math.random() >= EG_FLP) return; D.add(pid);
-  const me = monEl('p'); me?.classList.remove('egk'); void me?.offsetWidth; me?.classList.add('egk'); setTimeout(() => me?.classList.remove('egk'), 1600);
-  { const t = $b('.bt-top'), k = document.createElement('i'); k.className = 'bt-egs'; k.textContent = '✦'; t?.appendChild(k); setTimeout(() => k.remove(), 1700); }
-  se('DP_KIRAKIRA2'); GA.haptic?.(1); flash(2); await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
-  const x = egAdd(P, f, EG_FL); if (x) { await msgFan(`${eun(X.nm)} 특별한 기술 ${eul(x[1])} 깨달았다!`); try { window.Gym?.k?.awMv?.(P.id, x[0], x[1], x[2]); } catch (e) {} }
-  else await msgTap(`특별한 기술 깨달음이 ${Math.floor(gm(P).egP[f])}%가 됐다!`);
+  $b('.bt-msg .t').textContent = ''; egFx(); se('DP_KIRAKIRA2'); GA.haptic?.(1); await wait(900); if (!B) return; await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
+  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_FL); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
   GA.save?.();
 }
 async function learnAsk(P, i, id) {
