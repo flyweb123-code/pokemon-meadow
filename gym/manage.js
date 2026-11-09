@@ -48,7 +48,7 @@ const ckTag = s => `<em class="ck-t" style="--ck:${CK[coachK(s)][1]}">${CK[coach
 const coachSum = () => CK_O.map(k => [k, Math.round((coachX(k) - 1) * 100)]).filter(x => x[1] > 0).map(([k, p]) => `<span class="ck-s" style="--ck:${CK[k][1]}">${CK[k][0]} <b>+${p}%</b></span>`).join('');
 const coachN = t => coaches().filter(s => s.trait === t).length;   // 훈련장 특성: 기술 선생(teach) 특별한 기술 ×2, 노력파(effort) 노력치 +50%, 다정함(kind) 친밀도 ×2 — 코치로 있을 때
 const EV_DAY = 8;   // 노력치 훈련: 하루 8 (3시간에 1) × 코치 실력 (경완 2026-11-09)
-const coachRow = s => { const p = coachP(s); return `<div class="cs-row"><span>코치 실력</span><b>${ckTag(s)}+${p}%</b><i class="cs-bar"><i style="width:${Math.min(100, p / 80 * 100)}%"></i></i>${s.trait === 'train' ? '<em>훈련광 2배</em>' : ''}</div>`; };
+const coachRow = s => { const p = coachP(s); return `<div class="cs-row" style="--ckc:${CK[coachK(s)][1]}"><span>코치 실력</span><b>${ckTag(s)}+${p}%</b><i class="cs-bar"><i style="width:${Math.min(100, p / 80 * 100)}%"></i></i>${s.trait === 'train' ? '<em>훈련광 2배</em>' : ''}</div>`; };
 const YARD_SF = 3;   // v20.94 경완: 훈련장 코치 3명까지
 // 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
 // gym/egg.json (tools/gym/mkegg.js) 의 4개 중 아직 모르는 것 하나. 4번째는 포켓로그의 레어 알 기술이라 뽑힐 몫을 ¼ 로.
@@ -238,7 +238,7 @@ async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
   const yk = g.tr.map(e => e.id).join() + '|' + (g.sf || []).filter(x => x.yard).map(x => x.id).join() + '|' + CK_O.map(k => coachX(k)).join();
   if (Y && !Y.el.isConnected && Y.yk === yk && !sh.classList.contains('lk')) {   // v20.91 경완 '다른 메뉴 갔다 오면 순간이동 → 꾸미기 필드처럼': 다른 메뉴에 있는 동안에도 움직임은 계속 계산했으니 그 훈련장을 그대로 다시 붙임
-    cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; sh.innerHTML = ''; sh.append(Y.el);
+    cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; sh.innerHTML = ''; sh.append(Y.el); sh.onclick = yardTap;
     if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
@@ -271,14 +271,16 @@ async function drawTrain() {
   Y.lp.forEach(l => { const d = document.createElement('i'); d.className = 'ty-cs cs-lp'; d.style.cssText = `left:${l.x}px;top:${l.y}px`; Y.L.append(d); });
   /* v18.02 경완: 코치는 모양 그림자 없이 필드 포켓몬처럼 발밑 그림자만 */
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
-  sh.onclick = ev => {
+  sh.onclick = yardTap;
+  { const cs = coachSum(); if (cs) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 ${cs}</div>`); }   // v20.92 종류별
+  Y.yk = yk; Y.raf = requestAnimationFrame(yardLoop);
+}
+// v20.99 경완 '+ 눌러도 화면 안 뜸·포켓몬 눌러도 상세카드 안 뜸': 다른 메뉴가 sh.onclick 을 바꿔 두므로 훈련장을 다시 붙일 때도 꼭 다시 단다
+function yardTap(ev) {
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
     if (t.dataset.add) return statPop();   // + = 훈련 현황 겸 슬롯 (경완 2026-10-29)
     trPop(+t.dataset.p || t.dataset.p);
-  };
-  { const cs = coachSum(); if (cs) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 ${cs}</div>`); }   // v20.92 종류별
-  Y.yk = yk; Y.raf = requestAnimationFrame(yardLoop);
 }
 const TY_SHOT = new Set([8, 10, 11, 12, 13, 14, 15, 16, 18]);   // 과녁에 기술을 쏘는 타입 (고스트·불꽃·물·풀·전기·에스퍼·얼음·드래곤·페어리)
 function yardMon(P, e, i) {
@@ -477,6 +479,7 @@ function yardLoop(ts) {
   if (Y.storm && !document.hidden && !cov) { if (!Y.stT) Y.stT = now + 2.5 + Math.random() * 4; else if (now >= Y.stT) { Y.stT = now + 6 + Math.random() * 12; const wx = Y.el.querySelector('.ty-wx'), w = Y.el.clientWidth || 360; window.GA?.bolt?.(wx, w); if (Math.random() < .3) setTimeout(() => window.GA?.bolt?.(wx, w), 250 + Math.random() * 500); } } else Y.stT = 0;   // v18.63 뇌우면 필드처럼 번개·천둥
   if (now - (Y.ck ?? now) > 30) { const b0 = Y.mons.map(m => { const e = st().tr.find(x => x.id === m.id); return [e?.evg || 0, m.P.fr || 0, e?.evk, (GB().gm(m.P).egP || []).slice()]; });
     tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} });
+    if (st().aw?.mv?.length) setTimeout(() => Y && K.awMvNow?.(), cov ? 300 : 3200);   // v20.98 체육관 안에서 깨달은 기술은 알림창 바로 (필드엔 먼저 '✨ 이름 깨달음!')
     if (!cov) Y.mons.forEach((m, i) => { const e = st().tr.find(x => x.id === m.id), [g0, f0, k, p0] = b0[i], dg = (e?.evg || 0) - g0, df = (m.P.fr || 0) - f0, B = GB();   // v20.91 경완 '+EXP 처럼 노력치·친밀도 오를 때도'
       if (dg > 0 && k >= 0) setTimeout(() => Y && yEmo(m, `${B.EV_N?.[k] || ''} +${dg}`, 'evu', EV_SC[k]), 200 + i * 260);
       if (df > 0) setTimeout(() => Y && yEmo(m, `♥ 친밀도 +${df}`, 'fru'), 900 + i * 260);
@@ -764,7 +767,7 @@ function drawStaff() {
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
       <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
-      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 주급</dt><dd>7일에 <b>${x.wage.toLocaleString()}G</b></dd><dt>코치 실력</dt><dd class="cs-dd"><b>${ckTag(x)}+${coachP(x)}%</b><i class="cs-bar"><i style="width:${Math.min(100, coachP(x) / 80 * 100)}%"></i></i></dd></dl>
+      <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x.trait, true, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 주급</dt><dd>7일에 <b>${x.wage.toLocaleString()}G</b></dd><dt>코치 실력</dt><dd class="cs-dd" style="--ckc:${CK[coachK(x)][1]}"><b>${ckTag(x)}+${coachP(x)}%</b><i class="cs-bar"><i style="width:${Math.min(100, coachP(x) / 80 * 100)}%"></i></i></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
       ${C.length > 1 ? `<div class="cv-dots">${C.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div>` : ''}`
       : sfEmpty('', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
