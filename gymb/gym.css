@@ -3655,3 +3655,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym button.tm-wp{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}#gym button.tm-wp:active{transform:translate(1px,1px)}
 /* v20.61 노력치 훈련 박스 ? */
 #gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:-4px}#gym .ev-trhint{text-align:center;margin-top:6px}#gym .ev-trhint b{color:#6a44c0}
+/* v20.63 경완: 기술 바꾸기 창이 뜨면 아래 메뉴까지 어둡게 (본문은 상세카드 막 + 기술 창 막 두 겹이라 같은 진하기로) */
+#gym:has(.gy-pop .mv-ord) .gy-menu{position:relative}#gym:has(.gy-pop .mv-ord) .gy-menu::after{content:"";position:absolute;left:0;right:0;top:-3px;bottom:0;z-index:5;background:rgba(12,13,20,.3);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}#gym:has(.gy-pop ~ .gy-pop .mv-ord) .gy-menu::after{background:rgba(12,13,20,.51)}
