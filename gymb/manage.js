@@ -303,11 +303,13 @@ const yBusy = (k, m) => Y.mons.some(o => o !== m && o.k === k && o.st !== 'rest'
 function yGo(m, k, x, y, then) { m.st = 'go'; m.k = k; m.tx = x; m.ty = y; m.then = then; m.air = 0; }
 // 다음 할 일 (경완 2026-10-29 '6마리가 상호작용'): 타입에 맞는 기구를 고르고, 둘이 비어 있으면 가운데 코트에서 대련
 function yNext(m, now) {
+  if (m.st === 'eat') { const b = Y.fd?.bw.find(b => b.m === m); if (b) { b.done = 1; b.el.style.backgroundImage = `url(${pxCv(BOWL0, BOWL_P)})`; } yEmo(m, '♥', 'mu'); m.st = 'rest'; }
   m.k = null; m.air = 0; m.one = null; m.zb = 0;
   if (leftOf(m.e) <= 0) { m.st = 'sleep'; m.until = now + 99; return; }   // 오늘 8시간 다 쓴 포켓몬은 그 자리에서 잠
+  if (Y.fd?.st === 1) { const b = Y.fd.bw.find(b => b.m === m && !b.done); if (b) return yGo(m, 'feed' + m.id, b.x, b.y - 5, 'eat'); }   // v20.86 밥 시간
   if (m.fish) { const q = Y.pr.water; if (!yBusy('water', m) && Math.random() < .6) return yGo(m, 'water', q.x - 44, q.y - 2, 'buoy'); const [sx, sy] = yardSpot(true); return yGo(m, 'swim', sx, sy, 'rest'); }
   // 대련: 아직 대련 상대가 없고 코트가 비어 있으면 30%
-  const mates = Y.mons.filter(o => o !== m && !o.fish && !o.mate && leftOf(o.e) > 0 && (o.st === 'rest' || now > o.until - 1.5));
+  const mates = Y.mons.filter(o => o !== m && !o.fish && !o.mate && o.st !== 'eat' && !(o.st === 'go' && String(o.k).startsWith('feed')) && leftOf(o.e) > 0 && (o.st === 'rest' || now > o.until - 1.5));
   if (!Y.mons.some(o => o.k === 'spar') && mates.length && Math.random() < .3) { const o = K.pick(mates), C = Y.court, cx = (C.x0 + C.x1) / 2 + (Math.random() - .5) * 60, cy = (C.y0 + C.y1) / 2 + (Math.random() - .5) * 20;
     o.one = null; o.air = 0; m.mate = o; o.mate = m; m.lead = true; o.lead = false; yGo(m, 'spar', cx - 30, cy, 'spw'); yGo(o, 'spar', cx + 30, cy, 'spw'); return; }
   const W8 = [];   // [기구, 무게]
@@ -335,6 +337,7 @@ function yArrive(m, now) {
   else if (T === 'buoy') { m.st = 'buoy'; m.face = -1; }
   else if (T === 'hoop') { m.st = 'hoop'; m.ph = 0; m.lap = 0; }
   else if (T === 'tech') { m.st = 'tech'; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 7 + Math.random() * 4; }
+  else if (T === 'eat') { m.st = 'eat'; m.face = m.x > (Y.fd?.x ?? 0) ? 1 : -1; m.until = now + 6 + Math.random() * 3; m.nm = now + 1; }
   else if (T === 'train') { m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; }
   else if (T === 'sit') { m.st = 'sit'; m.face = Math.random() < .5 ? 1 : -1; }
   else if (T === 'sleep') { m.st = 'sleep'; m.until = now + 99; }
@@ -369,7 +372,7 @@ function coLine(t) { const L = [...(CO_L[t?.st === 'go' ? 'any' : t?.st] || []),
 function yCoach(c, now, dt) {
   const pool = Y.mons.filter(m => m.st !== 'sleep');   // v17.77 경완 '훈련 중인 포켓몬 없으면 코치도 쉬게': 깨어 있는 포켓몬이 없으면 제자리(양 끝)로 가서 쉼
   if (!pool.includes(c.tg) || now > c.tn) { const o = (Y.co || []).find(x => x !== c)?.tg, P2 = pool.filter(m => m !== o); c.tg = pool.length ? K.pick(P2.length ? P2 : pool) : null; c.tn = now + 6 + Math.random() * 4; c.side = Math.random() < .5 ? -1 : 1; }
-  const t = c.tg; let tx = c.hx, ty = c.hy;
+  const fd = Y.fd && c === Y.co[0], t = fd ? null : c.tg; let tx = c.hx, ty = c.hy;
   if (t) {   // v17.77 경완 '코치랑 포켓몬 너무 겹치지 않게': 고른 포켓몬 양옆·조금 더 멀리 중 다른 포켓몬·다른 코치와 가장 덜 겹치는 자리
     const near = (x, y) => Math.min(99, ...Y.mons.map(m => Math.hypot((m.x - x) * 1.2, m.y - y)), ...(Y.co || []).filter(o => o !== c).map(o => Math.hypot(o.x - x, o.y - y)));
     const cl = (x, y) => { x = Math.max(18, Math.min(Y.W - 18, x)); y = Math.max(Y.H * .3, Math.min(Y.H - 10, y)); if (inPond(x, y, 12)) { const p = Y.pond; y = p.y0 - 14; if (inPond(x, y, 12)) x = p.x1 + 16; } return [x, y]; };
@@ -379,17 +382,45 @@ function yCoach(c, now, dt) {
     if (!c.spot || c.spot.t !== t || now > c.spot.n) { let best = C2[0], bv = -1e9; for (const q of C2) { const v = sc(q); if (v > bv) { bv = v; best = q; } }
       const keep = c.spot && c.spot.t === t && Math.hypot(c.spot.x - t.x, c.spot.y - t.y) < gap + 40 && sc([c.spot.x, c.spot.y]) > bv - 8; c.spot = keep ? { ...c.spot, n: now + .5 } : { t, n: now + .5, x: best[0], y: best[1] }; }
     tx = c.spot.x; ty = c.spot.y; }
+  if (fd) { tx = Y.fd.cx; ty = Y.fd.y + 2; }   // v20.86 밥 주는 시간: 그릇 놓을 자리로
   if (c.snap && t) { c.x = tx; c.y = ty; } c.snap = 0;
   const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy), mv = d > 6;
   if (mv) { const v = Math.min(d, 52 * dt); let nx = c.x + dx / d * v, ny = c.y + dy / d * v; if (inPond(nx, ny, 10)) { ny = Math.min(ny, Y.pond.y0 - 12); nx = c.x + Math.sign(dx) * v; } c.x = nx; c.y = ny;
     c.d = Math.abs(dx) > Math.abs(dy) * .8 ? (dx < 0 ? 'l' : 'r') : dy < 0 ? 'u' : 'd'; }
+  else if (fd) c.d = Y.fd.cs > 0 ? 'r' : 'l';
   else if (t) { const ax = t.x - c.x, ay = t.y - c.y; c.d = Math.abs(ax) > Math.abs(ay) * .6 ? (ax < 0 ? 'l' : 'r') : ay < 0 ? 'u' : 'd'; }
   const k = c.d === 'r' ? 'l' : c.d, fr = CO_FR[k][mv ? Math.floor(now / .16) % 4 : 0];
   const e = c.el; e.style.left = c.x.toFixed(1) + 'px'; e.style.top = c.y.toFixed(1) + 'px'; e.style.zIndex = Math.round(c.y); e.style.backgroundPosition = `${-fr * c.fw}px 0`; e.style.setProperty('--fx', c.d === 'r' ? -1 : 1);
-  if (!mv && !t && !c.rs) { c.rs = 1; c.d = 'd'; yEmo2(c, '휴~'); } if (t) c.rs = 0;
+  if (fd && !mv && Y.fd.st === 0) yFeedDrop(c, now);
+  if (!mv && !t && !fd && !c.rs) { c.rs = 1; c.d = 'd'; yEmo2(c, '휴~'); } if (t) c.rs = 0;
   if (!mv && t && now > c.nx) { c.nx = now + 3 + Math.random() * 3; e.classList.remove('cheer'); void e.offsetWidth; e.classList.add('cheer');
     const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = coLine(t); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
 }
+// v20.86 경완 '가끔 코치가 포켓몬 밥 주는 시간': 1~2분마다 첫 코치가 빈 자리로 가서 그릇을 놓으면, 하던 걸 마친 포켓몬부터 와서 냠냠
+const BOWL = ['...lfFflf...', '..fFlfFlfF..', '.oooooooooo.', '.ohhrrrrrro.', '..orrrrrRo..', '..oRRRRRRo..', '...oooooo...'];
+const BOWL0 = ['............', '............', '.oooooooooo.', '.oRRRRRRRRo.', '..orrrrrRo..', '..oRRRRRRo..', '...oooooo...'];
+const BOWL_P = { o: '#5a2a20', r: '#d8503c', R: '#a83828', h: '#f4927a', f: '#a8683a', F: '#74401e', l: '#d09a5c' };
+const FD_L = ['밥 먹자~!', '밥 시간이야!', '든든하게 먹자!', '맛있게 먹어!'], FD_E = ['잘 먹었지?', '다 먹었구나!', '배부르지?', '이제 다시 힘내자!'];
+function yFeedTick(now) {
+  const co = Y.co?.[0]; if (!co) return;
+  if (!Y.fd) { Y.fdN ??= now + 35 + Math.random() * 30; if (now < Y.fdN) return;
+    const ms = Y.mons.filter(m => !m.fish && m.st !== 'sleep' && leftOf(m.e) > 0).slice(0, 6); if (!ms.length) { Y.fdN = now + 40; return; }
+    const w = (ms.length - 1) * 40 / 2 + 40; let best = null, bv = 1e9;
+    for (let i = 0; i < 40; i++) { const [x, y] = yardSpot(false); if (x - w < 24 || x + w > Y.W - 24 || y > Y.H - 30 || nearBush(x, y - 18) || inPond(x, y - 18, 16) || (x + w > Y.court.x0 - 16 && x - w < Y.court.x1 + 16 && y + 12 > Y.court.y0 - 30 && y - 30 < Y.court.y1 + 16)) continue;   // 대련 코트는 피함
+      const v = Math.hypot(x - Y.W * .5, y - Y.H * .68); if (v < bv) { bv = v; best = [x, y]; } }
+    if (!best) { Y.fdN = now + 30; return; }
+    const cs = best[0] > Y.W / 2 ? 1 : -1;   // 코치는 줄 옆 (가운데 쪽), 포켓몬 뒤에 가리지 않게
+    Y.fd = { x: best[0], y: best[1], st: 0, t0: now, ms, bw: [], cx: best[0] - cs * ((ms.length - 1) * 20 + 34), cs }; return; }
+  const F = Y.fd;
+  if ((F.st === 0 && now - F.t0 > 25) || (F.st === 1 && (F.bw.every(b => b.done) || now - F.go > 35))) yFeedEnd(now);
+}
+function yFeedDrop(c, now) { const F = Y.fd, n = F.ms.length; F.st = 1; F.go = now;
+  c.el.classList.remove('cheer'); void c.el.offsetWidth; c.el.classList.add('cheer'); yEmo2(c, K.pick(FD_L));
+  F.bw = F.ms.map((m, i) => { const x = F.x + (i - (n - 1) / 2) * 40, y = F.y + (i % 2) * 6, q = document.createElement('i'); q.className = 'ty-bowl'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y) + 4};background-image:url(${pxCv(BOWL, BOWL_P)});animation-delay:${i * .08}s`; Y.L.append(q); return { m, x, y, el: q }; });
+  for (const m of F.ms) if ((['rest', 'sit', 'tech', 'train', 'bag', 'shoot', 'tramp', 'buoy'].includes(m.st) || (m.st === 'go' && m.k !== 'spar')) && !m.mate) yNext(m, now); }   // 하던 게 금방 끝나는 건 바로 오고, 대련·달리기·후프는 마치고 옴
+function yFeedEnd(now) { const F = Y.fd; Y.fd = null; Y.fdN = now + 80 + Math.random() * 60;
+  if (F.st === 1) { F.bw.forEach(b => { b.el.classList.add('out'); setTimeout(() => b.el.remove(), 500); }); const c = Y.co?.[0]; if (c) yEmo2(c, K.pick(FD_E)); }
+  for (const m of Y.mons) if (m.st === 'eat' || (m.st === 'go' && String(m.k).startsWith('feed'))) yNext(m, now); }
 function yLight() {
   const F = GA.light?.(); if (!F || !Y) return; const e = Y.el, on = F.lamps;
   const nt = e.querySelector('.ty-nt'); nt.style.backgroundColor = `rgb(${F.col.join(',')})`;
@@ -428,6 +459,7 @@ function yardLoop(ts) {
   if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
   if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
   for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
+  yFeedTick(now);
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
     if (m.st === 'go') {
@@ -448,6 +480,7 @@ function yardLoop(ts) {
     if (m.st === 'buoy' && !m.one) m.one = mvTry(.3, null, { k: 'water', gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, k: 'water', gap: .3 + Math.random() * .5 };
     if (m.st === 'train' && !m.one) m.one = mvTry(.4, null, { gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
     if (m.st === 'tech' && !m.one) m.one = mvTry(1, null, { gap: 1 + Math.random() * .8 }) || (now > (m.tq || 0) ? (m.tq = now + 1.2, { n: 'Attack', t: 0, gap: .4 }) : null);   // 기술 연습: 효과음 차례가 아니면 잠깐 기본 동작
+    if (m.st === 'eat' && now > m.nm) { m.nm = now + 1.6 + Math.random() * 1.2; yEmo(m, Math.random() < .7 ? '냠냠' : '♪', 'mu'); }
     if (m.st === 'tramp') { const p0 = m.ph; m.ph += dt / .62; m.air = Math.abs(Math.sin(m.ph * Math.PI)) * 30; if (Math.floor(m.ph) !== Math.floor(p0)) { yWob(Y.pr.tramp, 'sq'); if (Math.random() < .3) yEmo(m, '♪', 'mu'); } }
     if (m.st === 'run') { const L = Y.lane, v = 80 * dt; m.y += m.dir * v; m.x = L.x; m.an = 'Walk';   // 세로 트랙: 위아래로 달리며 허들 넘기
       const hd = ['h1', 'h2'].map(k => Math.abs(m.y - Y.pr[k].y)).reduce((a, b) => Math.min(a, b)), J = 16; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 26 : 0;
@@ -494,7 +527,7 @@ function yDraw(m, dt) {
   const D = m.D; if (!D?.P) { m.el.classList.toggle('bob', m.st !== 'rest' && m.st !== 'sleep' && m.st !== 'sit'); if (m.one) { m.one.t += dt; if (m.one.t > .8) { yHit(m); m.one = null; } } return; }
   const A = D.P.a; let nm, f = null;
   if (m.one) { nm = A[m.one.n] ? m.one.n : 'Idle'; m.one.t += dt; }
-  else nm = m.st === 'go' || m.st === 'run' || m.st === 'hoop' ? m.an : m.st === 'sleep' ? 'Sleep' : m.st === 'sit' ? (A.Sit ? 'Sit' : 'Idle') : m.st === 'tramp' && A.Hop ? 'Hop' : 'Idle';
+  else nm = m.st === 'go' || m.st === 'run' || m.st === 'hoop' ? m.an : m.st === 'sleep' ? 'Sleep' : m.st === 'sit' ? (A.Sit ? 'Sit' : 'Idle') : m.st === 'eat' ? (A.Eat ? 'Eat' : 'Idle') : m.st === 'tramp' && A.Hop ? 'Hop' : 'Idle';
   if (!A[nm]) nm = nm === 'WalkUp' && A.Walk ? 'Walk' : 'Idle';
   const a = A[nm], durs = a[6], tot = durs.reduce((s, d) => s + d, 0) / 60;
   let t;
