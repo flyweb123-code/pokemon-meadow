@@ -551,6 +551,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
+      if (a === 'evq') return evTrHint(P, () => trPop(id, p));
       if (a.startsWith('evk')) { const e2 = st().tr.find(x => x.id === P.id); if (!e2) return; tickTrain(Date.now()); const k = +a.slice(3); e2.evk = e2.evk === k ? -1 : k; K.save(); trPop(id, p); return; }   // 노력치 훈련: 같은 칸 다시 누르면 끔
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
@@ -727,12 +728,12 @@ const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr 
 const recMon = () => { const P = shRec != null && S.box.find(p => p.id === shRec); return P && luMons().some(x => x.id === P.id) ? P : null; };
 const luMons = () => [...new Set((GB().lus() || []).flat())].map(id => S.box.find(p => p.id === id)).filter(Boolean);
 function recBar() { if (!['tm', 'tr', 'it'].includes(shopT)) return ''; const P = recMon();   // v17.67 경완: 작은 버튼으로 보유 골드 왼쪽에
-  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button></div>`
+  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button><button type="button" class="sp-recsx" data-rec="off" aria-label="추천 끄기">✕</button></div>`   /* v20.66 경완: 추천받기 켜면 이름 옆 ✕ (누르면 끔) */
     : `<button type="button" class="sp-recs sp-recsb" data-rec="pick"><i class="sp-recic" aria-hidden="true">★</i><b>추천받기</b></button>`; }
 // v17.82 경완 '추천받기 버튼 도구 탭이랑 정렬 맞추고 폰트·여백도 탭이랑, 테두리는 검정': 도구 탭과 같은 가로 자리·폭
 function recAlign() { const r = sh.querySelector('.sp-recs'), t = sh.querySelector('.sp-tabs [data-st=it]'), hd = sh.querySelector('.sf-hd'); if (!r || !t || !hd) return;
   const a = t.getBoundingClientRect(), h = hd.getBoundingClientRect(); if (!a.width) return; r.style.left = (a.left - h.left) + 'px';
-  if (r.classList.contains('on')) { const tl = sh.querySelector('.sp-hl')?.getBoundingClientRect(); r.style.left = ''; r.style.width = ''; r.style.right = (h.right - a.right) + 'px'; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (tl ? a.right - tl.right - 8 : a.width * 2) + 'px'; } else { r.style.right = ''; r.style.minWidth = r.style.maxWidth = ''; r.style.width = a.width + 'px'; } }   // v17.88 경완: 켜지면 도구 탭 오른쪽 끝에 맞추고 이름이 길면 왼쪽으로 늘어남
+  if (r.classList.contains('on')) { const tl = sh.querySelector('.sp-hl')?.getBoundingClientRect(); r.style.left = ''; r.style.width = ''; r.style.right = (h.right - a.right) + 'px'; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (tl ? a.right - tl.right - 8 : a.width * 2) + 'px'; r.style.minWidth = (a.width + 22) + 'px'; } else { r.style.right = ''; r.style.minWidth = r.style.maxWidth = ''; r.style.width = a.width + 'px'; } }   // v17.88 경완: 켜지면 도구 탭 오른쪽 끝에 맞추고 이름이 길면 왼쪽으로 늘어남
 addEventListener('resize', () => { try { recAlign(); } catch (e) {} });
 function recPick() {   // v17.61 경완: 라인업 1·2·3 탭
   GB().loadSim?.().catch(() => {});   // v19.65: 고르는 동안 미리
@@ -785,14 +786,15 @@ function tmWho(id, i) {
   const D = GB().D, M = luMons().filter(P => (D.sp[P.sp]?.tm || []).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
   if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
-  return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<span class="tm-wp${kn(P) ? ' kn' : ''}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</span>`).join('')}</div>`;
+  return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
   const kd = GB().tmKind(id); if (!GB().isTR(id) && n > 0) return;   /* 기술머신은 한 번 사면 계속 (v15.69) */
   pop(`<h4${GB().isTR(id) ? ' class="has-own"' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}${GB().isTR(id) ? GB().bagN(n) : ''}</h4><div class="mp-moves one tm-card${x[8] ? ' has-ds' : ''}">${GB().mvRow(x, '').replace(/<\/button>$/, x[8] ? `<span class="tm-ds">${esc(x[8])}</span></button>` : '</button>')}</div>${tmKdBox(id)}${tmWho(id, i)}
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
-    if (a === 'x') return close(); if (a !== 'buy') return;
+    if (a === 'x') return close(); if (a.startsWith('wp')) return GB()._monPop(+a.slice(2) || a.slice(2), 'view');   // v20.60 경완: 배울 수 있는 포켓몬을 누르면 그 포켓몬 상세카드
+    if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
     close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `${kd} <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
     say(`${kd} ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
@@ -830,8 +832,14 @@ function vitBuy(i) { const B = GB(), [k, nm] = B.EV_VIT[i], g = st(), n = g.vit?
     close(); if (a !== 'y') return; if (!buy(B.EV_VP)) return say(`골드가 모자라요. ${B.EV_VP}G가 필요해요.`);
     (g.vit ||= {})[k] = (g.vit[k] | 0) + 1; K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }); }
 // 훈련장 상세카드 '노력치 훈련': 고른 능력치에 노력치가 쌓임, 지금까지 오른 양만 (하루 속도는 안 보임)
+// v20.61 경완 '훈련장 카드 노력치 훈련 박스에도 ? — 지금 어떤 훈련이 좋은지 힌트': 추천 배분(evPlan) 순서대로 아직 목표에 못 미친 첫 능력치
+function evTrHint(P, after) { const B = GB(), m = B.gm(P), e = B.evArr(m), pl = B.evPlan(P.sp), N = B.EV_N, T = st().tr.find(x => x.id === P.id);
+  const k = pl.k.find((k, j) => (e[k] | 0) < pl.v[j]), j = pl.k.indexOf(k);
+  const chips = pl.k.map((x, jj) => `<span class="q-c"><small>${N[x]}</small><b>${e[x] | 0} / ${pl.v[jj]}</b></span>`).join('');
+  const msg = k == null ? '추천 배분대로 노력치가 다 찼어요. 이제 노력치 훈련은 쉬어도 돼요.' : `지금은 <b>${N[k]}</b> 노력치 훈련이 좋아요.${T?.evk === k ? ' 이미 이 훈련을 하고 있어요!' : ''}`;
+  B.gymPop(`<h4 class="mi-h">${esc(nmOf(P))}에게 좋은 훈련</h4><div class="q-main"><p class="q-nm">${pl.nm}</p><div class="q-cs">${chips}</div></div><p class="gy-msg mi-d">${pl.why}</p><p class="gy-msg ev-trhint">${msg}</p><div class="gy-btns${k == null || T?.evk === k ? ' one' : ''}"><button data-a="x"${k == null || T?.evk === k ? ' class="main"' : ''}>닫기</button>${k == null || T?.evk === k ? '' : `<button class="main" data-a="y">${N[k]} 훈련하기</button>`}</div>`, (a, c) => { c(); if (a === 'y' && T) { tickTrain(Date.now()); T.evk = k; K.save(); after?.(); } }).classList.add('ev-qpop'); }
 function evTrBox(P) { const B = GB(); if (!B.evOn?.()) return ''; const T = st().tr.find(e => e.id === P.id); if (!T) return ''; const on = T.evk ?? -1, g = T.evg | 0;
-  return `<div class="ev-tr"><div class="ev-trh"><b>노력치 훈련</b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}</small></div>
+  return `<div class="ev-tr"><div class="ev-trh"><b>노력치 훈련<button type="button" class="ev-q ev-trq" data-a="evq" aria-label="어떤 훈련이 좋을까"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}</small></div>
     <div class="ev-trg">${B.EV_N.map((n, i) => `<button type="button" class="ev-tk${i === on ? ' on' : ''}" data-a="evk${i}"><img alt="" src="${B.itImg(B.EV_PW[i])}"><span>${n}</span></button>`).join('')}</div></div>`; }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
 function shopDeco(body) {

@@ -3635,3 +3635,30 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v20.55 튜토리얼 '이걸 눌러 보렴': 그 칸만 눌림 */
 #gym .gy-tut-tap{position:absolute;inset:0;z-index:12;background:rgba(12,13,20,.25)}
+
+/* v20.59 경완 '라인업 상세카드 크기 통일': 사진 칸 크기 고정(랭크·지닌 도구에 따라 92~96px 로 바뀌던 것), 기술이 4개보다 적어도 기술 칸 높이는 4개 자리 */
+#gym .gy-pop .win:has(.iv-hex) .mp-head>.mp-thb>.rk-fr{width:94px;height:94px;box-sizing:border-box}
+#gym .gy-pop .win:has(.iv-hex) .mp-moves{min-height:131px;align-content:start}
+/* v20.59 경완 '? 가운데': 글자 대신 도트 ? 그림, 저장 버튼 글자 한 줄 */
+#gym .ev-q svg{display:block;margin:0 auto}
+#gym .ev-pop .ev-save{white-space:nowrap}
+/* v20.59 경완: 도구 없는 포켓몬은 사진 오른쪽 아래에 점선 + 칸 (눌러서 도구를 넣는 자리) */
+#gym .gy-pop .mp-head{position:relative}#gym .gy-pop .mp-head>button.th-add{position:absolute;left:var(--tha-x,71px);top:var(--tha-y,71px);width:28px;height:28px;min-width:0;padding:0!important;margin:0;box-sizing:border-box;border:2px dashed #8a8a96!important;border-radius:6px;background:rgba(255,255,255,.92)!important;box-shadow:none!important;color:#7a7a86;font:700 18px/24px var(--px);text-align:center;z-index:2;cursor:pointer}#gym .gy-pop .mp-head>button.th-add:active{transform:translate(1px,1px);background:#eef!important}   /* v20.62 경완: + 박스는 따로 눌리는 버튼 → 도구 사용 화면 */
+/* v20.59 경완 '딱지 잘린다': 기술 가르치기 창 '새로 배울 기술' 딱지가 창 위로 삐져나오게 (overflow-x:hidden 이 y 도 잘랐음 → clip) */
+#gym .gy-pop .win.mv-neww:has(.mv-learn){overflow-x:clip!important;overflow-y:visible!important}
+/* v20.60 경완: 도구 사용 화면 추천 도구 버튼 + 가진 도구 중 추천 하나 은은한 테두리·추천 딱지 */
+#gym .tt-who .it-hbtn{margin-left:auto;display:flex;gap:6px;flex:none}#gym .tt-who .it-hbtn .it-take{margin-left:0}
+#gym .tt-who .it-recbtn{height:30px;padding:0 10px;border:2px solid #e0a020;border-radius:6px;background:#fff8e4;font:inherit;font-size:12px;font-weight:700;color:#8a5a00;display:inline-flex;align-items:center;gap:3px}#gym .tt-who .it-recbtn i{font-style:normal;color:#e0a020}#gym .tt-who .it-recbtn:active{transform:translate(1px,1px)}
+#gym .sp-it.it-recm{position:relative;overflow:visible;box-shadow:inset 0 0 0 2px rgba(240,176,48,.9),inset 0 0 8px 2px rgba(240,176,48,.35);animation:mvRecm2 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){#gym .sp-it.it-recm{animation:none}}
+/* v20.60 경완: 기술머신 사기 창 '배울 수 있는 포켓몬'을 누르면 상세카드 → 버튼 */
+#gym button.tm-wp{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}#gym button.tm-wp:active{transform:translate(1px,1px)}
+/* v20.61 노력치 훈련 박스 ? */
+#gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:-4px}#gym .ev-trhint{text-align:center;margin-top:6px}#gym .ev-trhint b{color:#6a44c0}
+/* v20.63 경완: 기술 바꾸기 창이 뜨면 아래 메뉴까지 어둡게 (본문은 상세카드 막 + 기술 창 막 두 겹이라 같은 진하기로) */
+#gym:has(.gy-pop .mv-ord) .gy-menu{position:relative}#gym:has(.gy-pop .mv-ord) .gy-menu::after{content:"";position:absolute;left:0;right:0;top:-3px;bottom:0;z-index:5;background:rgba(12,13,20,.3);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}#gym:has(.gy-pop ~ .gy-pop .mv-ord) .gy-menu::after{background:rgba(12,13,20,.51)}
+/* v20.64 경완: 성격·특성 창 우상단 ✕ — 창 기준으로 */
+#gym .gy-pop .win:has(> .mp-x){position:relative}#gym .gy-pop .win:has(> .mp-x) > h4{padding-left:34px;padding-right:34px}
+/* v20.66 경완: 추천받기 켜면 이름 옆 ✕ — 노란 박스 안에 같이, 박스는 그만큼 길게 */
+#gym .sp-top .sp-recs.on{background:#fff4d6;box-shadow:inset 0 0 0 2px var(--frame,#282830)}#gym .sp-top .sp-recs.on .sp-recsb{flex:0 1 auto;background:none!important;box-shadow:none!important;padding:0 0 0 4px}#gym .sp-top .sp-recs.on .sp-recsx{display:flex;flex:none;align-items:center;padding:0 8px 0 4px;font-size:14px;line-height:1}
+#gym .iv-hex.nop,#gym .iv-hex.nop:active{transform:none!important;transition:none!important}   /* v20.66 바뀐 직후엔 눌림 크기 변화 없이 */
