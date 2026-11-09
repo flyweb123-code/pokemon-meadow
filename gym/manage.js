@@ -246,13 +246,13 @@ async function drawTrain() {
     if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
-  sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
-  const el = sh.querySelector('.ty-yd'); await loadYA(); if (!el.isConnected) return;
+  sh.innerHTML = `<div class="ty-yd ty-wait"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  const el = sh.querySelector('.ty-yd');   // v21.07 경완 '훈련장 처음 들어갈 때 노랗게 보였다가': 바닥 그림·조명이 다 그려질 때까지 가려 둠 (.ty-wait) await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
     pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
   Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
-  { const bg = el.querySelector('.ty-bg'), y0 = Y; requestAnimationFrame(() => setTimeout(() => { if (bg.isConnected && Y === y0) yardBg(bg); }, 0)); }   // 바닥 그림은 화면이 먼저 뜬 다음에 (처음 한 번만 무겁다)
+  { const bg = el.querySelector('.ty-bg'), y0 = Y, show = () => el.classList.remove('ty-wait'); if (YBG?.key === `${W}x${H}:${st().ty}:${new Date().getMonth()}`) { yardBg(bg); requestAnimationFrame(show); } else requestAnimationFrame(() => setTimeout(() => { if (bg.isConnected && Y === y0) yardBg(bg); requestAnimationFrame(show); }, 0)); }   // 바닥 그림은 화면이 먼저 뜬 다음에 (처음 한 번만 무겁다)
   const r1 = H * .29, r2 = H * .39;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
