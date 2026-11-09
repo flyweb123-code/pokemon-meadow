@@ -46,7 +46,8 @@ const coachRow = s => { const p = coachP(s); return `<div class="cs-row"><span>�
 const YARD_SF = 2;
 // 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
 // gym/egg.json (tools/gym/mkegg.js) 의 4개 중 아직 모르는 것 하나. 4번째는 포켓로그의 레어 알 기술이라 뽑힐 몫을 ¼ 로.
-const SP_P = 1 / 168;   // 훈련 1시간마다 (v19.57 쉬지 않고 24시간 × 7일 = 168시간에 1개쯤)
+const SP_P = 1 / 168;   // (v20.85 부터 안 씀) 훈련 1시간마다 (v19.57 쉬지 않고 24시간 × 7일 = 168시간에 1개쯤)
+const EG_H = 200, EG_SIDE = 1 / 6;   // v20.85 깨달음 게이지: 집중 칸은 200시간(약 8일)에 다 참, 나머지 칸은 ⅙ 속도, 기술 선생 코치마다 ×2
 const TR_H = 24;   /* v19.57 경완 '체육관 훈련은 그냥 쉬는시간 없이 계속하게': 하루 8시간 상한 → 하루 내내 */
 const TR_K = 8 / TR_H;   /* v19.59 경완 '시간만 그냥 늘리고 양은 원래대로': 하루에 쌓이는 경험치·친밀도는 예전 8시간 그대로 (1시간 몫 = ⅓) */
 function special(P) {
@@ -76,7 +77,9 @@ function tickTrain(now) {
       e.fa = (e.fa || 0) + step * TR_K * trFr(P) * (1 + coachN('kind')); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n, 'keep').learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
       if (e.evk >= 0 && GB().evOn?.()) { e.efx = (e.efx || 0) + step * EV_DAY / TR_H * coachX() * (1 + .5 * coachN('effort')); const n = Math.floor(e.efx); if (n > 0) { e.efx -= n; e.evg = (e.evg || 0) + GB().evAdd(GB().gm(P), e.evk, n); } }   // v20.45 노력치 훈련
-      e.acc = (e.acc || 0) + step; while (e.acc >= 1) { e.acc -= 1; if (Math.random() < SP_P * (1 + coachN('teach'))) { const x = special(P); if (x) { (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]); }   /* v16.71 경완: 코치 덕에 배운 기술은 일지에 '코치가 가르쳤다' */ if (x) K.awMv?.(P.id, x[0], x[1], x[2]); if (x) K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } }
+      { const f = GB().egFocus(P); if (f >= 0) { const sp = step * 100 / EG_H * (1 + coachN('teach')); for (const r of GB().egOpen(P)) { const x = GB().egAdd(P, r.i, r.i === f ? sp : sp * EG_SIDE); if (!x) continue;   /* v20.85 깨달음 게이지 */
+        (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]);
+        K.awMv?.(P.id, x[0], x[1], x[2]); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } } }
     }
     R.lv += GB().gm(P).lv - lvA; R.to = GB().gm(P).lv; }
     const lv = GB().gm(P).lv;
@@ -580,7 +583,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   const p = pop(`<div class="tp2">${trHead(P, true)}
     <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 훈련 일지 ›</small></span>
       <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span><button type="button" class="tp2-mvc" data-a="mvs"><small>새 기술</small><b class="${TT.mv.length ? 'mv' : ''}">${TT.mv.length ? `${TT.mv.length}개 ›` : '- ›'}</b></button></span>
-      ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>${evTrBox(P)}
+      ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>${evTrBox(P)}${egBox(P)}
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
@@ -588,6 +591,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
       if (a === 'evq') return evTrHint(P, () => trPop(id, p));
+      if (a.startsWith('egf')) { tickTrain(Date.now()); m.egF = +a.slice(3); sfx('tap'); K.save(); trPop(id, p); return; }   // v20.85 집중할 특별한 기술
       if (a.startsWith('evk')) { const e2 = st().tr.find(x => x.id === P.id); if (!e2) return; tickTrain(Date.now()); const k = +a.slice(3); e2.evk = e2.evk === k ? -1 : k; K.save(); trPop(id, p); return; }   // 노력치 훈련: 같은 칸 다시 누르면 끔
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
@@ -892,6 +896,10 @@ function evTrHint(P, after) { const B = GB(), m = B.gm(P), e = B.evArr(m), pl = 
   const k = pl.k.find((k, j) => (e[k] | 0) < pl.v[j]), j = pl.k.indexOf(k);
   const msg = k == null ? '추천 배분대로 노력치가 다 찼어요. 이제 노력치 훈련은 쉬어도 돼요.' : `지금은 <b>${N[k]}</b> 노력치 훈련이 좋아요.${T?.evk === k ? ' 이미 이 훈련을 하고 있어요!' : ''}`;
   B.gymPop(`<h4 class="mi-h">${esc(nmOf(P))}에게 좋은 훈련</h4><p class="gy-msg ev-trhint">${msg}</p><p class="gy-msg mi-d ev-trwhy">${pl.why}</p><div class="gy-btns${k == null || T?.evk === k ? ' one' : ''}"><button data-a="x"${k == null || T?.evk === k ? ' class="main"' : ''}>닫기</button>${k == null || T?.evk === k ? '' : `<button class="main" data-a="y">${N[k]} 훈련하기</button>`}</div>`, (a, c) => { c(); if (a === 'y' && T) { tickTrain(Date.now()); T.evk = k; K.save(); after?.(); } }).classList.add('ev-qpop'); }
+// v20.85 훈련장 상세카드 '특별한 기술': 알 기술 4칸 깨달음 게이지, 누르면 그 칸 집중 (안 익힌 건 이름 ??? + 타입·분류만)
+function egBox(P) { const B = GB(), L = B.egList?.(P) || []; if (!L.length) return ''; const m = B.gm(P), f = B.egFocus(P), G = m.egP || [];
+  return `<div class="eg-tr"><div class="ev-trh"><b>특별한 기술</b><small>${f < 0 ? '모두 깨달았어요!' : '누른 기술을 집중 훈련해요'}</small></div><div class="eg-gl">${L.map(r => { const kn = B.egKn(m, r.id), p = kn ? 100 : Math.floor(G[r.i] || 0);
+    return `<button type="button" class="eg-g${kn ? ' kn' : ''}${r.i === f ? ' on' : ''}${r.i === 3 ? ' rare' : ''}" data-a="${kn ? 'i' + r.id : 'egf' + r.i}" style="--tc:${GA.TYPE_C?.[r.x[2]] || '#888'}">${B.tyTag(r.x[2], r.x[3])}<b>${kn ? esc(r.x[1]) : '???'}</b><span class="eg-bar"><i style="width:${p}%"></i></span><em>${kn ? '익힘' : p + '%'}</em>${r.i === f ? '<i class="eg-fo">집중</i>' : r.i === 3 && !kn ? '<i class="eg-fo rr">레어</i>' : ''}</button>`; }).join('')}</div></div>`; }
 function evTrBox(P) { const B = GB(); if (!B.evOn?.()) return ''; const T = st().tr.find(e => e.id === P.id); if (!T) return ''; const on = T.evk ?? -1, g = T.evg | 0;
   return `<div class="ev-tr"><div class="ev-trh"><b>노력치 훈련<button type="button" class="ev-q ev-trq" data-a="evq" aria-label="어떤 훈련이 좋을까"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}</small></div>
     <div class="ev-trg">${B.EV_N.map((n, i) => `<button type="button" class="ev-tk${i === on ? ' on' : ''}" data-a="evk${i}"><img alt="" src="${B.itImg(B.EV_PW[i])}"><span>${n}</span></button>`).join('')}</div></div>`; }

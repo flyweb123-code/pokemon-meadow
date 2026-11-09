@@ -3743,3 +3743,21 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .ty-emo.mvn{left:auto;margin-left:-40px;width:auto;min-width:80px;white-space:nowrap;color:#fff4c0;font-size:12px}.ty-mvh{position:absolute;width:0;height:0;pointer-events:none}   /* v20.81 훈련장 기술 이름 외치기 · 기술 효과 칸 */
 .ty-emo.co{margin-left:0;translate:-50% 0}   /* v20.84 코치 말 길이 달라도 가운데 */
 #gym .gy-plate .gy-rpa{pointer-events:auto;cursor:pointer}   /* v20.84 경완 '평판 게이지가 빈 화면으로 인식돼 안 눌림': 게이지도 누를 수 있게 (누르면 등급표) */
+/* v20.85 경완 '기술 배우는 맛': 훈련장 카드 특별한 기술 깨달음 게이지 (누르면 집중) */
+#gym .eg-tr{margin:8px 0 6px;padding:8px 10px;border:3px solid #d8a020;background:#fffaec;box-shadow:0 3px 0 rgba(0,0,0,.12)}#gym .eg-tr .ev-trh b{color:#a86a00}
+#gym .eg-gl{display:flex;flex-direction:column;gap:4px}
+#gym .eg-g{position:relative;display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px 5px 10px;background:#fff;border:2px solid #e8dcc0;border-left:4px solid var(--tc);text-align:left;font:inherit;color:var(--ink,#20202c);transition:transform .08s ease-out}
+#gym .eg-g:active{transform:translateY(1px)}
+#gym .eg-g .tg{display:inline-flex;gap:3px;flex:none}
+#gym .eg-g > b{flex:none;width:5.6em;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#gym .eg-g:not(.kn) > b{color:#8a8070;letter-spacing:1px}
+#gym .eg-bar{flex:1;min-width:30px;height:8px;background:#ece4d0;border:1px solid #c8b890;position:relative;overflow:hidden}
+#gym .eg-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffd860,#e8a818);transition:width .5s ease-out}
+#gym .eg-g.kn .eg-bar i{background:linear-gradient(#8ee08e,#3ea84e)}
+#gym .eg-g > em{flex:none;width:30px;text-align:right;font-style:normal;font-size:11px;font-weight:700;color:#8a6a20}
+#gym .eg-g.kn > em{color:#3e9a52}
+#gym .eg-g.on{border-color:#e8a818;background:#fff4cc;box-shadow:0 0 0 1px #e8a818 inset}
+#gym .eg-fo{position:absolute;right:-3px;top:-8px;font-style:normal;font-size:9px;line-height:13px;padding:0 4px;background:#e8a818;color:#fff;border-radius:3px;font-weight:700}
+#gym .eg-fo.rr{background:#b07ae0}
+#gym .eg-g.on .eg-bar i{animation:egGl 1.6s ease-in-out infinite}
+@keyframes egGl{50%{filter:brightness(1.2)}}
