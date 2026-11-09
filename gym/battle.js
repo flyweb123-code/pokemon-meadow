@@ -1384,7 +1384,7 @@ function ivHex(P, m) {
   // 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28). 막대는 종족값·개체값·성격으로 오른 몫을 색으로 나눔, 판정 글자 없음 (경완 2026-10-29)
   const sb = statsOf(P.sp ?? m.sp, m.lv || 1, [0, 0, 0, 0, 0, 0], 'hardy'), w = v => `calc((100% - 60px) * ${(Math.max(0, v) / mx).toFixed(3)})`;   // 숫자가 막대 끝에 붙으니 그 자리(60px)만큼 빼고 늘인다
   const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key), d = st[i] - st0[i];
-    return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i class="sg-b" style="width:${w(sb[i])}"></i><i class="sg-i" style="width:${w(stI[i] - sb[i])}"></i>${st0[i] > stI[i] ? `<i class="sg-e" style="width:${w(st0[i] - stI[i])}"></i>` : ''}${d > 0 ? `<i class="sg-u" style="width:${w(d)}"></i>` : d < 0 ? `<i class="sg-d" style="width:${w(-d)}"></i>` : ''}<em>${st[i]}<small>${nd(i)}</small></em></b></div>`; }).join('')}
+    return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i class="sg-b" style="width:${w(sb[i])}"></i><i class="sg-i" style="width:${w(stI[i] - sb[i])}"></i>${st0[i] > stI[i] ? `<i class="${evOn() ? 'sg-e' : 'sg-i'}" style="width:${w(st0[i] - stI[i])}"></i>` : ''}${d > 0 ? `<i class="sg-u" style="width:${w(d)}"></i>` : d < 0 ? `<i class="sg-d" style="width:${w(-d)}"></i>` : ''}<em>${st[i]}<small>${nd(i)}</small></em></b></div>`; }).join('')}
     <div class="ivb-lg"><span><i class="sg-b"></i>종족값</span><span><i class="sg-i"></i>개체값</span>${evOn() ? '<span><i class="sg-e"></i>노력치</span>' : ''}<span><i class="sg-u"></i>성격 ▲</span><span><i class="sg-d"></i>성격 ▼</span></div></div>`;
   return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="능력치 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 -12 180 164" role="img" aria-label="능력치"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
     <div class="iv-sum"><b>능력치</b><span>합계 ${st.reduce((a, b) => a + b, 0)}</span><span>판정: ${ivJudge(Math.round(sum / 6))}</span><span>가장 좋은 능력치: ${best[1]}</span></div></div>`;
@@ -1892,12 +1892,12 @@ const evSumOf = m => evArr(m).reduce((a, b) => a + (b | 0), 0);
 // 쌓기: 능력치 i 에 n 만큼 (252·510 넘는 몫은 버림). 넣은 양을 돌려줌
 function evAdd(m, i, n) { const e = evArr(m), room = Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))), k = Math.max(0, Math.min(room, Math.floor(n))); e[i] = (e[i] | 0) + k; return k; }
 // 배틀: 쓰러뜨린 종의 노력치를 싸운 포켓몬(학습장치로 받은 포켓몬 빼고)에게 (본가처럼 같이 나와 싸운 포켓몬은 다 받음)
-function evBattle(P, sp) { if (!evOn() || !EVY) return; const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P); for (let i = 0; i < 6; i++) if (+y[i]) evAdd(m, i, +y[i]); }
+function evBattle(P, sp) { if (!EVY) return;   /* v20.54 경완: 노력치는 처음부터 쌓이고, 보이는 건 동네 체육관부터 */ const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P); for (let i = 0; i < 6; i++) if (+y[i]) evAdd(m, i, +y[i]); }
 // v20.52 경완 '원래 있는 포켓몬도 레벨이랑 배틀에서 쓰러뜨린 포켓몬 반영해서': 포켓몬별 쓰러뜨린 기록은 없어서 어림한다.
 // 처음 레벨부터 얻은 경험치 − 훈련장 경험치 = 배틀 경험치(학습장치 몫 어림해 ×0.8) → 같은 레벨 상대를 쓰러뜨린 것으로 한 마리씩 셈,
 // 상대 종은 최근 배틀 기록(blog) 상대들(없으면 체육관 타입 포켓몬) → 그 종 노력치. 이미 쌓인 칸은 모자란 만큼만. 포켓몬마다 한 번 (m.evM)
 function evMig() {
-  if (!EVY || !D || !S.gym?.mon || !evOn()) return 0; let done = 0;
+  if (!EVY || !D || !S.gym?.mon) return 0; let done = 0;
   const pool = []; for (const r of S.gym.blog || []) for (const f of r.fo || []) if (EVY[f[0]]) pool.push(f[0]);
   if (!pool.length) for (const k of Object.keys(EVY)) { const sp = +k; if (SPECIES[sp] && (!S.gym.ty || (SPECIES[sp].t || []).includes(S.gym.ty))) pool.push(sp); }
   if (!pool.length) return 0;
@@ -1913,7 +1913,7 @@ function evMig() {
   return done; }
 const evSet = m => { const e = evArr(m); return { hp: e[0], atk: e[1], def: e[2], spa: e[3], spd: e[4], spe: e[5] }; };
 // 상세카드 노력치 박스 (능력치 박스 밑)
-function evBox(m) { if (!evOn()) return ''; if (!m.evM) evMig(); const e = evArr(m), u = evSumOf(m), pl = m.evp | 0;
+function evBox(m) { if (!m.evM) evMig(); if (!evOn()) return ''; const e = evArr(m), u = evSumOf(m), pl = m.evp | 0;
   return `<button type="button" class="ev-box2" data-a="ev"><span class="eb2-t"><small>노력치</small><span class="n"><b>${u + pl}</b><span> / ${EV_MAX}</span></span><i class="eb-bar"><i class="p" style="width:${(pl / EV_MAX * 100).toFixed(1)}%"></i><i class="u" style="width:${(u / EV_MAX * 100).toFixed(1)}%"></i></i><em class="pool">${pl} 남음</em><span class="r">›</span></span>`
     + `<span class="eb2-s">${EV_N.map((n, i) => `<span class="${!e[i] ? 'z' : e[i] >= EV_ONE ? 'mx' : ''}"><small>${n}</small><b>${e[i] | 0}</b></span>`).join('')}</span></button>`; }
 // ? 힌트: 종족값으로 주로 찍는 배분 (공격·특공 중 높은 쪽, 스피드 80 이상이면 빠른 공격형, 아니면 튼튼한 공격형)
