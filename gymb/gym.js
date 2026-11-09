@@ -849,7 +849,8 @@ function mkSch(d0, from = 0) {
   return T.filter(t => t > from).sort((a, b) => a - b);
 }
 function glog(k, html, t = Date.now()) { const g = st(); g.log.unshift([t, k, html]); if (g.log.length > 400) g.log.length = 400; }   /* v15.66 일지에서 날짜별로 보려고 80 → 400 */
-function addRep(n) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, Math.min(r0, repFloor(g)), Math.max(r0, repCap(g))); if (g.wk) g.wk.r += g.rep - r0; }
+// v20.60 경완 '승급 직전 평판은 고용 트레이너로 올라가지 않고 무조건 관장이 직접': 트레이너(sf)가 막은 평판은 문턱 1 앞까지만, 마지막 한 칸은 관장 배틀로
+function addRep(n, sf) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r0 + n, Math.min(r0, repFloor(g)), Math.max(r0, repCap(g) - (sf && GRADES[(g.gmax | 0) + 1] ? 1 : 0))); if (g.wk) g.wk.r += g.rep - r0; }
 /* 날짜별 체육관 일지 (v15.66 경완): 찾아온 도전자 n, 그냥 돌아감 o, 주급 p, 상점 s,
    관장(나) me = {w 막음, l 짐, g 골드, r 평판}, 트레이너 sf = {이름: {w 막음, g 골드, r 평판}} (v15.68 경완 '트레이너가 번 돈·평판과 내가 번 돈·평판 구분') */
 const dayNew = () => ({ n: 0, o: 0, p: 0, s: 0, me: { w: 0, l: 0, g: 0, r: 0 }, sf: {} });
@@ -918,7 +919,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }

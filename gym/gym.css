@@ -3646,3 +3646,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mp-thb .rk-fr .th-add{position:absolute;right:-5px;bottom:-5px;width:28px;height:28px;box-sizing:border-box;border:2px dashed #8a8a96;border-radius:6px;background:rgba(255,255,255,.92);color:#7a7a86;font:700 18px/24px var(--px);font-style:normal;text-align:center;z-index:2;pointer-events:none}
 /* v20.59 경완 '딱지 잘린다': 기술 가르치기 창 '새로 배울 기술' 딱지가 창 위로 삐져나오게 (overflow-x:hidden 이 y 도 잘랐음 → clip) */
 #gym .gy-pop .win.mv-neww:has(.mv-learn){overflow-x:clip!important;overflow-y:visible!important}
+/* v20.60 경완: 도구 사용 화면 추천 도구 버튼 + 가진 도구 중 추천 하나 은은한 테두리·추천 딱지 */
+#gym .tt-who .it-hbtn{margin-left:auto;display:flex;gap:6px;flex:none}#gym .tt-who .it-hbtn .it-take{margin-left:0}
+#gym .tt-who .it-recbtn{height:30px;padding:0 10px;border:2px solid #e0a020;border-radius:6px;background:#fff8e4;font:inherit;font-size:12px;font-weight:700;color:#8a5a00;display:inline-flex;align-items:center;gap:3px}#gym .tt-who .it-recbtn i{font-style:normal;color:#e0a020}#gym .tt-who .it-recbtn:active{transform:translate(1px,1px)}
+#gym .sp-it.it-recm{position:relative;overflow:visible;box-shadow:inset 0 0 0 2px rgba(240,176,48,.9),inset 0 0 8px 2px rgba(240,176,48,.35);animation:mvRecm2 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){#gym .sp-it.it-recm{animation:none}}
+/* v20.60 경완: 기술머신 사기 창 '배울 수 있는 포켓몬'을 누르면 상세카드 → 버튼 */
+#gym button.tm-wp{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}#gym button.tm-wp:active{transform:translate(1px,1px)}
