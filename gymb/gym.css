@@ -3663,7 +3663,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-top .sp-recs.on{background:#fff4d6;box-shadow:inset 0 0 0 2px var(--frame,#282830)}#gym .sp-top .sp-recs.on .sp-recsb{flex:0 1 auto;background:none!important;box-shadow:none!important;padding:0 0 0 4px}#gym .sp-top .sp-recs.on .sp-recsx{display:flex;flex:none;align-items:center;padding:0 8px 0 4px;font-size:14px;line-height:1}
 #gym .iv-hex.nop,#gym .iv-hex.nop:active{transform:none!important;transition:none!important}   /* v20.66 바뀐 직후엔 눌림 크기 변화 없이 */
 /* v20.68 경완: 상점에서 산 것 = 창고 그 칸 오른쪽 위 빨간 점 */
-#gym .gy-storew .gy-body :is([data-tm],[data-it],[data-mint],[data-dc]){position:relative}#gym .gy-storew .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none}
+#gym .gy-storew .gy-body :is([data-tm],[data-it],[data-mint],[data-vit],[data-dc]){position:relative}#gym .gy-storew .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none}
 #gym .gy-storew .st-tabs [role=tab]{position:relative}#gym .gy-storew .st-tabs .tdot{position:absolute;top:4px;right:4px;margin:0}   /* 탭 글자가 잘려도 점은 보이게 */
 /* v20.68 경완: 상세카드 제목 글자는 그림과 상관없이 가운데, 그림은 글자 왼쪽 (그림 폭만큼 왼쪽으로 빼 둠) */
 #gym .gy-pop h4 > .tm-ic{margin-left:-36px}#gym .gy-pop h4 .tm-tr{font-style:normal;vertical-align:2px;margin-right:4px}
@@ -3699,7 +3699,24 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bu-pips i.new{background:#f0b020;box-shadow:inset 0 0 0 2px #b07800;animation:buPip .5s .35s steps(3,end) both}
 @keyframes buPip{0%{scale:.2;opacity:0}70%{scale:1.25}100%{scale:1;opacity:1}}
 /* v20.78 경완 '훈련장 + 슬롯 박스에 어떤 능력치 훈련 중인지, 박스 디자인 퀄': 능력치 딱지(파워 도구 + 색), 새 기술 딱지, 카드 머리 줄무늬·그림 받침·두꺼운 경험치 막대 */
-#gym .ts-slot.tsc{background:repeating-linear-gradient(135deg,#e8b84a 0 6px,#f4d27a 6px 12px) top/100% 5px no-repeat,linear-gradient(#fffdf4,#fbf6e4)!important;padding-top:10px!important}
+/* v20.79 경완 '슬롯 박스는 상단 스트라이프 빼고 퀄 좋은 나무 판자 느낌, 배경도 약간 갈색': 판자 세 장(이음새)·나뭇결·네 귀 못, 창 바탕 연한 갈색 */
+#gym .ts-win>.win{background:#efe3cf}
+#gym .ts-win .bw-hd h4,#gym .ts-win .bw-hd h4 small{color:#4a3018}
+#gym .ts-slot.tsc{--nl:radial-gradient(circle,#5a3a1e 0 1.6px,#b88a58 1.7px 2.6px,transparent 2.7px);
+  background:var(--nl) 6px 6px/7px 7px no-repeat,var(--nl) right 6px top 6px/7px 7px no-repeat,var(--nl) 6px calc(100% - 6px)/7px 7px no-repeat,var(--nl) right 6px bottom 6px/7px 7px no-repeat,
+  repeating-linear-gradient(180deg,transparent 0 34px,#8a5a30 34px 35px,#f0d0a0 35px 36px),
+  repeating-linear-gradient(178deg,transparent 0 6px,rgba(140,86,40,.16) 6px 7px,transparent 7px 13px,rgba(140,86,40,.1) 13px 14px,transparent 14px 21px),
+  linear-gradient(90deg,rgba(255,240,210,.25),transparent 30%,transparent 70%,rgba(110,60,20,.12)),linear-gradient(#e9c690,#ddb27a)!important;
+  border:3px solid #5a3a1e!important;box-shadow:inset 0 0 0 2px #f6dcae,inset 0 -3px 0 2px rgba(110,60,20,.22),4px 4px 0 rgba(70,40,15,.28)!important;padding-top:8px!important}
+#gym .ts-slot.tsc:active{box-shadow:inset 0 0 0 2px #f6dcae,2px 2px 0 rgba(70,40,15,.28)!important}
+#gym .ts-slot.tsc .tsc-nm b{color:#3a2410}#gym .ts-slot.tsc .tsc-lv{color:#6a4220}
+#gym .ts-slot.tsc .tsc-g{color:#6a4a2a}#gym .ts-slot.tsc .tsc-g small{color:#3a2410}
+#gym .ts-slot.tsc .tsc-g .mini{background:#f6e6c8;box-shadow:inset 0 0 0 2px #5a3a1e}
+#gym .ts-slot.tsc .tsc-out{color:#5a3a1e}
+#gym .ts-slot.tsc .tsc-up{background:#fff2e0;box-shadow:inset 0 0 0 1px #e8a090}
+#gym .ts-slot.tsc .tsc-ev.off{background:#f6e6c8;color:#6a4a2a;box-shadow:inset 0 0 0 1px #c09060}
+#gym .ts-win .ts-slot.tsc-new{background:rgba(120,70,30,.06)!important;border-color:#b08a60!important}#gym .ts-win .ts-slot.tsc-new b,#gym .ts-win .ts-slot.tsc-new span{color:#7a5430}
+#gym .ts-win .ts-slot.tsc-lock{border-color:#cdb594!important;background:repeating-linear-gradient(135deg,rgba(120,70,30,.05) 0 6px,transparent 6px 12px)!important;color:#7a5a3a}
 #gym .ts-slot.tsc .tsc-th{position:relative;background:radial-gradient(circle at 50% 70%,#fff 0 30%,#e6eefc 31% 60%,#d6e2f8 61%);box-shadow:inset 0 0 0 2px #c4d0ec,2px 2px 0 rgba(0,0,0,.1)}
 #gym .ts-slot.tsc .tsc-th::after{content:"";position:absolute;left:14px;right:14px;bottom:9px;height:5px;border-radius:50%;background:rgba(40,60,110,.18);z-index:-0;pointer-events:none}
 #gym .tsc-mid{gap:5px}
@@ -3721,3 +3738,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-sheet .sp-body .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none;z-index:1}
 #gym .gy-sheet .sp-tabs [role=tab]{position:relative}#gym .gy-sheet .sp-tabs .tdot{position:absolute;top:4px;right:4px;margin:0;box-shadow:0 0 0 2px var(--win,#fff)}
 #gym .bu-pop.fin .bu-hd{background:repeating-linear-gradient(135deg,#a8741a 0 10px,#bc8424 10px 20px)}#gym .bu-pop.fin .bu-hd small{color:#ffe8b0}#gym .bu-pop.fin .bu-hd b{text-shadow:2px 2px 0 #5a3a08}   /* v20.78 경완 '마지막 단계는 체육관이 완성됐어요!': 금색 머리띠 */
+#gym .sp-itr{justify-content:space-between}   /* v20.79 경완: 도구 탭 왼쪽 항목 필터 · 오른쪽 가격순 */
+#gym .ts-win .ts-slot.tsc .tsc-out{top:9px;right:14px}

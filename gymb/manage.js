@@ -817,6 +817,8 @@ function buyTm(id, can) {
   });
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
+let itCat = -1;   // v20.79 도구 탭 항목 필터 (-1 = 모든 항목)
+const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : [])];
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
   // 분류별로 (경완 2026-10-31 '기존 도구들도 민트처럼 항목 분류', 열매 추가). 분류 안에서는 가격순, 타입 강화는 체육관 타입 먼저
@@ -829,9 +831,11 @@ function shopIt(body) {
     body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><p class="sp-sub">${esc(nmOf(RP))}에게 맞는 도구</p><div class="sp-list sp-recit"></div>${nOk ? `<p class="sp-sub">추천 성격 민트</p><div class="sp-list">${GB().mintRow(nk, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)}</div>` : ''}`;
     GB().recIts(RP).then(L => { const el = body.querySelector('.sp-recit'); if (!el || !el.isConnected) return; L = L.filter(id => H[id]).slice(0, 8).sort((a, b) => (H[a][1] - H[b][1]) * shopPr); el.innerHTML = L.length ? L.map(row).join('') : '<p class="sf-none">추천할 도구가 없어요.</p>'; GB().fillTh?.(el); });
   } else
-  body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div>${GB().IT_CAT.map(sec).join('')}
-    <p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>${evShop()}`;   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+  { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.79 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
+  body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
+    ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
+    if (b.dataset.f === 'ic') { sfx('tap'); return K.fPop('항목', [[-1, '모든 항목'], ...itCats().map(([, n], i) => [i, n])], itCat, v => { itCat = v; redraw(); }); }
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
       return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
@@ -846,7 +850,7 @@ function evShop() { if (!GB().evOn?.()) return ''; const B = GB();
 function vitBuy(i) { const B = GB(), [k, nm] = B.EV_VIT[i], g = st(), n = g.vit?.[k] | 0;
   B.gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${B.itImg(k)}">${nm}${B.bagN(n)}</h4><p class="gy-msg mi-d">${B.EV_VD[i]}. 먹이면 ${B.EV_N[i]} 노력치가 10 올라간다. 상세카드 노력치 박스에서 먹일 수 있다.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="y">${gold(B.EV_VP)} 사기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return; if (!buy(B.EV_VP)) return say(`골드가 모자라요. ${B.EV_VP}G가 필요해요.`);
-    (g.vit ||= {})[k] = (g.vit[k] | 0) + 1; K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }); }
+    (g.vit ||= {})[k] = (g.vit[k] | 0) + 1; K.newMark?.('vit', i); K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }); }
 // 훈련장 상세카드 '노력치 훈련': 고른 능력치에 노력치가 쌓임, 지금까지 오른 양만 (하루 속도는 안 보임)
 // v20.61 경완 '훈련장 카드 노력치 훈련 박스에도 ? — 지금 어떤 훈련이 좋은지 힌트': 추천 배분(evPlan) 순서대로 아직 목표에 못 미친 첫 능력치
 function evTrHint(P, after) { const B = GB(), m = B.gm(P), e = B.evArr(m), pl = B.evPlan(P.sp), N = B.EV_N, T = st().tr.find(x => x.id === P.id);
@@ -915,7 +919,7 @@ function spWipe() {
 }
 try { spWipe(); } catch (e) { console.warn('spWipe', e); }
 // v20.68 경완 '퇴근하고 돌아오면 상점 필터 다 기본값': 탭·타입·형태·위력순·가격순·추천받기 모두 처음대로
-function shopReset() { shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
+function shopReset() { itCat = -1; shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
 window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
 setTimeout(() => K.menuDot?.(), 0);   // v20.78 상점 빨간 점: 불러오자마자 한 번
 })();

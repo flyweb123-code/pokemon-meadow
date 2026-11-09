@@ -2059,19 +2059,19 @@ function storePop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
-    const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [];   // 민트 (경완 2026-10-30)
-    const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
+    const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [];   // v20.79 영양제도 창고에   // 민트 (경완 2026-10-30)
+    const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
     const NW = g.newIt || {}, nwT = new Set(Object.keys(NW).map(nwTab));   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
     if (storeT === 'tm' || storeT === 'tr') { const D = GB()?.D, L = Object.entries(g.tms).filter(([id, n]) => n > 0 && trOf(id) === (storeT === 'tr')).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : `<p class="sf-none st-empty">가진 ${storeT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요.<br>상점에서 구입해보세요.</p>`; }
-    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}</div>` : '<p class="sf-none st-empty">가진 도구가 없어요.<br>상점에서 구입해보세요.</p>';
+    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length + VL.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}${VL.map(([i, n]) => GB().vitRow(i, n)).join('')}</div>` : '<p class="sf-none st-empty">가진 도구가 없어요.<br>상점에서 구입해보세요.</p>';
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none st-empty">가진 꾸미기가 없어요.<br>상점에서 구입해보세요.</p>';
     if (storeT === 'fit') { const cf = fitOf(g.fit) ? g.fit : ''; body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`; }
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
       <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small>${nwT.has(k) ? '<i class="tdot"></i>' : ''}</button>`).join('')}</div>${body}</div>`;
-    el.querySelectorAll('.gy-body [data-tm],.gy-body [data-it],.gy-body [data-mint],.gy-body [data-dc]').forEach(b => { const d = b.dataset, key = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.mint ? 'mint:' + d.mint : 'deco:' + d.dc; if (NW[key]) b.insertAdjacentHTML('beforeend', '<i class="nwdot" aria-label="새로 산 것"></i>'); });
+    el.querySelectorAll('.gy-body [data-tm],.gy-body [data-it],.gy-body [data-mint],.gy-body [data-vit],.gy-body [data-dc]').forEach(b => { const d = b.dataset, key = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.mint ? 'mint:' + d.mint : d.vit != null ? 'vit:' + d.vit : 'deco:' + d.dc; if (NW[key]) b.insertAdjacentHTML('beforeend', '<i class="nwdot" aria-label="새로 산 것"></i>'); });
     el.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
     if ((storeT === 'tm' || storeT === 'tr' || storeT === 'it') && !GB()?.D) loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (el.isConnected) draw(); });
   };
@@ -2080,13 +2080,14 @@ function storePop() {
     if (b.dataset.a === 'x') { nwSeen(storeT); return el.remove(); }
     if (b.dataset.st) { if (b.dataset.st !== storeT) nwSeen(storeT); storeT = b.dataset.st; return draw(); }
     if (b.dataset.pow) { stPow = -stPow; return draw(); }
-    { const d = b.dataset, key = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.mint ? 'mint:' + d.mint : d.dc ? 'deco:' + d.dc : ''; if (key && g.newIt?.[key]) { delete g.newIt[key]; save(); storeDot(); b.querySelector('.nwdot')?.remove(); } }   // v20.68 그 칸을 누르면 그 점만 끔
+    { const d = b.dataset, key = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.mint ? 'mint:' + d.mint : d.vit != null ? 'vit:' + d.vit : d.dc ? 'deco:' + d.dc : ''; if (key && g.newIt?.[key]) { delete g.newIt[key]; save(); storeDot(); b.querySelector('.nwdot')?.remove(); } }   // v20.68 그 칸을 누르면 그 점만 끔
     // 기술머신 누르면 기술 상세 → 기술 가르치기 → 포켓몬 박스 화면에서 고르기 (경완 2026-10-29)
     if (b.dataset.tm) { const id = b.dataset.tm; return GB().mvInfo(id, () => { el.remove(); GB().teachPick(id, () => storePop()); }, undefined, undefined, 1); }
     // 도구 누르면 상세 → 지니게 하기 → 포켓몬 박스에서 고르기 (경완 2026-10-29)
     if (b.dataset.takeit) { const Q = GA.S.box.find(x => String(x.id) === b.dataset.takeit); if (Q) GB().takeIt(Q); return draw(); }   // 지닌 도구 돌려받기 (경완 2026-10-29)
     if (b.dataset.it) { const id = b.dataset.it; return GB().itInfo(id, '지니게 하기', () => { el.remove(); GB().itPick(id, () => storePop()); }, '', g.itm?.[id] | 0); }
     if (b.dataset.mint) { const k = b.dataset.mint; return GB().mintInfo(k, '먹이기', () => { el.remove(); GB().mintPick(k, () => storePop()); }, '', g.mint?.[k] | 0); }
+    if (b.dataset.vit != null) { const i = +b.dataset.vit; return GB().vitInfo(i, '먹이기', () => { el.remove(); GB().vitPick(i, () => storePop()); }, g.vit?.[GB().EV_VIT[i][0]] | 0); }   // v20.79 경완 '영양제 창고에서 바로 포켓몬 골라 먹이기'
     if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
     if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
     if (b.dataset.fit != null) { fitSet(b.dataset.fit); save(); renderHome(true); return draw(); } };
