@@ -2315,12 +2315,38 @@ const KANG_OPEN = () => [
   '평판이 등급 끝까지 차면\n승급 심사를 받을 수 있지.\n이기면 등급 배지를 준단다!',
   '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
 ];
+// v20.44 경완 '훈련장, 트레이너 튜토리얼은 운영자 모드에서 확인': 노력치·코치 실력 시안 대사 (아직 본 튜토리얼로는 안 씀). 운영자 시뮬에서만 window.gymTutTest = 'tr' | 'st'
+// 빛나는 칸 = 그 자리에 노란 테두리를 강박사 막 위에 겹쳐 그림 (아직 게임에 없는 노력치 화면 칸은 건너뜀)
+const tutRing = sel => k => { k.querySelectorAll('.gy-k-ring').forEach(e => e.remove()); const el = sel && [...root.querySelectorAll(sel)].find(e => e.offsetParent); if (!el) return;
+  const a = el.getBoundingClientRect(), b = root.getBoundingClientRect(), r = document.createElement('i'); r.className = 'gy-k-ring';
+  Object.assign(r.style, { left: a.left - b.left - 4 + 'px', top: a.top - b.top - 4 + 'px', width: a.width + 8 + 'px', height: a.height + 8 + 'px' }); k.querySelector('.gy-k-veil').after(r); };
+const TUT_TR = () => [
+  { s: "A. 훈련장에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, 관장님!", tutRing(), "여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.", tutRing(), "훈련하면 경험치가 쌓여\n레벨이 오르고, 가끔은\n특별한 기술도 배우지.", tutRing(), "처음엔 한 마리뿐이지만\n체육관 등급이 오를 때마다\n자리가 하나씩 늘어난단다.", tutRing(".ty-add"), "자, 오른쪽 아래 + 버튼을\n눌러 첫 훈련생을\n보내 보렴!"] },
+  { s: "B. 포켓몬을 보내고 나서 (훈련 카드가 열린 채로)", L: [tutRing(), "잘했다! 이제 아주 중요한\n걸 하나 알려 주마.\n바로 '노력치'란다.", tutRing(), "같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.", tutRing(), "그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!", tutRing(), "개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.", tutRing(), "배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.", tutRing(), "빠른 포켓몬을 쓰러뜨리면\n스피드, 힘센 포켓몬이면\n공격 노력치가 오른단다.", tutRing(), "그리고 여기 훈련장에서는\n키울 능력치를 직접\n고를 수 있지.", tutRing(".ty-slot, .ts-slot"), "공격을 골라 보렴.\n훈련하는 동안 공격 노력치가\n꾸준히 쌓인단다.", tutRing(), "트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지."] },
+  { s: "C. 처음으로 상세카드를 열었을 때 (노력치 박스가 생긴 뒤)", L: [tutRing(), "상세카드 아래에 노력치\n박스가 생겼지? 남은 노력치와\n능력치별 노력치가 보인단다.", tutRing(), "한 마리가 쌓을 수 있는 건\n모두 510, 능력치 하나엔\n252까지란다.", tutRing(), "그래서 전부 키울 순 없어.\n보통은 두 가지에 252씩\n몰아 준단다.", tutRing(), "노력치 박스를 눌러 보렴.\n노력치를 직접 옮길 수\n있단다.", tutRing(), "− 로 빼는 건 공짜야.\n뺀 노력치는 '남은 노력치'로\n모인단다.", tutRing(), "+ 로 넣을 땐 1당 10골드.\n상점 영양제를 먹이면\n한 번에 10씩 오르지.", tutRing(), "어떻게 찍을지 모르겠으면\n제목 옆 ? 를 눌러 보렴.\n주로 찍는 법을 알려 준단다.", tutRing(), "추천 버튼을 누르면\n남은 노력치를\n알아서 찍어 주지.", tutRing(), "레벨이 높을수록 노력치로\n오르는 능력치도 커진단다.\n멋지게 키워 보렴!"] }
+];
+const TUT_ST = () => [
+  { s: "트레이너 메뉴에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "이번엔 트레이너 메뉴구나.\n체육관을 혼자 지키긴\n힘들지?", tutRing(), "트레이너를 고용하면\n도전자가 올 때 먼저 나가서\n싸워 준단다.", tutRing(), "트레이너가 막아 내면\n골드와 평판도 함께\n벌어 오지.", tutRing(".sp-tabs [data-sft=\"cand\"]"), "지원서 탭엔 가끔 일하고\n싶다는 트레이너가\n찾아온단다.", k => $g('.sp-tabs [data-sft="cand"]')?.click(), tutRing(".cv-card"), "지원서에선 포켓몬과\n평균 레벨, 특성, 희망 주급을\n잘 보렴.", tutRing(), "주급은 7일마다 나간단다.\n벌어 오는 골드보다 주급이\n비싸면 손해겠지?", tutRing(), "특성은 트레이너마다 하나.\n배틀에 강한 근성, 골드를 더\n벌어 오는 수완가도 있지.", tutRing(), "코치 실력도 사람마다\n달라. 훈련장 코치로 보낼\n생각이면 꼭 보렴.", tutRing(), "훈련광, 기술 선생, 노력파,\n다정함 같은 특성은\n코치로 있을 때 빛난단다.", tutRing(), "고용한 트레이너는 체육관에\n세우거나, 훈련장 코치로\n보낼 수 있지.", tutRing(), "고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다.", tutRing(), "자, 마음에 드는 지원서가\n있으면 고용해 보렴!"] }
+];
+async function tutTest(w) {
+  const g = st(); if (!g?.d) return; for (let i = 0; busy && i < 60; i++) await wait(100);
+  if (gradeOf(g.rep || 0).i < 1) { g.rep = GRADES[1][0]; g.gmax = Math.max(g.gmax | 0, 1); renderTop(); }   // 시뮬이라 나갈 때 되돌아감: 훈련장·트레이너가 열리는 동네 체육관으로
+  g.trTut = 1;   // 진짜 훈련장 첫 안내(KANG_TR)가 겹쳐 뜨지 않게 (시뮬이라 나가면 되돌아감)
+  if (w === 'st' && !(g.cands || []).length) { g.cands = [mkCand(Date.now())]; }
+  openTab(w === 'tr' ? 'train' : 'staff'); await wait(1400);
+  if (w === 'st') { $g('.sp-tabs [data-sft="sf"]')?.click(); await wait(500); }
+  const P = w === 'tr' ? TUT_TR() : TUT_ST();
+  for (const [i, p] of P.entries()) {
+    if (P.length > 1) await new Promise(ok => say(`<b>${p.s}</b>`, `튜토리얼 시험 ${i + 1}/${P.length}`, ok));
+    await kang(p.L, { lit: true });
+  }
+}
 // lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작
 function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, skip = nm !== '강박사' } = {}) {   // 강박사 튜토리얼엔 건너뛰기 없음 (경완 2026-10-29)
   return new Promise(done => {
     const k = document.createElement('div'); k.className = 'gy-kang' + (lit ? ' lit' : '') + (ow ? ' guide' : '');
     k.innerHTML = `<i class="gy-k-veil"></i>${ow ? `<i class="gy-k-pic ow${/\/pt\/|pt_/.test(pic) ? ' w32' : ''}" style="background-image:url(${pic})"></i>` : `<img class="gy-k-pic" alt="${nm}" src="${pic}">`}${skip ? '<button class="gy-k-skip" type="button">건너뛰기</button>' : ''}<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">${nm}</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
-    k.style.setProperty('--kn', Math.max(3, ...lines.map(t => String(t).split('\n').length)));   // v13.12 경완 '설명 박스 삐져나옴': 4줄 대사가 있으면 박스를 처음부터 그만큼 높게
+    k.style.setProperty('--kn', Math.max(3, ...lines.filter(t => typeof t !== 'function').map(t => String(t).split('\n').length)));   // v13.12 경완 '설명 박스 삐져나옴': 4줄 대사가 있으면 박스를 처음부터 그만큼 높게
     root.appendChild(k);
     const talk = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
     let stop = false; const end = async () => { if (k.classList.contains('bye')) return; stop = true; { const eat = e => { e.stopPropagation(); e.preventDefault(); }; root.addEventListener('click', eat, true); setTimeout(() => root.removeEventListener('click', eat, true), 600); } k.classList.add('bye'); await wait(450); k.remove(); done(); };   /* v14.10 경완: 마지막 대사를 넘긴 탭(pointerup 뒤 click)이 닫히는 막을 뚫고 밑의 라인업 칸을 눌러 포켓몬 고르는 박스로 넘어가던 것 → 그 click 은 먹는다. 대사창은 어두운 막과 같이 닫힘 (v14.08 즉시 닫기 되돌림) */
@@ -2328,7 +2354,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
     (async () => {
       if (!lit) { await wait(500); for (const o of [.55, .9, .25, .6, 0]) { k.style.setProperty('--veil', o); await wait(o ? 110 : 0); } k.classList.add('lit'); await wait(500); }
       k.classList.add('in'); await wait(650);
-      for (const t of lines) { if (stop) return; await talk(t); }
+      for (const t of lines) { if (stop) return; if (typeof t === 'function') { t(k); continue; } await talk(t); }   // 함수 = 대사 사이 연출 (튜토리얼 빛나는 칸)
       end();
     })();
   });
@@ -2664,8 +2690,10 @@ function enter() {
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
+  const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
+  if (tutW) setTimeout(() => { if (open) tutTest(tutW); }, 1600);
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
