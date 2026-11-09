@@ -366,7 +366,9 @@ const CO_L = {
   train: ['기본기가 중요해!', '몸 풀고!', '자세 다시!', '천천히, 정확하게!'],
   swim: ['물이 시원하지?', '천천히 헤엄쳐!'],
 };
-function coLine(t) { const L = [...(CO_L[t?.st === 'go' ? 'any' : t?.st] || []), ...CO_L.any], nm = t ? nmOf(t.P) : '';
+const CO_MV = (v, nm) => { const j = K.jong(v); return [`${v} 좋았어!`, `방금 ${v} 멋졌어!`, `${v}, 위력 좋은데!`, `${v} 타이밍 딱이야!`, `한 번 더 ${v}!`, `${v} 자세 좋아!`, `${v}${j ? '은' : '는'} 완벽해!`, `${v}${j ? '을' : '를'} 더 날카롭게!`, `${v}${j ? '이' : '가'} 점점 세지네!`, `${nm}의 ${v}, 최고야!`]; };   // v20.88 경완 '코치 한마디에 쓴 기술 이름도'
+function coLine(t) { const lm = t?.lmv; if (lm && performance.now() / 1000 - lm.t < 6 && Math.random() < .65) { const L = CO_MV(lm.nm, nmOf(t.P)); let x = K.pick(L); for (let i = 0; i < 4 && x === Y.coLast; i++) x = K.pick(L); Y.coLast = x; t.lmv = null; return x; }
+  const L = [...(CO_L[t?.st === 'go' ? 'any' : t?.st] || []), ...CO_L.any], nm = t ? nmOf(t.P) : '';
   if (nm && Math.random() < .25) L.push(`${nm}, 좋아!`, `${nm}${K.jong(nm) ? '아' : '야'}, 힘내!`, `${nm} 최고!`, `가자, ${nm}!`);
   let x = K.pick(L); for (let i = 0; i < 4 && x === Y.coLast; i++) x = K.pick(L); Y.coLast = x; return x; }
 function yCoach(c, now, dt) {
@@ -508,7 +510,7 @@ function yMove(m, want) { const B = GB(), L = (B.gm(m.P).mv || []).map(id => B.m
   const W = want == null ? L : L.filter(x => x[3] === want), x = K.pick(W.length ? W : L); return x ? { name: x[1], t: x[2], dc: x[3] === 0 ? 2 : 3 } : null; }
 function yMvOk(m, now) { return !!GA.mvFx && m.D?.P && now > (Y.mvT || 0) && now > (m.mvT || 0); }
 function yMvOne(m, mv, now, o = {}) { const A = m.D.P.a, n = (GA.mvAnims?.(mv.name, mv.dc) || []).find(a => A[a]) || 'Attack';
-  Y.mvT = now + 1.3; m.mvT = now + 3 + Math.random() * 2;   /* v20.83 경완: 기술 이름은 안 외침 */ return Object.assign({ n, t: 0, mv }, o); }
+  Y.mvT = now + 1.3; m.mvT = now + 3 + Math.random() * 2; m.lmv = { nm: mv.name, t: now };   /* v20.83 경완: 기술 이름은 안 외침 */ return Object.assign({ n, t: 0, mv }, o); }
 function yMvFx(m, q) { const mv = m.one.mv, f = -m.face || 1, hs = document.createElement('i'); hs.className = 'ty-mvh';
   hs.style.cssText = `left:${m.x.toFixed(0)}px;top:${(m.y - 22 - (m.lift || 0) - (m.air || 0)).toFixed(0)}px;z-index:${Math.round(Math.max(m.y, q?.y || 0)) + 6}`; Y.L.append(hs); setTimeout(() => hs.remove(), 3200);
   GA.mvFx(hs, mv.name, mv.t, mv.dc, f); }
@@ -599,10 +601,10 @@ function statPop() {
   };
 }
 /* v16.68 경완 '훈련 일지 넘어갈 때 포켓몬 박스 옆 글자 위치 그 전 화면이랑 맞춰': 상세카드·훈련 일지가 같은 머리 (이름 · Lv · 경험치 막대 · 다음 레벨까지) */
-function trHead(P, ed) {
+function trHead(P, ed, hb) {   // hb: 그림 = 지닌 도구 버튼 (v20.88 훈련장 상세카드)
   const m = GB().gm(P), g = GB().growth(P.sp), need = GB().xpAt(g, m.lv + 1) - GB().xpAt(g, m.lv), a0 = GB().xpAt(g, m.lv), mx = m.lv >= GB().LV_MAX, r = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, need), 0, 1);
   const e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0;
-  return `<div class="mp-head tp2-hd">${GB().thumb(P)}<div><h4>${ed && GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
+  return `<div class="mp-head tp2-hd">${hb ? `<button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${GB().thumb(P)}</button>${m.it ? '' : '<button type="button" class="th-add" data-a="hit" aria-label="도구 지니게 하기">+</button>'}` : GB().thumb(P)}<div><h4>${ed && GA.nmEdit ? GA.nmEdit(P) : esc(nmOf(P))}</h4><p class="tp2-lv"><b>Lv.${m.lv}</b>${e ? `<span class="tp2-st${lf ? '' : ' done'}">${lf ? '훈련 중' : '오늘 훈련 끝'}</span>` : ''}</p>
       <i class="mp-xp"><i style="width:${(r * 100).toFixed(1)}%"></i></i><small class="tp-xp">${mx ? '최고 레벨' : `다음 레벨까지 ${Math.max(0, Math.ceil(need - ((m.xp ?? a0) - a0))).toLocaleString()} · ${Math.max(0, Math.floor((m.xp ?? a0) - a0)).toLocaleString()}/${Math.ceil(need).toLocaleString()}`}</small></div></div>`;
 }
 function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예전 창 자리에 바로 바꿔 끼움 (v14.43)
@@ -612,7 +614,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
   /* v16.71 경완 '훈련 일지 옆 통합 점수를 앞 화면 박스에, 오늘 훈련 → 훈련 현황': 훈련 일지 전체를 더한 값 */
   const TT = Object.values(trLog(P.id)).reduce((a, d) => { a.d++; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv.push(...d.mv); return a; }, { d: 0, x: 0, lv: 0, f: 0, mv: [] });
   /* v16.41 경완: 레벨 옆 ▲ 딱지 빼고 훈련 중 / 오늘 훈련 끝만. 숫자 칸 넷 대신 '오늘 훈련' 상자(경험치·레벨·친밀도·새 기술) → 누르면 날짜별 훈련 일지. 기술 버튼 둘은 빼고 체육관 상세카드처럼 '기술 바꾸기 ›' */
-  const p = pop(`<div class="tp2">${trHead(P, true)}
+  const p = pop(`<div class="tp2">${trHead(P, true, true)}
     <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 훈련 일지 ›</small></span>
       <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span><button type="button" class="tp2-mvc" data-a="mvs"><small>새 기술</small><b class="${TT.mv.length ? 'mv' : ''}">${TT.mv.length ? `${TT.mv.length}개 ›` : '- ›'}</b></button></span>
       ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>${evTrBox(P)}
@@ -620,6 +622,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
     (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
+      if (a === 'hit') return GB().hitPop(P, close, () => { redraw(); trPop(id); });   // v20.88 경완 '훈련장 상세카드에서도 지닌 도구 눌러서 바꾸게'
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
       if (a === 'evq') return evTrHint(P, () => trPop(id, p));
