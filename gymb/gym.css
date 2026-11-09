@@ -3675,7 +3675,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ev-trh{align-items:center}#gym .ev-trh > b{display:inline-flex;align-items:center}#gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:0;flex:none}
 /* v20.70 경완 '기술 박스 오른쪽 잘림': 기술 이름이 길면 이름 칸이 줄어들고(…), 위력·명중·PP 칸은 늘 다 보이게 */
 #gym .mp-line .mp-mv > b{flex:1 1 auto!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gym .mp-line .mp-mv em.mv-st{grid-template-columns:46px 52px 36px;flex:none}
-/* v20.76 경완 '체육관 넓어졌다 알림창 디자인 다시': 초록 머리띠, 같은 축척 전→후 맵, +N칸 딱지, 7단계 점 */
+/* v20.77 경완 '체육관 넓어졌다 알림창 디자인 다시': 초록 머리띠, 같은 축척 전→후 맵, +N칸 딱지, 7단계 점 */
 #gym .bu-hd{background:repeating-linear-gradient(135deg,#2a6a4a 0 10px,#317a56 10px 20px)}#gym .bu-hd small{color:#c0f0d4}#gym .bu-hd b{font-size:17px;text-shadow:2px 2px 0 #163a28}
 #gym .bu-maps{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 8px 8px;background:#eef3ec;box-shadow:inset 0 0 0 2px #cfe0cc}
 #gym .bu-m{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;min-height:128px}
@@ -3698,7 +3698,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bu-pips i.on{color:#fff;background:#2a8a3e;box-shadow:inset 0 0 0 2px #1d6a2e}
 #gym .bu-pips i.new{background:#f0b020;box-shadow:inset 0 0 0 2px #b07800;animation:buPip .5s .35s steps(3,end) both}
 @keyframes buPip{0%{scale:.2;opacity:0}70%{scale:1.25}100%{scale:1;opacity:1}}
-/* v20.76 경완 '훈련장 + 슬롯 박스에 어떤 능력치 훈련 중인지, 박스 디자인 퀄': 능력치 딱지(파워 도구 + 색), 새 기술 딱지, 카드 머리 줄무늬·그림 받침·두꺼운 경험치 막대 */
+/* v20.77 경완 '훈련장 + 슬롯 박스에 어떤 능력치 훈련 중인지, 박스 디자인 퀄': 능력치 딱지(파워 도구 + 색), 새 기술 딱지, 카드 머리 줄무늬·그림 받침·두꺼운 경험치 막대 */
 #gym .ts-slot.tsc{background:repeating-linear-gradient(135deg,#e8b84a 0 6px,#f4d27a 6px 12px) top/100% 5px no-repeat,linear-gradient(#fffdf4,#fbf6e4)!important;padding-top:10px!important}
 #gym .ts-slot.tsc .tsc-th{position:relative;background:radial-gradient(circle at 50% 70%,#fff 0 30%,#e6eefc 31% 60%,#d6e2f8 61%);box-shadow:inset 0 0 0 2px #c4d0ec,2px 2px 0 rgba(0,0,0,.1)}
 #gym .ts-slot.tsc .tsc-th::after{content:"";position:absolute;left:14px;right:14px;bottom:9px;height:5px;border-radius:50%;background:rgba(40,60,110,.18);z-index:-0;pointer-events:none}
@@ -3716,8 +3716,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tsc-ev.off{padding-left:6px;color:#7a7a8a;background:#ececf0;font-weight:400;box-shadow:inset 0 0 0 1px #d4d4dc}
 #gym .tsc-mv{padding-left:6px!important;color:#2a8a3e;background:#e3f4e6;box-shadow:inset 0 0 0 1px #9cd4a8;font-weight:700}
 #gym .ts-win .ts-slot.tsc>.tsc-mid{grid-area:auto;justify-self:stretch}
-/* v20.76 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 들어온 칸 오른쪽 위 점, 탭 점 */
+/* v20.77 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 들어온 칸 오른쪽 위 점, 탭 점 */
 #gym .gy-sheet .sp-body :is([data-tm],[data-it],[data-mint],[data-vit],[data-dc]){position:relative}
 #gym .gy-sheet .sp-body .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none;z-index:1}
 #gym .gy-sheet .sp-tabs [role=tab]{position:relative}#gym .gy-sheet .sp-tabs .tdot{position:absolute;top:4px;right:4px;margin:0;box-shadow:0 0 0 2px var(--win,#fff)}
-#gym .bu-pop.fin .bu-hd{background:repeating-linear-gradient(135deg,#a8741a 0 10px,#bc8424 10px 20px)}#gym .bu-pop.fin .bu-hd small{color:#ffe8b0}#gym .bu-pop.fin .bu-hd b{text-shadow:2px 2px 0 #5a3a08}   /* v20.76 경완 '마지막 단계는 체육관이 완성됐어요!': 금색 머리띠 */
+#gym .bu-pop.fin .bu-hd{background:repeating-linear-gradient(135deg,#a8741a 0 10px,#bc8424 10px 20px)}#gym .bu-pop.fin .bu-hd small{color:#ffe8b0}#gym .bu-pop.fin .bu-hd b{text-shadow:2px 2px 0 #5a3a08}   /* v20.77 경완 '마지막 단계는 체육관이 완성됐어요!': 금색 머리띠 */
