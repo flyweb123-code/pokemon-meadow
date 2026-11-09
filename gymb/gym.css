@@ -3659,3 +3659,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym:has(.gy-pop .mv-ord) .gy-menu{position:relative}#gym:has(.gy-pop .mv-ord) .gy-menu::after{content:"";position:absolute;left:0;right:0;top:-3px;bottom:0;z-index:5;background:rgba(12,13,20,.3);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}#gym:has(.gy-pop ~ .gy-pop .mv-ord) .gy-menu::after{background:rgba(12,13,20,.51)}
 /* v20.64 경완: 성격·특성 창 우상단 ✕ — 창 기준으로 */
 #gym .gy-pop .win:has(> .mp-x){position:relative}#gym .gy-pop .win:has(> .mp-x) > h4{padding-left:34px;padding-right:34px}
+/* v20.66 경완: 추천받기 켜면 이름 옆 ✕ — 노란 박스 안에 같이, 박스는 그만큼 길게 */
+#gym .sp-top .sp-recs.on{background:#fff4d6;box-shadow:inset 0 0 0 2px var(--frame,#282830)}#gym .sp-top .sp-recs.on .sp-recsb{flex:0 1 auto;background:none!important;box-shadow:none!important;padding:0 0 0 4px}#gym .sp-top .sp-recs.on .sp-recsx{display:flex;flex:none;align-items:center;padding:0 8px 0 4px;font-size:14px;line-height:1}
+#gym .iv-hex.nop,#gym .iv-hex.nop:active{transform:none!important;transition:none!important}   /* v20.66 바뀐 직후엔 눌림 크기 변화 없이 */
