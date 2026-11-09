@@ -1436,7 +1436,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;
     if (O) { const P = boxOf(id); if (P) O.pick(P, { close: () => w.remove(), redraw: () => { const h = w.querySelector('.bw-hd h4'); if (h) h.innerHTML = O.title(); draw(); } }); return; }
-    if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; teachTm(P, tmId, () => { w.remove(); done?.(); }, null, () => {}); return; }   /* v20.70 경완: 박스 화면 위에서 바로 잊을 기술 창, 그만두면 박스 그대로 */
+    if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; teachTm(P, tmId, k => movesPop(P, () => { w.remove(); done?.(); }, k == null ? -1 : k), null, () => {}); return; }   /* v20.72 경완: 배웠다 창 다음엔 그 포켓몬 기술 목록 카드, 닫으면 창고로 */   /* v20.70 경완: 박스 화면 위에서 바로 잊을 기술 창, 그만두면 박스 그대로 */
     if (add) return monPop(id, 'add');   // 라인업 고르기도 상세카드 먼저, 버튼은 라인업에 넣기만 (경완 2026-10-29)
     if (add) { const cur = curLu(), j = cur.indexOf(id); if (j >= 0) cur.splice(j, 1); else if (cur.length < 6) cur.push(id); else return;   /* 경완 2026-10-28: 라인업에 든 포켓몬을 다시 누르면 빠진다 */ GA.save(); drawTab(); if (cur.length >= 6 && j < 0) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
     monPop(id, true);
@@ -1563,7 +1563,7 @@ function teachTm(P, id, done, slot, onX) {   // onX: 잊을 기술 창에서 그
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
   const use = k => { if (isTR(id)) { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; } m.kn = (m.kn || []).filter(y => y !== id);
     if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
-    GA.save(); learnFan(); gymPop(`<div class="tm-done"><p class="tm-dh">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'}<br><b>${esc(x[1])}</b>${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다!' : '배웠다!'}</p><div class="mp-moves mp-line tm-dmv">${mvRow(x, 'v')}</div>${k == null ? '<p class="tm-dsub">기술 바꾸기에서 쓸 수 있어요</p>' : ''}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); };
+    GA.save(); learnFan(); gymPop(`<div class="tm-done"><p class="tm-dh">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'}<br><b>${esc(x[1])}</b>${jong(x[1]) ? '을' : '를'} ${k == null ? '익혀 두었다!' : '배웠다!'}</p><div class="mp-moves mp-line tm-dmv">${mvRow(x, 'v')}</div>${k == null ? '<p class="tm-dsub">기술 바꾸기에서 쓸 수 있어요</p>' : ''}</div><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(k); }); };
   if (slot != null) return use(Math.min(slot, m.mv.length));
   if (m.mv.length < 4) return use(m.mv.length);
   gymPop(`<h4>${esc(x[1])} 대신 잊을 기술</h4><p class="gy-msg">잊은 기술은 나중에 기술 바꾸기에서 다시 배울 수 있어요.</p><div class="mp-moves mp-line pick">${m.mv.map((y, k) => mvOf(y) ? mvRow(mvOf(y), 's' + k) : '').join('')}</div>
