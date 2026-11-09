@@ -396,14 +396,14 @@ function yCoach(c, now, dt) {
   if (!mv && t && now > c.nx) { c.nx = now + 3 + Math.random() * 3; e.classList.remove('cheer'); void e.offsetWidth; e.classList.add('cheer');
     const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = coLine(t); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
 }
-// v20.86 경완 '가끔 코치가 포켓몬 밥 주는 시간': 1~2분마다 첫 코치가 빈 자리로 가서 그릇을 놓으면, 하던 걸 마친 포켓몬부터 와서 냠냠
+// v20.86 경완 '가끔 코치가 포켓몬 밥 주는 시간': (v20.87 경완 '1~2분은 너무 빨라' → 들어오고 2.5~4분 뒤 첫 번, 그 뒤 7~10분마다) 첫 코치가 빈 자리로 가서 그릇을 놓으면, 하던 걸 마친 포켓몬부터 와서 냠냠
 const BOWL = ['...lfFflf...', '..fFlfFlfF..', '.oooooooooo.', '.ohhrrrrrro.', '..orrrrrRo..', '..oRRRRRRo..', '...oooooo...'];
 const BOWL0 = ['............', '............', '.oooooooooo.', '.oRRRRRRRRo.', '..orrrrrRo..', '..oRRRRRRo..', '...oooooo...'];
 const BOWL_P = { o: '#5a2a20', r: '#d8503c', R: '#a83828', h: '#f4927a', f: '#a8683a', F: '#74401e', l: '#d09a5c' };
 const FD_L = ['밥 먹자~!', '밥 시간이야!', '든든하게 먹자!', '맛있게 먹어!'], FD_E = ['잘 먹었지?', '다 먹었구나!', '배부르지?', '이제 다시 힘내자!'];
 function yFeedTick(now) {
   const co = Y.co?.[0]; if (!co) return;
-  if (!Y.fd) { Y.fdN ??= now + 35 + Math.random() * 30; if (now < Y.fdN) return;
+  if (!Y.fd) { Y.fdN ??= now + 150 + Math.random() * 90; if (now < Y.fdN) return;
     const ms = Y.mons.filter(m => !m.fish && m.st !== 'sleep' && leftOf(m.e) > 0).slice(0, 6); if (!ms.length) { Y.fdN = now + 40; return; }
     const w = (ms.length - 1) * 40 / 2 + 40; let best = null, bv = 1e9;
     for (let i = 0; i < 40; i++) { const [x, y] = yardSpot(false); if (x - w < 24 || x + w > Y.W - 24 || y > Y.H - 30 || nearBush(x, y - 18) || inPond(x, y - 18, 16) || (x + w > Y.court.x0 - 16 && x - w < Y.court.x1 + 16 && y + 12 > Y.court.y0 - 30 && y - 30 < Y.court.y1 + 16)) continue;   // 대련 코트는 피함
@@ -418,7 +418,7 @@ function yFeedDrop(c, now) { const F = Y.fd, n = F.ms.length; F.st = 1; F.go = n
   c.el.classList.remove('cheer'); void c.el.offsetWidth; c.el.classList.add('cheer'); yEmo2(c, K.pick(FD_L));
   F.bw = F.ms.map((m, i) => { const x = F.x + (i - (n - 1) / 2) * 40, y = F.y + (i % 2) * 6, q = document.createElement('i'); q.className = 'ty-bowl'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y) + 4};background-image:url(${pxCv(BOWL, BOWL_P)});animation-delay:${i * .08}s`; Y.L.append(q); return { m, x, y, el: q }; });
   for (const m of F.ms) if ((['rest', 'sit', 'tech', 'train', 'bag', 'shoot', 'tramp', 'buoy'].includes(m.st) || (m.st === 'go' && m.k !== 'spar')) && !m.mate) yNext(m, now); }   // 하던 게 금방 끝나는 건 바로 오고, 대련·달리기·후프는 마치고 옴
-function yFeedEnd(now) { const F = Y.fd; Y.fd = null; Y.fdN = now + 80 + Math.random() * 60;
+function yFeedEnd(now) { const F = Y.fd; Y.fd = null; Y.fdN = now + 420 + Math.random() * 180;
   if (F.st === 1) { F.bw.forEach(b => { b.el.classList.add('out'); setTimeout(() => b.el.remove(), 500); }); const c = Y.co?.[0]; if (c) yEmo2(c, K.pick(FD_E)); }
   for (const m of Y.mons) if (m.st === 'eat' || (m.st === 'go' && String(m.k).startsWith('feed'))) yNext(m, now); }
 function yLight() {
