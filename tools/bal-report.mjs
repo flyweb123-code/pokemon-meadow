@@ -38,7 +38,7 @@ const catKey = k => DF.includes(k) ? DF.indexOf(k) : k === '이름 있는 트레
 const catOf = d => d.c === 'boss' ? `승급 심사 ${d.bs}` : d.c === 'named' ? '이름 있는 트레이너' : DF[d.df] || `도전자 ${d.df}`;
 
 function stats(L) {
-  const G = L.filter(r => r.kind === 'gym'), F = L.filter(r => r.kind === 'sf'), M = L.filter(r => r.kind === 'mg' && r.d.g !== 'drop'), D = L.filter(r => r.kind === 'mg' && r.d.g === 'drop');   // v17.54: 진화구슬(drop)은 따로
+  const G = L.filter(r => r.kind === 'gym'), F = L.filter(r => r.kind === 'sf'), M = L.filter(r => r.kind === 'mg' && (r.d.g || 'jump') === 'jump'), D = L.filter(r => r.kind === 'mg' && r.d.g === 'drop'), K = L.filter(r => r.kind === 'mg' && r.d.g === 'stack');   // v17.54: 진화구슬(drop)은 따로, 탑 쌓기(stack)도 따로 (2026-11-09: 장애물 넘기 칸에 섞여 있었음)   // v17.54: 진화구슬(drop)은 따로
   const gym = {
     n: G.length, people: people(G), win: pct(G.filter(r => r.d.w).length, G.length), quit: pct(G.filter(r => r.d.q).length, G.length),
     turns: avg(G.map(r => r.d.tn | 0)),
@@ -59,13 +59,14 @@ function stats(L) {
     ab: [...group(M, r => r.d.ab || '-')].map(([k, A]) => ({ k, n: A.length, p50: q(A.map(r => r.d.sc | 0), .5) })).sort((a, b) => (b.p50 || 0) - (a.p50 || 0)),
   };
   const ed = { n: D.length, people: people(D), score: { p50: q(D.map(r => r.d.sc | 0), .5), p90: q(D.map(r => r.d.sc | 0), .9) }, sec: avg(D.map(r => r.d.t | 0)), goldPlay: avg(D.map(r => r.d.gd | 0)), ab: avg(D.map(r => r.d.ab | 0)) };
+  const tw = { n: K.length, people: people(K), score: { p50: q(K.map(r => r.d.sc | 0), .5), p90: q(K.map(r => r.d.sc | 0), .9) }, sec: avg(K.map(r => r.d.t | 0)), goldPlay: avg(K.map(r => r.d.gd | 0)), ab: avg(K.map(r => r.d.ab | 0)) };
   const Gd = L.filter(r => r.kind === 'gold'), spOf = d => Object.values(d.sp || {}).reduce((a, b) => a + (+b || 0), 0), sum = A => A.reduce((a, b) => a + b, 0);   // v18.73: 하루 한 줄 골드 기록 (잔액·번 돈·쓴 돈)
   const catM = new Map(), itM = new Map(); for (const r of Gd) { for (const [k, n] of Object.entries(r.d.sp || {})) { const c = catM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); catM.set(k, c); } for (const [k, n] of Object.entries(r.d.it || {})) itM.set(k, (itM.get(k) || 0) + (+n || 0)); }
   const gold = { n: Gd.length, people: people(Gd), ern: { p50: q(Gd.map(r => r.d.ern | 0), .5), p90: q(Gd.map(r => r.d.ern | 0), .9) }, sp: { p50: q(Gd.map(r => spOf(r.d)), .5), p90: q(Gd.map(r => spOf(r.d)), .9) },
     spDays: pct(Gd.filter(r => spOf(r.d) > 0).length, Gd.length), useRate: pct(sum(Gd.map(r => spOf(r.d))), sum(Gd.map(r => r.d.ern | 0))), bal: { p50: q(Gd.map(r => r.d.b1 | 0), .5), p90: q(Gd.map(r => r.d.b1 | 0), .9), max: q(Gd.map(r => r.d.b1 | 0), 1) },
     cats: [...catM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), items: [...itM].sort((a, b) => b[1] - a[1]).slice(0, 12) };
   const vers = [...group(L, r => r.ver || '?')].map(([k, A]) => [k, A.length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return { gym, sf, mg, ed, gold, vers };
+  return { gym, sf, mg, ed, tw, gold, vers };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -110,6 +111,9 @@ const body = [
   '## 미니게임 (진화구슬 키우기)',
   `${v(S.ed.n)}판 · ${S.ed.people}명 · 한 판 평균 ${v(S.ed.sec)}초 · 기술 평균 ${v(S.ed.ab)}번`,
   `점수: 중앙 ${v(S.ed.score.p50)} · 상위 10% ${v(S.ed.score.p90)} · 골드: 한 판 평균 ${v(S.ed.goldPlay)}G (1분에 ${S.ed.sec ? v(Math.round(S.ed.goldPlay / S.ed.sec * 60)) : '-'}G, 장애물 넘기 1분에 ${S.mg.sec ? v(Math.round(S.mg.goldPlay / S.mg.sec * 60)) : '-'}G)`, '',
+  '## 미니게임 (포켓몬 탑 쌓기)',
+  `${v(S.tw.n)}판 · ${S.tw.people}명 · 한 판 평균 ${v(S.tw.sec)}초 · 기술 평균 ${v(S.tw.ab)}번`,
+  `점수: 중앙 ${v(S.tw.score.p50)} · 상위 10% ${v(S.tw.score.p90)} · 골드: 한 판 평균 ${v(S.tw.goldPlay)}G (1분에 ${S.tw.sec ? v(Math.round(S.tw.goldPlay / S.tw.sec * 60)) : '-'}G)`, '',
   '## 골드 (한 사람 하루, 다음 날 올라옴)',
   `${v(S.gold.n)}일치 · ${S.gold.people}명 · 번 골드 중앙 ${v(S.gold.ern.p50)}G (상위 10% ${v(S.gold.ern.p90)}G) · 쓴 골드 중앙 ${v(S.gold.sp.p50)}G (상위 10% ${v(S.gold.sp.p90)}G)`,
   `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
@@ -121,6 +125,10 @@ const body = [
 
 if (dry > 0) { console.log(body); process.exit(0); }
 if (!rows.length) { console.log('기록 없음'); }
+// 2026-11-09: 월요일 예약 실행이 GitHub 쪽에서 빠져서(07:13 예약이 안 돌았음) 예약을 두 번 걸어 둠 — 예약 실행은 12시간 안에 만든 이슈가 있으면 건너뜀
+if (process.env.GITHUB_EVENT_NAME === 'schedule') {
+  try { const L = JSON.parse(gh('issue', 'list', '--label', 'auto-bal', '--state', 'all', '--limit', '1', '--json', 'createdAt')); if (L[0] && NOW - Date.parse(L[0].createdAt) < DAY / 2) { console.log('이번 주 이슈 이미 있음'); process.exit(0); } } catch (e) {}
+}
 writeFileSync('/tmp/bal.md', body);
 try { gh('label', 'create', 'auto-bal', '--color', '0e8a16', '--description', '체육관·미니게임 밸런스 주간 보고 (자동)'); } catch (e) {}
 const url = gh('issue', 'create', '--title', `[밸런스 주간] ${ymd(NOW - 7 * DAY)} ~ ${ymd(NOW)}${flags.length ? ` · 눈여겨볼 것 ${flags.length}` : ''}`, '--label', 'auto-bal', '--body-file', '/tmp/bal.md');
