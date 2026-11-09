@@ -1461,14 +1461,14 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   if (!document.querySelector(".gy-pop .mp-head")) ivBar = false;   // 정보 카드를 새로 열면 능력치는 늘 육각형부터 (경완 2026-10-29)
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
-  const abShow = (k, hid, hk) => gymPop(`<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });
+  const abShow = (k, hid, hk) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   const p = gymPop(monHtml(P, fromBox),
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
       if (a === 'ev') { close(); evPop(P, () => monPop(P.id, fromBox, null, lst)); return; }   // v20.45 노력치 박스 → 설정 창, 닫으면 카드 다시
       if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
-      if (a === 'nat') { const rn = recNat(P, m), w1 = gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>${natRec(rn, m)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => {
+      if (a === 'nat') { const rn = recNat(P, m), w1 = gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>${natRec(rn, m)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => {
         if (b2 === 'ngive') { c2(); mintUse(P, rn); close(); monPop(P.id, fromBox, null, lst); return; }
         if (b2 === 'nbuy') { c2(); close(); document.querySelectorAll('#gym .gy-boxw').forEach(x => x.remove()); window.gymShopMint = rn; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => { monPop(id, fromBox, undefined, lst); setTimeout(() => [...document.querySelectorAll('#gym .gy-pop')].pop()?.querySelector('[data-a=nat]')?.click(), 60); } })   /* v17.71 경완: ‹ 누르면 보던 성격 창까지 */; return; }
         if (b2 === 'x') c2(); }); return; }   // 성격 효과도 눌러서 (경완 2026-10-29)
@@ -1741,10 +1741,8 @@ function mintInfo(k, lab, act, foot = '', own) {
 // v17.57 경완 '성격 창에 추천 성격': 이 개체가 쓰는 공격 기술(물리·특수)과 종족값으로 — 쓰는 공격을 올리고 안 쓰는 공격을 내림.
 // 빠른 편(스피드 종족값 80↑ 이고 공격 쪽이 강함)이면 스피드를, 공격이 약하고 막는 쪽이 강하면 방어·특방을 올린다
 function recNat(P, m = gm(P)) {
-  const bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60], mv = (m.mv || []).map(mvOf).filter(Boolean);
-  const pw = c => mv.filter(x => x[3] === c && (x[4] || MV_FIX[x[0]])).reduce((t, x) => t + (x[4] || 60), 0);
-  let ph = pw(0), sp = pw(1); if (!ph && !sp) { ph = bs[1]; sp = bs[3]; }
-  const phys = ph >= sp, off = phys ? bs[1] : bs[3], dn = phys ? 'spa' : 'atk';
+  const bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60];
+  const phys = bs[1] >= bs[3],   /* v20.64 경완: 성격 추천도 노력치 추천(evPlan)처럼 종족값만 — 배운 기술은 안 봄 (크레세리아 특공형인데 신중 추천되던 것) */ off = phys ? bs[1] : bs[3], dn = phys ? 'spa' : 'atk';
   let up = phys ? 'atk' : 'spa';
   if (bs[5] >= 80 && off >= 80 && bs[5] < 120) up = 'spe';
   else if (off < 75 && Math.max(bs[2], bs[4]) >= 85) up = bs[2] >= bs[4] ? 'def' : 'spd';
