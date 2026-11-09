@@ -1503,7 +1503,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   if (under) { p.style.background = 'transparent'; p.style.backdropFilter = p.style.webkitBackdropFilter = 'none'; Promise.race([Promise.all([...p.querySelectorAll('img')].map(i => new Promise(r => { if (i.complete && i.naturalWidth) r(); else { i.onload = i.onerror = r; } }))), new Promise(r => setTimeout(r, 300))]).then(() => { under.remove(); p.style.background = p.style.backdropFilter = p.style.webkitBackdropFilter = ''; }); }
   if (k >= 0 && L.length > 1) {
     const nb = d => L[k + d], go = (d, snd) => { if (nb(d) == null) return; if (snd) sfx('tap'); monPop(nb(d), fromBox, p, lst); };   // 끝에서는 안 넘어감, 밀어서 넘길 땐 소리 없음 (경완 2026-10-29)
-    const pg = j => `<p class="mp-pg num">${j + 1} / ${L.length}</p>`;   // v14.21 경완: 상세 카드 밑은 점 없이 언제나 숫자 / v14.20 경완: 많으면(타입 미리 보기·박스) 점 대신 '3 / 32' — 점이 줄을 넘쳐 카드가 화면 밖으로 밀리던 것
+    const pg = j => lst ? `<p class="mp-pg num">${j + 1} / ${L.length}</p>` : '';   /* v20.63 경완: 라인업 상세카드는 밑 번호 없음 */   // v14.21 경완: 상세 카드 밑은 점 없이 언제나 숫자 / v14.20 경완: 많으면(타입 미리 보기·박스) 점 대신 '3 / 32' — 점이 줄을 넘쳐 카드가 화면 밖으로 밀리던 것
     w.insertAdjacentHTML('beforeend', `${pg(k)}<button class="dp-arr l" type="button" data-nav="-1" aria-label="이전 포켓몬"><i class="sw-h l"></i></button><button class="dp-arr r" type="button" data-nav="1" aria-label="다음 포켓몬"><i class="sw-h r"></i></button>`);
     const arrows = [...w.querySelectorAll(':scope > .dp-arr')];
     [1, -1].forEach(d => { const Q = nb(d) != null && boxOf(nb(d)); if (Q) GA.thumb(Q).catch(() => {}); });   // 옆 카드 그림 미리
