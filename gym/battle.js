@@ -943,7 +943,8 @@ async function handle(a) {
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', none: '날씨가 원래대로 돌아왔다!' }; if (T[w]) await msg(T[w]); break; }
     case '-start': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), true); const t = startMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-end': { if (/Substitute/.test(a[3])) subFx(sideOf(a[2]), false); const t = endMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
-    case '-activate': { if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else if (/^item: /.test(a[3] || '')) await itemFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
+    case '-activate': { if (/^ability: /.test(a[3] || '')) { const ab = toID(a[3].slice(9)); B.abLast = ''; await abPop(a[2], ab); const of = a.find(x => /^\[of\] /.test(x)); if (ab === 'forewarn' && a[4]) await msg(`${who(a[2])}의 예지몽으로 ${of ? who(of.slice(5)) + '의 ' : ''}${eul(mvKo(toID(a[4])))} 알아챘다!`); break; }   /* v20.74 경완 '예지몽·싱크로 발동 안 된 것 같아': '-activate|…|ability: 이름' 줄(예지몽·싱크로·위기회피 등)을 안 보여 주던 것 → 특성 창 */
+      if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else if (/^item: /.test(a[3] || '')) await itemFx(sideOf(a[2])); else await gap(); const t = actMsg(who(a[2]), a[3]); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
     case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
