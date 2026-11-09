@@ -954,11 +954,11 @@ function payDay(now) {
   const g = st();
   for (const c of g.cands || []) if (c.wv !== 2) { c.wage = sfWage(teamLv(c.team) - myAvg(), c.team.length, c.trait); c.wv = 2; }
   for (const s of g.sf) {
-    if (s.wv !== 2) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait); s.wv = 2; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${o}G → ${s.wage}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
+    if (s.wv !== 2) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait); s.wv = 2; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${(+o || 0).toLocaleString()}G → ${s.wage.toLocaleString()}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
     let k = 0;
     while (now >= s.pay && k++ < 20) {
-      if (S.gold >= s.wage) { S.gold -= s.wage; try { window.pkGold?.('wage', s.wage); } catch (e) {} dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 주급 ${s.wage}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 주급 ${s.wage}G`); s.rest = 0; }
-      else { if (!s.rest) glog('sf', `골드가 모자라 ${sfName(s)}에게 주급(${s.wage}G)을 못 줬다. 주급을 줄 때까지 쉰다.`); s.rest = 1; break; }
+      if (S.gold >= s.wage) { S.gold -= s.wage; try { window.pkGold?.('wage', s.wage); } catch (e) {} dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 주급 ${s.wage.toLocaleString()}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 주급 ${s.wage.toLocaleString()}G`); s.rest = 0; }
+      else { if (!s.rest) glog('sf', `골드가 모자라 ${sfName(s)}에게 주급(${s.wage.toLocaleString()}G)을 못 줬다. 주급을 줄 때까지 쉰다.`); s.rest = 1; break; }
     }
   }
   try { GA.renderGold(); } catch (e) {} renderGoldG();
