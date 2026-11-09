@@ -2401,7 +2401,7 @@ const GT_EGD = () => [
   { c: '특별한 기술', when: EG_IN, t: '.eg-pop .eg-l', s: '??? 칸 하나하나가\n깨달음 게이지란다.\n훈련할수록 차오르고, 가득\n차면 그 기술을 익히지.' },
   { c: '특별한 기술', when: () => gtEl('.eg-pop .eg-cv .tg'), t: '.eg-pop .eg-cv .tg', s: '기술 이름은 비밀이지만\n타입과 물리·특수·변화는\n미리 알 수 있단다.' },
   { c: '집중 훈련', when: () => gtEl('.eg-pop .eg-fb'), t: '.eg-pop .eg-fb', s: '갖고 싶은 기술의\n\'집중하기\'를 누르면\n그 기술이 훨씬 빨리\n차오른단다.' },
-  { c: '레어 기술', when: () => gtEl('.eg-pop .eg-r.rare .eg-cv'), t: '.eg-pop .eg-r.rare', s: '금빛 리본은 레어 기술!\n무엇인지는 깨달을 때까지\n비밀이고, 천천히 차지.' },
+  { c: '레어 기술', when: () => gtEl('.eg-pop .eg-r.rare .eg-cv'), t: '.eg-pop .eg-r.rare', s: '금빛 리본은 레어 기술!\n훈련으로는 깨달을 수 없는\n아주 특별한 기술이지.' },
   { c: '번뜩임', when: EG_IN, t: '.eg-pop .eg-l', s: '배틀에서 기술을 쓰다 보면\n가끔 머릿속이 번뜩여서\n집중 기술이 한 번에\n크게 오른단다.' },
   { c: '기술 코치', when: EG_IN, t: '.eg-pop .eg-l', s: '기술 코치를 두면\n게이지가 더 빨리\n차오르지.' },
   { c: '특별한 기술', when: () => gtEl('.eg-pop [data-a=x]'), t: '.eg-pop [data-a=x]', tap: '.eg-pop [data-a=x]', until: () => !gtEl('.eg-pop'), after: 600, s: '자, \'닫기\'를 눌러\n돌아가자.' }];

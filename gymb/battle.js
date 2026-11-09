@@ -221,8 +221,8 @@ const EG_RARE = 2, EG_FL = 25, EG_FLP = .05;   // v20.85 번뜩임: 내 포켓�
 const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(id) })).filter(r => r.x);
 const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
 const egOpen = P => { const m = gm(P); return egList(P).filter(r => !egKn(m, r.id)); };
-function egFocus(P) { const m = gm(P), O = egOpen(P); if (!O.length) return -1; return O.some(r => r.i === m.egF) ? m.egF : (O.find(r => r.i !== 3) || O[0]).i; }
-function egAdd(P, i, amt) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || egKn(m, r.id)) return null; const G = m.egP || (m.egP = [0, 0, 0, 0]);
+function egFocus(P) { const m = gm(P), O = egOpen(P); if (!O.length) return -1; const N = O.filter(r => r.i !== 3); if (!N.length) return -1; return N.some(r => r.i === m.egF) ? m.egF : N[0].i; }   // v21.07 경완: 레어(4번째)는 집중·게이지 없음
+function egAdd(P, i, amt) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || i === 3 || egKn(m, r.id)) return null; const G = m.egP || (m.egP = [0, 0, 0, 0]);
   G[i] = Math.min(100, (G[i] || 0) + amt / (i === 3 ? EG_RARE : 1)); if (G[i] < 100) return null; teach(m, r.x[0], null, false); return r.x; }
 function teach(m, id, out, auto = true) {
   if (m.mv.includes(id)) return;
