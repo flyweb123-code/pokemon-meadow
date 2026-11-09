@@ -347,6 +347,23 @@ function hoopAt(t) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), x0 = R[0].x
 // 걸음 그림 = 9칸 걸음 그림(0 아래·1 위·2 왼쪽 서기, 3·4 아래 걸음, 5·6 위, 7·8 왼쪽), 오른쪽은 좌우 뒤집기. 수영장 안으로는 안 들어감
 const CO_FR = { d: [0, 3, 0, 4], u: [1, 5, 1, 6], l: [2, 7, 2, 8] };
 function yEmo2(c, t) { const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = t; q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
+/* v20.84 경완 '코치가 한 마디씩 하는 거 훨씬 다양하게': 지켜보는 포켓몬이 하는 훈련별 말 + 이름 부르기 + 아무 때나 하는 말 (바로 전 말은 안 겹침) */
+const CO_L = {
+  any: ['힘내!', '좋아!', '한 번 더!', '그렇지!', '바로 그거야!', '자세 좋아!', '숨 고르고!', '집중!', '할 수 있어!', '거의 다 왔어!', '오늘 컨디션 좋은데?', '어제보다 낫다!', '포기하지 마!', '멋져!', '끝까지!', '좋은 눈빛이야!', '그 기세로!', '와, 대단한데!'],
+  bag: ['더 세게!', '허리를 써!', '주먹 끝까지!', '샌드백이 흔들린다!', '연타로!', '발 디딤 좋아!', '한 방 더!'],
+  shoot: ['정중앙을 노려!', '조준 천천히!', '명중!', '아깝다, 조금만 더 왼쪽!', '과녁 한가운데!', '침착하게 쏴!'],
+  tramp: ['더 높이!', '착지 조심!', '균형 잡고!', '하늘까지 닿겠다!', '리듬 좋아!'],
+  run: ['속도 올려!', '허들 조심!', '발 높이!', '마지막 바퀴!', '숨 쉬는 거 잊지 마!', '빠르다 빨라!'],
+  hoop: ['고리 정중앙으로!', '날갯짓 좋아!', '바람을 타!', '한 바퀴 더!', '멋진 비행이야!'],
+  buoy: ['물살을 느껴!', '물속에서도 힘차게!', '헤엄 좋아!', '물보라 멋지다!'],
+  spar: ['상대 움직임을 봐!', '피하고 반격!', '좋은 대련이야!', '방심하지 마!', '거리 재고!', '둘 다 잘한다!', '페어플레이!'],
+  tech: ['기술 정확하게!', '그 기술 멋진데!', '타이밍 좋아!', '위력 좋아!', '한 번 더 보여 줘!', '기술 연결 좋아!'],
+  train: ['기본기가 중요해!', '몸 풀고!', '자세 다시!', '천천히, 정확하게!'],
+  swim: ['물이 시원하지?', '천천히 헤엄쳐!'],
+};
+function coLine(t) { const L = [...(CO_L[t?.st === 'go' ? 'any' : t?.st] || []), ...CO_L.any], nm = t ? nmOf(t.P) : '';
+  if (nm && Math.random() < .25) L.push(`${nm}, 좋아!`, `${nm}${K.jong(nm) ? '아' : '야'}, 힘내!`, `${nm} 최고!`, `가자, ${nm}!`);
+  let x = K.pick(L); for (let i = 0; i < 4 && x === Y.coLast; i++) x = K.pick(L); Y.coLast = x; return x; }
 function yCoach(c, now, dt) {
   const pool = Y.mons.filter(m => m.st !== 'sleep');   // v17.77 경완 '훈련 중인 포켓몬 없으면 코치도 쉬게': 깨어 있는 포켓몬이 없으면 제자리(양 끝)로 가서 쉼
   if (!pool.includes(c.tg) || now > c.tn) { const o = (Y.co || []).find(x => x !== c)?.tg, P2 = pool.filter(m => m !== o); c.tg = pool.length ? K.pick(P2.length ? P2 : pool) : null; c.tn = now + 6 + Math.random() * 4; c.side = Math.random() < .5 ? -1 : 1; }
@@ -369,7 +386,7 @@ function yCoach(c, now, dt) {
   const e = c.el; e.style.left = c.x.toFixed(1) + 'px'; e.style.top = c.y.toFixed(1) + 'px'; e.style.zIndex = Math.round(c.y); e.style.backgroundPosition = `${-fr * c.fw}px 0`; e.style.setProperty('--fx', c.d === 'r' ? -1 : 1);
   if (!mv && !t && !c.rs) { c.rs = 1; c.d = 'd'; yEmo2(c, '휴~'); } if (t) c.rs = 0;
   if (!mv && t && now > c.nx) { c.nx = now + 3 + Math.random() * 3; e.classList.remove('cheer'); void e.offsetWidth; e.classList.add('cheer');
-    const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = K.pick(['힘내!', '좋아!', '한 번 더!', '그렇지!', '!']); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
+    const q = document.createElement('i'); q.className = 'ty-emo co'; q.textContent = coLine(t); q.style.left = c.x + 'px'; q.style.top = (c.y - 74) + 'px'; q.style.zIndex = 9999; Y.L.append(q); setTimeout(() => q.remove(), 1300); }
 }
 function yLight() {
   const F = GA.light?.(); if (!F || !Y) return; const e = Y.el, on = F.lamps;
