@@ -3643,7 +3643,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ev-q svg{display:block;margin:0 auto}
 #gym .ev-pop .ev-save{white-space:nowrap}
 /* v20.59 경완: 도구 없는 포켓몬은 사진 오른쪽 아래에 점선 + 칸 (눌러서 도구를 넣는 자리) */
-#gym .mp-thb .rk-fr .th-add{position:absolute;right:-5px;bottom:-5px;width:28px;height:28px;box-sizing:border-box;border:2px dashed #8a8a96;border-radius:6px;background:rgba(255,255,255,.92);color:#7a7a86;font:700 18px/24px var(--px);font-style:normal;text-align:center;z-index:2;pointer-events:none}
+#gym .gy-pop .mp-head{position:relative}#gym .gy-pop .mp-head>button.th-add{position:absolute;left:var(--tha-x,71px);top:var(--tha-y,71px);width:28px;height:28px;min-width:0;padding:0!important;margin:0;box-sizing:border-box;border:2px dashed #8a8a96!important;border-radius:6px;background:rgba(255,255,255,.92)!important;box-shadow:none!important;color:#7a7a86;font:700 18px/24px var(--px);text-align:center;z-index:2;cursor:pointer}#gym .gy-pop .mp-head>button.th-add:active{transform:translate(1px,1px);background:#eef!important}   /* v20.62 경완: + 박스는 따로 눌리는 버튼 → 도구 사용 화면 */
 /* v20.59 경완 '딱지 잘린다': 기술 가르치기 창 '새로 배울 기술' 딱지가 창 위로 삐져나오게 (overflow-x:hidden 이 y 도 잘랐음 → clip) */
 #gym .gy-pop .win.mv-neww:has(.mv-learn){overflow-x:clip!important;overflow-y:visible!important}
 /* v20.60 경완: 도구 사용 화면 추천 도구 버튼 + 가진 도구 중 추천 하나 은은한 테두리·추천 딱지 */
