@@ -3698,3 +3698,26 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bu-pips i.on{color:#fff;background:#2a8a3e;box-shadow:inset 0 0 0 2px #1d6a2e}
 #gym .bu-pips i.new{background:#f0b020;box-shadow:inset 0 0 0 2px #b07800;animation:buPip .5s .35s steps(3,end) both}
 @keyframes buPip{0%{scale:.2;opacity:0}70%{scale:1.25}100%{scale:1;opacity:1}}
+/* v20.76 경완 '훈련장 + 슬롯 박스에 어떤 능력치 훈련 중인지, 박스 디자인 퀄': 능력치 딱지(파워 도구 + 색), 새 기술 딱지, 카드 머리 줄무늬·그림 받침·두꺼운 경험치 막대 */
+#gym .ts-slot.tsc{background:repeating-linear-gradient(135deg,#e8b84a 0 6px,#f4d27a 6px 12px) top/100% 5px no-repeat,linear-gradient(#fffdf4,#fbf6e4)!important;padding-top:10px!important}
+#gym .ts-slot.tsc .tsc-th{position:relative;background:radial-gradient(circle at 50% 70%,#fff 0 30%,#e6eefc 31% 60%,#d6e2f8 61%);box-shadow:inset 0 0 0 2px #c4d0ec,2px 2px 0 rgba(0,0,0,.1)}
+#gym .ts-slot.tsc .tsc-th::after{content:"";position:absolute;left:14px;right:14px;bottom:9px;height:5px;border-radius:50%;background:rgba(40,60,110,.18);z-index:-0;pointer-events:none}
+#gym .tsc-mid{gap:5px}
+#gym .tsc-nm b{font-size:15px;color:#20202c}
+#gym .tsc-lv{font-weight:700;color:#4a4a5a}
+#gym .tsc-g{grid-template-columns:40px 1fr 34px}
+#gym .tsc-g .mini{height:9px;background:#e4e4ec;box-shadow:inset 0 0 0 2px #383848;padding:2px}
+#gym .tsc-g .mini i{background:repeating-linear-gradient(90deg,#4a9ad8 0 5px,#62b0ea 5px 6px)!important}
+#gym .tsc-tags{display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+#gym .tsc-tags em{display:inline-flex;align-items:center;gap:3px;font-style:normal;font-size:10.5px;line-height:1;padding:3px 6px 3px 3px;white-space:nowrap}
+#gym .tsc-ev{color:#fff;background:var(--sc);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);font-weight:700}
+#gym .tsc-ev img{width:16px;height:16px;margin:-2px 0;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
+#gym .tsc-ev b{margin-left:3px;padding:1px 4px;background:rgba(255,255,255,.92);color:var(--sc);font-size:10px}
+#gym .tsc-ev.off{padding-left:6px;color:#7a7a8a;background:#ececf0;font-weight:400;box-shadow:inset 0 0 0 1px #d4d4dc}
+#gym .tsc-mv{padding-left:6px!important;color:#2a8a3e;background:#e3f4e6;box-shadow:inset 0 0 0 1px #9cd4a8;font-weight:700}
+#gym .ts-win .ts-slot.tsc>.tsc-mid{grid-area:auto;justify-self:stretch}
+/* v20.76 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 들어온 칸 오른쪽 위 점, 탭 점 */
+#gym .gy-sheet .sp-body :is([data-tm],[data-it],[data-mint],[data-vit],[data-dc]){position:relative}
+#gym .gy-sheet .sp-body .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none;z-index:1}
+#gym .gy-sheet .sp-tabs [role=tab]{position:relative}#gym .gy-sheet .sp-tabs .tdot{position:absolute;top:4px;right:4px;margin:0;box-shadow:0 0 0 2px var(--win,#fff)}
+#gym .bu-pop.fin .bu-hd{background:repeating-linear-gradient(135deg,#a8741a 0 10px,#bc8424 10px 20px)}#gym .bu-pop.fin .bu-hd small{color:#ffe8b0}#gym .bu-pop.fin .bu-hd b{text-shadow:2px 2px 0 #5a3a08}   /* v20.76 경완 '마지막 단계는 체육관이 완성됐어요!': 금색 머리띠 */
