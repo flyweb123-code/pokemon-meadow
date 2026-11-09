@@ -215,6 +215,15 @@ function gainXp(P, n, ask = false) {
   out.lv = m.lv; return out;
 }
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
+// v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
+// m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
+const EG_RARE = 2, EG_FL = 25, EG_FLP = .05;   // v20.85 번뜩임: 내 포켓몬이 기술을 쓴 턴이 끝날 때 5%, 한 배틀에 포켓몬마다 한 번 +25% (경완 '적당히 밸런스')
+const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(id) })).filter(r => r.x);
+const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
+const egOpen = P => { const m = gm(P); return egList(P).filter(r => !egKn(m, r.id)); };
+function egFocus(P) { const m = gm(P), O = egOpen(P); if (!O.length) return -1; return O.some(r => r.i === m.egF) ? m.egF : (O.find(r => r.i !== 3) || O[0]).i; }
+function egAdd(P, i, amt) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || egKn(m, r.id)) return null; const G = m.egP || (m.egP = [0, 0, 0, 0]);
+  G[i] = Math.min(100, (G[i] || 0) + amt / (i === 3 ? EG_RARE : 1)); if (G[i] < 100) return null; teach(m, r.x[0], null, false); return r.x; }
 function teach(m, id, out, auto = true) {
   if (m.mv.includes(id)) return;
   if (m.mv.length < 4) { m.mv.push(id); out?.learned.push([id, '']); return; }
@@ -770,7 +779,7 @@ async function run(opts) {
   lowHp(false); M('play', 'gym', { fade: 1.2 });
   // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
   const fd = document.createElement('i'); fd.className = 'bt-fade'; (el.parentElement || document.body).appendChild(fd); void fd.offsetWidth; fd.classList.add('on'); await wait(420);
-  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won: won && !cut, cut, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {} }; B = null; return res;
+  el.classList.add('off'); el.hidden = true; await wait(120); fd.classList.remove('on'); setTimeout(() => fd.remove(), 800); await wait(650); const res = { won: won && !cut, cut, quit: out === 'quit', turns: btl.turn, my: B?.my, used: [...(B?.used || [])], xr: B?.xr || {}, eg: B?.egUp || [] }; B = null; return res;
 }
 
 // 쇼다운 기록을 한 줄씩 읽어 화면에 보여 준다. 고를 차례가 오면 아래 화면 메뉴
@@ -907,7 +916,7 @@ async function handle(a) {
       break;
     }
     case 'move': {
-      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id };
+      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
@@ -990,7 +999,7 @@ async function handle(a) {
       se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
       m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
       await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
-    case 'turn': break;
+    case 'turn': await egFlash(); break;
     case 'win': break;
   }
 }
@@ -1256,6 +1265,21 @@ async function expGain(X) {
   if (!B.practice) GA.save();
 }
 // 새 기술을 배우려는데 기술이 4개일 때 (본가처럼): 잊을 기술을 고르거나 배우기를 포기한다 (경완 2026-10-30 '알아서 잊어버리는데 선택할 수 있게')
+/* v20.85 경완 '배틀 번뜩임은 배틀 중간에': 내 포켓몬이 기술을 쓰고 그 턴이 끝나면(다음 턴 시작 전) 가끔 번뜩임 → 집중 중인 특별한 기술 깨달음 +34% */
+/* v20.85 경완 '번뜩일 때 스프라이트 효과 다시 — 도트 아니어도 되니 퀄 높게': 포켓몬이 하얗게 번쩍 → 금빛 광채, 뒤로 빛줄기 회전, 머리 위 렌즈 플레어 별, 주위 반짝이, 화면 금빛 비네트 */
+function egFx() { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
+  const T = t.getBoundingClientRect(), R = im.getBoundingClientRect(), k = T.width / 256 || 1, cx = (R.left + R.width / 2 - T.left) / k, cy = (R.top + R.height * .55 - T.top) / k, hy = (R.top + R.height * .12 - T.top) / k, hx = (R.left + R.width * .58 - T.left) / k;
+  me.classList.remove('egk'); void me.offsetWidth; me.classList.add('egk'); setTimeout(() => me.classList.remove('egk'), 2200);
+  const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 2400); return e; };
+  add('bt-egv', 0, 0); add('bt-egr', cx, cy, '', $b('.bt-mw.p')); add('bt-egf', hx, hy, '<i></i><b></b><b class="v"></b>'); add('bt-egc', cx, cy); setTimeout(() => B && add('bt-egc', cx, cy), 220);
+  [[-30, -6, .1], [34, 4, .3], [-22, 30, .45], [26, -34, .2], [6, 44, .6], [-40, -38, .38], [44, -12, .7]].forEach(([x, y, dl]) => { const e = add('bt-egt', cx, cy - 8); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px'); e.style.setProperty('--d', dl + 's'); }); }
+async function egFlash() {
+  const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
+  const P = boxOf(pid); if (!P) return; const f = egFocus(P), D = B.egDone || (B.egDone = new Set()); if (f < 0 || D.has(pid) || Math.random() >= EG_FLP) return; D.add(pid);
+  $b('.bt-msg .t').textContent = ''; egFx(); se('DP_KIRAKIRA2'); GA.haptic?.(1); await wait(900); if (!B) return; await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
+  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_FL); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
+  GA.save?.();
+}
 async function learnAsk(P, i, id) {
   const m = gm(P), nm = B.my[i].nm, nw = mvKo(id); if (m.mv.includes(id)) return;
   await msg(`${eun(nm)} 새로 ${eul(nw)} 배우고 싶다…`); if (!B) return;
@@ -2073,5 +2097,5 @@ function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
-window.GymBattle = { hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();

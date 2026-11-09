@@ -1166,6 +1166,7 @@ async function challenge(picked) {
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
+    for (const u of res?.eg || []) try { await window.GymManage?.egGainPop?.(u); } catch (er) { console.error(er); }   // v20.85 경완: 번뜩였으면 기록창 뒤 특별한 기술 카드에서 게이지가 오르는 걸
     if (g.stk && (bsReady(g) || (c.boss && won))) { g.stk = 0; save(); renderTop(); }   /* v15.42 경완: 연승은 등급 안에서만. 결과창 뒤 승급 심사가 열리면(또는 심사 통과) 연승 끊김 */
     // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
     { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
@@ -1844,7 +1845,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk';
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
