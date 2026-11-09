@@ -257,7 +257,7 @@ function build() {
     <div class="gy-dbar"><div class="db-head"><b>창고</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
       <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
-  $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); };
+  $g('.gy-plate').onclick = e => { sfx('tap'); if (e.target.closest('.gy-rpa')) return perkPop(); infoPop(); };   // v20.81 경완 '홈 평판 게이지 누르면 체육관 등급별 혜택 카드'
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
@@ -2023,7 +2023,7 @@ function jnlPop() {
   const keys = Object.keys(g.days).map(Number).sort((a, b) => b - a); if (!keys.includes(jnlK)) jnlK = keys[0];
   const row = (a, b, c = '') => `<dt>${a}</dt><dd class="${c}">${b}</dd>`;
   const draw = () => { const k = jnlK, i = keys.indexOf(k), d = g.days[k], t = new Date(k), today = k === dayStart(Date.now()), m = d.me;
-    const SF = Object.entries(d.sf).sort((a, b) => b[1].w - a[1].w), sw = SF.reduce((a, [, x]) => a + x.w, 0), sg = SF.reduce((a, [, x]) => a + x.g, 0), sr = SF.reduce((a, [, x]) => a + x.r, 0), out = d.p + d.s;
+    const SF = Object.entries(d.sf).sort((a, b) => b[1].w - a[1].w), sw = SF.reduce((a, [, x]) => a + x.w, 0), sg = SF.reduce((a, [, x]) => a + x.g, 0), sr = SF.reduce((a, [, x]) => a + x.r, 0), out = d.p;   /* v20.81 경완 '체육관 일지에 상점에서 쓴 돈은 기록하지마' */
     const logs = (g.log || []).filter(x => dayStart(x[0]) === k);
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 일지</b></div>
       <div class="jn-nav"><button type="button" data-mv="1" ${i >= keys.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
@@ -2034,7 +2034,7 @@ function jnlPop() {
         <tbody><tr><th><i class="jn-dot me"></i>관장 (나)</th><td>${m.w}명</td><td class="jn-g">${Gc(m.g)}</td><td class="${cl(m.r)}">${R(m.r)}</td></tr>
         ${SF.map(([n, x]) => `<tr><th><i class="jn-dot sf"></i>${esc(n)}</th><td>${x.w}명</td><td class="jn-g">${Gc(x.g)}</td><td class="${cl(x.r)}">${R(x.r)}</td></tr>`).join('')}</tbody>
         <tfoot><tr><th>합계</th><td>${m.w + sw}명</td><td class="jn-g">${Gc(m.g + sg)}</td><td class="${cl(m.r + sr)}">${R(m.r + sr)}</td></tr></tfoot></table>
-        ${out ? `<dl class="jn-st jn-out">${d.p ? row('주급', Gc(-d.p), 'jn-m') : ''}${d.s ? row('상점', Gc(-d.s), 'jn-m') : ''}${row('<b>남긴 골드</b>', `<b>${Gc(m.g + sg - out)}</b>`, cl(m.g + sg - out))}</dl>` : ''}</div>
+        ${out ? `<dl class="jn-st jn-out">${d.p ? row('주급', Gc(-d.p), 'jn-m') : ''}${row('<b>남긴 골드</b>', `<b>${Gc(m.g + sg - out)}</b>`, cl(m.g + sg - out))}</dl>` : ''}</div>
       <div class="jn-day jn-fd${g.jnlO ? ' on' : ''}"><h5><button class="jn-fold" type="button" data-fold aria-expanded="${g.jnlO ? 'true' : 'false'}">기록 <small>${logs.length}개</small><i aria-hidden="true">▼</i></button></h5>${!g.jnlO ? '' : logs.length ? `<ul class="jn-log">${logs.map(x => `<li><time>${hhmm(x[0])}</time><span>${x[2]}</span></li>`).join('')}</ul>` : '<p class="jn-none">기록이 없어요.</p>'}</div>
       </div>`; };
   draw();

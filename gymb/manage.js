@@ -15,7 +15,7 @@ const onField = id => S.mons.some(m => m.pid === id);
 const pop = (h, f) => { const p = K.pop(h, f); GB()?.fillTh(p); return p; };
 const say = msg => K.say(msg);   // 체육관 홈과 같은 가운데 알림 (경완 2026-10-29 '팝업창 중앙 정렬')
 const spend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} K.renderGoldG(); K.save(); return true; };
-const buy = n => { if (!spend(n)) return false; try { window.pkGold?.('gym', n); } catch (e) {} try { K.dayRec().s += n; } catch (e) {} try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
+const buy = n => { if (!spend(n)) return false; try { window.pkGold?.('gym', n); } catch (e) {} try { window.GymBGM?.se('DP_REGI'); } catch (e) {} return true; };   // 상점에서 살 때 본가 계산대 소리 (SEQ_SE_DP_REGI, 경완 2026-10-28)
 const gold = n => `<i class="coin"></i>${n.toLocaleString()}G`;
 // 포켓몬 정면 그림: 블랙·화이트 움직이는 gif (못 받으면 저장소 png 첫 칸)
 const monImg = (sp, o = {}) => { const g = GB().gifUrl(sp, false, !!o.s, !!o.f), png = GB().pkSrc(sp, { s: o.s, f: o.f });
@@ -275,7 +275,7 @@ function yardMon(P, e, i) {
   const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), tag: o.querySelector('.ty-tag'), x, y, face: Math.random() < .5 ? 1 : -1, st: leftOf(e) <= 0 ? 'sleep' : 'rest', until: performance.now() / 1000 + (leftOf(e) <= 0 ? 99 : .5 + Math.random() * 2), at: 0,   /* v18.02 경완 '훈련 끝났는데 들어가면 다시 깨어 있고 코치가 갔다가 돌아감': 오늘 훈련 다 한 포켓몬은 처음부터 잠든 채 */
     swimmer: t.includes(11), fish, flyer: t.includes(3) || (GA.lift?.(P.sp) || 0) > 8, fighter: t.includes(2), shooter: t.some(x => TY_SHOT.has(x)), ty: t[0], air: 0, D: null };
   Y.mons.push(m); place(m); try { yTag(m); } catch (x) {}
-  GA.pmd?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;
+  (GA.pmdMx || GA.pmd)?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;   /* v20.81 펀치·킥·물기 같은 기술 동작 그림까지 */
     if (D.P) { const [w, h] = D.wh, s = D.s; m.s = s; Object.assign(m.sp.style, { backgroundImage: `url("${D.P.i}")`, backgroundSize: `${w * s}px ${h * s}px` }); if (P.shiny) m.sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`; GA.shBg?.(m.sp, P, D.P.i); m.fk = '';
       const fw = Math.max(10, (D.P.fw || 14) * s * 1.05); Object.assign(m.shd.style, { width: fw + 'px', left: ((D.P.fx || 0) * s - fw / 2) + 'px', height: Math.max(6, fw * .3) + 'px', top: -Math.max(6, fw * .3) / 2 + 'px' }); }
     else { m.sp.classList.add('one'); m.sp.style.backgroundImage = `url("${D.img}")`; }
@@ -313,6 +313,7 @@ function yNext(m, now) {
   const add = (k, w) => { if (w > 0 && !yBusy(k, m)) W8.push([k, w]); };
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
   else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
+  if (GA.mvFx && yMove(m) && Math.random() < .28) { const [sx, sy] = yardSpot(false); return yGo(m, 'tech' + m.id, sx, sy, 'tech'); }   // v20.81 기술 연습: 빈 자리로 가서 아는 기술을 차례로
   if (!W8.length) { m.st = 'train'; m.k = null; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
   let r = Math.random() * W8.reduce((a, x) => a + x[1], 0), k = W8[0][0]; for (const [kk, w] of W8) { r -= w; if (r <= 0) { k = kk; break; } }
   const q = Y.pr[k];
@@ -332,6 +333,7 @@ function yArrive(m, now) {
   else if (T === 'run') { m.st = 'run'; m.dir = 1; m.lap = 0; }
   else if (T === 'buoy') { m.st = 'buoy'; m.face = -1; }
   else if (T === 'hoop') { m.st = 'hoop'; m.ph = 0; m.lap = 0; }
+  else if (T === 'tech') { m.st = 'tech'; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 7 + Math.random() * 4; }
   else if (T === 'sit') { m.st = 'sit'; m.face = Math.random() < .5 ? 1 : -1; }
   else if (T === 'sleep') { m.st = 'sleep'; m.until = now + 99; }
   else if (T === 'spw') { m.st = 'spw'; m.until = now + 6; const o = m.mate; if (o && o.st === 'spw' && o.mate === m) { m.face = o.x > m.x ? -1 : 1; o.face = -m.face; m.st = o.st = 'spar'; m.until = o.until = now + 6 + Math.random() * 4; m.turn = o.turn = 0; } }
@@ -421,10 +423,12 @@ function yardLoop(ts) {
       yNext(m, now);
     }
     // 기구별 움직임
-    if (m.st === 'bag' && !m.one) m.one = { n: 'Attack', t: 0, k: m.k, gap: .2 + Math.random() * .4 };
-    if (m.st === 'shoot' && !m.one) m.one = { n: m.D?.P?.a.Shoot ? 'Shoot' : 'Attack', t: 0, shot: Y.pr.tgt, gap: .5 + Math.random() * .6 };
-    if (m.st === 'buoy' && !m.one) m.one = { n: 'Attack', t: 0, k: 'water', gap: .3 + Math.random() * .5 };
-    if (m.st === 'train' && !m.one) m.one = { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
+    const mvTry = (p, want, o) => { if (!yMvOk(m, now) || Math.random() > p) return null; const mv = yMove(m, want); return mv ? yMvOne(m, mv, now, o) : null; };   // v20.81 기술 쓰기
+    if (m.st === 'bag' && !m.one) m.one = mvTry(.3, 0, { k: m.k, gap: .6 + Math.random() * .4 }) || { n: 'Attack', t: 0, k: m.k, gap: .2 + Math.random() * .4 };
+    if (m.st === 'shoot' && !m.one) m.one = mvTry(.6, 1, { shot: Y.pr.tgt, gap: .8 + Math.random() * .6 }) || { n: m.D?.P?.a.Shoot ? 'Shoot' : 'Attack', t: 0, shot: Y.pr.tgt, gap: .5 + Math.random() * .6 };
+    if (m.st === 'buoy' && !m.one) m.one = mvTry(.3, null, { k: 'water', gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, k: 'water', gap: .3 + Math.random() * .5 };
+    if (m.st === 'train' && !m.one) m.one = mvTry(.4, null, { gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
+    if (m.st === 'tech' && !m.one) m.one = mvTry(1, null, { gap: 1 + Math.random() * .8 }) || (now > (m.tq || 0) ? (m.tq = now + 1.2, { n: 'Attack', t: 0, gap: .4 }) : null);   // 기술 연습: 효과음 차례가 아니면 잠깐 기본 동작
     if (m.st === 'tramp') { const p0 = m.ph; m.ph += dt / .62; m.air = Math.abs(Math.sin(m.ph * Math.PI)) * 30; if (Math.floor(m.ph) !== Math.floor(p0)) { yWob(Y.pr.tramp, 'sq'); if (Math.random() < .3) yEmo(m, '♪', 'mu'); } }
     if (m.st === 'run') { const L = Y.lane, v = 80 * dt; m.y += m.dir * v; m.x = L.x; m.an = 'Walk';   // 세로 트랙: 위아래로 달리며 허들 넘기
       const hd = ['h1', 'h2'].map(k => Math.abs(m.y - Y.pr[k].y)).reduce((a, b) => Math.min(a, b)), J = 16; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 26 : 0;
@@ -433,7 +437,7 @@ function yardLoop(ts) {
       m.air = Math.max(0, p.air - (m.top != null ? -m.top * .5 : 18) - (m.lift || 0));   // 몸통 가운데가 고리 구멍 높이로
       if (m.ph % 1 < .55) { const R = [0, 1, 2].map(i => Y.pr['ring' + i]), i = R.findIndex(q => Math.abs(q.x - m.x) < 4); if (i >= 0 && i !== m.ri) { m.ri = i; yWob({ el: R[i].fr }, 'spin'); yWob(R[i], 'spin'); } } else m.ri = -1;
       if (m.ph >= 3) { m.air = 0; yNext(m, now); } }
-    if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m; a.one = { n: 'Attack', t: 0, tgt: a === m ? m.mate : m }; m.turn++; }
+    if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m, tg = a === m ? m.mate : m, mv = yMvOk(a, now) && Math.random() < .4 && yMove(a); a.one = mv ? yMvOne(a, mv, now, { tgt: tg, gap: .5 }) : { n: 'Attack', t: 0, tgt: tg }; m.turn++; }   // v20.81 대련도 가끔 기술로
     if ((m.st === 'sleep') && now > (m.zz || 0)) { m.zz = now + 3 + Math.random() * 2; yEmo(m, 'Zz', 'zz'); }
     const sw = inPond(m.x, m.y, -6); m.el.classList.toggle('swim', sw); swimMask(m, sw);
     place(m); yDraw(m, dt);
@@ -446,8 +450,22 @@ function swimMask(m, on) {
   const st2 = m.sp.style; if (!on || !m.D?.P) { if (m.mk) { st2.maskImage = st2.webkitMaskImage = ''; m.mk = ''; } return; }
   const top = parseFloat(st2.top) || 0, feet = -top, dep = m.fish ? Math.max(10, feet * .5) : Math.min(12, feet * .3), y = Math.max(0, feet - dep).toFixed(0);
   const mk = `linear-gradient(to bottom,#000 ${y}px,rgba(0,0,0,.42) ${y}px)`; if (m.mk !== mk) { m.mk = mk; st2.maskImage = st2.webkitMaskImage = mk; } }
+/* v20.81 경완 '훈련장에서 포켓몬들마다 기술 동작·효과 많이 활용': 그 포켓몬이 아는 기술(배틀 기술)로 — 기술 이름 외치기 → 이름에 맞는 동작(펀치·킥·물기·소리…) → 필드와 같은 기술 효과·효과음 → 기구가 맞음.
+   샌드백·물 위 장치·대련은 가끔, 과녁은 자주(특수 기술), 새 '기술 연습'(빈 자리에서 아는 기술 차례로)은 늘. 효과음이 겹치지 않게 훈련장 전체 1.3초, 포켓몬마다 3초 간격 */
+function yMove(m, want) { const B = GB(), L = (B.gm(m.P).mv || []).map(id => B.mvOf(id)).filter(x => x && x[3] !== 2);
+  const W = want == null ? L : L.filter(x => x[3] === want), x = K.pick(W.length ? W : L); return x ? { name: x[1], t: x[2], dc: x[3] === 0 ? 2 : 3 } : null; }
+function yMvOk(m, now) { return !!GA.mvFx && m.D?.P && now > (Y.mvT || 0) && now > (m.mvT || 0); }
+function yMvOne(m, mv, now, o = {}) { const A = m.D.P.a, n = (GA.mvAnims?.(mv.name, mv.dc) || []).find(a => A[a]) || 'Attack';
+  Y.mvT = now + 1.3; m.mvT = now + 3 + Math.random() * 2; yEmo(m, mv.name + '!', 'mvn'); return Object.assign({ n, t: 0, mv }, o); }
+function yMvFx(m, q) { const mv = m.one.mv, f = -m.face || 1, hs = document.createElement('i'); hs.className = 'ty-mvh';
+  hs.style.cssText = `left:${m.x.toFixed(0)}px;top:${(m.y - 22 - (m.lift || 0) - (m.air || 0)).toFixed(0)}px;z-index:${Math.round(Math.max(m.y, q?.y || 0)) + 6}`; Y.L.append(hs); setTimeout(() => hs.remove(), 3200);
+  GA.mvFx(hs, mv.name, mv.t, mv.dc, f); }
 function yHit(m) {
-  const o = m.one; if (o.shot) return yShot(m, o.shot);
+  const o = m.one; if (o.mv) { const q = o.shot || (o.k && Y.pr[o.k]) || null; yMvFx(m, q || o.tgt);
+    setTimeout(() => { if (!Y) return; if (q) { yWob(q, o.k === 'water' ? 'wob' : 'swing'); yFx(q.x + 6, q.y - (q.h || 20) * .55, o.k === 'water' ? 'spl' : 'spk'); }
+      if (o.tgt) { const t = o.tgt; if (t.D?.P?.a.Hurt && !t.one) t.one = { n: 'Hurt', t: 0 }; yEmo(t, '!', 'hit'); t.x += (t.x > m.x ? 1 : -1) * 6; } }, o.shot ? 520 : 260);
+    if (Math.random() < .5) setTimeout(() => Y && yEmo(m, '+EXP', 'xp'), 700); return; }
+  if (o.shot) return yShot(m, o.shot);
   const q = o.k && Y.pr[o.k]; if (q) { yWob(q, o.k === 'water' ? 'wob' : 'swing'); yFx(q.x + (o.k === 'water' ? 10 : 6), q.y - (o.k === 'water' ? 10 : q.h * .55), o.k === 'water' ? 'spl' : 'spk'); }
   else if (!o.tgt) yFx(m.x - m.face * 22, m.y - 24, 'spk');
   if (o.tgt) { const t = o.tgt; if (t.D?.P?.a.Hurt && !t.one) t.one = { n: 'Hurt', t: 0 }; yFx((m.x + t.x) / 2, m.y - 22, 'spk'); yEmo(t, '!', 'hit'); t.x += (t.x > m.x ? 1 : -1) * 4; }
