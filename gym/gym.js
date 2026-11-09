@@ -1138,7 +1138,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
