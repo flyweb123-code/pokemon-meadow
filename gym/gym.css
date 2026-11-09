@@ -3653,3 +3653,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @media (prefers-reduced-motion: reduce){#gym .sp-it.it-recm{animation:none}}
 /* v20.60 경완: 기술머신 사기 창 '배울 수 있는 포켓몬'을 누르면 상세카드 → 버튼 */
 #gym button.tm-wp{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-appearance:none;appearance:none}#gym button.tm-wp:active{transform:translate(1px,1px)}
+/* v20.61 노력치 훈련 박스 ? */
+#gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:-4px}#gym .ev-trhint{text-align:center;margin-top:6px}#gym .ev-trhint b{color:#6a44c0}
