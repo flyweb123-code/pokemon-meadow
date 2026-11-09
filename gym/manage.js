@@ -37,7 +37,7 @@ function perHour(P) { const m = GB().gm(P), g = GB().growth(P.sp); if (m.lv >= G
 // v20.45 경완 '코치 보너스는 고용 트레이너 개체마다 다르게': 코치 실력 s.cs = 10~40% (지원할 때 정해짐, 예전 트레이너는 id 로 고정 값), 훈련광은 2배. 훈련장 코치로 있을 때만
 // 예전 규칙(코치 +25%, 훈련광 코치 +50%, 고용만 한 훈련광 +20%)은 없앰. 경험치와 노력치 훈련 둘 다 이 배율
 const coachSk = s => s.cs ?? (10 + (Math.abs((s.id | 0) * 2654435761 | 0) % 31));
-const coachP = s => coachSk(s) * (s.trait === 'train' ? 2 : 1);
+const coachP = s => coachSk(s) * (s.trait === 'train' ? 2 : 1) * (coachK(s) === 'mv' ? 2 : 1);   // v20.95 경완 OK: 기술 코치는 효과 2배 (특별한 기술이 원래 일주일에 1개라 체감되게)
 const coaches = () => (st().sf || []).filter(s => s.yard && !s.rest);
 // v20.92 경완 '코치 실력을 노력치 잘 올리는·경험치 잘 올리는·기술 잘 가르치는 트레이너로 나누자': 트레이너마다 코치 종류 하나, 실력 %는 그 종류에만
 const CK = { xp: ['경험치', '#2a7ad0'], ev: ['노력치', '#d0601a'], mv: ['기술', '#8a46c8'] }, CK_O = ['xp', 'ev', 'mv'];
@@ -475,11 +475,12 @@ function yardLoop(ts) {
   const cov = Y.cov = !Y.el.isConnected || sh.hidden || cur !== 'train' || !!document.querySelector('#gym .gy-boxw');   // v20.91 꾸미기 필드처럼: 다른 메뉴·+ 화면이 덮는 동안에도 0.1초마다 움직임은 계산, 그리기만 안 함
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
   if (Y.storm && !document.hidden && !cov) { if (!Y.stT) Y.stT = now + 2.5 + Math.random() * 4; else if (now >= Y.stT) { Y.stT = now + 6 + Math.random() * 12; const wx = Y.el.querySelector('.ty-wx'), w = Y.el.clientWidth || 360; window.GA?.bolt?.(wx, w); if (Math.random() < .3) setTimeout(() => window.GA?.bolt?.(wx, w), 250 + Math.random() * 500); } } else Y.stT = 0;   // v18.63 뇌우면 필드처럼 번개·천둥
-  if (now - (Y.ck ?? now) > 30) { const b0 = Y.mons.map(m => { const e = st().tr.find(x => x.id === m.id); return [e?.evg || 0, m.P.fr || 0, e?.evk]; });
+  if (now - (Y.ck ?? now) > 30) { const b0 = Y.mons.map(m => { const e = st().tr.find(x => x.id === m.id); return [e?.evg || 0, m.P.fr || 0, e?.evk, (GB().gm(m.P).egP || []).slice()]; });
     tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} });
-    if (!cov) Y.mons.forEach((m, i) => { const e = st().tr.find(x => x.id === m.id), [g0, f0, k] = b0[i], dg = (e?.evg || 0) - g0, df = (m.P.fr || 0) - f0, B = GB();   // v20.91 경완 '+EXP 처럼 노력치·친밀도 오를 때도'
+    if (!cov) Y.mons.forEach((m, i) => { const e = st().tr.find(x => x.id === m.id), [g0, f0, k, p0] = b0[i], dg = (e?.evg || 0) - g0, df = (m.P.fr || 0) - f0, B = GB();   // v20.91 경완 '+EXP 처럼 노력치·친밀도 오를 때도'
       if (dg > 0 && k >= 0) setTimeout(() => Y && yEmo(m, `${B.EV_N?.[k] || ''} +${dg}`, 'evu', EV_SC[k]), 200 + i * 260);
-      if (df > 0) setTimeout(() => Y && yEmo(m, `♥ 친밀도 +${df}`, 'fru'), 900 + i * 260); }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+      if (df > 0) setTimeout(() => Y && yEmo(m, `♥ 친밀도 +${df}`, 'fru'), 900 + i * 260);
+      (B.gm(m.P).egP || []).forEach((v, j) => { const a = Math.floor(p0[j] || 0), c = Math.floor(v || 0); if (c > a) { const id = B.EGG?.[m.P.sp]?.[j]; setTimeout(() => Y && yEmo(m, `✨ ${id ? B.mvKo(id) : '특별한 기술'} ${c}%`, 'egu'), 1600 + i * 260 + j * 500); } }); });   /* v20.96 깨달음 게이지가 1% 오를 때마다 */ } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
   if (!cov && now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
   for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
   yFeedTick(now);
