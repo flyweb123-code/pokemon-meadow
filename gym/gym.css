@@ -3815,3 +3815,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .eg-aw .eg-r.new .eg-cv b{animation:egGlowT 1.15s calc(var(--d) + .1s) both}
 @keyframes egGlow{0%{box-shadow:inset 3px 0 0 #5a5468,inset 0 0 0 1px #4a4558}40%{box-shadow:inset 0 0 0 2px #fff6c0,0 0 10px 3px rgba(255,230,120,.75)}100%{box-shadow:inset 0 0 0 2px #fff,0 0 18px 6px rgba(255,240,170,.95);filter:brightness(1.6)}}
 @keyframes egGlowT{to{color:#fff6d0;text-shadow:0 0 6px #ffe080}}
+/* v21.06 경완 '고용 트레이너 상세카드 스크롤 안 되게': 그림 칸 낮게, 특성·코치 나란히, 기록 줄 촘촘히, 버튼 한 줄 */
+#gym .sd2-hero{height:112px}#gym .sd2-hero img{width:104px;height:104px;margin-bottom:6px}#gym .sd2-hero::after{width:128px;height:60px;bottom:-22px}
+#gym .sd2-trt{grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding-top:10px}#gym .sd2-trt .trt{align-self:stretch;align-content:flex-start}#gym .sd2-trt .trt small{font-size:10.5px;line-height:1.3}
+#gym .sd2-h{margin-top:9px!important}#gym .sd2-team img{width:42px;height:42px}#gym .sd2-team span{padding-bottom:2px}
+#gym .sd2-rec>div{padding:5px 0}#gym .sd2-rec>div>b{font-size:14px}
+#gym .sd2 .sd-btns{margin-top:10px}#gym .sd2 .sd-btns.four{grid-template-columns:repeat(4,minmax(0,1fr))}#gym .sd2 .sd-btns.four button{font-size:12px;padding:9px 2px;letter-spacing:-.3px}
+#gym .mi-h.mi-nic{margin-bottom:8px}
+#gym .sfc .sfc-coach{left:auto;right:8px;top:8px;z-index:2}   /* v21.06 고용 관리 박스 우상단 훈련장 코치 = 상세카드 딱지와 같은 모양 */
+.ty-info.ty-ck{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:0;border:0;background:none;box-shadow:none}.ty-info.ty-ck .trt{margin:0;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ty-info.ty-ck .trt b{color:#fff}
+#gym .bw-hd h4{flex:none;white-space:nowrap}#gym .tsc-co:has(.trt){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;padding:0;background:none;border:0;box-shadow:none;min-width:0}#gym .tsc-co .trt{margin:0;font-size:11px;padding:2px 6px 2px 2px}#gym .tsc-co .trt b{font-size:10px}
