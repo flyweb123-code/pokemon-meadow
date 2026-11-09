@@ -1,0 +1,22 @@
+name: tmp read battle log
+on:
+  push:
+    branches: [claude/project-thread-gfjshm]
+    paths: ['tools/tmp/blog.mjs', '.github/workflows/tmp-blog.yml']
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+        working-directory: server
+      - run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+        working-directory: server
+      - run: node tools/tmp/blog.mjs
