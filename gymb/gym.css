@@ -3827,3 +3827,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .ty-info.ty-ck .trt b{color:#fff}
 #gym .bw-hd h4{flex:none;white-space:nowrap}#gym .tsc-co:has(.trt){display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;padding:0;background:none;border:0;box-shadow:none;min-width:0}#gym .tsc-co .trt{margin:0;font-size:11px;padding:2px 6px 2px 2px}#gym .tsc-co .trt b{font-size:10px}
 .ty-yd.ty-wait{background:#1c1e28!important}.ty-yd.ty-wait>*{visibility:hidden}   /* v21.07 바닥 그림 전엔 어두운 색만 */
+
+/* v21.08 레어 기술 설명창 */
+#gym .eg-rp .eg-rh{color:#c9961c;text-shadow:0 1px 0 #fff3c4}#gym .eg-rp .eg-rm{margin:6px 0;line-height:1.5}#gym .eg-rp .eg-rm b{color:#b8841a}
