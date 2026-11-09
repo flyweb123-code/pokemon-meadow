@@ -57,7 +57,7 @@ function special(P) {
 }
 const trFr = P => { try { return GA.frHr(P.sp) || .5; } catch (e) { return .5; } };   /* v16.42 경완 '친밀도 오르는건 필드 기준': 잘 돌본 필드와 같은 시간당 속도 (FR_TABLE 맨 위 × 포켓몬별 배수) */
 /* 날짜별 훈련 기록: g.tlog[포켓몬 id] = {하루 시작: {h 시간, x 경험치, lv 오른 레벨, f 친밀도, mv [새 기술]}} (60일) */
-const EV_SC = ['#e85a5a', '#ef8a3a', '#e0b020', '#4a7ad8', '#3e9a52', '#d8508a'];   // v20.77 슬롯 능력치 훈련 딱지 색 (HP·공격·방어·특공·특방·스피드)
+const EV_SC = ['#e85a5a', '#ef8a3a', '#e0b020', '#4a7ad8', '#3e9a52', '#d8508a'];   // v20.78 슬롯 능력치 훈련 딱지 색 (HP·공격·방어·특공·특방·스피드)
 const trLog = id => (st().tlog || {})[id] || {};
 function trDay(id, dk) { const g = st(), L = g.tlog || (g.tlog = {}), T = L[id] || (L[id] = {}); if (!T[dk]) { T[dk] = { h: 0, x: 0, lv: 0, f: 0, mv: [] }; const ks = Object.keys(T).map(Number).sort((a, b) => b - a); ks.slice(60).forEach(k => delete T[k]); } return T[dk]; }
 function tickTrain(now) {
@@ -513,7 +513,7 @@ function statPop() {
      v19.63 경완: 찬 칸·빈 칸·잠긴 칸 크기 같게(1fr), 데려오기 → ✕ */
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4>${cx > 1.001 ? `<span class="tsc-co">코치 보너스 <b>+${Math.round((cx - 1) * 100)}%</b></span>` : ''}</div>
     <div class="ts-grid tsc-grid">${Array.from({ length: Math.max(TR_ALL, L.length) }, (_, i) => { const r = L[i]; if (!r && i >= trMax()) return `<div class="ts-slot lock tsc-lock">${LOCK_SVG}<span><b>${K.GRADES[i + 1]?.[1] || ''}</b>이 되면 열려요</span></div>`; if (!r) return `<button type="button" class="ts-slot empty tsc-new" data-new="1"><span>+</span><b>포켓몬 보내기</b></button>`;
-      const [e, P] = r, m = GB().gm(P), up = Object.values(trLog(P.id)).reduce((a, d) => a + (d.lv | 0), 0), B = GB(), ek = e.evk ?? -1, eOn = !!B.evOn?.(),   /* v20.77 경완 '가비루사 일지 레벨업 수랑 슬롯 레벨업 수가 달라': ▲ = 훈련 일지 합 (훈련 현황과 같은 값, 배틀·사탕으로 오른 레벨은 안 셈) */ gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), nmv = Object.values(trLog(P.id)).reduce((a, d) => a + (d.mv?.length | 0), 0);
+      const [e, P] = r, m = GB().gm(P), up = Object.values(trLog(P.id)).reduce((a, d) => a + (d.lv | 0), 0), B = GB(), ek = e.evk ?? -1, eOn = !!B.evOn?.(),   /* v20.78 경완 '가비루사 일지 레벨업 수랑 슬롯 레벨업 수가 달라': ▲ = 훈련 일지 합 (훈련 현황과 같은 값, 배틀·사탕으로 오른 레벨은 안 셈) */ gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), nmv = Object.values(trLog(P.id)).reduce((a, d) => a + (d.mv?.length | 0), 0);
       return `<button type="button" class="ts-slot tsc" data-id="${P.id}"><span class="tsc-th">${GB().thumb(P)}</span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(nmOf(P))}</b><span class="tsc-lv">Lv.${m.lv}</span>${up > 0 ? `<em class="tsc-up">▲${up}</em>` : ''}</span>
         <span class="tsc-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span><small>${mx ? '최고' : `${Math.floor(f * 100)}%`}</small></span>
         <span class="tsc-tags">${eOn ? ek >= 0 ? `<em class="tsc-ev" style="--sc:${EV_SC[ek]}"><img alt="" src="${B.itImg(B.EV_PW[ek])}">${B.EV_N[ek]} 훈련<b>+${e.evg | 0}</b></em>` : '<em class="tsc-ev off">능력치 훈련 안 함</em>' : '<em class="tsc-ev off">훈련 중</em>'}${nmv ? `<em class="tsc-mv">새 기술 ${nmv}</em>` : ''}</span></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span></button>`; }).join('')}</div>
@@ -755,7 +755,7 @@ function drawShop() {
   const body = sh.querySelector('.sp-body');
   GB().loadSim?.().catch(() => {});   /* v19.65 경완 '추천리스트 불러오는 중 뜨지 않고 바로': 상점을 열 때 추천 점수용 쇼다운 자료를 미리 받아 둔다 */
   ({ tm: b => shopTm(b, false), tr: b => shopTm(b, true), it: shopIt, deco: shopDeco, fit: shopFit })[shopT](body);
-  { const NW = shopSeeT(shopT), dot = el => { if (!el.querySelector('.nwdot')) el.insertAdjacentHTML('beforeend', '<i class="nwdot"></i>'); };   // v20.77 새로 들어온 칸에 점
+  { const NW = shopSeeT(shopT), dot = el => { if (!el.querySelector('.nwdot')) el.insertAdjacentHTML('beforeend', '<i class="nwdot"></i>'); };   // v20.78 새로 들어온 칸에 점
     const mark = () => NW.size && body.querySelectorAll('[data-tm],[data-it],[data-mint],[data-vit],[data-dc]').forEach(b => { const d = b.dataset, k = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.mint ? 'mint:' + d.mint : d.vit != null ? 'vit:' + d.vit : 'deco:' + d.dc; if (NW.has(k)) dot(b); });
     mark(); if (NW.size) new MutationObserver((r, o) => { if (!body.isConnected) return o.disconnect(); o.disconnect(); mark(); o.observe(body, { childList: true, subtree: true }); }).observe(body, { childList: true, subtree: true }); K.menuDot?.(); }
   { const f = body.firstElementChild; if (f?.classList.contains('tm-row')) sh.querySelector('.sp-top').appendChild(f); }   /* v17.61 경완: 추천받기는 필터 줄 밑에 */ sh.querySelector('.sf-cap')?.insertAdjacentHTML('afterbegin', recBar()); recAlign();   /* v17.34 경완 '꾸미기 상점처럼 위쪽 고정, 필터 포함': 제목·골드·탭·필터 줄은 스크롤해도 위에 붙어 있음 */
@@ -763,7 +763,7 @@ function drawShop() {
   sh.onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.bk) { sfx('tap'); window.gymShopBack = null; K.openTab(back.t, back.opt || undefined); if (back.re) setTimeout(back.re, 0); return; } if (b.dataset.st) { sfx('tap'); if (b.dataset.st !== shopT) shopLeave(shopT); shopT = b.dataset.st; redraw(); return; } if (b.dataset.pr) { sfx('tap'); shopPr = -shopPr; redraw(); return; } if (b.dataset.rec) { sfx('tap'); if (b.dataset.rec === 'off') { shRec = null; redraw(); return; } return recPick(); } inner?.(e, b); };
   if (goIt || goMint) { const b = sh.querySelector(goIt ? `.sp-body [data-it="${goIt}"]` : `.sp-body [data-mint="${goMint}"]`); if (b) { b.classList.add('sp-go'); b.scrollIntoView({ block: 'center' }); setTimeout(() => document.addEventListener('pointerdown', () => b.classList.remove('sp-go'), { capture: true, once: true }), 0); }   /* v18.08 경완: 빛 테두리는 은은하게 계속, 그 칸·다른 곳·빈 곳을 누르면 꺼짐 */ }   // v17.58 경완: 그 칸을 가운데로 + 빛나게 (사기 창은 눌러서)
 }
-/* v20.77 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 살 수 있게 된 칸(업데이트로 들어온 물건, 등급이 올라 풀린 꾸미기, 새 포켓몬으로 늘어난 기술머신)에 점.
+/* v20.78 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 살 수 있게 된 칸(업데이트로 들어온 물건, 등급이 올라 풀린 꾸미기, 새 포켓몬으로 늘어난 기술머신)에 점.
    g.shSeen {키: 1} = 본 칸. 처음엔 지금 있는 것 모두 본 걸로. 탭을 열면 본 걸로 저장하되 그 탭을 보는 동안(탭 바꾸기·상점 닫기 전)엔 점을 그대로 둔다 */
 function shopKeys(t) { const g = st(), B = GB(), D = B?.D; if (!D) return [];
   if (t === 'tm' || t === 'tr') { const K2 = new Set(); S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { const id = D.mv[i]?.[0]; if (id && B.isTR(id) === (t === 'tr')) K2.add('tm:' + id); })); return [...K2]; }
@@ -917,5 +917,5 @@ try { spWipe(); } catch (e) { console.warn('spWipe', e); }
 // v20.68 경완 '퇴근하고 돌아오면 상점 필터 다 기본값': 탭·타입·형태·위력순·가격순·추천받기 모두 처음대로
 function shopReset() { shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
 window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
-setTimeout(() => K.menuDot?.(), 0);   // v20.77 상점 빨간 점: 불러오자마자 한 번
+setTimeout(() => K.menuDot?.(), 0);   // v20.78 상점 빨간 점: 불러오자마자 한 번
 })();

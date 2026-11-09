@@ -1721,7 +1721,7 @@ function lockOv(sh, t) {
 // v20.68 경완 '상점에서 사면 들어간 곳에 빨간 점': g.newIt {'tm:id'|'it:id'|'mint:k'|'deco:k': 1} → 홈 창고 버튼·창고 탭·그 칸에 점, 그 탭을 보고 나가면(탭 바꾸기·닫기) 꺼짐
 function newMark(k, id) { const g = st(); if (!g) return; (g.newIt ||= {})[k + ':' + id] = 1; save(); storeDot(); }
 function storeDot() { const b = $g('.gy-store'); if (!b) return; const on = Object.keys(st()?.newIt || {}).length > 0; let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
-function menuDot() { storeDot(); { const b = $g('.gy-menu [data-t="shop"]'); if (b) { const on = !!window.GymManage?.shopHas?.(); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); } }   /* v20.77 경완: 상점에 새로 들어온 게 있으면 메뉴 상점 단추에 점 */
+function menuDot() { storeDot(); { const b = $g('.gy-menu [data-t="shop"]'); if (b) { const on = !!window.GymManage?.shopHas?.(); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); } }   /* v20.78 경완: 상점에 새로 들어온 게 있으면 메뉴 상점 단추에 점 */
   const g = st(), b = $g('.gy-menu [data-t="staff"]'); if (!b) return; const on = !!(g?.cands?.length && !g.candSeen) && !lockedT('staff'); let d = b.querySelector('.mdot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="mdot"></i>'); if (!on && d) d.remove(); }
 function renderHome(quiet) {
   if (ded && !quiet) return ded.draw();
@@ -1823,7 +1823,7 @@ const SOON = {
 let bsMus = false;   // 승급 심사 화면 곡(포켓몬리그)이 나오는 중 (경완 2026-11-04 '승급심사 화면 들어가면 bgm 웅장하게')
 let tabOpt = null;
 function openTab(t, opt) {
-  if (tab === 'shop' && t !== 'shop') window.GymManage?.shopLeave?.();   // v20.77 상점 빨간 점: 상점을 떠나면 본 칸 점 끔
+  if (tab === 'shop' && t !== 'shop') window.GymManage?.shopLeave?.();   // v20.78 상점 빨간 점: 상점을 떠나면 본 칸 점 끔
   if (opt?.back === 1) opt = { back: { t: tab, opt: tabOpt, re: opt.re } };   // v17.68 경완: re = 상세카드 다시 열기   // v17.64 경완: 상세카드 추천 → 상점으로 넘어가도 원래 화면(배틀 라인업 고르기 등)으로 돌아갈 길. 라인업 고르기는 그대로 기다림
   window.gymShopBack = t === 'shop' && opt?.back ? opt.back : null; tabOpt = opt?.back ? null : opt;   // v17.68 경완: 추천에서 왔으면 메뉴 잠김과 상관없이 ‹ (누르면 상세카드로)
   if (bsMus && !(t === 'battle' && opt?.pick) && !opt?.back) { bsMus = false; bgmPlay('gym'); }   // 심사 화면·라인업에서 다른 곳으로 가면 체육관 곡으로
@@ -1997,10 +1997,10 @@ async function bigUp(el) {
     wf.remove(); await wait(1500);
     try { M?.play('gym'); } catch (e) {}
     busy = false; root.classList.remove('busy'); renderHome(true);
-    bigPop(A, B);   // v20.77 경완 '체육관 크기 넓어졌다 알림창 디자인 다시, 알림창처럼': 전·후 맵 + 늘어난 칸 + 단계 (예전 say 한 줄)
+    bigPop(A, B);   // v20.78 경완 '체육관 크기 넓어졌다 알림창 디자인 다시, 알림창처럼': 전·후 맵 + 늘어난 칸 + 단계 (예전 say 한 줄)
   } finally { busy = false; root.classList.remove('busy'); }
 }
-// v20.77 넓어졌다 알림창: 머리띠 · 전→후 맵(같은 축척이라 커진 게 보임) · +N칸 · 7단계 점. 저절로 뜨는 알림창(.gy-lock = 팝업 모션·효과음·확인으로만 닫힘)
+// v20.78 넓어졌다 알림창: 머리띠 · 전→후 맵(같은 축척이라 커진 게 보임) · +N칸 · 7단계 점. 저절로 뜨는 알림창(.gy-lock = 팝업 모션·효과음·확인으로만 닫힘)
 function bigPop(A, B) {
   const g = st(), lv = bigOf(g) + 1, n = B.w * B.h - A.w * A.h, k = Math.min(132 / B.w, 104 / B.h);
   const fig = (D, c, t) => `<figure class="bu-m ${c}"><i style="width:${Math.round(D.w * k)}px;height:${Math.round(D.h * k)}px"><img alt=""></i><figcaption><em>${t}</em>${D.w}×${D.h}</figcaption></figure>`;
