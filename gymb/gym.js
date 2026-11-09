@@ -2059,7 +2059,7 @@ function storePop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
-    const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [];   // v20.79 영양제도 창고에   // 민트 (경완 2026-10-30)
+    const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [];   // v20.80 영양제도 창고에   // 민트 (경완 2026-10-30)
     const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
     const NW = g.newIt || {}, nwT = new Set(Object.keys(NW).map(nwTab));   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
@@ -2087,7 +2087,7 @@ function storePop() {
     if (b.dataset.takeit) { const Q = GA.S.box.find(x => String(x.id) === b.dataset.takeit); if (Q) GB().takeIt(Q); return draw(); }   // 지닌 도구 돌려받기 (경완 2026-10-29)
     if (b.dataset.it) { const id = b.dataset.it; return GB().itInfo(id, '지니게 하기', () => { el.remove(); GB().itPick(id, () => storePop()); }, '', g.itm?.[id] | 0); }
     if (b.dataset.mint) { const k = b.dataset.mint; return GB().mintInfo(k, '먹이기', () => { el.remove(); GB().mintPick(k, () => storePop()); }, '', g.mint?.[k] | 0); }
-    if (b.dataset.vit != null) { const i = +b.dataset.vit; return GB().vitInfo(i, '먹이기', () => { el.remove(); GB().vitPick(i, () => storePop()); }, g.vit?.[GB().EV_VIT[i][0]] | 0); }   // v20.79 경완 '영양제 창고에서 바로 포켓몬 골라 먹이기'
+    if (b.dataset.vit != null) { const i = +b.dataset.vit; return GB().vitInfo(i, '먹이기', () => { el.remove(); GB().vitPick(i, () => storePop()); }, g.vit?.[GB().EV_VIT[i][0]] | 0); }   // v20.80 경완 '영양제 창고에서 바로 포켓몬 골라 먹이기'
     if (b.dataset.a === 'place') { el.remove(); return decoEdit(); }
     if (b.dataset.dc) { const k = b.dataset.dc, i = g.dp.indexOf(k); if (i >= 0) { g.dp.splice(i, 1); delete g.dpos?.[k]; } else g.dp.push(k); save(); renderHome(true); return draw(); }
     if (b.dataset.fit != null) { fitSet(b.dataset.fit); save(); renderHome(true); return draw(); } };

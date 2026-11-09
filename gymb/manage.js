@@ -817,7 +817,7 @@ function buyTm(id, can) {
   });
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
-let itCat = -1;   // v20.79 도구 탭 항목 필터 (-1 = 모든 항목)
+let itCat = -1;   // v20.80 도구 탭 항목 필터 (-1 = 모든 항목)
 const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : [])];
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
@@ -831,7 +831,7 @@ function shopIt(body) {
     body.innerHTML = `<div class="tm-row sp-prr">${prBtn()}</div><p class="sp-sub">${esc(nmOf(RP))}에게 맞는 도구</p><div class="sp-list sp-recit"></div>${nOk ? `<p class="sp-sub">추천 성격 민트</p><div class="sp-list">${GB().mintRow(nk, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)}</div>` : ''}`;
     GB().recIts(RP).then(L => { const el = body.querySelector('.sp-recit'); if (!el || !el.isConnected) return; L = L.filter(id => H[id]).slice(0, 8).sort((a, b) => (H[a][1] - H[b][1]) * shopPr); el.innerHTML = L.length ? L.map(row).join('') : '<p class="sf-none">추천할 도구가 없어요.</p>'; GB().fillTh?.(el); });
   } else
-  { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.79 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
+  { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.80 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
   body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
     ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;

@@ -2057,7 +2057,7 @@ function evPop(P, done) {
   start(); fillTh(p); return p;
 }
 
-// v20.79 경완 '영양제는 상세카드뿐 아니라 창고·도구 사용에서도 포켓몬 골라서 바로 먹이기': 한 개 = 그 능력치 노력치 +10 (252·510 한도, 남은 노력치 몫 포함)
+// v20.80 경완 '영양제는 상세카드뿐 아니라 창고·도구 사용에서도 포켓몬 골라서 바로 먹이기': 한 개 = 그 능력치 노력치 +10 (252·510 한도, 남은 노력치 몫 포함)
 const vitAll = () => evOn() ? EV_VIT.map(([k], i) => [i, S.gym?.vit?.[k] | 0]).filter(([, n]) => n > 0) : [];
 const vitRoom = (P, i) => { const m = gm(P), e = evArr(m); return Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))); };
 const vitRow = (i, n, P) => { const r = P ? vitRoom(P, i) : 10, full = !r, v = P ? evArr(gm(P))[i] | 0 : 0;
