@@ -1890,7 +1890,7 @@ function infoPop() {
 }
 // ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
 // S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
-const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'sfTut', 'vit', 'fb1', 'shelf', 'evd'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'evTD', 'sfTut', 'vit', 'fb1', 'shelf', 'evd'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
 const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
 const gUsedTy = () => new Set(gList().map(x => x.ty));
 // 휴업 중이던 시간은 없던 셈 (도전자·주급·면접·훈련 시계를 그만큼 민다)
@@ -2328,13 +2328,19 @@ const tutRing = sel => k => { k.querySelectorAll('.gy-k-ring').forEach(e => e.re
 const TUT_TR = () => [
   { s: "A. 훈련장에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, 관장님!", tutRing(), "여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.", tutRing(), "훈련하면 경험치가 쌓여\n레벨이 오르고, 가끔은\n특별한 기술도 배우지.", tutRing(), "처음엔 한 마리뿐이지만\n체육관 등급이 오를 때마다\n자리가 하나씩 늘어난단다.", tutRing(".ty-add"), "자, 오른쪽 아래 + 버튼을\n눌러 첫 훈련생을\n보내 보렴!"] },
   { s: "B. 포켓몬을 보내고 나서 (훈련 카드가 열린 채로)", L: [tutRing(), "잘했다! 이제 아주 중요한\n걸 하나 알려 주마.\n바로 '노력치'란다.", tutRing(), "같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.", tutRing(), "그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!", tutRing(), "개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.", tutRing(), "배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.", tutRing(), "빠른 포켓몬을 쓰러뜨리면\n스피드, 힘센 포켓몬이면\n공격 노력치가 오른단다.", tutRing(), "훈련장 포켓몬을 누르면\n노력치 훈련 칸이 있단다.\n키울 능력치를 직접 고르지.", tutRing(".ev-tr"), "고른 능력치엔 훈련하는\n동안 노력치가 꾸준히\n쌓인단다.", tutRing(), "트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지."] },
-  { s: "C. 처음으로 상세카드를 열었을 때 (노력치 박스가 생긴 뒤)", L: [tutRing(".ev-box2"), "상세카드 아래에 노력치\n박스가 생겼지? 남은 노력치와\n능력치별 노력치가 보인단다.", tutRing(), "한 마리가 쌓을 수 있는 건\n모두 510, 능력치 하나엔\n252까지란다.", tutRing(), "그래서 전부 키울 순 없어.\n보통은 두 가지에 252씩\n몰아 준단다.", tutRing(".ev-box2"), "노력치 박스를 눌러 보렴.\n노력치를 직접 옮길 수\n있단다.", tutRing(), "− 로 빼는 건 공짜야.\n뺀 노력치는 '남은 노력치'로\n모인단다.", tutRing(), "+ 로 넣을 땐 1당 10골드.\n상점 영양제를 먹이면\n한 번에 10씩 오르지.", tutRing(), "어떻게 찍을지 모르겠으면\n제목 옆 ? 를 눌러 보렴.\n주로 찍는 법을 알려 준단다.", tutRing(), "추천 버튼을 누르면\n남은 노력치를\n알아서 찍어 주지.", tutRing(), "레벨이 높을수록 노력치로\n오르는 능력치도 커진단다.\n멋지게 키워 보렴!"] }
+  { s: "C. 처음으로 상세카드를 열었을 때 (노력치 박스가 생긴 뒤) → 노력치 박스를 눌러야 다음으로", L: [tutRing(".ev-box2"), "상세카드 아래에 노력치\n박스가 생겼지? 남은 노력치와\n능력치별 노력치가 보인단다.", tutRing(), "한 마리가 쌓을 수 있는 건\n모두 510, 능력치 하나엔\n252까지란다.", tutRing(), "그래서 전부 키울 순 없어.\n보통은 두 가지에 252씩\n몰아 준단다.", tutRing(".ev-box2"), "노력치 박스를 눌러 보렴.\n노력치를 직접 옮길 수\n있단다."] },
+  { s: "D. 노력치 설정 창을 연 뒤 (C 에서 박스를 누르면)", L: [tutRing(".ev-pop .ev-pool"), "여기가 노력치 설정 창이란다.\n위 막대가 남은 노력치와\n합계를 보여 주지.", tutRing(".ev-pop [data-m]"), "− 로 빼는 건 공짜야.\n뺀 노력치는 '남은 노력치'로\n모인단다.", tutRing(".ev-pop [data-p]"), "+ 로 넣을 땐 1당 10골드.\n꾹 누르고 있으면\n계속 들어가지.", tutRing(".ev-pop [data-v]"), "옆의 영양제를 먹이면\n한 번에 10씩 오른단다.\n영양제는 상점에서 팔지.", tutRing(".ev-pop [data-q]"), "어떻게 찍을지 모르겠으면\n제목 옆 ? 를 눌러 보렴.\n주로 찍는 법을 알려 준단다.", tutRing(".ev-pop [data-rec]"), "추천 버튼을 누르면\n남은 노력치를\n알아서 찍어 주지.", tutRing(".ev-pop .ev-bill"), "든 골드는 정산표에 모이고,\n저장을 눌러야\n바뀐 게 남는단다.", tutRing(), "레벨이 높을수록 노력치로\n오르는 능력치도 커진단다.\n멋지게 키워 보렴!"] }
 ];
 const TUT_ST = () => [
   { s: "트레이너 메뉴에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "이번엔 트레이너 메뉴구나.\n체육관을 혼자 지키긴\n힘들지?", tutRing(), "트레이너를 고용하면\n도전자가 올 때 먼저 나가서\n싸워 준단다.", tutRing(), "트레이너가 막아 내면\n골드와 평판도 함께\n벌어 오지.", tutRing(".sp-tabs [data-sft=\"cand\"]"), "지원서 탭엔 가끔 일하고\n싶다는 트레이너가\n찾아온단다.", k => $g('.sp-tabs [data-sft="cand"]')?.click(), tutRing(".cv-card"), "지원서에선 포켓몬과\n평균 레벨, 특성, 희망 주급을\n잘 보렴.", tutRing(), "주급은 7일마다 나간단다.\n벌어 오는 골드보다 주급이\n비싸면 손해겠지?", tutRing(), "특성은 트레이너마다 하나.\n배틀에 강한 근성, 골드를 더\n벌어 오는 수완가도 있지.", tutRing(), "코치 실력도 사람마다\n달라. 훈련장 코치로 보낼\n생각이면 꼭 보렴.", tutRing(), "훈련광, 기술 선생, 노력파,\n다정함 같은 특성은\n코치로 있을 때 빛난단다.", tutRing(), "고용한 트레이너는 체육관에\n세우거나, 훈련장 코치로\n보낼 수 있지.", tutRing(), "고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다.", tutRing(), "자, 마음에 드는 지원서가\n있으면 고용해 보렴!"] }
 ];
 // v20.45 진짜 튜토리얼 (경완 2026-11-10 '배포해'): 훈련장 A(처음 들어올 때) → B(첫 포켓몬을 보낸 뒤, 노력치 개념) → C(처음 상세카드 노력치 박스를 볼 때), 트레이너 메뉴 S(처음 들어올 때)
 // 이미 훈련장을 본 관장(trTut)은 다음에 훈련장에 들어올 때 B 부터. 계정당 한 번 (G_SHARED)
+// 튜토리얼에서 '이걸 눌러 보렴': 화면을 막고 그 칸만 빛나게, 그 칸을 누르면 그대로 눌림 (그 칸이 사라지면 풀림)
+const tutTap = sel => new Promise(ok => { const el = [...root.querySelectorAll(sel)].find(e => e.offsetParent); if (!el) return ok();
+  const L = document.createElement('div'); L.className = 'gy-tut-tap'; root.appendChild(L); const ring = () => { const a = el.getBoundingClientRect(), b = root.getBoundingClientRect(); let r = L.querySelector('.gy-k-ring'); if (!r) { r = document.createElement('i'); r.className = 'gy-k-ring'; L.appendChild(r); } Object.assign(r.style, { left: a.left - b.left - 4 + 'px', top: a.top - b.top - 4 + 'px', width: a.width + 8 + 'px', height: a.height + 8 + 'px' }); }; ring();
+  const end = () => { clearInterval(t); L.remove(); ok(); }, t = setInterval(() => { if (!el.isConnected || !L.isConnected) end(); else ring(); }, 300);
+  L.onclick = e => { e.stopPropagation(); const a = el.getBoundingClientRect(); if (e.clientX >= a.left && e.clientX <= a.right && e.clientY >= a.top && e.clientY <= a.bottom) { end(); el.click(); } }; });
 const tutSeen = k => { const g = st(); return !!(g?.[k] || gList().some(x => x[k])); };
 async function tutEv(w) {
   const g = st(); if (!g?.d || window.gymSimOn || lockedT(w === 'S' ? 'staff' : 'train')) return;
@@ -2342,7 +2348,9 @@ async function tutEv(w) {
   if (w === 'A') { if (!tutSeen('trTut')) { g.trTut = 1; save(); await go(P[0].L); if (g.tr?.length && !tutSeen('evTB')) { g.evTB = 1; save(); await go(P[1].L); } return; }
     if (!tutSeen('evTB')) { g.evTB = 1; save(); await go(P[1].L); } return; }
   if (w === 'B') { if (tutSeen('evTB') || !tutSeen('trTut')) return; g.evTB = 1; save(); await wait(600); await go(P[1].L); return; }
-  if (w === 'C') { if (tutSeen('evTC') || !GB()?.evOn?.()) return; g.evTC = 1; save(); await wait(500); await go(P[2].L); return; }
+  // v20.55 경완 '설정 창 설명은 유저가 설정 창을 눌러서 켠 후에': C 는 박스를 눌러 보라는 데까지, 박스만 눌리게 막고 → 설정 창이 열리면 D
+  if (w === 'C') { if (tutSeen('evTC') || !GB()?.evOn?.()) return; g.evTC = 1; save(); await wait(500); await go(P[2].L); if (!tutSeen('evTD')) await tutTap('.ev-box2'); return; }
+  if (w === 'D') { if (tutSeen('evTD') || !tutSeen('evTC')) return; g.evTD = 1; save(); root.querySelectorAll('.gy-tut-tap').forEach(e => e.remove()); await wait(250); await go(P[3].L); return; }
   if (w === 'S') { if (tutSeen('sfTut')) return; g.sfTut = 1; save(); await go(TUT_ST()[0].L); }
 }
 async function tutTest(w) {
