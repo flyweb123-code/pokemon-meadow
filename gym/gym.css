@@ -193,7 +193,7 @@ body.gymMode{overflow:hidden}
 .bt-mon.glow .clip{filter:drop-shadow(0 0 3px var(--fx)) drop-shadow(0 0 6px var(--fx)) brightness(1.3)}
 .bt-mon.up .clip{animation:btUp .56s steps(4)}.bt-mon.down .clip{animation:btDown .56s steps(4)}
 .bt-mon.tint .clip{filter:var(--tint)}
-.bt-mon.shake{animation:btShake var(--d,.25s) steps(2) infinite}
+.bt-mon.shake{animation:btShake var(--d,.25s) ease-in-out infinite}
 @keyframes btShake{50%{translate:var(--sx,2px) var(--sy,0)}}
 /* 고르는 동안: 내 포켓몬과 체력 상자가 위아래로 1~2px (본가) */
 .bt.idle .bt-mon.p.on:not(.faint){animation:btBob .5s steps(1) infinite}
@@ -674,7 +674,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-re .re-bar{width:100%;height:12px;border:2px solid var(--frame);background:repeating-linear-gradient(45deg,#ffd84a 0 8px,#383848 8px 16px);background-size:200% 100%;animation:reBar .6s linear infinite}
 .gy-re .re-bar i{display:block;height:100%;background:transparent}
 @keyframes reBar{to{background-position:-22px 0}}
-.gy-re.build .re-shut{animation:reShake .42s steps(2,end) infinite}
+.gy-re.build .re-shut{animation:reShake .42s ease-in-out infinite}
 @keyframes reShake{50%{transform:translateY(2px)}}
 .gy-pop .gy-btns button.on{background:#fff6c8;box-shadow:inset 0 0 0 2px #ffd84a,0 3px 0 var(--frame)}
 /* v10.40 기술 버튼에 위력·명중 (경완 2026-10-27) */
@@ -1138,7 +1138,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .rr-d{font-style:normal;font-size:16px;opacity:0;transform:translateY(6px) scale(.6)}
 .rs-rep.up .rr-d{color:#2a8a3e}.rs-rep.dn .rr-d{color:#c03030}
 .rs-rep.dshow .rr-d{animation:rrPop .45s cubic-bezier(.3,1.6,.5,1) forwards}
-.rs-rep.up.go .rr-n{animation:rrUp .5s ease-out 2}.rs-rep.dn.go{animation:rrShake .4s steps(6)}
+.rs-rep.up.go .rr-n{animation:rrUp .5s ease-out 2}.rs-rep.dn.go{animation:rrShake .4s ease-in-out}
 .rs-rep.dn.go .rr-n{color:#c03030}.rs-rep.up.go .rr-n{color:#2a8a3e}
 .rs-rep.up.end{animation:rrFlash .6s ease-out}
 .rr-g{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12px}.rr-g .gy-bar{flex:1;width:auto}.rr-g .g-emb{transform:scale(.8)}
@@ -1747,7 +1747,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .rs-stk .sk-fl.l{left:10px}.rs-stk .sk-fl.r{right:10px}
 .rs-stk.go .sk-fl{animation:skFl .35s steps(2,end) .4s infinite alternate;opacity:1}
 @keyframes skFl{from{transform:scaleY(1) translateY(0)}to{transform:scaleY(1.25) translateY(-3px) scaleX(.85)}}
-.gy-pop .win.rs-shk{animation:rsShk .36s steps(6)}
+.gy-pop .win.rs-shk{animation:rsShk .36s ease-in-out}
 @keyframes rsShk{20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-3px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,-1px)}}
 /* 전설 알 (경완 2026-10-29) */
 .gy-perk .pk-le{display:inline-block;vertical-align:middle;margin:0 6px 0 -2px}.gy-perk .pk-le .egg{width:22px;height:27px}
