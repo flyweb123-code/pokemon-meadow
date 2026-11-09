@@ -1450,7 +1450,7 @@ const boxPop = () => boxWin(false);
 const inTr = id => !!S.gym?.tr?.some(e => e.id === id);
 function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프로필 박스 밑까지 꽉 차게, 왼쪽 아래 '경험치'
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
-  return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button><div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}</div><div class="mp-xpr"><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><span class="mp-xpt"><small class="mp-xpl">경험치</small><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></span></div></div>
+  return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${((t, no) => no ? t.replace(/<\/span>\s*$/, '<i class="th-add" aria-hidden="true">+</i></span>') : t)(thumb(P), mode !== 'view' && !gm(P).it)}</button><div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}</div><div class="mp-xpr"><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><span class="mp-xpt"><small class="mp-xpl">경험치</small><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></span></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}${mode === 'view' ? '' : evBox(m)}
     <div class="mp-mvh"><small>기술</small>${!S.gym ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>   <!-- v14.28 경완: 기술 바꾸기는 상세 카드 어디서나 (체육관 세우기 전 미리 보기만 빼고) -->
@@ -1932,11 +1932,11 @@ function evPop(P, done) {
   const statC = {}; const stat = (i, e) => { const k = i * 1000 + e; if (statC[k] != null) return statC[k]; const a = [0, 0, 0, 0, 0, 0]; a[i] = e; return (statC[k] = statsOf(sp, LV, IV, m.nat, a)[i]); };
   const bagOf = () => S.gym.vit || (S.gym.vit = {});
   let SAVED = { ev: evArr(m).slice(), pool: m.evp | 0, bag: EV_VIT.map(([k]) => bagOf()[k] | 0) }, S1;
-  const p = gymPop(`<button class="mp-x ev-x" data-a="x" aria-label="닫기">✕</button><div class="ev-hd">${thumb(P)}<div><h4>${esc(nmOf(P))} 노력치<button type="button" class="ev-q" data-q aria-label="노력치 찍는 법">?</button></h4><p class="ev-lv">Lv.${LV} · ${natKo(m.nat)} 성격</p></div></div>
+  const p = gymPop(`<button class="mp-x ev-x" data-a="x" aria-label="닫기">✕</button><div class="ev-hd">${thumb(P)}<div><h4>${esc(nmOf(P))} 노력치<button type="button" class="ev-q" data-q aria-label="노력치 찍는 법"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></h4><p class="ev-lv">Lv.${LV} · ${natKo(m.nat)} 성격</p></div></div>
   <div class="ev-pool"><button type="button" class="ev-rec" data-rec>추천</button><div class="ep-l"><small>남은 노력치</small><b class="evp-n">0</b></div><div class="ep-r"><small>합계</small><span><b class="evu-n">0</b> / ${EV_MAX}</span></div><i class="ep-g"><i class="gPool"></i><i class="gNew"></i><i class="gVit"></i></i></div>
   <div class="ev-cols"><span></span><small class="l">노력치</small><small>능력치</small><small>빼기</small><small>넣기</small><small>영양제</small></div>
   <div class="ev-list"></div>
-  <div class="ev-key"><span><b class="k p">+</b>넣기 <em>1당 <i class="coin"></i>${PP}G</em></span><span><b class="k m">−</b>빼기 <em>공짜</em></span><span><img class="k" alt="" src="${VIT[1]}">영양제 <em>+10</em></span><span><b class="k h">꾹</b>누르면 <em>계속</em></span></div>
+  <div class="ev-key"><span><b class="k p">+</b>넣기 <em>1당 <i class="coin"></i>${PP}G</em></span><span><b class="k m">−</b>빼기 <em>공짜</em></span><span><img class="k" alt="" src="${VIT[1]}">영양제 <em>1당 노력치 +10</em></span><span><b class="k h">꾹</b>누르면 <em>계속</em></span></div>
   <div class="ev-bill"><p class="eb-h"><span>정산표</span><span class="eb-gold">보유 <i class="coin"></i><b class="evg-n">0</b>G</span></p><div class="eb-rows"></div><div class="eb-tot"><span>합계</span><b><i class="coin"></i><span class="evc-n">0</span>G</b></div></div>
   <div class="gy-btns"><button data-a="cancel" class="ev-cancel">되돌리기</button><button class="main ev-save" data-a="save">저장</button></div>
   <p class="ev-toast" hidden></p>`, (a, close) => {
@@ -1968,7 +1968,7 @@ function evPop(P, done) {
     $('.evp-n').textContent = S1.pool; $('.evu-n').textContent = u + S1.pool; $('.evg-n').textContent = S.gold.toLocaleString(); drawBill(c);
     const base = S1.ev.map((v, i) => Math.min(v, SAVED.ev[i])), nw = S1.ev.map((v, i) => v - base[i]);
     const va = sum(S1.vAdd); $('.gNew').style.width = ((u - va) / EV_MAX * 100) + '%'; $('.gVit').style.width = (va / EV_MAX * 100) + '%'; $('.gPool').style.width = (S1.pool / EV_MAX * 100) + '%';
-    $('.ev-pool').classList.toggle('zero', !S1.pool); $('[data-rec]').disabled = !S1.pool;
+    $('.ev-pool').classList.toggle('zero', !S1.pool); $('[data-rec]').disabled = !S1.pool && !sum(S1.ev);
     rows.forEach((r, i) => { const v = S1.ev[i];
       r.querySelector('.o').style.width = (base[i] / EV_ONE * 100) + '%'; const vt = Math.min(S1.vAdd[i], nw[i]), pl = nw[i] - vt; r.querySelector('.n').style.width = (pl / EV_ONE * 100) + '%'; r.querySelector('.n').style.left = (base[i] / EV_ONE * 100) + '%'; r.querySelector('.evv').style.width = (vt / EV_ONE * 100) + '%'; r.querySelector('.evv').style.left = ((base[i] + pl) / EV_ONE * 100) + '%';
       { const d0 = v - SAVED.ev[i]; r.querySelector('.ev-g b').innerHTML = d0 ? `${v}<em class="${d0 > 0 ? 'p' : 'm'}">(${d0 > 0 ? '+' : '−'}${Math.abs(d0)})</em>` : v; }
@@ -1996,12 +1996,16 @@ function evPop(P, done) {
     const q = gymPop(`<h4 class="mi-h">${esc(SPECIES[sp]?.n || nmOf(P))}${jong(SPECIES[sp]?.n || '') ? '은' : '는'} 이렇게 많이 찍어요</h4><div class="q-main"><p class="q-nm">${P0.nm}</p><div class="q-cs">${chips(P0)}</div></div><p class="gy-msg mi-d">${P0.why}</p>
       <div class="q-alt"><small>이렇게도 찍어요 · ${P0.alt.nm}</small><span>${P0.alt.k.map((k, j) => `${N[k]} ${P0.alt.v[j]}`).join(' · ')}</span></div><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="y">이대로 추천 찍기</button></div>`, (a, c2) => { c2(); if (a === 'y') rec(); }); q.classList.add('ev-qpop'); };
   // 추천: 남은 노력치를 힌트 배분 순서대로, 능력치가 안 오르는 자투리는 추천 배분의 다른 칸으로
-  function rec() { if (!S1.pool) return toast('남은 노력치가 없어요'); const P0 = evPlan(sp), add = [0, 0, 0, 0, 0, 0]; let left = S1.pool; const room = i => EV_ONE - S1.ev[i] - add[i];
+  // v20.59 경완 '추천은 이미 들어간 노력치를 빼고 배분하는 것까지': 추천 배분 밖 칸·목표보다 많은 칸은 먼저 빼서(공짜) 남은 노력치로 모은 뒤 찍는다 (영양제로 이번에 넣은 몫은 그대로)
+  function rec() { const P0 = evPlan(sp), before = S1.ev.slice(), tgt = [0, 0, 0, 0, 0, 0]; P0.k.forEach((k, j) => { tgt[k] = P0.v[j]; });
+    for (let i = 0; i < 6; i++) { const n = Math.max(0, Math.min(S1.ev[i] - S1.vAdd[i], S1.ev[i] - tgt[i])); if (n) { S1.ev[i] -= n; S1.pool += n; } }
+    if (!S1.pool) { draw(); return toast('이미 추천대로 찍혀 있어요'); }
+    const add = [0, 0, 0, 0, 0, 0]; let left = S1.pool; const room = i => EV_ONE - S1.ev[i] - add[i];
     P0.k.forEach((k, j) => { const n = Math.max(0, Math.min(left, P0.v[j] - S1.ev[k] - add[k], room(k))); add[k] += n; left -= n; });
     for (const k of [...P0.k, 0, 1, 2, 3, 4, 5]) { if (!left) break; const n = Math.min(left, room(k)); add[k] += n; left -= n; }
     for (let i = 0; i < 6; i++) { if (!add[i]) continue; const v = S1.ev[i] + add[i]; let pv = v; while (pv > S1.ev[i] && stat(i, pv - 1) === stat(i, v)) pv--; const waste = v - pv; if (!waste || v >= EV_ONE) continue;
       for (const j of P0.k) { if (j === i) continue; const w = S1.ev[j] + add[j]; let nx = w + 1; while (nx <= EV_ONE && stat(j, nx) === stat(j, w)) nx++; if (nx <= EV_ONE && nx - w <= waste) { add[i] -= waste; add[j] += waste; break; } } }
-    add.forEach((n, i) => { S1.ev[i] += n; S1.pool -= n; }); sfx('tap'); draw(); toast('추천대로 찍었어요 · ' + add.map((n, i) => n ? `${N[i]} +${n}` : '').filter(Boolean).join(' · ')); }
+    add.forEach((n, i) => { S1.ev[i] += n; S1.pool -= n; }); sfx('tap'); draw(); const dd = S1.ev.map((v, i) => v - before[i]); toast(dd.some(Boolean) ? '추천대로 찍었어요' : '이미 추천대로 찍혀 있어요'); }
   W.querySelector('[data-q]').onclick = e => { e.stopPropagation(); sfx('tap'); qOpen(); };
   W.querySelector('[data-rec]').onclick = e => { e.stopPropagation(); rec(); };
   let hold = null; const stop = () => { clearTimeout(hold?.t); clearInterval(hold?.iv); hold = null; };
