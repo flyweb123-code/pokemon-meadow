@@ -954,11 +954,11 @@ function payDay(now) {
   const g = st();
   for (const c of g.cands || []) if (c.wv !== 2) { c.wage = sfWage(teamLv(c.team) - myAvg(), c.team.length, c.trait); c.wv = 2; }
   for (const s of g.sf) {
-    if (s.wv !== 2) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait); s.wv = 2; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${o}G → ${s.wage}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
+    if (s.wv !== 2) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait); s.wv = 2; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${(+o || 0).toLocaleString()}G → ${s.wage.toLocaleString()}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
     let k = 0;
     while (now >= s.pay && k++ < 20) {
-      if (S.gold >= s.wage) { S.gold -= s.wage; try { window.pkGold?.('wage', s.wage); } catch (e) {} dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 주급 ${s.wage}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 주급 ${s.wage}G`); s.rest = 0; }
-      else { if (!s.rest) glog('sf', `골드가 모자라 ${sfName(s)}에게 주급(${s.wage}G)을 못 줬다. 주급을 줄 때까지 쉰다.`); s.rest = 1; break; }
+      if (S.gold >= s.wage) { S.gold -= s.wage; try { window.pkGold?.('wage', s.wage); } catch (e) {} dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 주급 ${s.wage.toLocaleString()}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 주급 ${s.wage.toLocaleString()}G`); s.rest = 0; }
+      else { if (!s.rest) glog('sf', `골드가 모자라 ${sfName(s)}에게 주급(${s.wage.toLocaleString()}G)을 못 줬다. 주급을 줄 때까지 쉰다.`); s.rest = 1; break; }
     }
   }
   try { GA.renderGold(); } catch (e) {} renderGoldG();
@@ -1665,7 +1665,7 @@ const BT_HELP = () => { const W = hpTy('물'), F = hpTy('불꽃'), G = hpTy('풀
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big">쓰러뜨리면</b><span class="hp-x">상대 포켓몬이 잘하는 능력치 쪽으로 노력치가 쌓여요</span></div><div><b class="hp-big" style="color:#8a5ad8">빠른 상대</b><span class="hp-x">스피드 노력치 ▲</span></div><div><b class="hp-big" style="color:#8a5ad8">힘센 상대</b><span class="hp-x">공격 노력치 ▲</span></div></div>`, tx: `<p>배틀에서 상대를 쓰러뜨리면<br><em>노력치</em>가 쌓여요.</p><p class="on-sm">노력치가 쌓이면 그 능력치가 조금씩 올라요.<br>레벨이 높을수록 더 많이 올라요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big" style="color:#8a5ad8">510</b><span class="hp-x">한 마리가 쌓을 수 있는 노력치 모두</span></div><div><b class="hp-big" style="color:#8a5ad8">252</b><span class="hp-x">능력치 하나에 쌓을 수 있는 최대</span></div></div>`, tx: `<p>한 마리에 <em>모두 510</em>,<br>능력치 하나에 <em>252</em>까지예요.</p><p class="on-sm">다 키울 수는 없으니, 두 가지를 252씩<br>몰아 주는 게 보통이에요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big">−</b><span class="hp-x">빼기는 공짜 · 남은 노력치로 모여요</span></div><div><b class="hp-big">+</b><span class="hp-x">남은 노력치를 넣어요 · 1당 10G</span></div><div><b class="hp-big">영양제</b><span class="hp-x">한 번에 +10</span></div></div>`, tx: `<p>상세 카드의 <em>노력치 박스</em>를 누르면<br>노력치를 옮길 수 있어요.</p><p class="on-sm">?를 누르면 그 포켓몬을 주로 어떻게 찍는지,<br>추천을 누르면 알아서 찍어 줘요.</p>` },
-    { im: `<div class="hp-box hp-rows"><div><b class="hp-big">훈련장</b><span class="hp-x">고른 능력치로 노력치가 쌓여요</span></div><div><b class="hp-big">코치</b><span class="hp-x">코치 실력만큼 더 빨리 쌓여요</span></div></div>`, tx: `<p><em>훈련장</em>에서 키울 노력치를 골라 두면<br>훈련하는 동안 쌓여요.</p><p class="on-sm">노력치는 체육관이 <em>동네 체육관</em>이 되면 열려요.</p>` }] },
+    { im: `<div class="hp-box hp-rows"><div><b class="hp-big">훈련장</b><span class="hp-x">고른 능력치로 노력치가 쌓여요</span></div><div><b class="hp-big">코치</b><span class="hp-x">노력치 코치가 있으면 더 빨리 쌓여요</span></div></div>`, tx: `<p><em>훈련장</em>에서 키울 노력치를 골라 두면<br>훈련하는 동안 쌓여요.</p><p class="on-sm">노력치는 체육관이 <em>동네 체육관</em>이 되면 열려요.</p>` }] },
   { k: 'lv', t: '레벨·경험치가 뭐야?', c: '#2f6fb0', P: [
     { im: HPI('card'), tx: `<p>도전자의 포켓몬을 쓰러뜨리면 <em>경험치</em>를 받아<br>레벨이 올라요.</p><p class="on-sm">배틀에 나오지 않은 라인업 포켓몬도 절반을 받아요.<br>연습 배틀은 경험치가 없어요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big">Lv.▲</b><span class="hp-x">능력치가 오르고 새 기술을 배워요</span></div><div><b class="hp-big">훈련장</b><span class="hp-x">맡겨 두면 앱을 꺼도 경험치가 쌓여요</span></div></div>`, tx: `<p>레벨이 오르면 <em>능력치</em>가 오르고<br>새 기술을 배워요.</p><p class="on-sm">훈련장에 맡겨도 경험치가 쌓여요.</p>` }] },
@@ -2436,7 +2436,7 @@ const GT_ST = () => [
   { c: '특성', when: () => gtEl('.cv-card'), t: cvRow('특성'), s: '특성은 트레이너마다 하나.\n배틀에 강한 근성, 골드를 더\n벌어 오는 수완가도 있지.' },
   { c: '포켓몬', when: () => gtEl('.cv-card'), t: cvRow('포켓몬', '평균 레벨'), s: '데리고 다니는 포켓몬과\n평균 레벨이야. 셀수록\n도전자를 잘 막아 낸단다.' },
   { c: '주급', when: () => gtEl('.cv-card'), t: cvRow('희망 주급'), s: '주급은 7일마다 나간단다.\n벌어 오는 골드보다 주급이\n비싸면 손해겠지?' },
-  { c: '코치 실력', when: () => gtEl('.cv-card'), t: cvRow('코치 실력'), s: '코치 실력은 훈련장 코치로\n보냈을 때 훈련이 얼마나\n빨라지는지란다.' },
+  { c: '코치 실력', when: () => gtEl('.cv-card'), t: cvRow('코치 실력'), s: '코치 실력은 훈련장 코치로\n보냈을 때 경험치·노력치·기술 중\n하나를 얼마나 잘 키우는지란다.' },
   { c: '코치 실력', when: () => gtEl('.cv-card'), t: cvRow('특성', '코치 실력'), s: '훈련광, 기술 선생, 노력파,\n다정함 같은 특성은\n코치로 있을 때 빛난단다.' },
   { c: '남은 시간', when: () => gtEl('.cv-card'), t: '.cv-card[data-i="0"] .cv-tm', s: '지원서엔 남은 시간이 있어.\n시간이 지나면 다른 곳으로\n가 버린단다.' },
   { c: '지원서', when: () => gtEl('.cv-dots'), t: '.cv-dots', s: '지원서가 여러 장이면\n옆으로 밀어서\n넘겨 볼 수 있지.' },
