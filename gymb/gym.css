@@ -3744,20 +3744,21 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .ty-emo.co{margin-left:0;translate:-50% 0}   /* v20.84 코치 말 길이 달라도 가운데 */
 #gym .gy-plate .gy-rpa{pointer-events:auto;cursor:pointer}   /* v20.84 경완 '평판 게이지가 빈 화면으로 인식돼 안 눌림': 게이지도 누를 수 있게 (누르면 등급표) */
 /* v20.85 경완 '기술 배우는 맛': 훈련장 카드 특별한 기술 깨달음 게이지 (누르면 집중) */
-#gym .eg-tr{margin:8px 0 6px;padding:8px 10px;border:3px solid #d8a020;background:#fffaec;box-shadow:0 3px 0 rgba(0,0,0,.12)}#gym .eg-tr .ev-trh b{color:#a86a00}
-#gym .eg-gl{display:flex;flex-direction:column;gap:4px}
-#gym .eg-g{position:relative;display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px 5px 10px;background:#fff;border:2px solid #e8dcc0;border-left:4px solid var(--tc);text-align:left;font:inherit;color:var(--ink,#20202c);transition:transform .08s ease-out}
-#gym .eg-g:active{transform:translateY(1px)}
-#gym .eg-g .tg{display:inline-flex;gap:3px;flex:none}
-#gym .eg-g > b{flex:none;width:5.6em;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#gym .eg-g:not(.kn) > b{color:#8a8070;letter-spacing:1px}
-#gym .eg-bar{flex:1;min-width:30px;height:8px;background:#ece4d0;border:1px solid #c8b890;position:relative;overflow:hidden}
-#gym .eg-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#ffd860,#e8a818);transition:width .5s ease-out}
-#gym .eg-g.kn .eg-bar i{background:linear-gradient(#8ee08e,#3ea84e)}
-#gym .eg-g > em{flex:none;width:30px;text-align:right;font-style:normal;font-size:11px;font-weight:700;color:#8a6a20}
-#gym .eg-g.kn > em{color:#3e9a52}
-#gym .eg-g.on{border-color:#e8a818;background:#fff4cc;box-shadow:0 0 0 1px #e8a818 inset}
-#gym .eg-fo{position:absolute;right:-3px;top:-8px;font-style:normal;font-size:9px;line-height:13px;padding:0 4px;background:#e8a818;color:#fff;border-radius:3px;font-weight:700}
-#gym .eg-fo.rr{background:#b07ae0}
-#gym .eg-g.on .eg-bar i{animation:egGl 1.6s ease-in-out infinite}
-@keyframes egGl{50%{filter:brightness(1.2)}}
+/* v20.85 새 기술 창 특별한 기술 ??? 박스 = 깨달음 게이지 */
+#gym button.eg-cv{border:0;font:inherit;width:100%;margin:0;cursor:pointer;text-align:left;overflow:hidden;transition:transform .08s ease-out}
+#gym button.eg-cv:active{transform:translateY(1px)}
+#gym .eg-cv>*:not(.eg-fl){position:relative;z-index:1}
+#gym .eg-fl{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(135deg,#6e5a2c 0 8px,#62501f 8px 16px);box-shadow:inset -2px 0 0 #d8b450;transition:width .6s ease-out}
+#gym .eg-fl[style*="width:0%"]{box-shadow:none}
+#gym .eg-pc{margin-left:auto;font-style:normal;font-size:12px;font-weight:700;color:#d8c080;text-shadow:1px 1px 0 #1c1a24}
+#gym .eg-r.fo .eg-cv{box-shadow:inset 3px 0 0 #f0c040,inset 0 0 0 2px #f0c040}
+#gym .eg-r.fo .eg-fl{background:repeating-linear-gradient(135deg,#a8842a 0 8px,#977420 8px 16px);animation:egGl 1.6s ease-in-out infinite}
+#gym .eg-r.fo .eg-cv b,#gym .eg-r.fo .eg-pc{color:#ffe070}
+#gym .eg-r.fo .eg-cv small{color:#f0e0b0}
+#gym .eg-fo{position:absolute;z-index:2;top:-6px;right:6px;font-style:normal;font-size:9px;line-height:1;padding:2px 5px;border-radius:7px;background:#e8a818;color:#fff;font-weight:700}
+#gym .eg-r.rare .eg-fo{right:40px}
+#gym .eg-cv .eg-fl~small{color:#b8b0c8}
+#gym .eg-hint{margin:-2px 0 6px;font-size:11px;line-height:1.5;color:#8a6a20;text-align:center}
+#gym .eg-r.up .eg-pc{animation:egUp .5s ease-out}
+@keyframes egUp{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes egGl{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}

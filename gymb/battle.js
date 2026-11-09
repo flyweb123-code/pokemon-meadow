@@ -217,7 +217,7 @@ function gainXp(P, n, ask = false) {
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
-const EG_RARE = 2, EG_FL = 34, EG_FLP = .15;
+const EG_RARE = 2, EG_FL = 34, EG_FLP = .1;   // v20.85 번뜩임: 내 포켓몬이 기술을 쓴 턴이 끝날 때 10%, 한 배틀에 포켓몬마다 한 번
 const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(id) })).filter(r => r.x);
 const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
 const egOpen = P => { const m = gm(P); return egList(P).filter(r => !egKn(m, r.id)); };
@@ -916,7 +916,7 @@ async function handle(a) {
       break;
     }
     case 'move': {
-      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id };
+      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
@@ -999,7 +999,7 @@ async function handle(a) {
       se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
       m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
       await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
-    case 'turn': break;
+    case 'turn': await egFlash(); break;
     case 'win': break;
   }
 }
@@ -1260,15 +1260,20 @@ async function expGain(X) {
     if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); if (B) try { await window.GymBGM?.fan?.('ME_FANFA1'); } catch (e) {}   /* 본가 {WAIT 5}{WAIT 2}: 레벨 업 팡파르가 끝난 뒤 능력치 창 */ if (!B) return; const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (B) await L.run(); }
     for (const [id, f] of r.learned) await msgFan(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
     for (const id of r.ask || []) if (B) await learnAsk(P, i, id);
-    { const f = egFocus(P); if (B && f >= 0 && Math.random() < EG_FLP) {   /* v20.85 실전 번뜩임 */
-      se('DP_KIRAKIRA2'); GA.haptic?.(1); await msg(`${nm}의 머릿속에 무언가 번뜩였다!`, 0); if (!B) return;
-      const x = egAdd(P, f, EG_FL); if (x) { await msgFan(`${eun(nm)} 특별한 기술 ${eul(x[1])} 깨달았다!`); try { window.Gym?.k?.awMv?.(P.id, x[0], x[1], x[2]); } catch (e) {} }
-      else await msg(`특별한 기술 깨달음이 ${Math.floor(gm(P).egP[f])}%가 됐다!`, 0); } }
   }
   if (SH.length && B) await shareWin(SH);
   if (!B.practice) GA.save();
 }
 // 새 기술을 배우려는데 기술이 4개일 때 (본가처럼): 잊을 기술을 고르거나 배우기를 포기한다 (경완 2026-10-30 '알아서 잊어버리는데 선택할 수 있게')
+/* v20.85 경완 '배틀 번뜩임은 배틀 중간에': 내 포켓몬이 기술을 쓰고 그 턴이 끝나면(다음 턴 시작 전) 가끔 번뜩임 → 집중 중인 특별한 기술 깨달음 +34% */
+async function egFlash() {
+  const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
+  const P = boxOf(pid); if (!P) return; const f = egFocus(P), D = B.egDone || (B.egDone = new Set()); if (f < 0 || D.has(pid) || Math.random() >= EG_FLP) return; D.add(pid);
+  se('DP_KIRAKIRA2'); GA.haptic?.(1); flash(2); await msg(`${X.nm}의 머릿속에 무언가 번뜩였다!`, 0); if (!B) return;
+  const x = egAdd(P, f, EG_FL); if (x) { await msgFan(`${eun(X.nm)} 특별한 기술 ${eul(x[1])} 깨달았다!`); try { window.Gym?.k?.awMv?.(P.id, x[0], x[1], x[2]); } catch (e) {} }
+  else await msg(`특별한 기술 깨달음이 ${Math.floor(gm(P).egP[f])}%가 됐다!`, 0);
+  GA.save?.();
+}
 async function learnAsk(P, i, id) {
   const m = gm(P), nm = B.my[i].nm, nw = mvKo(id); if (m.mv.includes(id)) return;
   await msg(`${eun(nm)} 새로 ${eul(nw)} 배우고 싶다…`); if (!B) return;
