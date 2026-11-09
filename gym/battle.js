@@ -1579,7 +1579,7 @@ function tmWho(id) {
   return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
 }
 // v21.05 경완 '특별한 기술 설명은 상점 기술머신 설명 레이아웃과 같게': 기술 칸(타입 배경·위력·명중·PP) 안에 설명
-function mvCard(id) { const x = mvOf(id); if (!x) return; gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4>${tmBody(x)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); }); }
+function mvCard(id) { const x = mvOf(id); if (!x) return; gymPop(`<h4 class="mi-h mi-nic">${esc(x[1])}</h4>${tmBody(x)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); }); }
 function mvInfo(id, teach, lab = '기술 가르치기', onX, who) {
   const x = mvOf(id); if (!x) return; const n = S.gym?.tms?.[id] || 0;
   if (teach && !onX && n > 0) { const p = gymPop(`${tmHead(id, n)}${tmBody(x)}${tmKdBox(id)}${who ? tmWho(id) : ''}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button></div>`,

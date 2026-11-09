@@ -46,10 +46,10 @@ const CK_W = [1, .6, .3];   // v20.94 경완 '코치 3명까지, % 밸런스': �
 const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).map(coachP).sort((a, b) => b - a).reduce((a, p, i) => a + p * (CK_W[i] ?? 0) / 100, 0);
 const CK_BG = { xp: '#eaf2fc', ev: '#fdf0e6', mv: '#f4ecfb' }, CK_D = { xp: '훈련 경험치가', ev: '노력치 훈련이', mv: '특별한 기술 깨달음이' };
 // v21.04 경완 '코치 실력 박스는 특성 박스처럼, 게이지 없이, 특성 대신 코치 딱지, 종류는 딱지 없이 색으로만'
-const ckBox = (s, full, bare) => { const k = coachK(s), p = coachP(s); return `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}">${bare ? '' : '<b>코치</b>'}<i>${CK[k][0]} +${p}%</i>${full ? `<small>훈련장 코치로 있으면 ${CK_D[k]} ${p}% 더 빨리 쌓여요${s.trait === 'train' ? ' (훈련광 2배)' : ''}</small>` : ''}</span>`; };
+const ckBox = (s, full, bare) => { const k = coachK(s), p = coachP(s); return `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}">${bare ? '' : '<b>코치</b>'}<i>${CK[k][0]} +${p}%</i>${full ? `<small>${CK_D[k]} ${p}% 더 빨리${s.trait === 'train' ? ' (훈련광 2배)' : ''}</small>` : ''}</span>`; };
 const ckIn = s => `<em class="ck-t ck-in" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;   // v21.01 경완 '훈련장 코치 딱지에도 종류'
 const ckTag = s => `<em class="ck-t" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;
-const coachSum = () => CK_O.map(k => [k, Math.round((coachX(k) - 1) * 100)]).filter(x => x[1] > 0).map(([k, p]) => `<span class="ck-s" style="--ck:${CK[k][1]}">${CK[k][0]} <b>+${p}%</b></span>`).join('');
+const coachSum = () => CK_O.map(k => [k, Math.round((coachX(k) - 1) * 100)]).filter(x => x[1] > 0).map(([k, p]) => `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}"><b>코치</b><i>${CK[k][0]} +${p}%</i></span>`).join('');
 const coachN = t => coaches().filter(s => s.trait === t).length;   // 훈련장 특성: 기술 선생(teach) 특별한 기술 ×2, 노력파(effort) 노력치 +50%, 다정함(kind) 친밀도 ×2 — 코치로 있을 때
 const EV_DAY = 8;   // 노력치 훈련: 하루 8 (3시간에 1) × 코치 실력 (경완 2026-11-09)
 const YARD_SF = 3;   // v20.94 경완: 훈련장 코치 3명까지
@@ -276,7 +276,7 @@ async function drawTrain() {
   /* v18.02 경완: 코치는 모양 그림자 없이 필드 포켓몬처럼 발밑 그림자만 */
   el.insertAdjacentHTML('beforeend', '<i class="ty-nt"></i><i class="ty-glow"></i><i class="ty-wx"></i>'); yLight();
   sh.onclick = yardTap;
-  { const cs = coachSum(); if (cs) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 ${cs}</div>`); }   // v20.92 종류별
+  { const cs = coachSum(); if (cs) el.insertAdjacentHTML('beforeend', `<div class="ty-info ty-ck">${cs}</div>`); }   // v20.92 종류별 · v21.06 경완 '고용 관리 박스 코치 딱지처럼'
   Y.yk = yk; Y.raf = requestAnimationFrame(yardLoop);
 }
 // v20.99 경완 '+ 눌러도 화면 안 뜸·포켓몬 눌러도 상세카드 안 뜸': 다른 메뉴가 sh.onclick 을 바꿔 두므로 훈련장을 다시 붙일 때도 꼭 다시 단다
@@ -779,9 +779,9 @@ function drawStaff() {
       : sfEmpty('', '지금은 지원서가 없어요', '새 지원자가 오면<br>트레이너 단추에 빨간 점이 떠요.');
   const gL = K.sfList ? K.sfList() : [], gNo = x => gL.findIndex(z => z[0] === x);
    /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 주급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
-  const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? `<i class="sfc-rib y">훈련장 코치${ckIn(x)}</i>` : '<i class="sfc-rib">대기 중</i>';
-  const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', K.inGym(s) && s.yard ? `<em class="y">훈련장 코치${ckIn(s)}</em>` : ''].join('');
-      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
+  const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '' : '<i class="sfc-rib">대기 중</i>';
+  const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', ].join('');
+      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}${s.yard ? '<i class="sd2-coach sfc-coach">훈련장 코치</i>' : ''}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
       <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}${ckBox(s)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
       <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage.toLocaleString()}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
@@ -806,7 +806,7 @@ function sfDetail(s, home) {
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? `<i class="sfc-rib y">훈련장 코치${ckIn(s)}</i>` : '<i class="sfc-rib">대기 중</i>';
   /* v16.35~36 경완 '상세 카드 디자인 퀄': 위는 지원서처럼 배경 + 받침 위 전신과 자리 딱지, 아래는 라인업 · 막대가 있는 숫자 칸 */
-  const p = pop(`<div class="sd2">${K.inGym(s) || !s.yard ? rib.replace('sfc-rib', 'sfc-rib sd2-corner') : ''}<div class="sd2-hero">${s.yard ? `<i class="sd2-coach">훈련장 코치${ckIn(s)}</i>` : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
+  const p = pop(`<div class="sd2">${K.inGym(s) || !s.yard ? rib.replace('sfc-rib', 'sfc-rib sd2-corner') : ''}<div class="sd2-hero">${s.yard ? '<i class="sd2-coach">훈련장 코치</i>' : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
     <div class="sd2-trt">${trtBox(s.trait, true)}${ckBox(s, true)}</div>
     <p class="sd2-h">라인업 <small>평균 Lv.${lv}</small></p>
     <div class="sd2-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
@@ -816,7 +816,7 @@ function sfDetail(s, home) {
       <div><span>주급</span><b class="pay">${s.wage.toLocaleString()}G</b><em>${s.rest ? '<b class="dn">밀렸어요</b>' : `7일마다 · <b>${dd}일 뒤</b>`}</em></div>
       <div><span>번 돈</span><b class="${eg >= s.wage ? 'up' : 'dn'}">${eg.toLocaleString()}G</b><em>최근 7일 · 오늘 ${tg.toLocaleString()}G</em></div>
       <div><span>고용</span><b>${s.hired ? `${Math.max(0, Math.floor((now - s.hired) / K.DAY)) + 1}일째` : '-'}</b><em>${s.lastE != null ? `지난주 ${s.lastE.toLocaleString()}G` : '첫 주예요'}</em></div></div>
-    <div class="gy-btns sd-btns${bn === 3 ? ' three' : ''}"><button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>${gb ? `<button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button>` : ''}
+    <div class="gy-btns sd-btns${bn === 3 ? ' three' : bn === 4 ? ' four' : ''}"><button data-a="yd" ${s.yard ? 'class="sd2-in"' : !s.yard && yN >= YARD_SF ? 'disabled' : ''}>${s.yard ? '코치 빼기' : '코치 맡기기'}</button>${gb ? `<button data-a="gym">${K.inGym(s) ? '자리 바꾸기' : '체육관에 배치'}</button>` : ''}
       ${up ? '<button data-a="up">순서 앞으로</button>' : ''}<button data-a="fire" class="danger">해고</button><button class="main" data-a="x" style="grid-column:1/-1">닫기</button></div></div>`,
     (a, close) => {
       if (a === 'x') return close();
