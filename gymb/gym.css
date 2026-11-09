@@ -3673,3 +3673,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ev-qpop .gy-msg.ev-trhint{font-weight:700;margin:2px 0 10px;padding:12px 10px;background:#f1ecff;border:2px solid #b9a6ec;border-radius:6px;font-size:16px;line-height:1.5;color:#20202c!important;text-align:center;word-break:keep-all}#gym .ev-qpop .ev-trhint b{color:#5a3aa8;font-size:18px}#gym .ev-qpop .ev-trwhy{text-align:center;word-break:keep-all}
 /* v20.68 경완: 노력치 훈련 글자 옆 ? 높이 맞춤 */
 #gym .ev-trh{align-items:center}#gym .ev-trh > b{display:inline-flex;align-items:center}#gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:0;flex:none}
+/* v20.70 경완 '기술 박스 오른쪽 잘림': 기술 이름이 길면 이름 칸이 줄어들고(…), 위력·명중·PP 칸은 늘 다 보이게 */
+#gym .mp-line .mp-mv > b{flex:1 1 auto!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#gym .mp-line .mp-mv em.mv-st{grid-template-columns:46px 52px 36px;flex:none}
