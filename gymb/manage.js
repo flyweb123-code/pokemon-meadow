@@ -316,6 +316,7 @@ function yNext(m, now) {
   const add = (k, w) => { if (w > 0 && !yBusy(k, m)) W8.push([k, w]); };
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
   else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
+  if (Math.random() < .2 && m.D?.P) { const [sx, sy] = yardSpot(false); return yGo(m, 'drill' + m.id, sx, sy, 'drill'); }   // v20.89 몸 풀기: 빙글빙글·구르기·점프
   if (GA.mvFx && yMove(m) && Math.random() < .28) { const [sx, sy] = yardSpot(false); return yGo(m, 'tech' + m.id, sx, sy, 'tech'); }   // v20.81 기술 연습: 빈 자리로 가서 아는 기술을 차례로
   if (!W8.length) { if (nearBush(m.x, m.y)) { const [sx, sy] = yardSpot(false); return yGo(m, 'train', sx, sy, 'train'); } m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
   let r = Math.random() * W8.reduce((a, x) => a + x[1], 0), k = W8[0][0]; for (const [kk, w] of W8) { r -= w; if (r <= 0) { k = kk; break; } }
@@ -338,6 +339,7 @@ function yArrive(m, now) {
   else if (T === 'hoop') { m.st = 'hoop'; m.ph = 0; m.lap = 0; }
   else if (T === 'tech') { m.st = 'tech'; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 7 + Math.random() * 4; }
   else if (T === 'eat') { m.st = 'eat'; m.face = m.x > (Y.fd?.x ?? 0) ? 1 : -1; m.until = now + 6 + Math.random() * 3; m.nm = now + 1; }
+  else if (T === 'drill') { m.st = 'drill'; m.until = now + 8 + Math.random() * 4; }
   else if (T === 'train') { m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; }
   else if (T === 'sit') { m.st = 'sit'; m.face = Math.random() < .5 ? 1 : -1; }
   else if (T === 'sleep') { m.st = 'sleep'; m.until = now + 99; }
@@ -355,6 +357,7 @@ function yEmo2(c, t) { const q = document.createElement('i'); q.className = 'ty-
 /* v20.84 경완 '코치가 한 마디씩 하는 거 훨씬 다양하게': 지켜보는 포켓몬이 하는 훈련별 말 + 이름 부르기 + 아무 때나 하는 말 (바로 전 말은 안 겹침) */
 const CO_L = {
   any: ['힘내!', '좋아!', '한 번 더!', '그렇지!', '바로 그거야!', '자세 좋아!', '숨 고르고!', '집중!', '할 수 있어!', '거의 다 왔어!', '오늘 컨디션 좋은데?', '어제보다 낫다!', '포기하지 마!', '멋져!', '끝까지!', '좋은 눈빛이야!', '그 기세로!', '와, 대단한데!'],
+  drill: ['유연하게!', '빙글빙글 좋아!', '몸이 가벼운데?', '구르기 깔끔해!', '균형 잡고!', '몸 풀기 좋아!', '반동을 살려!'],
   bag: ['더 세게!', '허리를 써!', '주먹 끝까지!', '샌드백이 흔들린다!', '연타로!', '발 디딤 좋아!', '한 방 더!'],
   shoot: ['정중앙을 노려!', '조준 천천히!', '명중!', '아깝다, 조금만 더 왼쪽!', '과녁 한가운데!', '침착하게 쏴!'],
   tramp: ['더 높이!', '착지 조심!', '균형 잡고!', '하늘까지 닿겠다!', '리듬 좋아!'],
@@ -419,7 +422,7 @@ function yFeedTick(now) {
 function yFeedDrop(c, now) { const F = Y.fd, n = F.ms.length; F.st = 1; F.go = now;
   c.el.classList.remove('cheer'); void c.el.offsetWidth; c.el.classList.add('cheer'); yEmo2(c, K.pick(FD_L));
   F.bw = F.ms.map((m, i) => { const x = F.x + (i - (n - 1) / 2) * 40, y = F.y + (i % 2) * 6, q = document.createElement('i'); q.className = 'ty-bowl'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y) + 4};background-image:url(${pxCv(BOWL, BOWL_P)});animation-delay:${i * .08}s`; Y.L.append(q); return { m, x, y, el: q }; });
-  for (const m of F.ms) if ((['rest', 'sit', 'tech', 'train', 'bag', 'shoot', 'tramp', 'buoy'].includes(m.st) || (m.st === 'go' && m.k !== 'spar')) && !m.mate) yNext(m, now); }   // 하던 게 금방 끝나는 건 바로 오고, 대련·달리기·후프는 마치고 옴
+  for (const m of F.ms) if ((['rest', 'sit', 'tech', 'train', 'drill', 'bag', 'shoot', 'tramp', 'buoy'].includes(m.st) || (m.st === 'go' && m.k !== 'spar')) && !m.mate) yNext(m, now); }   // 하던 게 금방 끝나는 건 바로 오고, 대련·달리기·후프는 마치고 옴
 function yFeedEnd(now) { const F = Y.fd; Y.fd = null; Y.fdN = now + 420 + Math.random() * 180;
   if (F.st === 1) { F.bw.forEach(b => { b.el.classList.add('out'); setTimeout(() => b.el.remove(), 500); }); const c = Y.co?.[0]; if (c) yEmo2(c, K.pick(FD_E)); }
   for (const m of Y.mons) if (m.st === 'eat' || (m.st === 'go' && String(m.k).startsWith('feed'))) yNext(m, now); }
@@ -480,8 +483,10 @@ function yardLoop(ts) {
     if (m.st === 'bag' && !m.one) m.one = mvTry(.3, 0, { k: m.k, gap: .6 + Math.random() * .4 }) || { n: 'Attack', t: 0, k: m.k, gap: .2 + Math.random() * .4 };
     if (m.st === 'shoot' && !m.one) m.one = mvTry(.6, 1, { shot: Y.pr.tgt, gap: .8 + Math.random() * .6 }) || { n: m.D?.P?.a.Shoot ? 'Shoot' : 'Attack', t: 0, shot: Y.pr.tgt, gap: .5 + Math.random() * .6 };
     if (m.st === 'buoy' && !m.one) m.one = mvTry(.3, null, { k: 'water', gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, k: 'water', gap: .3 + Math.random() * .5 };
-    if (m.st === 'train' && !m.one) m.one = mvTry(.4, null, { gap: .6 + Math.random() * .5 }) || { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
-    if (m.st === 'tech' && !m.one) m.one = mvTry(1, null, { gap: 1 + Math.random() * .8 }) || (now > (m.tq || 0) ? (m.tq = now + 1.2, { n: 'Attack', t: 0, gap: .4 }) : null);   // 기술 연습: 효과음 차례가 아니면 잠깐 기본 동작
+    if (m.st === 'train' && !m.one) m.one = mvTry(.4, null, { gap: .6 + Math.random() * .5 }) || (Math.random() < .45 && yMot(m, now)) || { n: 'Attack', t: 0, gap: .25 + Math.random() * .5 };
+    if (m.st === 'drill' && !m.one) m.one = yMot(m, now, 1) || { n: 'Idle', t: 0, nh: 1, gap: .5 };
+    if (m.rl) { if (now > m.rl.e) m.rl = null; else { const nx = m.x + m.rl.v * dt; if (nx < 24 || nx > Y.W - 24 || inPond(nx, m.y, 12)) m.rl = null; else m.x = nx; } }
+    if (m.st === 'tech' && !m.one) m.one = mvTry(1, null, { gap: 1 + Math.random() * .8 }) || (now > (m.tq || 0) ? (m.tq = now + 1.2, (Math.random() < .35 && yMot(m, now)) || { n: 'Attack', t: 0, gap: .4 }) : null);   // 기술 연습: 효과음 차례가 아니면 잠깐 기본 동작
     if (m.st === 'eat' && now > m.nm) { m.nm = now + 1.6 + Math.random() * 1.2; yEmo(m, Math.random() < .7 ? '냠냠' : '♪', 'mu'); }
     if (m.st === 'tramp') { const p0 = m.ph; m.ph += dt / .62; m.air = Math.abs(Math.sin(m.ph * Math.PI)) * 30; if (Math.floor(m.ph) !== Math.floor(p0)) { yWob(Y.pr.tramp, 'sq'); if (Math.random() < .3) yEmo(m, '♪', 'mu'); } }
     if (m.st === 'run') { const L = Y.lane, v = 80 * dt; m.y += m.dir * v; m.x = L.x; m.an = 'Walk';   // 세로 트랙: 위아래로 달리며 허들 넘기
@@ -525,6 +530,24 @@ function yHit(m) {
   if (o.tgt) { const t = o.tgt; if (t.D?.P?.a.Hurt && !t.one) t.one = { n: 'Hurt', t: 0 }; yFx((m.x + t.x) / 2, m.y - 22, 'spk'); yEmo(t, '!', 'hit'); t.x += (t.x > m.x ? 1 : -1) * 4; }
   if (Math.random() < .3) yEmo(m, '+EXP', 'xp');
 }
+// v20.89 경완 '빙글빙글 도는 동작이나 구르기 같은 것도 (지금은 공격 동작밖에 없음)': 그 포켓몬 그림에 있는 몸 풀기 동작, 없으면 CSS 로 빙글·데굴
+const Y_MOT = [['Rotate', 3, '빙글빙글'], ['Tumble', 2.4, '데굴데굴'], ['TumbleBack', 1, ''], ['Hop', 1.4, '폴짝'], ['LeapForth', 1, '휙!'], ['Swing', 1, ''], ['Double', .8, ''], ['RearUp', .8, ''], ['Rumble', .6, ''], ['DeepBreath', .6, '후~'], ['Pose', .8, '짠!'], ['Charge', .6, ''], ['Twirl', 2, '빙그르르'], ['Dance', 1.6, '♪'], ['Shake', .8, '부르르'], ['FlapAround', 1, '퍼덕퍼덕'], ['QuickStrike', .8, '슉!'], ['Kick', .8, ''], ['Strike', .6, ''], ['Pull', .5, ''], ['Nod', .4, ''], ['LookUp', .4, ''], ['Float', .6, ''], ['Hover', .4, ''], ['Withdraw', .5, ''], ['Special0', .5, ''], ['Special1', .4, '']];
+function yMot(m, now, drill) { const A = m.D?.P?.a; if (!A) return null;
+  const L = Y_MOT.filter(x => A[x[0]]); L.push(['cssSpin', A.Rotate ? .3 : 1.6, '빙글빙글'], ['cssRoll', A.Tumble ? .3 : 1.6, '데굴데굴'], ['cssJump', A.Hop ? .5 : 1.2, '점프!'], ['cssStr', .6, '쭈욱~'], ['cssWig', .6, '']);
+  let r = Math.random() * L.reduce((s, x) => s + x[1], 0), x = L[0]; for (const y of L) { r -= y[1]; if (r <= 0) { x = y; break; } }
+  if (drill && Math.random() < .5) m.face = Math.random() < .5 ? 1 : -1;
+  if (x[2] && Math.random() < .35) yEmo(m, x[2], 'mu');
+  const n = x[0], gap = .3 + Math.random() * .5;
+  if (n === 'cssJump' || n === 'cssStr' || n === 'cssWig') { const K2 = n === 'cssJump' ? [[{ translate: '0 0', scale: '1 1' }, { translate: '0 0', scale: '1.15 .8', offset: .15 }, { translate: '0 -34px', scale: '.9 1.12', offset: .5 }, { translate: '0 0', scale: '1.12 .85', offset: .85 }, { translate: '0 0', scale: '1 1' }], 800]
+      : n === 'cssStr' ? [[{ scale: '1 1' }, { scale: '.86 1.2', offset: .4 }, { scale: '.86 1.2', offset: .6 }, { scale: '1 1' }], 1100] : [[{ rotate: '0deg' }, { rotate: '-12deg' }, { rotate: '12deg' }, { rotate: '-8deg' }, { rotate: '8deg' }, { rotate: '0deg' }], 800];
+    m.sp.animate(K2[0], { duration: K2[1], easing: 'ease-in-out' }); return { n: 'Idle', t: 0, nh: 1, gap: K2[1] / 1000 + gap }; }   // 그림 없는 포켓몬도: 높이 점프·기지개·좌우 흔들기
+  if (n === 'cssSpin' || n === 'cssRoll') { const roll = n === 'cssRoll', d = roll ? -m.face : (Math.random() < .5 ? 1 : -1), T = roll ? 900 : 700;
+    m.sp.animate([{ rotate: '0deg' }, { rotate: `${d * (roll ? 720 : 360)}deg` }], { duration: T, easing: roll ? 'linear' : 'ease-in-out' });
+    if (roll) m.rl = { v: d * 70, e: now + T / 1000 };
+    return { n: 'Idle', t: 0, nh: 1, gap: T / 1000 + gap }; }
+  const tot = A[n][6].reduce((s, d) => s + d, 0) / 60;
+  if (n === 'Tumble' || n === 'TumbleBack') m.rl = { v: (n === 'Tumble' ? -m.face : m.face) * 60, e: now + tot };
+  return { n, t: 0, nh: 1, gap }; }
 function yDraw(m, dt) {
   const D = m.D; if (!D?.P) { m.el.classList.toggle('bob', m.st !== 'rest' && m.st !== 'sleep' && m.st !== 'sit'); if (m.one) { m.one.t += dt; if (m.one.t > .8) { yHit(m); m.one = null; } } return; }
   const A = D.P.a; let nm, f = null;
@@ -535,7 +558,7 @@ function yDraw(m, dt) {
   let t;
   if (m.one) { t = m.one.t;
     const hitT = durs.slice(0, (a[7] ?? 0) + 1).reduce((s, d) => s + d, 0) / 60;
-    if (!m.one.hit && t >= hitT) { m.one.hit = 1; if (m.one.n !== 'Hurt') yHit(m); }
+    if (!m.one.hit && t >= hitT) { m.one.hit = 1; if (m.one.n !== 'Hurt' && !m.one.nh) yHit(m); }
     if (t >= tot) { if (m.one.gap && t < tot + m.one.gap) { t = tot - .001; } else { m.one = null; return yDraw(m, 0); } } }
   else { if (m.ak !== nm) { m.ak = nm; m.at = 0; } m.at += dt * (m.st === 'run' ? 1.8 : 1); t = m.at % tot; }
   let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } }
