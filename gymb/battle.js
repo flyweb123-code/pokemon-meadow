@@ -1901,6 +1901,11 @@ function evBox(m) { if (!evOn()) return ''; const e = evArr(m), u = evSumOf(m), 
 function evPlan(sp) { const BS = SPECIES[sp]?.bs || [60, 60, 60, 60, 60, 60], a = BS[1] >= BS[3] ? 1 : 3, fast = BS[5] >= 80, d = BS[2] >= BS[4] ? 2 : 4;
   return fast ? { k: [a, 5, 0], v: [252, 252, 6], nm: a === 1 ? '빠른 물리 공격형' : '빠른 특수 공격형', why: `${EV_N[a]}(${BS[a]})${a === 1 ? '이' : '이'} 높고 스피드(${BS[5]})도 빨라서, 먼저 때려서 쓰러뜨리는 배분을 가장 많이 써요.`, alt: { k: [0, a, d], v: [252, 252, 6], nm: '튼튼하게' } }
     : { k: [0, a, d], v: [252, 252, 6], nm: a === 1 ? '튼튼한 물리 공격형' : '튼튼한 특수 공격형', why: `스피드(${BS[5]})가 느린 편이라, HP를 채워 오래 버티며 ${EV_N[a]}${a === 1 ? '으로' : '으로'} 때리는 배분을 많이 써요.`, alt: { k: [a, 5, 0], v: [252, 252, 6], nm: '빠르게' } }; }
+// v20.50 경완: 도전자 노력치 = 체육관 등급별 (처음 등급 0 ~ 전설 등급 주력 두 능력치 252씩), 배분은 추천과 같은 틀 (30%는 다른 배분)
+const EV_FOE = [0, 84, 168, 252, 336, 420, 510];
+function foeEvs(sp, gi) { const T = EV_FOE[Math.max(0, Math.min(EV_FOE.length - 1, gi | 0))], o = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }; if (!T) return o;
+  const pl = evPlan(sp), x = Math.random() < .3 ? pl.alt : pl, K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
+  x.k.forEach((k, j) => { o[K[k]] = Math.floor(x.v[j] * T / EV_MAX); }); return o; }
 const evSpend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} try { window.Gym.k.renderGoldG(); } catch (e) {} try { window.pkGold?.('gym', n); } catch (e) {} try { window.Gym.k.dayRec().s += n; } catch (e) {} return true; };
 // 노력치 설정 창 (시안 설정 시연 v34 그대로): − 공짜 → 남은 노력치, + 1당 10G, 영양제 +10 (영양제 몫은 영양제 − 로만), 정산표, 되돌리기 · ○G 내고 저장
 function evPop(P, done) {
@@ -1990,5 +1995,5 @@ function evPop(P, done) {
   start(); fillTh(p); return p;
 }
 
-window.GymBattle = { evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
