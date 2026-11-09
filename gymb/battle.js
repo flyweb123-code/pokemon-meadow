@@ -190,7 +190,7 @@ function gm(P) {
   if (!m || !D.sp[P.sp]) {
     const r = seeded('gm' + P.id), lv = BASE_LV[GA.rankOf(P)] || 5, ab = D.sp[P.sp]?.ab || ['noability'], nats = NATS();
     const nm = abNorm(P.sp), ha = hiddenRoll('ha' + P.id) && D.sp[P.sp]?.h;
-    m = g.mon[P.id] = { lv, xp: xpAt(growth(P.sp), lv), nat: nats[Math.floor(r() * nats.length)], ab: nm[Math.floor(r() * Math.min(2, nm.length))], mv: pickMoves(P.sp, lv, r) };
+    m = g.mon[P.id] = { lv, xp: xpAt(growth(P.sp), lv), nat: nats[Math.floor(r() * nats.length)], ab: nm[Math.floor(r() * Math.min(2, nm.length))], mv: pickMoves(P.sp, lv, r), evM: 1 };   /* evM: 노력치 옛 포켓몬 채우기 대상 아님 (새로 만든 포켓몬) */
     if (ha) { m.ab = ha; m.ha = 1; } else if (P.sp === 744 && seeded('ot' + P.id)() < .05) m.ab = 'owntempo';   // v16.85: 암멍이 5% 마이페이스 (본게임 natAb 와 같은 씨앗)
   }
   // 특성 (경완 2026-10-27 '특성, 숨겨진 특성'): 보통 특성은 숨겨진 특성을 뺀 것 중에서, 숨겨진 특성은 5% (ha). 진화하면 같은 자리 특성으로
@@ -718,6 +718,7 @@ function blogSave(opts, my, foeT, won, out) {
 }
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
+  try { evMig(); } catch (e) {}
   if (!el) buildUI(); fit();
   const my = opts.my.map(myEntry), foeT = opts.foe.team;
   if (opts.foe.hold != null) try { foeItems(foeT, opts.foe.hold); } catch (e) {}   // 도전자 지닌 도구 (v16.89)
@@ -1892,9 +1893,27 @@ const evSumOf = m => evArr(m).reduce((a, b) => a + (b | 0), 0);
 function evAdd(m, i, n) { const e = evArr(m), room = Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))), k = Math.max(0, Math.min(room, Math.floor(n))); e[i] = (e[i] | 0) + k; return k; }
 // 배틀: 쓰러뜨린 종의 노력치를 싸운 포켓몬(학습장치로 받은 포켓몬 빼고)에게 (본가처럼 같이 나와 싸운 포켓몬은 다 받음)
 function evBattle(P, sp) { if (!evOn() || !EVY) return; const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P); for (let i = 0; i < 6; i++) if (+y[i]) evAdd(m, i, +y[i]); }
+// v20.52 경완 '원래 있는 포켓몬도 레벨이랑 배틀에서 쓰러뜨린 포켓몬 반영해서': 포켓몬별 쓰러뜨린 기록은 없어서 어림한다.
+// 처음 레벨부터 얻은 경험치 − 훈련장 경험치 = 배틀 경험치(학습장치 몫 어림해 ×0.8) → 같은 레벨 상대를 쓰러뜨린 것으로 한 마리씩 셈,
+// 상대 종은 최근 배틀 기록(blog) 상대들(없으면 체육관 타입 포켓몬) → 그 종 노력치. 이미 쌓인 칸은 모자란 만큼만. 포켓몬마다 한 번 (m.evM)
+function evMig() {
+  if (!EVY || !D || !S.gym?.mon || !evOn()) return 0; let done = 0;
+  const pool = []; for (const r of S.gym.blog || []) for (const f of r.fo || []) if (EVY[f[0]]) pool.push(f[0]);
+  if (!pool.length) for (const k of Object.keys(EVY)) { const sp = +k; if (SPECIES[sp] && (!S.gym.ty || (SPECIES[sp].t || []).includes(S.gym.ty))) pool.push(sp); }
+  if (!pool.length) return 0;
+  const TL = S.gym.tlog || {};
+  for (const P of S.box) { const m = S.gym.mon[P.id]; if (!m || m.evM) continue; m.evM = 1; done++;
+    const g = growth(P.sp), L0 = BASE_LV[GA.rankOf(P)] || 5, tx = Object.values(TL[P.id] || {}).reduce((a, d) => a + (d?.x | 0), 0);
+    let bud = Math.max(0, ((m.xp ?? xpAt(g, m.lv || 1)) - xpAt(g, L0) - tx) * .8), L = L0, xp = xpAt(g, L0); const est = [0, 0, 0, 0, 0, 0], r = seeded('evm' + P.id);
+    for (let it = 0; it < 3000 && bud > 0; it++) { while (L < LV_MAX && xp >= xpAt(g, L + 1)) L++;
+      const sp = pool[Math.floor(r() * pool.length)], k = xpFor({ sp, lv: L }, L); if (k > bud && r() > bud / k) break; bud -= k; xp += k;
+      const y = EVY[sp] || ''; for (let i = 0; i < 6; i++) est[i] += +y[i] || 0; }
+    const e = evArr(m); for (let i = 0; i < 6; i++) if (est[i] > (e[i] | 0)) evAdd(m, i, est[i] - (e[i] | 0)); }
+  if (done) try { GA.save(); } catch (e) {}
+  return done; }
 const evSet = m => { const e = evArr(m); return { hp: e[0], atk: e[1], def: e[2], spa: e[3], spd: e[4], spe: e[5] }; };
 // 상세카드 노력치 박스 (능력치 박스 밑)
-function evBox(m) { if (!evOn()) return ''; const e = evArr(m), u = evSumOf(m), pl = m.evp | 0;
+function evBox(m) { if (!evOn()) return ''; if (!m.evM) evMig(); const e = evArr(m), u = evSumOf(m), pl = m.evp | 0;
   return `<button type="button" class="ev-box2" data-a="ev"><span class="eb2-t"><small>노력치</small><span class="n"><b>${u + pl}</b><span> / ${EV_MAX}</span></span><i class="eb-bar"><i class="p" style="width:${(pl / EV_MAX * 100).toFixed(1)}%"></i><i class="u" style="width:${(u / EV_MAX * 100).toFixed(1)}%"></i></i><em class="pool">${pl} 남음</em><span class="r">›</span></span>`
     + `<span class="eb2-s">${EV_N.map((n, i) => `<span class="${!e[i] ? 'z' : e[i] >= EV_ONE ? 'mx' : ''}"><small>${n}</small><b>${e[i] | 0}</b></span>`).join('')}</span></button>`; }
 // ? 힌트: 종족값으로 주로 찍는 배분 (공격·특공 중 높은 쪽, 스피드 80 이상이면 빠른 공격형, 아니면 튼튼한 공격형)
@@ -1995,5 +2014,5 @@ function evPop(P, done) {
   start(); fillTh(p); return p;
 }
 
-window.GymBattle = { foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { evMig, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
