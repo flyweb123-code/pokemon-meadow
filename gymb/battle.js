@@ -1797,11 +1797,11 @@ function usePop(P, done) {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
-    const IL = itAll(), ML = mintAll();
-    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
+    const IL = itAll(), ML = mintAll(), VL = vitAll();
+    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
     const TT = TL.filter(r => isTR(r[2]) === (useT === 'tr'));   /* v15.75 기술머신·기술레코드 탭 따로 */
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
-      : (IL.length + ML.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
+      : (IL.length + ML.length + VL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
       <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>${useT === 'it' ? '추천 도구' : '추천 기술'}</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
@@ -1829,7 +1829,8 @@ function usePop(P, done) {
     if (b.dataset.takeit) { const Q = boxOf(+b.dataset.takeit || b.dataset.takeit); if (Q) { takeIt(Q); se('DECIDE'); } return draw(); }
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }
-    if (b.dataset.mint) { const k = b.dataset.mint; return mintInfo(k, '먹이기', () => { mintUse(P, k); draw(); }); } };
+    if (b.dataset.mint) { const k = b.dataset.mint; return mintInfo(k, '먹이기', () => { mintUse(P, k); draw(); }); }
+    if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); } };
 }
 // 창고 도구 → 지니게 하기 → 포켓몬 박스에서 고르기
 function itPick(id, done) {
@@ -2056,5 +2057,20 @@ function evPop(P, done) {
   start(); fillTh(p); return p;
 }
 
-window.GymBattle = { evMig, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+// v20.80 경완 '영양제는 상세카드뿐 아니라 창고·도구 사용에서도 포켓몬 골라서 바로 먹이기': 한 개 = 그 능력치 노력치 +10 (252·510 한도, 남은 노력치 몫 포함)
+const vitAll = () => evOn() ? EV_VIT.map(([k], i) => [i, S.gym?.vit?.[k] | 0]).filter(([, n]) => n > 0) : [];
+const vitRoom = (P, i) => { const m = gm(P), e = evArr(m); return Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))); };
+const vitRow = (i, n, P) => { const r = P ? vitRoom(P, i) : 10, full = !r, v = P ? evArr(gm(P))[i] | 0 : 0;
+  return `<button type="button" class="sp-tm sp-it sp-vit${full ? ' off' : ''}" data-vit="${i}" ${full ? 'disabled' : ''}><img class="tm-ic it-ic" alt="" src="${itImg(EV_VIT[i][0])}"><span class="tm-nm"><b>${EV_VIT[i][1]}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${full ? `<b class="ev-stc">${EV_N[i]}</b> 노력치 가득 찼어요` : P ? `<b class="ev-stc">${EV_N[i]}</b> 노력치 ${v} → ${v + Math.min(10, r)}` : `<b class="ev-stc">${EV_N[i]}</b> 노력치 +10`}</small></span></button>`; };
+function vitInfo(i, lab, act, own, P) { const r = P ? vitRoom(P, i) : 10;
+  gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${itImg(EV_VIT[i][0])}">${EV_VIT[i][1]}${bagN(own | 0)}</h4><p class="gy-msg mi-d">${EV_VD[i]}. 먹이면 ${EV_N[i]} 노력치가 10 올라간다.</p>${P && !r ? `<p class="gy-msg" style="text-align:center"><small>${esc(nmOf(P))}의 노력치가 더 들어갈 자리가 없어요.</small></p>` : ''}<div class="gy-btns${r ? '' : ' one'}"><button data-a="x">닫기</button>${r ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
+    (a, close) => { close(); if (a === 't') act?.(); }); }
+function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)) return; const n = evAdd(gm(P), i, 10); if (!n) return;
+  if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
+  gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
+function vitPick(i, done) {
+  boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
+    tag: P => `${EV_N[i]} ${evArr(gm(P))[i] | 0}`, pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });
+}
+window.GymBattle = { evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
