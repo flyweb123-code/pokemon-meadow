@@ -252,7 +252,7 @@ function build() {
       <div class="win gy-dtit"><b>체육관 꾸미기</b><span>꾸미기를 눌러서 옮겨요</span></div>
     </div>
     <nav class="gy-menu" aria-label="체육관 메뉴">
-      <button type="button" data-t="battle">포켓몬</button><button type="button" data-t="train">훈련장</button><button type="button" data-t="staff">트레이너</button><button type="button" data-t="shop">상점</button><button type="button" class="gy-out" data-t="out">퇴근</button>
+      <button type="button" data-t="battle" data-nosfx>포켓몬</button><button type="button" data-t="train">훈련장</button><button type="button" data-t="staff">트레이너</button><button type="button" data-t="shop">상점</button><button type="button" class="gy-out" data-t="out">퇴근</button>
     </nav>
     <div class="gy-dbar"><div class="db-head"><b>창고</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
       <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;

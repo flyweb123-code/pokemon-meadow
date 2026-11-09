@@ -593,7 +593,7 @@ function trLogPop(P, from) {
   const page = () => { const k = ks[i], t = new Date(k);
     return ks.length ? `<div class="jn-nav tl-nav"><button type="button" data-mv="1" ${i >= ks.length - 1 ? 'disabled' : ''} aria-label="전날">◀</button><b>${t.getMonth() + 1}월 ${t.getDate()}일 <small>(${WD[t.getDay()]})</small>${k === today ? '<i class="jn-today">오늘</i>' : ''}</b><button type="button" data-mv="-1" ${i <= 0 ? 'disabled' : ''} aria-label="다음날">▶</button></div>
       <ul class="tl-list">${row(k)}</ul><p class="tl-pg">${ks.length - i} / ${ks.length}일</p>` : '<p class="gy-msg tl-none">아직 훈련 기록이 없어요.<br>훈련한 만큼 날마다 여기에 쌓여요.</p>'; };
-  const p = pop(`<div class="tl-pop">${trHead(P)}
+  const p = pop(`<div class="tl-pop">${trHead(P, true)}
     <div class="mp-mvh tl-h"><small>훈련 일지</small></div><div class="tl-body">${page()}</div>
     <div class="gy-btns one"><button class="main" data-a="x">닫기</button></div></div>`, (a, close) => { if (a === 'x') return close(); if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); });
   const bd = p.querySelector('.tl-body');

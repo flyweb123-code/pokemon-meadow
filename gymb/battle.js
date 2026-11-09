@@ -1436,7 +1436,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
     const id = +c.dataset.id || c.dataset.id;
     if (O) { const P = boxOf(id); if (P) O.pick(P, { close: () => w.remove(), redraw: () => { const h = w.querySelector('.bw-hd h4'); if (h) h.innerHTML = O.title(); draw(); } }); return; }
-    if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; w.remove(); teachTm(P, tmId, done); return; }
+    if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; teachTm(P, tmId, () => { w.remove(); done?.(); }, null, () => {}); return; }   /* v20.70 경완: 박스 화면 위에서 바로 잊을 기술 창, 그만두면 박스 그대로 */
     if (add) return monPop(id, 'add');   // 라인업 고르기도 상세카드 먼저, 버튼은 라인업에 넣기만 (경완 2026-10-29)
     if (add) { const cur = curLu(), j = cur.indexOf(id); if (j >= 0) cur.splice(j, 1); else if (cur.length < 6) cur.push(id); else return;   /* 경완 2026-10-28: 라인업에 든 포켓몬을 다시 누르면 빠진다 */ GA.save(); drawTab(); if (cur.length >= 6 && j < 0) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
     monPop(id, true);
@@ -1559,7 +1559,7 @@ const TR_IDS = new Set('swordsdance bodyslam flamethrower hydropump surf icebeam
 // 이 포켓몬이 이 기술머신을 배울 수 있나 (이미 아는 기술은 못 배움)
 const tmCan = (P, id) => (D.sp[P.sp]?.tm || []).some(i => D.mv[i]?.[0] === id) && !gm(P).mv.includes(id);
 // 기술머신 하나를 P 에게: 기술이 4개면 잊을 기술 고르기(또는 익혀 두기만)
-function teachTm(P, id, done, slot) {   // slot: 기술 바꾸기에서 고른 칸이면 그 자리에 바로
+function teachTm(P, id, done, slot, onX) {   // onX: 잊을 기술 창에서 그만두기 (없으면 done)   // slot: 기술 바꾸기에서 고른 칸이면 그 자리에 바로
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
   const use = k => { if (isTR(id)) { g.tms[id] = (g.tms[id] || 0) - 1; if (g.tms[id] <= 0) delete g.tms[id]; } m.kn = (m.kn || []).filter(y => y !== id);
     if (k == null) { if (!m.kn.includes(id)) m.kn.push(id); } else if (k >= m.mv.length) m.mv.push(id); else { const old = m.mv[k]; m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); }
@@ -1567,7 +1567,7 @@ function teachTm(P, id, done, slot) {   // slot: 기술 바꾸기에서 고른 �
   if (slot != null) return use(Math.min(slot, m.mv.length));
   if (m.mv.length < 4) return use(m.mv.length);
   gymPop(`<h4>${esc(x[1])} 대신 잊을 기술</h4><p class="gy-msg">잊은 기술은 나중에 기술 바꾸기에서 다시 배울 수 있어요.</p><div class="mp-moves mp-line pick">${m.mv.map((y, k) => mvOf(y) ? mvRow(mvOf(y), 's' + k) : '').join('')}</div>
-    <div class="gy-btns"><button data-a="keep">익혀 두기만</button><button data-a="x">그만두기</button></div>`, (b, c2) => { c2(); if (b === 'x') return done?.(); use(b === 'keep' ? null : +b.slice(1)); });
+    <div class="gy-btns"><button data-a="keep">익혀 두기만</button><button data-a="x">그만두기</button></div>`, (b, c2) => { c2(); if (b === 'x') return (onX || done)?.(); use(b === 'keep' ? null : +b.slice(1)); });
 }
 // 기술 가르치기 (경완 2026-10-29): 창고 기술머신 탭과 같은 화면. 가르칠 수 있는 것 먼저, 못 가르치는 건 회색
 function tmPop(P, done, slot) {
