@@ -3635,3 +3635,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v20.55 튜토리얼 '이걸 눌러 보렴': 그 칸만 눌림 */
 #gym .gy-tut-tap{position:absolute;inset:0;z-index:12;background:rgba(12,13,20,.25)}
+
+/* v20.59 경완 '라인업 상세카드 크기 통일': 사진 칸 크기 고정(랭크·지닌 도구에 따라 92~96px 로 바뀌던 것), 기술이 4개보다 적어도 기술 칸 높이는 4개 자리 */
+#gym .gy-pop .win:has(.iv-hex) .mp-head>.mp-thb>.rk-fr{width:94px;height:94px;box-sizing:border-box}
+#gym .gy-pop .win:has(.iv-hex) .mp-moves{min-height:131px;align-content:start}
+/* v20.59 경완 '? 가운데': 글자 대신 도트 ? 그림, 저장 버튼 글자 한 줄 */
+#gym .ev-q svg{display:block;margin:0 auto}
+#gym .ev-pop .ev-save{white-space:nowrap}
+/* v20.59 경완: 도구 없는 포켓몬은 사진 오른쪽 아래에 점선 + 칸 (눌러서 도구를 넣는 자리) */
+#gym .mp-thb .rk-fr .th-add{position:absolute;right:-5px;bottom:-5px;width:28px;height:28px;box-sizing:border-box;border:2px dashed #8a8a96;border-radius:6px;background:rgba(255,255,255,.92);color:#7a7a86;font:700 18px/24px var(--px);font-style:normal;text-align:center;z-index:2;pointer-events:none}
+/* v20.59 경완 '딱지 잘린다': 기술 가르치기 창 '새로 배울 기술' 딱지가 창 위로 삐져나오게 (overflow-x:hidden 이 y 도 잘랐음 → clip) */
+#gym .gy-pop .win.mv-neww:has(.mv-learn){overflow-x:clip!important;overflow-y:visible!important}
