@@ -477,7 +477,7 @@ function pickTrain(after) {
   const g = st(), ty = g.ty, inTr = id => g.tr.some(e => e.id === id);
   GB().boxWin(false, null, () => { redraw(); after?.(); }, {
     title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입이 먼저 보여요`,
-    list: () => S.box.filter(P => GB().gm(P).lv < GB().LV_MAX || inTr(P.id)), ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
+    list: () => S.box,   /* v20.50 경완: 만렙도 훈련장에 (노력치·친밀도·기술) */ ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
     tag: P => inTr(P.id) ? '훈련장' : onField(P.id) ? '필드' : '',
     pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
@@ -494,7 +494,6 @@ function trSend(P, done) {
   const g = st(), i = g.tr.findIndex(e => e.id === P.id), n = esc(nmOf(P)), j = K.jong(nmOf(P)) ? '을' : '를';
   if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); slotRf?.(); return done?.(); }
   if (g.tr.length >= trMax()) return say(trFull());
-  if (GB().gm(P).lv >= GB().LV_MAX) return say('이미 최고 레벨이에요.');
   GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
     const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
     const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); slotRf?.(); done?.(); setTimeout(() => K.tutEv?.('B'), 300); });
