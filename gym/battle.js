@@ -28,6 +28,7 @@ function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
     getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json')
+    , evyLoad()
   ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg]) => { EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
@@ -113,7 +114,7 @@ const effM = () => EFF ||= TY_EN.map(a => TY_EN.map(d => !a || !d ? 1 : !PSim.De
 const SLP_MV = new Set('spore sleeppowder hypnosis yawn lovelykiss sing grasswhistle darkvoid'.split(' ')), STS_MV = new Set('thunderwave willowisp toxic spore sleeppowder hypnosis glare stunspore poisonpowder nuzzle yawn'.split(' '));
 const HEAL_MV = new Set('recover roost softboiled slackoff synthesis moonlight morningsun milkdrink shoreup wish strengthsap'.split(' '));
 function mvCtx(P, m = gm(P)) {
-  const st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat), ab = toID(m.ab), bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60];
+  const st = statsOf(P.sp, m.lv || 1, P.iv || [], m.nat, m.ev), ab = toID(m.ab), bs = SPECIES[P.sp]?.bs || [60, 60, 60, 60, 60, 60];
   const atk = st[1] * (ab === 'hugepower' || ab === 'purepower' ? 2 : ab === 'hustle' ? 1.5 : 1), spa = st[3];
   return { P, m, st, ab, tys: SPECIES[P.sp]?.t || [], atk, spa, A: Math.max(atk, spa), phys: atk >= spa, slow: st[5] < Math.max(st[1], st[3]) * .75, bulky: bs[0] + bs[2] + bs[4] >= 250, dx: PSim.Dex };
 }
@@ -606,7 +607,7 @@ function psSet(o) {
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
-function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})() }; }
+function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, evs: evSet(m), fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})() }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
 function foeEntry(sp, lv, tier = 0) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
@@ -1204,7 +1205,7 @@ function wxSet(w) { const f = $b('.bt-wx'); if (f) f.className = 'bt-wx' + (WX_C
 // 레벨업 능력치 창 (본가처럼): 먼저 오른 만큼(+N), 누르면 새 능력치. 다시 누르면 닫힘 (경완 2026-10-30)
 const LV_ST = ['최대HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
 function lvWin(P, lv0, lv) {
-  const m = gm(P), a = statsOf(P.sp, lv0, P.iv || [], m.nat), b = statsOf(P.sp, lv, P.iv || [], m.nat), w = $b('.bt-lvw');
+  const m = gm(P), a = statsOf(P.sp, lv0, P.iv || [], m.nat, m.ev), b = statsOf(P.sp, lv, P.iv || [], m.nat, m.ev), w = $b('.bt-lvw');
   const show = f => { w.innerHTML = `<table>${LV_ST.map((n, i) => `<tr><th>${n}</th><td>${f(i)}</td></tr>`).join('')}</table><b class="cur">▼</b>`; };
   const tap = () => new Promise(r => { if (!B) return r(); B.tapWake = r; });
   return { a, b, run: async () => { show(i => '+' + (b[i] - a[i])); w.hidden = false; se('SELECT'); await tap();
@@ -1220,7 +1221,9 @@ function lvApply(pk, X, lv, a, b) {
 }
 // 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받고, 나머지 라인업은 학습장치로 절반. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
-  const foe = B.foe[X.i]; if (!foe || B.practice) return;   // v13.04 경완: 연습 배틀은 경험치 연출도 없음
+  const foe = B.foe[X.i]; if (!foe || B.practice) return;
+  for (const pid of B.vs) { const i = B.my.findIndex(o => o.pid === pid), P = boxOf(pid); if (P && B.o.p[i] && !B.o.p[i].fainted) evBattle(P, foe.sp); }   // v20.45 노력치: 싸운 포켓몬이 쓰러뜨린 종의 노력치를 (동네 체육관부터)
+  // v13.04 경완: 연습 배틀은 경험치 연출도 없음
   // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
   for (const pid of [...B.vs, ...B.my.map(o => o.pid).filter(p => !B.vs.has(p))]) {
@@ -1363,14 +1366,14 @@ let ivBar = false;
 const ivJudge = v => v >= 31 ? '최고' : v >= 26 ? '훌륭해' : v >= 16 ? '굉장해' : v >= 1 ? '괜찮아' : '별로야';
 // 능력치 육각형 (경완 2026-10-29 '노력치는 없으니까 나머지 다 반영한 능력치로, 판정에 개체값 판정'): 종족값·개체값·레벨·성격으로 본가 공식 그대로 계산
 const ST_KEY = ['', 'atk', 'def', 'spa', 'spd', 'spe'];
-function statsOf(sp, lv, iv, nat) {
+function statsOf(sp, lv, iv, nat, ev = []) {   // ev: 노력치 (v20.45, 본가 공식 +⌊EV/4⌋)
   const bs = SPECIES[sp]?.bs || [60, 60, 60, 60, 60, 60], nt = D.nt[nat] || ['', '', ''];
-  return bs.map((b, i) => { const v = Math.floor((2 * b + (iv[i] | 0)) * lv / 100); if (!i) return SPECIES[sp]?.n === '껍질몬' ? 1 : v + lv + 10;
+  return bs.map((b, i) => { const v = Math.floor((2 * b + (iv[i] | 0) + ((ev[i] | 0) >> 2)) * lv / 100); if (!i) return SPECIES[sp]?.n === '껍질몬' ? 1 : v + lv + 10;
     return Math.floor((v + 5) * (ST_KEY[i] === nt[1] ? 1.1 : ST_KEY[i] === nt[2] ? .9 : 1)); });
 }
 function ivHex(P, m) {
   const iv = P.iv || [0, 0, 0, 0, 0, 0], nt = D.nt[m.nat] || ['', '', ''], R = 52, cx = 90, cy = 72, pt = (k, r) => { const a = -Math.PI / 2 + k * Math.PI / 3; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; };
-  const st = statsOf(P.sp ?? m.sp, m.lv || 1, iv, m.nat), st0 = statsOf(P.sp ?? m.sp, m.lv || 1, iv, 'hardy'), mx = Math.max(...st) * 1.05;
+  const ev = m.ev || [], st = statsOf(P.sp ?? m.sp, m.lv || 1, iv, m.nat, ev), st0 = statsOf(P.sp ?? m.sp, m.lv || 1, iv, 'hardy', ev), stI = statsOf(P.sp ?? m.sp, m.lv || 1, iv, 'hardy'), mx = Math.max(...st) * 1.05;   // 노력치 몫 = st0 - stI (보라 sg-e)
   const nd = i => { const d = st[i] - st0[i]; return d ? `(${d > 0 ? '+' : ''}${d})` : ''; };   // 성격으로 오르내린 만큼 괄호로 (경완 2026-10-29)
   const ring = f => IV_ORD.map((_, k) => pt(k, R * f).map(v => v.toFixed(1)).join(',')).join(' ');
   const poly = IV_ORD.map(([i], k) => pt(k, R * Math.max(.06, st[i] / mx)).map(v => v.toFixed(1)).join(',')).join(' ');
@@ -1380,8 +1383,8 @@ function ivHex(P, m) {
   // 누르면 육각형 ↔ 가로 막대 (경완 2026-10-28). 막대는 종족값·개체값·성격으로 오른 몫을 색으로 나눔, 판정 글자 없음 (경완 2026-10-29)
   const sb = statsOf(P.sp ?? m.sp, m.lv || 1, [0, 0, 0, 0, 0, 0], 'hardy'), w = v => `calc((100% - 60px) * ${(Math.max(0, v) / mx).toFixed(3)})`;   // 숫자가 막대 끝에 붙으니 그 자리(60px)만큼 빼고 늘인다
   const bars = `<div class="iv-bars">${[[0, 'HP', ''], [1, '공격', 'atk'], [2, '방어', 'def'], [3, '특공', 'spa'], [4, '특방', 'spd'], [5, '스피드', 'spe']].map(([i, n, key]) => { const c = cOf(key), d = st[i] - st0[i];
-    return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i class="sg-b" style="width:${w(sb[i])}"></i><i class="sg-i" style="width:${w(st0[i] - sb[i])}"></i>${d > 0 ? `<i class="sg-u" style="width:${w(d)}"></i>` : d < 0 ? `<i class="sg-d" style="width:${w(-d)}"></i>` : ''}<em>${st[i]}<small>${nd(i)}</small></em></b></div>`; }).join('')}
-    <div class="ivb-lg"><span><i class="sg-b"></i>종족값</span><span><i class="sg-i"></i>개체값</span><span><i class="sg-u"></i>성격 ▲</span><span><i class="sg-d"></i>성격 ▼</span></div></div>`;
+    return `<div class="ivb ${c}"><span>${n}<i>${arw(c)}</i></span><b><i class="sg-b" style="width:${w(sb[i])}"></i><i class="sg-i" style="width:${w(stI[i] - sb[i])}"></i>${st0[i] > stI[i] ? `<i class="sg-e" style="width:${w(st0[i] - stI[i])}"></i>` : ''}${d > 0 ? `<i class="sg-u" style="width:${w(d)}"></i>` : d < 0 ? `<i class="sg-d" style="width:${w(-d)}"></i>` : ''}<em>${st[i]}<small>${nd(i)}</small></em></b></div>`; }).join('')}
+    <div class="ivb-lg"><span><i class="sg-b"></i>종족값</span><span><i class="sg-i"></i>개체값</span>${evOn() ? '<span><i class="sg-e"></i>노력치</span>' : ''}<span><i class="sg-u"></i>성격 ▲</span><span><i class="sg-d"></i>성격 ▼</span></div></div>`;
   return `<div class="iv-hex${ivBar ? ' bar' : ''}" role="button" tabindex="0" aria-label="능력치 (누르면 보기 바꾸기)">${bars}<svg viewBox="0 -12 180 164" role="img" aria-label="능력치"><polygon points="${ring(1)}" class="r0"/><polygon points="${ring(2 / 3)}" class="r1"/><polygon points="${ring(1 / 3)}" class="r1"/><polygon points="${poly}" class="iv"/>${lab}</svg>
     <div class="iv-sum"><b>능력치</b><span>합계 ${st.reduce((a, b) => a + b, 0)}</span><span>판정: ${ivJudge(Math.round(sum / 6))}</span><span>가장 좋은 능력치: ${best[1]}</span></div></div>`;
 }
@@ -1405,7 +1408,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'
   const draw = () => {
     w.querySelectorAll('[data-sort]').forEach(b => { const on = b.dataset.sort === bxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (bxDir > 0 ? '▼' : '▲') : ''; });
     const lu = new Set(O?.view ? [] : curLu()), q = bxQ.toLowerCase();
-    const key = { st: x => statsOf(x.P.sp ?? x.m?.sp, x.m?.lv || 1, x.P.iv || [0, 0, 0, 0, 0, 0], x.m?.nat || 'hardy').reduce((a, b) => a + b, 0) * 1e3 + (x.m?.lv || 0), lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
+    const key = { st: x => statsOf(x.P.sp ?? x.m?.sp, x.m?.lv || 1, x.P.iv || [0, 0, 0, 0, 0, 0], x.m?.nat || 'hardy', x.m?.ev).reduce((a, b) => a + b, 0) * 1e3 + (x.m?.lv || 0), lv: x => (x.m?.lv || 0) * 1e3 + GA.ivSum(x.P), rank: x => (RK_ORD[GA.rankOf(x.P)] || 0) * 1e5 + (x.m?.lv || 0), new: x => +x.P.t || +x.P.id || 0 }[bxSort] || (x => (x.m?.lv || 0));
     // 라인업 고르기는 가진 포켓몬 전부: 다른 타입은 흐리게(못 고름), 고를 수 있는 포켓몬이 앞에 (경완 2026-10-28)
     const all = O ? O.list() : S.box.filter(tyOk), tys = P => SPECIES[P.sp]?.t || [];
     // 타입 필터: 목록에 있는 타입만 아이콘으로, 고르면 그 타입이 들어간 포켓몬만 (경완 2026-10-29)
@@ -1448,7 +1451,7 @@ function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
   return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button><div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}</div><div class="mp-xpr"><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><span class="mp-xpt"><small class="mp-xpl">경험치</small><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></span></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
-    ${ivHex(P, m)}
+    ${ivHex(P, m)}${mode === 'view' ? '' : evBox(m)}
     <div class="mp-mvh"><small>기술</small>${!S.gym ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>   <!-- v14.28 경완: 기술 바꾸기는 상세 카드 어디서나 (체육관 세우기 전 미리 보기만 빼고) -->
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`).join('')}</div>
     ${mode === 'view' ? '' : mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns mp-3"><button data-a="tm">도구 사용</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업으로</button>`}${!inTr(P.id) && window.Gym?.k?.lockedT?.('train') ? '<button data-a="tr" class="tr-go tr-lk" aria-disabled="true" data-tip="동네 체육관이 되면 열려요" data-tipc><i class="mp-lk" aria-hidden="true"></i>훈련장으로</button>' : `<button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button>`}</div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
@@ -1461,6 +1464,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   const p = gymPop(monHtml(P, fromBox),
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
+      if (a === 'ev') { close(); evPop(P, () => monPop(P.id, fromBox, null, lst)); return; }   // v20.45 노력치 박스 → 설정 창, 닫으면 카드 다시
       if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
       if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
       if (a === 'nat') { const rn = recNat(P, m), w1 = gymPop(`<h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>${natRec(rn, m)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => {
@@ -1491,7 +1495,8 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (fromBox !== 'add') monPop(P.id, fromBox, null, lst); };   // 정보 카드 '라인업으로'는 카드를 다시 열어 바뀐 버튼을 보여 줌 (경완 2026-10-30)
       if (a === 'rm') return luAsk(P, fin);   // 빼기 전에 한 번 묻기 (경완 2026-10-29)
       fin(); });
-  p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
+  p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));
+  if (p.querySelector('.ev-box2')) window.Gym?.k?.tutEv?.('C');   // v20.45 처음 노력치 박스를 볼 때 강박사 설명   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
   const L = lst ? lst() : curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
   if (under) { p.style.background = 'transparent'; p.style.backdropFilter = p.style.webkitBackdropFilter = 'none'; Promise.race([Promise.all([...p.querySelectorAll('img')].map(i => new Promise(r => { if (i.complete && i.naturalWidth) r(); else { i.onload = i.onerror = r; } }))), new Promise(r => setTimeout(r, 300))]).then(() => { under.remove(); p.style.background = p.style.backdropFilter = p.style.webkitBackdropFilter = ''; }); }
@@ -1871,5 +1876,119 @@ async function practice() {
   finally { document.body.classList.remove('gymBattle'); drawTab(); }
 }
 
-window.GymBattle = { recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+// ---------- 노력치 (v20.45 경완 2026-11-09~10, 시안 https://claude.ai/artifact/DdyuhYTmJgYGN6mMttb7dr) ----------
+// m.ev = 능력치별 노력치 [HP 공격 방어 특공 특방 스피드], m.evp = 남은 노력치 (− 로 뺀 것). 합계(넣은 + 남은) 510, 한 능력치 252
+// 배틀에서 쓰러뜨린 종의 노력치(gym/evy.json, PokeAPI)는 능력치에 바로, 훈련장 토글도 고른 능력치에 바로. + 는 남은 노력치에서 1당 EV_PP 골드
+// 동네 체육관(등급 1)이 돼서 훈련장이 열릴 때부터 쌓이고 상세카드에 노력치 박스가 생긴다
+const EV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'], EV_MAX = 510, EV_ONE = 252, EV_PP = 10, EV_VP = 300;
+const EV_VIT = [['hpup', '맥스업'], ['protein', '타우린'], ['iron', '사포닌'], ['calcium', '리보플라빈'], ['zinc', '키토산'], ['carbos', '알칼로이드']];
+const EV_VD = ['체력이 나는 영양 드링크', '근육을 키우는 영양 드링크', '몸을 단단하게 하는 영양 드링크', '머리가 맑아지는 영양 드링크', '마음이 단단해지는 영양 드링크', '몸이 가벼워지는 영양 드링크'];
+const EV_PW = ['powerweight', 'powerbracer', 'powerbelt', 'powerlens', 'powerband', 'poweranklet'];
+let EVY = null; const evyLoad = () => EVY ? Promise.resolve(EVY) : getJ('gym/evy.json').then(j => (EVY = j || {}));
+const evOn = () => { try { return !!S.gym?.d && window.Gym.k.gradeOf(S.gym.rep || 0).i >= 1; } catch (e) { return false; } };
+const evArr = m => (m.ev = Array.isArray(m.ev) && m.ev.length === 6 ? m.ev : [0, 0, 0, 0, 0, 0]);
+const evSumOf = m => evArr(m).reduce((a, b) => a + (b | 0), 0);
+// 쌓기: 능력치 i 에 n 만큼 (252·510 넘는 몫은 버림). 넣은 양을 돌려줌
+function evAdd(m, i, n) { const e = evArr(m), room = Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))), k = Math.max(0, Math.min(room, Math.floor(n))); e[i] = (e[i] | 0) + k; return k; }
+// 배틀: 쓰러뜨린 종의 노력치를 싸운 포켓몬(학습장치로 받은 포켓몬 빼고)에게 (본가처럼 같이 나와 싸운 포켓몬은 다 받음)
+function evBattle(P, sp) { if (!evOn() || !EVY) return; const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P); for (let i = 0; i < 6; i++) if (+y[i]) evAdd(m, i, +y[i]); }
+const evSet = m => { const e = evArr(m); return { hp: e[0], atk: e[1], def: e[2], spa: e[3], spd: e[4], spe: e[5] }; };
+// 상세카드 노력치 박스 (능력치 박스 밑)
+function evBox(m) { if (!evOn()) return ''; const e = evArr(m), u = evSumOf(m), pl = m.evp | 0;
+  return `<button type="button" class="ev-box2" data-a="ev"><span class="eb2-t"><small>노력치</small><span class="n"><b>${u + pl}</b><span> / ${EV_MAX}</span></span><i class="eb-bar"><i class="p" style="width:${(pl / EV_MAX * 100).toFixed(1)}%"></i><i class="u" style="width:${(u / EV_MAX * 100).toFixed(1)}%"></i></i><em class="pool">${pl} 남음</em><span class="r">›</span></span>`
+    + `<span class="eb2-s">${EV_N.map((n, i) => `<span class="${!e[i] ? 'z' : e[i] >= EV_ONE ? 'mx' : ''}"><small>${n}</small><b>${e[i] | 0}</b></span>`).join('')}</span></button>`; }
+// ? 힌트: 종족값으로 주로 찍는 배분 (공격·특공 중 높은 쪽, 스피드 80 이상이면 빠른 공격형, 아니면 튼튼한 공격형)
+function evPlan(sp) { const BS = SPECIES[sp]?.bs || [60, 60, 60, 60, 60, 60], a = BS[1] >= BS[3] ? 1 : 3, fast = BS[5] >= 80, d = BS[2] >= BS[4] ? 2 : 4;
+  return fast ? { k: [a, 5, 0], v: [252, 252, 6], nm: a === 1 ? '빠른 물리 공격형' : '빠른 특수 공격형', why: `${EV_N[a]}(${BS[a]})${a === 1 ? '이' : '이'} 높고 스피드(${BS[5]})도 빨라서, 먼저 때려서 쓰러뜨리는 배분을 가장 많이 써요.`, alt: { k: [0, a, d], v: [252, 252, 6], nm: '튼튼하게' } }
+    : { k: [0, a, d], v: [252, 252, 6], nm: a === 1 ? '튼튼한 물리 공격형' : '튼튼한 특수 공격형', why: `스피드(${BS[5]})가 느린 편이라, HP를 채워 오래 버티며 ${EV_N[a]}${a === 1 ? '으로' : '으로'} 때리는 배분을 많이 써요.`, alt: { k: [a, 5, 0], v: [252, 252, 6], nm: '빠르게' } }; }
+const evSpend = n => { if (S.gold < n) return false; S.gold -= n; try { GA.renderGold(); } catch (e) {} try { window.Gym.k.renderGoldG(); } catch (e) {} try { window.pkGold?.('gym', n); } catch (e) {} try { window.Gym.k.dayRec().s += n; } catch (e) {} return true; };
+// 노력치 설정 창 (시안 설정 시연 v34 그대로): − 공짜 → 남은 노력치, + 1당 10G, 영양제 +10 (영양제 몫은 영양제 − 로만), 정산표, 되돌리기 · ○G 내고 저장
+function evPop(P, done) {
+  const m = gm(P), sp = P.sp, IV = P.iv || [0, 0, 0, 0, 0, 0], LV = m.lv || 1, N = EV_N, PP = EV_PP, VP = EV_VP, VIT = EV_VIT.map(([k]) => itImg(k)), VN = EV_VIT.map(x => x[1]);
+  const statC = {}; const stat = (i, e) => { const k = i * 1000 + e; if (statC[k] != null) return statC[k]; const a = [0, 0, 0, 0, 0, 0]; a[i] = e; return (statC[k] = statsOf(sp, LV, IV, m.nat, a)[i]); };
+  const bagOf = () => S.gym.vit || (S.gym.vit = {});
+  let SAVED = { ev: evArr(m).slice(), pool: m.evp | 0, bag: EV_VIT.map(([k]) => bagOf()[k] | 0) }, S1;
+  const p = gymPop(`<button class="mp-x ev-x" data-a="x" aria-label="닫기">✕</button><div class="ev-hd">${thumb(P)}<div><h4>${esc(nmOf(P))} 노력치<button type="button" class="ev-q" data-q aria-label="노력치 찍는 법">?</button></h4><p class="ev-lv">Lv.${LV} · ${natKo(m.nat)} 성격</p></div></div>
+  <div class="ev-pool"><button type="button" class="ev-rec" data-rec>추천</button><div class="ep-l"><small>남은 노력치</small><b class="evp-n">0</b></div><div class="ep-r"><small>합계</small><span><b class="evu-n">0</b> / ${EV_MAX}</span></div><i class="ep-g"><i class="gPool"></i><i class="gNew"></i><i class="gVit"></i></i></div>
+  <div class="ev-cols"><span></span><small class="l">노력치</small><small>능력치</small><small>빼기</small><small>넣기</small><small>영양제</small></div>
+  <div class="ev-list"></div>
+  <div class="ev-key"><span><b class="k p">+</b>넣기 <em>1당 <i class="coin"></i>${PP}G</em></span><span><b class="k m">−</b>빼기 <em>공짜</em></span><span><img class="k" alt="" src="${VIT[1]}">영양제 <em>+10</em></span><span><b class="k h">꾹</b>누르면 <em>계속</em></span></div>
+  <div class="ev-bill"><p class="eb-h"><span>정산표</span><span class="eb-gold">보유 <i class="coin"></i><b class="evg-n">0</b>G</span></p><div class="eb-rows"></div><div class="eb-tot"><span>합계</span><b><i class="coin"></i><span class="evc-n">0</span>G</b></div></div>
+  <div class="gy-btns"><button data-a="cancel" class="ev-cancel">되돌리기</button><button class="main ev-save" data-a="save">저장</button></div>
+  <p class="ev-toast" hidden></p>`, (a, close) => {
+    if (a === 'x') { close(); done?.(); return; }
+    if (a === 'cancel') { start(); toast('바꾼 걸 되돌렸어요'); return; }
+    if (a === 'save') { const c = cost(); if (c > S.gold || !dirty()) return; if (c && !evSpend(c)) return;
+      if (c) try { window.GymBGM?.se('DP_REGI'); } catch (e) {}
+      const e = evArr(m); for (let i = 0; i < 6; i++) e[i] = S1.ev[i]; m.evp = S1.pool; const B0 = bagOf(); EV_VIT.forEach(([k], i) => { const n = (B0[k] | 0) - S1.vUse[i]; if (n > 0) B0[k] = n; else delete B0[k]; });
+      GA.save(); SAVED = { ev: S1.ev.slice(), pool: S1.pool, bag: EV_VIT.map(([k]) => B0[k] | 0) }; start(); toast(c ? `${c.toLocaleString()}G를 내고 저장했어요` : '저장했어요');
+      setTimeout(() => { if (p.isConnected) { p.remove(); done?.(); } }, 700); }
+  });
+  p.classList.add('ev-pop'); const W = p.querySelector('.win'), $ = s => W.querySelector(s), list = $('.ev-list');
+  p.onclick = (h => e => { if (e.target === p) { p.remove(); done?.(); return; } h(e); })(p.onclick);
+  const sum = a => a.reduce((x, y) => x + y, 0);
+  const putAmt = i => Math.max(0, S1.ev[i] - SAVED.ev[i] - S1.vAdd[i]);
+  const cost = () => S1.ev.reduce((a, _, i) => a + putAmt(i), 0) * PP + S1.vBuy.reduce((a, n) => a + n * VP, 0);
+  const dirty = () => JSON.stringify([S1.ev, S1.pool]) !== JSON.stringify([SAVED.ev, SAVED.pool]);
+  list.innerHTML = N.map((n, i) => `<div class="ev-r" data-i="${i}"><span class="ev-n">${n}</span><span class="ev-g"><i class="o"></i><i class="n"></i><i class="evv"></i><b></b></span><small class="ev-d"></small><button type="button" class="ev-b ev-m" data-m="${i}" aria-label="${n} 빼기">−</button><button type="button" class="ev-b ev-pl" data-p="${i}" aria-label="${n} 넣기">+</button><span class="ev-vw"><button type="button" class="ev-b ev-vb" data-v="${i}" aria-label="${n} 영양제 먹이기"><img alt="" src="${VIT[i]}"><small></small></button><button type="button" class="ev-b ev-vx" data-x="${i}" aria-label="${n} 영양제 빼기" hidden>−<em></em></button></span></div>`).join('');
+  const rows = [...list.children];
+  function drawBill(c) { const L = [];
+    N.forEach((n, i) => { const a = putAmt(i); if (a) L.push(`<div class="eb-r"><span>${n} 노력치 <em>+${a}</em></span><small>${a} × ${PP}G</small><b>${(a * PP).toLocaleString()}G</b></div>`); });
+    N.forEach((n, i) => { const b = S1.vBuy[i], u = S1.vUse[i];
+      if (b) L.push(`<div class="eb-r v"><span><img alt="" src="${VIT[i]}">${VN[i]} <strong>×${b}</strong> <em>${n}</em></span><small>개당 ${VP}G</small><b>${(b * VP).toLocaleString()}G</b></div>`);
+      if (u) L.push(`<div class="eb-r v bag"><span><img alt="" src="${VIT[i]}">${VN[i]} <strong>×${u}</strong> <em>${n}</em></span><small>가방에서</small><b>0G</b></div>`); });
+    const br = $('.eb-rows'); br.innerHTML = L.length ? L.join('') : '<p class="eb-0">넣은 노력치 없음</p>'; br.onscroll = () => br.classList.toggle('more', br.scrollTop + br.clientHeight < br.scrollHeight - 2); br.onscroll(); }
+  function draw() {
+    const u = sum(S1.ev), c = cost();
+    $('.evp-n').textContent = S1.pool; $('.evu-n').textContent = u + S1.pool; $('.evg-n').textContent = S.gold.toLocaleString(); drawBill(c);
+    const base = S1.ev.map((v, i) => Math.min(v, SAVED.ev[i])), nw = S1.ev.map((v, i) => v - base[i]);
+    const va = sum(S1.vAdd); $('.gNew').style.width = ((u - va) / EV_MAX * 100) + '%'; $('.gVit').style.width = (va / EV_MAX * 100) + '%'; $('.gPool').style.width = (S1.pool / EV_MAX * 100) + '%';
+    $('.ev-pool').classList.toggle('zero', !S1.pool); $('[data-rec]').disabled = !S1.pool;
+    rows.forEach((r, i) => { const v = S1.ev[i];
+      r.querySelector('.o').style.width = (base[i] / EV_ONE * 100) + '%'; const vt = Math.min(S1.vAdd[i], nw[i]), pl = nw[i] - vt; r.querySelector('.n').style.width = (pl / EV_ONE * 100) + '%'; r.querySelector('.n').style.left = (base[i] / EV_ONE * 100) + '%'; r.querySelector('.evv').style.width = (vt / EV_ONE * 100) + '%'; r.querySelector('.evv').style.left = ((base[i] + pl) / EV_ONE * 100) + '%';
+      { const d0 = v - SAVED.ev[i]; r.querySelector('.ev-g b').innerHTML = d0 ? `${v}<em class="${d0 > 0 ? 'p' : 'm'}">(${d0 > 0 ? '+' : '−'}${Math.abs(d0)})</em>` : v; }
+      const g0 = stat(i, SAVED.ev[i]) - stat(i, 0), g1 = stat(i, v) - stat(i, 0), sd = r.querySelector('.ev-d');
+      let nx = v + 1; while (nx <= EV_ONE && stat(i, nx) === stat(i, v)) nx++; const step = nx > EV_ONE ? 0 : nx - v;
+      let pv = v; while (pv > 0 && stat(i, pv - 1) === stat(i, v)) pv--; const span = step ? nx - pv : 1;
+      sd.innerHTML = `<span class="dv"><b class="now${g0 ? '' : ' z'}">${g0}</b>${g1 === g0 ? '<i></i><b></b>' : `<i>→</i><b class="${g1 > g0 ? 'up' : 'dn'}">${g1}</b>`}</span>` + `<span class="nx">${step ? `<i class="pb"><i style="width:${(v - pv) / span * 100}%"></i></i>` : '최대'}</span>`;
+      r.classList.toggle('full', v >= EV_ONE); r.classList.toggle('chg', v !== SAVED.ev[i]);
+      r.querySelector('.ev-m').disabled = v - S1.vAdd[i] <= 0; r.querySelector('.ev-pl').disabled = !S1.pool || v >= EV_ONE;
+      const room = v < EV_ONE && u + S1.pool < EV_MAX, vb = r.querySelector('.ev-vb'), have = S1.bag[i] - S1.vUse[i];
+      vb.disabled = !room; vb.querySelector('small').innerHTML = have > 0 ? `×${have}` : `${VP}`; vb.classList.toggle('have', have > 0); const vn = S1.vBuy[i] + S1.vUse[i], vx = r.querySelector('.ev-vx'); vx.hidden = !vn; vx.querySelector('em').textContent = vn; });
+    $('.evc-n').textContent = c.toLocaleString(); $('.ev-bill').classList.toggle('on', c > 0); $('.ev-bill').classList.toggle('short', c > S.gold);
+    $('.ev-save').innerHTML = c ? `<i class="coin"></i>${c.toLocaleString()}G 내고 저장` : '저장'; $('.ev-save').disabled = !dirty() || c > S.gold; $('.ev-cancel').disabled = !dirty();
+  }
+  const put = i => { if (!S1.pool || S1.ev[i] >= EV_ONE) return false; S1.pool--; S1.ev[i]++; draw(); return true; };
+  const take = i => { if (S1.ev[i] - S1.vAdd[i] <= 0) return false; S1.ev[i]--; S1.pool++; draw(); return true; };
+  const vit = i => { const u = sum(S1.ev); if (S1.ev[i] >= EV_ONE || u + S1.pool >= EV_MAX) return false; const k = Math.min(10, EV_ONE - S1.ev[i], EV_MAX - u - S1.pool);
+    const fromBag = S1.bag[i] - S1.vUse[i] > 0; S1.vK[i].push({ k, bag: fromBag }); if (fromBag) S1.vUse[i]++; else S1.vBuy[i]++; S1.ev[i] += k; S1.vAdd[i] += k; draw(); return true; };
+  const unvit = i => { const t = S1.vK[i].pop(); if (!t) return false; S1.ev[i] -= t.k; S1.vAdd[i] -= t.k; if (t.bag) S1.vUse[i]--; else S1.vBuy[i]--; draw(); return true; };
+  // 영양제 첫 누름 = 상점 카드 모양 설명, 이번에 하나라도 먹였으면 바로 먹임
+  const vcOpen = i => { const have = S1.bag[i] - S1.vUse[i];
+    gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${VIT[i]}">${VN[i]}${bagN(have)}</h4><p class="gy-msg mi-d">${EV_VD[i]}. 먹이면 ${N[i]} 노력치가 10 올라간다.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="y">${have > 0 ? '먹이기' : `<i class="coin"></i>${VP}G 먹이기`}</button></div>`, (a, c2) => { c2(); if (a === 'y') vit(i); }); };
+  // ? 힌트 카드
+  const qOpen = () => { const P0 = evPlan(sp), chips = Q => Q.k.map((k, j) => `<span class="q-c"><small>${N[k]}</small><b>${Q.v[j]}</b></span>`).join('');
+    const q = gymPop(`<h4 class="mi-h">${esc(SPECIES[sp]?.n || nmOf(P))}${jong(SPECIES[sp]?.n || '') ? '은' : '는'} 이렇게 많이 찍어요</h4><div class="q-main"><p class="q-nm">${P0.nm}</p><div class="q-cs">${chips(P0)}</div></div><p class="gy-msg mi-d">${P0.why}</p>
+      <div class="q-alt"><small>이렇게도 찍어요 · ${P0.alt.nm}</small><span>${P0.alt.k.map((k, j) => `${N[k]} ${P0.alt.v[j]}`).join(' · ')}</span></div><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="y">이대로 추천 찍기</button></div>`, (a, c2) => { c2(); if (a === 'y') rec(); }); q.classList.add('ev-qpop'); };
+  // 추천: 남은 노력치를 힌트 배분 순서대로, 능력치가 안 오르는 자투리는 추천 배분의 다른 칸으로
+  function rec() { if (!S1.pool) return toast('남은 노력치가 없어요'); const P0 = evPlan(sp), add = [0, 0, 0, 0, 0, 0]; let left = S1.pool; const room = i => EV_ONE - S1.ev[i] - add[i];
+    P0.k.forEach((k, j) => { const n = Math.max(0, Math.min(left, P0.v[j] - S1.ev[k] - add[k], room(k))); add[k] += n; left -= n; });
+    for (const k of [...P0.k, 0, 1, 2, 3, 4, 5]) { if (!left) break; const n = Math.min(left, room(k)); add[k] += n; left -= n; }
+    for (let i = 0; i < 6; i++) { if (!add[i]) continue; const v = S1.ev[i] + add[i]; let pv = v; while (pv > S1.ev[i] && stat(i, pv - 1) === stat(i, v)) pv--; const waste = v - pv; if (!waste || v >= EV_ONE) continue;
+      for (const j of P0.k) { if (j === i) continue; const w = S1.ev[j] + add[j]; let nx = w + 1; while (nx <= EV_ONE && stat(j, nx) === stat(j, w)) nx++; if (nx <= EV_ONE && nx - w <= waste) { add[i] -= waste; add[j] += waste; break; } } }
+    add.forEach((n, i) => { S1.ev[i] += n; S1.pool -= n; }); sfx('tap'); draw(); toast('추천대로 찍었어요 · ' + add.map((n, i) => n ? `${N[i]} +${n}` : '').filter(Boolean).join(' · ')); }
+  W.querySelector('[data-q]').onclick = e => { e.stopPropagation(); sfx('tap'); qOpen(); };
+  W.querySelector('[data-rec]').onclick = e => { e.stopPropagation(); rec(); };
+  let hold = null; const stop = () => { clearTimeout(hold?.t); clearInterval(hold?.iv); hold = null; };
+  list.addEventListener('pointerdown', e => { const b = e.target.closest('.ev-b'); if (!b || b.disabled) return; e.preventDefault(); sfx('tap');
+    if (b.dataset.v != null && !S1.vK[+b.dataset.v].length) { vcOpen(+b.dataset.v); return; }
+    const go = () => b.dataset.p != null ? put(+b.dataset.p) : b.dataset.m != null ? take(+b.dataset.m) : b.dataset.x != null ? unvit(+b.dataset.x) : vit(+b.dataset.v); go();
+    hold = { t: setTimeout(() => { vib(); hold.n = 0; hold.iv = setInterval(() => { if (!go()) return stop(); if (++hold.n % 5 === 0) vib(); }, 70); }, 380) }; });   // 꾹 누르면 계속 + 진동 (경완 규칙)
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => list.addEventListener(t, stop));
+  const toast = t => { const el = $('.ev-toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 1600); };
+  const start = () => { S1 = { ev: SAVED.ev.slice(), pool: SAVED.pool, bag: SAVED.bag.slice(), vAdd: [0, 0, 0, 0, 0, 0], vBuy: [0, 0, 0, 0, 0, 0], vUse: [0, 0, 0, 0, 0, 0], vK: [[], [], [], [], [], []] }; draw(); };
+  start(); fillTh(p); return p;
+}
+
+window.GymBattle = { evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
