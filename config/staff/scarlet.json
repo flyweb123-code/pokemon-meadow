@@ -1,6 +1,1105 @@
 {
  "days": [
   {
+   "at": 1794264484414,
+   "theme": "숲속 꼬마 놀이공원",
+   "note": "오늘은 숲속 꼬마 놀이공원이에요! 회전목마·관람차·범퍼카처럼 올라타서 흔들리는 탈것과, 힘 측정기·두더지 잡기·오리 맞히기·고리 던지기처럼 격투·물·전기·에스퍼 타입이 기술로 노는 게임대를 섞었어요. 빨강·크림 줄무늬와 금빛 전구로 한 동네처럼 맞췄고, 밤엔 입구 아치 전구가 반짝여요.",
+   "items": [
+    {
+     "id": "park-carousel",
+     "n": "꼬마 회전목마",
+     "k": "놀이",
+     "d": "빨강·크림 줄무늬 고깔 지붕에 금빛 기둥이 선 작은 회전목마예요. 하얀 목마 등에 빨간 안장이 얹혀 있고, 둥근 받침 둘레에 금빛 장식이 박혀 있어요.",
+     "fit": "놀이터 가운데 넓은 풀밭",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "하얀 목마 등에 올라타 오르락내리락 흔들리며 타요",
+       "x": {
+        "at": [
+         0.5,
+         0.58
+        ],
+        "m": "ride",
+        "fx": "swing"
+       },
+       "l": [
+        "회전목마 하얀 목마에 올라타 오르락내리락 흔들린다.",
+        "회전목마 목마 등에 올라타 신이 나서 몸을 들썩인다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 고깔 지붕 꼭대기 금빛 구슬 옆에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "회전목마 고깔 지붕 꼭대기에 날아올라 앉았다.",
+        "회전목마 지붕 위 금빛 구슬 옆에서 깃털을 고른다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "회전목마 둘레를 빙빙 돌며 목마를 따라 달려요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "회전목마 둘레를 빙빙 돌며 목마를 따라 달렸다.",
+        "회전목마를 따라 한 바퀴 뛰어 돌았다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "누가 타고 있으면 받침을 밀어 목마를 더 크게 흔들어 줘요",
+       "x": {
+        "at": [
+         0.1,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "회전목마 받침을 힘껏 밀어 목마를 크게 흔들어 줬다.",
+        "회전목마를 밀어 빙글빙글 돌게 해 줬다."
+       ]
+      }
+     ],
+     "px": [
+      "...............kk...............",
+      "..............kYYk..............",
+      "..............kook..............",
+      "..............kyyk..............",
+      ".............kkwwsk.............",
+      "...........kkRWwrsckk...........",
+      ".........kkRWWrwrwssckk.........",
+      ".......kkRRWWrWwrrwsscckk.......",
+      ".....kkRRRWWrrwwrrwwssccskk.....",
+      "...kkRRRWWWrrWwwrrrwwsssccskk...",
+      "..kRRRRWWWrrrWwwrrrwwwssscccskk.",
+      ".kRRRWWWWrrrWwwwrrrwwwwsssccccsk",
+      ".kyyyyyyyyyyyyyyyyyyyyyyooooook.",
+      ".krjjoiiijjjiiijjjiiijjjiiojjk..",
+      "..kjjyjjjojjjjjyoyyjjjojjjyjjk..",
+      "..kiiyiiioiiiiiyoyyWWioiiiyiik..",
+      "..kiiyiiioCCiiiyoyyWkwoiCCyiik..",
+      "..kiiyiiioCCiiryoyyWwwoiCCyiik..",
+      "..kiiyiCCoyWWWrrrWWWWCoCCCyiik..",
+      "..kiiyiCCooWWWsssWWWiCoCCiyiik..",
+      "..kiiyiCCoCWWWWWWWWWiCoCCiyiik..",
+      "..kiiyiCioCwwwwwwwwwiCoiCiyiik..",
+      "..kiiyiiioiiciiyoiciiioiiiyiik..",
+      "..kiiyiiioiiiciyoiiciioiiiyiik..",
+      ".kkiiyiiioiiiiiyoiiiiioiiiyiikk.",
+      "kWWWWWWWWWWWwwwwwwwwwwwwwwwwwwwk",
+      "kwwwwwwwwwwwwwwwwwwwccccccccccck",
+      "krrYrrYrrYrrYrrYrrYssYssYssYsssk",
+      "krrrrrrrrrrrrrrrrrsssssssssssssk",
+      "ksssssssssssssssssssssSSSSSSSSSk",
+      ".kssssssssssssssssssssSSSSSSSSk.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "C": "#a88a62",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "i": "#3a3448",
+      "j": "#544a62",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-ferris-wheel",
+     "n": "작은 관람차",
+     "k": "놀이",
+     "d": "나무 다리 위에 선 하얀 바퀴에 빨강·청록·분홍·파랑 곤돌라 네 개가 매달린 작은 관람차예요. 바퀴 둘레에 노란 전구가 촘촘히 박혀 있어요.",
+     "fit": "놀이공원 끝, 언덕이나 높은 자리",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "아래쪽 곤돌라에 올라타 바퀴를 따라 천천히 흔들려요",
+       "x": {
+        "at": [
+         0.3,
+         0.72
+        ],
+        "m": "ride",
+        "fx": "swing"
+       },
+       "l": [
+        "관람차 곤돌라에 올라타 천천히 흔들리며 바깥을 내다본다.",
+        "관람차 곤돌라에 올라타 높은 곳을 구경한다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "관람차 바퀴 둘레를 날갯짓하며 곤돌라를 따라 빙빙 돌아요",
+       "x": {
+        "m": "circ flap"
+       },
+       "l": [
+        "관람차 바퀴 둘레를 날갯짓하며 빙빙 돌았다.",
+        "관람차 곤돌라를 따라 날며 한 바퀴 돌았다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "가운데 축에 전기를 흘려 바퀴 둘레 전구를 반짝 켜요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "관람차에 전기를 흘려 바퀴 둘레 전구를 반짝 켰다.",
+        "관람차 전구에 찌릿 불을 켜 놓고 뿌듯해한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "관람차 아래에서 고개를 들어 꼭대기 곤돌라를 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "관람차 아래에서 꼭대기 곤돌라를 올려다본다.",
+        "관람차가 얼마나 높은지 고개를 젖혀 올려다본다."
+       ]
+      }
+     ],
+     "px": [
+      "............kkkk............",
+      ".........kkkMMMMkkk.........",
+      ".......kkMMYMMMMYMmkk.......",
+      "......kYMMMkkmkkkmmmYk......",
+      ".....kMMMkk.kmk..kkmmmk.....",
+      "....kMgkk...kmk....kkgmk....",
+      "...kRrrrrk..kmk...kTttttk...",
+      "...kiAiiik..kmk...kiAiiik...",
+      "..kMRrrssmk.kmk..kmTttuugk..",
+      "..kMrrrsskmkkmk.kmktttuugk..",
+      "..kYkkkkk.kmkmkkmk.kkkkkYk..",
+      ".kMMk......kmyymk......kggk.",
+      ".kMMkkkkkkkkyyyokkkkkkkkggk.",
+      ".kMMmmmmmmmmyyoommmmmmmmggk.",
+      ".kMMkkkkkkkkmoomkkkkkkkkggk.",
+      "..kYk.....kmDmDEmk.....kYk..",
+      "..kMmk...kmDBmkDEmk...kggk..",
+      "..kmmk..kmkDBmkDEkmk..kggk..",
+      "...kmmkkmkDBkmkkDEkmkkggk...",
+      "...kYmkmkkDBkmkkDEkkmkgYk...",
+      "....kmgkkDBkkmk.kDEkkggk....",
+      "...kTttttDBkkmk.kDERrrrrk...",
+      "...kiAiiimgkkmkkkggiAiiik...",
+      "...kTttuuggYggggYggRrrssk...",
+      "...ktttuukkkggggkkkrrrssk...",
+      "....kkDBk...kkkk...kDEkk....",
+      ".....kDBk..........kDEk.....",
+      "....kDBk............kDEk....",
+      "....kDBk............kDEk....",
+      "...kDBk..............kDEk...",
+      ".kkkDBkkkkkkkkkkkkkkkkDEkkk.",
+      "kBBBBBBBBBBBBBBBBBBBBBBBBBBk",
+      "kDEEEEEEEEEEEEEEEEEEEEEEEEDk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "A": "#9cc4f0",
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "M": "#e8eef4",
+      "R": "#f08c78",
+      "T": "#9ad8d0",
+      "Y": "#fbe39a",
+      "g": "#7c8494",
+      "i": "#3a3448",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "t": "#5aa8a0",
+      "u": "#3d7a78",
+      "y": "#e8b84a"
+     }
+    },
+    {
+     "id": "park-high-striker",
+     "n": "힘 측정기",
+     "k": "놀이",
+     "d": "나무 망치로 받침을 치면 눈금판의 빨간 추가 쭉 올라가 꼭대기 금빛 종을 땡 울리는 힘 측정기예요. 옆에 큰 망치가 기대어 있어요.",
+     "fit": "놀이공원 길가, 넓게 비운 자리",
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "받침을 힘껏 내리쳐 추를 꼭대기 종까지 쏘아 올려요",
+       "x": {
+        "at": [
+         0.4,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "glow"
+       },
+       "l": [
+        "힘 측정기 받침을 힘껏 내리쳐 꼭대기 종을 땡 울렸다.",
+        "힘 측정기를 내리쳐 추를 끝까지 쏘아 올렸다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "받침을 쿵 밟아 추가 어디까지 오르는지 올려다봐요",
+       "x": {
+        "at": [
+         0.4,
+         1
+        ],
+        "m": "push peek"
+       },
+       "l": [
+        "힘 측정기 받침을 쿵 밟고 추가 오르는 걸 올려다본다.",
+        "힘 측정기를 밟아 보고 눈금을 확인한다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 꼭대기 종 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "힘 측정기 꼭대기 종 위에 날아올라 앉았다.",
+        "힘 측정기 종 위에 앉아 아래를 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "눈금판 옆에 서서 빨간 추를 톡톡 건드려 봐요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "힘 측정기 눈금판의 빨간 추를 톡톡 건드려 본다.",
+        "힘 측정기 눈금을 손으로 짚어 보며 키를 재 본다."
+       ]
+      }
+     ],
+     "px": [
+      ".....kkkk.......",
+      "....kyyyyk......",
+      "...kyYyyyok.....",
+      "...kyyyyook.....",
+      "...kyyyoook.....",
+      "....kyoook......",
+      "....kkookk......",
+      "...kWwwccck.....",
+      "...kWwwccck.....",
+      "...kWcwcrck.....",
+      "...kWwwccck.....",
+      "...kWwwccck.....",
+      "...kWcwcrck.....",
+      "...kWwwccck.....",
+      "...kWwwccck.....",
+      "...kWcwcRck.....",
+      "...kWwwccck.....",
+      "...kWwwccckkkkk.",
+      "...kWRRrrcLLLLLk",
+      "...kWrrrrcrBBBDk",
+      "...kWwwcccrBBBDk",
+      "...kWcwcycEEEEEk",
+      "...kWwwccckkBkk.",
+      "...kWwwccckkBDk.",
+      "...kWcwcYckkBDk.",
+      "...kWwwccckkBDk.",
+      "...kWwwccckkBDk.",
+      ".kkkWwwccckkkDDk",
+      "kRRRRRRRRRRRRBDk",
+      "krrWWWWWwwwrrBDk",
+      "krrrrrrrrrrrrBDk",
+      "kssssssssssssBDk",
+      ".kkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-whack-mole",
+     "n": "두더지 잡기 게임대",
+     "k": "놀이",
+     "d": "나무 상판에 구멍 세 개가 뚫린 두더지 잡기 게임대예요. 갈색 인형 두더지가 쏙쏙 고개를 내밀고, 위에는 빨간 뿅망치가 놓여 있어요.",
+     "fit": "놀이공원 길가, 그늘진 자리",
+     "acts": [
+      {
+       "w": "작은 땅 타입",
+       "a": "가운데 빈 구멍에 쏙 숨었다가 고개만 빼꼼 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.48
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "두더지 잡기 빈 구멍에 쏙 숨었다가 고개를 빼꼼 내민다.",
+        "두더지 잡기 게임대 구멍 속에서 두더지 흉내를 낸다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "고개 내민 두더지 인형을 콩콩 두드려 쏙 들어가게 해요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "두더지 잡기에서 고개 내민 인형을 콩콩 두드렸다.",
+        "두더지 잡기를 하며 인형을 하나도 안 놓쳤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "게임대 앞에 서서 두더지가 나왔다 들어가는 걸 고개를 갸웃하며 지켜봐요",
+       "x": {
+        "at": "front",
+        "m": "speek"
+       },
+       "l": [
+        "두더지 잡기 게임대 앞에서 인형이 들락날락하는 걸 지켜본다.",
+        "두더지 잡기 인형이 쏙 들어가자 깜짝 놀란다."
+       ]
+      }
+     ],
+     "px": [
+      "...kkkkkkkkkkkkkkkkkkkk...",
+      "..kYYYYYYYYYYYYYYYYYYYYk..",
+      "..kyyrryyrryyrryyrryyyyk..",
+      "..kyyrryyrryyrryyrryyyyk..",
+      "..kooooooooooooooooooook..",
+      "...kDkkkkkkkkkkkkkkkkEk...",
+      "...kDDDk..........kDDDk...",
+      ".kkDBDDEkkkkkkkkkkDBDDEkk.",
+      "kWWDkDkEWWWWWWWWWWDkDkEWWk",
+      "kLLDDPEELLLLLLLLLLDDPEELLk",
+      "kLLiwEwiLLiiiiiiLLiwEwiLLk",
+      "kLLiiiiiLLLiiiiLLLiiiiiLLk",
+      "kBBBBBBBBBBBBBBBBBBBBBBBBk",
+      "kyyyyyyyyyyyyyyyyyyyyyyyyk",
+      "kRRRrrrrrrrrrrrrrrrrrssssk",
+      "kRRRryyrrryyrrryyrrryssssk",
+      "kRRRryorrryorrryorrryssssk",
+      "kRRRroorrroorrroorrrossssk",
+      "kRRRrrrrrrrrrrrrrrrrrssssk",
+      "kssssssssssssssssssssssssk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "P": "#ffc8dc",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "i": "#3a3448",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-cotton-candy",
+     "n": "솜사탕 수레",
+     "k": "먹거리",
+     "d": "분홍 줄무늬 차양 아래 유리 대 위에 분홍 솜사탕 구름이 몽글몽글 피어 있는 바퀴 달린 수레예요. 옆면에 분홍 띠와 하얀 땡땡이가 있어요.",
+     "fit": "놀이공원 입구 옆, 길가",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "수레 앞에 서서 몽글몽글한 솜사탕을 한 입 뜯어 먹어요",
+       "x": {
+        "at": "front",
+        "m": "peek",
+        "an": "Eat"
+       },
+       "l": [
+        "솜사탕 수레에서 분홍 솜사탕을 한 입 뜯어 먹었다.",
+        "솜사탕을 먹고 입가가 분홍색이 됐다."
+       ]
+      },
+      {
+       "w": "페어리 타입",
+       "a": "솜사탕 구름 옆에서 반짝이를 뿌려 솜사탕을 더 부풀려요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "솜사탕 수레 옆에서 반짝이를 뿌려 솜사탕을 부풀렸다.",
+        "솜사탕을 반짝반짝 크게 부풀려 놓고 흐뭇해한다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "차양 위에 떠서 날갯짓으로 솜사탕 실을 살랑살랑 날려요",
+       "x": {
+        "at": "top",
+        "m": "flap"
+       },
+       "l": [
+        "솜사탕 수레 위에서 날갯짓해 솜사탕 실을 날렸다.",
+        "솜사탕 수레 차양 위를 맴돌며 달콤한 냄새를 맡는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "수레 바퀴 뒤에 숨어 솜사탕을 몰래 노려요",
+       "x": {
+        "at": [
+         0.25,
+         1
+        ],
+        "m": "hide speek"
+       },
+       "l": [
+        "솜사탕 수레 바퀴 뒤에 숨어 솜사탕을 몰래 노린다.",
+        "솜사탕 수레 뒤에서 고개를 내밀어 눈치를 본다."
+       ]
+      }
+     ],
+     "px": [
+      "....kkkkkkppPPppkkkkk.....",
+      "...kWWPPPWwwpppwwwqqqk....",
+      ".kkWWWPPPWwwpppwwwqqqckk..",
+      "kPPWWWPPPWwwpppwwwqqqccck.",
+      "PPPWWWPPPWwwpppwwwqqqcccqk",
+      "PPPWWWPPPWwwpppwwwqqqcccqq",
+      "PPPWWWPPPWwwpppwwwqqqcccqq",
+      "kkkkmpkkppkkppkkpqkkqgkkkk",
+      "...kmk..kk.kkkk.kk..kgk...",
+      "...kmk..kkkppppkk...kgk...",
+      "...kmk.kWPPPpppppk..kgk...",
+      "...kmkkPPPPPppppppk.kgk...",
+      "...kmkkpPPPppppppppkkgk...",
+      "...kmk.kpppppppppqk.kgk...",
+      "...kmkkMMMMMMMMMMMMkkgk...",
+      "..kkmkkmmmmmmmmmmmmkkgkk..",
+      ".kWWWWWWWWWWWWWWWWWWWWWWkk",
+      ".kwwwwwwwwwwwwwwwwwwcccBBD",
+      ".kwwwwwwwwwwwwwwwwwwcccckD",
+      ".kPPPPPPPPPPPPPPPPPPqqqqkk",
+      ".kpppWpppWpppWpppWppqqqqk.",
+      ".kppppppppppppppppppqqqqk.",
+      ".kwwwwwmwwwwwwwwwwwwcccck.",
+      ".kwwwmmmmmwwwwwwwwwwcccck.",
+      ".kccmmmmmmgccccccccccccck.",
+      "..kkmmyyyggkkkkkkkkkmgkk..",
+      "...kmmyyyggk.......kmgk...",
+      "...kmmmgggGk.......kmgk...",
+      "....kmgggGk........kmgk...",
+      ".....kkgkk..........kk...."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "G": "#4e5466",
+      "M": "#e8eef4",
+      "P": "#ffc8dc",
+      "W": "#fff4dc",
+      "c": "#d4b88a",
+      "g": "#7c8494",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "p": "#f090b4",
+      "q": "#c8608a",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-balloon-stand",
+     "n": "풍선 가판대",
+     "k": "놀이",
+     "d": "줄무늬 받침대 위 나무 기둥에 빨강·노랑·파랑·청록·분홍 풍선 다섯 개가 실로 묶여 둥실 떠 있는 풍선 가판대예요.",
+     "fit": "놀이공원 입구, 바람이 잔잔한 곳",
+     "acts": [
+      {
+       "w": "작은 나는 포켓몬",
+       "a": "풍선 실 하나를 꼭 잡고 둥실둥실 오르내려요",
+       "x": {
+        "at": [
+         0.5,
+         0.45
+        ],
+        "m": "bob"
+       },
+       "l": [
+        "풍선 실을 꼭 잡고 둥실둥실 오르내린다.",
+        "풍선에 매달려 바람 따라 살랑살랑 흔들린다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 맨 위 노란 풍선 꼭대기에 살짝 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "풍선 가판대 노란 풍선 꼭대기에 날아올라 앉았다.",
+        "풍선 위에 살짝 앉아 흔들흔들 균형을 잡는다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "풍선 다발 아래에서 고개를 들어 색색 풍선을 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "풍선 가판대 아래에서 색색 풍선을 올려다본다.",
+        "풍선 가판대에서 어떤 색 풍선을 고를지 고민한다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "풍선을 몸에 문질러 정전기로 털이 쭈뼛 서요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "풍선을 몸에 문질러 정전기로 털이 쭈뼛 섰다.",
+        "풍선에 정전기를 일으켜 몸에 착 붙였다."
+       ]
+      }
+     ],
+     "px": [
+      ".........kkk.........",
+      "........kyyyk........",
+      ".......kyWyyyk.......",
+      "...kkkkyYyyyookkkk...",
+      "..krrrkyyyyyookaaak..",
+      ".krWrrryyyyoooaWaaak.",
+      "krRrrrssyyoooaAaaabbk",
+      "krrrrrsskoookaaaaabbk",
+      "krrrrstttkokpppaabbnk",
+      ".krrstWtttmpWpppbbnk.",
+      "..kstTtttupPpppqqnk..",
+      "...ktttttupppppqqk...",
+      "...kttttuuppppqqqk...",
+      "....kttuuumppqqqk....",
+      ".....kuuukmkqqqk.....",
+      "......kukkmkkqk......",
+      ".......kmkmkmk.......",
+      ".......kmmmmmk.......",
+      "........kmmmk........",
+      "........kBDk.........",
+      "........kBDk.........",
+      "........kBDk.........",
+      "........kBDk.........",
+      "..kkkkkkkBDkkkkkkk...",
+      ".kRRRRRRRRRRRRRRRRk..",
+      ".krrrrrrrrrrrrrrrrk..",
+      "..kWWWWWWWWWWWWWWk...",
+      "..kwrwwrwwrwwsccck...",
+      "..kwrwwrwwrwwsccck...",
+      "..kwrwwrwwrwwsccck...",
+      "..kwrwwrwwrwwsccck...",
+      "..kCCCCCCCCCCCCCCk...",
+      "...kkkkkkkkkkkkkk...."
+     ],
+     "pal": {
+      "A": "#9cc4f0",
+      "B": "#c08a52",
+      "C": "#a88a62",
+      "D": "#93643a",
+      "P": "#ffc8dc",
+      "R": "#f08c78",
+      "T": "#9ad8d0",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "a": "#5a8ad0",
+      "b": "#3d62a0",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "n": "#2a3f6e",
+      "o": "#c08a2e",
+      "p": "#f090b4",
+      "q": "#c8608a",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "t": "#5aa8a0",
+      "u": "#3d7a78",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-duck-gallery",
+     "n": "오리 맞히기 게임대",
+     "k": "놀이",
+     "d": "빨강·크림 줄무늬 차양 아래 남색 벽 앞으로 노란 오리 인형 셋과 빨간 과녁이 줄지어 선 맞히기 게임대예요. 앞에는 나무 계산대가 있어요.",
+     "fit": "놀이공원 길가, 벽 쪽",
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "계산대 앞에서 물대포를 쏴 노란 오리 인형을 차례로 맞혀요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "오리 맞히기 게임대에서 물대포로 오리 인형을 차례로 맞혔다.",
+        "오리 맞히기에서 물줄기로 과녁 한가운데를 맞혔다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "찌릿 전기를 쏴 빨간 과녁을 맞혀요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "오리 맞히기 게임대 과녁에 찌릿 전기를 맞혔다.",
+        "오리 맞히기에서 전기로 과녁을 맞히고 신이 났다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "계산대 뒤에 숨었다가 오리 인형 사이로 고개를 빼꼼 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.5
+        ],
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "오리 맞히기 게임대 오리 인형 사이로 고개를 빼꼼 내밀었다.",
+        "오리 맞히기 계산대 뒤에 숨어 오리 흉내를 낸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "계산대 앞에 서서 오리 인형을 고개를 갸웃하며 구경해요",
+       "x": {
+        "at": "front",
+        "m": "speek"
+       },
+       "l": [
+        "오리 맞히기 게임대 앞에서 오리 인형을 구경한다.",
+        "오리 맞히기 오리 인형과 눈싸움을 한다."
+       ]
+      }
+     ],
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kRWWWRRRWWWRRRWWWRRRWWWRRRWk",
+      "krwwwrrrwwwrrrwwwrrrwccsssck",
+      "krwwwrrrwwwrrrwwwrrrwccsssck",
+      "krwwwrrrwwwrrrwwwrrrwccsssck",
+      "kLBkkrrkkkkrrkkkkrrkkkkssDDk",
+      "kLBnnnnnnnnnnnnnnnnnnnnnnDDk",
+      "kLBbbbbbbbbbbbbbbbbbbbbbbDDk",
+      "kLBbbbAbbbbbAbbbbbAbbbrbbDDk",
+      "kLBbbbbykobbbykobbbykrWrbDDk",
+      "kLBbbbbyorbbbyorbbbyorrrbDDk",
+      "kLBbbyyyybbyyyybbyyyybrbbDDk",
+      "kLBbbyyoobbyyoobbyyoobbbbDDk",
+      "kLBBBBBBBBBBBBBBBBBBBBBBBDDk",
+      "kLBDDDDDDDDDDDDDDDDDDDDDDDDk",
+      "kWWWWWWWWWWWWWWWWWWWWWWWWWWk",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLLLk",
+      "kBBDBBBDBBBDBBBDBBBDBDDEDDDk",
+      "kBBDBBBDBBBDBBBDBBBDBDDEDDDk",
+      "krrrrrrrrrrrrrrrrrrrrssssssk",
+      "krrrrrrrrrrrrrrrrrrrrssssssk",
+      "kBBDBBBDBBBDBBBDBBBDBDDEDDDk",
+      "kBBDBBBDBBBDBBBDBBBDBDDEDDDk",
+      "kEEEEEEEEEEEEEEEEEEEEEEEEEEk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "A": "#9cc4f0",
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "b": "#3d62a0",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "n": "#2a3f6e",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-bumper-car",
+     "n": "꼬마 범퍼카",
+     "k": "탈것",
+     "d": "파란 동그란 차체에 빨간 등받이와 운전대가 달리고, 둘레에 고무 범퍼를 두른 꼬마 범퍼카예요. 뒤로 솟은 막대 끝에서 노란 불꽃이 튀어요.",
+     "fit": "평평한 풀밭, 두세 대 모아서",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "범퍼카에 올라타 운전대를 잡고 들썩들썩 흔들려요",
+       "x": {
+        "at": [
+         0.4,
+         0.5
+        ],
+        "m": "ride",
+        "fx": "swing"
+       },
+       "l": [
+        "꼬마 범퍼카에 올라타 운전대를 잡고 들썩인다.",
+        "꼬마 범퍼카에 올라타 부릉부릉 흉내를 낸다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 큰 포켓몬",
+       "a": "범퍼카 범퍼에 쿵 부딪쳐 통통 튕겨 내요",
+       "x": {
+        "at": [
+         0.05,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "꼬마 범퍼카 범퍼에 쿵 부딪쳐 통통 튕겨 냈다.",
+        "꼬마 범퍼카를 밀어 범퍼끼리 콩 부딪치게 했다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "뒤 막대 끝에 전기를 보내 노란 불꽃을 파지직 튀겨요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "꼬마 범퍼카 막대 끝에 전기를 보내 불꽃을 파지직 튀겼다.",
+        "꼬마 범퍼카에 전기를 채워 넣고 뿌듯해한다."
+       ]
+      }
+     ],
+     "px": [
+      "..............kYyk......",
+      ".............kYmkyk.....",
+      "..............kmgk......",
+      "..............kmgk......",
+      "..............kmgk......",
+      "..............kmgk......",
+      "..............kmgk......",
+      "..............kmgk......",
+      "....kkkkkkk...kmgkk.....",
+      "...kRRRRRRRkkkkmMmmk....",
+      "...kRrrrrssaaaaammmk....",
+      "...kRrrrrssaaaaaGaaak...",
+      "..kaRnnnnnnnnnnGaaaabk..",
+      ".kaaRnnnnnnnnnGaaabbbbk.",
+      "kaaaaaaaaaaaaaaabbbWYbbk",
+      ".kYYYYYYYYYYYYYYYYYYYYk.",
+      ".kkaaaaaaaabbbbbbbbnnkk.",
+      "kjjjjjjjjjjjjjjjjjjjjjjk",
+      "kiiiiiiiiiiiiiiiiiiiiiik",
+      "kiiiiiiiiiiiiiiiiiiiiiik",
+      ".kkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "G": "#4e5466",
+      "M": "#e8eef4",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "a": "#5a8ad0",
+      "b": "#3d62a0",
+      "g": "#7c8494",
+      "i": "#3a3448",
+      "j": "#544a62",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "n": "#2a3f6e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-ring-toss",
+     "n": "고리 던지기 탁자",
+     "k": "놀이",
+     "d": "줄무늬 천을 덮은 낮은 탁자 위에 유리병 다섯 개가 서 있고, 빨강·노랑 고리가 몇 개 걸려 있는 고리 던지기 탁자예요.",
+     "fit": "놀이공원 길가, 탁 트인 자리",
+     "acts": [
+      {
+       "w": "에스퍼 타입",
+       "a": "염력으로 고리를 띄워 병목에 쏙쏙 걸어요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "고리 던지기 탁자에서 염력으로 고리를 병목에 쏙쏙 걸었다.",
+        "고리 던지기를 염력으로 한 번에 다 성공했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "탁자 앞에서 고리를 던져 병목에 걸어 보려고 해요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "고리 던지기 탁자 앞에서 고리를 던져 병목에 걸었다.",
+        "고리 던지기를 하다 아깝게 빗나가 아쉬워한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "탁자 천 아래로 쏙 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide speek"
+       },
+       "l": [
+        "고리 던지기 탁자 천 아래로 쏙 숨었다.",
+        "고리 던지기 탁자 천 밑에서 고개를 빼꼼 내민다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 병 사이 탁자 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "고리 던지기 탁자 위 병 사이에 날아올라 앉았다.",
+        "고리 던지기 병 사이에 앉아 병목을 콕콕 쪼아 본다."
+       ]
+      }
+     ],
+     "px": [
+      ".....k...k...k...k...k....",
+      "....kck.kck.kck.kck.kck...",
+      "....ktk.ktkkkakkktk.kak...",
+      "....ktk.ktkYyyyyktk.kak...",
+      "....ktk.ktkkkakkktk.kak...",
+      "...kttukttukaabkttukaabk..",
+      "...kTtukTtukAabkTtukAabk..",
+      "...ktturrrrraabyyyyyaabk..",
+      "...kttukttukaabkttukaabk..",
+      ".kkkttukttukaabkttukaabkk.",
+      "kWWWWWWWWWWWWWWWWWWWWWWWWk",
+      "kLLLLLLLLLLLLLLLLLLLBBBBBk",
+      "kSSSSSSSSSSSSSSSSSSSSSSSSk",
+      "krrwwwrrrwwwrrrwwwrsscccsk",
+      "krrwwwrrrwwwrrrwwwrsscccsk",
+      "krrwwwrrrwwwrrrwwwrsscccsk",
+      "krrwwwrrrwwwrrrwwwrsscccsk",
+      "krrwwwrrrwwwrrrwwwrsscccsk",
+      ".kykykykykykykykykykokokok",
+      "..krrkk.k.k.k.k.k.k.k.k.k.",
+      "...kk....................."
+     ],
+     "pal": {
+      "A": "#9cc4f0",
+      "B": "#c08a52",
+      "L": "#e2b47a",
+      "S": "#7a2a2e",
+      "T": "#9ad8d0",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "a": "#5a8ad0",
+      "b": "#3d62a0",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "t": "#5aa8a0",
+      "u": "#3d7a78",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "glow": 0
+    },
+    {
+     "id": "park-entrance-arch",
+     "n": "놀이공원 꼬마 전구 아치",
+     "k": "장식",
+     "glow": 1,
+     "d": "빨강·크림 사탕 줄무늬 기둥 두 개 위로 둥근 아치가 걸리고, 아치를 따라 노란 꼬마 전구가 줄지어 반짝이는 놀이공원 입구예요. 가운데 빨간 현수막에 하얀 무늬가 찍혀 있어요.",
+     "fit": "맵 가장자리 길 입구",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "아치 아래로 신나게 걸어 지나가요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "놀이공원 아치 아래로 신나게 걸어 지나갔다.",
+        "놀이공원 아치를 지나며 위쪽 전구를 올려다본다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 아치 꼭대기 깃발 옆에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "놀이공원 아치 꼭대기 깃발 옆에 날아올라 앉았다.",
+        "놀이공원 아치 위에서 놀이공원 전체를 내려다본다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "기둥에 몸을 대고 전기를 흘려 아치 전구를 차례로 켜요",
+       "x": {
+        "at": [
+         0.12,
+         1
+        ],
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "놀이공원 아치 기둥에 전기를 흘려 전구를 차례로 켰다.",
+        "놀이공원 아치 전구에 불을 켜고 뿌듯해한다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "아치 전구 줄을 따라 떠서 빙 돌아요",
+       "x": {
+        "at": [
+         0.5,
+         0.25
+        ],
+        "m": "circ"
+       },
+       "l": [
+        "놀이공원 아치 전구 줄을 따라 빙 돌았다.",
+        "놀이공원 아치 둘레를 떠다니며 반짝이는 전구를 구경한다."
+       ]
+      }
+     ],
+     "px": [
+      "................kDpppk..............",
+      "............kkkkkDpkkkkk............",
+      ".........kkkwwwwwDwwwwwwkkk.........",
+      ".......kkWWWwwywwwwwwywwwwckk.......",
+      "......kWWWWYwwkkkkkkkkwwYwccck......",
+      ".....kWWyWWkkk........kkkwcycck.....",
+      "....kWWWWkk..............kkcccck....",
+      "...kWWYWk..................kcYcck...",
+      "...kWWWkkkkkkkkkkkkkkkkkkkkkkccck...",
+      "..kWyWRRRRRRRRRRRRRRRRRRRRRRRRcyck..",
+      "..kWWWrrrWWrWWrWWrWWrWWrwwssssccck..",
+      "..kWWWrrrWWrWWrWWrWWrWWrwwssssccck..",
+      ".kRRwwsssssssssssssssssssssssRRwwsk.",
+      ".kRWwrskkkkkkkkkkkkkkkkkkkkkkRWwrsk.",
+      ".kWWrrck....................kWWrrck.",
+      ".kWRrwck....................kWRrwck.",
+      ".kRRwwsk....................kRRwwsk.",
+      ".kRWwrsk....................kRWwrsk.",
+      ".kWWrrck....................kWWrrck.",
+      ".kWRrwck....................kWRrwck.",
+      ".kRRwwsk....................kRRwwsk.",
+      ".kRWwrsk....................kRWwrsk.",
+      ".kWWrrck....................kWWrrck.",
+      ".kWRrwck....................kWRrwck.",
+      ".kRRwwsk....................kRRwwsk.",
+      ".kRWwrsk....................kRWwrsk.",
+      ".kWWrrck....................kWWrrck.",
+      ".kWRrwck....................kWRrwck.",
+      ".kRRwwsk....................kRRwwsk.",
+      ".kRWwrsk....................kRWwrsk.",
+      ".kWWrrck....................kWWrrck.",
+      "kLLLLLLLk..................kLLLLLLLk",
+      "kBBBBBBBk..................kBBBBBBBk",
+      ".kkkkkkk....................kkkkkkk."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "L": "#e2b47a",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "p": "#f090b4",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     }
+    }
+   ]
+  },
+  {
    "at": 1794178156174,
    "theme": "숲속 장난감 가게",
    "note": "오늘은 숲속 장난감 가게예요! 흔들목마·오뚝이·팽이처럼 건드리면 흔들리는 장난감을 많이 넣어서 밀기 동작이 손맛 나게 했고, 블록 탑·장난감 상자·인형극 무대엔 숨기·창 내밀기를, 돛단배는 연못 위에 띄우게 했어요. 빨강·파랑·노랑 원목 장난감 색으로 맞췄어요.",
