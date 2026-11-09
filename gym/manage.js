@@ -728,12 +728,12 @@ const prBtn = () => `<button class="tm-sort" type="button" data-pr="1">${shopPr 
 const recMon = () => { const P = shRec != null && S.box.find(p => p.id === shRec); return P && luMons().some(x => x.id === P.id) ? P : null; };
 const luMons = () => [...new Set((GB().lus() || []).flat())].map(id => S.box.find(p => p.id === id)).filter(Boolean);
 function recBar() { if (!['tm', 'tr', 'it'].includes(shopT)) return ''; const P = recMon();   // v17.67 경완: 작은 버튼으로 보유 골드 왼쪽에
-  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button></div>`
+  return P ? `<div class="sp-recs on"><button type="button" class="sp-recsb" data-rec="pick" aria-label="추천 포켓몬 바꾸기"><span class="sp-recth">${GB().thumb(P)}</span><b>${esc(nmOf(P))}</b></button><button type="button" class="sp-recsx" data-rec="off" aria-label="추천 끄기">✕</button></div>`   /* v20.66 경완: 추천받기 켜면 이름 옆 ✕ (누르면 끔) */
     : `<button type="button" class="sp-recs sp-recsb" data-rec="pick"><i class="sp-recic" aria-hidden="true">★</i><b>추천받기</b></button>`; }
 // v17.82 경완 '추천받기 버튼 도구 탭이랑 정렬 맞추고 폰트·여백도 탭이랑, 테두리는 검정': 도구 탭과 같은 가로 자리·폭
 function recAlign() { const r = sh.querySelector('.sp-recs'), t = sh.querySelector('.sp-tabs [data-st=it]'), hd = sh.querySelector('.sf-hd'); if (!r || !t || !hd) return;
   const a = t.getBoundingClientRect(), h = hd.getBoundingClientRect(); if (!a.width) return; r.style.left = (a.left - h.left) + 'px';
-  if (r.classList.contains('on')) { const tl = sh.querySelector('.sp-hl')?.getBoundingClientRect(); r.style.left = ''; r.style.width = ''; r.style.right = (h.right - a.right) + 'px'; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (tl ? a.right - tl.right - 8 : a.width * 2) + 'px'; } else { r.style.right = ''; r.style.minWidth = r.style.maxWidth = ''; r.style.width = a.width + 'px'; } }   // v17.88 경완: 켜지면 도구 탭 오른쪽 끝에 맞추고 이름이 길면 왼쪽으로 늘어남
+  if (r.classList.contains('on')) { const tl = sh.querySelector('.sp-hl')?.getBoundingClientRect(); r.style.left = ''; r.style.width = ''; r.style.right = (h.right - a.right) + 'px'; r.style.minWidth = a.width + 'px'; r.style.maxWidth = (tl ? a.right - tl.right - 8 : a.width * 2) + 'px'; r.style.minWidth = (a.width + 22) + 'px'; } else { r.style.right = ''; r.style.minWidth = r.style.maxWidth = ''; r.style.width = a.width + 'px'; } }   // v17.88 경완: 켜지면 도구 탭 오른쪽 끝에 맞추고 이름이 길면 왼쪽으로 늘어남
 addEventListener('resize', () => { try { recAlign(); } catch (e) {} });
 function recPick() {   // v17.61 경완: 라인업 1·2·3 탭
   GB().loadSim?.().catch(() => {});   // v19.65: 고르는 동안 미리

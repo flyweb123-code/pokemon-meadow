@@ -1355,7 +1355,7 @@ function drawTab() {
   };
 }
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
-  p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
+  p.onclick = e => { if (e.target === p) return p.remove(); const h = e.target.closest('.iv-hex'); if (h) { sfx('tap'); ivBar = h.classList.toggle('bar'); h.classList.add('nop'); clearTimeout(h._nop); h._nop = setTimeout(() => h.classList.remove('nop'), 450); return; }   /* v20.66 경완: 막대 → 육각형으로 돌아올 때 눌림(작아짐)이 바뀐 그림에 남아 육각형이 살짝 움직였다 돌아오던 것 */ const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, () => p.remove(), b); } };
   if (S.gym) document.querySelector('#gym .gy-main').appendChild(p); else { p.style.zIndex = 16; document.querySelector('#gym').appendChild(p); }   // v14.18: 체육관 열기 전(타입 고르기 화면 위)엔 맨 위에
   fillTh(p); return p; }
 // 라인업에서 빼기 전에 묻는 창 (경완 2026-10-29)
@@ -1452,7 +1452,7 @@ function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
   return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button>${mode !== 'view' && !gm(P).it ? '<button type="button" class="th-add" data-a="hit" aria-label="도구 지니게 하기">+</button>' : ''}<div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}</div><div class="mp-xpr"><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><span class="mp-xpt"><small class="mp-xpl">경험치</small><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></span></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
-    ${ivHex(P, m)}${mode === 'view' ? '' : evBox(m)}
+    ${ivHex(P, m)}${mode === 'view' && !S.gym?.d ? '' : evBox(m)}   <!-- v20.66 경완: 보기 전용 카드(상점 배울 수 있는 포켓몬 등)에도 노력치 -->
     <div class="mp-mvh"><small>기술</small>${!S.gym ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>   <!-- v14.28 경완: 기술 바꾸기는 상세 카드 어디서나 (체육관 세우기 전 미리 보기만 빼고) -->
     <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`).join('')}</div>
     ${mode === 'view' ? '' : mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns mp-3"><button data-a="tm">도구 사용</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업으로</button>`}${!inTr(P.id) && window.Gym?.k?.lockedT?.('train') ? '<button data-a="tr" class="tr-go tr-lk" aria-disabled="true" data-tip="동네 체육관이 되면 열려요" data-tipc><i class="mp-lk" aria-hidden="true"></i>훈련장으로</button>' : `<button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button>`}</div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
@@ -1460,6 +1460,7 @@ function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프
 function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수). 없으면 라인업 (훈련장 슬롯은 훈련장 포켓몬끼리만, 경완 2026-10-29)
   if (!document.querySelector(".gy-pop .mp-head")) ivBar = false;   // 정보 카드를 새로 열면 능력치는 늘 육각형부터 (경완 2026-10-29)
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
+  if (under !== null && String(under?.dataset?.pid) !== String(P.id)) { try { GA.cry?.(P.sp, 0, 1, CRY_K); } catch (e) {} }   // v20.66 경완: 상세카드를 열 때(넘길 때도) 본게임처럼 울음소리. 작은 창을 닫고 카드만 다시 그릴 땐(null) 안 남
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
   const abShow = (k, hid, hk) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
@@ -1497,6 +1498,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'rm') return luAsk(P, fin);   // 빼기 전에 한 번 묻기 (경완 2026-10-29)
       fin(); });
   p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));
+  p.dataset.pid = P.id;
   if (p.querySelector('.ev-box2')) window.Gym?.k?.tutEv?.('C');   // v20.45 처음 노력치 박스를 볼 때 강박사 설명   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
   const L = lst ? lst() : curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
@@ -1779,23 +1781,29 @@ function usePop(P, done) {
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
       : (IL.length + ML.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
-      <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>추천 도구</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
+      <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>${useT === 'it' ? '추천 도구' : '추천 기술'}</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
     fillTh(el); recMk(); };
   // v20.60 경완 '도구 사용 화면에도 추천 도구 버튼, 가진 도구 중 추천할 도구는 테두리 은은하게 + 추천 딱지': 가진 도구(창고) 중 이 포켓몬에게 가장 맞는 것 하나
-  let recL = null; const recMk = () => { if (useT !== 'it') return; const mk = () => { const m = gm(P), own = new Set([...el.querySelectorAll('.sp-it[data-it]')].map(b => b.dataset.it)), r = recL.find(id => own.has(id) && id !== m.it), b = r && el.querySelector(`.sp-it[data-it="${r}"]`); if (b && !b.classList.contains('it-recm')) { b.classList.add('it-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } };
+  let recL = null; const recT = {}; const recMk = () => { if (useT !== 'it') { const k = useT; (recT[k] ? Promise.resolve(recT[k]) : loadSim().then(() => (recT[k] = recTms(P, k === 'tr')))).then(L => { if (!el.isConnected || useT !== k) return; const id = L.find(i => el.querySelector(`.sp-tm[data-tm="${i}"]:not(.off)`)), b = id && el.querySelector(`.sp-tm[data-tm="${id}"]`); if (b && !b.classList.contains('it-recm')) { b.classList.add('it-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } }).catch(() => {}); return; }   /* v20.66 경완: 기술머신·기술레코드 탭에선 가진 것 중 추천 기술 하나에 테두리 + 추천 딱지 */ const mk = () => { const m = gm(P), own = new Set([...el.querySelectorAll('.sp-it[data-it]')].map(b => b.dataset.it)), r = recL.find(id => own.has(id) && id !== m.it), b = r && el.querySelector(`.sp-it[data-it="${r}"]`); if (b && !b.classList.contains('it-recm')) { b.classList.add('it-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } };
     if (recL) return mk(); recIts(P).then(L => { recL = L || []; if (el.isConnected) mk(); }); };
   const recGo = () => recIt(P).then(r => { if (!el.isConnected) return; const m = gm(P);
     if (!r || r === m.it) return gymPop(`<h4>추천 도구</h4><p class="gy-msg" style="text-align:center">${r ? `지금 지닌 ${esc(HOLD[r][0])}${jong(HOLD[r][0]) ? '이' : '가'} 가장 잘 맞아요.` : '지금은 추천할 도구가 없어요.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c2) => c2());
     if ((g.itm[r] | 0) > 0 || itWho(r)) return itInfo(r, '지니게 하기', () => { giveIt(P, r); draw(); });
     gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(r)}">${esc(HOLD[r][0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 도구예요</p><p class="gy-msg mi-d">${esc(HOLD[r][2])}</p><p class="gy-msg" style="text-align:center"><small>창고에 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { c2(); if (a !== 'buy') return;
       el.remove(); window.gymShopIt = r; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => usePop(P, done) }); }); });
+  // v20.66 경완 '기술머신·기술레코드 탭에선 추천 도구 버튼이 추천 기술로': 가진 것 중 가장 좋은 기술이면 바로 그 기술 창(가르치기), 없으면 상점에서 보기
+  const recGoTm = () => { const k = useT, tr = k === 'tr', nm = tr ? '기술레코드' : '기술머신'; loadSim().then(() => { if (!el.isConnected) return; const L = recT[k] || (recT[k] = recTms(P, tr)), r = L.find(id => (g.tms[id] | 0) > 0 && tmCan(P, id));
+    if (r) return mvInfo(r, () => teachTm(P, r, draw));
+    const x = L[0] && mvOf(L[0]); if (!x) return gymPop(`<h4>추천 기술</h4><p class="gy-msg" style="text-align:center">지금 기술보다 좋은 ${nm}${tr ? '가' : '이'} 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c2) => c2());
+    gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 ${nm}${tr ? '예요' : '이에요'}</p><div class="mp-moves mp-line">${mvRow(x, 'i' + L[0])}</div><p class="gy-msg" style="text-align:center"><small>가진 ${nm}${tr ? '가' : '이'} 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1)); c2(); if (a !== 'buy') return;
+      el.remove(); window.gymShopTm = L[0]; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => usePop(P, done) }); }); }).catch(() => {}); };
   document.querySelector('#gym .gy-main').appendChild(el); draw();   // 하단 메뉴는 그대로
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return done?.(); }
     if (b.dataset.ut) { useT = b.dataset.ut; return draw(); }
     if (b.hasAttribute('data-take')) { takeIt(P); return draw(); }
-    if (b.hasAttribute('data-recit')) return recGo();
+    if (b.hasAttribute('data-recit')) return useT === 'it' ? recGo() : recGoTm();
     if (b.dataset.takeit) { const Q = boxOf(+b.dataset.takeit || b.dataset.takeit); if (Q) { takeIt(Q); se('DECIDE'); } return draw(); }
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }

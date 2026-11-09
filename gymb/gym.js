@@ -262,7 +262,7 @@ function build() {
   $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
-  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); if (t === 'battle') gse('DP_GASHIN', 1.2); else sfx('tap');   /* v20.62 경완: 포켓몬 메뉴는 본가 포켓몬 창 여는 철컥 */   /* v14.14 경완: 라인업 고르기 중에도 메뉴 잠그지 않음 — 다른 메뉴나 포켓몬 메뉴를 다시 누르면 고르기를 그만두고(luRes null) 배틀 시작 전 대사로 돌아감 */
+  $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); if (t === 'battle') gse('DP_WIN_OPEN'); else sfx('tap');   /* v20.62 경완: 포켓몬 메뉴는 본가 포켓몬 창 여는 철컥 (v20.66 후보 3번 DP_WIN_OPEN) */   /* v14.14 경완: 라인업 고르기 중에도 메뉴 잠그지 않음 — 다른 메뉴나 포켓몬 메뉴를 다시 누르면 고르기를 그만두고(luRes null) 배틀 시작 전 대사로 돌아감 */
     root.querySelectorAll('.gy-pop').forEach(x => x.remove());   // 다른 메뉴를 누르면 포켓몬 정보 카드 같은 팝업도 닫힘 (경완 2026-10-29)
     const cov = root.querySelectorAll('.gy-boxw,.gy-infos'); if (cov.length) { cov.forEach(x => x.remove()); return openTab(t); }   // 포켓몬 고르기·정보 화면 위에서 메뉴를 누르면 그 화면을 닫고 그 메뉴로 (경완 2026-10-28)
     openTab(tab === t ? null : t); };
