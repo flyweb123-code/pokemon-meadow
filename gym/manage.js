@@ -785,14 +785,15 @@ function tmWho(id, i) {
   const D = GB().D, M = luMons().filter(P => (D.sp[P.sp]?.tm || []).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
   if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
-  return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<span class="tm-wp${kn(P) ? ' kn' : ''}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</span>`).join('')}</div>`;
+  return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
 }
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
   const kd = GB().tmKind(id); if (!GB().isTR(id) && n > 0) return;   /* 기술머신은 한 번 사면 계속 (v15.69) */
   pop(`<h4${GB().isTR(id) ? ' class="has-own"' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}${GB().isTR(id) ? GB().bagN(n) : ''}</h4><div class="mp-moves one tm-card${x[8] ? ' has-ds' : ''}">${GB().mvRow(x, '').replace(/<\/button>$/, x[8] ? `<span class="tm-ds">${esc(x[8])}</span></button>` : '</button>')}</div>${tmKdBox(id)}${tmWho(id, i)}
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
-    if (a === 'x') return close(); if (a !== 'buy') return;
+    if (a === 'x') return close(); if (a.startsWith('wp')) return GB()._monPop(+a.slice(2) || a.slice(2), 'view');   // v20.60 경완: 배울 수 있는 포켓몬을 누르면 그 포켓몬 상세카드
+    if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
     close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `${kd} <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
     say(`${kd} ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'

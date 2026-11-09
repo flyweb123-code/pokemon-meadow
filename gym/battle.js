@@ -1781,14 +1781,23 @@ function usePop(P, done) {
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (m.mv.includes(id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
       : (IL.length + ML.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
-      <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</p>
+      <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>추천 도구</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
-    fillTh(el); };
+    fillTh(el); recMk(); };
+  // v20.60 경완 '도구 사용 화면에도 추천 도구 버튼, 가진 도구 중 추천할 도구는 테두리 은은하게 + 추천 딱지': 가진 도구(창고) 중 이 포켓몬에게 가장 맞는 것 하나
+  let recL = null; const recMk = () => { if (useT !== 'it') return; const mk = () => { const m = gm(P), own = new Set([...el.querySelectorAll('.sp-it[data-it]')].map(b => b.dataset.it)), r = recL.find(id => own.has(id) && id !== m.it), b = r && el.querySelector(`.sp-it[data-it="${r}"]`); if (b && !b.classList.contains('it-recm')) { b.classList.add('it-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } };
+    if (recL) return mk(); recIts(P).then(L => { recL = L || []; if (el.isConnected) mk(); }); };
+  const recGo = () => recIt(P).then(r => { if (!el.isConnected) return; const m = gm(P);
+    if (!r || r === m.it) return gymPop(`<h4>추천 도구</h4><p class="gy-msg" style="text-align:center">${r ? `지금 지닌 ${esc(HOLD[r][0])}${jong(HOLD[r][0]) ? '이' : '가'} 가장 잘 맞아요.` : '지금은 추천할 도구가 없어요.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c2) => c2());
+    if ((g.itm[r] | 0) > 0 || itWho(r)) return itInfo(r, '지니게 하기', () => { giveIt(P, r); draw(); });
+    gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(r)}">${esc(HOLD[r][0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 도구예요</p><p class="gy-msg mi-d">${esc(HOLD[r][2])}</p><p class="gy-msg" style="text-align:center"><small>창고에 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { c2(); if (a !== 'buy') return;
+      el.remove(); window.gymShopIt = r; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => usePop(P, done) }); }); });
   document.querySelector('#gym .gy-main').appendChild(el); draw();   // 하단 메뉴는 그대로
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); return done?.(); }
     if (b.dataset.ut) { useT = b.dataset.ut; return draw(); }
     if (b.hasAttribute('data-take')) { takeIt(P); return draw(); }
+    if (b.hasAttribute('data-recit')) return recGo();
     if (b.dataset.takeit) { const Q = boxOf(+b.dataset.takeit || b.dataset.takeit); if (Q) { takeIt(Q); se('DECIDE'); } return draw(); }
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }
