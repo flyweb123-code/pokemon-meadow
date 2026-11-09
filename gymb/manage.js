@@ -247,7 +247,7 @@ async function drawTrain() {
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
   sh.innerHTML = `<div class="ty-yd ty-wait"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
-  const el = sh.querySelector('.ty-yd');   // v21.07 경완 '훈련장 처음 들어갈 때 노랗게 보였다가': 바닥 그림·조명이 다 그려질 때까지 가려 둠 (.ty-wait) await loadYA(); if (!el.isConnected) return;
+  const el = sh.querySelector('.ty-yd');   /* v21.07 경완 '훈련장 처음 들어갈 때 노랗게 보였다가': 바닥 그림·조명이 다 그려질 때까지 가려 둠 (.ty-wait) */ await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
     pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } };
@@ -289,7 +289,7 @@ function yardTap(ev) {
 const TY_SHOT = new Set([8, 10, 11, 12, 13, 14, 15, 16, 18]);   // 과녁에 기술을 쏘는 타입 (고스트·불꽃·물·풀·전기·에스퍼·얼음·드래곤·페어리)
 function yardMon(P, e, i) {
   const t = SPECIES[P.sp]?.t || [], o = document.createElement('div');
-  o.className = 'ty-m'; o.dataset.p = P.id; o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div><div class="ty-tag"></div>';
+  o.className = 'ty-m' + ({ S: ' rkS', A: ' rkA' }[GA.rankOf?.(P)] || ''); o.dataset.p = P.id;   /* v21.09 경완 '훈련장에도 꾸미기 필드처럼 랭크 후광 (S 금빛·A 빨간빛)' */ o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div><div class="ty-tag"></div>';
   // 물고기 포켓몬은 처음부터 수영장에서, 수영장에만 있다 (경완 2026-10-27)
   const fish = !!GA.isFish?.(P.sp), p0 = Y.pos[P.id], [x, y] = p0 && (!fish || inPond(p0[0], p0[1], -14)) ? p0 : yardSpot(fish); Y.L.append(o);
   const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), tag: o.querySelector('.ty-tag'), x, y, face: Math.random() < .5 ? 1 : -1, st: leftOf(e) <= 0 ? 'sleep' : 'rest', until: performance.now() / 1000 + (leftOf(e) <= 0 ? 99 : .5 + Math.random() * 2), at: 0,   /* v18.02 경완 '훈련 끝났는데 들어가면 다시 깨어 있고 코치가 갔다가 돌아감': 오늘 훈련 다 한 포켓몬은 처음부터 잠든 채 */
