@@ -685,18 +685,20 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
 const mvChips = L => L.map(id => { const x = GB().mvOf(id); return `<button type="button" class="mv-chip" data-a="i${id}" style="--tc:${GA.TYPE_C?.[x?.[2]] || '#2a8a3e'}">${esc(GB().mvKo(id))}</button>`; }).join('');
 /* v19.55 경완 '훈련 현황 새 기술 박스 → 새 기술 창: 특별한 기술은 처음엔 실루엣 박스로 가려져 있다가 배울 때마다 하나씩 열림, 기술마다 행 하나로 길게':
    위 = 특별한 기술(알 기술 4줄, 4번째 레어), 아래 = 훈련 중 레벨업으로 배운 기술. 처음 보는 알 기술(m.egS 에 없음)은 열리는 연출 한 번 */
-function mvListPop(L, P, U) {   // U = 번뜩임 { i, a, b, got } → 게이지가 a% 에서 b% 로 오름, 버튼으로만 닫힘
+function mvListPop(L, P, U) {   // U = 번뜩임 { i, a, b, got } → 게이지가 a% 에서 b% 로 오름, 버튼으로만 닫힘 · U.aw = 특별한 기술 익힘 알림창 { mv, i, n, done }
+  const AW = U?.aw;
   const m = P && GB().gm(P), E = (P && GB().EGG?.[P.sp] || []).filter(id => id && GB().mvOf(id)), kn = new Set([...(m?.mv || []), ...(m?.kn || [])]), seen = new Set(m?.egS || []);
   const lvL = [...new Set(L)].filter(id => !E.includes(id)).map(id => GB().mvOf(id)).filter(Boolean);   // v19.59 경완 '원래대로 같이 표시': 레벨업 기술도 아래에
   /* v20.85 경완 '특별한 기술 게이지는 따로 구역 말고 새 기술 창의 ??? 박스 전체가 게이지': 안 익힌 줄 = 깨달음 % 만큼 차오르는 박스, 누르면 그 기술 집중 훈련 */
   let nNew = 0; const G = m?.egP || [], ix = id => (GB().EGG?.[P.sp] || []).indexOf(id);
-  const row = (id, k) => { const x = GB().mvOf(id), i = ix(id), rare = i === 3, on = kn.has(id), nw = on && !seen.has(id), f = GB().egFocus?.(P), fo = !on && i === f, pc = Math.floor(U && U.i === i && !on ? U.a : G[i] || 0); if (nw) nNew++;
+  const row = (id, k) => { const x = GB().mvOf(id), i = ix(id), rare = i === 3, on = kn.has(id), nw = on && (AW ? id === AW.mv : !seen.has(id)), f = GB().egFocus?.(P), fo = !AW && !on && i === f, pc = Math.floor(U && U.i === i && !on ? U.a : G[i] || 0); if (nw) nNew++;
     return `<div class="eg-r${rare ? ' rare' : ''}${on ? ' on' : ''}${nw ? ' new' : ''}${fo ? ' fo' : ''}" style="--d:${nw ? (nNew - 1) * .9 : 0}s">${on ? GB().mvRow(x, 'i' + id) : ''}${!on || nw ? `<button type="button" class="eg-cv" data-a="${on ? '' : 'egf' + i}"${on ? ' tabindex="-1"' : ''} style="--tc:${rare ? '#d8a020' : GA.TYPE_C?.[x[2]] || '#888'}"><i class="eg-fl" style="width:${on ? 100 : pc}%"></i>${rare ? '' : GB().tyTag(x[2], x[3])}<b>${rare ? '? ? ? ? ?' : '???'}</b><em class="eg-pc">${on ? 100 : pc}%</em><span class="eg-fb">${fo ? '집중 중' : '집중하기'}</span></button>` : ''}${rare ? '<em class="eg-rt">★ 레어 기술</em>' : ''}</div>`; };   /* v20.85 경완 '집중·레어·타입 힌트가 안 느껴짐': 타입·분류 딱지 + 타입 색 게이지 + 오른쪽 집중 버튼, 레어는 금테 리본 */
   const got = E.filter(id => kn.has(id)).length, egL = () => E.map(row).join('');
-  const p = pop(`${U ? `<h4 class="eg-ft eg-lk">번뜩임!</h4><p class="eg-fs">${esc(nmOf(P))}의 특별한 기술 깨달음이 올랐어요</p>` : '<h4>새로 배운 기술</h4>'}${E.length ? `<div class="mp-mvh eg-h"><small>특별한 기술</small><span>${got} / ${E.length}</span></div>${got < E.length && !U ? '<p class="eg-hint"><b>집중하기</b>를 누른 기술이 훈련에서 빨리 차올라요<br>배틀 중에 번뜩이면 한 번에 크게 올라요</p>' : ''}<div class="mp-moves mp-line eg-l">${egL()}</div>` : ''}
-    ${lvL.length && !U ? `<div class="mp-mvh eg-h"><small>레벨업으로 배운 기술</small></div><div class="mp-moves mp-line">${lvL.map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>` : ''}
-    ${!E.length && !lvL.length ? '<p class="gy-msg">아직 새로 배운 기술이 없어요.</p>' : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
-  (a, close) => { if (a === 'x') { close(); U?.done?.(); return; } if (a && a.startsWith('egf')) { tickTrain(Date.now()); m.egF = +a.slice(3); sfx('tap'); K.save(); const l = p.querySelector('.eg-l'); if (l) l.innerHTML = egL(); return; } if (a && a[0] === 'i') GB().mvInfo(a.slice(1)); }); p.classList.add('eg-pop'); if (!U && E.length) window.Gym?.k?.tutEv?.('E');   // v20.96 특별한 기술 튜토리얼
+  const p = pop(`${AW ? `${AW.n > 1 ? `<i class="aw-cnt">${AW.i + 1} / ${AW.n}</i>` : ''}<h4 class="eg-ft eg-lk eg-awh"><small>훈련장</small>특별한 기술을 익혔다!</h4><p class="eg-fs"><b>${esc(nmOf(P))}</b>${K.jong(nmOf(P)) ? '은' : '는'} <b class="eg-awn">${esc(GB().mvKo(AW.mv))}</b>${K.jong(GB().mvKo(AW.mv)) ? '을' : '를'} 익혔다!</p>` : U ? `<h4 class="eg-ft eg-lk">번뜩임!</h4><p class="eg-fs">${esc(nmOf(P))}의 특별한 기술 깨달음이 올랐어요</p>` : '<h4>새로 배운 기술</h4>'}${E.length ? `<div class="mp-mvh eg-h"><small>특별한 기술</small><span>${got} / ${E.length}</span></div>${got < E.length && !U ? '<p class="eg-hint"><b>집중하기</b>를 누른 기술이 훈련에서 빨리 차올라요<br>배틀 중에 번뜩이면 한 번에 크게 올라요</p>' : ''}<div class="mp-moves mp-line eg-l">${egL()}</div>` : ''}
+    ${AW ? '<p class="eg-awt">기술을 누르면 설명을 볼 수 있어요</p>' : ''}${lvL.length && !U ? `<div class="mp-mvh eg-h"><small>레벨업으로 배운 기술</small></div><div class="mp-moves mp-line">${lvL.map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>` : ''}
+    ${!E.length && !lvL.length ? '<p class="gy-msg">아직 새로 배운 기술이 없어요.</p>' : ''}<div class="gy-btns one"><button class="main" data-a="x">${AW ? (AW.i + 1 < AW.n ? '다음' : '확인') : '닫기'}</button></div>`,
+  (a, close) => { if (a === 'x') { close(); U?.done?.(); return; } if (a && a.startsWith('egf')) { if (AW) return; tickTrain(Date.now()); m.egF = +a.slice(3); sfx('tap'); K.save(); const l = p.querySelector('.eg-l'); if (l) l.innerHTML = egL(); return; } if (a && a[0] === 'i') GB().mvCard(a.slice(1)); }); p.classList.add('eg-pop'); if (AW) p.classList.add('eg-aw');   /* v21.05 경완 '기술 설명은 상점 기술머신 설명 모양으로' */ if (!U && E.length) window.Gym?.k?.tutEv?.('E');
+  if (AW) { try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} GA.haptic?.(1); }   // v20.96 특별한 기술 튜토리얼
   if (U && !U.got) { const r = [...p.querySelectorAll('.eg-l .eg-cv')].find(b => b.dataset.a === 'egf' + U.i)?.parentElement;
     const fl = r?.querySelector('.eg-fl'), pe = r?.querySelector('.eg-pc');
     if (fl && pe) setTimeout(() => { if (!p.isConnected) return; r.classList.add('egu'); try { window.GymBGM?.se?.('DP_REGI'); } catch (e) {} GA.haptic?.(1); fl.style.transition = 'width 1.1s cubic-bezier(.3,.7,.3,1)'; fl.style.width = Math.floor(U.b) + '%';
@@ -1048,6 +1050,6 @@ function spWipe() {
 try { spWipe(); } catch (e) { console.warn('spWipe', e); }
 // v20.68 경완 '퇴근하고 돌아오면 상점 필터 다 기본값': 탭·타입·형태·위력순·가격순·추천받기 모두 처음대로
 function shopReset() { itCat = -1; shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
-window.GymManage = { egGainPop: u => new Promise(ok => { const P = boxOf(u.pid); if (!P) return ok(); mvListPop([], P, { ...u, done: ok }); }), tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
+window.GymManage = { egGainPop: u => new Promise(ok => { const P = boxOf(u.pid); if (!P) return ok(); mvListPop([], P, { ...u, done: ok }); }), egAwPop: (P, mv, i, n) => new Promise(ok => mvListPop([], P, { aw: { mv, i, n }, got: 1, done: ok })), tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
 setTimeout(() => K.menuDot?.(), 0);   // v20.78 상점 빨간 점: 불러오자마자 한 번
 })();

@@ -2964,6 +2964,7 @@ function awSfPop(SF) {
 }
 /* 기술 알림창: 포켓몬 그림 + 반짝임 → 배틀 기술 카드 모양 (타입 색) */
 function awMvPop([P, mv, nm, ty], i, n) {
+  if ((GB()?.EGG?.[P.sp] || []).includes(mv) && window.GymManage?.egAwPop) return window.GymManage.egAwPop(P, mv, i, n);   // v21.05 경완 '특별한 기술 창 4칸에서 하나 실루엣 빛나면서 나타나게'
   const d = GB()?.D?.mv?.find(x => x[0] === mv), t = d ? d[2] : ty, cat = d ? d[3] : 0, pw = d && d[4] ? d[4] : '-', pn = P.nm || SPECIES[P.sp]?.n || '???';
   try { window.GymBGM?.se?.('ME_WAZA'); } catch (e) {} try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e2) {} } GA.haptic?.(1);
   return new Promise(ok => { const p = pop(`<div class="aw-pop aw-mvp">
