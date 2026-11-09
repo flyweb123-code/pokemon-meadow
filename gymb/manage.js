@@ -227,6 +227,10 @@ function yardBg0(c) {
 // 훈련장 다시 꾸미기 (경완 2026-10-29): 6마리가 서로 다른 기구에서 — 샌드백 둘·과녁(기술 쏘기)·트램펄린·허들 달리기·후프링(나는 포켓몬)·수영장(물)·가운데 코트 대련 둘·벤치 쉬기
 async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
+  const yk = g.tr.map(e => e.id).join() + '|' + (g.sf || []).filter(x => x.yard).map(x => x.id).join() + '|' + coachX();
+  if (Y && !Y.el.isConnected && Y.yk === yk && !sh.classList.contains('lk')) {   // v20.91 경완 '다른 메뉴 갔다 오면 순간이동 → 꾸미기 필드처럼': 다른 메뉴에 있는 동안에도 움직임은 계속 계산했으니 그 훈련장을 그대로 다시 붙임
+    cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; sh.innerHTML = ''; sh.append(Y.el);
+    if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
   sh.innerHTML = `<div class="ty-yd"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
@@ -265,7 +269,7 @@ async function drawTrain() {
     trPop(+t.dataset.p || t.dataset.p);
   };
   { const x = coachX(); if (x > 1.001) el.insertAdjacentHTML('beforeend', `<div class="ty-info">💪 코치 보너스 <b>+${Math.round((x - 1) * 100)}%</b></div>`); }
-  Y.raf = requestAnimationFrame(yardLoop);
+  Y.yk = yk; Y.raf = requestAnimationFrame(yardLoop);
 }
 const TY_SHOT = new Set([8, 10, 11, 12, 13, 14, 15, 16, 18]);   // 과녁에 기술을 쏘는 타입 (고스트·불꽃·물·풀·전기·에스퍼·얼음·드래곤·페어리)
 function yardMon(P, e, i) {
@@ -288,7 +292,7 @@ const place = m => { m.el.style.transform = `translate(${m.x.toFixed(1)}px,${m.y
   m.lift = (m.lift ?? L) + (L - (m.lift ?? L)) * .08;
   m.fl.style.transform = `translateY(${(-m.lift - (m.air || 0) - bob).toFixed(1)}px) scaleX(${m.face})`;
   m.shd.style.opacity = m.air > 1 ? Math.max(.35, 1 - m.air / 90).toFixed(2) : ''; };
-function yEmo(m, ch, cls = '') { const q = document.createElement('i'); q.className = 'ty-emo ' + cls; q.textContent = ch; q.style.top = ((m.top ?? -40) - 22 - (m.air || 0)) + 'px'; m.el.append(q); setTimeout(() => q.remove(), 1300); }
+function yEmo(m, ch, cls = '', col) { const q = document.createElement('i'); q.className = 'ty-emo ' + cls; q.textContent = ch; if (col) q.style.color = col; q.style.top = ((m.top ?? -40) - 22 - (m.air || 0)) + 'px'; m.el.append(q); setTimeout(() => q.remove(), 1300); }
 // 맞는 순간 반짝 + 먼지 (기구 쪽), 걸을 때 발밑 먼지
 function yFx(x, y, cls) { const q = document.createElement('i'); q.className = 'ty-fx ' + cls; q.style.cssText = `left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;z-index:${Math.round(y) + 3}`; Y.L.append(q); setTimeout(() => q.remove(), 700); }
 // 과녁에 쏘는 기술 구슬 (타입 색)
@@ -458,12 +462,16 @@ function yLight() {
     Y.storm = on && !!F.storm; }
 }
 function yardLoop(ts) {
-  if (!Y || !Y.el.isConnected || sh.hidden || cur !== 'train') { Y && (Y.raf = 0); return; }
-  if (Y.el.closest('#gym')?.querySelector('.gy-boxw')) { const Y0 = Y; Y.last = 0; Y.raf = 0; Y.pz = setTimeout(() => { if (Y === Y0) Y.raf = requestAnimationFrame(yardLoop); }, 300); return; }   // v20.90 경완: + 화면(포켓몬 박스)이 덮는 동안은 훈련장을 안 그림 (0.3초마다 닫혔나만 봄)
+  if (!Y || !document.body.classList.contains('gymMode')) { Y && (Y.raf = 0); return; }   // 체육관을 나가면 멈춤
+  const cov = Y.cov = !Y.el.isConnected || sh.hidden || cur !== 'train' || !!document.querySelector('#gym .gy-boxw');   // v20.91 꾸미기 필드처럼: 다른 메뉴·+ 화면이 덮는 동안에도 0.1초마다 움직임은 계산, 그리기만 안 함
   const now = ts / 1000, dt = Math.min(.1, Y.last ? now - Y.last : 0); Y.last = now;
-  if (Y.storm && !document.hidden) { if (!Y.stT) Y.stT = now + 2.5 + Math.random() * 4; else if (now >= Y.stT) { Y.stT = now + 6 + Math.random() * 12; const wx = Y.el.querySelector('.ty-wx'), w = Y.el.clientWidth || 360; window.GA?.bolt?.(wx, w); if (Math.random() < .3) setTimeout(() => window.GA?.bolt?.(wx, w), 250 + Math.random() * 500); } } else Y.stT = 0;   // v18.63 뇌우면 필드처럼 번개·천둥
-  if (now - (Y.ck ?? now) > 30) { tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
-  if (now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
+  if (Y.storm && !document.hidden && !cov) { if (!Y.stT) Y.stT = now + 2.5 + Math.random() * 4; else if (now >= Y.stT) { Y.stT = now + 6 + Math.random() * 12; const wx = Y.el.querySelector('.ty-wx'), w = Y.el.clientWidth || 360; window.GA?.bolt?.(wx, w); if (Math.random() < .3) setTimeout(() => window.GA?.bolt?.(wx, w), 250 + Math.random() * 500); } } else Y.stT = 0;   // v18.63 뇌우면 필드처럼 번개·천둥
+  if (now - (Y.ck ?? now) > 30) { const b0 = Y.mons.map(m => { const e = st().tr.find(x => x.id === m.id); return [e?.evg || 0, m.P.fr || 0, e?.evk]; });
+    tickTrain(Date.now()); K.save(); Y.ck = now; Y.mons.forEach(m => { try { yTag(m); } catch (x) {} });
+    if (!cov) Y.mons.forEach((m, i) => { const e = st().tr.find(x => x.id === m.id), [g0, f0, k] = b0[i], dg = (e?.evg || 0) - g0, df = (m.P.fr || 0) - f0, B = GB();   // v20.91 경완 '+EXP 처럼 노력치·친밀도 오를 때도'
+      if (dg > 0 && k >= 0) setTimeout(() => Y && yEmo(m, `${B.EV_N?.[k] || ''} +${dg}`, 'evu', EV_SC[k]), 200 + i * 260);
+      if (df > 0) setTimeout(() => Y && yEmo(m, `♥ 친밀도 +${df}`, 'fru'), 900 + i * 260); }); } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+  if (!cov && now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
   for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
   yFeedTick(now);
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
@@ -499,10 +507,10 @@ function yardLoop(ts) {
       if (m.ph >= 3) { m.air = 0; yNext(m, now); } }
     if (m.st === 'spar' && m.lead && !m.one && !m.mate?.one) { const a = m.turn % 2 ? m.mate : m, tg = a === m ? m.mate : m, mv = yMvOk(a, now) && Math.random() < .4 && yMove(a); a.one = mv ? yMvOne(a, mv, now, { tgt: tg, gap: .5 }) : { n: 'Attack', t: 0, tgt: tg }; m.turn++; }   // v20.81 대련도 가끔 기술로
     if ((m.st === 'sleep') && now > (m.zz || 0)) { m.zz = now + 3 + Math.random() * 2; yEmo(m, 'Zz', 'zz'); }
-    const sw = inPond(m.x, m.y, -6); m.el.classList.toggle('swim', sw); swimMask(m, sw);
-    place(m); yDraw(m, dt);
+    if (!cov) { const sw = inPond(m.x, m.y, -6); m.el.classList.toggle('swim', sw); swimMask(m, sw); place(m); } yDraw(m, dt);
   }
   if (Y.el.closest('.gy-sheet.lk')) return;   // 잠긴 훈련장은 한 장면에서 멈춘 그림 (경완 2026-10-29)
+  if (cov) { const Y0 = Y; Y.raf = 0; clearTimeout(Y.pz); Y.pz = setTimeout(() => { if (Y === Y0 && !Y.raf) yardLoop(performance.now()); }, 100); return; }
   Y.raf = requestAnimationFrame(yardLoop);
 }
 // 물에 잠긴 부분은 반투명 (경완 2026-10-27): 발밑에서 물고기는 몸 절반쯤, 다른 포켓몬은 조금
@@ -563,7 +571,7 @@ function yDraw(m, dt) {
     if (t >= tot) { if (m.one.gap && t < tot + m.one.gap) { t = tot - .001; } else { m.one = null; return yDraw(m, 0); } } }
   else { if (m.ak !== nm) { m.ak = nm; m.at = 0; } m.at += dt * (m.st === 'run' ? 1.8 : 1); t = m.at % tot; }
   let acc = 0; f = durs.length - 1; for (let i = 0; i < durs.length; i++) { acc += durs[i] / 60; if (t < acc) { f = i; break; } }
-  const key = nm + ':' + f; if (m.fk === key) return; m.fk = key;
+  const key = nm + ':' + f; if (m.fk === key) return; if (Y.cov) { m.fk = null; return; } m.fk = key;
   const s = m.s, P = D.P, st2 = m.sp.style;
   if (nm === 'Idle' || m.top == null) m.top = (-a[5] - (P.fy || 0)) * s + (P.vt || 0) * s;
   st2.width = a[1] * s + 'px'; st2.height = a[2] * s + 'px'; st2.left = -a[4] * s + 'px'; st2.top = (-a[5] - (P.fy || 0)) * s + 'px';

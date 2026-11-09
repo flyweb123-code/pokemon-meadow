@@ -3745,3 +3745,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plate .gy-rpa{pointer-events:auto;cursor:pointer}   /* v20.84 경완 '평판 게이지가 빈 화면으로 인식돼 안 눌림': 게이지도 누를 수 있게 (누르면 등급표) */
 
 .ty-bowl{position:absolute;width:24px;height:14px;margin:-10px 0 0 -12px;background-size:100% 100%;image-rendering:pixelated;pointer-events:none;animation:tyBowl .35s backwards cubic-bezier(.3,1.6,.5,1)}.ty-bowl.out{animation:tyBowlO .45s forwards}@keyframes tyBowl{0%{opacity:0;translate:0 -14px;scale:.6}}@keyframes tyBowlO{to{opacity:0;scale:.6}}   /* v20.86 훈련장 밥 그릇 */
+.ty-emo{white-space:nowrap;display:flex;justify-content:center}.ty-emo.evu{font-size:12px;filter:brightness(1.25)}.ty-emo.fru{color:#ff9cc8;font-size:12px}   /* v20.91 몸 풀기 글자 한 줄 · 노력치·친밀도 오름 */
