@@ -1269,9 +1269,11 @@ async function expGain(X) {
 async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P) return; const f = egFocus(P), D = B.egDone || (B.egDone = new Set()); if (f < 0 || D.has(pid) || Math.random() >= EG_FLP) return; D.add(pid);
-  se('DP_KIRAKIRA2'); GA.haptic?.(1); flash(2); await msg(`${X.nm}의 머릿속에 무언가 번뜩였다!`, 0); if (!B) return;
+  const me = monEl('p'); me?.classList.remove('egk'); void me?.offsetWidth; me?.classList.add('egk'); setTimeout(() => me?.classList.remove('egk'), 1600);
+  { const t = $b('.bt-top'), k = document.createElement('i'); k.className = 'bt-egs'; k.textContent = '✦'; t?.appendChild(k); setTimeout(() => k.remove(), 1700); }
+  se('DP_KIRAKIRA2'); GA.haptic?.(1); flash(2); await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
   const x = egAdd(P, f, EG_FL); if (x) { await msgFan(`${eun(X.nm)} 특별한 기술 ${eul(x[1])} 깨달았다!`); try { window.Gym?.k?.awMv?.(P.id, x[0], x[1], x[2]); } catch (e) {} }
-  else await msg(`특별한 기술 깨달음이 ${Math.floor(gm(P).egP[f])}%가 됐다!`, 0);
+  else await msgTap(`특별한 기술 깨달음이 ${Math.floor(gm(P).egP[f])}%가 됐다!`);
   GA.save?.();
 }
 async function learnAsk(P, i, id) {
