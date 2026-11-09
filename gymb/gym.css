@@ -3805,3 +3805,13 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 #gym .sfc-ck{display:flex;align-items:center;gap:0;margin-top:4px;font-size:11px;line-height:1.2}#gym .sfc-ck small{font-size:11px;color:var(--dim);margin-right:6px}#gym .sfc-ck b{font-size:13px;color:var(--ckc)}   /* v21.03 경완 '고용 관리 박스에도 코치 실력' */
 #gym .sd2-trt{display:grid;gap:6px}#gym .sfc-mid .trt-ck{margin-top:3px}   /* v21.04 코치 실력 = 특성 박스 모양 */
+/* v21.05 특별한 기술 익힘 알림창 = 새 기술 창 4칸, 익힌 칸 실루엣이 빛나다 열림 */
+#gym .eg-pop h4.eg-awh{display:flex;flex-direction:column;align-items:center;gap:2px}#gym .eg-pop h4.eg-awh small{font-size:11px;letter-spacing:0;color:#9a8aa8;font-weight:700}
+#gym .eg-aw .eg-fs b{color:var(--win-ink)}#gym .eg-aw .eg-fs b.eg-awn{color:#c0302a}
+#gym .eg-aw .eg-awt{margin:8px 0 0;text-align:center;font-size:11px;color:var(--dim)}
+#gym .eg-aw .eg-fb{display:none}#gym .eg-aw .eg-cv{cursor:default}
+#gym .eg-aw .aw-cnt{position:absolute;top:10px;right:12px}
+#gym .eg-aw .eg-r.new .eg-cv{animation:egGlow 1.15s calc(var(--d) + .1s) both,egShk .7s calc(var(--d) + .45s),egOut .3s calc(var(--d) + 1.15s) forwards}
+#gym .eg-aw .eg-r.new .eg-cv b{animation:egGlowT 1.15s calc(var(--d) + .1s) both}
+@keyframes egGlow{0%{box-shadow:inset 3px 0 0 #5a5468,inset 0 0 0 1px #4a4558}40%{box-shadow:inset 0 0 0 2px #fff6c0,0 0 10px 3px rgba(255,230,120,.75)}100%{box-shadow:inset 0 0 0 2px #fff,0 0 18px 6px rgba(255,240,170,.95);filter:brightness(1.6)}}
+@keyframes egGlowT{to{color:#fff6d0;text-shadow:0 0 6px #ffe080}}
