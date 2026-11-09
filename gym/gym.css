@@ -3632,3 +3632,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ev-pop .win{position:relative;max-width:360px}
 #gym .ev-qpop .win{max-width:330px}
 #gym .ev-box2 .eb2-t .pool{min-width:0}
+
+/* v20.55 튜토리얼 '이걸 눌러 보렴': 그 칸만 눌림 */
+#gym .gy-tut-tap{position:absolute;inset:0;z-index:12;background:rgba(12,13,20,.25)}

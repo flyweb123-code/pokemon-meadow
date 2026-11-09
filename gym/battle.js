@@ -1948,7 +1948,8 @@ function evPop(P, done) {
       GA.save(); SAVED = { ev: S1.ev.slice(), pool: S1.pool, bag: EV_VIT.map(([k]) => B0[k] | 0) }; start(); toast(c ? `${c.toLocaleString()}G를 내고 저장했어요` : '저장했어요');
       setTimeout(() => { if (p.isConnected) { p.remove(); done?.(); } }, 700); }
   });
-  p.classList.add('ev-pop'); const W = p.querySelector('.win'), $ = s => W.querySelector(s), list = $('.ev-list');
+  p.classList.add('ev-pop'); window.Gym?.k?.tutEv?.('D');   // v20.55 설정 창이 처음 열리면 강박사가 설정 창 설명
+  const W = p.querySelector('.win'), $ = s => W.querySelector(s), list = $('.ev-list');
   p.onclick = (h => e => { if (e.target === p) { p.remove(); done?.(); return; } h(e); })(p.onclick);
   const sum = a => a.reduce((x, y) => x + y, 0);
   const putAmt = i => Math.max(0, S1.ev[i] - SAVED.ev[i] - S1.vAdd[i]);
