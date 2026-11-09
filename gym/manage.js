@@ -240,7 +240,7 @@ async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
   const yk = g.tr.map(e => e.id).join() + '|' + (g.sf || []).filter(x => x.yard).map(x => x.id).join() + '|' + CK_O.map(k => coachX(k)).join();
   if (Y && !Y.el.isConnected && Y.yk === yk && !sh.classList.contains('lk')) {   // v20.91 경완 '다른 메뉴 갔다 오면 순간이동 → 꾸미기 필드처럼': 다른 메뉴에 있는 동안에도 움직임은 계속 계산했으니 그 훈련장을 그대로 다시 붙임
-    cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; sh.innerHTML = ''; sh.append(Y.el); sh.onclick = yardTap;
+    cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; Y.el.querySelectorAll('.wob,.swing').forEach(q => q.classList.remove('wob', 'swing')); sh.innerHTML = ''; sh.append(Y.el); sh.onclick = yardTap;   /* v21.03 경완 '다른 메뉴 갔다 오면 소품이 한 번 흔들림': 다시 붙이면 남아 있던 흔들림 애니메이션이 다시 돌아서 지움 */
     if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
@@ -778,7 +778,7 @@ function drawStaff() {
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? `<i class="sfc-rib y">훈련장 코치${ckIn(x)}</i>` : '<i class="sfc-rib">대기 중</i>';
   const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', K.inGym(s) && s.yard ? `<em class="y">훈련장 코치${ckIn(s)}</em>` : ''].join('');
       return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
-      <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
+      <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s.trait)}<span class="sfc-ck" style="--ckc:${CK[coachK(s)][1]}"><small>코치 실력</small>${ckTag(s)}<b>+${coachP(s)}%</b></span>${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
       <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage.toLocaleString()}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
     : sfEmpty('crew', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
