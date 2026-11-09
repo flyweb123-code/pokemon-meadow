@@ -3804,3 +3804,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .ty-emo.egu{color:#ffe070;font-size:12px}   /* v20.96 훈련장 특별한 기술 깨달음 % */
 
 #gym .sfc-ck{display:flex;align-items:center;gap:0;margin-top:4px;font-size:11px;line-height:1.2}#gym .sfc-ck small{font-size:11px;color:var(--dim);margin-right:6px}#gym .sfc-ck b{font-size:13px;color:var(--ckc)}   /* v21.03 경완 '고용 관리 박스에도 코치 실력' */
+#gym .sd2-trt{display:grid;gap:6px}#gym .sfc-mid .trt-ck{margin-top:3px}   /* v21.04 코치 실력 = 특성 박스 모양 */
