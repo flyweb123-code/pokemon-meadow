@@ -456,7 +456,7 @@ function yMove(m, want) { const B = GB(), L = (B.gm(m.P).mv || []).map(id => B.m
   const W = want == null ? L : L.filter(x => x[3] === want), x = K.pick(W.length ? W : L); return x ? { name: x[1], t: x[2], dc: x[3] === 0 ? 2 : 3 } : null; }
 function yMvOk(m, now) { return !!GA.mvFx && m.D?.P && now > (Y.mvT || 0) && now > (m.mvT || 0); }
 function yMvOne(m, mv, now, o = {}) { const A = m.D.P.a, n = (GA.mvAnims?.(mv.name, mv.dc) || []).find(a => A[a]) || 'Attack';
-  Y.mvT = now + 1.3; m.mvT = now + 3 + Math.random() * 2; yEmo(m, mv.name + '!', 'mvn'); return Object.assign({ n, t: 0, mv }, o); }
+  Y.mvT = now + 1.3; m.mvT = now + 3 + Math.random() * 2;   /* v20.83 경완: 기술 이름은 안 외침 */ return Object.assign({ n, t: 0, mv }, o); }
 function yMvFx(m, q) { const mv = m.one.mv, f = -m.face || 1, hs = document.createElement('i'); hs.className = 'ty-mvh';
   hs.style.cssText = `left:${m.x.toFixed(0)}px;top:${(m.y - 22 - (m.lift || 0) - (m.air || 0)).toFixed(0)}px;z-index:${Math.round(Math.max(m.y, q?.y || 0)) + 6}`; Y.L.append(hs); setTimeout(() => hs.remove(), 3200);
   GA.mvFx(hs, mv.name, mv.t, mv.dc, f); }
