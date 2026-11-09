@@ -2321,51 +2321,138 @@ const KANG_OPEN = () => [
   '평판이 등급 끝까지 차면\n승급 심사를 받을 수 있지.\n이기면 등급 배지를 준단다!',
   '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
 ];
-// v20.44 경완 '훈련장, 트레이너 튜토리얼은 운영자 모드에서 확인': 노력치·코치 실력 시안 대사 (아직 본 튜토리얼로는 안 씀). 운영자 시뮬에서만 window.gymTutTest = 'tr' | 'st'
-// 빛나는 칸 = 그 자리에 노란 테두리를 강박사 막 위에 겹쳐 그림 (아직 게임에 없는 노력치 화면 칸은 건너뜀)
-const tutRing = sel => k => { k.querySelectorAll('.gy-k-ring').forEach(e => e.remove()); const el = sel && [...root.querySelectorAll(sel)].find(e => e.offsetParent); if (!el) return;
-  const a = el.getBoundingClientRect(), b = root.getBoundingClientRect(), r = document.createElement('i'); r.className = 'gy-k-ring';
-  Object.assign(r.style, { left: a.left - b.left - 4 + 'px', top: a.top - b.top - 4 + 'px', width: a.width + 8 + 'px', height: a.height + 8 + 'px' }); k.querySelector('.gy-k-veil').after(r); };
-const TUT_TR = () => [
-  { s: "A. 훈련장에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, 관장님!", tutRing(), "여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.", tutRing(), "훈련하면 경험치가 쌓여\n레벨이 오르고, 가끔은\n특별한 기술도 배우지.", tutRing(), "처음엔 한 마리뿐이지만\n체육관 등급이 오를 때마다\n자리가 하나씩 늘어난단다.", tutRing(".ty-add"), "자, 오른쪽 아래 + 버튼을\n눌러 첫 훈련생을\n보내 보렴!"] },
-  { s: "B. 포켓몬을 보내고 나서 (훈련 카드가 열린 채로)", L: [tutRing(), "잘했다! 이제 아주 중요한\n걸 하나 알려 주마.\n바로 '노력치'란다.", tutRing(), "같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.", tutRing(), "그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!", tutRing(), "개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.", tutRing(), "배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.", tutRing(), "빠른 포켓몬을 쓰러뜨리면\n스피드, 힘센 포켓몬이면\n공격 노력치가 오른단다.", tutRing(), "훈련장 포켓몬을 누르면\n노력치 훈련 칸이 있단다.\n키울 능력치를 직접 고르지.", tutRing(".ev-tr"), "고른 능력치엔 훈련하는\n동안 노력치가 꾸준히\n쌓인단다.", tutRing(), "트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지."] },
-  { s: "C. 처음으로 상세카드를 열었을 때 (노력치 박스가 생긴 뒤) → 노력치 박스를 눌러야 다음으로", L: [tutRing(".ev-box2"), "상세카드 아래에 노력치\n박스가 생겼지? 남은 노력치와\n능력치별 노력치가 보인단다.", tutRing(), "한 마리가 쌓을 수 있는 건\n모두 510, 능력치 하나엔\n252까지란다.", tutRing(), "그래서 전부 키울 순 없어.\n보통은 두 가지에 252씩\n몰아 준단다.", tutRing(".ev-box2"), "노력치 박스를 눌러 보렴.\n노력치를 직접 옮길 수\n있단다."] },
-  { s: "D. 노력치 설정 창을 연 뒤 (C 에서 박스를 누르면)", L: [tutRing(".ev-pop .ev-pool"), "여기가 노력치 설정 창이란다.\n위 막대가 남은 노력치와\n합계를 보여 주지.", tutRing(".ev-pop [data-m]"), "− 로 빼는 건 공짜야.\n뺀 노력치는 '남은 노력치'로\n모인단다.", tutRing(".ev-pop [data-p]"), "+ 로 넣을 땐 1당 10골드.\n꾹 누르고 있으면\n계속 들어가지.", tutRing(".ev-pop [data-v]"), "옆의 영양제를 먹이면\n한 번에 10씩 오른단다.\n영양제는 상점에서 팔지.", tutRing(".ev-pop [data-q]"), "어떻게 찍을지 모르겠으면\n제목 옆 ? 를 눌러 보렴.\n주로 찍는 법을 알려 준단다.", tutRing(".ev-pop [data-rec]"), "추천 버튼을 누르면\n남은 노력치를\n알아서 찍어 주지.", tutRing(".ev-pop .ev-bill"), "든 골드는 정산표에 모이고,\n저장을 눌러야\n바뀐 게 남는단다.", tutRing(), "레벨이 높을수록 노력치로\n오르는 능력치도 커진단다.\n멋지게 키워 보렴!"] }
-];
-const TUT_ST = () => [
-  { s: "트레이너 메뉴에 처음 들어왔을 때 (동네 체육관 승급 뒤, 화면 잠금)", L: [tutRing(), "이번엔 트레이너 메뉴구나.\n체육관을 혼자 지키긴\n힘들지?", tutRing(), "트레이너를 고용하면\n도전자가 올 때 먼저 나가서\n싸워 준단다.", tutRing(), "트레이너가 막아 내면\n골드와 평판도 함께\n벌어 오지.", tutRing(".sp-tabs [data-sft=\"cand\"]"), "지원서 탭엔 가끔 일하고\n싶다는 트레이너가\n찾아온단다.", k => $g('.sp-tabs [data-sft="cand"]')?.click(), tutRing(".cv-card"), "지원서에선 포켓몬과\n평균 레벨, 특성, 희망 주급을\n잘 보렴.", tutRing(), "주급은 7일마다 나간단다.\n벌어 오는 골드보다 주급이\n비싸면 손해겠지?", tutRing(), "특성은 트레이너마다 하나.\n배틀에 강한 근성, 골드를 더\n벌어 오는 수완가도 있지.", tutRing(), "코치 실력도 사람마다\n달라. 훈련장 코치로 보낼\n생각이면 꼭 보렴.", tutRing(), "훈련광, 기술 선생, 노력파,\n다정함 같은 특성은\n코치로 있을 때 빛난단다.", tutRing(), "고용한 트레이너는 체육관에\n세우거나, 훈련장 코치로\n보낼 수 있지.", tutRing(), "고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다.", tutRing(), "자, 마음에 드는 지원서가\n있으면 고용해 보렴!"] }
-];
-// v20.45 진짜 튜토리얼 (경완 2026-11-10 '배포해'): 훈련장 A(처음 들어올 때) → B(첫 포켓몬을 보낸 뒤, 노력치 개념) → C(처음 상세카드 노력치 박스를 볼 때), 트레이너 메뉴 S(처음 들어올 때)
-// 이미 훈련장을 본 관장(trTut)은 다음에 훈련장에 들어올 때 B 부터. 계정당 한 번 (G_SHARED)
-// 튜토리얼에서 '이걸 눌러 보렴': 화면을 막고 그 칸만 빛나게, 그 칸을 누르면 그대로 눌림 (그 칸이 사라지면 풀림)
-const tutTap = sel => new Promise(ok => { const el = [...root.querySelectorAll(sel)].find(e => e.offsetParent); if (!el) return ok();
-  const L = document.createElement('div'); L.className = 'gy-tut-tap'; root.appendChild(L); const ring = () => { const a = el.getBoundingClientRect(), b = root.getBoundingClientRect(); let r = L.querySelector('.gy-k-ring'); if (!r) { r = document.createElement('i'); r.className = 'gy-k-ring'; L.appendChild(r); } Object.assign(r.style, { left: a.left - b.left - 4 + 'px', top: a.top - b.top - 4 + 'px', width: a.width + 8 + 'px', height: a.height + 8 + 'px' }); }; ring();
-  const end = () => { clearInterval(t); L.remove(); ok(); }, t = setInterval(() => { if (!el.isConnected || !L.isConnected) end(); else ring(); }, 300);
-  L.onclick = e => { e.stopPropagation(); const a = el.getBoundingClientRect(); if (e.clientX >= a.left && e.clientX <= a.right && e.clientY >= a.top && e.clientY <= a.bottom) { end(); el.click(); } }; });
 const tutSeen = k => { const g = st(); return !!(g?.[k] || gList().some(x => x[k])); };
+// v20.64 경완 '훈련장·트레이너 튜토리얼도 오프닝 튜토리얼처럼': 강박사 창이 버튼·딱지마다 옮겨 다니며 설명하고, 눌러 볼 건 유저가 직접 누른다 (본게임 tutFlow 와 같은 #tut 모양)
+// 단계: { c: 딱지, t: 비출 곳(선택자·함수), s: 대사, tap: 직접 누를 곳, until: 넘어갈 조건, when: 이 단계를 할지, pre: 먼저 할 일, after: 누른 뒤 기다림 }
+const gtEl = t => { if (!t) return null; if (typeof t === 'function') return t() || null; return [...document.querySelectorAll(t)].find(x => x.getClientRects().length && !x.closest('[hidden]')) || null; };
+const gtBox = es => { es = es.filter(e => e && e.getClientRects().length); if (!es.length) return null; const rs = es.map(x => x.getBoundingClientRect()), r = { left: Math.min(...rs.map(q => q.left)), top: Math.min(...rs.map(q => q.top)), right: Math.max(...rs.map(q => q.right)), bottom: Math.max(...rs.map(q => q.bottom)) }; r.width = r.right - r.left; r.height = r.bottom - r.top; return { getBoundingClientRect: () => r, contains: x => es.some(e => e.contains(x)), sv: es[0] }; };
+const gtAll = sel => () => gtBox([...document.querySelectorAll(sel)]);
+let gtOn = false;
+async function gtu(T) {
+  if (gtOn) return; gtOn = true; try { GA.introCss?.(); } catch (e) {}
+  const ov = document.createElement('div'); ov.id = 'tut'; ov.className = 'gtu hide';
+  ov.innerHTML = `<i class="tu-hole none"></i><div class="tu-box"><img alt="강박사" src="${GA.KANG}"><div class="win"><span class="tu-n"></span><span class="tu-t"></span><b class="cur" hidden>▼</b></div></div>`;
+  document.body.append(ov);
+  const hole = ov.querySelector('.tu-hole'), bx = ov.querySelector('.tu-box'), say = GA.inTyper(ov, ov.querySelector('.tu-t'), ov.querySelector('.cur'));
+  let lock = true, allow = null, tapped = false, cur = null, raf = 0, snap = true, bxY = null;
+  const hit = (e, s) => !!s && !!e.target.closest && (typeof s === 'function' ? (x => !!x && x.contains(e.target))(s()) : !!e.target.closest(s));
+  const block = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); };
+  // 설명 중에는 박사 창만 눌리고(누르면 다음 말), 눌러 보는 단계에서는 비춘 곳만 눌린다
+  const guard = e => { if (lock) return block(e); if (!allow) { if (e.target.closest?.('#tut')) return; block(e); if (e.type === 'pointerup') say.poke(); return; } if (hit(e, allow)) { if (e.type === 'click') tapped = true; return; } block(e); };
+  const EV = ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'];
+  EV.forEach(t => addEventListener(t, guard, { capture: true, passive: false }));
+  // 박사 창은 비춘 곳 바로 위나 아래 (빈 곳이 넓은 쪽), 단계가 바뀔 때만 옮겨 간다
+  const placeBox = (r, first) => { const H = innerHeight, top0 = 10, bh = bx.offsetHeight || 170; let y;
+    if (!r) y = H * .5 - bh / 2; else { const up = r.top - 14 - bh, dn = r.bottom + 14; y = (r.top + r.bottom) / 2 > H * .45 ? (up >= top0 ? up : dn) : (dn + bh <= H - 10 ? dn : up); if (up < top0 && dn + bh > H - 10) y = r.height > H * .5 ? r.bottom - bh - 12 : (r.top > H - r.bottom ? top0 : H - bh - 10); }
+    y = Math.round(Math.max(top0, Math.min(H - bh - 10, y))); if (first || bxY == null || Math.abs(bxY - y) > 40) { if (first) bx.style.transition = 'none'; bx.style.top = y + 'px'; bxY = y; if (first) { void bx.offsetWidth; bx.style.transition = ''; } } };
+  const track = () => { const e = cur && gtEl(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && !r.width) r = null;
+    if (r && cur.tap && (r.width < 44 || r.height < 44)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
+    if (r) { const p = 6; if (snap) hole.style.transition = 'none'; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (snap) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
+    else { hole.classList.add('none'); ov.classList.toggle('dim', !ov.classList.contains('tapon')); }
+    if (!ov.classList.contains('tapon')) placeBox(r, false); raf = requestAnimationFrame(track); };
+  try {
+    for (const st of T) {
+      if (!open) break;
+      if (st.when && !st.when()) continue;
+      if (st.pre) { lock = true; ov.classList.add('hide'); await st.pre(); await wait(st.hold || 500); }
+      const need = st.tap || st.t; if (need && typeof need === 'string') { let i = 0; for (; i < 25 && !gtEl(need); i++) await wait(100); if (st.tap && i >= 25) continue; }   // 눌러 볼 곳이 안 나타나면 그 단계는 건너뜀
+      { const e = gtEl(st.t); (e?.sv || e)?.scrollIntoView?.({ block: 'nearest' }); }
+      const wasHid = ov.classList.contains('hide') || !cur; cur = st; snap = true; ov.querySelector('.tu-n').textContent = st.c || '강박사'; ov.classList.remove('hide', 'tapon'); lock = false;
+      { const e = gtEl(st.t), r = e && e.getBoundingClientRect(); placeBox(r && r.width ? r : null, wasHid); }
+      cancelAnimationFrame(raf); track();
+      const s = typeof st.s === 'function' ? st.s() : st.s;
+      if (st.tap) {
+        await say(s); lock = true; ov.classList.add('tapon'); await wait(300); lock = false; ov.classList.add('do'); tapped = false; allow = st.tap;
+        for (let gone = 0; ; ) { await wait(100); if (!open) break; if (st.until ? st.until() : tapped) break; gone = gtEl(st.tap) || (st.until && tapped) ? 0 : gone + 1; if (gone > 40) break; }   // 누를 곳이 4초 넘게 사라지면 풀어 준다 (갇히지 않게)
+        allow = null; ov.classList.remove('do'); lock = true; ov.classList.add('hide'); await wait(st.after || 700); lock = false; ov.classList.remove('tapon');
+      } else await say(s);
+    }
+  } finally { cancelAnimationFrame(raf); EV.forEach(t => removeEventListener(t, guard, { capture: true })); ov.remove(); gtOn = false; }
+}
+// 훈련장: 훈련 중인 포켓몬 카드 → 노력치 훈련 (처음 훈련장 흐름의 뒷부분, 예전에 훈련장 안내만 본 관장은 이것만)
+const GT_TRB = () => { const g = st(); return [
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
+  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '여기가 훈련 현황이란다.\n얻은 경험치, 오른 레벨과\n친밀도, 새로 배운 기술이\n쌓이지.' },
+  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '앱을 꺼 두어도 훈련은\n계속된단다. 가끔 특별한\n기술도 배우지.' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '그리고 아주 중요한 것!\n바로 \'노력치\'란다.' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.' },
+  { c: '노력치 훈련', t: '.gy-pop .ev-trg', s: '훈련장에선 키울 능력치를\n직접 고를 수 있단다.\n고른 능력치에 노력치가\n꾸준히 쌓이지.' },
+  { c: '노력치 훈련', t: '.gy-pop .ev-trg', tap: '.gy-pop .ev-tk', until: () => g.tr?.some(e => e.evk >= 0), after: 900, s: '키우고 싶은 능력치를\n하나 눌러 보렴!' },
+  { c: '노력치 훈련', t: '.gy-pop .ev-tk.on', s: '좋아! 이제 이 능력치에\n노력치가 쌓인단다.\n같은 칸을 다시 누르면\n훈련을 멈추지.' },
+  { c: '노력치 훈련', t: '.gy-pop .ev-trq', s: '뭘 키울지 모르겠으면\n이 ? 를 눌러 보렴.\n지금 하기 좋은 훈련을\n알려 준단다.' },
+  { c: '코치', t: '.gy-menu [data-t=staff]', s: '트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지.' },
+  { c: '훈련장', s: '자, 포켓몬들을\n멋지게 키워 보렴,\n관장님!' }]; };
+// 훈련장 처음 들어올 때: + → 칸 → 포켓몬 고르기 → 보내기 → 카드 → 노력치 훈련
+const GT_TR = () => { const g = st(), n0 = g.tr?.length || 0; return [
+  { c: '훈련장', s: '오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, 관장님!' },
+  { c: '훈련장', t: '.ty-yd', s: '여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.' },
+  { c: '훈련장', t: '.ty-yd', s: '훈련하면 경험치가 쌓여\n레벨이 오르고, 가끔은\n특별한 기술도 배우지.' },
+  { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 + 버튼을\n눌러 보렴!' },
+  { c: '훈련장 칸', t: gtAll('.ts-win .tsc-lock'), s: '잠긴 칸들이 보이지?\n체육관 등급이 오를 때마다\n훈련장 자리가 하나씩\n늘어난단다.' },
+  { c: '훈련 보내기', when: () => gtEl('.ts-win .tsc-new'), t: '.ts-win .tsc-new', tap: '.ts-win .tsc-new', until: () => gtEl('.bw-grid'), after: 900, s: '지금은 한 자리가 비었구나.\n빈 칸을 눌러 보렴!' },
+  { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.bw-grid', s: '내 포켓몬 박스란다.\n훈련시키고 싶은 포켓몬을\n골라 보자.' },
+  { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.bw-grid', tap: '.bw-grid .pk', until: () => gtEl('.gy-pop [data-a=ok]') || (g.tr?.length || 0) > n0, after: 600, s: '키우고 싶은 포켓몬을\n하나 눌러 보렴!' },
+  { c: '훈련 보내기', when: () => gtEl('.gy-pop [data-a=ok]'), t: '.gy-pop [data-a=ok]', tap: '.gy-pop [data-a=ok]', until: () => (g.tr?.length || 0) > n0, after: 1000, s: '\'보내기\'를 눌러 보렴!' },
+  { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.gy-boxw .bw-x', tap: '.gy-boxw .bw-x', until: () => !gtEl('.bw-grid'), after: 800, s: '잘했다! ‹ 를 눌러\n돌아가자.' },
+  ...GT_TRB()]; };
+// 트레이너 메뉴 처음 들어올 때
+const cvRow = (...L) => () => { const c = gtEl('.cv-card[data-i="0"]'); return c ? gtBox([...c.querySelectorAll('.cv-dl dt')].filter(d => L.includes(d.textContent.trim())).flatMap(d => [d, d.nextElementSibling])) : null; };
+const GT_ST = () => [
+  { c: '트레이너', s: '이번엔 트레이너 메뉴구나.\n체육관을 혼자 지키긴\n힘들지?' },
+  { c: '고용 관리', t: '.sp-tabs [data-sft=sf]', s: '고용한 트레이너는\n\'고용 관리\'에 모인단다.\n도전자가 오면 먼저 나가서\n싸워 주지.' },
+  { c: '고용 관리', t: '.sp-tabs [data-sft=sf]', s: '트레이너가 막아 내면\n골드와 평판도 함께\n벌어 온단다.' },
+  { c: '지원서', t: '.sp-tabs [data-sft=cand]', tap: '.sp-tabs [data-sft=cand]', until: () => gtEl('.sp-tabs [data-sft=cand][aria-selected=true]'), after: 900, s: '일하고 싶은 트레이너는\n지원서를 보낸단다.\n\'지원서\' 탭을 눌러 보렴!' },
+  { c: '지원서', when: () => !gtEl('.cv-card'), s: '지금은 지원서가 없구나.\n일하고 싶은 트레이너가\n가끔 찾아온단다.' },
+  { c: '지원서', when: () => gtEl('.cv-card'), t: '.cv-card[data-i="0"]', s: '이게 트레이너 지원서란다.\n하나씩 같이 살펴보자.' },
+  { c: '특성', when: () => gtEl('.cv-card'), t: cvRow('특성'), s: '특성은 트레이너마다 하나.\n배틀에 강한 근성, 골드를 더\n벌어 오는 수완가도 있지.' },
+  { c: '포켓몬', when: () => gtEl('.cv-card'), t: cvRow('포켓몬', '평균 레벨'), s: '데리고 다니는 포켓몬과\n평균 레벨이야. 셀수록\n도전자를 잘 막아 낸단다.' },
+  { c: '주급', when: () => gtEl('.cv-card'), t: cvRow('희망 주급'), s: '주급은 7일마다 나간단다.\n벌어 오는 골드보다 주급이\n비싸면 손해겠지?' },
+  { c: '코치 실력', when: () => gtEl('.cv-card'), t: cvRow('코치 실력'), s: '코치 실력은 훈련장 코치로\n보냈을 때 훈련이 얼마나\n빨라지는지란다.' },
+  { c: '코치 실력', when: () => gtEl('.cv-card'), t: cvRow('특성', '코치 실력'), s: '훈련광, 기술 선생, 노력파,\n다정함 같은 특성은\n코치로 있을 때 빛난단다.' },
+  { c: '남은 시간', when: () => gtEl('.cv-card'), t: '.cv-card[data-i="0"] .cv-tm', s: '지원서엔 남은 시간이 있어.\n시간이 지나면 다른 곳으로\n가 버린단다.' },
+  { c: '지원서', when: () => gtEl('.cv-dots'), t: '.cv-dots', s: '지원서가 여러 장이면\n옆으로 밀어서\n넘겨 볼 수 있지.' },
+  { c: '고용하기', when: () => gtEl('.cv-card'), t: '.cv-card[data-i="0"] .cv-btns', s: '마음에 들면 \'고용하기\',\n아니면 \'돌려보내기\'를\n누르면 된단다.' },
+  { c: '트레이너', t: '.gy-menu [data-t=train]', s: '고용한 트레이너는 체육관에\n세우거나, 훈련장 코치로\n보낼 수 있단다.' },
+  { c: '트레이너', s: '고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다. 힘내라, 관장님!' }];
+// 노력치: 처음 상세카드에서 노력치 박스를 볼 때(C) → 박스를 직접 눌러 설정 창을 열고 → 설정 창 칸별 설명(D)
+const GT_EVD = () => [
+  { c: '노력치 설정', t: '.ev-pop .ev-pool', s: '여기가 노력치 설정 창이란다.\n위 막대가 남은 노력치와\n합계를 보여 주지.' },
+  { c: '노력치 설정', t: '.ev-pop [data-m]', s: '− 로 빼는 건 공짜야.\n뺀 노력치는 \'남은 노력치\'로\n모인단다.' },
+  { c: '노력치 설정', t: '.ev-pop [data-p]', s: '+ 로 넣을 땐 1당 10골드.\n꾹 누르고 있으면\n계속 들어가지.' },
+  { c: '영양제', t: '.ev-pop [data-v]', s: '옆의 영양제를 먹이면\n한 번에 10씩 오른단다.\n영양제는 상점에서 팔지.' },
+  { c: '도움말', t: '.ev-pop [data-q]', s: '어떻게 찍을지 모르겠으면\n제목 옆 ? 를 눌러 보렴.\n주로 찍는 법을 알려 준단다.' },
+  { c: '추천', t: '.ev-pop [data-rec]', s: '추천 버튼을 누르면\n노력치를 알아서\n찍어 주지.' },
+  { c: '저장', t: '.ev-pop .ev-bill', s: '든 골드는 정산표에 모이고,\n저장을 눌러야\n바뀐 게 남는단다.' },
+  { c: '노력치', s: '레벨이 높을수록 노력치로\n오르는 능력치도 커진단다.\n멋지게 키워 보렴!' }];
+const GT_EV = () => [
+  { c: '노력치', t: '.gy-pop .ev-box2', s: '상세카드 아래에 노력치\n박스가 생겼지? 남은 노력치와\n능력치별 노력치가 보인단다.' },
+  { c: '노력치', t: '.gy-pop .ev-box2', s: '한 마리가 쌓을 수 있는 건\n모두 510, 능력치 하나엔\n252까지란다.' },
+  { c: '노력치', t: '.gy-pop .ev-box2', s: '그래서 전부 키울 순 없어.\n보통은 두 가지에 252씩\n몰아 준단다.' },
+  { c: '노력치', t: '.gy-pop .ev-box2', tap: '.gy-pop .ev-box2', until: () => gtEl('.ev-pop'), after: 1000, s: '노력치 박스를 눌러 보렴!\n노력치를 직접 옮길 수\n있단다.' },
+  ...GT_EVD()];
 async function tutEv(w) {
   const g = st(); if (!g?.d || window.gymSimOn || lockedT(w === 'S' ? 'staff' : 'train')) return;
-  const P = TUT_TR(), go = async L => { for (let i = 0; busy && i < 60; i++) await wait(100); await wait(350); if (!open) return; await kang(L, { lit: true }); };
-  if (w === 'A') { if (!tutSeen('trTut')) { g.trTut = 1; save(); await go(P[0].L); if (g.tr?.length && !tutSeen('evTB')) { g.evTB = 1; save(); await go(P[1].L); } return; }
-    if (!tutSeen('evTB')) { g.evTB = 1; save(); await go(P[1].L); } return; }
-  if (w === 'B') { if (tutSeen('evTB') || !tutSeen('trTut')) return; g.evTB = 1; save(); await wait(600); await go(P[1].L); return; }
-  // v20.55 경완 '설정 창 설명은 유저가 설정 창을 눌러서 켠 후에': C 는 박스를 눌러 보라는 데까지, 박스만 눌리게 막고 → 설정 창이 열리면 D
-  if (w === 'C') { if (tutSeen('evTC') || !GB()?.evOn?.()) return; g.evTC = 1; save(); await wait(500); await go(P[2].L); if (!tutSeen('evTD')) await tutTap('.ev-box2'); return; }
-  if (w === 'D') { if (tutSeen('evTD') || !tutSeen('evTC')) return; g.evTD = 1; save(); root.querySelectorAll('.gy-tut-tap').forEach(e => e.remove()); await wait(250); await go(P[3].L); return; }
-  if (w === 'S') { if (tutSeen('sfTut')) return; g.sfTut = 1; save(); await go(TUT_ST()[0].L); }
+  const go = async T => { for (let i = 0; (busy || gtOn) && i < 80; i++) await wait(100); await wait(350); if (!open || gtOn) return; await gtu(T); };
+  // v20.67 경완: 오프닝처럼 강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기 (gtu)
+  if (w === 'A') { if (!tutSeen('trTut')) { g.trTut = 1; g.evTB = 1; save(); await go(GT_TR()); return; }
+    if (!tutSeen('evTB') && g.tr?.length) { g.evTB = 1; save(); await go(GT_TRB()); } return; }
+  if (w === 'B') { if (gtOn || tutSeen('evTB') || !tutSeen('trTut')) return; g.evTB = 1; save(); await wait(600); await go(GT_TRB()); return; }
+  if (w === 'C') { if (gtOn || tutSeen('evTC') || !GB()?.evOn?.()) return; g.evTC = 1; g.evTD = 1; save(); await wait(500); await go(GT_EV()); return; }
+  if (w === 'D') { if (gtOn || tutSeen('evTD') || !tutSeen('evTC')) return; g.evTD = 1; save(); await wait(250); await go(GT_EVD()); return; }
+  if (w === 'S') { if (tutSeen('sfTut')) return; g.sfTut = 1; save(); await go(GT_ST()); }
 }
 async function tutTest(w) {
   const g = st(); if (!g?.d) return; for (let i = 0; busy && i < 60; i++) await wait(100);
   if (gradeOf(g.rep || 0).i < 1) { g.rep = GRADES[1][0]; g.gmax = Math.max(g.gmax | 0, 1); renderTop(); }   // 시뮬이라 나갈 때 되돌아감: 훈련장·트레이너가 열리는 동네 체육관으로
-  g.trTut = 1;   // 진짜 훈련장 첫 안내(KANG_TR)가 겹쳐 뜨지 않게 (시뮬이라 나가면 되돌아감)
+  g.trTut = g.evTB = g.sfTut = 1;   // 진짜 튜토리얼이 겹쳐 뜨지 않게 (시뮬이라 나가면 되돌아감)
   if (w === 'st' && !(g.cands || []).length) { g.cands = [mkCand(Date.now())]; }
   openTab(w === 'tr' ? 'train' : 'staff'); await wait(1400);
   if (w === 'st') { $g('.sp-tabs [data-sft="sf"]')?.click(); await wait(500); }
-  const P = w === 'tr' ? TUT_TR() : TUT_ST();
-  for (const [i, p] of P.entries()) {
-    if (P.length > 1) await new Promise(ok => say(`<b>${p.s}</b>`, `튜토리얼 시험 ${i + 1}/${P.length}`, ok));
-    await kang(p.L, { lit: true });
-  }
+  await gtu(w === 'tr' ? GT_TR() : GT_ST());
 }
 // lines 를 강박사가 한 줄씩 말한다 (화면을 누르면 다음). lit: 처음부터 밝게 / 아니면 어두운 체육관에 불이 켜지며 시작
 function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, skip = nm !== '강박사' } = {}) {   // 강박사 튜토리얼엔 건너뛰기 없음 (경완 2026-10-29)
