@@ -1995,8 +1995,21 @@ async function bigUp(el) {
     wf.remove(); await wait(1500);
     try { M?.play('gym'); } catch (e) {}
     busy = false; root.classList.remove('busy'); renderHome(true);
-    say('체육관이 넓어졌어요!', `+${B.w * B.h - A.w * A.h}칸 넓어졌어요`);   // 훈련장 칸은 등급 따라 저절로 (넓히기와 무관), 문구 뺌 (경완 2026-10-31)
+    bigPop(A, B);   // v20.76 경완 '체육관 크기 넓어졌다 알림창 디자인 다시, 알림창처럼': 전·후 맵 + 늘어난 칸 + 단계 (예전 say 한 줄)
   } finally { busy = false; root.classList.remove('busy'); }
+}
+// v20.76 넓어졌다 알림창: 머리띠 · 전→후 맵(같은 축척이라 커진 게 보임) · +N칸 · 7단계 점. 저절로 뜨는 알림창(.gy-lock = 팝업 모션·효과음·확인으로만 닫힘)
+function bigPop(A, B) {
+  const g = st(), lv = bigOf(g) + 1, n = B.w * B.h - A.w * A.h, k = Math.min(132 / B.w, 104 / B.h);
+  const fig = (D, c, t) => `<figure class="bu-m ${c}"><i style="width:${Math.round(D.w * k)}px;height:${Math.round(D.h * k)}px"><img alt=""></i><figcaption><em>${t}</em>${D.w}×${D.h}</figcaption></figure>`;
+  const p = pop(`<div class="aw-pop bu-pop gy-lock"><div class="aw-hd bu-hd"><small>체육관 크기 ${lv} / ${STAGES}단계</small><b>체육관이 넓어졌어요!</b></div>
+    <div class="bu-maps">${fig(A, 'a', '전')}<span class="bu-ar" aria-hidden="true"></span>${fig(B, 'b', '후')}<i class="aw-st s1"></i><i class="aw-st s2"></i><i class="aw-st s3"></i></div>
+    <div class="bu-plus"><b>+${n}칸</b><span>${A.w * A.h}칸 → ${B.w * B.h}칸</span></div>
+    <div class="bu-pips" aria-label="${lv}단계">${Array.from({ length: STAGES }, (_, i) => `<i class="${i < lv ? 'on' : ''}${i === lv - 1 ? ' new' : ''}">${i + 1}</i>`).join('')}</div>
+    <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => close());
+  p?.classList.add('aw-wrap');
+  [[A, '.a'], [B, '.b']].forEach(([D, c]) => mapSrc(D).then(u => { const im = p?.querySelector(`.bu-m${c} img`); if (im) im.src = u; }).catch(() => {}));
+  return p;
 }
 // 체육관 일지 (v15.66 경완, v15.68 '날짜별로 한 화면'): 하루 한 화면, ◀ ▶ 로 날짜 넘김. 관장(나)과 트레이너 몫을 나눠서
 let jnlK = null;   /* v16.22 경완: 트레이너별 박스는 없애고 합계 표에 트레이너 이름별 줄 */
@@ -3003,7 +3016,7 @@ async function visit(F, code) {
   await wait(200); gymLoad.hide();
 }
 
-window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D),
+window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
