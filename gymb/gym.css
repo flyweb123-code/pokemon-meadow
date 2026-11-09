@@ -3741,5 +3741,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-itr{justify-content:space-between}   /* v20.80 경완: 도구 탭 왼쪽 항목 필터 · 오른쪽 가격순 */
 #gym .ts-win .ts-slot.tsc .tsc-out{top:9px;right:14px}
 .ty-emo.mvn{left:auto;margin-left:-40px;width:auto;min-width:80px;white-space:nowrap;color:#fff4c0;font-size:12px}.ty-mvh{position:absolute;width:0;height:0;pointer-events:none}   /* v20.81 훈련장 기술 이름 외치기 · 기술 효과 칸 */
-.ty-emo.co{margin-left:0;translate:-50% 0}   /* v20.84 코치 말 길이 달라도 가운데 */
+.ty-emo.co{margin-left:0;translate:-50% 0;animation-name:tyEmoC}@keyframes tyEmoC{0%{opacity:0;translate:-50% 6px}15%{opacity:1;translate:-50% 0}75%{opacity:1}100%{opacity:0;translate:-50% -14px}}   /* v20.84~85 코치 말 가운데 = 코치 가운데 (tyEmo 가 translate 를 덮어써서 따로) */
 #gym .gy-plate .gy-rpa{pointer-events:auto;cursor:pointer}   /* v20.84 경완 '평판 게이지가 빈 화면으로 인식돼 안 눌림': 게이지도 누를 수 있게 (누르면 등급표) */

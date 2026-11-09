@@ -91,9 +91,10 @@ const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, TR_H - e.h) : T
 let Y = null;   // 마당: { el, W, H, L, pr: {소품}, mons, raf, last, pos: {id: [x, y]}, pond, court }
 const inPond = (x, y, m = 0) => { const p = Y.pond; return x > p.x0 - m && x < p.x1 + m && y > p.y0 - m && y < p.y1 + m; };   // 수영장(네모)
 const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
+const nearBush = (x, y) => Math.abs(x - Y.W / 2) < 120 && y < yTop() + 56;   // v20.85 문 옆 덤불 앞은 기술·훈련 자리로 안 씀 (경완 '덤불에 공격')
 function yardSpot(swim) {
   for (let i = 0; i < 60; i++) { const x = 24 + Math.random() * (Y.W - 48), y = yTop() + Math.random() * (Y.H - yTop() - 20);
-    if (swim ? inPond(x, y - 10, -22) : !inPond(x, y, 16) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
+    if (swim ? inPond(x, y - 10, -22) : !inPond(x, y, 16) && !nearBush(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
   return [Y.W * .3, Y.H * .6];
 }
 // 훈련장 소품 = 스칼렛 작업물 그림 (gym/yard.json, config/staff/scarlet.json 에서 골라 옮김 + 후프링) (경완 2026-10-29 '스칼렛 작업물 수준으로, 가져와도 돼')
@@ -314,7 +315,7 @@ function yNext(m, now) {
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
   else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
   if (GA.mvFx && yMove(m) && Math.random() < .28) { const [sx, sy] = yardSpot(false); return yGo(m, 'tech' + m.id, sx, sy, 'tech'); }   // v20.81 기술 연습: 빈 자리로 가서 아는 기술을 차례로
-  if (!W8.length) { m.st = 'train'; m.k = null; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
+  if (!W8.length) { if (nearBush(m.x, m.y)) { const [sx, sy] = yardSpot(false); return yGo(m, 'train', sx, sy, 'train'); } m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
   let r = Math.random() * W8.reduce((a, x) => a + x[1], 0), k = W8[0][0]; for (const [kk, w] of W8) { r -= w; if (r <= 0) { k = kk; break; } }
   const q = Y.pr[k];
   if (k === 'bag1' || k === 'bag2') return yGo(m, k, q.x + 30, q.y + 2, 'bag');
@@ -334,6 +335,7 @@ function yArrive(m, now) {
   else if (T === 'buoy') { m.st = 'buoy'; m.face = -1; }
   else if (T === 'hoop') { m.st = 'hoop'; m.ph = 0; m.lap = 0; }
   else if (T === 'tech') { m.st = 'tech'; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 7 + Math.random() * 4; }
+  else if (T === 'train') { m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; }
   else if (T === 'sit') { m.st = 'sit'; m.face = Math.random() < .5 ? 1 : -1; }
   else if (T === 'sleep') { m.st = 'sleep'; m.until = now + 99; }
   else if (T === 'spw') { m.st = 'spw'; m.until = now + 6; const o = m.mate; if (o && o.st === 'spw' && o.mate === m) { m.face = o.x > m.x ? -1 : 1; o.face = -m.face; m.st = o.st = 'spar'; m.until = o.until = now + 6 + Math.random() * 4; m.turn = o.turn = 0; } }
@@ -479,7 +481,7 @@ function yMvFx(m, q) { const mv = m.one.mv, f = -m.face || 1, hs = document.crea
   GA.mvFx(hs, mv.name, mv.t, mv.dc, f); }
 function yHit(m) {
   const o = m.one; if (o.mv) { const q = o.shot || (o.k && Y.pr[o.k]) || null; yMvFx(m, q || o.tgt);
-    setTimeout(() => { if (!Y) return; if (q) { yWob(q, o.k === 'water' ? 'wob' : 'swing'); yFx(q.x + 6, q.y - (q.h || 20) * .55, o.k === 'water' ? 'spl' : 'spk'); }
+    setTimeout(() => { if (!Y) return; if (q) { yWob(q, o.k === 'water' || !q.mp ? 'wob' : 'swing'); yFx(q.x + 6, q.y - (q.h || 20) * .55, o.k === 'water' ? 'spl' : 'spk'); }
       if (o.tgt) { const t = o.tgt; if (t.D?.P?.a.Hurt && !t.one) t.one = { n: 'Hurt', t: 0 }; yEmo(t, '!', 'hit'); t.x += (t.x > m.x ? 1 : -1) * 6; } }, o.shot ? 520 : 260);
     if (Math.random() < .5) setTimeout(() => Y && yEmo(m, '+EXP', 'xp'), 700); return; }
   if (o.shot) return yShot(m, o.shot);
