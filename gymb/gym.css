@@ -3662,3 +3662,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v20.66 경완: 추천받기 켜면 이름 옆 ✕ — 노란 박스 안에 같이, 박스는 그만큼 길게 */
 #gym .sp-top .sp-recs.on{background:#fff4d6;box-shadow:inset 0 0 0 2px var(--frame,#282830)}#gym .sp-top .sp-recs.on .sp-recsb{flex:0 1 auto;background:none!important;box-shadow:none!important;padding:0 0 0 4px}#gym .sp-top .sp-recs.on .sp-recsx{display:flex;flex:none;align-items:center;padding:0 8px 0 4px;font-size:14px;line-height:1}
 #gym .iv-hex.nop,#gym .iv-hex.nop:active{transform:none!important;transition:none!important}   /* v20.66 바뀐 직후엔 눌림 크기 변화 없이 */
+/* v20.68 경완: 상점에서 산 것 = 창고 그 칸 오른쪽 위 빨간 점 */
+#gym .gy-storew .gy-body :is([data-tm],[data-it],[data-mint],[data-dc]){position:relative}#gym .gy-storew .nwdot{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#e84040;box-shadow:0 0 0 2px var(--win,#fff);pointer-events:none}
+#gym .gy-storew .st-tabs [role=tab]{position:relative}#gym .gy-storew .st-tabs .tdot{position:absolute;top:4px;right:4px;margin:0}   /* 탭 글자가 잘려도 점은 보이게 */
+/* v20.68 경완: 상세카드 제목 글자는 그림과 상관없이 가운데, 그림은 글자 왼쪽 (그림 폭만큼 왼쪽으로 빼 둠) */
+#gym .gy-pop h4 > .tm-ic{margin-left:-36px}#gym .gy-pop h4 .tm-tr{font-style:normal;vertical-align:2px;margin-right:4px}
+/* v20.68 경완: 창고 보유 수량 딱지는 칸 안 오른쪽 */
+#gym .gy-storew .sp-tm{position:relative}#gym .gy-storew .sp-tm .tm-own{position:absolute;right:10px;top:50%;transform:translateY(-50%);margin:0}#gym .gy-storew .sp-tm .tm-nm,#gym .gy-storew .sp-tm .tm-meta{padding-right:34px}
+/* v20.68 경완: 훈련 추천 카드 — 노력치 숫자 없이 '지금은 ○○ 노력치 훈련이 좋아요'를 가운데·크게 */
+#gym .ev-qpop .gy-msg.ev-trhint{font-weight:700;margin:2px 0 10px;padding:12px 10px;background:#f1ecff;border:2px solid #b9a6ec;border-radius:6px;font-size:16px;line-height:1.5;color:#20202c!important;text-align:center;word-break:keep-all}#gym .ev-qpop .ev-trhint b{color:#5a3aa8;font-size:18px}#gym .ev-qpop .ev-trwhy{text-align:center;word-break:keep-all}
+/* v20.68 경완: 노력치 훈련 글자 옆 ? 높이 맞춤 */
+#gym .ev-trh{align-items:center}#gym .ev-trh > b{display:inline-flex;align-items:center}#gym .ev-trh b .ev-trq{margin-left:6px;vertical-align:0;flex:none}

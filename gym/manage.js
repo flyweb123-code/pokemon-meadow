@@ -791,12 +791,12 @@ function tmWho(id, i) {
 function buyTm(id, can) {
   const D = GB().D, g = st(), x = GB().mvOf(id), i = D.mv.indexOf(x), price = tmPrice(x), L = can.get(i) || [], n = g.tms?.[id] || 0;
   const kd = GB().tmKind(id); if (!GB().isTR(id) && n > 0) return;   /* 기술머신은 한 번 사면 계속 (v15.69) */
-  pop(`<h4${GB().isTR(id) ? ' class="has-own"' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${kd} · ${esc(x[1])}${GB().isTR(id) ? GB().bagN(n) : ''}</h4><div class="mp-moves one tm-card${x[8] ? ' has-ds' : ''}">${GB().mvRow(x, '').replace(/<\/button>$/, x[8] ? `<span class="tm-ds">${esc(x[8])}</span></button>` : '</button>')}</div>${tmKdBox(id)}${tmWho(id, i)}
+  pop(`${GB().tmHead(id, n)}${GB().tmBody(x)}${tmKdBox(id)}${tmWho(id, i)}
     <div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(price)} 사기</button></div>`, (a, close) => {
     if (a === 'x') return close(); if (a.startsWith('wp')) return GB()._monPop(+a.slice(2) || a.slice(2), 'view');   // v20.60 경완: 배울 수 있는 포켓몬을 누르면 그 포켓몬 상세카드
     if (a !== 'buy') return;
     if (!buy(price)) { close(); return say(`골드가 모자라요. ${price.toLocaleString()}G가 필요해요.`); }
-    close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.glog('tr', `${kd} <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
+    close(); g.tms = g.tms || {}; g.tms[id] = (g.tms[id] || 0) + 1; K.newMark?.('tm', id); K.glog('tr', `${kd} <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 샀다.`); K.save(); redraw();
     say(`${kd} ${esc(x[1])}${K.jong(x[1]) ? '을' : '를'} 창고에 넣었어요.`);   // 경완 2026-10-29 '여기까지만'
   });
 }
@@ -819,10 +819,10 @@ function shopIt(body) {
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
       return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
-        g.mint = g.mint || {}; g.mint[mk] = (g.mint[mk] || 0) + 1; K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }, '', n); }
+        g.mint = g.mint || {}; g.mint[mk] = (g.mint[mk] || 0) + 1; K.newMark?.('mint', mk); K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }, '', n); }
     const id = b.dataset.it; if (!id || GB().itHave(id)) return; sfx('tap'); const x = H[id];
     GB().itInfo(id, `${gold(x[1])} 사기`, () => { if (!buy(x[1])) return say(`골드가 모자라요. ${x[1].toLocaleString()}G가 필요해요.`);
-      if (GB().itHave(id)) return; g.itm[id] = 1; K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }, '', g.itm[id] || 0); };
+      if (GB().itHave(id)) return; g.itm[id] = 1; K.newMark?.('it', id); K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }, '', g.itm[id] || 0); };
 }
 // v20.45 영양제 (노력치 +10, 300G): 상점 도구 탭 민트 밑, 창고(g.vit)에 쌓였다가 노력치 설정 창에서 먹임. 슬롯엔 창고 수 안 보임 (경완)
 function evShop() { if (!GB().evOn?.()) return ''; const B = GB();
@@ -835,9 +835,8 @@ function vitBuy(i) { const B = GB(), [k, nm] = B.EV_VIT[i], g = st(), n = g.vit?
 // v20.61 경완 '훈련장 카드 노력치 훈련 박스에도 ? — 지금 어떤 훈련이 좋은지 힌트': 추천 배분(evPlan) 순서대로 아직 목표에 못 미친 첫 능력치
 function evTrHint(P, after) { const B = GB(), m = B.gm(P), e = B.evArr(m), pl = B.evPlan(P.sp), N = B.EV_N, T = st().tr.find(x => x.id === P.id);
   const k = pl.k.find((k, j) => (e[k] | 0) < pl.v[j]), j = pl.k.indexOf(k);
-  const chips = pl.k.map((x, jj) => `<span class="q-c"><small>${N[x]}</small><b>${e[x] | 0} / ${pl.v[jj]}</b></span>`).join('');
   const msg = k == null ? '추천 배분대로 노력치가 다 찼어요. 이제 노력치 훈련은 쉬어도 돼요.' : `지금은 <b>${N[k]}</b> 노력치 훈련이 좋아요.${T?.evk === k ? ' 이미 이 훈련을 하고 있어요!' : ''}`;
-  B.gymPop(`<h4 class="mi-h">${esc(nmOf(P))}에게 좋은 훈련</h4><div class="q-main"><p class="q-nm">${pl.nm}</p><div class="q-cs">${chips}</div></div><p class="gy-msg mi-d">${pl.why}</p><p class="gy-msg ev-trhint">${msg}</p><div class="gy-btns${k == null || T?.evk === k ? ' one' : ''}"><button data-a="x"${k == null || T?.evk === k ? ' class="main"' : ''}>닫기</button>${k == null || T?.evk === k ? '' : `<button class="main" data-a="y">${N[k]} 훈련하기</button>`}</div>`, (a, c) => { c(); if (a === 'y' && T) { tickTrain(Date.now()); T.evk = k; K.save(); after?.(); } }).classList.add('ev-qpop'); }
+  B.gymPop(`<h4 class="mi-h">${esc(nmOf(P))}에게 좋은 훈련</h4><p class="gy-msg ev-trhint">${msg}</p><p class="gy-msg mi-d ev-trwhy">${pl.why}</p><div class="gy-btns${k == null || T?.evk === k ? ' one' : ''}"><button data-a="x"${k == null || T?.evk === k ? ' class="main"' : ''}>닫기</button>${k == null || T?.evk === k ? '' : `<button class="main" data-a="y">${N[k]} 훈련하기</button>`}</div>`, (a, c) => { c(); if (a === 'y' && T) { tickTrain(Date.now()); T.evk = k; K.save(); after?.(); } }).classList.add('ev-qpop'); }
 function evTrBox(P) { const B = GB(); if (!B.evOn?.()) return ''; const T = st().tr.find(e => e.id === P.id); if (!T) return ''; const on = T.evk ?? -1, g = T.evg | 0;
   return `<div class="ev-tr"><div class="ev-trh"><b>노력치 훈련<button type="button" class="ev-q ev-trq" data-a="evq" aria-label="어떤 훈련이 좋을까"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}</small></div>
     <div class="ev-trg">${B.EV_N.map((n, i) => `<button type="button" class="ev-tk${i === on ? ' on' : ''}" data-a="evk${i}"><img alt="" src="${B.itImg(B.EV_PW[i])}"><span>${n}</span></button>`).join('')}</div></div>`; }
@@ -855,7 +854,7 @@ function shopDeco(body) {
     if (G < o.lv) return say(`${K.GRADES[o.lv][1]}이 되면 살 수 있어요.`);
     pop(`<h4>${o.n}</h4><div class="dc-big"><img alt="" src="${IMG}deco/${k}.png"></div><div class="gy-btns"><button data-a="x">그만두기</button><button class="main" data-a="y">${gold(o.g)} 사기</button></div>`, (a, close) => {
       close(); if (a !== 'y') return; if (!buy(o.g)) return say('골드가 모자라요.');
-      g.own[k] = 1; g.dp.push(k); K.save(); redraw(); });
+      g.own[k] = 1; g.dp.push(k); K.newMark?.('deco', k); K.save(); redraw(); });
   };
 }
 // 관장 의상: 앞모습은 옷 모양까지 새로 그린 그림, 맵·배틀 뒷모습은 옷 색만. 누르면 그 옷을 입은 전신 카드 (경완 2026-10-27)
@@ -899,5 +898,7 @@ function spWipe() {
   g.spW = 1; K.save(); console.log('spWipe', n);
 }
 try { spWipe(); } catch (e) { console.warn('spWipe', e); }
-window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP };
+// v20.68 경완 '퇴근하고 돌아오면 상점 필터 다 기본값': 탭·타입·형태·위력순·가격순·추천받기 모두 처음대로
+function shopReset() { shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
+window.GymManage = { tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset };
 })();

@@ -1534,8 +1534,21 @@ function foePop(sp, lv, key) {
 const mvBoxHtml = id => { const x = mvOf(id); if (!x) return ''; return `<div class="mi-box"><h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><div class="mi-tg">${tyTag(x[2], x[3])}</div>
     <dl class="mi-st"><div><dt>위력</dt><dd>${x[4] || '—'}</dd></div><div><dt>명중</dt><dd>${x[5] && x[5] !== true ? x[5] : '—'}</dd></div><div><dt>PP</dt><dd>${x[6] || '—'}</dd></div></dl>
     <p class="gy-msg mi-d">${esc(x[8] || '설명이 아직 없어요.')}</p></div>`; };
-function mvInfo(id, teach, lab = '기술 가르치기', onX) {
+// v20.68 경완 '창고 기술 상세카드 = 상점 상세카드': 제목(종류 · 이름, 레코드는 창고 수), 기술 칸 안에 설명, 계속 사용/1회용 안내, 라인업에서 배울 수 있는 포켓몬
+const tmHead = (id, n) => { const x = mvOf(id), tr = isTR(id); return `<h4 class="mi-h${tr ? ' has-own' : ''}"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${tr ? '<i class="tm-tr">TR</i>' : ''}${esc(x[1])}${tr ? bagN(n) : ''}</h4>`; };   /* 경완: 슬롯처럼 TR 딱지 (종류는 아래 계속 사용·1회용 칸) */
+const tmBody = x => `<div class="mp-moves one tm-card${x[8] ? ' has-ds' : ''}">${mvRow(x, '').replace(/<\/button>$/, x[8] ? `<span class="tm-ds">${esc(x[8])}</span></button>` : '</button>')}</div>`;
+const tmKdBox = id => { const tr = isTR(id); return `<div class="tm-kd${tr ? ' tr' : ''}"><div class="tm-kdr"><i class="tm-kdb">${tr ? '1회용' : '계속 사용'}</i><span>${tr ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</span></div></div>`; };
+function tmWho(id) {
+  const i = D.mv.indexOf(mvOf(id)), M = [...new Set(lus().flat())].map(boxOf).filter(P => P && (D.sp[P.sp]?.tm || []).includes(i)), kn = P => gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
+  const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
+  if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
+  return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
+}
+function mvInfo(id, teach, lab = '기술 가르치기', onX, who) {
   const x = mvOf(id); if (!x) return; const n = S.gym?.tms?.[id] || 0;
+  if (teach && !onX && n > 0) { const p = gymPop(`${tmHead(id, n)}${tmBody(x)}${tmKdBox(id)}${who ? tmWho(id) : ''}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button></div>`,
+      (a, close) => { if (!a) return; if (a.startsWith('wp')) return monPop(+a.slice(2) || a.slice(2), 'view'); close(); if (a === 't') teach(); });
+    return; }
   gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><div class="mi-tg">${tyTag(x[2], x[3])}${teach && !onX ? (isTR(id) ? `<span class="mi-own">기술레코드 ×${n} · 한 번 쓰면 없어져요</span>` : '<span class="mi-own">기술머신 · 계속 쓸 수 있어요</span>') : ''}</div>
     <dl class="mi-st"><div><dt>위력</dt><dd>${x[4] || '—'}</dd></div><div><dt>명중</dt><dd>${x[5] && x[5] !== true ? x[5] : '—'}</dd></div><div><dt>PP</dt><dd>${x[6] || '—'}</dd></div></dl>
     <p class="gy-msg mi-d">${esc(x[8] || '설명이 아직 없어요.')}</p><div class="gy-btns${teach ? '' : ' one'}">${teach ? `<button data-a="x">닫기</button><button class="main" data-a="t">${lab}</button>` : '<button class="main" data-a="x">닫기</button>'}</div>`,
@@ -1796,7 +1809,7 @@ function usePop(P, done) {
   const recGoTm = () => { const k = useT, tr = k === 'tr', nm = tr ? '기술레코드' : '기술머신'; loadSim().then(() => { if (!el.isConnected) return; const L = recT[k] || (recT[k] = recTms(P, tr)), r = L.find(id => (g.tms[id] | 0) > 0 && tmCan(P, id));
     if (r) return mvInfo(r, () => teachTm(P, r, draw));
     const x = L[0] && mvOf(L[0]); if (!x) return gymPop(`<h4>추천 기술</h4><p class="gy-msg" style="text-align:center">지금 기술보다 좋은 ${nm}${tr ? '가' : '이'} 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c2) => c2());
-    gymPop(`<h4 class="mi-h"><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png">${esc(x[1])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 ${nm}${tr ? '예요' : '이에요'}</p><div class="mp-moves mp-line">${mvRow(x, 'i' + L[0])}</div><p class="gy-msg" style="text-align:center"><small>가진 ${nm}${tr ? '가' : '이'} 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1)); c2(); if (a !== 'buy') return;
+    gymPop(`${tmHead(L[0], 0)}<p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 ${nm}${tr ? '예요' : '이에요'}</p>${tmBody(x)}${tmKdBox(L[0])}<p class="gy-msg" style="text-align:center"><small>가진 ${nm}${tr ? '가' : '이'} 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { if (!a) return; c2(); if (a !== 'buy') return;
       el.remove(); window.gymShopTm = L[0]; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => usePop(P, done) }); }); }).catch(() => {}); };
   document.querySelector('#gym .gy-main').appendChild(el); draw();   // 하단 메뉴는 그대로
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap');
@@ -2034,5 +2047,5 @@ function evPop(P, done) {
   start(); fillTh(p); return p;
 }
 
-window.GymBattle = { evMig, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { evMig, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
