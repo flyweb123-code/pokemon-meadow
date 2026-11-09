@@ -2408,12 +2408,8 @@ const GT_EGD = () => [
 const GT_EGO = () => [
   { c: '특별한 기술', when: () => gtEl('.gy-pop .tp2-mvc'), t: '.gy-pop .tp2-mvc', tap: '.gy-pop .tp2-mvc', until: () => gtEl('.eg-pop'), after: 900, s: '포켓몬마다 특별한 기술이\n4가지 숨어 있단다.\n\'새 기술\'을 눌러 보렴!' },
   ...GT_EGD()];
-const GT_TRB = () => { const g = st(); return [
-  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
-  { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
-  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '여기가 훈련 현황이란다.\n얻은 경험치, 오른 레벨과\n친밀도, 새로 배운 기술이\n쌓이지.' },
-  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '앱을 꺼 두어도 훈련은\n계속된단다.' },
-  ...GT_EGO(),
+// v20.99 경완 '노력치 개념은 처음 떠오르는 체육관이 됐을 때, 동네 체육관에선 특별한 기술만': 노력치 설명은 GT_EVT 로 떼어 evOn(떠오르는 체육관부터) 일 때만
+const GT_EVT = g => [
   { c: '노력치', t: '.gy-pop .ev-tr', s: '그리고 아주 중요한 것!\n바로 \'노력치\'란다.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!' },
@@ -2423,6 +2419,22 @@ const GT_TRB = () => { const g = st(); return [
   { c: '노력치 훈련', t: '.gy-pop .ev-trg', tap: '.gy-pop .ev-tk', until: () => g.tr?.some(e => e.evk >= 0), after: 900, s: '키우고 싶은 능력치를\n하나 눌러 보렴!' },
   { c: '노력치 훈련', t: '.gy-pop .ev-tk.on', s: '좋아! 이제 이 능력치에\n노력치가 쌓인단다.\n같은 칸을 다시 누르면\n훈련을 멈추지.' },
   { c: '노력치 훈련', t: '.gy-pop .ev-trq', s: '뭘 키울지 모르겠으면\n이 ? 를 눌러 보렴.\n지금 하기 좋은 훈련을\n알려 준단다.' },
+];
+const GT_TREV = () => { const g = st(); return [
+  { c: '노력치', s: '떠오르는 체육관이 된 걸\n축하한다, 관장님!' },
+  { c: '노력치', s: '체육관 이름이 알려질수록\n더 강한 도전자들이\n찾아올 거란다.' },
+  { c: '노력치', s: '그러니 포켓몬들도\n더 강해져야겠지?\n그 방법을 알려 주마!' },
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
+  ...GT_EVT(g),
+  { c: '노력치', s: '노력치를 잘 쌓아서\n어떤 도전자도 막아 내는\n체육관을 만들어 보렴!' }]; };
+const GT_TRB = () => { const g = st(); return [
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
+  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '여기가 훈련 현황이란다.\n얻은 경험치, 오른 레벨과\n친밀도, 새로 배운 기술이\n쌓이지.' },
+  { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '앱을 꺼 두어도 훈련은\n계속된단다.' },
+  ...GT_EGO(),
+  ...(GB()?.evOn?.() ? GT_EVT(g) : []),
   { c: '코치', t: '.gy-menu [data-t=staff]', s: '트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지.' },
   { c: '훈련장', s: '자, 포켓몬들을\n멋지게 키워 보렴,\n관장님!' }]; };
 // 훈련장 처음 들어올 때: + → 칸 → 포켓몬 고르기 → 보내기 → 카드 → 노력치 훈련
@@ -2477,10 +2489,10 @@ async function tutEv(w) {
   const g = st(); if (!g?.d || window.gymSimOn || lockedT(w === 'S' ? 'staff' : 'train')) return;
   const go = async T => { for (let i = 0; (busy || gtOn) && i < 80; i++) await wait(100); await wait(350); if (!open || gtOn) return; await gtu(T); };
   // v20.67 경완: 오프닝처럼 강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기 (gtu)
-  if (w === 'A') { if (!tutSeen('trTut')) { g.trTut = 1; g.evTB = 1; g.egT = 1; save(); await go(GT_TR()); return; }
-    if (!tutSeen('evTB') && g.tr?.length) { g.evTB = 1; g.egT = 1; save(); await go(GT_TRB()); } return; }
+  if (w === 'A') { if (!tutSeen('trTut')) { g.trTut = 1; g.egT = 1; if (GB()?.evOn?.()) g.evTB = 1; save(); await go(GT_TR()); return; }
+    if (!tutSeen('evTB') && g.tr?.length && GB()?.evOn?.()) { const eg = tutSeen('egT'); g.evTB = 1; g.egT = 1; save(); await go(eg ? GT_TREV() : GT_TRB()); } return; }
   if (w === 'E') { if (gtOn || tutSeen('egT') || !tutSeen('trTut')) return; g.egT = 1; save(); await wait(500); await go(GT_EGD()); return; }   // 예전 튜토리얼을 본 관장: 새 기술 창을 처음 열 때
-  if (w === 'B') { if (gtOn || tutSeen('evTB') || !tutSeen('trTut')) return; g.evTB = 1; g.egT = 1; save(); await wait(600); await go(GT_TRB()); return; }
+  if (w === 'B') { if (gtOn || tutSeen('evTB') || !tutSeen('trTut') || !GB()?.evOn?.()) return; const eg = tutSeen('egT'); g.evTB = 1; g.egT = 1; save(); await wait(600); await go(eg ? GT_TREV() : GT_TRB()); return; }
   if (w === 'C') { if (gtOn || tutSeen('evTC') || !GB()?.evOn?.()) return; g.evTC = 1; g.evTD = 1; save(); await wait(500); await go(GT_EV()); return; }
   if (w === 'D') { if (gtOn || tutSeen('evTD') || !tutSeen('evTC')) return; g.evTD = 1; save(); await wait(250); await go(GT_EVD()); return; }
   if (w === 'S') { if (tutSeen('sfTut')) return; g.sfTut = 1; save(); await go(GT_ST()); }

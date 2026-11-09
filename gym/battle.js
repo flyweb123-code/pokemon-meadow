@@ -1949,7 +1949,7 @@ const EV_VIT = [['hpup', '맥스업'], ['protein', '타우린'], ['iron', '사�
 const EV_VD = ['체력이 나는 영양 드링크', '근육을 키우는 영양 드링크', '몸을 단단하게 하는 영양 드링크', '머리가 맑아지는 영양 드링크', '마음이 단단해지는 영양 드링크', '몸이 가벼워지는 영양 드링크'];
 const EV_PW = ['powerweight', 'powerbracer', 'powerbelt', 'powerlens', 'powerband', 'poweranklet'];
 let EVY = null; const evyLoad = () => EVY ? Promise.resolve(EVY) : getJ('gym/evy.json').then(j => (EVY = j || {}));
-const evOn = () => { try { return !!S.gym?.d && window.Gym.k.gradeOf(S.gym.rep || 0).i >= 1; } catch (e) { return false; } };
+const evOn = () => { try { return !!S.gym?.d && [S.gym, ...(S.gym.shelf || [])].some(g => Math.max(g.gmax | 0, window.Gym.k.gradeOf(g.rep || 0).i) >= 2); } catch (e) { return false; } };   // v20.99 경완: 노력치는 계정에서 처음 떠오르는 체육관이 됐을 때부터, 그 뒤엔 다른 타입 체육관을 새로 열어도 계속 (동네 체육관은 특별한 기술만)
 const evArr = m => (m.ev = Array.isArray(m.ev) && m.ev.length === 6 ? m.ev : [0, 0, 0, 0, 0, 0]);
 const evSumOf = m => evArr(m).reduce((a, b) => a + (b | 0), 0);
 // 쌓기: 능력치 i 에 n 만큼 (252·510 넘는 몫은 버림). 넣은 양을 돌려줌
