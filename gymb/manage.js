@@ -480,7 +480,7 @@ function yardLoop(ts) {
     if (!cov) Y.mons.forEach((m, i) => { const e = st().tr.find(x => x.id === m.id), [g0, f0, k, p0] = b0[i], dg = (e?.evg || 0) - g0, df = (m.P.fr || 0) - f0, B = GB();   // v20.91 경완 '+EXP 처럼 노력치·친밀도 오를 때도'
       if (dg > 0 && k >= 0) setTimeout(() => Y && yEmo(m, `${B.EV_N?.[k] || ''} +${dg}`, 'evu', EV_SC[k]), 200 + i * 260);
       if (df > 0) setTimeout(() => Y && yEmo(m, `♥ 친밀도 +${df}`, 'fru'), 900 + i * 260);
-      (B.gm(m.P).egP || []).forEach((v, j) => { const a = Math.floor(p0[j] || 0), c = Math.floor(v || 0); if (c > a) { const id = B.EGG?.[m.P.sp]?.[j]; setTimeout(() => Y && yEmo(m, `✨ ${id ? B.mvKo(id) : '특별한 기술'} ${c}%`, 'egu'), 1600 + i * 260 + j * 500); } }); });   /* v20.96 깨달음 게이지가 1% 오를 때마다 */ } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
+      (B.gm(m.P).egP || []).forEach((v, j) => { const a = Math.floor(p0[j] || 0), c = Math.floor(v || 0); if (c > a) { const id = B.EGG?.[m.P.sp]?.[j]; setTimeout(() => Y && yEmo(m, c >= 100 && id ? `✨ ${B.mvKo(id)} 깨달음!` : `✨ ??? ${c}%`, 'egu'), 1600 + i * 260 + j * 500); } }); });   /* v20.96 깨달음 게이지가 1% 오를 때마다 — v20.97 깨닫기 전엔 이름 가림 ??? (레어 포함) */ } else Y.ck ??= now;   // 30초마다 남은 시간·레벨 새로
   if (!cov && now - (Y.lk ?? 0) > 10) { Y.lk = now; yLight(); }
   for (const o of Y.co || []) if (o.cs) { const st2 = o.cs.style; st2.left = o.el.style.left; st2.top = o.el.style.top; st2.backgroundPosition = o.el.style.backgroundPosition; st2.setProperty('--fx', o.el.style.getPropertyValue('--fx') || 1); o.cs.classList.toggle('w32', o.el.classList.contains('w32')); }   // 코치 그림자 따라가기   // v17.75: 10초마다 시간·날씨 다시
   yFeedTick(now);
