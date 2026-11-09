@@ -42,13 +42,14 @@ const coaches = () => (st().sf || []).filter(s => s.yard && !s.rest);
 // v20.92 경완 '코치 실력을 노력치 잘 올리는·경험치 잘 올리는·기술 잘 가르치는 트레이너로 나누자': 트레이너마다 코치 종류 하나, 실력 %는 그 종류에만
 const CK = { xp: ['경험치', '#2a7ad0'], ev: ['노력치', '#d0601a'], mv: ['기술', '#8a46c8'] }, CK_O = ['xp', 'ev', 'mv'];
 const coachK = s => s.ck || { train: 'xp', effort: 'ev', teach: 'mv' }[s.trait] || CK_O[Math.abs(Math.imul(s.id | 0, 40503)) % 3];   // 훈련광=경험치, 노력파=노력치, 기술 선생=기술, 나머지는 id 로 고정
-const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).reduce((a, s) => a + coachP(s) / 100, 0);
+const CK_W = [1, .6, .3];   // v20.94 경완 '코치 3명까지, % 밸런스': 같은 종류 코치는 겹칠수록 덜 (센 순서로 100%·60%·30%) — 셋 다 경험치면 최대 +76%(훈련광 둘이면 더), 종류를 나누면 각자 그대로
+const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).map(coachP).sort((a, b) => b - a).reduce((a, p, i) => a + p * (CK_W[i] ?? 0) / 100, 0);
 const ckTag = s => `<em class="ck-t" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;
 const coachSum = () => CK_O.map(k => [k, Math.round((coachX(k) - 1) * 100)]).filter(x => x[1] > 0).map(([k, p]) => `<span class="ck-s" style="--ck:${CK[k][1]}">${CK[k][0]} <b>+${p}%</b></span>`).join('');
 const coachN = t => coaches().filter(s => s.trait === t).length;   // 훈련장 특성: 기술 선생(teach) 특별한 기술 ×2, 노력파(effort) 노력치 +50%, 다정함(kind) 친밀도 ×2 — 코치로 있을 때
 const EV_DAY = 8;   // 노력치 훈련: 하루 8 (3시간에 1) × 코치 실력 (경완 2026-11-09)
 const coachRow = s => { const p = coachP(s); return `<div class="cs-row"><span>코치 실력</span><b>${ckTag(s)}+${p}%</b><i class="cs-bar"><i style="width:${Math.min(100, p / 80 * 100)}%"></i></i>${s.trait === 'train' ? '<em>훈련광 2배</em>' : ''}</div>`; };
-const YARD_SF = 2;
+const YARD_SF = 3;   // v20.94 경완: 훈련장 코치 3명까지
 // 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
 // gym/egg.json (tools/gym/mkegg.js) 의 4개 중 아직 모르는 것 하나. 4번째는 포켓로그의 레어 알 기술이라 뽑힐 몫을 ¼ 로.
 const SP_P = 1 / 168;   // 훈련 1시간마다 (v19.57 쉬지 않고 24시간 × 7일 = 168시간에 1개쯤)
@@ -255,7 +256,7 @@ async function drawTrain() {
   { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
-  Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * (i ? .9 : .1), cy = H * .6; q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
+  Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * [.1, .9, .5][i], cy = H * (i === 2 ? .68 : .6); q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
     q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1, hx: cx, hy: cy }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
   // v17.77 경완 '훈련장에도 필드처럼 날씨·시간, 어두워지면 조명': 필드와 같은 곱하기 색(GA.light) + 가로등 3개 + 비·눈
   Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q, dx: x < W / 2 ? 1 : -1 }; });
