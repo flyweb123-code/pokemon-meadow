@@ -1511,7 +1511,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .bt .bt-terr.mi{background:linear-gradient(to top,rgba(255,170,220,.55),rgba(255,210,240,.2) 55%,transparent)}
 .bt .bt-terr.ps{background:linear-gradient(to top,rgba(200,110,255,.5),rgba(220,170,255,.18) 55%,transparent)}
 @keyframes btTerr{from{filter:brightness(.85)}to{filter:brightness(1.25)}}
-.bt-mon.fmc img{animation:btFmc .68s steps(6)}@keyframes btFmc{0%,100%{filter:none}20%,60%{filter:brightness(3) saturate(0)}40%,80%{filter:none}}
+.bt-mon.fmc img{animation:btFmc .68s steps(6)}.pkevo img{filter:brightness(0) invert(1)!important}   /* v21.51 배틀 중 진화: 하얀 실루엣으로 깜빡이며 바뀜 */@keyframes btFmc{0%,100%{filter:none}20%,60%{filter:brightness(3) saturate(0)}40%,80%{filter:none}}
 .gy-sheet.lk{overflow:hidden!important}.gy-sheet.lk>:not(.gy-lockov){filter:grayscale(.85) brightness(.75);pointer-events:none}
 .gy-lockov{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(24,24,36,.38)}
 .gy-lockov .win{max-width:300px;width:100%;box-sizing:border-box;padding:18px 16px 16px;text-align:center}
