@@ -739,7 +739,7 @@ async function run(opts) {
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {} };
-  frHooks(btl); B.picks = [];
+  frHooks(btl); try { erHooks(btl); } catch (e) {} B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
@@ -764,6 +764,7 @@ async function run(opts) {
   try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
+  try { if (!cut) erEnd(); } catch (e) {}
   if (cut) try { const er = B?.err; window.pkErrRep?.('battle: ' + (er ? er.message || er : '고를 것이 없어 멈춤'), er?.stack || '', { foe: B?.foeNm || '', blog: S.gym?.blog?.[0] }); } catch (e) {}   /* 오류 창이 뜬 배틀은 서버로 보고 → 자동으로 고침 (경완 2026-11-04) */
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
@@ -841,6 +842,20 @@ function frRow(P) { const fr = Math.min(255, P.fr || 0), h = fr >= 255 ? 5 : Mat
 // ♥3 이상: 쓰러질 공격을 HP 1로 버팀 (15·20·25%) · ♥4 이상: 급소 +1, 턴 끝에 상태 이상을 스스로 고침 (20%) · ♥5(만점): 공격을 피함 (10%)
 const FR_END = [0, 0, 0, 15, 20, 25];
 function frLv(pk) { if (!B || !pk || pk.side?.id !== 'p1') return 0; const fr = B.my[B.o.p.indexOf(pk)]?.fr || 0; return fr >= 255 ? 5 : Math.min(4, Math.floor(fr / 51)); }
+/* v21.49 경완 '특별한 진화 조건 — 배틀 기록': 관장 포켓몬마다 S.gym.mon[pid].er 에 남김 (연습 배틀은 안 셈)
+   u{기술:쓴 횟수} 배리어러시·독침천발·분노의주먹 / cr 한 판 급소 최대 / dg 쓰러지지 않은 한 판에 받은 피해 최대 / rc 쓰러지지 않은 판에 받은 피해 합 / ko 쓰러뜨린 악·강철 타입 수 → 본 게임 EVX 진화 조건 */
+const ER_MV = ['psyshieldbash', 'barbbarrage', 'ragefist'];
+function erHooks(btl) {
+  const F = btl.format, per = new Map(); B.erP = per;
+  const rec = pk => { if (!B || B.practice || pk?.side?.id !== 'p1') return null; const e = B.my[B.o.p.indexOf(pk)], m = e && S.gym?.mon?.[e.pid]; return m ? (m.er ||= {}) : null; };
+  const one = pk => { let o = per.get(pk); if (!o) per.set(pk, o = { cr: 0, dm: 0 }); return o; };
+  btl.onEvent('AfterMove', F, function (src, tgt, move) { const r = rec(src); if (r && ER_MV.includes(move?.id)) { r.u ||= {}; r.u[move.id] = (r.u[move.id] || 0) + 1; } });
+  btl.onEvent('DamagingHit', F, function (dmg, target, src, move) {
+    const r = rec(src); if (r && target?.getMoveHitData?.(move)?.crit) { const o = one(src); o.cr++; if (o.cr > (r.cr || 0)) r.cr = o.cr; }
+    if (rec(target) && dmg > 0) one(target).dm += dmg; });
+  btl.onEvent('Faint', F, function (target, src) { const r = rec(src); if (r && target?.side?.id === 'p2' && target.hasType?.(['Dark', 'Steel'])) r.ko = (r.ko || 0) + 1; });
+}
+function erEnd() { if (!B?.erP) return; for (const [pk, o] of B.erP) { const r = pk.side?.id === 'p1' && !pk.fainted && pk.hp > 0 ? (() => { const e = B.my[B.o.p.indexOf(pk)], m = e && S.gym?.mon?.[e.pid]; return m ? (m.er ||= {}) : null; })() : null; if (!r || !o.dm) continue; if (o.dm > (r.dg || 0)) r.dg = o.dm; r.rc = (r.rc || 0) + o.dm; } B.erP = null; }
 function frHooks(btl) {
   const F = btl.format;
   btl.onEvent('Damage', F, -40, function (dmg, target, src, eff) {
