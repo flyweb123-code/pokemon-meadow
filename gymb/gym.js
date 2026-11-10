@@ -489,7 +489,7 @@ function decoEdit() {
 function decoDone() { if (!ded) return; ded = null; root.classList.remove('ded', 'dedc', 'dhas'); $g('.gy-map .gy-grid')?.remove(); $g('.gy-map').onclick = null; $g('.gy-map').onpointerdown = null; $g('.gy-dbar').onclick = null; $g('.gy-dbar').onpointerdown = null; renderHome(); }
 // 고용 트레이너 자리 (경완 2026-10-27 '훈련장 배치랑 체육관 배치 둘 다', '체육관 배치 위치는 내가 고를 수 있게'):
 // s.gym 체육관에 서 있음(도전자 상대), s.yard 훈련장 코치. 둘 다 켤 수 있다. s.gp [x, y, 맵] 직접 고른 칸 (없으면 맵의 기본 자리)
-const inGym = s => s.gym ?? (s.yard ? 0 : 1);
+const inGym = s => s.gym ?? 1;   // v21.29 경완: 고용하면 모두 체육관 기본 자리에 (코치도 같이 설 수 있음, 예전엔 코치면 빠졌음)
 function trTile(D, x, y, used) {
   if (x < 1 || y < 2 || x > D.w - 2 || y > D.h - 2 || used?.has(x + ',' + y)) return false;
   if (D.free && D.free[y]?.[x] !== '1' && !D.slots.some(q => q[0] === x && q[1] === y)) return false;
