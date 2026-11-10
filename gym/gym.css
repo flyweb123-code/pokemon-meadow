@@ -3829,7 +3829,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .ty-yd.ty-wait{background:#1c1e28!important}.ty-yd.ty-wait>*{visibility:hidden}   /* v21.07 바닥 그림 전엔 어두운 색만 */
 
 /* v21.08 레어 기술 설명창 */
-#gym .eg-rp .eg-rh{color:#c9961c;text-shadow:0 1px 0 #fff3c4}#gym .eg-rp .eg-rm{margin:6px 0;line-height:1.5}#gym .eg-rp .eg-rm b{color:#b8841a}
+#gym .eg-rp .eg-rh{color:#a8700a;text-shadow:none}#gym .gy-pop.eg-rp p.eg-rm{margin:8px 0;line-height:1.5;text-align:center;white-space:nowrap;font-size:13px;color:#2a2630!important}#gym .gy-pop.eg-rp p.eg-rm b{color:#b05a00!important}   /* v21.12 경완 '줄 나눔 없이 가운데, 글자색 가독성' */
 .ty-m.rkS .ty-fl{animation:sglow 4s ease-in-out infinite}.ty-m.rkA .ty-fl{animation:aglowM 4s ease-in-out infinite}   /* v21.09 필드 .mon.rkS/.rkA 와 같은 후광 */
 .ty-m.rkS .ty-fl::before{content:'✦';position:absolute;left:-30px;top:-44px;z-index:3;color:#fff3a0;font-size:16px;line-height:1;text-shadow:0 0 4px #ffb000,0 0 2px #fff;animation:tySpk 1.6s steps(1) infinite;pointer-events:none}
 @keyframes tySpk{0%{opacity:1;transform:none}20%{opacity:.4;transform:scale(.6)}40%{opacity:0}60%{opacity:1;transform:translate(48px,-6px) scale(.8)}80%{opacity:.4;transform:translate(48px,-6px) scale(.5)}100%{opacity:0}}
