@@ -1,0 +1,39 @@
+# 임시: 경완 계정 저장의 최근 배틀 기록(S.gym.blog) 중 따라큐 판만 읽기 (따라큐 탈 특성 창 확인, 2026-11-10). 끝나면 지움.
+name: tmp blog read
+on:
+  push:
+    branches: [claude/project-thread-jt6ykd]
+    paths: [.github/workflows/tmp-blog-read.yml]
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Read
+        run: |
+          for a in flyweb test; do
+            npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT code, i, data FROM save_part WHERE acct = '$a' ORDER BY code, i" > /tmp/$a.json
+            node -e '
+              const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"))[0].results; const by = {};
+              for (const x of r) (by[x.code] = by[x.code] || []).push(x.data);
+              for (const [c, ps] of Object.entries(by)) { let S; try { S = JSON.parse(ps.join("")); } catch (e) { console.log(c, "parse fail"); continue; }
+                const bl = S.gym?.blog || []; console.log("== acct", process.argv[2], "code", c, "savedAt", new Date(S.savedAt || 0).toISOString(), "blog", bl.length);
+                for (const b of bl) { const has = JSON.stringify([b.my, b.fo]).match(/\b778\b/) || b.log.some(l => /Mimikyu/.test(l));
+                  console.log("-- battle", new Date(b.t).toISOString(), "v", b.v, "foe", b.foe, "mimikyu", !!has);
+                  if (has) { console.log("my", JSON.stringify(b.my)); console.log("fo", JSON.stringify(b.fo)); b.log.forEach((l, i) => { if (/Mimikyu|Disguise/.test(l)) console.log(i, l); }); } } }
+            ' /tmp/$a.json $a
+          done
