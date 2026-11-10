@@ -115,3 +115,35 @@ CREATE TABLE IF NOT EXISTS bal (
   d    TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS bal_t ON bal (kind, t);
+
+-- 서버 계정 자동 백업 (2026-11-10 경완 '자동 백업이 기기에도 저장되고 서버 계정에도'). 계정마다 칸(slot):
+--   dYYYY-MM-DD = 그날(한국 시간) 첫 저장 14일, p시각 = 도감·박스가 갑자기 줄기 직전 저장 5개. 조각은 bak_part (save_part 와 같은 모양)
+-- dex·box·gold 는 기기가 보낸 요약 (서버는 큰 저장을 풀어 보지 않는다, CPU 한도)
+CREATE TABLE IF NOT EXISTS bak (
+  acct  TEXT NOT NULL,
+  slot  TEXT NOT NULL,
+  code  TEXT NOT NULL,
+  sig   TEXT NOT NULL,
+  saved REAL NOT NULL DEFAULT 0,
+  dex   INTEGER NOT NULL DEFAULT 0,
+  box   INTEGER NOT NULL DEFAULT 0,
+  gold  INTEGER NOT NULL DEFAULT 0,
+  parts INTEGER NOT NULL,
+  at    INTEGER NOT NULL,
+  PRIMARY KEY (acct, slot)
+);
+CREATE TABLE IF NOT EXISTS bak_part (
+  acct TEXT NOT NULL,
+  slot TEXT NOT NULL,
+  i    INTEGER NOT NULL,
+  data TEXT NOT NULL,
+  PRIMARY KEY (acct, slot, i)
+);
+-- 계정마다 마지막으로 올린 저장 요약 (갑자기 줄었는지 보려고)
+CREATE TABLE IF NOT EXISTS acct_sum (
+  acct TEXT PRIMARY KEY,
+  dex  INTEGER NOT NULL DEFAULT 0,
+  box  INTEGER NOT NULL DEFAULT 0,
+  gold INTEGER NOT NULL DEFAULT 0,
+  at   INTEGER NOT NULL
+);

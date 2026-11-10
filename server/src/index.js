@@ -150,8 +150,42 @@ async function handle(env, b) {
         db.prepare('INSERT INTO save (acct, code, sig, saved, parts, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6) ON CONFLICT(acct, code) DO UPDATE SET sig = ?3, saved = ?4, parts = ?5, at = ?6')
           .bind(id, me, sig, saved, parts.length, now),
       ];
+      // 서버 계정 자동 백업 (v21.37 경완 '자동 백업이 기기에도 저장되고 서버 계정에도'): 덮어쓰기 전에 갑자기 줄었으면 줄기 전을 p 칸에, 그날 첫 저장은 d 칸에
+      const sm = b.sum && typeof b.sum === 'object' ? b.sum : null, n = v => Math.max(0, Math.floor(+v || 0));
+      const sum = sm ? { dex: n(sm.dex), box: n(sm.box), gold: n(sm.gold) } : null;
+      const prev = sum ? await db.prepare('SELECT dex, box, gold FROM acct_sum WHERE acct = ?').bind(id).first() : null;
+      const pre = [];
+      if (prev && ((prev.dex - sum.dex >= 3 && sum.dex < prev.dex * .8) || (prev.box - sum.box >= 3 && sum.box < prev.box * .8))) {
+        const old = await db.prepare('SELECT code FROM save WHERE acct = ? ORDER BY saved DESC, at DESC LIMIT 1').bind(id).first();
+        if (old) pre.push(...bakCopy(db, id, 'p' + now, old.code, prev, now));
+      }
+      if (pre.length) await db.batch(pre);
       await db.batch(st);
+      if (sum) {
+        const day = 'd' + new Date(now + 9 * 3600e3).toISOString().slice(0, 10), old14 = 'd' + new Date(now + 9 * 3600e3 - 14 * 864e5).toISOString().slice(0, 10);
+        const has = await db.prepare('SELECT 1 FROM bak WHERE acct = ? AND slot = ?').bind(id, day).first();
+        const post = [db.prepare('INSERT INTO acct_sum (acct, dex, box, gold, at) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(acct) DO UPDATE SET dex = ?2, box = ?3, gold = ?4, at = ?5').bind(id, sum.dex, sum.box, sum.gold, now)];
+        if (!has && sum.dex + sum.box > 0) post.push(...bakCopy(db, id, day, me, sum, now));
+        post.push(db.prepare("DELETE FROM bak_part WHERE acct = ? AND slot IN (SELECT slot FROM bak WHERE acct = ? AND slot LIKE 'd%' AND slot < ?)").bind(id, id, old14),
+          db.prepare("DELETE FROM bak WHERE acct = ? AND slot LIKE 'd%' AND slot < ?").bind(id, old14),
+          db.prepare("DELETE FROM bak_part WHERE acct = ? AND slot IN (SELECT slot FROM bak WHERE acct = ? AND slot LIKE 'p%' ORDER BY at DESC LIMIT -1 OFFSET 5)").bind(id, id),
+          db.prepare("DELETE FROM bak WHERE acct = ? AND slot IN (SELECT slot FROM bak WHERE acct = ? AND slot LIKE 'p%' ORDER BY at DESC LIMIT -1 OFFSET 5)").bind(id, id));
+        await db.batch(post);
+      }
       return true;
+    }
+    case 'acctBaks': {   // 서버 계정 자동 백업 목록 (v21.37)
+      const id = acctId(b.id), k = str(b.k, 64); if (!id || !k) bad('잘못된 요청');
+      await checkK(db, id, k);
+      return (await db.prepare('SELECT slot, saved, dex, box, gold, at FROM bak WHERE acct = ? ORDER BY at DESC LIMIT 30').bind(id).all()).results;
+    }
+    case 'acctBak': {   // 백업 하나 받기
+      const id = acctId(b.id), k = str(b.k, 64), slot = str(b.slot, 40); if (!id || !k || !slot) bad('잘못된 요청');
+      await checkK(db, id, k);
+      const r = await db.prepare('SELECT parts FROM bak WHERE acct = ? AND slot = ?').bind(id, slot).first(); if (!r) bad('백업을 못 찾았어요');
+      const { results } = await db.prepare('SELECT data FROM bak_part WHERE acct = ? AND slot = ? ORDER BY i').bind(id, slot).all();
+      if (results.length !== r.parts) bad('백업이 깨져 있어요');
+      return { data: results.map(x => x.data).join('') };
     }
     case 'acctPull': {
       const id = acctId(b.id), k = str(b.k, 64); if (!id || !k) bad('잘못된 요청');
@@ -166,6 +200,9 @@ async function handle(env, b) {
         db.prepare('DELETE FROM account WHERE id = ?').bind(id),
         db.prepare('DELETE FROM save WHERE acct = ?').bind(id),
         db.prepare('DELETE FROM save_part WHERE acct = ?').bind(id),
+        db.prepare('DELETE FROM bak WHERE acct = ?').bind(id),
+        db.prepare('DELETE FROM bak_part WHERE acct = ?').bind(id),
+        db.prepare('DELETE FROM acct_sum WHERE acct = ?').bind(id),
         db.prepare('DELETE FROM trainer WHERE code = ?').bind(me),
         db.prepare('DELETE FROM score WHERE code = ?').bind(me),
       ]);
@@ -274,6 +311,14 @@ async function checkK(db, id, k) {
   await db.prepare('UPDATE account SET kh = ? WHERE id = ?').bind(kh, id).run();   // 저장이 하나도 없는 옮겨 온 계정: 처음 온 k 로
 }
 
+// 계정 저장(save/save_part 의 한 줄)을 백업 칸으로 그대로 복사 (서버가 큰 저장을 풀지 않게 SQL 안에서)
+function bakCopy(db, id, slot, code, sum, now) {
+  return [
+    db.prepare('DELETE FROM bak_part WHERE acct = ? AND slot = ?').bind(id, slot),
+    db.prepare('INSERT INTO bak_part (acct, slot, i, data) SELECT acct, ?, i, data FROM save_part WHERE acct = ? AND code = ?').bind(slot, id, code),
+    db.prepare('INSERT OR REPLACE INTO bak (acct, slot, code, sig, saved, dex, box, gold, parts, at) SELECT acct, ?, code, sig, saved, ?, ?, ?, parts, ? FROM save WHERE acct = ? AND code = ?').bind(slot, sum.dex | 0, sum.box | 0, sum.gold | 0, now, id, code),
+  ];
+}
 async function readSave(db, id, code, parts) {
   const { results } = await db.prepare('SELECT i, data FROM save_part WHERE acct = ? AND code = ? ORDER BY i').bind(id, code).all();
   if (results.length !== parts) return null;
