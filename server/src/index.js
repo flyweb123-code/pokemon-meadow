@@ -141,7 +141,19 @@ async function handle(env, b) {
       if (!id || !k || k.length !== 64 || data == null) bad('잘못된 요청');
       await checkK(db, id, k);
       const sig = await sha(k + await sha(data));
-      let saved = 0; try { saved = +JSON.parse(data).savedAt || 0; } catch (e) {}
+      let saved = 0, o = null; try { o = JSON.parse(data); saved = +o.savedAt || 0; } catch (e) {}
+      // v21.38 경완 '유찬님 계정 다시 켰어?': 예전 버전 앱(덮어쓰기 막기가 없는)이 빈 새 게임을 올려 또 덮어씀 → 서버에서도 막는다.
+      // 마지막 저장보다 도감이 절반 아래로 줄면(도감 10 이상일 때) 받지 않는다. 요약이 없던 계정은 저장 크기로 본다.
+      const osum = o ? { dex: Array.isArray(o.unlocked) ? o.unlocked.length : 0, box: Array.isArray(o.box) ? o.box.length : 0, gold: Math.max(0, Math.floor(+o.gold || 0)) } : null;
+      {
+        const ps = await db.prepare('SELECT dex FROM acct_sum WHERE acct = ?').bind(id).first();
+        if (ps && osum) { if (ps.dex >= 10 && osum.dex < ps.dex * .5) bad('기록이 갑자기 크게 줄어서 서버에 올리지 않았어요'); }
+        else {
+          const top = await db.prepare('SELECT code FROM save WHERE acct = ? ORDER BY saved DESC, at DESC LIMIT 1').bind(id).first();
+          const len = top ? (await db.prepare('SELECT SUM(length(data)) n FROM save_part WHERE acct = ? AND code = ?').bind(id, top.code).first())?.n || 0 : 0;
+          if (len > 20000 && data.length < len * .3) bad('기록이 갑자기 크게 줄어서 서버에 올리지 않았어요');
+        }
+      }
       const parts = [];
       for (let i = 0; i < data.length; i += PART) parts.push(data.slice(i, i + PART));
       const st = [
@@ -152,7 +164,7 @@ async function handle(env, b) {
       ];
       // 서버 계정 자동 백업 (v21.37 경완 '자동 백업이 기기에도 저장되고 서버 계정에도'): 덮어쓰기 전에 갑자기 줄었으면 줄기 전을 p 칸에, 그날 첫 저장은 d 칸에
       const sm = b.sum && typeof b.sum === 'object' ? b.sum : null, n = v => Math.max(0, Math.floor(+v || 0));
-      const sum = sm ? { dex: n(sm.dex), box: n(sm.box), gold: n(sm.gold) } : null;
+      const sum = osum || (sm ? { dex: n(sm.dex), box: n(sm.box), gold: n(sm.gold) } : null);   // v21.38: 서버가 저장에서 직접 센 값 먼저 (예전 앱도 백업되게)
       const prev = sum ? await db.prepare('SELECT dex, box, gold FROM acct_sum WHERE acct = ?').bind(id).first() : null;
       const pre = [];
       if (prev && ((prev.dex - sum.dex >= 3 && sum.dex < prev.dex * .8) || (prev.box - sum.box >= 3 && sum.box < prev.box * .8))) {
@@ -161,6 +173,8 @@ async function handle(env, b) {
       }
       if (pre.length) await db.batch(pre);
       await db.batch(st);
+      { const pin = await db.prepare('SELECT v FROM kv WHERE k = ?').bind('rst:' + id).first(); let pd = 0; try { pd = +JSON.parse(pin?.v || '{}').dex || 0; } catch (e) {}
+        if (pin && osum && osum.dex >= pd * .7) await db.prepare('DELETE FROM kv WHERE k = ?').bind('rst:' + id).run(); }
       if (sum) {
         const day = 'd' + new Date(now + 9 * 3600e3).toISOString().slice(0, 10), old14 = 'd' + new Date(now + 9 * 3600e3 - 14 * 864e5).toISOString().slice(0, 10);
         const has = await db.prepare('SELECT 1 FROM bak WHERE acct = ? AND slot = ?').bind(id, day).first();
@@ -327,6 +341,12 @@ async function readSave(db, id, code, parts) {
 
 // 이 계정의 저장(기기마다 하나) 중 서명이 맞고 게임 안 저장 시각(savedAt)이 가장 나중인 것
 async function newestSave(db, id, k) {
+  // v21.38: 운영자가 되살려 둔 칸(kv 'rst:<아이디>' = {code})이 있으면 그걸 가장 최근 기록으로 내준다 (savedAt 을 지금으로 바꿔 예전 앱도 받게).
+  // 그 계정이 도감을 거의 되찾은 저장을 올리면 지운다 (acctSave)
+  const pin = await db.prepare('SELECT v FROM kv WHERE k = ?').bind('rst:' + id).first();
+  if (pin) { try { const p = JSON.parse(pin.v), s = await db.prepare('SELECT sig, parts FROM save WHERE acct = ? AND code = ?').bind(id, p.code).first();
+    const data = s && await readSave(db, id, p.code, s.parts), now = Date.now();
+    if (data != null && await sha(k + await sha(data)) === s.sig) return { data: data.replace(/"savedAt":[0-9.]+/, '"savedAt":' + now), t: now }; } catch (e) {} }
   const { results } = await db.prepare('SELECT code, sig, saved, parts, at FROM save WHERE acct = ? ORDER BY saved DESC, at DESC LIMIT 20').bind(id).all();
   for (const s of results) {
     const data = await readSave(db, id, s.code, s.parts);
