@@ -778,6 +778,10 @@ async function run(opts) {
       const W = opts.rew; if (W && B) { if (won) { await msgTap(`${W.g.toLocaleString()}G를 받았다!`); if (W.r) await msgTap(`체육관 평판이 ${W.r} 올랐다!`); } else if (W.rl) await msgTap(`체육관 평판이 ${-W.rl} 깎였다…`); }
     }
   }
+  /* v21.51 경완 '배틀에서 진화하는 애들은 배틀에서 바로 진화': 배틀 기록 조건(EVX b)이 막 채워진 포켓몬은 승부가 끝나자마자 진화 연출 → 배틀 화면의 내 포켓몬도 새 모습으로 */
+  if (B && !B.practice && !cut && out !== 'quit') { const L = (B.my || []).map((e, i) => ({ i, P: GA.boxOf?.(e.pid) })).filter(x => x.P && GA.evoBtl?.(x.P));
+    if (L.length) { M('stop', .8); for (const x of L) { try { await GA.evoRun(x.P); } catch (e) { console.error(e); } const P = x.P, A = { ...B.my[x.i], sp: P.sp, fm: P.fm }; B.my[x.i] = A;
+      if (btl.p1.active[0] === B.o.p[x.i] && !B.o.p[x.i].fainted) { const fe = monEl('p'); fe.style.transition = ''; fe.style.opacity = ''; A.gif = await pickGif('p', A); showMon('p', A); await wait(1100); } } } }
   if (monSnap) S.gym.mon = JSON.parse(monSnap);
   lowHp(false); M('play', 'gym', { fade: 1.2 });
   // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
@@ -853,9 +857,21 @@ function erHooks(btl) {
   btl.onEvent('DamagingHit', F, function (dmg, target, src, move) {
     const r = rec(src); if (r && target?.getMoveHitData?.(move)?.crit) { const o = one(src); o.cr++; if (o.cr > (r.cr || 0)) r.cr = o.cr; }
     if (rec(target) && dmg > 0) one(target).dm += dmg; });
+  /* v21.51 경완 '배틀 도중 그 자리에서 진화': 턴 끝에 조건이 맞은 내 포켓몬은 쇼다운 안에서 종을 바꾸고(능력치·최대 HP 다시) '-pkevo' 줄 → 화면 연출 */
+  btl.onEvent('Residual', F, function () {
+    for (const pk of this.p1.active) { if (!pk || pk.fainted || B.practice) continue; const r = rec(pk), o = per.get(pk);
+      if (r && o) { if (o.dm > (r.dg || 0)) r.dg = o.dm; r.rc = (r.rc || 0) + o.dm - (o.rcA || 0); o.rcA = o.dm; }   // 지금까지 버틴 피해도 바로 셈 (끝에 erEnd 가 나머지)
+      const e = B.my[B.o.p.indexOf(pk)], P = e && GA.boxOf?.(e.pid); if (!P || !GA.evoBtl?.(P)) continue;
+      const to = GA.evoTo?.(P), id = to && D.sp[to]?.id, sp = id && this.dex.species.get(id); if (!sp?.exists) continue;
+      const ratio = pk.hp / pk.maxhp; pk.setSpecies(sp); pk.baseSpecies = sp; pk.details = pk.getUpdatedDetails(); const st = this.spreadModify(sp.baseStats, pk.set);
+      pk.baseMaxhp = pk.maxhp = st.hp; pk.hp = Math.max(1, Math.round(ratio * st.hp));
+      { const SP = GA.SPECIES, o = SP[P.sp]?.n, n = SP[to]?.n; if (n && pk.name === o) { pk.name = n; pk.fullname = `${pk.side.id}: ${n}`; } }   // 별명 없으면 기록 이름도 새 종 이름 (뒤 대사가 옛 이름으로 나오지 않게)
+      try { GA.evoSilent?.(P, to); } catch (er) { console.error(er); }
+      this.add('-pkevo', pk, String(to), `${pk.hp}/${pk.maxhp}`); }
+  });
   btl.onEvent('Faint', F, function (target, src) { const r = rec(src); if (r && target?.side?.id === 'p2' && target.hasType?.(['Dark', 'Steel'])) r.ko = (r.ko || 0) + 1; });
 }
-function erEnd() { if (!B?.erP) return; for (const [pk, o] of B.erP) { const r = pk.side?.id === 'p1' && !pk.fainted && pk.hp > 0 ? (() => { const e = B.my[B.o.p.indexOf(pk)], m = e && S.gym?.mon?.[e.pid]; return m ? (m.er ||= {}) : null; })() : null; if (!r || !o.dm) continue; if (o.dm > (r.dg || 0)) r.dg = o.dm; r.rc = (r.rc || 0) + o.dm; } B.erP = null; }
+function erEnd() { if (!B?.erP) return; for (const [pk, o] of B.erP) { const add = Math.max(0, o.dm - (o.rcA || 0)); const r = pk.side?.id === 'p1' && !pk.fainted && pk.hp > 0 ? (() => { const e = B.my[B.o.p.indexOf(pk)], m = e && S.gym?.mon?.[e.pid]; return m ? (m.er ||= {}) : null; })() : null; if (!r || !o.dm) continue; if (o.dm > (r.dg || 0)) r.dg = o.dm; r.rc = (r.rc || 0) + add; } B.erP = null; }
 function frHooks(btl) {
   const F = btl.format;
   btl.onEvent('Damage', F, -40, function (dmg, target, src, eff) {
@@ -1025,6 +1041,17 @@ async function handle(a) {
       se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
       m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
       await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
+    case '-pkevo': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X || s !== 'p') break; const to = +a[3], from = X.sp, P = GA.boxOf?.(X.pid), SP = GA.SPECIES, toN = SP[to]?.n || '', oldNm = X.nm;
+      const ro = w => w + ((c => c > 0 && c !== 8)((w.charCodeAt(w.length - 1) - 44032) % 28) ? '으로' : '로');
+      await msg(`어라…? ${oldNm}의 모습이…!`, 500); if (!B) break;
+      const N = { ...X, sp: to, tsp: to, fm: toID(D.sp[to]?.id || ''), gif: null }; N.gif = await pickGif(s, N); if (!B) break;
+      m._tok = (m._tok || 0) + 1; m.classList.add('pkevo'); se('KOUKA_M', { pan: panOf(s) }); await wait(500);
+      let gap = 460, k = 0; while (gap > 60 && B) { showMon(s, k ? N : X, true); k ^= 1; await wait(gap); gap *= .8; }
+      if (!B) break; showMon(s, N, true); m.classList.remove('pkevo'); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); try { GA.haptic?.(2); } catch (e) {}
+      playAnim(s, N); try { GA.cry?.(to, 0, 1, CRY_K); } catch (e) {} await wait(420); m.classList.remove('fmc');
+      Object.assign(X, { sp: to, tsp: to, fm: N.fm, gif: N.gif }); if (oldNm === SP[from]?.n) X.nm = toN; const E = B.my[X.i]; if (E) { E.sp = to; E.nm = X.nm; E.fm = P?.fm; }
+      const [hp, mhp] = hpOf(a[4]); if (mhp) X.mhp = mhp; X.hp = hp; paintHb(s, X);
+      await msg(`축하해! ${eun(oldNm)} ${ro(toN)} 진화했다!`); break; }
     case 'turn': await egFlash(); break;
     case 'win': break;
   }
