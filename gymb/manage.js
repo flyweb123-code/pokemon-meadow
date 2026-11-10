@@ -801,7 +801,7 @@ function drawStaff() {
 /* v16.68 경완 '고용 트레이너 상세카드에 자리 바꾸기 없애고, 체육관 홈에서 트레이너 누르면 뜨는 카드(같은 카드)에 자리 바꾸기': home = 홈에서 연 카드 */
 function sfDetail(s, home) {
   const g = st(), now = Date.now(); if (!s) return; const i = g.sf.indexOf(s), yN = g.sf.filter(x => x.yard).length, lv = Math.round(K.teamLv(s.team));
-  const gb = home || !K.inGym(s), up = !home && i > 0, bn = (gb ? 1 : 0) + 2 + (up ? 1 : 0), gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
+  const gb = home,   /* v21.29 경완 '체육관 배치 버튼 빼고 고용하면 알아서 체육관에': 자리 바꾸기는 홈에서 연 카드에만 */ up = !home && i > 0, bn = (gb ? 1 : 0) + 2 + (up ? 1 : 0), gi = K.sfList ? K.sfList().findIndex(z => z[0] === s) : -1, dd = Math.max(0, Math.ceil((s.pay - now) / K.DAY));
   const W = s.w || 0, L = s.l || 0, wr = W + L ? W / (W + L) : 0, [tg, eg] = sfEarn(s);
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? `<i class="sfc-rib y">훈련장 코치${ckIn(s)}</i>` : '<i class="sfc-rib">대기 중</i>';
