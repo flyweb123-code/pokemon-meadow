@@ -1,0 +1,36 @@
+name: zread
+on:
+  push:
+    branches: [claude/project-thread-5eaq6n]
+    paths: ['.github/workflows/zread.yml']
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Read
+        run: |
+          npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT i, data FROM save_part WHERE acct='flyweb' ORDER BY i" > /tmp/p.json
+          node -e '
+          const r=JSON.parse(require("fs").readFileSync("/tmp/p.json","utf8"))[0].results;
+          const S=JSON.parse(r.map(x=>x.data).join(""));
+          const fam=new Set([79,80,199,10164,10165,10172]);
+          console.log("ver",S.ver||S.v, "box",(S.box||[]).length);
+          for(const m of S.box||[]) if(fam.has(+m.sp)) console.log(JSON.stringify(m));
+          for(const k of ["field","fld","mons"]) if(Array.isArray(S[k])) for(const m of S[k]) if(m&&fam.has(+m.sp)) console.log(k,JSON.stringify(m));
+          console.log("errs",JSON.stringify((S.errs||[]).slice(-8)));
+          '
