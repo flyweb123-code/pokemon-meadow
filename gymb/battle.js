@@ -337,10 +337,11 @@ function fit() {
 // 대화창: 글자를 하나씩. wait=true 면 다 쓰고 잠깐 멈춤(누르면 바로 다음)
 // 본가처럼 ▼ 가 깜빡이는 동안 대화창·빈 곳을 누르면 넘어간다. 안 눌러도 잠시 뒤 저절로 (경완 2026-10-28)
 async function msg(t, hold = 650) {
-  if (!B) return; const box = $b('.bt-msg .t'), cur = $b('.bt-msg .cur'); B.fast = false; cur.hidden = true; box.textContent = '';
+  if (!B) return; const box = $b('.bt-msg .t'), cur = $b('.bt-msg .cur'); B.fast = false; cur.hidden = true; box.textContent = ''; B.msgOn = true;
   for (const ch of [...t]) { if (!B) return; if (B.fast) { box.textContent = t.replace(/[\u23F8\u0007]/g, ''); break; } if (ch === '\u23F8') { await wait(330); continue; } if (ch === '\u0007') { se('KON'); continue; } box.textContent += ch; await wait(ch === ' ' ? 12 : 26); }   // ⏸ = 본가 {PAUSE 20} (20프레임 멈춤)
   // 저절로 넘어가지 않는다: 대화창·빈 곳을 눌러야 다음 (경완 2026-10-28)
   if (hold) { cur.hidden = false; await new Promise(r => { if (!B) return r(); B.tapWake = r; const iv = setInterval(() => { if (!B || B.tapWake !== r) { clearInterval(iv); r(); } }, 250); }); if (B) B.tapWake = null; cur.hidden = true; }
+  if (B) { B.msgOn = false; if (hold) await abDone(); }   // v21.31: 특성 창은 그 대사를 넘길 때 같이 들어간다
 }
 // 누를 때까지 기다리는 대화 (승부 끝 등)
 // 본가 {WAIT 5}{WAIT 2}: 글이 다 나오면 팡파르(레벨 업·새 기술), 끝날 때까지 기다렸다가 눌러서 다음 (경완 2026-10-31 본가 타이밍)
@@ -1002,6 +1003,7 @@ async function handle(a) {
     case '-sideend': { const t = sideMsg(a[2], a[3], false); if (t) await msg(t); break; }
     case '-fieldstart': case '-fieldend': { const on = k === '-fieldstart', w = (a[2] || '').replace('move: ', ''), t = FIELD_T[w]; const tr = TERR[w];   // 필드 (경완 2026-10-29 '일렉트릭필드 발동이 안 됨')
       if (tr) { const f = $b('.bt-terr'); f.className = 'bt-terr' + (on ? ' on ' + tr : ''); }
+      if (on && fa && toID(fa.slice(15)) === 'hadronengine' && of) { await msg(HADRON(who(of.slice(5)))); break; }   // v21.31: 하드론엔진으로 깔릴 땐 본가 SV 문장
       if (t) await msg(t[on ? 0 : 1]); break; }
     case '-formechange': case 'detailschange': case 'replace': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X) break; if (k === 'replace') { X.nm = nmIn(a[2]); X.sp = PSim.Dex.species.get((a[3] || '').split(', ')[0]).num || X.sp; X.tsp = X.sp; }   /* v20.75: 일루전이 풀리면 진짜 모습·이름으로 */   // 폼 체인지 (리밋실드·꼬르륵스위치·배틀스위치·탈 등): 하얗게 번쩍이며 그 폼 그림으로 (경완 2026-10-29)
       const fm = toID((a[3] || '').split(', ')[0]); if (fm === X.fm) break; X.fm = fm; X.gif = await pickGif(s, X); if (!B) break;
@@ -1044,7 +1046,8 @@ function endMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusi
 const TYK = { Normal: '노말', Fire: '불꽃', Water: '물', Grass: '풀', Electric: '전기', Ice: '얼음', Fighting: '격투', Poison: '독', Ground: '땅', Flying: '비행', Psychic: '에스퍼', Bug: '벌레', Rock: '바위', Ghost: '고스트', Dragon: '드래곤', Dark: '악', Steel: '강철', Fairy: '페어리', Stellar: '스텔라' };
 /* v20.75 경완 '효과나 문장 빼먹은 특성 검토': 특성 줄('ability: 이름')이 따로 오는 cant·-block·-start·-end·-activate 에 특성 창+본가 문장 */
 const AB_ANN = { pressure: n => `${eun(n)} 프레셔를 발하고 있다!`, moldbreaker: n => `${eun(n)} 틀깨기다!`, teravolt: n => `${eun(n)} 파직파직한 오라를 발하고 있다!`, turboblaze: n => `${eun(n)} 활활 타오르는 오라를 발하고 있다!`, airlock: () => '날씨의 영향이 없어졌다!', cloudnine: () => '날씨의 영향이 없어졌다!', unnerve: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asoneglastrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asonespectrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, darkaura: n => `${eun(n)} 다크오라를 발하고 있다!`, fairyaura: n => `${eun(n)} 페어리오라를 발하고 있다!`, aurabreak: n => `${eun(n)} 모든 오라를 제압한다!`, comatose: n => `${eun(n)} 꿈속을 헤매고 있다!`, neutralizinggas: () => '주변이 화학변화가스로 가득 찼다!', vesselofruin: n => `${n}의 재앙의그릇으로 주위의 특수공격이 약해졌다!`, swordofruin: n => `${n}의 재앙의검으로 주위의 방어가 약해졌다!`, tabletsofruin: n => `${n}의 재앙의목간으로 주위의 공격이 약해졌다!`, beadsofruin: n => `${n}의 재앙의구슬로 주위의 특수방어가 약해졌다!` };   // v21.30: 나올 때 특성 창 다음 본가 문장
-const AB_ACT = { stickyhold: n => `${n}의 도구는 빼앗을 수 없다!`, suctioncups: n => `${eun(n)} 흡반으로 단단히 달라붙어 있다!`, quickdraw: n => `${eun(n)} 퀵드로로 먼저 행동할 수 있게 되었다!`, telepathy: n => `${eun(n)} 아군의 공격을 피했다!`, guarddog: n => `${eun(n)} 밀려나지 않는다!`, magicguard: () => '', disguise: n => `${n}의 탈이 대신 공격을 받았다!`, icface: () => '', screencleaner: () => '모든 벽이 사라졌다!', symbiosis: n => `${eun(n)} 도구를 건네주었다!`, battlebond: n => `${eun(n)} 트레이너와의 유대가 깊어졌다!`, mimicry: n => `${n}의 타입이 원래대로 돌아왔다!` };
+const HADRON = n => `${eun(n)} 일렉트릭필드를 전개하여 미래 기관을 가동했다!`;   // v21.31 경완 '기억 안 나면 검색': 나무위키 특성 문서 — 이미 일렉트릭필드여도 나올 때 이 문장
+const AB_ACT = { hadronengine: HADRON, stickyhold: n => `${n}의 도구는 빼앗을 수 없다!`, suctioncups: n => `${eun(n)} 흡반으로 단단히 달라붙어 있다!`, quickdraw: n => `${eun(n)} 퀵드로로 먼저 행동할 수 있게 되었다!`, telepathy: n => `${eun(n)} 아군의 공격을 피했다!`, guarddog: n => `${eun(n)} 밀려나지 않는다!`, magicguard: () => '', disguise: n => `${n}의 탈이 대신 공격을 받았다!`, icface: () => '', screencleaner: () => '모든 벽이 사라졌다!', symbiosis: n => `${eun(n)} 도구를 건네주었다!`, battlebond: n => `${eun(n)} 트레이너와의 유대가 깊어졌다!`, mimicry: n => `${n}의 타입이 원래대로 돌아왔다!` };
 function actMsg(n, w, o = '상대', x = []) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠져 있다!`, Protect: `${eun(n)} 공격으로부터 몸을 지켰다!`, Substitute: '대타가 대신 공격을 받았다!', 'Destiny Bond': `${eun(n)} 상대를 길동무로 삼았다!`, Endure: `${eun(n)} 공격을 버텼다!`,
     // v21.30 경완 '본가랑 다른 거 검토': 묶는 기술 시작·헤롱헤롱·흰안개·방울소리·원한 등 본가 문장
     Bind: `${eun(n)} ${o}에게 조이기를 당했다!`, Wrap: `${eun(n)} ${o}에게 김밥말이를 당했다!`, 'Fire Spin': `${eun(n)} 불꽃의 소용돌이에 갇혔다!`, Whirlpool: `${eun(n)} 소용돌이에 갇혔다!`, 'Sand Tomb': `${eun(n)} 모래지옥에 갇혔다!`, 'Magma Storm': `${eun(n)} 마그마의 소용돌이에 갇혔다!`, Clamp: `${eun(o)} ${eul(n)} 껍질에 끼웠다!`, Infestation: `${eun(n)} ${o}에게 엉겨붙기를 당했다!`, 'Snap Trap': `${eun(n)} 집게덫에 걸렸다!`, 'Thunder Cage': `${eun(o)} ${eul(n)} 가두었다!`,
@@ -1211,7 +1214,13 @@ async function abPop(id, ab) {
   if (!id || !ab || !B) return; const s = sideOf(id), key = s + ab; if (B.abLast === key) return; B.abLast = key;
   const w = document.createElement('div'); w.className = `bt-abp ${s}`; w.innerHTML = `<small>${esc(who(id))}의</small><b>${esc(abKo(ab))}</b>`;
   $b('.bt-top')?.appendChild(w) || el.appendChild(w);
-  await wait(30); w.classList.add('on'); await wait(B.fast ? 500 : 1100); w.classList.remove('on'); await wait(220); w.remove(); }
+  await wait(30); w.classList.add('on'); await wait(B.fast ? 250 : 450);
+  // v21.31 경완 '따라큐랑 싸웠을 때 탈 특성 안 나왔음': 본가처럼 특성 창은 뒤따르는 대사가 넘어갈 때까지 떠 있는다 (전엔 1.1초 뒤 사라져서 대사를 읽을 땐 이미 없었음)
+  // 뒤따르는 대사가 없으면 조금 뒤 저절로 들어간다
+  const t0 = Date.now(); (B.abHold = B.abHold || []).forEach(h => h.s === s && abOut(h)); B.abHold.push({ w, s, t0 });
+  const iv = setInterval(() => { const h = B?.abHold?.find(x => x.w === w); if (!h) return clearInterval(iv); if (!B.msgOn && Date.now() - t0 > 1600) { clearInterval(iv); abOut(h); } }, 200); }
+function abOut(h) { if (B?.abHold) B.abHold = B.abHold.filter(x => x !== h); h.w.classList.remove('on'); setTimeout(() => h.w.remove(), 240); }
+async function abDone() { const L = B?.abHold || []; if (!L.length) return; L.slice().forEach(abOut); await wait(220); }
 // 혼란: 본가처럼 머리 위로 병아리 셋이 빙글빙글 (플래티넘 status_effect 그림, 경완 2026-10-28)
 // 그림에서 가장 위쪽 불투명 줄(머리)의 위치: 포켓몬 칸 기준 [x, y] (그림을 못 읽으면 null)
 function headAt(m) {
