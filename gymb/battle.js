@@ -861,13 +861,12 @@ function erHooks(btl) {
   btl.onEvent('Residual', F, function () {
     for (const pk of this.p1.active) { if (!pk || pk.fainted || B.practice) continue; const r = rec(pk), o = per.get(pk);
       if (r && o) { if (o.dm > (r.dg || 0)) r.dg = o.dm; r.rc = (r.rc || 0) + o.dm - (o.rcA || 0); o.rcA = o.dm; }   // 지금까지 버틴 피해도 바로 셈 (끝에 erEnd 가 나머지)
-      const e = B.my[B.o.p.indexOf(pk)], P = e && GA.boxOf?.(e.pid); if (!P || !GA.evoBtl?.(P)) continue;
+      const e = B.my[B.o.p.indexOf(pk)], P = e && GA.boxOf?.(e.pid); if (!P || (B.evoDone ||= new Set()).has(pk) || !GA.evoBtl?.(P)) continue;
       const to = GA.evoTo?.(P), id = to && D.sp[to]?.id, sp = id && this.dex.species.get(id); if (!sp?.exists) continue;
       const ratio = pk.hp / pk.maxhp; pk.setSpecies(sp); pk.baseSpecies = sp; pk.details = pk.getUpdatedDetails(); const st = this.spreadModify(sp.baseStats, pk.set);
       pk.baseMaxhp = pk.maxhp = st.hp; pk.hp = Math.max(1, Math.round(ratio * st.hp));
       { const SP = GA.SPECIES, o = SP[P.sp]?.n, n = SP[to]?.n; if (n && pk.name === o) { pk.name = n; pk.fullname = `${pk.side.id}: ${n}`; } }   // 별명 없으면 기록 이름도 새 종 이름 (뒤 대사가 옛 이름으로 나오지 않게)
-      try { GA.evoSilent?.(P, to); } catch (er) { console.error(er); }
-      this.add('-pkevo', pk, String(to), `${pk.hp}/${pk.maxhp}`); }
+      B.evoDone.add(pk); this.add('-pkevo', pk, String(to), `${pk.hp}/${pk.maxhp}`); }
   });
   btl.onEvent('Faint', F, function (target, src) { const r = rec(src); if (r && target?.side?.id === 'p2' && target.hasType?.(['Dark', 'Steel'])) r.ko = (r.ko || 0) + 1; });
 }
@@ -1042,16 +1041,15 @@ async function handle(a) {
       m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
       await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
     case '-pkevo': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X || s !== 'p') break; const to = +a[3], from = X.sp, P = GA.boxOf?.(X.pid), SP = GA.SPECIES, toN = SP[to]?.n || '', oldNm = X.nm;
-      const ro = w => w + ((c => c > 0 && c !== 8)((w.charCodeAt(w.length - 1) - 44032) % 28) ? '으로' : '로');
       await msg(`어라…? ${oldNm}의 모습이…!`, 500); if (!B) break;
       const N = { ...X, sp: to, tsp: to, fm: toID(D.sp[to]?.id || ''), gif: null }; N.gif = await pickGif(s, N); if (!B) break;
-      m._tok = (m._tok || 0) + 1; m.classList.add('pkevo'); se('KOUKA_M', { pan: panOf(s) }); await wait(500);
-      let gap = 460, k = 0; while (gap > 60 && B) { showMon(s, k ? N : X, true); k ^= 1; await wait(gap); gap *= .8; }
-      if (!B) break; showMon(s, N, true); m.classList.remove('pkevo'); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); try { GA.haptic?.(2); } catch (e) {}
-      playAnim(s, N); try { GA.cry?.(to, 0, 1, CRY_K); } catch (e) {} await wait(420); m.classList.remove('fmc');
+      /* v21.52 경완 '한번 뜨고 우리 진화하는 화면으로 넘어가고 배틀로 돌아오는게 낫겠는데': 대사 뒤 본 게임 진화 화면(evolveWin, 진화 곡·확인·도감 카드) → 끝나면 배틀 곡이 다시 흐르고 새 모습으로 */
+      const bg = window.GymBGM?.name; lowHp(false); M('stop', .5);
+      if (P && P.sp !== to) { try { await GA.evoRun(P, to); } catch (e) { console.error(e); } if (P.sp !== to) try { GA.evoSilent?.(P, to); } catch (e) { console.error(e); } }   // 진화 화면이 못 열리면(다른 진화·부화 중) 상태만
+      if (!B) break; if (bg) M('play', bg, { fade: .6 });
+      m._tok = (m._tok || 0) + 1; showMon(s, N, true); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); playAnim(s, N); await wait(420); m.classList.remove('fmc');
       Object.assign(X, { sp: to, tsp: to, fm: N.fm, gif: N.gif }); if (oldNm === SP[from]?.n) X.nm = toN; const E = B.my[X.i]; if (E) { E.sp = to; E.nm = X.nm; E.fm = P?.fm; }
-      const [hp, mhp] = hpOf(a[4]); if (mhp) X.mhp = mhp; X.hp = hp; paintHb(s, X);
-      await msg(`축하해! ${eun(oldNm)} ${ro(toN)} 진화했다!`); break; }
+      const [hp, mhp] = hpOf(a[4]); if (mhp) X.mhp = mhp; X.hp = hp; paintHb(s, X); break; }
     case 'turn': await egFlash(); break;
     case 'win': break;
   }
