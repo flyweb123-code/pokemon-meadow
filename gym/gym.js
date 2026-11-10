@@ -1247,14 +1247,16 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
   const run = (a, b, up, tick, T0, cub, keepN) => { const T = T0 || clampN(Math.abs(b - a) * 90, 500, 1100); window.GymBGM?.se?.(up ? 'DP_EXP' : 'DP_KOUKA_L', up ? { dur: T / 1000 } : undefined);   // 차오르는 소리는 막대가 다 찰 때 같이 멈춤 (경완 2026-10-29)
     const t0 = performance.now();
     return new Promise(done => { const f = now => { if (!el.isConnected) return done(); const k = clampN((now - t0) / T, 0, 1), r = Math.round(a + (b - a) * (1 - (1 - k) ** (cub ? 3 : 2))), G = gradeOf(r);
-      if (!keepN) n.textContent = r; tick?.(r, 1 - (1 - k) ** (cub ? 3 : 2)); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
+      if (!keepN) n.textContent = r; tick?.(r, 1 - (1 - k) ** (cub ? 3 : 2), k); bar.style.width = clampN((r - G.lo) / Math.max(1, G.hi - G.lo), 0, 1) * 100 + '%';
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
+  const tk = (x, v) => { if (!x || x.textContent === v) return; x.innerHTML = '<span class="tk">' + v + '</span>'; };   // 시안: 숫자 바뀔 때마다 아래에서 살짝 올라오며 바뀜 (곡선 대신 일정한 간격)
+  const pin = () => { const L = n.offsetLeft + n.offsetWidth + 8; let x = L; for (const e of [d, el.querySelector('.rr-b')]) { if (!e) continue; e.style.left = x + 'px'; e.style.top = n.offsetTop + (n.offsetHeight - e.offsetHeight) / 2 + 'px'; if (e.classList.contains('keep') || el.classList.contains('dshow') && e === d || e.classList.contains('on')) x += e.offsetWidth + 6; } }; const pinT = setInterval(() => { if (!el.isConnected) return clearInterval(pinT); pin(); }, 16);   // 시안: 평판 숫자 자리는 고정, +N 들은 숫자 옆에 붙음
   el.dataset.gi = g0; await wait(300); if (gp) { await gp; await wait(60); } if (!el.isConnected) return;   // 경완 2026-11-03: 평판은 골드가 다 오른 뒤에
-  el.classList.add('go'); const rm = r1 - sb;
-  el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
+  el.classList.add('go'); const rm = r1 - sb, cb = !!(el.querySelector('.rs-stk2') && sb && rm !== r0);
+  if (!cb) el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
   if (rm < r0 && !sb) { d.textContent = `-${r0 - rm}`; d.classList.add('dnS'); n.classList.add('dnF'); await run(r0, rm, false, null, 0, false, false); await wait(450); n.classList.remove('dnF'); return; }   /* v18.39 경완 '평판 깎일 때 평판 점수 잠깐 빨간색 됐다가 돌아오게' */   /* v18.09 경완 '평판 떨어지는 연출은 연패 기준이 없으니 합쳐지는 모션·괄호 없이 바로 떨어지는 것만 빨간 글자로': -N 은 처음부터 빨갛게 그대로, 평판 숫자만 바로 내려감 */
-  if (rm !== r0) { const up = rm > r0; d.textContent = up ? '+1' : '-1'; await run(r0, rm, up, r => { d.textContent = (up ? '+' : '-') + Math.max(1, Math.abs(r - r0)); }, gT ? 550 : 0, !!gT, true); }   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
+  if (rm !== r0 && !cb) { const up = rm > r0; d.textContent = (up ? '+' : '-') + Math.abs(rm - r0); await run(r0, rm, up, null, gT ? 550 : 0, !!gT, true); }   // 시안 경완: 본 점수는 오르는 모션 없이 최종 값   // v14.97 경완: 골드와 같은 시간·같은 곡선으로 같이 오른다 (평판 숫자는 +N 이 합쳐질 때 한 번에)
   if (!el.isConnected) return;
   const flash = () => { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
   const showTot = () => { if (r1 === r0 || !el.isConnected || d.classList.contains('tot')) return; d.className = 'rr-d tot' + (combo ? ' keep' : ''); d.style.removeProperty('--dx'); d.textContent = `(${r1 > r0 ? '+' : ''}${r1 - r0})`; };   // v17.72 경완: 총 오른 점수는 괄호로 (+N)   /* 경완 2026-11-04: 총 오른 점수 +N 은 처음 초록 +N 자리에서, 마지막으로 합쳐지며 숫자가 튈 때 같이 튀어나옴 */
@@ -1266,8 +1268,8 @@ const into = (x, t) => { if (!x || !t) return; const rg = document.createRange()
   const sk = el.querySelector('.rs-stk2');
   if (gp) await gp;
   if (sk && sb) { await wait(60); if (!el.isConnected) return; const bx = el.querySelector('.rr-b'), gbx = p.querySelector('.rg-b'); if (bx) bx.textContent = '+1'; if (gbx) gbx.textContent = '+1G';
-    if (combo) d.classList.add('keep'); sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(180); if (!el.isConnected) return;
-    await run(rm, r1, true, (r, k) => { if (bx) bx.textContent = '+' + Math.max(1, r - rm); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; } }, 420, true, true); if (!el.isConnected) return; await wait(110); if (!el.isConnected) return;
+    if (combo) { d.classList.add('keep'); d.textContent = '+' + (rm - r0); el.classList.add('dshow'); } sk.classList.add('go'); bx?.classList.add('on'); gbx?.classList.add('on'); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} await wait(180); if (!el.isConnected) return;
+    await run(combo ? r0 : rm, r1, true, (r, k, kl) => {  if (bx) tk(bx, '+' + Math.max(1, Math.ceil(sb * kl))); if (gx && gbx) { const v = Math.max(1, Math.round(gx.gb * k)); gbx.textContent = '+' + v + 'G'; } }, combo ? 650 : 420, true, true); if (!el.isConnected) return; await wait(110); if (!el.isConnected) return;
     into(gbx, gx?.n); gbx?.classList.remove('on'); into(bx, n); bx?.classList.remove('on'); if (combo) { into(d, n); onMrg?.(); } await wait(200); n.textContent = r1; n.classList.remove('bump', 'bump0'); showTot(); void n.offsetWidth; if (bx) { n.classList.add('bump'); flash(); } if (gx) { gx.n.textContent = '+' + (gx.g0 + gx.gb).toLocaleString(); const gb2 = gx.n.parentElement; gb2.classList.remove('end'); gx.n.classList.remove('bump'); void gb2.offsetWidth; gb2.classList.add('end'); gx.n.classList.add('bump'); const gS = gx.n.nextElementSibling; if (gS) { const nb = gx.n.getBoundingClientRect(), sb = gS.getBoundingClientRect(), z = nb.width / (gx.n.offsetWidth || 1) || 1; gS.style.transformOrigin = `${((nb.left + nb.width / 2) - sb.left) / z}px 50%`; } } /* 경완 2026-11-03 'G 도 효과': G 가 숫자와 한 덩어리로 같이 커지고(숫자 가운데 기준) 같이 빨개짐 */ }
   await wait(560);   // 보너스가 합쳐지며 빨갛게 튄 뒤에 원래 색으로 (end 의 색 고정이 튐을 덮지 않게)
   el.classList.add('end');
