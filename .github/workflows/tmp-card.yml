@@ -1,0 +1,38 @@
+# 임시 (2026-11-10 경완 '카드도 채워'): u_chany 트레이너 카드를 되살린 저장으로 다시 채운다. 끝나면 지움
+name: tmp card u_chany
+on:
+  push:
+    branches: [claude/project-thread-1ji9et]
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Card
+        run: |
+          set -e
+          ex() { npx wrangler d1 execute pokegrow --remote -y --json --command "$1"; }
+          ex "SELECT data FROM save_part WHERE acct='u_chany' AND code='RSTNDN66' ORDER BY i" | jq -r '.[0].results | map(.data) | join("")' > s.json
+          ex "SELECT card FROM score WHERE code='NDN66BNL' AND game='jumpW2026x11x9'" | jq -r '.[0].results[0].card' > old.json
+          jq -c '{dex: ((.unlocked//[])|length), wkH, wk, totalKm, walkKm, tr}' s.json
+          WK=H2026-11-9
+          HN=$(jq -r --arg w "2026-11-9" 'if .wkH.k == $w then (.wkH.n // 0) else 0 end' s.json)
+          jq -c --slurpfile s s.json --argjson hn "$HN" '. as $o | $s[0] as $d | {v:1, n: ($d.tr.n // $o.n), sex: ($d.tr.sex // $o.sex), rp: $o.rp, fit: $o.fit, gym: null, gifts: [], got: [], ty: [], sp: ($o.rp.sp // 0), sx: ($o.rp.sx // ""), bn: ($o.rp.nm // ""), dex: (($d.unlocked // [])|length), wk: ($d.wk.k // "2026-11-9"), wkm: (if ($d.wk.k // "") == "2026-11-9" then (($d.wk.km // 0)*100|round/100) else 0 end), hk: "H2026-11-9", hn: $hn, tot: ((($d.totalKm // 0)*100|round)/100), walk: ((($d.walkKm // 0)*100|round)/100)}' old.json > card.json
+          cat card.json
+          DEX=$(jq .dex card.json); C=$(jq -c . card.json | sed "s/'/''/g"); N=$(($(date +%s) * 1000))
+          ex "UPDATE trainer SET card = '$C', wk = '$WK', wkm = $HN, dex = $DEX, at = $N WHERE code = 'NDN66BNL'" | jq -c '.[0].meta.changes'
+          ex "SELECT code, wk, wkm, dex, json_extract(card,'$.n') n, at FROM trainer WHERE code = 'NDN66BNL'" | jq -c '.[0].results[]'
