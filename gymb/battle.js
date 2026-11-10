@@ -1051,6 +1051,7 @@ const AB_ACT = { hadronengine: HADRON, stickyhold: n => `${n}의 도구는 빼�
 function actMsg(n, w, o = '상대', x = []) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠져 있다!`, Protect: `${eun(n)} 공격으로부터 몸을 지켰다!`, Substitute: '대타가 대신 공격을 받았다!', 'Destiny Bond': `${eun(n)} 상대를 길동무로 삼았다!`, Endure: `${eun(n)} 공격을 버텼다!`,
     // v21.30 경완 '본가랑 다른 거 검토': 묶는 기술 시작·헤롱헤롱·흰안개·방울소리·원한 등 본가 문장
     Bind: `${eun(n)} ${o}에게 조이기를 당했다!`, Wrap: `${eun(n)} ${o}에게 김밥말이를 당했다!`, 'Fire Spin': `${eun(n)} 불꽃의 소용돌이에 갇혔다!`, Whirlpool: `${eun(n)} 소용돌이에 갇혔다!`, 'Sand Tomb': `${eun(n)} 모래지옥에 갇혔다!`, 'Magma Storm': `${eun(n)} 마그마의 소용돌이에 갇혔다!`, Clamp: `${eun(o)} ${eul(n)} 껍질에 끼웠다!`, Infestation: `${eun(n)} ${o}에게 엉겨붙기를 당했다!`, 'Snap Trap': `${eun(n)} 집게덫에 걸렸다!`, 'Thunder Cage': `${eun(o)} ${eul(n)} 가두었다!`,
+    'Fickle Beam': `${eun(n)} 전력을 다하기 시작했다!`,   // v21.36 경완이 붙여 준 나무위키 변덕레이저 문장
     Attract: `${eun(n)} ${o}에게 헤롱헤롱하다!`, Mist: `${eun(n)} 흰안개에 지켜지고 있다!`, 'Heal Bell': '방울소리가 울려 퍼졌다!', Aromatherapy: '기분 좋은 향기가 퍼졌다!', 'Lock-On': `${eun(n)} ${eul(o)} 겨냥했다!`, 'Mind Reader': `${eun(n)} ${eul(o)} 겨냥했다!`,
     Spite: x[0] ? `${n}의 ${mvKo(toID(x[0]))}의 PP가 ${x[1] || ''} 줄었다!` : '', 'Eerie Spell': x[0] ? `${n}의 ${mvKo(toID(x[0]))}의 PP가 ${x[1] || ''} 줄었다!` : '', Sketch: x[0] ? `${eun(n)} ${eul(mvKo(toID(x[0])))} 스케치했다!` : '',
     'Psychic Terrain': `${eun(n)} 사이코필드에 지켜지고 있다!`, 'Quick Guard': `${eun(n)} 퍼스트가드로 지켜지고 있다!`, 'Wide Guard': `${eun(n)} 와이드가드로 지켜지고 있다!`, 'Crafty Shield': `${eun(n)} 트릭가드로 지켜지고 있다!`, 'Mat Block': `${eun(n)} 다다미가드로 지켜지고 있다!`,
