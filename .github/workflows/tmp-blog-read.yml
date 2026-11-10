@@ -1,4 +1,4 @@
-# 임시: 경완 계정 저장의 최근 배틀 기록(S.gym.blog) 중 따라큐 판만 읽기 (따라큐 탈 특성 창 확인, 2026-11-10). 끝나면 지움.
+# 임시(2): 경완 계정 저장의 최근 배틀 기록(S.gym.blog) 중 따라큐 판만 읽기 (따라큐 탈 특성 창 확인, 2026-11-10). 끝나면 지움.
 name: tmp blog read
 on:
   push:
@@ -34,6 +34,6 @@ jobs:
                 const bl = S.gym?.blog || []; console.log("== acct", process.argv[2], "code", c, "savedAt", new Date(S.savedAt || 0).toISOString(), "blog", bl.length);
                 for (const b of bl) { const has = JSON.stringify([b.my, b.fo]).match(/\b778\b/) || b.log.some(l => /Mimikyu/.test(l));
                   console.log("-- battle", new Date(b.t).toISOString(), "v", b.v, "foe", b.foe, "mimikyu", !!has);
-                  if (has) { console.log("my", JSON.stringify(b.my)); console.log("fo", JSON.stringify(b.fo)); b.log.forEach((l, i) => { if (/Mimikyu|Disguise/.test(l)) console.log(i, l); }); } } }
+                  if (has) { console.log("my", JSON.stringify(b.my)); console.log("fo", JSON.stringify(b.fo)); b.log.forEach((l, i) => { if (i >= 55 && i <= 95) console.log(i, l); }); console.log("ch", JSON.stringify(b.ch).slice(0, 600)); } } }
             ' /tmp/$a.json $a
           done
