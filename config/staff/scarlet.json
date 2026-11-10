@@ -1,6 +1,1133 @@
 {
  "days": [
   {
+   "at": 1794350871531,
+   "theme": "숲속 꼬마 소방서",
+   "note": "오늘은 숲속 꼬마 소방서예요! 소화전·호스 릴·손펌프 수레·물대포 과녁은 물 타입이 기술로 노는 자리, 망루 종·헬멧 걸이는 줄과 종을 울리는 자리, 구조 사다리·구조 매트는 오르고 튀는 자리로 나눴어요. 빨강·금빛·크림 세 가지로 한 동네처럼 맞췄고, 밤엔 경광등이 붉게 빛나요.",
+   "items": [
+    {
+     "id": "fire-hydrant",
+     "n": "빨간 소화전",
+     "k": "소방",
+     "d": "금빛 둥근 뚜껑과 양옆 꼭지가 달린 작고 통통한 빨간 소화전이에요. 앞쪽 큰 금빛 마개 가운데에 볼트가 박혀 있어요.",
+     "px": [
+      ".......kk.......",
+      "......kYyk......",
+      ".....kkyokk.....",
+      "....kYyyyyyk....",
+      "...kYyyyyyook...",
+      "..kyYyyyyooook..",
+      "..kooooooooook..",
+      "...krRyoooOSk...",
+      ".kkkrRoooOSSkkk.",
+      "kYyyrRrrssSSyook",
+      "kYyyrRryysSSoook",
+      "kooorRyOOoSSooOk",
+      ".kkkrRyyoOSSkkk.",
+      "...krRrrssSSk...",
+      "...krRrrssSSk...",
+      "...krRrrssSSk...",
+      "..kkrRrrssSSkk..",
+      ".krRRrrrrrrrrrk.",
+      ".krorrrorsssoSk.",
+      "..kkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "Y": "#fbe39a",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 앞 길가, 꽃밭 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "소화전 옆 꼭지에 입을 대고 물대포를 하늘로 쏘아 올려요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "소화전 꼭지에 대고 물대포를 하늘 높이 쏘아 올렸다.",
+        "소화전 옆에서 물을 뿜어 무지개를 만들었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "소화전을 타고 올라가 금빛 뚜껑 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "소화전을 타고 올라가 금빛 뚜껑 위에 앉았다.",
+        "소화전 꼭대기에 올라앉아 길을 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "소화전 앞 금빛 마개를 톡톡 두드려 봐요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "소화전 금빛 마개를 톡톡 두드려 본다.",
+        "소화전 마개에 비친 제 얼굴을 신기하게 들여다본다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "fire-bell-tower",
+     "n": "망루 종",
+     "k": "소방",
+     "d": "빨간 세모 지붕 아래 금빛 종이 매달린 나무 망루예요. 다리 사이에 X자 버팀목이 있고, 종에서 내려온 줄을 당기면 종이 흔들려요.",
+     "px": [
+      "........kkyok.........",
+      "......kkRrrrskk.......",
+      "....kkRRrrrrssskk.....",
+      "...kRRRRrrrrsssSSk....",
+      ".kkRRRRrrrrrssssSSkk..",
+      "kRRRRRRrrrrrssssSSSSkk",
+      "RRRRRRrrrrrrsssssSSSSS",
+      "EDDDDDDDDDDDDDDDDDDDDE",
+      "kkkkEEEEEEkkEEEEEEkkkk",
+      "...kBDkkkkgikkkkLDk...",
+      "...kBDk.kYyoOk.kLDk...",
+      "...kBDkkYyyooOkkLDk...",
+      "...kBDkkYyyooOkkLDk...",
+      "...kBDkkYyyooOkkLDk...",
+      "...kBDkyyyyooOOkLDk...",
+      ".kkkBkoooooooOOOkDkkk.",
+      "kEDDDEkkkkOOkkkkDEDDDk",
+      "kLLLLLBBBBkwkBBDDDDDDk",
+      ".kkkDDEDDEkckDDEDDkkk.",
+      "..kBDEkkkkkwkkkkELDk..",
+      "..kBDkEkk.kckkkEkLDk..",
+      "..kBDkkkEkkwkEkkkLDk..",
+      "..kBDk..kEkckk..kLDk..",
+      "..kBDk...kkwk...kLDk..",
+      "..kBDk.kkkrrkkk.kLDk..",
+      "..kBDkkEkkkkkkEkkLDk..",
+      "..kBDEkkkkkkkkkkELDk..",
+      "..kBDDEDDEDDEDDEDDDk..",
+      "..kBDkkkkkkkkkkkkLDk..",
+      "..kBDk..........kLDk..",
+      ".kBDk............kLDk.",
+      "..kk..............kk.."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "g": "#7c8494",
+      "i": "#4a5060",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 마당 가운데, 넓은 풀밭",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "........kkyok.........",
+       "......kkRrrrskk.......",
+       "....kkRRrrrrssskk.....",
+       "...kRRRRrrrrsssSSk....",
+       ".kkRRRRrrrrrssssSSkk..",
+       "kRRRRRRrrrrrssssSSSSkk",
+       "RRRRRRrrrrrrsssssSSSSS",
+       "EDDDDDDDDDDDDDDDDDDDDE",
+       "kkkkEEEEEE..EEEEEEkkkk",
+       "...kBDkkk....kkkLDk...",
+       "...kBDk........kLDk...",
+       "...kBDk........kLDk...",
+       "...kBDk........kLDk...",
+       "...kBDk........kLDk...",
+       "...kBD..........LDk...",
+       ".kkkB............Dkkk.",
+       "kEDDDE..........DEDDDk",
+       "kLLLLLBBBB...BBDDDDDDk",
+       ".kkkDDEDDE...DDEDDkkk.",
+       "..kBDEkkkk...kkkELDk..",
+       "..kBDkEkk....kkEkLDk..",
+       "..kBDkkkEk...EkkkLDk..",
+       "..kBDk..kE...k..kLDk..",
+       "..kBDk...k......kLDk..",
+       "..kBDk.kk....kk.kLDk..",
+       "..kBDkkEkk..kkEkkLDk..",
+       "..kBDEkkkkkkkkkkELDk..",
+       "..kBDDEDDEDDEDDEDDDk..",
+       "..kBDkkkkkkkkkkkkLDk..",
+       "..kBDk..........kLDk..",
+       ".kBDk............kLDk.",
+       "..kk..............kk.."
+      ],
+      "mp": [
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "..........kk..........",
+       ".........kgik.........",
+       "........kYyoOk........",
+       ".......kYyyooOk.......",
+       ".......kYyyooOk.......",
+       ".......kYyyooOk.......",
+       "......kyyyyooOOk......",
+       ".....koooooooOOOk.....",
+       "......kkkkOOkkkk......",
+       "..........kwk.........",
+       "..........kck.........",
+       "..........kwk.........",
+       "..........kck.........",
+       "..........kwk.........",
+       "..........kck.........",
+       "..........kwk.........",
+       ".........krrk.........",
+       "..........kk..........",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................",
+       "......................"
+      ],
+      "o": [
+       10.5,
+       9
+      ],
+      "k": "swing",
+      "amp": 1.4
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "망루 지붕 꼭대기에 날아올라 앉았다.",
+        "망루 꼭대기에서 마을을 둘러보며 망을 본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "종에서 늘어진 줄을 잡아당겨 종을 땡땡 울려요",
+       "x": {
+        "at": [
+         0.5,
+         0.75
+        ],
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "망루 줄을 잡아당겨 종을 땡땡 울렸다.",
+        "망루 종을 울리고 소리에 스스로 깜짝 놀랐다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "망루 다리를 힘껏 밀어 종을 크게 흔들어요",
+       "x": {
+        "at": [
+         0.2,
+         1
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "망루 다리를 힘껏 밀어 종을 크게 흔들었다.",
+        "망루를 들이받아 종이 땡그랑 울렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "망루 다리 사이 그늘에 들어가 몸을 말고 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep",
+        "back": true
+       },
+       "l": [
+        "망루 다리 사이 그늘에서 몸을 말고 잠들었다.",
+        "망루 아래에서 종소리를 자장가 삼아 꾸벅꾸벅 존다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "hose-reel",
+     "n": "호스 릴",
+     "k": "소방",
+     "d": "빨간 테두리 바퀴에 크림색 소방 호스가 동글게 감긴 나무 받침 릴이에요. 풀린 호스 끝에 금빛 노즐이 놓여 있어요.",
+     "px": [
+      "........kkkk........",
+      "......kkRRRrkk......",
+      "....kkRRRRRrrrkk....",
+      "...kRRRwWWWwwrrrk...",
+      "...kRwWWwwwwwwcrk...",
+      "..kRRWwwWWWwccwrrk..",
+      "..kRwWwWwwwcwcwcsk..",
+      ".kRRWwWwrrrscwccssk.",
+      ".kRRWwWwrYysccSSSsk.",
+      ".kRRWwWwryosccccssk.",
+      ".krrwwwcrsssccccssk.",
+      "..krwwcwccccccccsk..",
+      "..krrwccwccccccssk..",
+      "...krcwwcccccccskkk.",
+      "...krrrccccccssskYyk",
+      "...kkkrssssssskkwyyk",
+      ".kkkBDkksssskkcccyok",
+      "kBLBBBBBkkkkBBBBBBBk",
+      "kDDDDDDDDDDDDDDDDDDk",
+      ".kkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "L": "#e2b47a",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "fit": "소화전 옆, 소방서 벽 앞",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       ".................kk.",
+       ".................Yyk",
+       "...k............wyyk",
+       ".kkkBD........cccyok",
+       "kBLBBBBB....BBBBBBBk",
+       "kDDDDDDDDDDDDDDDDDDk",
+       ".kkkkkkkkkkkkkkkkkk."
+      ],
+      "mp": [
+       "........kkkk........",
+       "......kkRRRrkk......",
+       "....kkRRRRRrrrkk....",
+       "...kRRRwWWWwwrrrk...",
+       "...kRwWWwwwwwwcrk...",
+       "..kRRWwwWWWwccwrrk..",
+       "..kRwWwWwwwcwcwcsk..",
+       ".kRRWwWwrrrscwccssk.",
+       ".kRRWwWwrYysccSSSsk.",
+       ".kRRWwWwryosccccssk.",
+       ".krrwwwcrsssccccssk.",
+       "..krwwcwccccccccsk..",
+       "..krrwccwccccccssk..",
+       "...krcwwcccccccsk...",
+       "...krrrccccccsssk...",
+       "....kkrssssssskk....",
+       "......kksssskk......",
+       "........kkkk........",
+       "....................",
+       "...................."
+      ],
+      "o": [
+       9.5,
+       8.5
+      ],
+      "k": "spin"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "바퀴를 앞발로 굴려 호스 릴을 빙글빙글 돌려요",
+       "x": {
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "호스 릴 바퀴를 굴려 빙글빙글 돌렸다.",
+        "호스 릴을 돌리다 호스가 풀려 허둥지둥한다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "금빛 노즐을 물고 호스 끝으로 물을 뿜어요",
+       "x": {
+        "at": [
+         0.85,
+         1
+        ],
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "호스 릴 노즐을 물고 물을 시원하게 뿜었다.",
+        "호스 끝으로 물을 뿌려 풀밭을 적셨다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 바퀴 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "호스 릴 바퀴 꼭대기에 날아올라 앉았다.",
+        "호스 릴 위에 앉아 깃털을 고른다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "fire-bucket-rack",
+     "n": "소방 양동이 걸이",
+     "k": "소방",
+     "d": "나무 선반에 금빛 테두리를 두른 빨간 소방 양동이 세 개가 나란히 걸려 있어요. 양동이마다 크림색 표시가 있어요.",
+     "px": [
+      "..........................",
+      "kkkkkkkkkkkkkkkkkkkkkkkkkk",
+      "LLLLLLLLLLLLLLLLLLLLLLLLLL",
+      "DDDDDDDDDDDDDDDDDDDDDDDDDD",
+      "kLDkkkOkkkkkkOkkkkkkOkkBEk",
+      "kLDkkgggk..kgggk..kgggkBEk",
+      "kLDkgkkkgkkgkkkgkkgkkkgBEk",
+      "kLDkyYyookkyYyookkyYyooBEk",
+      "kLDkRrrsSkkRrrsSkkRrrsSBEk",
+      "kLDkRrrsSkkRrrsSkkRrrsSBEk",
+      "kLDkRWWsSkkRWWsSkkRWWsSBEk",
+      "kLDkkRwSk..kRwSk..kRwSkBEk",
+      "kLDkkRrSk..kRrSk..kRrSkBEk",
+      "kLDkkRrSk..kRrSk..kRrSkBEk",
+      "kLDkkRrSkkkkRrSkkkkRrSkBEk",
+      "kDDDDDDDDDDDDDDDDDDDDDDDDk",
+      "kLDkkkkkkkkkkkkkkkkkkkkBEk",
+      "kLDk..................kBEk",
+      "kLDk..................kBEk",
+      ".kk....................kk."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "g": "#7c8494",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 벽 옆, 연못 가까이",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "양동이마다 물을 채워 넣어 찰랑찰랑하게 만들어요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "소방 양동이에 물을 하나씩 가득 채웠다.",
+        "소방 양동이에 물을 채우고 뿌듯해한다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "양동이를 톡 쳐서 셋이 나란히 흔들리는 걸 구경해요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "소방 양동이를 톡 쳐서 흔들리게 했다.",
+        "소방 양동이 셋이 달랑달랑 흔들리는 걸 구경한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "선반 뒤에 숨어 양동이 사이로 빼꼼 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "소방 양동이 선반 뒤에 숨어 빼꼼 고개를 내민다.",
+        "소방 양동이 사이로 숨바꼭질을 한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "rescue-ladder",
+     "n": "구조 사다리",
+     "k": "소방",
+     "d": "빨간 A자 구조 사다리예요. 은빛 디딤대가 촘촘하고 꼭대기에 넓은 발판이 있어요.",
+     "px": [
+      "....kkkkkkkkkk....",
+      "...kRWRRRRRsssk...",
+      "...krrrrrrrsssk...",
+      "....kkRrkkrskk....",
+      ".....kRrkkrsk.....",
+      ".....kRrMgrsk.....",
+      "....kRrSkkSrsk....",
+      "....kRrSkkSrsk....",
+      "....kRrSkkSrsk....",
+      "....kRrMmmgrsk....",
+      "....kRrkkkkrsk....",
+      "....kRrk..krsk....",
+      "...kRrSkkkkSrsk...",
+      "...kRrMmmmmgrsk...",
+      "...kRrSkkkkSrsk...",
+      "...kRrSk..kSrsk...",
+      "...kRrSkkkkSrsk...",
+      "..kRrMmmmmmmgrsk..",
+      "..kRrkSkkkkSkrsk..",
+      "..kRrkSk..kSkrsk..",
+      "..kRrSkkkkkkSrsk..",
+      "..kRrMmmmmmmgrsk..",
+      "..kRrSkkkkkkSrsk..",
+      ".kRrkSk....kSkrsk.",
+      ".kRrkSk....kSkrsk.",
+      ".kRrkSk....kSkrsk.",
+      "kiiikk......kkiiik",
+      ".kkk..........kkk."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "g": "#7c8494",
+      "i": "#4a5060",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "r": "#d0564a",
+      "s": "#a43c36"
+     },
+     "fit": "망루 옆, 나무 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "디딤대를 한 칸씩 밟고 꼭대기 발판까지 올라가요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "구조 사다리를 한 칸씩 밟고 꼭대기까지 올라갔다.",
+        "구조 사다리 꼭대기에서 의기양양하게 섰다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 꼭대기 발판에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "구조 사다리 꼭대기 발판에 날아올라 앉았다.",
+        "구조 사다리 위에서 멀리 내다본다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "사다리에 등을 기대고 느긋하게 쉬어요",
+       "x": {
+        "at": "under"
+       },
+       "l": [
+        "구조 사다리에 등을 기대고 느긋하게 쉰다.",
+        "구조 사다리에 기대어 하품을 했다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "사다리를 붙잡고 디딤대로 턱걸이를 해요",
+       "x": {
+        "at": [
+         0.5,
+         0.55
+        ],
+        "m": "wobble",
+        "an": "Attack"
+       },
+       "l": [
+        "구조 사다리 디딤대를 붙잡고 턱걸이를 했다.",
+        "구조 사다리로 몸을 단련한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "siren-lamp",
+     "n": "경광등",
+     "k": "소방",
+     "d": "은빛 기둥 위에 빨간 유리 둥근 등이 얹힌 경광등이에요. 기둥 옆에 금빛 사이렌 나팔이 달려 있고, 밤엔 붉게 빛나요.",
+     "px": [
+      "......kk......",
+      ".....kyok.....",
+      "....kkWRkk....",
+      "...kWWRRRRk...",
+      "...kRWRRRrk...",
+      "..kWRRRRrrrk..",
+      "..krrrrrsssk..",
+      ".kyYyyyyooook.",
+      "..kkRrrrsskk..",
+      "....kkrskk....",
+      ".....kmgk..kk.",
+      ".....kmgkkkyok",
+      ".....kmgkyyook",
+      ".....kmgkyyook",
+      ".....kmgkyyook",
+      ".....kmgkkkoOk",
+      ".....kmgk..kk.",
+      ".....kmgk.....",
+      ".....kmgk.....",
+      ".....kmgk.....",
+      ".....kmgk.....",
+      "...kkkmgkkk...",
+      "..kmMmmmmiik..",
+      "..kggggggiik..",
+      "...kkkkkkkk...",
+      ".............."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "g": "#7c8494",
+      "i": "#4a5060",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 입구, 길 모퉁이",
+     "glow": 1,
+     "acts": [
+      {
+       "w": "전기 타입",
+       "a": "기둥에 전기를 흘려 빨간 등을 번쩍번쩍 켜요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "경광등에 전기를 흘려 번쩍번쩍 켰다.",
+        "경광등을 켜 놓고 출동 준비 자세를 잡는다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "빨간 등 높이에 떠서 둘레를 빙빙 돌아요",
+       "x": {
+        "m": "circ flap"
+       },
+       "l": [
+        "경광등 빨간 불빛 둘레를 빙빙 돌았다.",
+        "경광등 불빛을 따라 떠다닌다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 아래에서 고개를 들어 빨간 등을 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "경광등 아래에서 빨간 등을 올려다본다.",
+        "경광등 사이렌 나팔에 귀를 대 본다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "pump-cart",
+     "n": "손펌프 수레",
+     "k": "소방",
+     "d": "나무 바퀴 두 개가 달린 빨간 수레 위에 금빛 물탱크가 얹혀 있어요. 은빛 펌프 기둥 위 나무 손잡이를 위아래로 눌러 물을 뿜어요.",
+     "px": [
+      "............kEkkkkkkkkkkkE",
+      "............kELLLLBoBBBDDE",
+      ".....kkkkkkkkkkkkkgggkkkkk",
+      "....koYWWYYYYYYOkkmmgk....",
+      "....koyyyyyyyyyOkkmmgk....",
+      "....koyyyyyyyyyOkkmmgk....",
+      "....kooooooooooOkkmmgk....",
+      "....koOOOOOOOOOOkkmmgk....",
+      "..kkDDDDDDDDDDDDDkmmgkkk..",
+      ".kRRRRRRRRRRRRRRRRRRRRRRk.",
+      ".krrrrrrrrrrrrrrrrrrrsssk.",
+      ".krrBBBBBrorrrrroBBBBBosk.",
+      ".ksBBsEsBDssssssBBsEsBDsk.",
+      ".kBBkkEkkDDkkkkBBkkEkkDDk.",
+      ".kBEEoyoEEDk..kBEEoyoEEDk.",
+      ".kBEEoooEEDk..kBEEoooEEDk.",
+      ".kBBkkEkkDDk..kBBkkEkkDDk.",
+      "..kBDkEkDDk....kBDkEkDDk..",
+      "...kDDDDDk......kDDDDDk...",
+      "....kkkkk........kkkkk...."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "g": "#7c8494",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 마당, 연못 가까이",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "나무 손잡이를 위아래로 힘차게 눌러 펌프질해요",
+       "x": {
+        "at": [
+         0.75,
+         0.15
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "rock"
+       },
+       "l": [
+        "손펌프 수레 손잡이를 힘차게 눌러 펌프질했다.",
+        "손펌프를 쉬지 않고 눌러 물줄기를 뿜어냈다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "금빛 탱크에 물을 가득 채워 줘요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "손펌프 수레 탱크에 물을 가득 채워 줬다.",
+        "손펌프 수레 탱크를 찰랑찰랑하게 채웠다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "금빛 탱크 위에 올라가 동그랗게 몸을 말고 자요",
+       "x": {
+        "at": [
+         0.4,
+         0.18
+        ],
+        "m": "climb",
+        "an": "Sleep"
+       },
+       "l": [
+        "손펌프 수레 탱크 위에 올라가 몸을 말고 잠들었다.",
+        "손펌프 수레 따끈한 탱크 위에서 낮잠을 잔다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "수레를 끝에서 끝까지 밀고 다녀요",
+       "x": {
+        "m": "push walk"
+       },
+       "l": [
+        "손펌프 수레를 영차영차 밀고 다녔다.",
+        "손펌프 수레를 밀어 마당을 한 바퀴 돌았다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "rescue-mat",
+     "n": "구조 매트",
+     "k": "소방",
+     "d": "빨강·크림 줄무늬 테두리에 크림색 그물을 팽팽하게 친 둥근 구조 매트예요. 짧은 은빛 다리로 받쳐져 있어 위에서 통통 튈 수 있어요.",
+     "px": [
+      ".....k...k...k...k...k......",
+      "....kRkkkRkkkRkkkRkkkRk.....",
+      "...kkrrrrrrwwwcwwrrrrrrkk...",
+      "..kRrcWWWcwwwcwwwcwwwcwrsk..",
+      ".krwcwwwcwwwcwwwcwwwcwwwcrk.",
+      "krrcwwwcwwwcwwwcwwwcwwwcwsrk",
+      "kRrrwwcwwwcwwwcwwwcwwwcwrrsk",
+      "kRRWWrrrrcwwwcwwwcwrrrrcsssk",
+      "kRRWWWRRrwrrrrrrrrrrscccsssk",
+      "ksscccssscccssscccssscccsssk",
+      ".kkmgkkkkkkkkmgkkkkkkkkmgkk.",
+      "..kggk......kggk......kggk..",
+      "..kggk......kggk......kggk..",
+      "...kk........kk........kk..."
+     ],
+     "pal": {
+      "R": "#f08c78",
+      "W": "#fff4dc",
+      "c": "#d4b88a",
+      "g": "#7c8494",
+      "k": "#20202c",
+      "m": "#b4bcc8",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4"
+     },
+     "fit": "망루나 사다리 아래, 넓은 풀밭",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "매트 위에 올라타 통통 튀어 올라요",
+       "x": {
+        "at": "top",
+        "m": "ride",
+        "fx": "swing"
+       },
+       "l": [
+        "구조 매트 위에 올라타 통통 튀어 올랐다.",
+        "구조 매트에서 높이 뛰어 공중제비를 넘었다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 매트 한가운데 사뿐히 내려앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "구조 매트 한가운데 사뿐히 내려앉았다.",
+        "구조 매트에 내려앉아 출렁임을 느낀다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "매트 가장자리에 기대 몸을 말고 자요",
+       "x": {
+        "at": "side",
+        "an": "Sleep"
+       },
+       "l": [
+        "구조 매트 가장자리에 기대 잠들었다.",
+        "구조 매트 옆에서 몸을 동그랗게 말고 존다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "helmet-rack",
+     "n": "헬멧 걸이",
+     "k": "소방",
+     "d": "나무 세발 걸이 꼭대기에 금빛 배지가 붙은 빨간 소방 헬멧이 걸려 있어요. 왼쪽 걸이엔 감긴 밧줄, 오른쪽 걸이엔 금빛 손종이 매달려 있어요.",
+     "px": [
+      "........kk........",
+      "......kkrrkk......",
+      ".....kRrSrrrk.....",
+      "....kRrYyyrrrk....",
+      "...kRrryWyrrssk...",
+      "..kkrrryyosssskkk.",
+      ".krRrrrrrrrrrSSSSk",
+      "kssssssssssssSSSSk",
+      ".kkkkrrssssSSkkkk.",
+      "...kOOOOssSkk.....",
+      "..kWwwkkBDOOOk....",
+      ".kWckkwkBDkkDk....",
+      ".kwkckckBDkYyyk...",
+      "..kwwckkBDkyyok...",
+      "...kkk.kBDoooook..",
+      ".......kBDkkOkk...",
+      ".......kBDk.k.....",
+      ".......kBDk.......",
+      ".......kBDk.......",
+      "......kkBDkk......",
+      ".....kDDBDEEk.....",
+      "....kDkkkkkkEk....",
+      "...kDk......kEk...",
+      "....k........k...."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "c": "#d4b88a",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 입구 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "헬멧 걸이 뒤에 숨었다가 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "헬멧 걸이 뒤에 숨었다가 고개를 쏙 내밀었다.",
+        "헬멧 걸이 뒤에서 소방관 흉내를 낸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥을 톡 쳐서 금빛 손종을 딸랑 울려요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "헬멧 걸이를 톡 쳐서 손종을 딸랑 울렸다.",
+        "헬멧 걸이 손종 소리에 귀를 쫑긋 세운다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 헬멧 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "헬멧 걸이 빨간 헬멧 꼭대기에 날아올라 앉았다.",
+        "소방 헬멧 위에 앉아 늠름하게 가슴을 편다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "water-target",
+     "n": "물대포 과녁",
+     "k": "소방",
+     "d": "나무 기둥 위에 빨강·크림 조각 무늬 둥근 과녁이 달려 있어요. 물을 맞히면 과녁이 빙글빙글 돌고, 기둥 옆엔 물 담긴 금빛 양동이가 있어요.",
+     "px": [
+      ".......kkkkkk.......",
+      ".....kkRRRrrrkk.....",
+      "....kRRRRRrrsssk....",
+      "...krRRWWWwwcssrk...",
+      "...krrWWWWwcccrrk...",
+      "..krrwwWRrsscwwrSk..",
+      "..krrwwrrrssrwwrrk..",
+      ".krrwwwssYyrrwwwrSk.",
+      ".krrwwwssyysscccsSk.",
+      ".kRRWWwrryysscccsSk.",
+      "..kRrwwrssrrsccssk..",
+      "..krrwwcssrrwccsSk..",
+      "...krrccccwwwwssk...",
+      "...krsscccwwwrrSk...",
+      "....ksssssrrrrSk....",
+      ".....kkSSSSSSkk.....",
+      ".......kkkkkk....k..",
+      ".......kBLDDk...kgk.",
+      ".......kBLDDk..kYayk",
+      ".......kBLDDk..kyyyk",
+      ".......kBLDDk..koook",
+      "....kkkkBLDDkkkkkOk.",
+      "...kLLLLLLLLLEEEkk..",
+      "...kDDDDDDDDDEEEk...",
+      "....kkkkkkkkkkkk....",
+      "...................."
+     ],
+     "pal": {
+      "B": "#c08a52",
+      "D": "#93643a",
+      "E": "#674526",
+      "L": "#e2b47a",
+      "O": "#8a5e1e",
+      "R": "#f08c78",
+      "S": "#7a2a2e",
+      "W": "#fff4dc",
+      "Y": "#fbe39a",
+      "a": "#5a8ac8",
+      "c": "#d4b88a",
+      "g": "#7c8494",
+      "k": "#20202c",
+      "o": "#c08a2e",
+      "r": "#d0564a",
+      "s": "#a43c36",
+      "w": "#f0dcb4",
+      "y": "#e8b84a"
+     },
+     "fit": "소방서 마당 끝, 넓게 비운 자리",
+     "glow": 0,
+     "mv": {
+      "st": [
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       ".................k..",
+       ".......kBLDDk...kgk.",
+       ".......kBLDDk..kYayk",
+       ".......kBLDDk..kyyyk",
+       ".......kBLDDk..koook",
+       "....kkkkBLDDkkkkkOk.",
+       "...kLLLLLLLLLEEEkk..",
+       "...kDDDDDDDDDEEEk...",
+       "....kkkkkkkkkkkk....",
+       "...................."
+      ],
+      "mp": [
+       ".......kkkkkk.......",
+       ".....kkRRRrrrkk.....",
+       "....kRRRRRrrsssk....",
+       "...krRRWWWwwcssrk...",
+       "...krrWWWWwcccrrk...",
+       "..krrwwWRrsscwwrSk..",
+       "..krrwwrrrssrwwrrk..",
+       ".krrwwwssYyrrwwwrSk.",
+       ".krrwwwssyysscccsSk.",
+       ".kRRWWwrryysscccsSk.",
+       "..kRrwwrssrrsccssk..",
+       "..krrwwcssrrwccsSk..",
+       "...krrccccwwwwssk...",
+       "...krsscccwwwrrSk...",
+       "....ksssssrrrrSk....",
+       ".....kkSSSSSSkk.....",
+       ".......kkkkkk.......",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...................."
+      ],
+      "o": [
+       9.5,
+       8
+      ],
+      "k": "spin"
+     },
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "멀리서 물대포를 쏘아 과녁을 빙글빙글 돌려요",
+       "x": {
+        "at": "far",
+        "m": "skill",
+        "an": "Attack",
+        "fx": "spin"
+       },
+       "l": [
+        "물대포 과녁 한가운데를 맞혀 빙글빙글 돌렸다.",
+        "물대포 과녁을 맞히고 신이 나서 폴짝 뛰었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "과녁 앞에 떠서 날갯짓 바람으로 과녁을 돌려요",
+       "x": {
+        "at": "front",
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "물대포 과녁 앞에서 날갯짓해 과녁을 돌렸다.",
+        "날갯바람으로 물대포 과녁을 빙빙 돌렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "과녁을 손으로 밀어 돌려 보고 무늬를 구경해요",
+       "x": {
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "물대포 과녁을 밀어 빙글 돌려 보았다.",
+        "물대포 과녁 무늬가 도는 걸 넋 놓고 본다."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
    "at": 1794264484414,
    "theme": "숲속 꼬마 놀이공원",
    "note": "오늘은 숲속 꼬마 놀이공원이에요! 회전목마·관람차·범퍼카처럼 올라타서 흔들리는 탈것과, 힘 측정기·두더지 잡기·오리 맞히기·고리 던지기처럼 격투·물·전기·에스퍼 타입이 기술로 노는 게임대를 섞었어요. 빨강·크림 줄무늬와 금빛 전구로 한 동네처럼 맞췄고, 밤엔 입구 아치 전구가 반짝여요.",
