@@ -1045,9 +1045,12 @@ async function handle(a) {
       const N = { ...X, sp: to, tsp: to, fm: toID(D.sp[to]?.id || ''), gif: null }; N.gif = await pickGif(s, N); if (!B) break;
       /* v21.52 경완 '한번 뜨고 우리 진화하는 화면으로 넘어가고 배틀로 돌아오는게 낫겠는데': 대사 뒤 본 게임 진화 화면(evolveWin, 진화 곡·확인·도감 카드) → 끝나면 배틀 곡이 다시 흐르고 새 모습으로 */
       const bg = window.GymBGM?.name; lowHp(false); M('stop', .5);
+      /* v21.53 경완 '화면이 좀 밝아지면서 넘어가게': 배틀 화면이 하얗게 밝아진 뒤 진화 화면이 그 흰빛 아래서 열리고 걷힌다 */
+      const wh = document.createElement('div'); wh.className = 'dfxWhite'; document.body.append(wh); void wh.offsetWidth; wh.classList.add('on'); await wait(450); if (B) { m._tok = (m._tok || 0) + 1; showMon(s, N, true); }   // 흰빛 뒤에서 배틀 그림은 미리 새 모습으로 (돌아왔을 때 옛 모습이 비치지 않게)
+      setTimeout(() => { wh.classList.add('out'); wh.classList.remove('on'); setTimeout(() => wh.remove(), 700); }, 120);
       if (P && P.sp !== to) { try { await GA.evoRun(P, to); } catch (e) { console.error(e); } if (P.sp !== to) try { GA.evoSilent?.(P, to); } catch (e) { console.error(e); } }   // 진화 화면이 못 열리면(다른 진화·부화 중) 상태만
       if (!B) break; if (bg) M('play', bg, { fade: .6 });
-      m._tok = (m._tok || 0) + 1; showMon(s, N, true); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); playAnim(s, N); await wait(420); m.classList.remove('fmc');
+      m._tok = (m._tok || 0) + 1; showMon(s, N, true); playAnim(s, N); await wait(420);
       Object.assign(X, { sp: to, tsp: to, fm: N.fm, gif: N.gif }); if (oldNm === SP[from]?.n) X.nm = toN; const E = B.my[X.i]; if (E) { E.sp = to; E.nm = X.nm; E.fm = P?.fm; }
       const [hp, mhp] = hpOf(a[4]); if (mhp) X.mhp = mhp; X.hp = hp; paintHb(s, X); break; }
     case 'turn': await egFlash(); break;
