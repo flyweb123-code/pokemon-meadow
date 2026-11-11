@@ -1926,7 +1926,7 @@ function mecLay(stg) {
         if (a.z < 25 && ovl(fa, trB) > .3) { const sd = a.x >= cx ? 1 : -1, need = sd > 0 ? trB[2] - fa[0] : fa[2] - trB[0]; a.x += sd * Math.min(need + 2, 34); ch = true; continue; }   // 관장 뒤에서 얼굴이 가리면 옆으로
         for (const b of A) { if (b === a || b.z < a.z || (b.z === a.z && A.indexOf(b) < A.indexOf(a)) || ovl(fa, body(b)) <= .3) continue;   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 같은 z 면 나중 것이 위에 그려지니 그것도 가림 */
           const oa = ovl(fa, body(b)), ob = ovl(fb(b), body(a));   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 서로 가리면 덜 가리는 쪽으로 앞뒤 */
-          if (Math.abs(a.b - b.b) < 12 && (ob < .2 || ob < oa - .25)) { const t = a.z; a.z = b.z; b.z = t; if (a.z === b.z) a.z++; }   // 같은 줄이면 앞뒤 바꾸기
+          if (Math.abs(a.b - b.b) < 1.5 && (ob < .2 || ob < oa - .25)) {   /* 경완 '한카리아스가 더 앞인데 왜 뒤로': 깊이가 다르면 앞뒤는 그대로, 옆으로만 비킴 */ const t = a.z; a.z = b.z; b.z = t; if (a.z === b.z) a.z++; }   // 같은 줄이면 앞뒤 바꾸기
           else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 8; b.x -= sd * 8; }   // 아니면 서로 조금씩 비킴
           ch = true; } }
       if (!ch) break; }
