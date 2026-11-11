@@ -4032,3 +4032,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bt-panel{bottom:var(--pb,0px)}
 .bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
 .bt.mob::after{display:none}
+.bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
