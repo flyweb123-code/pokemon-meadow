@@ -1934,7 +1934,10 @@ function mecLay(stg) {
           else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 8; b.x -= sd * 8; }   // 아니면 서로 조금씩 비킴
           ch = true; } }
       if (!ch) break; }
-    const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)), d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); }
+    /* 경완 '대짱이 오른쪽 프레임에 잘림': 얼굴 피해 비킨 뒤 폭이 넘치면 가운데 쪽으로 모아서 좌우 프레임 안에 */
+    for (let it = 0; it < 30; it++) { const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2));
+      if (hi - lo <= W - M * 2) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); break; }
+      const m = (lo + hi) / 2; A.forEach(a => { a.x = m + (a.x - m) * .97; }); } }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
   const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
