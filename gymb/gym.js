@@ -1862,17 +1862,51 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
 // 관장 카드 우상단 옷장 (경완 2026-11-08 '관장 카드에도 옷장 아이콘 넣어서 옷 갈아입을 수 있게'): 가진 옷 고르기 → 입고 카드 다시
-const CLOSET_SVG = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h12v1H2zM1 2h1v12H1zM14 2h1v12h-1zM2 14h12v1H2zM7 2h2v12H7zM2 15h2v1H2zM12 15h2v1h-2z"/><path fill="#c88a50" d="M2 2h5v12H2zM9 2h5v12H9z"/><path fill="#e8b070" d="M3 3h3v10H3zM10 3h3v10h-3z"/><path fill="#20202c" d="M5 7h1v2H5zM10 7h1v2h-1z"/></svg>';
+// v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨'
+// 키(SPECIES h, 0.1m) → 그림 높이: 관장(1.4m, 66px) 기준 (키/1.4)^0.75 (거대한 포켓몬은 무대 높이까지). 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 아주 작은 건 관장 발 앞.
+// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 왼쪽 포켓몬은 좌우 반전해 가운데를 봄(5세대 앞모습은 왼쪽을 봄). 폭이 넘치면 겹침을 늘리고, 그래도 넘치면 그 줄만 줄임.
+function mecLay(stg) {
+  const W = stg.clientWidth, H = stg.clientHeight; if (!W || !H) return;
+  const cx = W / 2, BB = 34, FB = 4, M = 4;
+  const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
+    return { e, bw: sp.offsetWidth * sh, bh: sp.offsetHeight * sh, r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 14), .75) }; });
+  if (!A.length || A.some(a => !a)) return;
+  // 무대를 채우게 관장 크기(LH)부터 정함: 가장 큰 포켓몬이 무대 높이 거의 끝까지 (관장 60~104px), 키 비율은 그대로
+  const rm = Math.max(1, ...A.map(a => a.r)), LH = Math.max(60, Math.min(104, (H - (rm > 1.3 ? BB : FB) - 14) / rm)), LW = 36 * LH / 53;
+  A.forEach(a => { a.th = LH * a.r; });
+  const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = 80 * LH / 53 + 'px'; }
+  const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
+  const back = A.filter(a => a.th > LH * 1.3).sort((x, y) => y.th - x.th), front = A.filter(a => a.th <= LH * 1.3).sort((x, y) => x.th - y.th);
+  const row = (L, bot, mode) => { if (!L.length) return; for (let k = 1, boost = 0; ; ) {
+      L.forEach(a => { a.h = Math.min(a.th, H - bot - M) * k; a.s = a.h / a.bh; a.w = a.bw * a.s; a.b = bot; });
+      let le = cx, re = cx, prevL = null, prevR = null, side = 1;
+      if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx; le = cx - a.w / 2; re = cx + a.w / 2; prevL = prevR = a; a.z = 1; return; }
+        side = i % 2 ? -1 : 1; const pv = side < 0 ? prevL : prevR, ov = Math.min(.48, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
+        if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 1 + i; });
+      else { let tl = cx - 4, tr = cx + 4; le = cx - LW / 2 + 6; re = cx + LW / 2 - 6;
+        L.forEach((a, i) => { if (a.h < LH * .5) { side = tr - cx <= cx - tl ? 1 : -1; a.b = 1; a.z = 30 + i;   // 아주 작으면 관장 발 앞
+            if (side > 0) { a.x = tr + a.w / 2 - Math.min(10, a.w * .3); tr = a.x + a.w / 2; re = Math.max(re, tr - a.w * .5); } else { a.x = tl - a.w / 2 + Math.min(10, a.w * .3); tl = a.x - a.w / 2; le = Math.min(le, tl + a.w * .5); } return; }
+          side = re - cx <= cx - le ? 1 : -1; const pv = side < 0 ? prevL : prevR, ov = pv ? Math.min(.45, .2 + boost) * Math.min(a.w, pv.w) : 0;
+          if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 20 - i; }); }
+      const lo = Math.min(...L.map(a => a.x - a.w / 2)), hi = Math.max(...L.map(a => a.x + a.w / 2));
+      if (hi - lo <= W - M * 2 || k < .45) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; L.forEach(a => a.x += d); return; }
+      if (boost < .3) boost += .1; else k *= .92; } };
+  row(back, BB, 'b'); row(front, FB, 'f');
+  A.forEach(a => { const f = a.x < cx - 6 ? ' scaleX(-1)' : ''; Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
+}
+const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
   const p = pop(`<h4>옷 갈아입기</h4><div class="ft-grid mec-fts">${['', ...fk].map(k => `<button type="button" data-a="f:${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { if (a === 'x') { close(); return meCard(); } if (!a.startsWith('f:')) return; const k = a.slice(2); close(); if (k !== cf) { fitSet(k); save(); renderHome(true); } meCard(); });
   p.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; })); }
-async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
+async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6);   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec">
-    <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
-    <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
+  const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
+    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-h="${SPECIES[P.sp]?.h || 10}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
+    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
+  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i;
+  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
+  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); } }
 function sfCard(s) { loadJs('gymb/battle.js', 'GymBattle').then(() => loadJs('gymb/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
