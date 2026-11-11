@@ -411,7 +411,7 @@ const dbkLoad = () => window.GymDBK ? Promise.resolve(true) : (dbkP = dbkP || Pr
 const dxImg = u => new Promise(r => { if (!u) return r(null); const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => r({ w: i.naturalWidth, h: i.naturalHeight }); i.onerror = () => r(null); i.src = u; });
 const frontOf = (X, fm) => gifUrl(X.sp, false, X.shiny, X.g === 'F', fm) || pkSrc(X.sp, { s: X.shiny });
 async function dxMon(u) { const z = await dxImg(u); if (!z) return null; const g = await gifTop(u); return { url: u, w: z.w * 2, h: z.h * 2, top: (g?.t || 0) * 2 }; }   // 블랙·화이트 크기 그림 = Essentials 의 절반 → 2배
-const DX_SE = { 'Psych Up': 'SUIKOMU', fog2: 'BOWA2', Earth1: 'KOUKA_H', Sword2: 'KOUKA_L', Ice5: 'KOUKA_M', Saint7: 'SELECT', 'Battle recall': 'BOWA2', 'Battle throw': 'NAGERU', Explosion3: 'KOUKA_H' };
+const DX_SE = { 'Psych Up': 'SUIKOMU', fog2: 'BOWA2', Earth1: 'KOUKA_H', Sword2: 'KOUKA_L', Ice5: 'KIRAKIRA2', Saint7: 'KIRAN', 'Battle recall': 'BOWA2', 'Battle throw': 'NAGERU', Explosion3: 'KOUKA_H' };
 const DX_MP3 = { 'DX Action': 'dxaction', 'Z-Move Title': 'ztitle' };
 function dxSe(n, pan) { if (DX_MP3[n]) { try { const a = new Audio(`${IMG}dbk/se/${DX_MP3[n]}.mp3`); a.volume = .8; a.play().catch(() => {}); } catch (e) {} return; } if (DX_SE[n]) se(DX_SE[n], { pan }); }
 async function dxCtx(s, X, from, to, item) {

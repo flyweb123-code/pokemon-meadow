@@ -153,11 +153,12 @@
     const rays = mk(`left:50%;top:52%;width:${Math.hypot(Wd, Hd) * 1.3}px;height:${Math.hypot(Wd, Hd) * 1.3}px;margin:${-Math.hypot(Wd, Hd) * .65}px 0 0 ${-Math.hypot(Wd, Hd) * .65}px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.32) 0 4deg,rgba(255,255,255,0) 4deg 14deg);-webkit-mask:radial-gradient(circle,#000 10%,transparent 62%);mask:radial-gradient(circle,#000 10%,transparent 62%);opacity:0;mix-blend-mode:screen`);
     const rainbow = mk(`left:50%;top:52%;width:${Wd * 1.1}px;height:${Wd * 1.1}px;margin:${-Wd * .55}px 0 0 ${-Wd * .55}px;border-radius:50%;background:conic-gradient(#ff4d6d,#ffb347,#fff275,#6dff8a,#4dd2ff,#7a6dff,#ff6df0,#ff4d6d);filter:blur(${Wd * .06}px);opacity:0;mix-blend-mode:screen`);
     const glow = mk(`left:50%;top:52%;width:${Wd * .9}px;height:${Wd * .9}px;margin:${-Wd * .45}px 0 0 ${-Wd * .45}px;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(255,240,255,.9) 30%,rgba(190,140,255,.45) 50%,rgba(120,80,255,0) 70%);opacity:0;transform:scale(.2)`);
-    // 메가 모습
-    const mw = c.to.w / 2, mh = c.to.h / 2, mz = Math.min(Hd * .36 / mh, Wd * .78 / mw), MW = mw * mz, MH = mh * mz;
-    const meg = mk(`left:${(Wd - MW) / 2}px;top:${Hd * .52 - MH * .55}px;width:${MW}px;height:${MH}px;opacity:0`);
-    const megI = document.createElement('img'); megI.src = c.to.url; megI.alt = ''; megI.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}filter:brightness(0) invert(1) drop-shadow(0 0 ${Wd * .03}px #fff)`; meg.appendChild(megI);
-    const icon = mk(`left:50%;top:${Hd * .52 - MH * .55 - 30 * mz * .5}px;width:${30 * mz * .45}px;height:${54 * mz * .45}px;margin-left:${-15 * mz * .45}px;background:url(${P}Mega/icon.png) center/100% 100%;image-rendering:pixelated;opacity:0;filter:drop-shadow(0 0 6px #fff)`);
+    // 원래 앞모습(org) → 메가 모습(meg): 둘 다 가운데, 같은 배율 (경완 2026-11-12 '진화하기 전에 원래 앞모습 나와서 진화하는 모습')
+    const ow = c.mon.w / 2, oh = c.mon.h / 2, mw = c.to.w / 2, mh = c.to.h / 2, mz = Math.min(Hd * .36 / Math.max(mh, oh), Wd * .78 / Math.max(mw, ow)), MW = mw * mz, MH = mh * mz, OW = ow * mz, OH = oh * mz, FY = Hd * .52 + Math.max(MH, OH) * .45;   // FY = 발끝
+    const WH = `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .03}px #fff) drop-shadow(0 0 ${Wd * .05}px #c89bff)`, NORM = `brightness(1) invert(0) drop-shadow(0 0 ${Wd * .02}px rgba(255,255,255,.7)) drop-shadow(0 0 0 rgba(0,0,0,0))`;
+    const sprite = (u, w, h) => { const b = mk(`left:${(Wd - w) / 2}px;top:${FY - h}px;width:${w}px;height:${h}px;opacity:0;transform-origin:50% 100%`), i = document.createElement('img'); i.src = u; i.alt = ''; i.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}`; b.appendChild(i); return [b, i]; };
+    const [org, orgI] = sprite(c.mon.url, OW, OH), [meg, megI] = sprite(c.to.url, MW, MH); megI.style.filter = WH;
+    const icon = mk(`left:50%;top:${FY - MH - 54 * mz * .45 - 8}px;width:${30 * mz * .45}px;height:${54 * mz * .45}px;margin-left:${-15 * mz * .45}px;background:url(${P}Mega/icon.png) center/100% 100%;image-rendering:pixelated;opacity:0;filter:drop-shadow(0 0 6px #fff)`);
     // 트레이너 컷인 띠
     const bandH = Hd * .3, band = mk(`left:-10%;right:-10%;top:${Hd * .66}px;height:${bandH}px;background:linear-gradient(${opp ? 'to left' : 'to right'},rgba(255,255,255,.95),rgba(220,190,255,.9) 45%,rgba(120,70,220,.0));transform:skewY(-8deg) translateX(${side * 110}%);opacity:0;box-shadow:0 0 30px rgba(180,120,255,.8)`);
     const tw = c.tr.w / 2, th = c.tr.h / 2, tz = bandH * 1.25 / th, TW = tw * tz, TH = th * tz, trX = opp ? Wd - TW - Wd * .02 : Wd * .02;
@@ -177,51 +178,60 @@
     const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
     const shake = (t, d, amp) => at(t, () => A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'none' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px)` })), { duration: d, easing: 'linear', fill: 'none' }));
     const vib = n => { try { window.GA?.haptic?.(n); } catch (e) {} };
-    // 1) 위 화면을 그 포켓몬 쪽으로 화면 가득 (0~650)
-    hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 })));
-    tAnim.push(A(top, [{ transform: T0 === 'none' ? 'none' : T0 }, { transform: `translate(${tx}px,${ty}px) scale(${zt})` }], { duration: 650, easing: 'cubic-bezier(.7,0,.2,1)' }));
-    tAnim.push(A(bgF, [{ opacity: 0, transform: 'scale(1.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.7,0,.2,1)' }));
-    at(0, () => c.se('fog2')); at(380, () => vib(1));
-    // 2) 어두워지고 트레이너 컷인 + 키스톤 (650~1500)
-    A(dim, [{ opacity: 0 }, { opacity: .85 }], { duration: 400, delay: 600 });
-    A(band, [{ opacity: 1, transform: `skewY(-8deg) translateX(${side * 110}%)` }, { opacity: 1, transform: 'skewY(-8deg) translateX(0)' }], { duration: 300, delay: 700, easing: 'cubic-bezier(.2,.9,.3,1.1)' });
-    A(trn, [{ opacity: 0, transform: `${opp ? '' : 'scaleX(-1) '}translateX(${-side * -60}px)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}translateX(0)` }], { duration: 320, delay: 760 });
-    if (c.tr.n > 1) at(760, () => { let f = 0; const st = setInterval(() => { f = Math.min(c.tr.n - 1, f + 1); trn.style.backgroundPosition = `${-f * tw * tz}px center`; if (f >= c.tr.n - 1) clearInterval(st); }, 700 / c.tr.n); timers.push(st); });
-    at(1050, () => c.se('DX Action'));
-    if (ks) A(ks, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.5)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 380, delay: 1050, easing: 'ease-out' });
-    if (ms) A(ms, [{ opacity: 0, transform: 'translateY(20px) scale(.3)' }, { opacity: 1, transform: 'translateY(0) scale(1.4)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 380, delay: 1150 });
-    // 3) 빛줄기 이어짐 (1350~2100)
-    const kc = ks ? ks.getBoundingClientRect() : null;
-    at(1350, () => { c.se('Psych Up'); vib(1); const g = beam.getContext('2d'); const ax = (ks ? parseFloat(ks.style.left) + Wd * .065 : trX + TW / 2) * 2, ay = (ks ? parseFloat(ks.style.top) + Wd * .065 : Hd * .7) * 2, bx = Wd, by = (ms ? parseFloat(ms.style.top) + Wd * .09 : Hd * .4) * 2, t0 = performance.now();
-      beam.style.opacity = 1; const draw = now => { const p = Math.min(1, (now - t0) / 450), q = (now - t0) / 1000; g.clearRect(0, 0, beam.width, beam.height); g.globalCompositeOperation = 'lighter';
-        [[0, '#ff8af0'], [Math.PI, '#8ad8ff']].forEach(([ph, col]) => { g.beginPath(); for (let i = 0; i <= 60 * p; i++) { const u = i / 60, x = ax + (bx - ax) * u, y = ay + (by - ay) * u, n = Math.sin(u * 9 + q * 14 + ph) * Wd * .05 * Math.sin(u * Math.PI); const nx = -(by - ay), ny = bx - ax, L = Math.hypot(nx, ny); i ? g.lineTo(x + nx / L * n, y + ny / L * n) : g.moveTo(x, y); } g.strokeStyle = col; g.lineWidth = Wd * .02; g.shadowColor = col; g.shadowBlur = 30; g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = Wd * .007; g.stroke(); });
-        if (now - t0 < 800 && root.isConnected) requestAnimationFrame(draw); else A(beam, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 }); };
+    // 1) 위 화면을 그 포켓몬 쪽으로 화면 가득 (0~900)
+    hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350 })));
+    tAnim.push(A(top, [{ transform: T0 === 'none' ? 'none' : T0 }, { transform: `translate(${tx}px,${ty}px) scale(${zt})` }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    tAnim.push(A(bgF, [{ opacity: 0, transform: 'scale(1.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    at(0, () => c.se('fog2')); at(600, () => vib(1));
+    // 2) 어두워지며 원래 앞모습이 가운데 (850~1500)
+    A(dim, [{ opacity: 0 }, { opacity: .88 }], { duration: 600, delay: 850 });
+    A(org, [{ opacity: 0, transform: 'scale(.8) translateY(10px)' }, { opacity: 1, transform: 'scale(1.04)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 600, delay: 950 });
+    at(950, () => { c.se('Battle throw'); if (mon) mon.style.visibility = 'hidden'; });   // 키운 뒷모습은 숨기고 가운데 앞모습만
+    // 3) 트레이너 컷인 + 키스톤, 메가스톤 반응 (1700~2700)
+    A(band, [{ opacity: 1, transform: `skewY(-8deg) translateX(${side * 110}%)` }, { opacity: 1, transform: 'skewY(-8deg) translateX(0)' }], { duration: 420, delay: 1700, easing: 'cubic-bezier(.2,.9,.3,1.1)' });
+    A(trn, [{ opacity: 0, transform: `${opp ? '' : 'scaleX(-1) '}translateX(${side * 70}px)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}translateX(0)` }], { duration: 450, delay: 1780 });
+    at(1720, () => c.se('Battle recall'));
+    at(2250, () => { c.se('DX Action'); vib(1); });
+    if (ks) A(ks, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.6)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 500, delay: 2250 });
+    if (ks) at(2750, () => ks.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1.1)' }], { duration: 380, iterations: 4, composite: 'replace' }));
+    at(2500, () => c.se('Saint7'));
+    if (ms) A(ms, [{ opacity: 0, transform: 'translateY(24px) scale(.3)' }, { opacity: 1, transform: 'translateY(0) scale(1.5)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 520, delay: 2500 });
+    if (ms) at(3000, () => ms.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1.1)' }], { duration: 380, iterations: 3 }));
+    // 4) 빛줄기 이어짐 (2900~4100)
+    at(2900, () => { c.se('Psych Up'); vib(1); const g = beam.getContext('2d'); const ax = (ks ? parseFloat(ks.style.left) + Wd * .065 : trX + TW / 2) * 2, ay = (ks ? parseFloat(ks.style.top) + Wd * .065 : Hd * .7) * 2, bx = Wd, by = (ms ? parseFloat(ms.style.top) + Wd * .09 : Hd * .4) * 2, t0 = performance.now();
+      beam.style.opacity = 1; const draw = now => { const p = Math.min(1, (now - t0) / 650), q = (now - t0) / 1000; g.clearRect(0, 0, beam.width, beam.height); g.globalCompositeOperation = 'lighter';
+        [[0, '#ff8af0'], [Math.PI, '#8ad8ff']].forEach(([ph, col]) => { g.beginPath(); for (let i = 0; i <= 60 * p; i++) { const u = i / 60, x = ax + (bx - ax) * u, y = ay + (by - ay) * u, n = Math.sin(u * 9 + q * 12 + ph) * Wd * .05 * Math.sin(u * Math.PI); const nx = -(by - ay), ny = bx - ax, L = Math.hypot(nx, ny); i ? g.lineTo(x + nx / L * n, y + ny / L * n) : g.moveTo(x, y); } g.strokeStyle = col; g.lineWidth = Wd * .02; g.shadowColor = col; g.shadowBlur = 30; g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = Wd * .007; g.stroke(); });
+        if (now - t0 < 1200 && root.isConnected) requestAnimationFrame(draw); else A(beam, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }); };
       requestAnimationFrame(draw); });
-    // 4) 포켓몬 하얗게, 빛 모임, 떨림 (1700~3000)
-    at(1700, () => { if (mon) { mon.dataset.mgf = mon.style.filter; mon.style.filter = `brightness(0) invert(1) drop-shadow(0 0 ${4 / zt}px #fff) drop-shadow(0 0 ${10 / zt}px #c89bff)`; } });
-    [band, trn, ks].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 1800, composite: 'replace' }));
-    if (ms) A(ms, [{ opacity: 1, transform: 'scale(1.1)' }, { opacity: 0, transform: 'scale(2.4)' }], { duration: 420, delay: 1750, easing: 'ease-in' });
-    A(rainbow, [{ opacity: 0, transform: 'scale(.3) rotate(0)' }, { opacity: .55, transform: 'scale(1) rotate(240deg)' }], { duration: 1200, delay: 1800, easing: 'ease-in' });
-    A(glow, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.05)' }], { duration: 1200, delay: 1800, easing: 'ease-in' });
-    A(lines, [{ opacity: 0 }, { opacity: .35 }], { duration: 600, delay: 1900 });
+    // 5) 메가스톤 빛이 포켓몬에게, 하얗게 빛남, 빛 모임·떨림 (4000~6000)
+    [band, trn, ks].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, delay: 4000 }));
+    if (ms) A(ms, [{ opacity: 1, transform: 'scale(1.1)' }, { opacity: 0, transform: `translateY(${FY - OH * .5 - parseFloat(ms.style.top) - Wd * .09}px) scale(2.6)` }], { duration: 500, delay: 3950, easing: 'ease-in' });
+    at(4300, () => { orgI.animate([{ filter: NORM }, { filter: WH }], { duration: 500, fill: 'forwards' }); c.se('Psych Up'); vib(1); });
+    A(rainbow, [{ opacity: 0, transform: 'scale(.3) rotate(0)' }, { opacity: .55, transform: 'scale(1) rotate(300deg)' }], { duration: 1800, delay: 4300, easing: 'ease-in' });
+    A(glow, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: .9, transform: 'scale(1)' }], { duration: 1800, delay: 4300, easing: 'ease-in' });
+    A(lines, [{ opacity: 0 }, { opacity: .35 }], { duration: 800, delay: 4400 });
     parts.forEach((p, i) => { const a = i / parts.length * Math.PI * 2 + Math.random() * .3, r = Math.hypot(Wd, Hd) * (.55 + Math.random() * .25), cx = Wd / 2 - Wd * .03, cy = Hd * .52 - Wd * .03;
-      A(p, [{ opacity: 0, transform: `translate(${cx + Math.cos(a) * r}px,${cy + Math.sin(a) * r}px) scale(1.6)` }, { opacity: 1, offset: .2 }, { opacity: 1, transform: `translate(${cx}px,${cy}px) scale(.3)` }], { duration: 650, delay: 1850 + (i % 13) * 85, easing: 'cubic-bezier(.6,0,1,.6)' }); });
-    shake(2100, 300, 2); shake(2450, 300, 4); shake(2750, 350, 7); at(2200, () => vib(1)); at(2600, () => vib(2)); at(2400, () => c.se('Psych Up'));
-    // 5) 번쩍 + 메가 모습 (3050~)
-    A(glow, [{ opacity: 1, transform: 'scale(1.05)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 180, delay: 3000, easing: 'ease-in', composite: 'replace' });
-    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .55 }, { opacity: 0 }], { duration: 700, delay: 3150, easing: 'linear' });
-    at(3180, () => { c.se('fog2'); vib(3); if (mon) { mon.style.filter = mon.dataset.mgf || ''; mon.style.visibility = 'hidden'; } });
-    at(3200, () => { A(dim, [{ opacity: .85 }, { opacity: 1 }], { duration: 300 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 600, composite: 'replace' }); });
-    A(meg, [{ opacity: 0, transform: 'scale(1.35)' }, { opacity: 1, transform: 'scale(.94)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 520, delay: 3250, easing: 'cubic-bezier(.2,1.4,.4,1)' });
-    at(3300, () => { megI.animate([{ filter: megI.style.filter }, { filter: `brightness(1) invert(0) drop-shadow(0 0 ${Wd * .02}px rgba(255,255,255,.8))` }], { duration: 650, delay: 150, fill: 'both' }); });
-    A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .15 }, { opacity: .9, transform: 'rotate(110deg) scale(1.05)' }], { duration: 1800, delay: 3200, easing: 'linear' });
-    A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(240deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(420deg)' }], { duration: 1800, delay: 3200, easing: 'linear', composite: 'replace' });
-    A(lines, [{ opacity: .35 }, { opacity: .45 }], { duration: 200, delay: 3200, composite: 'replace' });
-    [ring, ring2].forEach((r, i) => A(r, [{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: `scale(${5 + i * 2})` }], { duration: 700 + i * 200, delay: 3250 + i * 120, easing: 'cubic-bezier(.1,.7,.3,1)' }));
-    shake(3250, 500, 12); at(3500, () => c.cry());
-    A(icon, [{ opacity: 0, transform: 'translateY(16px) scale(.4)' }, { opacity: 1, transform: 'translateY(0) scale(1.25)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 420, delay: 3700 });
-    // 6) 원래 화면으로 (4900~5500)
-    const END = 5500;
+      A(p, [{ opacity: 0, transform: `translate(${cx + Math.cos(a) * r}px,${cy + Math.sin(a) * r}px) scale(1.6)` }, { opacity: 1, offset: .2 }, { opacity: 1, transform: `translate(${cx}px,${cy}px) scale(.3)` }], { duration: 800, delay: 4400 + (i % 13) * 110, easing: 'cubic-bezier(.6,0,1,.6)' }); });
+    shake(4600, 400, 2); shake(5100, 400, 4); at(4700, () => vib(1)); at(5200, () => { vib(2); c.se('Psych Up'); });
+    // 6) 진화하는 모습: 하얀 원래 모습 ↔ 하얀 메가 모습이 점점 빨리 번갈아 (5000~6300)
+    at(5000, () => { meg.style.opacity = 0; let t = 0; const gaps = [300, 260, 220, 180, 150, 120, 100, 80, 65, 55, 50, 45]; gaps.forEach((g, i) => { t += g; at(t, () => { const m = i % 2 === 0; meg.style.opacity = m ? 1 : 0; org.style.opacity = m ? 0 : 1; meg.style.transform = org.style.transform = `scale(${1 + i * .012})`; if (i % 3 === 0) c.se('Ice5'); }); }); });
+    shake(5700, 600, 8); at(5900, () => vib(2));
+    // 7) 번쩍 + 메가 모습 (6300~)
+    A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 250, delay: 6250, easing: 'ease-in' });
+    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: 900, delay: 6450, easing: 'linear' });
+    at(6480, () => { c.se('Explosion3'); c.se('fog2'); vib(3); org.style.opacity = 0; meg.style.opacity = 0; if (mon) mon.style.visibility = 'hidden'; });
+    at(6550, () => { A(dim, [{ opacity: .88 }, { opacity: 1 }], { duration: 400 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 800 }); });
+    A(meg, [{ opacity: 0, transform: 'scale(1.4)' }, { opacity: 1, transform: 'scale(.93)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, delay: 6650, easing: 'cubic-bezier(.2,1.4,.4,1)' });
+    at(6750, () => megI.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }));
+    A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .12 }, { opacity: .9, transform: 'rotate(130deg) scale(1.05)' }], { duration: 2600, delay: 6550, easing: 'linear' });
+    A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(300deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(520deg)' }], { duration: 2600, delay: 6550, easing: 'linear' });
+    A(lines, [{ opacity: .35 }, { opacity: .45 }], { duration: 300, delay: 6550 });
+    [ring, ring2].forEach((r, i) => A(r, [{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: `scale(${5 + i * 2})` }], { duration: 900 + i * 250, delay: 6650 + i * 150, easing: 'cubic-bezier(.1,.7,.3,1)' }));
+    shake(6650, 650, 12); at(7000, () => c.cry());
+    A(icon, [{ opacity: 0, transform: 'translateY(16px) scale(.4)' }, { opacity: 1, transform: 'translateY(0) scale(1.25)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 500, delay: 7300 });
+    at(7300, () => c.se('Saint7'));
+    // 8) 원래 화면으로 (8800~)
+    const END = 9300;
     return new Promise(res => { let done = false;
       const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => { clearTimeout(t); clearInterval(t); }); if (mon) { if (mon.dataset.mgf != null) { mon.style.filter = mon.dataset.mgf; delete mon.dataset.mgf; } mon.style.visibility = ''; }
         const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
