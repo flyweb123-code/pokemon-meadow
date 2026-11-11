@@ -1643,7 +1643,7 @@ const tmHead = (id, n) => { const x = mvOf(id), tr = isTR(id); return `<h4 class
 const tmBody = x => `<div class="mp-moves one tm-card${x[8] ? ' has-ds' : ''}">${mvRow(x, '').replace(/<\/button>$/, x[8] ? `<span class="tm-ds">${esc(x[8])}</span></button>` : '</button>')}</div>`;
 const tmKdBox = id => { const tr = isTR(id); return `<div class="tm-kd${tr ? ' tr' : ''}"><div class="tm-kdr"><i class="tm-kdb">${tr ? '1회용' : '계속 사용'}</i><span>${tr ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</span></div></div>`; };
 function tmWho(id) {
-  const i = D.mv.indexOf(mvOf(id)), M = [...new Set(lus().flat())].map(boxOf).filter(P => P && (D.sp[P.sp]?.tm || []).includes(i)), kn = P => gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
+  const i = D.mv.indexOf(mvOf(id)), M = [...new Set(lus().flat())].map(boxOf).filter(P => P && tmOf(P.sp).includes(i)), kn = P => gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
   if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
   return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
@@ -1663,7 +1663,12 @@ function mvInfo(id, teach, lab = '기술 가르치기', onX, who) {
 /* 기술레코드 (v15.69 경완 '레코드 개념 적용'): 소드·실드 TR00~TR99 기술은 한 번 쓰면 없어지는 기술레코드, 나머지 기술머신은 한 번 사면 계속 쓴다 */
 const TR_IDS = new Set('swordsdance bodyslam flamethrower hydropump surf icebeam blizzard lowkick thunderbolt thunder earthquake psychic agility focusenergy metronome fireblast waterfall amnesia leechlife triattack substitute reversal sludgebomb spikes outrage psyshock endure sleeptalk megahorn batonpass encore irontail crunch shadowball futuresight uproar heatwave taunt trick superpower skillswap blazekick hypervoice overheat cosmicpower muddywater irondefense dragonclaw bulkup calmmind leafblade dragondance gyroball closecombat toxicspikes flareblitz aurasphere poisonjab darkpulse seedbomb xscissor bugbuzz dragonpulse powergem focusblast energyball bravebird earthpower nastyplot zenheadbutt flashcannon leafstorm powerwhip gunkshot ironhead stoneedge stealthrock grassknot sludgewave heavyslam electroball foulplay storedpower allyswitch scald workup wildcharge drillrun heatcrash hurricane playrough venomdrench dazzlinggleam darkestlariat highhorsepower throatchop pollenpuff psychicfangs liquidation bodypress'.split(' ')), isTR = id => TR_IDS.has(id), tmKind = id => isTR(id) ? '기술레코드' : '기술머신';
 // 이 포켓몬이 이 기술머신을 배울 수 있나 (이미 아는 기술은 못 배움)
-const tmCan = (P, id) => (D.sp[P.sp]?.tm || []).some(i => D.mv[i]?.[0] === id) && !gm(P).mv.includes(id);
+// v21.66 경완 '팬텀이 기술머신 병상첨병 못 배워?': 데이터(mkdata)는 레벨업으로 배우는 기술을 tm 에서 뺐다 → 기술머신으로 파는 기술이면 레벨업으로 배우는 포켓몬도 가르칠 수 있게 (배틀 상대 AI 기술 고르기는 그대로 D.sp.tm)
+let TM_ALL = null; const TM_OF = new Map();
+const tmOf = sp => { const o = D?.sp[sp]; if (!o) return []; let r = TM_OF.get(sp); if (r) return r;
+  if (!TM_ALL) { TM_ALL = new Set(); for (const v of Object.values(D.sp)) (v.tm || []).forEach(i => TM_ALL.add(i)); }
+  const t = new Set(o.tm || []); (o.lv || []).forEach((x, k) => { if (k % 2 && TM_ALL.has(x)) t.add(x); }); r = [...t]; TM_OF.set(sp, r); return r; };
+const tmCan = (P, id) => tmOf(P.sp).some(i => D.mv[i]?.[0] === id) && !gm(P).mv.includes(id);
 // 기술머신 하나를 P 에게: 기술이 4개면 잊을 기술 고르기(또는 익혀 두기만)
 function teachTm(P, id, done, slot, onX) {   // onX: 잊을 기술 창에서 그만두기 (없으면 done)   // slot: 기술 바꾸기에서 고른 칸이면 그 자리에 바로
   const g = S.gym, m = gm(P), x = mvOf(id); if (!x || !(g.tms?.[id] > 0)) return done?.();
@@ -1821,7 +1826,7 @@ async function recIts(P) { await loadSim(); const e = myEntry(P); e.it = null; e
 function recTms(P, wantTR) {   // 상점 추천받기: 지금 기술 한 칸과 바꿨을 때 묶음 점수가 가장 많이 오르는 기술머신(또는 기술레코드) 순
   if (!window.PSim) return [];
   const m = gm(P), [c, pool] = recCtx(P, m), own = new Set(pool), cur = m.mv.slice();
-  const T = (D.sp[P.sp]?.tm || []).map(i => D.mv[i]?.[0]).filter(id => id && MVI.has(id) && isTR(id) === !!wantTR && !own.has(id)); T.forEach(id => { c.top = Math.max(c.top, mvVal(MVI.get(id), c, () => false)[0]); });
+  const T = tmOf(P.sp).map(i => D.mv[i]?.[0]).filter(id => id && MVI.has(id) && isTR(id) === !!wantTR && !own.has(id)); T.forEach(id => { c.top = Math.max(c.top, mvVal(MVI.get(id), c, () => false)[0]); });
   const base = setScore(cur, c);
   const L = T.map(id => {
     let g = -1; for (let k = 0; k < Math.max(1, Math.min(4, cur.length + (cur.length < 4 ? 1 : 0))); k++) { const t = cur.slice(); t[k] = id; g = Math.max(g, setScore(t, c) - base); } return [id, g]; });
@@ -2169,5 +2174,5 @@ function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
-window.GymBattle = { mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, IT_CAT, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();

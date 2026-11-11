@@ -2894,7 +2894,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
       if (k === 'mint') B.MINT.forEach(id => { if (!no.has(id)) out.push({ k, id, nm: B.mintNm(id), img: B.mintImg(id), d: B.mintD?.(id) || '먹이면 성격이 바뀌어요' }); });
       if (k === 'deco') Object.entries(DECO).forEach(([id, o]) => { if (o.g <= cap && G >= (o.lv | 0) && !g.own?.[id] && !no.has(id)) out.push({ k, id, nm: o.n, img: `${IMG}deco/${id}.png`, d: '꾸미기에 놓을 수 있어요' }); });
       // 기술머신·기술레코드: 지금 라인업 포켓몬이 배울 수 있고 아직 모르는 기술만 (경완 2026-11-08). 기술머신은 이미 가진 건 빼고
-      if (k === 'tm') { await B.loadData?.(); const D = B.D, W = new Map(); luAll().forEach(P => (D?.sp[P.sp]?.tm || []).forEach(i => { const x = D.mv[i]; if (!x || no.has(x[0]) || B.gm(P).mv.includes(x[0]) || (!B.isTR(x[0]) && (g.tms?.[x[0]] | 0) > 0)) return; if (x[3] !== 2 && (x[4] || 0) < 60) return; (W.get(x[0]) || W.set(x[0], []).get(x[0])).push(P); }));
+      if (k === 'tm') { await B.loadData?.(); const D = B.D, W = new Map(); luAll().forEach(P => (B.tmOf?.(P.sp) || D?.sp[P.sp]?.tm || []).forEach(i => { const x = D.mv[i]; if (!x || no.has(x[0]) || B.gm(P).mv.includes(x[0]) || (!B.isTR(x[0]) && (g.tms?.[x[0]] | 0) > 0)) return; if (x[3] !== 2 && (x[4] || 0) < 60) return; (W.get(x[0]) || W.set(x[0], []).get(x[0])).push(P); }));
         W.forEach((L, id) => { const x = B.mvOf(id), kd = B.tmKind(id); out.push({ k, id, nm: `${kd} ${x[1]}`, img: `${IMG}bt/tm_${x[2]}.png`, d: `${x[8] || ''}${x[4] ? `\n위력 ${x[4]}` : ''}${B.isTR(id) ? '\n(한 번 가르치면 없어져요)' : ''}` });   /* 무슨 기술인지 (경완 2026-11-08 '배울 수 있는 포켓몬 문구 말고') */ }); } }
     return out.length ? out[Math.random() * out.length | 0] : null; },
   giveLoot: L => { if (window.gymEvTest || !L) return; const g = st();

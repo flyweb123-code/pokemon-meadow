@@ -896,7 +896,7 @@ function drawShop() {
 /* v20.78 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 살 수 있게 된 칸(업데이트로 들어온 물건, 등급이 올라 풀린 꾸미기, 새 포켓몬으로 늘어난 기술머신)에 점.
    g.shSeen {키: 1} = 본 칸. 처음엔 지금 있는 것 모두 본 걸로. 탭을 열면 본 걸로 저장하되 그 탭을 보는 동안(탭 바꾸기·상점 닫기 전)엔 점을 그대로 둔다 */
 function shopKeys(t) { const g = st(), B = GB(), D = B?.D; if (!D) return [];
-  if (t === 'tm' || t === 'tr') { const K2 = new Set(); S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { const id = D.mv[i]?.[0]; if (id && B.isTR(id) === (t === 'tr')) K2.add('tm:' + id); })); return [...K2]; }
+  if (t === 'tm' || t === 'tr') { const K2 = new Set(); S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).forEach(P => GB().tmOf(P.sp).forEach(i => { const id = D.mv[i]?.[0]; if (id && B.isTR(id) === (t === 'tr')) K2.add('tm:' + id); })); return [...K2]; }
   if (t === 'it') return [...B.IT_CAT.flatMap(([, , ids]) => ids.filter(id => B.HOLD[id]).map(id => 'it:' + id)), ...B.MINT.map(k => 'mint:' + k), ...(B.evOn?.() ? B.EV_VIT.map((_, i) => 'vit:' + i) : [])];
   if (t === 'deco') { const G = K.gradeOf(g.rep || 0).i; return Object.entries(K.DECO).filter(([, o]) => G >= o.lv).map(([k]) => 'deco:' + k); }
   return []; }
@@ -908,7 +908,7 @@ function shopLeave(t) { if (t) delete shNow[t]; else for (const k in shNow) dele
 // 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 창고(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술 가르치기'에서 (경완 2026-10-27)
 function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레코드 탭 따로 */
   const D = GB().D, g = st(), mons = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)); g.tms = g.tms || {};
-  const can = new Map(); mons.forEach(P => (D.sp[P.sp]?.tm || []).forEach(i => { if (GB().isTR(D.mv[i][0]) !== !!wantTR) return; if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
+  const can = new Map(); mons.forEach(P => GB().tmOf(P.sp).forEach(i => { if (GB().isTR(D.mv[i][0]) !== !!wantTR) return; if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
   if (recMon() && !window.PSim) { body.innerHTML = ''; GB().loadSim().then(() => redraw()); return; }   // 추천 점수는 쇼다운 기술 정보(특성·연속기 등)를 써서 처음 한 번 받아 옴
@@ -929,7 +929,7 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
 /* v19.49 경완: 기술머신(계속 씀)·기술레코드(한 번 쓰면 없어짐) 안내를 색 딱지로 구분, 사기 창에 라인업에서 배울 수 있는 포켓몬 목록(스프라이트) */
 const tmKdBox = id => { const tr = GB().isTR(id); return `<div class="tm-kd${tr ? ' tr' : ''}"><div class="tm-kdr"><i class="tm-kdb">${tr ? '1회용' : '계속 사용'}</i><span>${tr ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</span></div></div>`; };   // v19.49 경완: 기술 설명은 위 기술 칸 안으로(진한 글자)
 function tmWho(id, i) {
-  const D = GB().D, M = luMons().filter(P => (D.sp[P.sp]?.tm || []).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
+  const D = GB().D, M = luMons().filter(P => GB().tmOf(P.sp).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
   if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
   return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
