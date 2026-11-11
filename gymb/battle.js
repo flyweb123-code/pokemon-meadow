@@ -234,8 +234,8 @@ const frAdd = (P, a) => { if (!P) return; if (a > 0 && GA.addFr) GA.addFr(P.id, 
 function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
   (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
     if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, B.frw || [3, 2, 1]))   /* v22.14 체육관 도전자 배틀은 gym.js FR_W (난이도별) */; }); }
-// v22.13 경완 '레어 번뜩임은 그 포켓몬이 배틀에 나가 3연승 이상일 때만': m.ws = 내보낸 배틀 연승 수 (이기고 안 쓰러지면 +1, 지거나 쓰러지면 0, 안 나간 배틀은 그대로)
-function wsBattle(won) { (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk || !B.used?.has(e.pid)) return; const m = gm(P); m.ws = won && !pk.fainted ? (m.ws | 0) + 1 : 0; }); }
+// v22.13 경완 '레어 번뜩임은 그 포켓몬이 배틀에 나가 3연승 이상일 때만': m.ws = 내보낸 배틀 연승 수 (이기면 +1 — 쓰러졌어도, 지면 0, 안 나간 배틀은 그대로)
+function wsBattle(won) { (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk || !B.used?.has(e.pid)) return; const m = gm(P); m.ws = won ? (m.ws | 0) + 1 : 0; }); }
 const EG_WS = 3;
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
