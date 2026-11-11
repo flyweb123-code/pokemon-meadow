@@ -9543,8 +9543,8 @@ function pkGif(g, sp, sh, f) { const e = g[sp]; if (!e) return null; const [nm, 
 const PK_BW = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';   // v21.73 경완: 650~1025·지역 폼 블랙·화이트풍 팬 도트 gif (gym/img/pk/bwa.json 있는 것만, 체육관 배틀과 같은 것)
 let pkBwJ = null; const pkBwG = () => pkBwJ || (pkBwJ = fetch('gym/img/pk/bwa.json').then(r => r.json()).catch(() => { pkBwJ = null; return {}; }));
 const pkBw = (M, sp, sh, f) => { const L = M.l?.[sp] || 0, m = M.r?.[sp];   // v21.75 경완 고른 EeveeExpo 그림(gym/img/pk/bw, 비트 32 앞)이 먼저
-  if (L & 32) return `gym/img/pk/bw/${f && !sh && L & 8 ? 'f' : sh && L & 2 ? 's' : ''}${sp}.gif?v=3`;
-  if (sh && L & 2) return `gym/img/pk/bw/s${sp}.gif?v=3`;   // PokeAPI 에 이로치만 없는 종 (음번·대여르, v21.77 지금 그림에 이로치 색)
+  if (L & 32) return `gym/img/pk/bw/${f && !sh && L & 8 ? 'f' : sh && L & 2 ? 's' : ''}${sp}.gif?v=4`;
+  if (sh && L & 2) return `gym/img/pk/bw/s${sp}.gif?v=4`;   // PokeAPI 에 이로치만 없는 종 (음번·대여르, v21.77 지금 그림에 이로치 색)
   return m == null ? null : `${PK_BW}${f && !sh && m & 8 ? 'female/' : sh && m & 2 ? 'shiny/' : ''}${sp}.gif`; };
 let pkFaJ = null; const pkFaG = () => pkFaJ || (pkFaJ = fetch('gym/img/pk/fa/fa.json').then(r => r.json()).catch(() => { pkFaJ = null; return {}; }));
 function pkFront(el, rp) {   // v16.52 경완: 494~649 는 한 장짜리 그림이라 2장 판 크기로 늘려 그리면 처음에 엄청 크게 보였다가 gif 로 줄어듦 → 그림 크기를 재서 1.5배로, 650~ 은 2장 판으로 본가처럼 움직임
