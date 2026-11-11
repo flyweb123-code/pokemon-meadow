@@ -4148,3 +4148,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .gy-perk.pk-gl,#gym .gy-pop .gy-perk.pk-sl{height:58vh;max-height:58vh;box-sizing:border-box}
 #gym .gy-pop .pk-tabs{margin:0 4px 8px}
 #gym .gy-perk.pk-sl{justify-content:flex-start}
+/* 상대 메가진화 간단 연출: 메가 마크가 포켓몬 위에서 한 바퀴 돌고 사라짐 (경완 2026-11-12) */
+.bt-mon .gm-mark{position:absolute;left:50%;top:-30px;width:22px;height:27px;margin-left:-11px;background:center/contain no-repeat;image-rendering:pixelated;pointer-events:none;z-index:5;animation:gmMark 1.6s ease-out forwards}
+@keyframes gmMark{0%{opacity:0;transform:translateY(8px) scale(.4) rotateY(0)}18%{opacity:1;transform:translateY(0) scale(1.15) rotateY(0)}60%{opacity:1;transform:translateY(-2px) scale(1) rotateY(360deg)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px) scale(1) rotateY(360deg)}}

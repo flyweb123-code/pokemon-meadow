@@ -455,7 +455,9 @@ async function gmFx(s, X, kind, ty) {
         await GymDBK.dynamax(c); swap(); dmaxOn(s, X); return; }
     } catch (e) { console.error(e); }
   }
-  if (kind === 'mega' || kind === 'primal') { se('KOUKA_M', { pan }); m.classList.add('gm-' + kind); await wait(B.fast ? 400 : 900); m.classList.add('fmc'); await wait(260); if (X?.gmPend) { X.gmPend = 0; swap(); } await wait(420); m.classList.remove('fmc', 'gm-' + kind); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
+  // 경완 2026-11-12 '도전자 메가진화 간단 연출에도 효과음, 메가 마크가 한 번 돌면서 상대 포켓몬 위에': 기운 모음(SUIKOMU) → 바뀔 때 반짝·쾅 → 위에 메가 마크
+  const mgMark = () => { if (kind !== 'mega') return; const k = document.createElement('i'); k.className = 'gm-mark'; k.style.backgroundImage = `url(${IMG}dbk/Mega/mark.png)`; m.appendChild(k); setTimeout(() => k.remove(), 1700); };
+  if (kind === 'mega' || kind === 'primal') { se(kind === 'mega' ? 'SUIKOMU' : 'KOUKA_M', { pan }); m.classList.add('gm-' + kind); await wait(B.fast ? 400 : 900); m.classList.add('fmc'); await wait(260); if (X?.gmPend) { X.gmPend = 0; swap(); } if (kind === 'mega') { se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); mgMark(); } await wait(kind === 'mega' ? 1100 : 420); m.classList.remove('fmc', 'gm-' + kind); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
   if (kind === 'dmax') { se('KOUKA_M', { pan }); m.classList.add('fmc'); await wait(260); swap(); m.classList.remove('fmc'); dmaxOn(s, X); await wait(B.fast ? 400 : 900); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
