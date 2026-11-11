@@ -3951,3 +3951,15 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rk-rep small{font-size:10px;color:#6a6a80}#gym .rk-rep b{font-size:17px;color:#3a2000}
 #gym .rk-mine h5{margin:4px 0 6px}
 #gym .rk-tip{margin:2px 4px 0;font-size:11px;line-height:1.5;color:var(--dim);text-align:center}
+/* v21.93 경완 '체육관 랭킹 배경 도전자 받는 화면처럼 체육관스럽게, 스트라이프 빼고': 도전자 명단과 같은 어두운 경기장 바닥 + 경기장 선 */
+#gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,255,255,.07) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,255,255,.07) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#3a4270 0,transparent 70%),linear-gradient(180deg,#1e2238 0,#141626 100%)!important;color:#f0f0f8}
+#gym .gy-rkw .gy-sh .if-t,#gym .gy-rkw .gy-sh .gy-back{color:#fff}
+#gym .gy-rkw .rk-row{border-color:#0c0d18;border-radius:4px;box-shadow:inset 0 0 0 2px #fff,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top1{box-shadow:inset 0 0 0 2px #fff6c0,inset 0 0 0 4px #c8901a,0 0 12px rgba(255,210,80,.35),3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top2{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #8a92a6,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top3{box-shadow:inset 0 0 0 2px #fff0e0,inset 0 0 0 4px #a05a20,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.me{border-color:#e0a820}
+#gym .gy-rkw .rk-row .lb-rk:not(.r1):not(.r2):not(.r3){background:#0c0d18;color:#ffd84a}
+#gym .gy-rkw :is(.rk-tip,.rk-msg){color:#b8bcd8}#gym .gy-rkw .rk-mine h5{color:#d8dcf0}
+/* 닉네임 뒤 작은 '관장' */
+#gym .rk-tx>b .rk-ld{display:inline;margin-left:4px;font-size:11px;font-weight:700;color:#6a6a80}

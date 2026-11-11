@@ -2356,7 +2356,7 @@ function rkPop() {
       const L = rows.map(r => ({ code: r.code, D: r.code === me && mineC ? mineC : rkClean(r.c), mine: r.code === me })); L.forEach(x => { if (!x.D.n) x.D.n = x.mine ? '나' : '트레이너'; }); if (mineC && !mineC.n) mineC.n = '나';
       const myI = L.findIndex(x => x.mine);
       const G = D => gradeOf(D.rep, D.gm);   /* v21.92 경완 '단상 지우고 슬롯으로만, 꾸미기 랭킹처럼 메달·박스, 평판 글자 숫자 위, 타입 아이콘 앞에 프로필 박스, 체육관 이름·관장 이름 자리 바꿈, 평판 순위 박스 없애고 내 위치는 테두리로 은은하게' */
-      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}</b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
+      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
       const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
       body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p>`;
       el._L = L;
@@ -2366,8 +2366,8 @@ function rkPop() {
   draw();
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.me) return meCard();
-    const x = el._L?.[+b.dataset.i]; if (!x) return; x.mine ? meCard() : meCardOf(x.D, false); };
+    if (b.dataset.me) return meCardOf(rkCard(), true);   // v21.93 경완 '랭킹 슬롯 누르면 그 타입 체육관에 등록된 관장 카드': 내 줄도 지금 운영 중인 곳 말고 랭킹에 오른 체육관(평판 최고)
+    const x = el._L?.[+b.dataset.i]; if (!x) return; x.mine ? meCardOf(rkCard(), true) : meCardOf(x.D, false); };
   if (!GA.frOn?.()) { err = '체육관 랭킹은 앱에서 친구 서버에 연결되어 있을 때 볼 수 있어요'; return draw(); }
   const fresh = rkRows && Date.now() - rkAt < 60_000;
   if (fresh) { rows = rkRows; Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; draw(); }); return draw(); }
