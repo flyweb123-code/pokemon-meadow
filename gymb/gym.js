@@ -1161,6 +1161,7 @@ async function challenge(picked) {
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
     try { res = await GB().run({ my, ...(MEGA_ON && (g.mgRing || fmg) ? { gmk: { mega: 1 } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
+    if (res && !res.cut && g.mgRing) g.mgN = (g.mgN | 0) + 1;   // 메가링 받은 뒤 직접 싸운 판 수 (도전자 메가진화 MG_FOE)
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4 class="gy-lock">배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
       root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc('어라, 배틀이 중간에 멈춰 버렸네요. 다음에 다시 붙어요!'));
@@ -3442,12 +3443,12 @@ async function megaTest(k, foe) {
 const MEGA_ON = false;
 const MG_TUT = { 1: [115, 'kangaskhanite', ['doubleedge', 'suckerpunch', 'earthquake', 'poweruppunch'], 'scrappy'], 2: [448, 'lucarionite', ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], 'innerfocus'], 3: [18, 'pidgeotite', ['hurricane', 'heatwave', 'uturn', 'roost'], 'keeneye'], 4: [15, 'beedrillite', ['poisonjab', 'uturn', 'drillrun', 'swordsdance'], 'swarm'], 5: [445, 'garchompite', ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], 'roughskin'], 6: [142, 'aerodactylite', ['stoneedge', 'earthquake', 'aerialace', 'crunch'], 'pressure'], 7: [212, 'scizorite', ['bulletpunch', 'xscissor', 'swordsdance', 'roost'], 'technician'], 8: [94, 'gengarite', ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'], 9: [306, 'aggronite', ['ironhead', 'earthquake', 'stoneedge', 'rockpolish'], 'sturdy'], 10: [6, 'charizarditey', ['flamethrower', 'airslash', 'solarbeam', 'focusblast'], 'blaze'], 11: [130, 'gyaradosite', ['waterfall', 'crunch', 'icefang', 'dragondance'], 'intimidate'], 12: [3, 'venusaurite', ['gigadrain', 'sludgebomb', 'earthquake', 'sleeppowder'], 'overgrow'], 13: [181, 'ampharosite', ['thunderbolt', 'dragonpulse', 'focusblast', 'thunderwave'], 'static'], 14: [65, 'alakazite', ['psychic', 'shadowball', 'focusblast', 'calmmind'], 'synchronize'], 15: [460, 'abomasite', ['blizzard', 'woodhammer', 'earthquake', 'iceshard'], 'snowwarning'], 16: [373, 'salamencite', ['dragonclaw', 'earthquake', 'fly', 'dragondance'], 'intimidate'], 17: [229, 'houndoominite', ['darkpulse', 'flamethrower', 'sludgebomb', 'nastyplot'], 'flashfire'], 18: [282, 'gardevoirite', ['moonblast', 'psychic', 'shadowball', 'calmmind'], 'trace'] };
 const MG_TID = 990011;
-/* 경완 2026-11-12 '메가진화 해금되면 도전자들도 쓰는데 한동안은 안 쓰게 (메가진화로 쭉쭉 미는 맛), 강박사의 비기는 다 이런 식' (다음 거다이맥스도 같은 틀):
-   메가링 받은 날(g.mgAt)부터 MG_FOE.wait 일은 아무도 안 씀 → 그 뒤 MG_FOE.ramp 일 동안 확률이 0 에서 최대까지 오름. 최대는 도전자 세기별.
+/* 경완 2026-11-12 '메가진화 해금되면 도전자들도 쓰는데 한동안은 안 쓰게 (메가진화로 쭉쭉 미는 맛), 강박사의 비기는 다 이런 식' (다음 거다이맥스도 같은 틀) + '일수 말고 판수로':
+   메가링 받은 뒤 관장이 직접 싸운 도전자 배틀 수(g.mgN)로 센다. MG_FOE.wait 판은 아무도 안 씀 → 그 뒤 MG_FOE.ramp 판 동안 확률이 0 에서 최대까지 오름. 최대는 도전자 세기별.
    쓸 수 있으면 팀에서 메가진화할 수 있는 포켓몬(뒤쪽 = 에이스 먼저) 하나에 메가스톤을 지니게 함 */
-const MG_FOE = { wait: 7, ramp: 7, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
-function foeMgP(c) { const g = st(); if (!MEGA_ON || !g?.mgRing || !g.mgAt) return 0; const d = (Date.now() - g.mgAt) / DAY - MG_FOE.wait; if (d < 0) return 0;
-  const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, d / MG_FOE.ramp); }
+const MG_FOE = { wait: 20, ramp: 20, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
+function foeMgP(c) { const g = st(); if (!MEGA_ON || !g?.mgRing) return 0; const d = (g.mgN | 0) - MG_FOE.wait; if (d < 0) return 0;
+  const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / MG_FOE.ramp); }
 function foeMega(c, team, force) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c))) return false;
   for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; return true; } } return false; }
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';
@@ -3538,7 +3539,7 @@ async function megaTut(test) {
     let CR; [k, CR] = await kangIn(D); if (!open) return;
     T = storyTalk();
     for (const t of [`${NK()}!\n이름난 체육관이 됐다는 소식을\n듣고 달려왔단다!`, '이제 이 동네에서 네 체육관을\n모르는 트레이너는 없을 거야.\n정말 축하한다!', '하지만 이름이 알려질수록\n더 강한 도전자들이\n몰려오기 마련이지.', '그래서 오늘은 포켓몬을\n한층 더 강하게 만드는\n특별한 힘을 알려 주마.', '바로 \'메가진화\'란다!', '메가진화는 배틀 중에 포켓몬이\n더 강한 모습으로 진화하는 거란다.\n배틀이 끝나면 원래대로 돌아오지.', '능력치가 크게 오르고,\n특성이나 타입이 바뀌기도\n한단다.', '메가진화에는 두 가지가 필요해.\n트레이너의 메가링, 그리고\n포켓몬이 지닌 메가스톤!', '자, 이걸 받으렴.']) { if (!open) return; await say(t); }
-    hideT(true); await ringPop(); g.mgRing = 1; if (!test) g.mgAt = g.mgAt || Date.now(); save(); hideT(false);
+    hideT(true); await ringPop(); g.mgRing = 1; save(); hideT(false);
     { const gu = guyEnt, GW = { who: '안내원' }; if (gu) { face(gu, k); face(k, gu); }   // 개그 (경완 2026-11-12 '스토리 튜토리얼마다 개그요소')
       await say('와아, 반짝반짝해요!\n강박사님, 저도 하나만…!', GW); await say('자네는 메가진화할 포켓몬도\n없지 않나.'); await say('그럼 제가 메가진화하면\n되잖아요!', GW); await say('…사람은 메가진화가 안 된다네.\n내가 해 봐서 알아.'); await say('(해 보셨구나…)', GW); if (gu) { face(k, meEnt); face(gu, meEnt); } }
     for (const t of ['메가링은 트레이너와 포켓몬의\n마음을 이어 주는 팔찌란다.', '메가스톤을 지닌 포켓몬과\n마음이 통하면 메가링이 반응해서\n메가진화할 수 있지.', '단, 메가진화는 한 배틀에\n한 마리만 할 수 있단다.']) { if (!open) return; await say(t); }
