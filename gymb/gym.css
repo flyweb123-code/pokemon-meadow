@@ -3892,3 +3892,30 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v21.88 경완 '관장 카드에 체육관 등급이랑 이름도 표시' */
 #gym .mec-gn{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 1px;font-size:13px}#gym .mec-gn b{color:#2a2a3a}#gym .mec-gn em{font-style:normal;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff;background:var(--k3,#5a6a9a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+
+/* v21.89 배틀 기믹 ([DBK] 메가진화·Z-Power·Dynamax·Terastallization) */
+.bt.mob .bp-moves .gk-row{grid-column:1/-1;display:flex;gap:7px;min-width:0}
+.bt.mob .bp-moves .gk-row .bb{flex:1 1 0;min-width:0}
+.bt.mob .bp-moves .gk-row .cancel{flex:0 0 30%}
+.bt.mob .bb.gkb span{font-size:13px;white-space:nowrap}.bt.mob .bb.gkb small{font-size:11px;opacity:.9}
+.bt.mob .bb.gkb.mega{--c1:#9a7ad8;--c2:#6a48b0}.bt.mob .bb.gkb.zmove{--c1:#e8b838;--c2:#b8841a}.bt.mob .bb.gkb.dynamax{--c1:#f0507a;--c2:#b8204a}.bt.mob .bb.gkb.terastallize{--c1:#5cc8e8;--c2:#2a8cb8}
+.bt.mob .bb.gkb.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 2.5px #fff,0 0 12px 3px var(--c1),0 3px 0 rgba(0,0,0,.18);animation:gkOn 1.2s ease-in-out infinite}
+@keyframes gkOn{50%{filter:brightness(1.18)}}
+.bt.mob .bp-moves.gk:has(.gkb.on) .mvb:not(:disabled){box-shadow:0 0 0 2px #fff,0 0 10px 2px rgba(255,255,255,.6)}
+.bt-mon.gm-mega .clip,.bt-mon.gm-primal .clip{animation:gmMega .9s ease-in forwards}
+@keyframes gmMega{0%{filter:drop-shadow(0 0 0 #fff)}25%{filter:drop-shadow(0 0 4px #ff6aa8) drop-shadow(0 0 8px #ffd040)}50%{filter:drop-shadow(0 0 5px #6ae0ff) drop-shadow(0 0 10px #b070ff) brightness(1.4)}100%{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff) brightness(3) saturate(0)}}
+.bt-mon.gm-primal .clip{animation-name:gmPrimal}@keyframes gmPrimal{50%{filter:drop-shadow(0 0 6px #ff5020) brightness(1.4)}100%{filter:drop-shadow(0 0 10px #fff) brightness(3) saturate(0)}}
+.bt-mon.gm-z .clip{animation:gmZ 1s ease-in-out}
+@keyframes gmZ{0%,100%{filter:none}30%,70%{filter:drop-shadow(0 0 3px #fff4a0) drop-shadow(0 0 8px #ffb000) drop-shadow(0 0 14px #ff8000) brightness(1.25)}}
+.bt-mon.gm-tera .clip{animation:gmTera 1.1s ease-out}
+@keyframes gmTera{0%{filter:none}35%{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--tc)) brightness(2.4) saturate(.3)}100%{filter:drop-shadow(0 0 2px var(--tc))}}
+.bt-mon.tera .clip{filter:drop-shadow(0 0 1.5px var(--tc)) drop-shadow(0 0 4px var(--tc));animation:gmTeraG 2.4s ease-in-out infinite}
+@keyframes gmTeraG{50%{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px var(--tc)) brightness(1.12)}}
+.bt-mon.dmx .clip{transform:scale(1.6);transform-origin:50% 92%;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
+.bt-mon .clip{transition:transform .4s ease-out}
+.bt-mon .dmx-cl{position:absolute;left:50%;bottom:4%;width:0;height:0;pointer-events:none;z-index:2}
+.bt-mon .dmx-cl b{position:absolute;width:58px;height:30px;margin:-15px -29px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,60,110,.85),rgba(200,20,70,.55) 55%,transparent);filter:blur(1.5px);animation:dmxCl 3.2s ease-in-out infinite}
+.bt-mon .dmx-cl b:nth-child(1){left:-46px;top:-6px}.bt-mon .dmx-cl b:nth-child(2){left:-14px;top:4px;animation-delay:-.6s}.bt-mon .dmx-cl b:nth-child(3){left:20px;top:2px;animation-delay:-1.3s}.bt-mon .dmx-cl b:nth-child(4){left:50px;top:-8px;animation-delay:-2s}.bt-mon .dmx-cl b:nth-child(5){left:2px;top:-120px;width:40px;height:22px;opacity:.55;animation-delay:-2.6s}
+@keyframes dmxCl{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6px,-4px) scale(1.15)}}
+.bt-mon.p .dmx-cl{transform:scale(1.4)}
+.bt-mon:not(.dmx) .dmx-cl{display:none}
