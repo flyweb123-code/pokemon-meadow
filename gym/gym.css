@@ -3936,3 +3936,81 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bi-fx li{background:#fff;border-radius:10px;padding:5px 8px;box-shadow:0 0 0 1px rgba(0,0,0,.1);display:grid;grid-template-columns:1fr auto;gap:0 6px}.bi-fx li b{font-size:11px}.bi-fx li em{font-style:normal;font-size:10px;color:#6070a0}
 .bi-fx li p{grid-column:1/-1;margin:1px 0 0;font-size:10px;line-height:13px;color:#4a5468}.bi-fx li.none{display:block;text-align:center;color:#8a92a8}
 .bp-binfo .cancel{flex:0 0 36px}
+/* v21.89 체육관 랭킹: 트로피 아이콘 (일지 오른쪽) + 랭킹 화면 */
+#gym .gy-jnl.gy-sq.gy-sq{right:calc(var(--si-right,env(safe-area-inset-right)) + 60px)!important}
+#gym .gy-rk.gy-sq.gy-sq{position:absolute!important;top:calc(var(--si-top,env(safe-area-inset-top)) + 80px)!important;bottom:auto!important;left:auto!important;right:calc(var(--si-right,env(safe-area-inset-right)) + 4px)!important;width:58px!important;height:auto!important;min-height:0;padding:2px 0!important;margin:0;background:none!important;box-shadow:none!important;border:0!important;transform:none!important;display:flex!important;flex-direction:column;align-items:center;gap:2px;color:#fff;font-weight:700}
+#gym .gy-rk svg{width:34px!important;height:32px!important;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.45))!important}
+#gym .gy-rk .ga-l{font-size:11px;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c}
+#gym .gy-rk:active{transform:translateY(2px)!important}
+#gym:is(.gview,.ded,.busy,.sim-hide,.pre) .gy-rk,#gym:has(.gy-sheet:not([hidden]),.gy-infos) .gy-rk{visibility:hidden!important}
+#gym:is(.dedc,.visit) .gy-rk{display:none!important}
+
+/* v21.89 경완 '관장카드 승률 빼고 이름 줄 나눔 가운데, 텍스트·딱지 다시 정렬': 타입 관장 → 이름 → 등급 딱지·체육관 이름 세 줄 가운데 */
+#gym .mec-id{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:5px;margin:10px 0 10px}
+#gym .mec-id .mec-ty{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border:2px solid color-mix(in srgb,var(--tc,#888) 70%,#000);border-radius:11px;background:color-mix(in srgb,var(--tc,#888) 16%,#fff);color:color-mix(in srgb,var(--tc,#888) 55%,#000);font-size:12px;font-weight:700;line-height:1.3}
+#gym .mec-id .mec-ty :is(img,svg,i){width:16px;height:16px}
+#gym .mec .mec-id h4.mec-h{display:block;margin:0;max-width:100%;font-size:21px;line-height:1.2;color:#20202c;overflow-wrap:anywhere}
+#gym .mec-id .mec-gn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:0;font-size:14px;line-height:1.2}
+#gym .mec-id .mec-gn b{color:#2a2a3a}
+#gym .mec-id .mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2}
+/* v21.89 경완 '등급딱지랑 이름은 두 줄로 좌상단에 박혀야': 무대 그림 왼쪽 위에 두 줄 */
+#gym .mec-stg .mec-gn{position:absolute;top:7px;left:8px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin:0;max-width:60%;pointer-events:none;text-align:left}
+#gym .mec-stg .mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2}
+#gym .mec-stg .mec-gn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:#fff;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c,0 2px 0 #20202c}
+#gym .mec-id{gap:4px;margin:10px 0 10px}
+#gym .mec-id .mec-wl{margin:0;line-height:1.2}
+/* v21.89 경완 '무대 그림 말고 전체 박스 테두리 안쪽 좌상단': 등급 딱지·체육관 이름 두 줄 (오른쪽 위 옷걸이와 짝) */
+#gym .gy-pop.mec-wrap .win>.mec-gn{position:absolute;top:12px;left:12px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:0;max-width:calc(50% - 62px);pointer-events:none;text-align:left}
+#gym .gy-pop.mec-wrap .win>.mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2;white-space:nowrap}
+#gym .gy-pop.mec-wrap .win>.mec-gn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:#2a2a3a;padding-left:2px}
+#gym .mec .bd-pic.mec-stg{margin-top:46px}
+/* v21.90 경완 '물 타입 관장 이 부분은 딱지 말고 텍스트로만' */
+#gym .mec-id .mec-ty{padding:0;border:0;border-radius:0;background:none;font-size:13px;color:color-mix(in srgb,var(--tc,#888) 60%,#000)}
+/* v21.91 경완 '관장 카드에 올라오는 포켓몬 움직이는 스프라이트에도 랭크에 따라 후광, 이로치면 이로치 효과': 필드·훈련장과 같은 S 금빛·A 붉은 후광, 이로치는 반짝이 (상세카드 tcv-tw) */
+#gym .mec-pk.rkS>span:first-child{animation:sglow 4s ease-in-out infinite}#gym .mec-pk.rkA>span:first-child{animation:aglowM 4s ease-in-out infinite}
+#gym .mec-pk>.tcv-tw{position:absolute;inset:0;display:block;width:auto;z-index:2}
+/* v21.92 경완 '체육관 랭킹 화면 체육관스럽게 (도전자 받는 메뉴처럼), 슬롯만, 꾸미기 랭킹 메달·박스' */
+#gym .gy-rkw{background:repeating-linear-gradient(135deg,#f4f1e6 0 14px,#eeeadc 14px 28px)}
+#gym .gy-rkw .gy-body{display:flex;flex-direction:column;gap:10px;padding-bottom:14px;text-align:left}
+#gym .rk-msg{margin:40px 8px;text-align:center;color:var(--dim);line-height:1.6;font-size:14px}
+#gym .rk-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+#gym .rk-row{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;border:3px solid var(--frame,#383848);border-radius:6px;background:#fffdf4;box-shadow:3px 3px 0 rgba(0,0,0,.15);color:#20202c;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:scale .1s,filter .1s}
+#gym .rk-row:active{scale:.97;filter:brightness(.94)}
+#gym .rk-row.top1{background:linear-gradient(135deg,#fff7c8,#f6d466 55%,#ffe99a);box-shadow:inset 0 0 0 2px #fff6c0,inset 0 0 0 4px #c8901a,3px 3px 0 rgba(0,0,0,.18)}
+#gym .rk-row.top2{background:linear-gradient(135deg,#ffffff,#d6dce8 55%,#f2f4f8);box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #8a92a6,3px 3px 0 rgba(0,0,0,.18)}
+#gym .rk-row.top3{background:linear-gradient(135deg,#fff0e0,#e8b07a 55%,#f8d8b4);box-shadow:inset 0 0 0 2px #fff0e0,inset 0 0 0 4px #a05a20,3px 3px 0 rgba(0,0,0,.18)}
+#gym .rk-row.me{border-color:#e0a820;outline:2px solid rgba(255,206,64,.75);outline-offset:2px;animation:rkMe 2.6s ease-in-out infinite}@keyframes rkMe{50%{outline-color:rgba(255,206,64,.25)}}
+#gym .rk-row .lb-rk{flex:none;width:30px;height:30px;display:grid;place-items:center;font-size:15px;font-weight:700;background:#3a3a50;color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.3)}
+#gym .rk-row .lb-rk.r1,#gym .rk-row .lb-rk.r2,#gym .rk-row .lb-rk.r3{background:none;box-shadow:none;height:38px}
+#gym .rk-row .lb-show{flex:none}
+#gym .rk-bd{flex:none;line-height:0;display:grid;place-items:center}#gym .rk-bd .bdw img{width:34px;height:34px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+#gym .rk-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left}
+#gym .rk-tx>b{font-size:15px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gym .rk-tx small{display:flex;align-items:center;gap:5px;min-width:0;font-size:11px;color:#5a5a70}
+#gym .rk-tx small>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#gym .rk-tx .gr-tag{flex:none;padding:1px 6px 2px!important;border-width:1.5px!important;border-radius:7px!important;font-size:10px;font-style:normal;line-height:1.2}
+#gym .rk-rep{flex:none;display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+#gym .rk-rep small{font-size:10px;color:#6a6a80}#gym .rk-rep b{font-size:17px;color:#3a2000}
+#gym .rk-mine h5{margin:4px 0 6px}
+#gym .rk-tip{margin:2px 4px 0;font-size:11px;line-height:1.5;color:var(--dim);text-align:center}
+/* v21.93 경완 '체육관 랭킹 배경 도전자 받는 화면처럼 체육관스럽게, 스트라이프 빼고': 도전자 명단과 같은 어두운 경기장 바닥 + 경기장 선 */
+#gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,255,255,.07) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,255,255,.07) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#3a4270 0,transparent 70%),linear-gradient(180deg,#1e2238 0,#141626 100%)!important;color:#f0f0f8}
+#gym .gy-rkw .gy-sh .if-t,#gym .gy-rkw .gy-sh .gy-back{color:#fff}
+#gym .gy-rkw .rk-row{border-color:#0c0d18;border-radius:4px;box-shadow:inset 0 0 0 2px #fff,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top1{box-shadow:inset 0 0 0 2px #fff6c0,inset 0 0 0 4px #c8901a,0 0 12px rgba(255,210,80,.35),3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top2{box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px #8a92a6,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.top3{box-shadow:inset 0 0 0 2px #fff0e0,inset 0 0 0 4px #a05a20,3px 3px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-row.me{border-color:#e0a820}
+#gym .gy-rkw .rk-row .lb-rk:not(.r1):not(.r2):not(.r3){background:#0c0d18;color:#ffd84a}
+#gym .gy-rkw :is(.rk-tip,.rk-msg){color:#b8bcd8}#gym .gy-rkw .rk-mine h5{color:#d8dcf0}
+/* 닉네임 뒤 작은 '관장' */
+#gym .rk-tx>b .rk-ld{display:inline;margin-left:4px;font-size:11px;font-weight:700;color:#6a6a80}
+/* v21.95 경완 '내 테두리 은은하게 활성화되는 게 슬롯 박스 테두리에 가려서 하단만 보임': 바깥 outline 대신 줄 안쪽에 덮는 빛 테두리 */
+#gym .gy-rkw .gy-body{flex:1 1 auto}
+#gym .gy-rkw .rk-tip{margin-top:auto;padding-top:14px}
+#gym .rk-row{position:relative}
+#gym .rk-row.me,#gym .gy-rkw .rk-row.me{outline:0;animation:none}
+#gym .rk-row.me::after{content:'';position:absolute;inset:-3px;border:3px solid #ffc830;border-radius:inherit;box-shadow:inset 0 0 0 1px #fff6c0,inset 0 0 12px rgba(255,200,48,.65),0 0 10px rgba(255,200,48,.55);pointer-events:none;animation:rkMe2 2.4s ease-in-out infinite}
+@keyframes rkMe2{50%{opacity:.35}}
+/* v21.96 경완 'B 좋다': 랭킹 배경 붉은 배틀 타워 */
+#gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
