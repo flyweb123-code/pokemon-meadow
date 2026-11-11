@@ -3840,3 +3840,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rrTk{from{transform:translateY(40%);opacity:.3}to{transform:none;opacity:1}}
 #gym .rs-rep .rr-d.tot{transform:none;animation:rrTotFade .7s ease-out forwards!important}
 @keyframes rrTotFade{from{opacity:0;filter:blur(2px)}to{opacity:1;filter:none}}
+
+/* v21.65 경완 '평판 게이지만 눌러도 타이틀 리본이랑 배지가 눌림 — 리본 누르는 범위 딱 그 모양으로': 판 전체는 안 눌리고 리본(잘린 모양 ::before)·배지 동그라미·평판 게이지만 눌림, 눌림 모션은 .prs (게이지 누를 땐 없음) */
+#gym .gy-top .gy-plate,#gym .gy-top .gy-plate .gy-wing,#gym .gy-top .gy-plate .gy-bd{pointer-events:none}
+#gym .gy-top .gy-plate .gy-wing::before{pointer-events:auto}
+#gym .gy-top .gy-plate .gy-bd::after{content:'';position:absolute;left:50%;top:50%;width:90px;height:90px;margin:-45px;border-radius:50%;pointer-events:auto}
+#gym .gy-top .gy-plate:active{transform:none;filter:none}
+#gym .gy-top .gy-plate.prs{transform:translateY(3px) scale(.985);filter:brightness(.94)}
