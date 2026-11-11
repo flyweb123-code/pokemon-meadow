@@ -1867,17 +1867,269 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
 // 관장 카드 우상단 옷장 (경완 2026-11-08 '관장 카드에도 옷장 아이콘 넣어서 옷 갈아입을 수 있게'): 가진 옷 고르기 → 입고 카드 다시
-const CLOSET_SVG = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h12v1H2zM1 2h1v12H1zM14 2h1v12h-1zM2 14h12v1H2zM7 2h2v12H7zM2 15h2v1H2zM12 15h2v1h-2z"/><path fill="#c88a50" d="M2 2h5v12H2zM9 2h5v12H9z"/><path fill="#e8b070" d="M3 3h3v10H3zM10 3h3v10h-3z"/><path fill="#20202c" d="M5 7h1v2H5zM10 7h1v2h-1z"/></svg>';
+// v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨' + '스라크가 관장보다 작아?'
+// 키(SPECIES h, 0.1m) 그대로 비율: 관장 = 1.4m. 무대에 안 들어가는 거대한 포켓몬만 무대 높이까지. 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 관장 절반보다 작으면 관장 발 앞.
+// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄).
+// 폭이 넘치면 ① 겹침을 늘리고 ② 앞줄에서 큰 걸 뒷줄로 올리고 ③ 그래도 넘치면 관장까지 다 같이 줄임 (키 비율은 안 깨짐).
+function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비율 [왼쪽, 오른쪽] (아직 못 읽으면 0, 다른 곳 그림은 CORS 로 한 번 더 받아 읽고 again())
+  if (im.tagName !== 'IMG' || !im.naturalWidth) return [0, 0, 0, 0]; if (im._trim) return im._trim;
+  const rd = src => { const w = src.naturalWidth, h = src.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0);
+    const d = x.getImageData(0, 0, w, h).data; let l = w, r = -1, t = h, b = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < l) l = i; if (i > r) r = i; if (y < t) t = y; b = y; }
+    return r < 0 ? [0, 0, 0, 0] : [l / w, (w - 1 - r) / w, t / h, (h - 1 - b) / h]; };
+  try { return im._trim = rd(im); } catch (e) {}
+  if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0, 0, 0]; } }; c.onerror = () => { im._trim = [0, 0, 0, 0]; }; c.src = im.src; }
+  return [0, 0, 0, 0]; }
+const mecSt = sp => { const o = SPECIES[sp]; return !!o && !!(o.leg || o.my || (o.bs || []).reduce((x, y) => x + y, 0) >= 580); };   // 전설·환상·종족값 580 이상 = 센 포켓몬 (왼쪽 자리)
+let MEC_FACE = null, mecFq = null;
+function mecFace(again) { if (MEC_FACE) return MEC_FACE; if (!mecFq) mecFq = fetch('gym/img/pk/face.json').then(r => r.json()).then(d => { MEC_FACE = d; }).catch(() => { MEC_FACE = {}; }); mecFq.then(() => again?.()); return null; }
+function mecLay(stg) {
+  const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
+  const cx = W / 2, BB = 34, FB = 4, M = 4;
+  const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
+    const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
+    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
+  if (!A.length || A.some(a => !a)) return;
+  const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
+  const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
+  // 경완 11-11 '관장 주변을 원형으로 감싸듯이' + '발판 뒤로 넘어가지 않게, 겹침은 아까 정도': 발판 타원 안에서 큰 포켓몬은 뒤쪽 호(가운데일수록 뒤), 작은 포켓몬은 앞쪽 호(관장 다리 앞).
+  // 옆으로는 예전처럼 몸 폭의 20% 정도만 겹치며 바깥으로 줄 세움 (넘치면 겹침을 늘리고, 그래도 안 되면 그때만 조금씩 줄임)
+  const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
+  const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= Math.pow(18 / 17, .6)).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
+  let LH = L0, LB = 14, ok = false, G = null;
+  const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
+  const FC0 = mecFace(() => stg.isConnected && mecLay(stg));
+  const fb0 = a => { const f = FC0?.[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
+  const bd0 = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];
+  const ov0 = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
+  for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
+    A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
+    /* 경완 11-11 '배치 규칙을 어떻게 해야하나' (비키면 다른 데서 가려짐): 큰 포켓몬마다 왼쪽·오른쪽을 바꾼 후보 배치를 모두 만들어 보고
+       프레임 안에 들어오는 것 중 점수가 가장 낮은 것 — 얼굴 가림(앞 포켓몬 몸·관장) ×10, 센 포켓몬이 오른쪽 +1.5, 좌우 치우침 */
+    for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
+      const place = (mk, ord, co = 0) => {
+        // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜). 어느 쪽으로 갈지는 mk 의 i 번째 비트
+        let le = cx, re = cx, pL = null, pR = null;
+        ord.forEach((a, i) => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, Math.min(a.h0, (H - C - RY - M) * k))));   /* 경완 '약어리가 콩둘기보다 작음': 원본 그림이 작아도 최소 크기는 지킴, '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기까지만 */ a.s = a.h / a.bh; a.w = a.bw * a.s;
+          const sd = (mk >> i) & 1 ? 1 : -1;
+          if (!i && ord.length % 2) { a.x = cx + sd * (co ? a.w * co : Math.min(26, 6 + a.w * .14)); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
+          const pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
+          if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
+        // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
+        let tl = cx - LW * .15, tr = cx + LW * .15;
+        tiny.forEach(a => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, a.h0))); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
+          if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
+        const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) return false;
+        const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d);
+        const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로, 가운데일수록 뒤 */
+        big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });
+        tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
+        [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; });   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~) (경완 '한카리아스가 더 앞인데 뒤로') */
+        return true; };
+      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH]; let s = 0;
+        A.forEach(a => { const fa = fb0(a); if (fa) { if (a.z < 25) s += 10 * Math.max(0, ov0(fa, trB) - .1); A.forEach(b => { if (b.z > a.z) s += 10 * Math.max(0, ov0(fa, bd0(b)) - .1); }); }
+          const ba = bd0(a); let cv = a.z < 25 ? ov0(ba, trB) : 0; A.forEach(b => { if (b.z > a.z) cv += ov0(ba, bd0(b)); }); s += 3 * Math.max(0, cv - .35);   // 몸도 거의 다 가려지면 벌점
+          if (a.st && a.x > cx + 6) s += 1.5; });   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
+        const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); return s + Math.abs((cx - lo) - (hi - cx)) / W * 3; };
+      let best = null, bs = Infinity;   // 크기 순서 그대로 + 이웃한 둘을 바꾼 순서도 (조금 벌점)
+      const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
+      /* 경완 '저런 경우가 안 나오게 규칙을': 관장 바로 뒤 가운데 포켓몬은 얼굴이 관장 머리에 가리면 더 비켜 선 자리(몸 폭 .3·.45)도 후보로 (조금 벌점) */
+      ords.forEach((ord, oi) => { for (const co of ord.length % 2 ? [0, .3, .45] : [0]) for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord, co)) continue; const sc = score() + (oi ? .4 : 0) + (co ? co : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord, co]; } } });
+      if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
+        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
+    if (!ok) k *= .96; }
+  if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
+  if (G) { const trB = [cx - trF[0] * LH * .42, LB, cx + trF[0] * LH * .42, LB + LH]; let fc = 0;   // 가장 많이 가려진 얼굴 비율 (검사용 data-fc)
+    A.forEach(a => { const fa = fb0(a); if (!fa) return; let c = a.z < 25 ? ov0(fa, trB) : 0; A.forEach(b => { if (b.z > a.z) c += ov0(fa, bd0(b)); }); fc = Math.max(fc, c); }); stg.dataset.fc = fc.toFixed(2); stg.dataset.k = (LH / L0).toFixed(2); }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
+  const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
+  const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
+  // 경완 11-11 '스프라이트마다 얼굴 인식해서 안 가리게': gym/img/pk/face.json = 종마다 얼굴 상자(보이는 그림 기준 비율, 왼쪽 보는 원본). 앞에 선 포켓몬·관장이 얼굴을 덮으면 앞뒤를 바꾸거나 옆으로 비킴
+  const FC = mecFace(() => stg.isConnected && mecLay(stg));
+  if (FC) { const LWv = trF[0] * LH;
+    const fb = a => { const f = FC[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
+    const body = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];   // 몸 상자는 그림보다 조금 좁게 (가장자리 투명·꼬리)
+    const ovl = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
+    const trB = [cx - LWv * .42, LB, cx + LWv * .42, LB + LH];
+    for (let pass = 0; pass < 0; pass++)   /* 후보 배치 점수로 고르니 나중에 비키기는 끔 (비키면 다른 데서 가려짐, 경완 11-11) */ { let ch = false;
+      for (const a of A) { const fa = fb(a); if (!fa) continue;
+        if (a.z < 25 && ovl(fa, trB) > .3) { const sd = a.x >= cx ? 1 : -1, need = sd > 0 ? trB[2] - fa[0] : fa[2] - trB[0]; a.x += sd * Math.min(need + 2, 34); ch = true; continue; }   // 관장 뒤에서 얼굴이 가리면 옆으로
+        for (const b of A) { if (b === a || b.z < a.z || (b.z === a.z && A.indexOf(b) < A.indexOf(a)) || ovl(fa, body(b)) <= .3) continue;   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 같은 z 면 나중 것이 위에 그려지니 그것도 가림 */
+          const oa = ovl(fa, body(b)), ob = ovl(fb(b), body(a));   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 서로 가리면 덜 가리는 쪽으로 앞뒤 */
+          if (Math.abs(a.b - b.b) < 1.5 && (ob < .2 || ob < oa - .25)) {   /* 경완 '한카리아스가 더 앞인데 왜 뒤로': 깊이가 다르면 앞뒤는 그대로, 옆으로만 비킴 */ const t = a.z; a.z = b.z; b.z = t; if (a.z === b.z) a.z++; }   // 같은 줄이면 앞뒤 바꾸기
+          else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 8; b.x -= sd * 8; }   // 아니면 서로 조금씩 비킴
+          ch = true; } }
+      if (!ch) break; }
+    /* 경완 '대짱이 오른쪽 프레임에 잘림': 얼굴 피해 비킨 뒤 폭이 넘치면 가운데 쪽으로 모아서 좌우 프레임 안에 */
+    for (let it = 0; it < 30; it++) { const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2));
+      if (hi - lo <= W - M * 2) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); break; }
+      const m = (lo + hi) / 2; A.forEach(a => { a.x = m + (a.x - m) * .97; }); } }
+  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
+  // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
+  const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+}
+const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
   const p = pop(`<h4>옷 갈아입기</h4><div class="ft-grid mec-fts">${['', ...fk].map(k => `<button type="button" data-a="f:${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { if (a === 'x') { close(); return meCard(); } if (!a.startsWith('f:')) return; const k = a.slice(2); close(); if (k !== cf) { fitSet(k); save(); renderHome(true); } meCard(); });
   p.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; })); }
-async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
+/* v21.87 경완 '관장카드 배포해': 관장 카드 타입별 테두리 (캔버스 — .gy-pop .win 은 CSS 애니메이션이 꺼져 있어서) */
+/* 관장 카드 타입별 테두리 효과 (시안) — mtfOn(win, ty, g): 카드 둘레에 타입 도트 효과, 등급 0~6 으로 세짐 */
+const MTF_TY = {
+  normal: ['#f4f1e6', '#b8b49a', '#6e6a52', '#ffffff', 'boil'], fire: ['#ffe2c4', '#f08030', '#9a2c08', '#ffd040', 'flame'], water: ['#d8e6ff', '#6890f0', '#1f3f9a', '#bfe8ff', 'bubble'],
+  grass: ['#dcf5cf', '#78c850', '#2c6a24', '#c8f080', 'leaf'], electric: ['#fff6c2', '#f8d030', '#8a6a00', '#ffffff', 'bolt'], ice: ['#e2f8f8', '#98d8d8', '#2e7a8a', '#ffffff', 'snow'],
+  fighting: ['#f8d4cc', '#c03028', '#5e1010', '#ffb040', 'impact'], poison: ['#efd6ef', '#a040a0', '#4a1450', '#d070ff', 'ooze'], ground: ['#f6ead0', '#e0c068', '#7a5a20', '#c89a50', 'dust'],
+  flying: ['#ece6ff', '#a890f0', '#4a3a9a', '#ffffff', 'wind'], psychic: ['#ffdbe6', '#f85888', '#8a1a44', '#ffb0d0', 'orb'], bug: ['#eef4c8', '#a8b820', '#4e5a08', '#e8ff70', 'firefly'],
+  rock: ['#f0e8c8', '#b8a038', '#5e5018', '#8a7a50', 'rock'], ghost: ['#e4dcf2', '#705898', '#2c1e48', '#b080ff', 'wisp'], dragon: ['#ded2ff', '#7038f8', '#2a0e7a', '#ff8050', 'aura'],
+  dark: ['#e6dcd6', '#705848', '#2a1c14', '#e03040', 'smoke'], steel: ['#eef0f6', '#b8b8d0', '#4e5068', '#ffffff', 'shine'], fairy: ['#ffe6ee', '#ee99ac', '#9a3a5a', '#fff0a0', 'heart'],
+};
+const MTF_KO = { 노말: 'normal', 불꽃: 'fire', 물: 'water', 풀: 'grass', 전기: 'electric', 얼음: 'ice', 격투: 'fighting', 독: 'poison', 땅: 'ground', 비행: 'flying', 에스퍼: 'psychic', 벌레: 'bug', 바위: 'rock', 고스트: 'ghost', 드래곤: 'dragon', 악: 'dark', 강철: 'steel', 페어리: 'fairy' };
+const MTF_ORD = ['normal', 'fighting', 'flying', 'poison', 'ground', 'rock', 'bug', 'ghost', 'steel', 'fire', 'water', 'grass', 'electric', 'psychic', 'ice', 'dragon', 'dark', 'fairy'], MTF_IMG = IMG;
+const MTF_RATE = [0, .08, .18, .38, .7, 1.2, 2], MTF_CAP = [0, 6, 14, 28, 50, 85, 140], MTF_M = 34;
+function mtfOn(win, ty, g) {
+  const T = MTF_TY[ty]; if (!T || !win) return; win.dataset.ty = ty; win.dataset.g = g;
+  for (const [i, k] of ['--t1', '--t2', '--t3', '--t4'].entries()) win.style.setProperty(k, T[i]);
+  win.querySelector('.mtf-cv')?._stop?.(); win.querySelector('.mtf-cv')?.remove(); win.querySelector('.mtf-bp')?.remove();
+  { const ti = MTF_ORD.indexOf(ty) + 1, bp = document.createElement('span'); bp.className = 'mtf-bp'; bp.innerHTML = `<img alt="" src="${MTF_IMG}badge/${g + 1}/${ti}.png">`; win.appendChild(bp);
+    /* 경완 11-11 '배지는 뒤 원형 없이, 박스 테두리랑 프로필 박스 테두리 사이 여백에 위아래 살짝씩 걸치게': 카드 윗변~사진 칸 윗변 사이 가운데, 보이는 그림이 위아래로 7px씩 넘게. 11-11 '이름난부터 안쪽 원형을 앞 등급 원형 크기랑 같게' → 모든 등급 같은 배율(원형 지름 44칸 기준) */
+    const fit = () => { const pic = win.querySelector('.bd-pic'); if (!pic) return; const wr = win.getBoundingClientRect(), pr = pic.getBoundingClientRect(); if (!pr.height) return;
+      const gap = pr.top - wr.top, vis = Math.round((gap + 14) * .88),   /* 11-11 '전부 배지 크기 조금씩만 줄여' */ fr = 44 / 64, H = Math.round(vis / fr); bp.style.width = bp.style.height = H + 'px'; bp.style.top = Math.round(gap / 2 - H / 2 - win.clientTop) + 'px'; bp.style.marginLeft = Math.round(-H / 2) + 'px'; };
+    fit(); requestAnimationFrame(fit); setTimeout(fit, 300); }
+  if (!g) return;
+  const cv = document.createElement('canvas'); cv.className = 'mtf-cv'; win.appendChild(cv); const x = cv.getContext('2d');
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), C = T.slice(0, 4).map(hex), fx = T[4];
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`, mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  let W = 0, H = 0, P = [], run = true, fr = 0, dpr = 1, bw = 2;
+  const size = () => { const r = win.getBoundingClientRect(); dpr = Math.min(2, devicePixelRatio || 1); W = Math.round(r.width); H = Math.round(r.height); cv.width = (W + MTF_M * 2) * dpr; cv.height = (H + MTF_M * 2) * dpr; cv.style.width = W + MTF_M * 2 + 'px'; cv.style.height = H + MTF_M * 2 + 'px'; bw = parseFloat(getComputedStyle(win).borderTopWidth) || 2; cv.style.left = cv.style.top = -(MTF_M + bw) + 'px'; };
+  size(); const ro = new ResizeObserver(size); ro.observe(win);
+  const R = Math.random, px = (X, Y, s, c) => { x.fillStyle = c; x.fillRect(Math.round(X), Math.round(Y), s, s); };
+  // 카드 테두리 위 한 점 (e: 0 위 1 오른쪽 2 아래 3 왼쪽), 바깥쪽 o 만큼
+  const L = MTF_M, edge = (E, o = 0) => { const e = E ?? (R() < (W / (W + H)) ? (R() < .5 ? 0 : 2) : (R() < .5 ? 1 : 3)), t = R();
+    return e === 0 ? [L + t * W, L - o, e] : e === 2 ? [L + t * W, L + H + o, e] : e === 1 ? [L + W + o, L + t * H, e] : [L - o, L + t * H, e]; };
+  const out = e => [[0, -1], [1, 0], [0, 1], [-1, 0]][e];
+  const spawn = () => { let p;
+    switch (fx) {
+      case 'flame': { const [X, Y, e] = edge(R() < .25 ? 0 : R() < .3 ? 2 : R() < .5 ? 1 : 3, R() * 3 + (0)); p = { X, Y, vx: (R() - .5) * .3, vy: -(.5 + R() * .9) * (1 + g * .1), l: 0, m: 22 + R() * 22 + g * 3, s: 2 + Math.round(R() * (2 + g * .7)) }; if (e !== 2) p.vy *= .6; break; }   /* 11-11 경완 '불꽃 하단 테두리도 불 붙여' */
+      case 'bubble': case 'ooze': { const [X, Y] = edge(R() < .6 ? 2 : (R() < .5 ? 1 : 3), -1); p = { X, Y, vx: 0, vy: -(.3 + R() * .5), l: 0, m: 60 + R() * 50, s: 2 + Math.round(R() * (1 + g * .45)), w: R() * 6 }; break; }
+      case 'leaf': case 'rock': { const [X, Y] = edge(R() < .7 ? 0 : (R() < .5 ? 1 : 3), 4); p = { X, Y, vx: (R() - .5) * .5, vy: .35 + R() * .5, l: 0, m: 70 + R() * 60, s: fx === 'rock' ? 2 + Math.round(R() * (1 + g * .4)) : 2, w: R() * 6, r: R() < .5 }; break; }
+      case 'snow': { p = { t: R(), v: (.0009 + R() * .0012) * (R() < .5 ? 1 : -1), o: -2 + R() * 9, vx: 0, vy: 0, l: 0, m: 120 + R() * 90, s: R() < .25 + g * .05 ? 3 : 1, w: R() * 6, sf: 1 }; break; }   /* 11-11 경완 '눈송이 위에서 떨어지는 느낌 말고 테두리 따라 흐르게, 모든 테두리' */
+      case 'bolt': { const [X, Y, e] = edge(undefined, 0); p = { X, Y, e, l: 0, m: 6 + R() * 6, n: 3 + Math.round(R() * (2 + g * .6)), len: 12 + R() * (10 + g * 4), bolt: 1 }; break; }
+      case 'impact': { const [X, Y, e] = edge(R() < .5 ? undefined : undefined, 0); const k = g >= 5 && R() < .4; p = { X, Y, e, l: 0, m: 16 + R() * 6, rmax: 6 + g * 2.4 + (k ? 8 : 0), imp: 1 }; break; }
+      case 'dust': { const [X, Y, e] = edge(R() < .7 ? 2 : (R() < .5 ? 1 : 3), 0); const d = out(e); p = { X, Y, vx: d[0] * .3 + (R() - .5) * .5, vy: d[1] * .2 - R() * .15, l: 0, m: 40 + R() * 30, s: 2 + Math.round(R() * (1 + g * .4)), grow: 1 }; break; }
+      case 'wind': { if (g >= 3 && R() < .22) { const [X, Y, e] = edge(undefined, 3 + R() * 6); const h = e === 0 || e === 2; p = { X, Y, vx: h ? 1.6 + R() * 1.4 : 0, vy: h ? 0 : -(1.2 + R()), l: 0, m: 26 + R() * 16, len: 6 + R() * (8 + g * 2), streak: 1 }; break; }
+        if (R() < .75) return; const [X, Y] = edge(undefined, 2 + R() * 8); p = { X, Y, vx: (R() - .5) * .5, vy: .18 + R() * .25, l: 0, m: 110 + R() * 80, s: 3.2 + R() * (1.5 + g * .35), w: R() * 6, rot: R() * 6, vr: (R() - .5) * .03, fe: 1, wc: R() < .15 }; break; }
+      case 'orb': { p = { t: R(), v: (.0012 + R() * .0016) * (R() < .5 ? 1 : -1), o: (R() - .5) * 10, l: 0, m: 140 + R() * 120, s: 2 + Math.round(R() * (1 + g * .5)), orb: 1 }; break; }
+      case 'firefly': { const [X, Y] = edge(undefined, (R() - .3) * 16); p = { X, Y, vx: (R() - .5) * .4, vy: (R() - .5) * .4, l: 0, m: 90 + R() * 80, s: 2, ph: R() * 6 }; break; }
+      case 'wisp': { const [X, Y] = edge(R() < .5 ? 2 : (R() < .5 ? 1 : 3), -2); p = { X, Y, vx: 0, vy: -(.25 + R() * .35), l: 0, m: 80 + R() * 60, s: 3 + Math.round(R() * (1 + g * .5)), w: R() * 6 }; break; }
+      case 'aura': { const [X, Y, e] = edge(undefined, -1); p = { X, Y, vx: 0, vy: -(1 + R() * 1.4), l: 0, m: 22 + R() * 18, len: 4 + R() * (5 + g * 1.6), streak: 1, up: 1, c2: R() < .35 }; break; }
+      case 'boil': { if (R() < .55) return; const [X, Y, e] = edge(undefined, 1 + R() * 3), d = out(e); p = { X, Y, vx: d[0] * (.12 + R() * .1) + (R() - .5) * .08, vy: d[1] * (.12 + R() * .1) - .05, l: 0, m: 70 + R() * 50, s: 3 + R() * (2.5 + g * .5), bo: 1 }; break; }   /* 11-12 경완 '흐르는 느낌 말고 그냥 원 모양 그래픽이 뭉게뭉게 나오는 느낌': 테두리에서 동그라미가 부풀며 피어올랐다 사라짐 */
+      case 'flow': { const F = P.filter(q => q.fl), N = 7 + g; if (F.length >= N) return; const b = F[0]; p = { t: b ? b.t + F.length / N : R(), v: .0007 * (1 + g * .04), o: 4, l: 0, m: 1e9, fl: 1, wd: 8 + g * .6 }; break; }   /* 11-12 경완 '노말 테두리는 테두리 흐르는 느낌으로 새롭게': 빛 띠가 테두리를 따라 한 방향으로 흐름 */
+      case 'puff': { if (R() < .9 || P.filter(q => q.pf).length >= 6 + g) return; const [X, Y] = edge(undefined, 3 + R() * 4); p = { X, Y, vx: 0, vy: 0, dx: 3 + R() * 4, dy: 3 + R() * 4, l: 0, m: 240 + R() * 90, s: 9 + R() * (3 + g * .6), pf: 1 }; break; }   /* 11-12 경완 '여전히 징그러움, 크기 키우고 양 줄여': 드물게·크게·천천히 */   /* 경완 11-11 '노말 테두리 효과는 뭉게뭉게' */
+      case 'smoke': { const [X, Y, e] = edge(undefined, 0); const d = out(e); p = { X, Y, vx: d[0] * .2 + (R() - .5) * .2, vy: d[1] * .2 - .2, l: 0, m: 70 + R() * 50, s: 3 + Math.round(R() * (2 + g * .6)), grow: 1, eye: g >= 4 && R() < .04 }; break; }
+      default: { const [X, Y] = edge(undefined, (R() - .5) * 8); p = { X, Y, vx: 0, vy: fx === 'heart' ? -(.2 + R() * .3) : 0, l: 0, m: 30 + R() * 30, s: 1 + Math.round(R() * (1 + g * .35)), star: 1, hr: fx === 'heart' && R() < .45 }; }
+    }
+    P.push(p); };
+  const perim = t => { t = ((t % 1) + 1) % 1; const tot = 2 * (W + H); let d = t * tot; if (d < W) return [L + d, L]; d -= W; if (d < H) return [L + W, L + d]; d -= H; if (d < W) return [L + W - d, L + H]; d -= W; return [L, L + H - d]; };
+  // 부드러운 그리기 도구 (경완 '픽셀 아니어도 돼': 둥근 빛·곡선)
+  const TAU = Math.PI * 2;
+  const blob = (X, Y, r, c, a) => { if (r <= 0 || a <= 0) return; const q = x.createRadialGradient(X, Y, 0, X, Y, r); q.addColorStop(0, rgba(c, a)); q.addColorStop(.45, rgba(c, a * .55)); q.addColorStop(1, rgba(c, 0)); x.fillStyle = q; x.beginPath(); x.arc(X, Y, r, 0, TAU); x.fill(); };
+  const disc = (X, Y, r, c, a) => { x.fillStyle = rgba(c, a); x.beginPath(); x.arc(X, Y, r, 0, TAU); x.fill(); };
+  const sparkle = (X, Y, r, c, a) => { blob(X, Y, r * 1.8, c, a * .5); x.fillStyle = rgba(c, a); x.beginPath(); x.moveTo(X, Y - r); x.quadraticCurveTo(X, Y, X + r, Y); x.quadraticCurveTo(X, Y, X, Y + r); x.quadraticCurveTo(X, Y, X - r, Y); x.quadraticCurveTo(X, Y, X, Y - r); x.fill(); disc(X, Y, r * .18, [255, 255, 255], a); };
+  const heartP = (X, Y, r, c, a) => { x.fillStyle = rgba(c, a); x.beginPath(); x.moveTo(X, Y + r * .9); x.bezierCurveTo(X - r * 1.6, Y - r * .2, X - r * .7, Y - r * 1.3, X, Y - r * .4); x.bezierCurveTo(X + r * .7, Y - r * 1.3, X + r * 1.6, Y - r * .2, X, Y + r * .9); x.fill(); };
+  // 액자 모서리 (경완 '모서리 효과 지우고 액자처럼 테두리 자체에 모서리'): 띠가 모서리에서 네모 판으로 넓어지고, 판에 비스듬한 이음선·눌린 무늬
+  let bandFill = null;
+  const corners = () => { if (g < 2) return; const s = bw + [0, 0, 6, 9, 12, 15, 18][g];
+    for (const [cx, cy, sx, sy] of [[L, L, 1, 1], [L + W, L, -1, 1], [L, L + H, 1, -1], [L + W, L + H, -1, -1]]) {
+      x.save(); x.translate(cx, cy); x.scale(sx, sy);
+      x.beginPath(); if (g >= 5) { const r = s * .45; x.moveTo(0, 0); x.lineTo(s, 0); x.lineTo(s, s - r); x.arc(s, s, r, -Math.PI / 2, Math.PI, true); x.lineTo(0, s); x.closePath(); } else x.rect(0, 0, s, s);
+      x.setTransform(dpr, 0, 0, dpr, 0, 0); x.fillStyle = bandFill || rgba(C[1], 1); x.fill(); x.restore();
+      x.save(); x.translate(cx, cy); x.scale(sx, sy);
+      x.strokeStyle = rgba(C[2], 1); x.lineWidth = 1; x.beginPath(); if (g >= 5) { const r = s * .45; x.moveTo(s, .5); x.lineTo(s, s - r); x.arc(s, s, r, -Math.PI / 2, Math.PI, true); x.lineTo(.5, s); } else { x.moveTo(s - .5, .5); x.lineTo(s - .5, s - .5); x.lineTo(.5, s - .5); } x.stroke();
+      x.strokeStyle = 'rgba(255,255,255,.55)'; x.beginPath(); x.moveTo(1.5, s - 1); x.lineTo(1.5, 1.5); x.lineTo(s - 1, 1.5); x.stroke();
+      if (g >= 3) { const m = s * .5, q = s * (g >= 5 ? .2 : .17); x.strokeStyle = rgba(C[2], .7); x.lineWidth = 1; x.beginPath(); x.moveTo(m * .62, m * .62 - q); x.lineTo(m * .62 + q, m * .62); x.lineTo(m * .62, m * .62 + q); x.lineTo(m * .62 - q, m * .62); x.closePath(); x.stroke(); }
+      if (g >= 4) { const m = s * .31, q = s * (g >= 5 ? .17 : .14); const rg = x.createLinearGradient(m - q, m - q, m + q, m + q); rg.addColorStop(0, '#fff'); rg.addColorStop(.5, rgba(C[3], 1)); rg.addColorStop(1, rgba(C[2], 1)); x.fillStyle = rg; x.beginPath(); x.moveTo(m, m - q); x.lineTo(m + q, m); x.lineTo(m, m + q); x.lineTo(m - q, m); x.closePath(); x.fill(); }
+      x.restore(); } };
+  const frame = () => { if (g < 2) return; const cx = L + W / 2, cy = L + H / 2, t = fr;
+    if (g >= 3) { const pu = g >= 5 ? (Math.sin(t * (g >= 6 ? .07 : .05)) + 1) / 2 : 0; x.save(); x.shadowColor = rgba(g >= 5 ? C[3] : C[1], .95); x.shadowBlur = [0, 0, 0, 8, 14, 18, 24][g] + pu * (g - 3) * 6; x.strokeStyle = rgba(C[1], .9); x.lineWidth = 3; x.strokeRect(L - .5, L - .5, W + 1, H + 1); if (g >= 6) { x.shadowColor = rgba(C[1], .8); x.shadowBlur = 40 + pu * 24; x.strokeRect(L - .5, L - .5, W + 1, H + 1); } x.restore(); }
+    const a0 = g >= 4 ? t * [0, 0, 0, 0, .006, .011, .018][g] : .6, gr = x.createConicGradient ? x.createConicGradient(a0, cx, cy) : null;
+    const st = g >= 5 ? [C[2], C[1], [255, 255, 255], C[3], C[1], C[2], C[1], [255, 255, 255], C[3], C[1], C[2]] : g >= 4 ? [C[2], C[1], C[3], C[1], C[2], C[1], C[3], C[1], C[2]] : [C[2], C[1], C[2], C[1], C[2]];
+    if (gr) st.forEach((c, i) => gr.addColorStop(i / (st.length - 1), rgba(c, 1)));
+    bandFill = gr; x.save(); x.beginPath(); x.rect(L, L, W, H); x.rect(L + bw, L + bw, W - bw * 2, H - bw * 2); x.fillStyle = gr || rgba(C[1], 1); x.fill('evenodd');
+    x.fillStyle = 'rgba(255,255,255,.5)'; x.fillRect(L + 1, L + 1, W - 2, 1); x.fillRect(L + 1, L + 1, 1, H - 2); x.fillStyle = rgba(C[2], .6); x.fillRect(L + 1, L + H - 2, W - 2, 1); x.fillRect(L + W - 2, L + 1, 1, H - 2);
+    x.strokeStyle = rgba(C[2], 1); x.lineWidth = 1; x.strokeRect(L + .5, L + .5, W - 1, H - 1); x.strokeRect(L + bw - .5, L + bw - .5, W - bw * 2 + 1, H - bw * 2 + 1); x.restore();
+    if (g >= 5) { const per = g >= 6 ? 150 : 210, k = (t % per) / per; if (k < .5) { const sx = L - H + (W + H * 2) * (k / .5); x.save(); x.beginPath(); x.rect(L, L, W, H); x.clip(); const sg = x.createLinearGradient(sx - 40, 0, sx + 40, 0); sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(.5, 'rgba(255,255,255,.28)'); sg.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = sg; x.transform(1, 0, -.5, 1, (L + H) * .5, 0); x.fillRect(sx - 40, L, 80, H); x.restore(); } } };
+  const WALL = { fire: [3, 1, 2], ghost: [3, 1, 2], dragon: [3, 1, 2], psychic: [3, 1, 2], dark: [2, 1, 2], water: [3, 1, 0], electric: [3, 1, 1], ice: [3, 1, 0], grass: [3, 1, 2], fairy: [3, 1, 0], fighting: [3, 1, 2], poison: [3, 1, 2] }[fx === 'ooze' ? 'poison' : ty];
+  const nz = (a, t) => Math.sin(a * .21 + t * .09) * .5 + Math.sin(a * .53 - t * .13) * .3 + Math.sin(a * 1.31 + t * .23) * .2;
+  const wall = () => { if (g < 4 || !WALL || ty === 'electric') return; const amp = [0, 0, 0, 0, 7, 11, 17][g], t = fr, wave = ty === 'water' || ty === 'ice', glowy = ty !== 'dark';
+    const side = (len, map, dir) => { const st = 6, pts = []; for (let a = -st; a <= len + st; a += st) { let h = wave ? (Math.sin(a * .09 - t * .07) * .5 + .5) * amp * .7 + 2 : (nz(a + dir * 97, t) * .5 + .5) * amp * (ty === 'fire' ? 1.15 : 1); pts.push([a, Math.max(0, h)]); }
+      x.beginPath(); let [a0] = pts[0]; let p0 = map(a0, 0); x.moveTo(p0[0], p0[1]); for (const [a, h] of pts) { const p = map(a, -h); x.lineTo(p[0], p[1]); } const pe = map(pts[pts.length - 1][0], 0); x.lineTo(pe[0], pe[1]); x.closePath();
+      const q0 = map(len / 2, 0), q1 = map(len / 2, -amp); const lg = x.createLinearGradient(q0[0], q0[1], q1[0], q1[1]); lg.addColorStop(0, rgba(mix(C[WALL[0]], [255, 255, 255], glowy ? .2 : 0), ty === 'dark' ? .7 : .85)); lg.addColorStop(.5, rgba(C[WALL[1]], .6)); lg.addColorStop(1, rgba(C[WALL[2]], 0)); x.fillStyle = lg; x.fill(); };
+    x.save(); if (glowy) x.globalCompositeOperation = 'lighter'; x.filter = 'blur(1.5px)';
+    side(W, (a, o) => [L + a, L + o], 0); side(H, (a, o) => [L + W - o, L + a], 1); side(H, (a, o) => [L + o, L + H - a], 3);
+    if (ty !== 'ghost') side(W, (a, o) => [L + W - a, L + H - o], 2);
+    x.restore(); };
+  /* 11-11 경완 '드래곤 타입 알처럼 테두리를 휘감으면서 올라가게': 카드 둘레를 도는 나선 띠 하나(알 .egg.lt16 의 보랏빛 띠), 앞을 지날 땐 카드 위로, 뒤로 갈 땐 카드 밖에서만 보임. 위로 계속 올라감 */
+  const spiralRun = (front, pass) => { const R0 = W / 2 + 4 + g, cx = L + W / 2, pitch = H / 1.6, t = fr * (.012 + g * .0015), w0 = 2.2 + g * .75, al = .5 + g * .07, yb = L + H + 30;
+    x.lineCap = x.lineJoin = 'round'; for (let lay = 0; lay < (front ? 3 : 1); lay++) { x.beginPath(); let on = false;
+      for (let y = yb; y >= L - 30; y -= 3) { const th = (yb - y) / pitch * TAU + t * TAU, dz = Math.cos(th), X = cx + Math.sin(th) * R0;
+        if ((dz > 0) === front) { on ? x.lineTo(X, y) : x.moveTo(X, y); on = true; } else on = false; }
+      if (front) { x.strokeStyle = lay === 0 ? rgba(C[1], al * .28) : lay === 1 ? rgba(mix(C[1], [255, 255, 255], .3), al * .8) : rgba(mix(C[3], [255, 255, 255], .4), al * .55); x.lineWidth = lay === 0 ? w0 * 3 : lay === 1 ? w0 : w0 * .3; }
+      else { x.strokeStyle = rgba(C[2], al * .5); x.lineWidth = w0 * .7; }
+      x.stroke(); } };
+  const spiral = () => { if (ty === 'dragon' && g >= 1) { x.save(); spiralRun(false); x.restore(); } };
+  const spiralF = () => { if (ty === 'dragon' && g >= 1) { x.save(); spiralRun(true); x.restore(); } };
+  const step = () => { if (!run) return; requestAnimationFrame(step); if (!win.isConnected) return stop(); fr++;
+    let r = MTF_RATE[g]; while (r > 0) { if (R() < r && P.length < MTF_CAP[g]) spawn(); r -= 1; }
+    x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W + L * 2, H + L * 2); x.imageSmoothingEnabled = true; frame(); corners();
+    const glow = fx !== 'puff' && fx !== 'boil' && fx !== 'smoke' && fx !== 'dust' && fx !== 'rock' && fx !== 'leaf' && fx !== 'wind';
+    x.save(); x.beginPath(); x.rect(0, 0, W + L * 2, H + L * 2); x.rect(L + bw, L + bw, W - bw * 2, H - bw * 2); x.clip('evenodd'); wall(); spiral(); x.globalCompositeOperation = glow ? 'lighter' : 'source-over';
+    const sz = 1 + g * .12;
+    P = P.filter(p => { p.l++; const k = p.l / p.m; if (k >= 1) return false; let a = k < .15 ? k / .15 : 1 - Math.max(0, (k - .6) / .4);
+      if (p.X != null) { const ed = Math.min(p.X, p.Y, W + L * 2 - p.X, H + L * 2 - p.Y); if (ed < 16) { if (ed <= 0) return false; a *= ed / 16; } }   /* 11-11 캔버스 끝에서 잘린 선이 안 보이게 가장자리에서 흐려짐 */
+      if (p.sf) { p.t += p.v; const [X0, Y0] = perim(p.t), o = p.o + Math.sin(p.l * .06 + p.w) * 2; p.X = X0 + (X0 <= L + .5 ? -o : X0 >= L + W - .5 ? o : 0); p.Y = Y0 + (Y0 <= L + .5 ? -o : Y0 >= L + H - .5 ? o : 0); p.w += .03; }
+      if (p.bo) { p.X += p.vx; p.Y += p.vy; const r = p.s * sz * (.45 + .75 * Math.sqrt(Math.min(1, k * 1.4))), A2 = a * (k < .7 ? 1 : 1 - (k - .7) / .3);
+        /* 11-12 경완 '솜뭉치 같은 부드러운 느낌': 딱딱한 원 대신 가장자리가 흐린 둥근 빛 여러 겹 + 보송한 작은 뭉치 */
+        blob(p.X, p.Y + r * .15, r * 1.5, [214, 204, 178], A2 * .35); blob(p.X, p.Y, r * 1.35, [255, 251, 240], A2 * .95); if (!p.fz) p.fz = [0, 1, 2, 3, 4].map(i => [Math.cos(i * 1.257 + p.s) * .55, Math.sin(i * 1.257 + p.s) * .5, .55 + R() * .25]);
+        for (const [u, v, q] of p.fz) blob(p.X + u * r, p.Y + v * r, r * q, [255, 253, 247], A2 * .7); blob(p.X - r * .25, p.Y - r * .3, r * .55, [255, 255, 255], A2 * .8); return true; }
+      if (p.fl) { p.t += p.v; a = Math.min(1, p.l / 40); const [X0, Y0] = perim(p.t), o = p.o, X = X0 + (X0 <= L + .5 ? -o : X0 >= L + W - .5 ? o : 0), Y = Y0 + (Y0 <= L + .5 ? -o : Y0 >= L + H - .5 ? o : 0) + Math.sin(p.t * 60) * 1.2; p.X = X; p.Y = Y;   /* 11-12 경완 '흐르는 걸 뭉게뭉게 그래픽으로': 노말 알 크림 구름이 같은 간격·같은 속도로 테두리를 따라 흐름 */
+        const sc = p.wd * sz, CL = [[-.44, .24, .44], [.04, -.12, .56], [.52, .24, .42]]; blob(X, Y, sc * 1.8, [255, 238, 200], a * .45);
+        x.save(); x.globalAlpha = a; for (const [fill, dy] of [['rgba(190,150,90,.25)', 1.5], ['#fff6e0', 0]]) { x.fillStyle = fill; x.beginPath(); for (const [u, v, r] of CL) { x.moveTo(X + u * sc + r * sc, Y + v * sc + dy); x.arc(X + u * sc, Y + v * sc + dy, r * sc, 0, TAU); } x.ellipse(X, Y + sc * .4 + dy, sc * .78, sc * .3, 0, 0, TAU); x.fill(); }
+        x.fillStyle = '#fffaf0'; x.beginPath(); x.arc(X - .06 * sc, Y - .22 * sc, .34 * sc, 0, TAU); x.fill(); x.restore(); return true; }
+      if (p.orb) { p.t += p.v; const [X, Y0] = perim(p.t), Y = Y0 + p.o + Math.sin(p.l * .08) * 3; blob(X, Y, p.s * 3.2 * sz, C[1], .55 * a); disc(X, Y, p.s * .7 * sz, mix(C[3], [255, 255, 255], .6), a); return true; }
+      if (p.bolt) { const d = out(p.e), tx = [-d[1], d[0]]; let X = p.X, Y = p.Y; const pts = [[X, Y]]; for (let i = 0; i < p.n; i++) { const st = p.len / p.n; X += tx[0] * st + d[0] * (R() - .3) * 6; Y += tx[1] * st + d[1] * (R() - .3) * 6; pts.push([X, Y]); }
+        x.save(); x.lineJoin = x.lineCap = 'round'; x.shadowColor = rgba(C[1], 1); x.shadowBlur = 8 + g * 2; x.strokeStyle = rgba(C[1], a); x.lineWidth = g >= 5 ? 3.5 : 2.5; x.beginPath(); pts.forEach(([u, v], i) => i ? x.lineTo(u, v) : x.moveTo(u, v)); x.stroke(); x.shadowBlur = 0; x.strokeStyle = rgba([255, 255, 255], a); x.lineWidth = 1.2; x.stroke(); x.restore(); if (R() < .4) sparkle(X, Y, 3, [255, 255, 255], a); return true; }
+      if (p.imp) { const rr = p.rmax * Math.min(1, k * 1.6) * sz; x.strokeStyle = rgba(k < .4 ? C[3] : C[1], a); x.lineWidth = 2.5 * (1 - k) + .5; x.beginPath(); x.arc(p.X, p.Y, rr, 0, TAU); x.stroke(); x.lineWidth = 2; for (let i = 0; i < 6; i++) { const an = i / 6 * TAU + p.m; x.beginPath(); x.moveTo(p.X + Math.cos(an) * rr * .5, p.Y + Math.sin(an) * rr * .5); x.lineTo(p.X + Math.cos(an) * rr * 1.25, p.Y + Math.sin(an) * rr * 1.25); x.stroke(); } if (k < .3) blob(p.X, p.Y, 8 * sz, C[3], 1); return true; }
+      if (p.streak) { p.X += p.vx; p.Y += p.vy; const c = p.c2 ? C[3] : p.up ? C[1] : [255, 255, 255], x2 = p.vx ? p.X - p.len * 1.4 : p.X, y2 = p.vx ? p.Y : p.Y + p.len * 1.4; const lg = x.createLinearGradient(p.X, p.Y, x2, y2); lg.addColorStop(0, rgba(c, a * .9)); lg.addColorStop(1, rgba(c, 0)); x.strokeStyle = lg; x.lineCap = 'round'; x.lineWidth = p.up ? 2.2 : 1.6; x.beginPath(); x.moveTo(p.X, p.Y); x.lineTo(x2, y2); x.stroke(); if (p.f) { x.save(); x.translate(p.X, p.Y); x.rotate(.3 + Math.sin(p.l * .2) * .4); x.fillStyle = rgba(C[1], a); x.beginPath(); x.ellipse(0, 0, 5, 2, 0, 0, TAU); x.fill(); x.restore(); } return true; }
+      p.w = (p.w || 0) + .08; p.X += p.vx + (fx === 'wind' || fx === 'leaf' || fx === 'snow' || fx === 'wisp' || fx === 'bubble' || fx === 'ooze' ? Math.sin(p.w) * .35 : 0); p.Y += p.vy;
+      if (fx === 'firefly') { p.vx += (R() - .5) * .08; p.vy += (R() - .5) * .08; p.vx *= .97; p.vy *= .97; const b = (Math.sin(p.l * .15 + p.ph) + 1) / 2; blob(p.X, p.Y, 7 * sz, C[3], .5 * a * b); disc(p.X, p.Y, 1.3, mix(C[3], [255, 255, 255], .5), a * (.3 + .7 * b)); return true; }
+      if (fx === 'flame') { const c = k < .3 ? mix([255, 255, 255], C[3], k / .3) : k < .65 ? mix(C[3], C[1], (k - .3) / .35) : mix(C[1], C[2], (k - .65) / .35); const r2 = p.s * 1.5 * sz * (1 - k * .55); blob(p.X, p.Y, r2 * 1.6, c, a * .9); if (k < .4) blob(p.X, p.Y + r2 * .3, r2 * .6, [255, 240, 200], a * .8); return true; }
+      if (fx === 'bubble' || fx === 'ooze') { const r2 = p.s * 1.1 * sz; if (fx === 'ooze') { blob(p.X, p.Y, r2 * 1.5, C[1], a * .5); disc(p.X, p.Y, r2, C[3], a * .45); } x.strokeStyle = rgba(fx === 'ooze' ? C[3] : C[3], a); x.lineWidth = 1.2; x.beginPath(); x.arc(p.X, p.Y, r2, 0, TAU); x.stroke(); x.strokeStyle = rgba([255, 255, 255], a * .9); x.beginPath(); x.arc(p.X, p.Y, r2 * .6, Math.PI * 1.1, Math.PI * 1.45); x.stroke(); if (k > .92 && fx === 'ooze') for (let i = 0; i < 4; i++) disc(p.X + (R() - .5) * 10, p.Y + (R() - .5) * 10, 1.2, C[3], 1); return true; }
+      if (fx === 'leaf') { x.save(); x.translate(p.X, p.Y); x.rotate(p.w * 1.3 + (p.r ? 1 : 0)); const s2 = 3.2 * sz; x.fillStyle = rgba(Math.sin(p.w * 1.5) > 0 ? C[1] : mix(C[1], C[2], .4), a); x.beginPath(); x.moveTo(-s2 * 1.4, 0); x.quadraticCurveTo(0, -s2, s2 * 1.4, 0); x.quadraticCurveTo(0, s2, -s2 * 1.4, 0); x.fill(); x.strokeStyle = rgba(C[2], a * .8); x.lineWidth = .8; x.beginPath(); x.moveTo(-s2 * 1.2, 0); x.lineTo(s2 * 1.2, 0); x.stroke(); x.restore(); return true; }
+      if (fx === 'rock') { x.save(); x.translate(p.X, p.Y); x.rotate(p.w * (p.r ? 1 : -1)); const s2 = p.s * 1.2 * sz; x.fillStyle = rgba(C[1], a); x.beginPath(); x.moveTo(-s2, s2 * .6); x.lineTo(-s2 * .3, -s2); x.lineTo(s2, -s2 * .2); x.lineTo(s2 * .5, s2); x.closePath(); x.fill(); x.fillStyle = rgba(C[2], a * .7); x.beginPath(); x.moveTo(s2 * .5, s2); x.lineTo(s2, -s2 * .2); x.lineTo(s2 * .2, 0); x.closePath(); x.fill(); x.restore(); return true; }
+      if (fx === 'snow') { if (p.s === 3) { x.save(); x.translate(p.X, p.Y); x.rotate(p.w * .5); x.strokeStyle = rgba([255, 255, 255], a); x.lineWidth = 1.1; x.lineCap = 'round'; const s2 = 4 * sz; for (let i = 0; i < 3; i++) { x.rotate(Math.PI / 3); x.beginPath(); x.moveTo(-s2, 0); x.lineTo(s2, 0); x.stroke(); } x.restore(); blob(p.X, p.Y, 6 * sz, C[1], a * .4); } else blob(p.X, p.Y, 2.6 * sz, [255, 255, 255], a); return true; }
+      if (fx === 'wisp') { const c = mix(C[3], C[1], k), r2 = p.s * 1.3 * sz * (1 - k * .4); blob(p.X, p.Y, r2 * 2, c, a * .7); blob(p.X, p.Y + r2, r2 * 1.2, C[1], a * .35); disc(p.X, p.Y, r2 * .35, [255, 255, 255], a * .7); return true; }
+      if (p.pf) { const sc = (.7 + Math.min(1, k / .3) * .3 + Math.max(0, k - .3) * .15) * p.s * sz, X = p.X + k * p.dx, Y = p.Y - k * p.dy;   /* 11-11 경완 '노말 알에 쓰는 뭉게뭉게처럼': 알(.egg.lt1)의 크림색 구름 3봉우리+밑 타원, 오른쪽 위로 떠가며 커짐 */
+        const CL = [[-.44, .24, .44], [.04, -.12, .56], [.52, .24, .42]], aa = a * .95; blob(X, Y, sc * 1.9, [255, 236, 190], aa * .55);
+        x.save(); x.globalAlpha = aa; 
+        for (const [fill, dy] of [['rgba(190,150,90,.22)', 1.5], ['#fff6e0', 0]]) { x.fillStyle = fill; x.beginPath(); for (const [u, v, r] of CL) { x.moveTo(X + u * sc + r * sc, Y + v * sc + dy); x.arc(X + u * sc, Y + v * sc + dy, r * sc, 0, TAU); } x.ellipse(X, Y + sc * .4 + dy, sc * .78, sc * .3, 0, 0, TAU); x.fill(); }
+        x.fillStyle = '#fffaf0'; x.beginPath(); x.arc(X + .04 * sc - sc * .1, Y - .12 * sc - sc * .1, .56 * sc * .6, 0, TAU); x.fill(); x.restore(); return true; }
+      if (fx === 'dust' || fx === 'smoke') { const r2 = p.s * (1 + k * 1.4) * 1.3 * sz; blob(p.X, p.Y, r2, fx === 'smoke' ? C[2] : C[1], a * (fx === 'smoke' ? .55 : .5)); if (p.eye) { blob(p.X - 3, p.Y, 3, C[3], a); blob(p.X + 3, p.Y, 3, C[3], a); } return true; }
+      if (p.fe) { p.rot += p.vr + Math.sin(p.w) * .012; x.save(); x.translate(p.X, p.Y); x.rotate(p.rot + Math.sin(p.w) * .5); const L2 = p.s * 1.6 * sz, W2 = L2 * .32, col = p.wc ? C[1] : mix(C[1], [255, 255, 255], .7);
+        const fg = x.createLinearGradient(0, -L2, 0, L2); fg.addColorStop(0, rgba([255, 255, 255], a * .85)); fg.addColorStop(.7, rgba(col, a * .75)); fg.addColorStop(1, rgba(col, a * .3)); x.fillStyle = fg;
+        x.beginPath(); x.moveTo(0, -L2); x.bezierCurveTo(W2 * 1.3, -L2 * .5, W2, L2 * .5, 0, L2 * .85); x.bezierCurveTo(-W2 * .9, L2 * .45, -W2 * 1.2, -L2 * .45, 0, -L2); x.fill();
+                x.strokeStyle = rgba(C[1], a * .45); x.lineWidth = .7; x.beginPath(); x.moveTo(0, -L2 * .9); x.quadraticCurveTo(W2 * .15, 0, 0, L2 * 1.15); x.stroke(); x.restore(); return true; }
+      if (p.hr) { heartP(p.X, p.Y, 3.4 * sz, C[1], a); blob(p.X, p.Y, 8 * sz, C[3], a * .35); return true; }
+      const tw = (Math.sin(p.l * .3) + 1) / 2; sparkle(p.X, p.Y, (p.s + 1.5) * 1.3 * sz, fx === 'shine' || fx === 'spark' ? [255, 255, 255] : C[3], a * (.4 + .6 * tw));
+      return true; });
+    x.restore(); x.globalCompositeOperation = 'source-over'; spiralF(); };
+  const stop = () => { run = false; ro.disconnect(); }; cv._stop = stop; requestAnimationFrame(step);
+}
+async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6);   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec">
-    <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
-    <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
+  const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
+    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}" data-st="${mecSt(P.sp) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
+    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${(g.w || 0) + (g.l || 0)}</b>전 <b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
+  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[(g.ty | 0) - 1], G.i); }
+  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
+  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); } }
 function sfCard(s) { loadJs('gymb/battle.js', 'GymBattle').then(() => loadJs('gymb/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
