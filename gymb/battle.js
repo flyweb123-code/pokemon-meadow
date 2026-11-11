@@ -1623,7 +1623,7 @@ async function expGain(X) {
 /* v20.85 경완 '번뜩일 때 스프라이트 효과 다시 — 도트 아니어도 되니 퀄 높게': 포켓몬이 하얗게 번쩍 → 금빛 광채, 뒤로 빛줄기 회전, 머리 위 렌즈 플레어 별, 주위 반짝이, 화면 금빛 비네트 */
 /* v22.15 경완 '상 번뜩임은 파칭 그대로 + 머리를 스치는 번개': 파칭과 함께 머리 위를 가로지르는 번개 두 줄기 (0.12초·0.38초), 레어는 무지갯빛 */
 const EG_ZP = ['M0 14 L16 9 L13 15 L30 6 L27 13 L46 3 L43 10 L64 2', 'M0 4 L14 10 L12 4 L28 12 L26 6 L44 13 L41 7 L60 12'];
-function egZap(add, hx, hy, c) { [[0, -34, -14, -12], [1, -26, -6, 10]].forEach(([k, x, y, r], n) => setTimeout(() => { if (!B) return; const e = add('bt-egz' + c, hx + x, hy + y, `<svg viewBox="-2 -2 68 20"><path d="${EG_ZP[k]}"/><path class="c" d="${EG_ZP[k]}"/></svg>`); e.style.setProperty('--r', r + 'deg'); }, [120, 380][n])); }
+function egZap(add, hx, hy, c) { try { window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} [[0, -58, -20, -12], [1, -50, -6, 9], [0, -54, -30, -24]].forEach(([k, x, y, r], n) => setTimeout(() => { if (!B) return; const e = add('bt-egz' + c, hx + x, hy + y, `<svg viewBox="-2 -2 68 20"><path d="${EG_ZP[k]}"/><path class="c" d="${EG_ZP[k]}"/></svg>`); e.style.setProperty('--r', r + 'deg'); add('bt-egzf' + c, 0, 0); }, [90, 320, 560][n])); }   /* v22.15 경완 '번개 잘 안 보임, 천둥 효과음': 더 크게·세 줄기·번쩍일 때 화면 하얗게, 플래티넘 천둥 DP_KAMI */
 /* v22.15 경완 '번뜩일 때 배경 곡 줄이기': 보통 중·상, 레어는 모두 — 곡을 ¼ 로 줄였다가 ms 뒤 다시 */
 const egDuck = ms => { try { window.GymBGM?.duck?.(.25, .15); setTimeout(() => { try { window.GymBGM?.duck?.(1, .5); } catch (e) {} }, ms); } catch (e) {} };
 function egFx(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
