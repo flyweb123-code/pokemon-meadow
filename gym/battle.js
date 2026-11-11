@@ -27,9 +27,9 @@ const getJ = u => fetch(`${u}?v=${VER}`).then(r => r.ok ? r.json() : null).catch
 function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
-    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json')
+    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json'), getJ(`${IMG}pk/bwa.json`)
     , evyLoad()
-  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg]) => { EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
+  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw]) => { BWA = bw || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -395,6 +395,12 @@ function monEl(side) { return $b(`.bt-mon.${side}`); }
 // 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
+// v21.7x 경완 '팬 도트 gif로 다 바꿔줘': 650~1025·지역 폼은 PokeAPI/sprites(고정 커밋)의 블랙·화이트풍 팬 도트 gif. 있는 것만 (gym/img/pk/bwa.json: 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷), 없으면 예전 그림
+const BWG = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';
+let BWA = {};
+function bwUrl(sp, b, sh, f) { const m = BWA[sp]; if (m == null) return null;
+  if (b) { const d = f && !sh && m & 16 ? 'back/female/' : sh && m & 4 ? 'back/shiny/' : m & 1 ? 'back/' : null; return d && `${BWG}${d}${sp}.gif`; }
+  return `${BWG}${f && !sh && m & 8 ? 'female/' : sh && m & 2 ? 'shiny/' : ''}${sp}.gif`; }
 // 배틀 중 바뀐 폼 (tools/gym/mkforms.py): 1~649 는 블랙·화이트 gif 폼 이름, 650~ 은 gym/img/pk/fm/<쇼다운 id>.png
 const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette',
   rotomheat: 'rotom-oheat', rotomwash: 'rotom-owash', rotomfrost: 'rotom-ofrost', rotomfan: 'rotom-ofan', rotommow: 'rotom-omow', tornadustherian: 'tornadus-otherian', thundurustherian: 'thundurus-otherian', landorustherian: 'landorus-otherian',
@@ -403,6 +409,7 @@ const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny
 const BFM = { 479: { Heat: 'rotomheat', Wash: 'rotomwash', Frost: 'rotomfrost', Fan: 'rotomfan', Mow: 'rotommow' }, 641: { Therian: 'tornadustherian' }, 642: { Therian: 'thundurustherian' }, 645: { Therian: 'landorustherian' }, 905: { Therian: 'enamorustherian' }, 892: { Rapid_Strike: 'urshifurapidstrike' }, 849: { Lowkey: 'toxtricitylowkey' }, 745: { Midnight: 'lycanrocmidnight', Dusk: 'lycanrocdusk' }, 493: { Bug: ['arceusbug', 'insectplate'], Dark: ['arceusdark', 'dreadplate'], Dragon: ['arceusdragon', 'dracoplate'], Electric: ['arceuselectric', 'zapplate'], Fighting: ['arceusfighting', 'fistplate'], Fire: ['arceusfire', 'flameplate'], Flying: ['arceusflying', 'skyplate'], Ghost: ['arceusghost', 'spookyplate'], Grass: ['arceusgrass', 'meadowplate'], Ground: ['arceusground', 'earthplate'], Ice: ['arceusice', 'icicleplate'], Poison: ['arceuspoison', 'toxicplate'], Psychic: ['arceuspsychic', 'mindplate'], Rock: ['arceusrock', 'stoneplate'], Steel: ['arceussteel', 'ironplate'], Water: ['arceuswater', 'splashplate'], Fairy: ['arceusfairy', 'pixieplate'] }, 649: { Douse: ['genesectdouse', 'dousedrive'], Shock: ['genesectshock', 'shockdrive'], Burn: ['genesectburn', 'burndrive'], Chill: ['genesectchill', 'chilldrive'] }, 386: { Attack: 'deoxysattack', Defense: 'deoxysdefense', Speed: 'deoxysspeed' }, 492: { Sky: 'shayminsky' }, 483: { Origin: ['dialgaorigin', 'adamantcrystal'] }, 484: { Origin: ['palkiaorigin', 'lustrousglobe'] }, 487: { Origin: ['giratinaorigin', 'griseouscore'] }, 720: { Unbound: 'hoopaunbound' }, 888: { Crowned_Sword: ['zaciancrowned', 'rustedsword'] }, 889: { Crowned_Shield: ['zamazentacrowned', 'rustedshield'] }, 718: { 10: 'zygarde10', Complete: ['zygarde', '', 'powerconstruct'] }, 1017: { '': ['ogerpon', 'tealmask'], Wellspring: ['ogerponwellspring', 'wellspringmask'], Hearthflame: ['ogerponhearthflame', 'hearthflamemask'], Cornerstone: ['ogerponcornerstone', 'cornerstonemask'] }, 646: { Black: 'kyuremblack', White: 'kyuremwhite' }, 741: { Pom_Pom: 'oricoriopompom', Pa_U: 'oricoriopau', Sensu: 'oricoriosensu' } };   // v16.88: 폼 도구 — [쇼다운 종, 지니는 도구]
 const anOf = A => A && (FMA[A.fm] || ANIM[A.sp]);
 function gifUrl(sp, b, sh, f, fm) {
+  if (+sp >= 650 && (!fm || fm === toID(D?.sp?.[sp]?.id || ''))) return bwUrl(sp, b, sh, f);   /* 배틀 중 바뀐 폼은 예전 그림 */
   if (RFA[fm] || rfKey(sp)) return null;   /* 지역 폼은 gif 없이 저장소 그림 */
   if (FM_G[fm]) return `${G5}s${FM_G[fm]}${b ? '-b' : ''}${sh ? '-s' : ''}.gif`;
   const g = ANIM.g?.[sp]; if (!g) return null; const [nm, bits] = g, has = k => !k || (bits >> G5K.indexOf(k) & 1);
