@@ -4020,12 +4020,15 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* 경완 2026-11-12 '메가진화 버튼 배경 퀄 높여': 메가 켜면 아래 화면 = 연보라 바탕 + 천천히 도는 빛살 + 가운데 무지개 고리 + 메가 마크 + 떠오르는 반짝이 (몬스터볼 자리) */
 .bt.mob .bt-bot::before,.bt.mob .bt-bot::after{content:'';position:absolute;pointer-events:none;opacity:0;transition:opacity .45s;z-index:0}
 .bt.mob .bt-panel{z-index:1}
-.bt.mob .bt-bot::before{left:50%;top:50%;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,0) 30%),conic-gradient(from 0deg,rgba(255,120,200,.55),rgba(255,200,120,.55),rgba(255,250,140,.5),rgba(120,240,170,.5),rgba(110,200,255,.55),rgba(150,120,255,.6),rgba(255,120,200,.55)),repeating-conic-gradient(rgba(255,255,255,.7) 0 5deg,rgba(255,255,255,0) 5deg 15deg);
-  background-blend-mode:normal,soft-light,normal;-webkit-mask:radial-gradient(circle,#000 18%,rgba(0,0,0,.55) 38%,transparent 64%);mask:radial-gradient(circle,#000 18%,rgba(0,0,0,.55) 38%,transparent 64%);animation:gkRays 16s linear infinite}
+.bt.mob .bt-bot::before{inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),linear-gradient(160deg,#e6d6ff,#ffd6ec 40%,#d8e6ff 75%,#e6d6ff);animation:gkHue 20s linear infinite}   /* 경완 '빛줄기 없애고 은은하게 계속 바뀌게': 파스텔 띠가 천천히 흘러감 */
 .bt.mob .bt-bot::after{inset:0;background:url(../gym/img/dbk/Mega/icon.png) center/34px 61px no-repeat,radial-gradient(1.6px 1.6px at 18% 30%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 72% 22%,#fff 60%,transparent),radial-gradient(2px 2px at 84% 64%,#fff 60%,transparent),radial-gradient(1.4px 1.4px at 30% 78%,#fff 60%,transparent),radial-gradient(1.8px 1.8px at 56% 88%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 8% 60%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 94% 40%,#fff 60%,transparent);
   background-size:34px 61px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px;image-rendering:pixelated;filter:drop-shadow(0 0 6px rgba(190,140,255,.9));animation:gkSpark 5s linear infinite}
 .bt.mob.gkbg-mega .bt-bot{background-image:linear-gradient(#f4edff,#dccbff 55%,#efe6ff);background-blend-mode:normal}
-.bt.mob.gkbg-mega .bt-bot::before{opacity:.9}.bt.mob.gkbg-mega .bt-bot::after{opacity:.55}
-@keyframes gkRays{to{transform:rotate(360deg)}}
+.bt.mob.gkbg-mega .bt-bot::before{opacity:1}.bt.mob.gkbg-mega .bt-bot::after{opacity:.55}
+@keyframes gkHue{to{filter:hue-rotate(360deg)}}
 @keyframes gkSpark{to{background-position:center,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px}}
+
+/* 경완 2026-11-12 '위아래 검정 여백 다 채워줘': 아래 화면은 홈 막대 자리까지(버튼판만 --pb 위로), 위 상태 막대 자리는 배틀 배경 윗줄을 거울처럼 이어 붙임 */
+.bt.mob .bt-panel{bottom:var(--pb,0px)}
+.bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
+.bt.mob::after{display:none}

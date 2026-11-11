@@ -336,14 +336,14 @@ function buildUI() {
 // 위 화면은 맨 위 폭에 꽉 차게, 바로 밑에 대화창, 남는 높이는 모두 아래(터치) 화면 — 아래 화면은 세로로만 더 늘리고 글자·그림은 원래 비율로 되돌린다.
 // 넓은 화면은 예전처럼 두 화면을 가운데에
 let safe = null; const TOP_H = 144;   // 본가 대화창 윗선(144): 뒷모습 그림이 거기서 끝난다 (경완 2026-10-28)   // 대화창을 밖으로 꺼내면 위 화면은 배틀 장면 높이만
-const safeIn = () => { if (safe) return safe; const q = document.createElement('div'); q.style.cssText = 'position:fixed;visibility:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)'; document.body.appendChild(q);
+const safeIn = () => { if (safe) return safe; const q = document.createElement('div'); q.style.cssText = 'position:fixed;visibility:hidden;padding-top:var(--si-top,env(safe-area-inset-top));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom))'; document.body.appendChild(q);
   const cs = getComputedStyle(q); safe = [parseFloat(cs.paddingTop) || 0, parseFloat(cs.paddingBottom) || 0]; q.remove(); return safe; };
 function fit() {
   if (!el) return; const W = innerWidth, H = innerHeight, mob = H / W > 1.45, msgEl = $b('.bt-msg');
   el.classList.toggle('mob', mob);
-  if (mob) { const k = W / 256, [st, sb] = safeIn(), mh = 52 * k, tall = H - sb - st - (TOP_H + 52 + 192) * k >= 0, top = st + (tall ? TOP_H : 192) * k, bt = top + mh, bh = H - sb - bt;
+  if (mob) { const k = W / 256, [st, sb] = safeIn(), mh = 52 * k, tall = H - sb - st - (TOP_H + 52 + 192) * k >= 0, top = st + (tall ? TOP_H : 192) * k, bt = top + mh, bh = H - bt;   /* 아래 화면을 홈 막대 자리까지 늘려 검정 여백 없앰, 버튼판만 --pb 만큼 위로 (경완 2026-11-12) */
     el.classList.toggle('msgmid', tall); (tall ? $b('.bt-mid') : $b('.bt-top')).appendChild(msgEl);
-    [['--k', k], ['--bh', (tall ? bh / k : 192) + 'px'], ['--st', st + 'px'], ['--mt', top + 'px'], ['--mh', mh + 'px'], ['--bt', (tall ? bt : H - sb - 192 * k) + 'px']].forEach(([n, v]) => el.style.setProperty(n, v)); return; }
+    [['--k', k], ['--pb', (tall ? sb / k : 0) + 'px'], ['--bh', (tall ? bh / k : 192) + 'px'], ['--st', st + 'px'], ['--mt', top + 'px'], ['--mh', mh + 'px'], ['--bt', (tall ? bt : H - sb - 192 * k) + 'px']].forEach(([n, v]) => el.style.setProperty(n, v)); return; }
   el.classList.remove('msgmid'); $b('.bt-top').appendChild(msgEl);
   const k = Math.max(1, Math.floor(Math.min(W / 256, (H - 20) / 394) * 4) / 4); el.style.setProperty('--k', k);
 }
@@ -420,7 +420,7 @@ async function dxCtx(s, X, from, to, item) {
   if (!mon && from !== to) mon = await dxMon(pkSrc(X.sp, { s: X.shiny }));   // 움직이는 그림을 못 받으면 원래 모습 그림으로 (메가 모습으로 대신하면 진화 전부터 메가로 보임)
   return { host: $b('.bt-top'), path: `${IMG}dbk/`, opp: s === 'e', wild: false, bg: { url: bu, pos: bp, size: '1024px 384px' }, base: { url: `${IMG}bt/pl_e.png`, w: 256, h: 128 },
     tr: { url: B.trU?.[s] || `${IMG}tr/pt_m.png`, w: (tr?.w || 80) * 2, h: (tr?.h || 80) * 2 }, item: it ? { url: item, w: it.w > 40 ? it.w : it.w * 1.6, h: it.w > 40 ? it.h : it.h * 1.6 } : null,
-    mon: mon || too, to: too || mon, se: n => dxSe(n, panOf(s)), cry: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } };
+    mon: mon || too, to: too || mon, se: n => dxSe(n, panOf(s)), cry: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }, cryBig: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K * 1.8, .5); GA.cry?.(X.sp, 0, .82, CRY_K * .9); } catch (e) {} vibBig(3, 3); } };   /* 메가진화 뒤 울음소리: 크게 + 메아리 + 낮은 겹소리 + 큰 진동 (경완 2026-11-12) */
 }
 const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
@@ -998,7 +998,7 @@ async function run(opts) {
   await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
   const encDone = await encounter(opts);
   el.classList.remove('off'); el.hidden = false; el.className = 'bt intro now'; fit();   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
-  $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`;
+  $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`; el.style.setProperty('--bgi', `url(${new URL(`${IMG}bt/bg_${opts.bg || 'in1'}.png`, location.href).href})`);   /* CSS 변수 속 주소는 gym.css 기준으로 풀려서 절대 주소로 */   /* 위 상태 막대 자리도 배틀 배경으로 채움 */
   // 지난 배틀의 away·back·throw 가 남아 있으면 트레이너가 미끄러져 들어오지 않고 제자리에 있었다 (경완 2026-10-28 '발판만 움직이고 캐릭터는 안 움직임')
   const trE = $b('.bt-tr.e'), trP = $b('.bt-tr.p'), uE = trSrc(opts.foe.tr), uP = opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`;
   trE.className = 'bt-tr e'; trP.className = 'bt-tr p';
