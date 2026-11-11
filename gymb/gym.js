@@ -258,6 +258,8 @@ function build() {
       <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
   $g('.gy-plate').onclick = e => { sfx('tap'); if (e.target.closest('.gy-rpa')) return perkPop(); infoPop(); };   // v20.81 경완 '홈 평판 게이지 누르면 체육관 등급별 혜택 카드'
+  { const pl = $g('.gy-plate'), off = () => pl.classList.remove('prs');   // v21.65 경완 '평판 게이지만 눌러도 리본·배지가 눌림 → 리본 누르는 범위 딱 그 모양으로': 눌림 모션은 리본·배지를 눌렀을 때만 (CSS 가 리본 모양·배지 동그라미만 눌리게)
+    pl.addEventListener('pointerdown', e => { if (!e.target.closest('.gy-rpa')) pl.classList.add('prs'); }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => pl.addEventListener(k, off)); }
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
