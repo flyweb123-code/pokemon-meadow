@@ -1890,7 +1890,7 @@ function mecLay(stg) {
   // 옆으로는 예전처럼 몸 폭의 20% 정도만 겹치며 바깥으로 줄 세움 (넘치면 겹침을 늘리고, 그래도 안 되면 그때만 조금씩 줄임)
   const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
   const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= Math.pow(18 / 17, .6)).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
-  let LH = L0, LB = 14, ok = false, gk = 1;
+  let LH = L0, LB = 14, ok = false, G = null;
   const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
     A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
@@ -1928,8 +1928,12 @@ function mecLay(stg) {
       let best = null, bs = Infinity;   // 크기 순서 그대로 + 이웃한 둘을 바꾼 순서도 (조금 벌점)
       const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
       ords.forEach((ord, oi) => { for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord)) continue; const sc = score() + (oi ? .4 : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord]; } } });
-      if (best) { place(...best); ok = true; } }
-    if (!ok) k *= .96; }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
+      if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
+        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
+    if (!ok) k *= .96; }
+  if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
+  if (G) { const trB = [cx - trF[0] * LH * .42, LB, cx + trF[0] * LH * .42, LB + LH]; let fc = 0;   // 가장 많이 가려진 얼굴 비율 (검사용 data-fc)
+    A.forEach(a => { const fa = fb0(a); if (!fa) return; let c = a.z < 25 ? ov0(fa, trB) : 0; A.forEach(b => { if (b.z > a.z) c += ov0(fa, bd0(b)); }); fc = Math.max(fc, c); }); stg.dataset.fc = fc.toFixed(2); stg.dataset.k = (LH / L0).toFixed(2); }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
   const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
   // 경완 11-11 '스프라이트마다 얼굴 인식해서 안 가리게': gym/img/pk/face.json = 종마다 얼굴 상자(보이는 그림 기준 비율, 왼쪽 보는 원본). 앞에 선 포켓몬·관장이 얼굴을 덮으면 앞뒤를 바꾸거나 옆으로 비킴
