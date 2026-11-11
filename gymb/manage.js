@@ -37,7 +37,7 @@ function perHour(P) { const m = GB().gm(P), g = GB().growth(P.sp); if (m.lv >= G
 // v20.45 경완 '코치 보너스는 고용 트레이너 개체마다 다르게': 코치 실력 s.cs = 10~40% (지원할 때 정해짐, 예전 트레이너는 id 로 고정 값), 훈련광은 2배. 훈련장 코치로 있을 때만
 // 예전 규칙(코치 +25%, 훈련광 코치 +50%, 고용만 한 훈련광 +20%)은 없앰. 경험치와 노력치 훈련 둘 다 이 배율
 const coachSk = s => s.cs ?? (10 + (Math.abs((s.id | 0) * 2654435761 | 0) % 31));
-const coachP = s => coachSk(s) * (s.trait === 'train' ? 2 : 1) * (coachK(s) === 'mv' ? 2 : 1);   // v20.95 경완 OK: 기술 코치는 효과 2배 (특별한 기술이 원래 일주일에 1개라 체감되게)
+const coachP = s => { const k = coachK(s), p = coachSk(s) * (s.trait === 'train' ? 2 : 1) * (k === 'mv' ? 2 : 1), m = s.trait === 'effort' && k === 'ev' ? 1.5 : s.trait === 'teach' && k === 'mv' ? 2 : 1; return m === 1 ? p : Math.round(((1 + p / 100) * m - 1) * 100); };   /* v21.82 경완 '노력치는 한번에 수치로': 노력파(노력치 코치 ×1.5)·기술 선생(기술 코치 ×2)도 코치 % 하나에 합쳐 보임 */   // v20.95 경완 OK: 기술 코치는 효과 2배 (특별한 기술이 원래 일주일에 1개라 체감되게)
 const coaches = () => (st().sf || []).filter(s => s.yard && !s.rest);
 // v20.92 경완 '코치 실력을 노력치 잘 올리는·경험치 잘 올리는·기술 잘 가르치는 트레이너로 나누자': 트레이너마다 코치 종류 하나, 실력 %는 그 종류에만
 const CK = { xp: ['경험치', '#2a7ad0'], ev: ['노력치', '#d0601a'], mv: ['기술', '#8a46c8'] }, CK_O = ['xp', 'ev', 'mv'];
@@ -46,11 +46,11 @@ const CK_W = [1, .6, .3];   // v20.94 경완 '코치 3명까지, % 밸런스': �
 const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).map(coachP).sort((a, b) => b - a).reduce((a, p, i) => a + p * (CK_W[i] ?? 0) / 100, 0);
 const CK_BG = { xp: '#eaf2fc', ev: '#fdf0e6', mv: '#f4ecfb' }, CK_D = { xp: '훈련 경험치가', ev: '노력치 훈련이', mv: '특별한 기술 깨달음이' };
 // v21.04 경완 '코치 실력 박스는 특성 박스처럼, 게이지 없이, 특성 대신 코치 딱지, 종류는 딱지 없이 색으로만'
-const ckBox = (s, full, bare) => { const k = coachK(s), p = coachP(s); return `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}">${bare ? '' : '<b>코치</b>'}<i>${CK[k][0]} +${p}%</i>${full ? `<small>${CK_D[k]} ${p}% 더 빨리${s.trait === 'train' ? ' (훈련광 2배)' : ''}</small>` : ''}</span>`; };
+const ckBox = (s, full, bare) => { const k = coachK(s), p = coachP(s); return `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}">${bare ? '' : '<b>코치</b>'}<i>${CK[k][0]} +${p}%</i>${full ? `<small>${CK_D[k]} ${p}% 더 빨리</small>` : ''}</span>`; };
 const ckIn = s => `<em class="ck-t ck-in" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;   // v21.01 경완 '훈련장 코치 딱지에도 종류'
 const ckTag = s => `<em class="ck-t" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;
 const coachSum = () => CK_O.map(k => [k, Math.round((coachX(k) - 1) * 100)]).filter(x => x[1] > 0).map(([k, p]) => `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}"><b>코치</b><i>${CK[k][0]} +${p}%</i></span>`).join('');
-const coachN = t => coaches().filter(s => s.trait === t).length;   // 훈련장 특성: 기술 선생(teach) 특별한 기술 ×2, 노력파(effort) 노력치 +50%, 다정함(kind) 친밀도 ×2 — 코치로 있을 때
+const coachN = (t, k) => coaches().filter(s => s.trait === t && (!k || coachK(s) !== k)).length;   /* k: 그 코치 종류면 이미 coachP 에 합쳐져 빼고 셈 */   // 훈련장 특성: 기술 선생(teach) 특별한 기술 ×2, 노력파(effort) 노력치 +50%, 다정함(kind) 친밀도 ×2 — 코치로 있을 때
 const EV_DAY = 8;   // 노력치 훈련: 하루 8 (3시간에 1) × 코치 실력 (경완 2026-11-09)
 const YARD_SF = 3;   // v20.94 경완: 훈련장 코치 3명까지
 // 특별한 기술 = 포켓로그 알 기술 (v19.50 경완 '포켓로그 알 기술 목록에 있는거 배울 수 있게, 기댓값은 일주일에 1개 정도'):
@@ -85,8 +85,8 @@ function tickTrain(now) {
       const step = Math.min(1, left), tot = perHour(P) * TR_K * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * TR_K * trFr(P) * (1 + coachN('kind')); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n, 'keep').learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
-      if (e.evk >= 0 && GB().evOn?.()) { e.efx = (e.efx || 0) + step * EV_DAY / TR_H * coachX('ev') * (1 + .5 * coachN('effort')); const n = Math.floor(e.efx); if (n > 0) { e.efx -= n; e.evg = (e.evg || 0) + GB().evAdd(GB().gm(P), e.evk, n); } }   // v20.45 노력치 훈련
-      { const f = GB().egFocus(P); if (f >= 0) { const sp = step * 100 / EG_H * (1 + coachN('teach')) * coachX('mv'); for (const r of GB().egOpen(P)) { const x = GB().egAdd(P, r.i, r.i === f ? sp : sp * EG_SIDE); if (!x) continue;   /* v20.85 깨달음 게이지 */
+      if (e.evk >= 0 && GB().evOn?.()) { e.efx = (e.efx || 0) + step * EV_DAY / TR_H * coachX('ev') * (1 + .5 * coachN('effort', 'ev')); const n = Math.floor(e.efx); if (n > 0) { e.efx -= n; e.evg = (e.evg || 0) + GB().evAdd(GB().gm(P), e.evk, n); } }   // v20.45 노력치 훈련
+      { const f = GB().egFocus(P); if (f >= 0) { const sp = step * 100 / EG_H * (1 + coachN('teach', 'mv')) * coachX('mv'); for (const r of GB().egOpen(P)) { const x = GB().egAdd(P, r.i, r.i === f ? sp : sp * EG_SIDE); if (!x) continue;   /* v20.85 깨달음 게이지 */
         (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]);
         K.awMv?.(P.id, x[0], x[1], x[2]); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } } }
     }

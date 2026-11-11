@@ -883,7 +883,7 @@ function blocked(c, sf) {
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
 const TRAITS = {
-  train: { n: '훈련광', d: '코치로 있으면 코치 실력 2배' }, teach: { n: '기술 선생', d: '코치로 있으면 특별한 기술을 2배 빨리 가르친다' }, effort: { n: '노력파', d: '코치로 있으면 노력치 훈련 +50%' }, kind: { n: '다정함', d: '코치로 있으면 훈련장 친밀도 2배' },   /* v20.45 경완: 훈련장 특성 (코치 실력은 트레이너마다 cs) */ star: { n: '인기인', d: '도전자를 막으면 평판 +50%' }, money: { n: '수완가', d: '도전자를 막으면 골드 +50%' },
+  train: { n: '훈련광', d: '코치로 있으면 코치 실력이 더 좋다' }, teach: { n: '기술 선생', d: '코치로 있으면 특별한 기술을 더 빨리 가르친다' }, effort: { n: '노력파', d: '코치로 있으면 노력치 훈련이 더 빠르다' }, kind: { n: '다정함', d: '코치로 있으면 훈련장 친밀도 2배' },   /* v20.45 경완: 훈련장 특성 (코치 실력은 트레이너마다 cs) */ star: { n: '인기인', d: '도전자를 막으면 평판 +50%' }, money: { n: '수완가', d: '도전자를 막으면 골드 +50%' },
   guts: { n: '근성', d: '배틀에 강하다' }, grow: { n: '성장형', d: '이길수록 포켓몬 레벨이 빨리 오른다' }, thrift: { n: '검소함', d: '주급이 적다' }, lazy: { n: '느긋함', d: '가끔 배틀을 쉰다' },
 };
 // 고용 트레이너 포켓몬은 시간이 지나도 조금씩 큰다: 하루 반마다(성장형은 하루마다) +1, 내 라인업 평균 -1 까지만. 쉬는 중엔 안 큼 (경완 2026-10-29)
@@ -1073,6 +1073,8 @@ function tick0(now) {
   payDay(now); sfGrow(now);
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
+  /* v21.82 경완 '잠금일 때 보이는 지원서는 예시일 뿐인데 그 지원자가 잠금 풀리며 그대로 나타나 포켓몬 Lv 3~5': 잠금 중 생긴 지원서는 예시(demo) 표시, 트레이너 메뉴가 열리면 지금 라인업 레벨로 새로 받음 */
+  if (lockedT('staff')) g.cands.forEach(c => { c.demo = 1; }); else { const av = myAvg(), old = c => c.demo || teamLv(c.team) < av - 10; if (g.cands.some(old)) { g.cands = g.cands.map(c => old(c) ? mkCand(now) : c); g.candSeen = 0; } }   // 이미 열린 체육관에 남아 있던 예시 지원서(라인업보다 10 넘게 낮음)도 새로
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
   try { warmImgs(); } catch (e) {}
   setAt(now); save();
@@ -2015,6 +2017,7 @@ function bigPop(A, B) {
     <div class="bu-pips" aria-label="${lv}단계">${Array.from({ length: STAGES }, (_, i) => `<i class="${i < lv ? 'on' : ''}${i === lv - 1 ? ' new' : ''}">${i + 1}</i>`).join('')}</div>
     <div class="gy-btns one"><button class="main" data-a="x">확인</button></div></div>`, (a, close) => close());
   p?.classList.add('aw-wrap');
+  if (p) setTimeout(() => { try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60);   /* v21.82 경완 '체육관이 넓어졌어요! 창 뜰 때 알림창 효과음' (.aw-pop 은 공통 소리 빠짐) */
   [[A, '.a'], [B, '.b']].forEach(([D, c]) => mapSrc(D).then(u => { const im = p?.querySelector(`.bu-m${c} img`); if (im) im.src = u; }).catch(() => {}));
   return p;
 }
