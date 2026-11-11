@@ -1885,7 +1885,7 @@ function mecLay(stg) {
   let L0 = Math.min(84, (H - FB - 8) / Math.max(1, ...A.filter(a => !fit(a.r)).map(a => a.r)));   // 앞줄에서 가장 큰 포켓몬이 무대 높이 안
   const place = (L, bot, mode, LH, boost) => { const LW = 36 * LH / 53; let le = cx, re = cx, prevL = null, prevR = null;
     L.forEach(a => { a.b = bot; a.h = Math.max(18, Math.min(LH * a.r, H - bot - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
-    if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx; le = cx - a.w / 2; re = cx + a.w / 2; prevL = prevR = a; a.z = 1; return; }
+    if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx + (L.length % 2 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */ prevL = prevR = a; a.z = 1; return; }
       const side = i % 2 ? -1 : 1, pv = side < 0 ? prevL : prevR, ov = Math.min(.5 + boost * .6, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
       if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 1 + i; });
     else { let tl = cx - 4, tr = cx + 4; le = cx - LW / 2 + 6; re = cx + LW / 2 - 6;
