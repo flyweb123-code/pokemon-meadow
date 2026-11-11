@@ -395,7 +395,7 @@ function monEl(side) { return $b(`.bt-mon.${side}`); }
 // 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
-// v21.73 경완 '팬 도트 gif로 다 바꿔줘': 650~1025·지역 폼은 PokeAPI/sprites(고정 커밋)의 블랙·화이트풍 팬 도트 gif. 있는 것만 (gym/img/pk/bwa.json: 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷), 없으면 예전 그림
+// v21.7x 경완 '팬 도트 gif로 다 바꿔줘': 650~1025·지역 폼은 PokeAPI/sprites(고정 커밋)의 블랙·화이트풍 팬 도트 gif. 있는 것만 (gym/img/pk/bwa.json: 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷), 없으면 예전 그림
 const BWG = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';
 let BWA = {};
 function bwUrl(sp, b, sh, f) { const m = BWA[sp]; if (m == null) return null;
