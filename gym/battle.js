@@ -1022,7 +1022,7 @@ async function run(opts) {
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
   try { if (!cut) erEnd(); } catch (e) {}
-  try { if (B && !B.practice && !cut && out !== 'quit') frBattle(won); wsBattle(won); } catch (e) { console.error(e); }
+  try { if (B && !B.practice && !cut && out !== 'quit') { frBattle(won); wsBattle(won); } } catch (e) { console.error(e); }
   if (cut) try { const er = B?.err; window.pkErrRep?.('battle: ' + (er ? er.message || er : '고를 것이 없어 멈춤'), er?.stack || '', { foe: B?.foeNm || '', blog: S.gym?.blog?.[0] }); } catch (e) {}   /* 오류 창이 뜬 배틀은 서버로 보고 → 자동으로 고침 (경완 2026-11-04) */
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
