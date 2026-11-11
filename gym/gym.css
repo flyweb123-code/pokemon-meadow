@@ -4100,3 +4100,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li.pk-tip.on .pk-tc b{color:inherit}
 #gym .gy-perk>li.pk-tip.on .pk-tc small,#gym .gy-perk>li.pk-tip.on .pk-tc p{color:var(--dim)}
 #gym .gy-perk .pk-kg{margin:0 5px}   /* 등급 카드 배지 칸(42px)과 글자 줄 맞춤 */
+
+/* v22.33 등급 창 등급·비기 탭 (고용 관리 탭과 같은 모양) */
+#gym .gy-pop .pk-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0 0 8px;border:3px solid var(--frame);background:var(--frame);box-shadow:0 3px 0 rgba(0,0,0,.18)}
+#gym .gy-pop .pk-tabs button{padding:8px 4px;font-size:14px;background:var(--win);box-shadow:none;border:0}
+#gym .gy-pop .pk-tabs button[aria-selected="true"]{background:var(--frame);color:var(--win)}
+#gym .gy-perk.pk-sl>li.pk-tip{gap:0}
+
+#gym .gy-perk button.pk-tc{width:100%;font:inherit;text-align:left;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+#gym .gy-perk button.pk-tc:active{translate:0 2px;box-shadow:none}
+#gym .gy-perk .pk-tc>div{flex:1}
+#gym .gy-perk .pk-re{flex:none;align-self:center;font-style:normal;font-size:11px;font-weight:700;color:#8a5a10;white-space:nowrap}
