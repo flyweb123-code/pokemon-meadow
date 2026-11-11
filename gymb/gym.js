@@ -1154,7 +1154,7 @@ async function challenge(picked) {
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
     const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
-    const fmg = foeMega(c, team);   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
+    const fmg = foeMega(c, team, 0, my);   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
     let res;
@@ -2191,7 +2191,7 @@ function infoPop() {
 }
 // ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
 // S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
-const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'evTD', 'sfTut', 'vit', 'fb1', 'shelf', 'evd'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'evTD', 'sfTut', 'vit', 'fb1', 'shelf', 'evd', 'mint', 'newIt', 'mgRing'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
 const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
 const gUsedTy = () => new Set(gList().map(x => x.ty));
 // 휴업 중이던 시간은 없던 셈 (도전자·주급·면접·훈련 시계를 그만큼 민다)
@@ -2204,6 +2204,8 @@ function gSwap(n, drop) {
   const shelf = (keep.shelf || []).filter(x => x !== n); delete keep.shelf;
   if (g.tr?.length) { glog('tr', `휴업하면서 훈련장 포켓몬 ${g.tr.length}마리를 데려왔다.`); g.tr = []; }
   if (!drop) { g.off = now; shelf.push(g); }
+  // 경완 2026-11-12 '창고는 모든 체육관이 같은 창고': 예전에 체육관마다 따로 있던 민트·새 물건 점은 지금 창고에 더해 합침
+  for (const k of ['mint', 'newIt']) if (n[k] && typeof n[k] === 'object') { const t = keep[k] = keep[k] || {}; for (const [x, v] of Object.entries(n[k])) t[x] = typeof v === 'number' && k === 'mint' ? (t[x] | 0) + v : t[x] || v; }
   if (n.off) gWake(n, now); G_SHARED.forEach(k => { delete n[k]; });
   S.gym = Object.assign(n, keep, { shelf }); gInit(); tick(now); save();
 }
@@ -3459,8 +3461,15 @@ const MG_TID = 990011;
 const MG_FOE = { wait: 10, ramp: 10, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
 function foeMgP(c) { const g = st(); if (!MEGA_ON || !tutSeen('mgRing') || (g?.gmax | 0) < 3) return 0; const d = (g.mgN | 0) - MG_FOE.wait; if (d < 0) return 0;
   const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / MG_FOE.ramp); }
-function foeMega(c, team, force) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c))) return false;
-  for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; return true; } } return false; }
+// 경완 2026-11-12 '난이도 밸런스는 기본, 유저 라인업이 메가진화 안 나와도 되는 라인업이면 이 시점이 와도 안 나옴 — 이 시점은 최솟값': 라인업이 셀수록 1 에 가까움
+//   내 라인업에 메가스톤 지닌 포켓몬이 있으면 1, 아니면 센 3마리 종족값이 레벨 기준(spTgt)보다 얼마나 높은지 + 연승. 연패 중이면 0
+function mgNeed(my) { const g = st(), B = GB(); if (!my?.length || (g.lstk | 0) >= 2) return 0;
+  if (my.some(P => { const it = (B?.gm?.(P) || g.mon?.[P.id])?.it; return it && B?.MEGA_ST?.[it]; })) return 1;
+  const R = my.map(P => ({ b: bsOf(P.sp), lv: (B?.gm?.(P) || g.mon?.[P.id])?.lv || 0 })).filter(x => x.b && x.lv).sort((a, b) => b.b - a.b).slice(0, 3); if (!R.length) return 0;
+  const sb = R.reduce((a, x) => a + x.b, 0) / R.length, sl = R.reduce((a, x) => a + x.lv, 0) / R.length;
+  return clampN((sb - spTgt(sl)) / 60 + Math.min(.4, (g.stk | 0) * .08), 0, 1); }
+function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c) * mgNeed(my))) return false;
+  for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; if (!force) o.lv = Math.max(2, (o.lv | 0) - 2); return true; } } return false; }   // 메가진화하는 포켓몬은 그만큼 세지니 레벨 2 낮춤
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';
 // 내 포켓몬 중 메가진화할 수 있는 종 (체육관 타입 먼저, 같은 종은 한 번). 레쿠쟈는 화룡점정으로
 function mgCan() { const B = GB(), ty = st()?.ty, seen = new Set(), L = [];
