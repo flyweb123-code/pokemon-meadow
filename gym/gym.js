@@ -2259,7 +2259,7 @@ function mgPop() {
 }
 // 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
 // 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
-const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련하며 깨닫는 그 포켓몬만의 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: 'evTB', t: '노력치', d: '어떻게 키웠느냐에 따라 능력치가 달라져요' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
+const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련하며 깨닫는 그 포켓몬만의 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '어떻게 키웠느냐에 따라 능력치가 달라져요' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
 const PK_NTH = ['', '첫 번째', '두 번째', '세 번째'];
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
@@ -2272,7 +2272,7 @@ function perkPop() {
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
      계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
-  const tip = i => { const T = PK_TIP[i]; if (!T) return ''; const on = !!g[T.k]; if (!on && tutSeen(T.k)) return '';
+  const tip = i => { const T = PK_TIP[i]; if (!T) return ''; const K = [].concat(T.k), on = K.some(k => g[k]); if (!on && K.some(tutSeen)) return '';   /* 노력치는 훈련장 노력치 설명(evTB)이든 노력치 화면 설명(evTC)이든 하나만 봤어도 배운 걸로 */
     return `<li class="pk-tip${on ? ' on' : ''}"><i class="pk-ar"></i><div class="pk-tc"><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div></div><i class="pk-ar"></i></li>`; };
   pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><ol class="gy-perk">${GRADES.map((G, i) => tip(i) + row(G, i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
