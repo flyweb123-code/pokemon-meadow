@@ -1890,23 +1890,25 @@ function mecLay(stg) {
   const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
   const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= Math.pow(18 / 17, .6)).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
   let LH = L0, LB = 14, ok = false, gk = 1;
+  const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
     A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
     for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Hb = a => Math.max(1, C + RY), Ht = 1;
       // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜)
       let le = cx, re = cx, pL = null, pR = null;
-      big.forEach((a, i) => { a.h = Math.min(a.bh * k, Math.max(24, Math.min(a.h0, (H - C - RY - M) * k))); a.s = a.h / a.bh;   /* 경완 '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기(원본 1.5배)까지만 */ a.w = a.bw * a.s;
+      big.forEach((a, i) => { a.h = Math.min(a.bh * k, Math.max(HMIN, Math.min(a.h0, (H - C - RY - M) * k))); a.s = a.h / a.bh;   /* 경완 '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기(원본 1.5배)까지만 */ a.w = a.bw * a.s;
         if (!i && big.length % 2) { a.x = cx + (n % 4 === 1 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
         const sd = re - cx <= cx - le ? 1 : -1, pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
         if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
       // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
       let tl = cx - LW * .15, tr = cx + LW * .15;
-      tiny.forEach(a => { a.h = Math.min(a.bh * k, Math.max(24, a.h0)); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
+      tiny.forEach(a => { a.h = Math.min(a.bh * k, Math.max(HMIN, a.h0)); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
         if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
       const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) continue;
       const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); ok = true;
       const R = 68 * LH / 66;   // 발판 반폭: 발판 밖 옆으로 나간 포켓몬은 발판 가운데 줄 높이에 (발판 뒤로 안 넘어가게)
-      big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = C + RY * Math.sqrt(1 - u * u); });   // 가운데일수록 발판 뒤쪽 (발판 안)
+      const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로 잡아 가운데→바깥으로 갈수록 차례로 앞으로 (모두 다른 깊이) */
+      big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });   // 가운데일수록 발판 뒤쪽 (발판 안)
       tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
       A.forEach(a => { a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); }); }
     if (!ok) k *= .96; }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
@@ -1922,9 +1924,10 @@ function mecLay(stg) {
     for (let pass = 0; pass < 5; pass++) { let ch = false;
       for (const a of A) { const fa = fb(a); if (!fa) continue;
         if (a.z < 25 && ovl(fa, trB) > .3) { const sd = a.x >= cx ? 1 : -1, need = sd > 0 ? trB[2] - fa[0] : fa[2] - trB[0]; a.x += sd * Math.min(need + 2, 34); ch = true; continue; }   // 관장 뒤에서 얼굴이 가리면 옆으로
-        for (const b of A) { if (b === a || b.z <= a.z || ovl(fa, body(b)) <= .3) continue;
-          if (Math.abs(a.b - b.b) < 10 && ovl(fb(b), body(a)) < .2) { const t = a.z; a.z = b.z; b.z = t; }   // 같은 줄이면 앞뒤 바꾸기
-          else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 6; b.x -= sd * 6; }   // 아니면 서로 조금씩 비킴
+        for (const b of A) { if (b === a || b.z < a.z || (b.z === a.z && A.indexOf(b) < A.indexOf(a)) || ovl(fa, body(b)) <= .3) continue;   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 같은 z 면 나중 것이 위에 그려지니 그것도 가림 */
+          const oa = ovl(fa, body(b)), ob = ovl(fb(b), body(a));   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 서로 가리면 덜 가리는 쪽으로 앞뒤 */
+          if (Math.abs(a.b - b.b) < 12 && (ob < .2 || ob < oa - .25)) { const t = a.z; a.z = b.z; b.z = t; if (a.z === b.z) a.z++; }   // 같은 줄이면 앞뒤 바꾸기
+          else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 8; b.x -= sd * 8; }   // 아니면 서로 조금씩 비킴
           ch = true; } }
       if (!ch) break; }
     const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)), d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); }
