@@ -1,0 +1,22 @@
+# v22.22 경완 '이벤트 알림창에 지도': config/spawn-ev.json 에 이벤트가 생기면 행사장 지도(글자 없는 그래픽)를 OpenStreetMap 데이터로 그려
+# config/ev-map/<id>.jpg·.json 으로 main 에 올린다 (게임은 이 그림만 받음, 인터넷 지도 안 부름). 루틴 PR 이 머지되면 몇 분 뒤 지도가 생김 (그 전엔 알림창이 지도 없이 뜸).
+name: Event maps
+on:
+  push:
+    branches: [main]   # 다른 스레드 브랜치가 main 을 합칠 때마다 돌아 지도가 그 브랜치에 섞이지 않게 main 만
+    paths: ['config/spawn-ev.json', 'tools/ev-map.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow && python3 tools/ev-map.py
+      - name: Commit maps
+        run: |
+          git add config/ev-map || true
+          if git diff --cached --quiet; then echo '새 지도 없음'; exit 0; fi
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m '이벤트 지도 그림 (자동)' && git push
