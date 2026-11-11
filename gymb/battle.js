@@ -908,7 +908,12 @@ function frHooks(btl) {
   });
 }
 const FR_ST = { slp: '잠', frz: '얼음', par: '마비', brn: '화상', psn: '독', tox: '독' };
-async function frFx(s) { const m = monEl(s); if (!m) return; const h = document.createElement('i'); h.className = 'bt-hrt'; h.textContent = '♥'; m.appendChild(h); setTimeout(() => h.remove(), 1400); try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} await wait(500); }
+// v21.85 경완 '친밀도 효과 나올 때 포켓몬 한번 꿀렁하고 하트 표시 나온 후에 멘트': 꿀렁 → 하트·소리 → (하트가 다 보인 뒤) 멘트
+async function frFx(s) { const m = monEl(s); if (!m) return; const im = m.querySelector('img');
+  if (im) { await im.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,.86)', offset: .3 }, { transform: 'scale(.94,1.08)', offset: .6 }, { transform: 'scale(1.03,.97)', offset: .82 }, { transform: 'scale(1,1)' }], { duration: 480, easing: 'ease-in-out', composite: 'add' }).finished.catch(() => {}); if (!B) return; }
+  const h = document.createElement('i'); h.className = 'bt-hrt'; h.textContent = '♥'; m.appendChild(h); setTimeout(() => h.remove(), 1400); try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} await wait(B?.fast ? 500 : 950); }
+// v21.85 경완 '친밀도 멘트 관장 말고 트레이너 닉네임으로'
+const frTr = () => { let n = ''; try { n = (GA.trOf?.().n || '').trim(); } catch (e) {} return n || '관장'; };
 async function readLog() {
   const L = B.btl.log;
   while (B && B.li < L.length) {
@@ -939,9 +944,9 @@ async function handle(a) {
   if (PEND[k]) { if (k === '-crit') setTimeout(() => vib(2), 120); (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
     const n = nmIn(a[2]), s = sideOf(a[2]);
-    if (a[3] === 'endure') { (B.pend = B.pend || []).push(`${eun(n)} 관장님을 슬프게 하지 않으려고 버텼다!`); (B.frq = B.frq || []).push(s); return; }
+    if (a[3] === 'endure') { (B.pend = B.pend || []).push(`${eun(n)} ${eul(frTr())} 슬프게 하지 않으려고 버텼다!`); (B.frq = B.frq || []).push(s); return; }
     await flushPend(); await frFx(s);
-    await msg(a[3] === 'dodge' ? `${eun(n)} 관장님의 기대에 응하려고 공격을 피했다!` : `${eun(n)} 관장님을 걱정시키지 않으려고 ${FR_ST[a[4]] || '상태 이상'}에서 스스로 벗어났다!`);
+    await msg(a[3] === 'dodge' ? `${eun(n)} ${frTr()}의 기대에 응하려고 공격을 피했다!` : `${eun(n)} ${eul(frTr())} 걱정시키지 않으려고 ${FR_ST[a[4]] || '상태 이상'}에서 스스로 벗어났다!`);
     if (a[3] === 'cure') { const X = B.act[s]; if (X) { X.st = ''; setSt(s, ''); } }
     return;
   }
@@ -975,6 +980,7 @@ async function handle(a) {
     }
     case 'move': {
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
+      { const mv = PSim.Dex.moves.get(id); B.mh = mv?.multihit || id === 'dragondarts' ? { s, id, n: 0 } : null; }   /* v21.85 경완 '연속기는 본가처럼 맞을 때마다 기술 효과': 두 번째 맞는 것부터 그 기술 연출을 다시 */
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
@@ -991,7 +997,7 @@ async function handle(a) {
       if (from && !hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
       if (from === 'confusion') { await moveFx(other(s), 'pound'); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
       if (!from && B.noHit === s) B.noHit = null;   /* v21.30 경완 '탈은 특성 카드 먼저': 탈이 대신 맞은 0 데미지 줄은 본가처럼 맞아 깜빡이지 않음 */
-      else if (!from) await hitFx(s, effAhead(a[2]));
+      else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false); await hitFx(s, effAhead(a[2])); }
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
@@ -1018,7 +1024,7 @@ async function handle(a) {
     case '-activate': { if (/^ability: /.test(a[3] || '')) { const ab = toID(a[3].slice(9)); B.abLast = ''; if (ab === 'disguise' || ab === 'iceface') B.noHit = sideOf(a[2]); await abPop(a[2], ab); const of = a.find(x => /^\[of\] /.test(x)); if (AB_ACT[ab]) { const t = AB_ACT[ab](who(a[2])); if (t) await msg(t); } if ((ab === 'mummy' || ab === 'lingeringaroma') && /^p\d/.test(a[4] || '')) await msg(`${who(a[4])}의 특성이 ${iga(abKo(ab))} 되었다!`); if (ab === 'forewarn' && a[4]) await msg(`${who(a[2])}의 예지몽으로 ${of ? who(of.slice(5)) + '의 ' : ''}${eul(mvKo(toID(a[4])))} 알아챘다!`); break; }   /* v20.74 경완 '예지몽·싱크로 발동 안 된 것 같아': '-activate|…|ability: 이름' 줄(예지몽·싱크로·위기회피 등)을 안 보여 주던 것 → 특성 창 */
       if (/confusion/.test(a[3])) await confFx(sideOf(a[2])); else if (/^item: /.test(a[3] || '')) await itemFx(sideOf(a[2])); else await gap(); const of = a.find(x => /^\[of\] /.test(x)); const t = actMsg(who(a[2]), a[3], of ? who(of.slice(5)) : '상대', a.slice(4).filter(v => !/^\[/.test(v))); if (t) await msg(t); break; }
     case '-ability': await msg(`${who(a[2])}의 ${abKo(toID(a[3]))}!`, 500); break;
-    case '-hitcount': await msg(`${a[3]}번 맞았다!`); break;
+    case '-hitcount': B.mh = null; await msg(`${a[3]}번 맞았다!`); break;
     case '-ohko': await msg('일격필살!'); break;
     case '-prepare': { const id = toID(a[3]), n = who(a[2]), e = jong(nmIn(a[2])) ? '은' : '는';
       { const c = chgOf(id); if (c) await moveFx(sideOf(a[2]), id, false, c); } if (HIDE_MV.test(id)) monEl(sideOf(a[2])).classList.add('hid');   /* v18.17 경완 '솔라빔 연출이 없어': 모으는 턴은 _c 연출, 공격 턴은 본 연출 */
