@@ -232,6 +232,7 @@ const gradeOf = (rep, gm = st()?.gmax ?? 99) => { let i = 0; GRADES.forEach(([v]
 const st = () => S.gym;
 const myTypes = () => { const c = Array(19).fill(0); S.box.forEach(p => (SPECIES[p.sp]?.t || []).forEach(t => c[t]++)); return c; };
 const trName = () => (trOf().n || '').trim();
+const NK = () => trName() || '관장님';   // 경완 2026-11-12 '왜 관장님이라고 해? 닉네임 안 부르고': 강박사는 닉네임으로 부름 (닉네임 없을 때만 관장님)
 const defName = ty => `${TYPE_KO[ty]} 체육관`;   // 이름 8자 제한에 맞춰 (경완 2026-10-29)
 
 // ---------- 화면 ----------
@@ -2398,6 +2399,8 @@ function rkPop() {
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm', stPow = 1;
+// 중요한 물건: 창고 도구 탭 맨 위. 지니게·팔기·버리기 없이 보기만 (k = 체육관 저장에 있으면 가진 것)
+const KEY_IT = [{ k: 'mgRing', n: '메가링', img: 'dbk/it/mega-bracelet.png', s: '메가진화에 쓰는 팔찌. 강박사에게서 받았다.', d: '메가진화에 쓰는 팔찌. 메가스톤을 지닌 포켓몬과 마음이 통하면 배틀 중에 메가진화할 수 있다. 강박사에게서 받았다.' }];
 const nwTab = key => { const [k, id] = key.split(':'); return k === 'tm' ? (GB()?.isTR?.(id) ? 'tr' : 'tm') : k === 'deco' ? 'deco' : 'it'; };
 const nwSeen = t => { const g = st(); if (!g?.newIt) return; let ch = 0; for (const key of Object.keys(g.newIt)) if (nwTab(key) === t) { delete g.newIt[key]; ch = 1; } if (ch) { save(); storeDot(); } };   // 그 탭을 보고 나가면 점 끔
 function storePop() {
@@ -2406,13 +2409,15 @@ function storePop() {
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [];   // v20.80 영양제도 창고에   // 민트 (경완 2026-10-30)
-    const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
+    const KY = KEY_IT.filter(k => g[k.k]);   // 경완 2026-11-12 '창고 도구에 중요한 물건 항목, 메가링은 버리지도 못하게'
+    const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', KY.length + IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
     const NW = g.newIt || {}, nwT = new Set(Object.keys(NW).map(nwTab));   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
     let body = ''; if (!T.some(([k]) => k === storeT)) storeT = 'tm';
     if (storeT === 'tm' || storeT === 'tr') { const D = GB()?.D, L = Object.entries(g.tms).filter(([id, n]) => n > 0 && trOf(id) === (storeT === 'tr')).map(([id, n]) => [GB()?.mvOf?.(id), n, id]).filter(([x]) => x);
       L.sort((a, b) => (a[0][2] - b[0][2]) || ((b[0][4] || 0) - (a[0][4] || 0)) * stPow);   // 타입별로 묶고 그 안에서 위력순 (경완 2026-10-29)   // 위력순 (경완 2026-10-29), 안내 문구 없음
       body = !D ? '<p class="gy-lead">불러오는 중…</p>' : L.length ? `<div class="tm-row"><button class="tm-sort" type="button" data-pow="1">위력순 ${stPow > 0 ? '▼' : '▲'}</button></div><div class="sp-list">${L.map(([x, n, id]) => GB().tmRow(x, n, id)).join('')}</div>` : `<p class="sf-none st-empty">가진 ${storeT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요.<br>상점에서 구입해보세요.</p>`; }
-    if (storeT === 'it') body = !H ? '<p class="gy-lead">불러오는 중…</p>' : IL.length + ML.length + VL.length ? `<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}${VL.map(([i, n]) => GB().vitRow(i, n)).join('')}</div>` : '<p class="sf-none st-empty">가진 도구가 없어요.<br>상점에서 구입해보세요.</p>';
+    if (storeT === 'it') { const ky = KY.length ? `<h5 class="st-sec">중요한 물건</h5><div class="sp-list">${KY.map(k => `<button type="button" class="sp-tm sp-it sp-key" data-key="${k.k}"><img class="tm-ic it-ic" alt="" src="${IMG}${k.img}"><span class="tm-nm"><b>${esc(k.n)}</b></span><span class="tm-meta"><small>${esc(k.s)}</small></span></button>`).join('')}</div>` : '', n = IL.length + ML.length + VL.length;
+      body = !H ? '<p class="gy-lead">불러오는 중…</p>' : ky + (n ? `${ky ? '<h5 class="st-sec">도구</h5>' : ''}<div class="sp-list">${IL.map(GB().itRowAll).join('')}${ML.map(([k, n]) => GB().mintRow(k, n)).join('')}${VL.map(([i, n]) => GB().vitRow(i, n)).join('')}</div>` : ky ? '' : '<p class="sf-none st-empty">가진 도구가 없어요.<br>상점에서 구입해보세요.</p>'); }
     if (storeT === 'deco') body = dk.length ? `<div class="dc-grid">${dk.map(k => `<button type="button" data-dc="${k}" class="${g.dp.includes(k) ? 'own' : ''}"><span class="dc-pic"><img alt="" src="${IMG}deco/${k}.png" class="${DECO[k].w > 16 ? 'big' : ''}"></span><b>${DECO[k].n}</b><em>${g.dp.includes(k) ? '놓여 있음' : '창고에 있음'}</em></button>`).join('')}</div>` : '<p class="sf-none st-empty">가진 꾸미기가 없어요.<br>상점에서 구입해보세요.</p>';
     if (storeT === 'fit') { const cf = fitOf(g.fit) ? g.fit : ''; body = `<div class="ft-grid">${['', ...fk].map(k => `<button type="button" data-fit="${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div>`; }
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">창고</b></div>
@@ -2431,6 +2436,7 @@ function storePop() {
     if (b.dataset.tm) { const id = b.dataset.tm; return GB().mvInfo(id, () => { el.remove(); GB().teachPick(id, () => storePop()); }, undefined, undefined, 1); }
     // 도구 누르면 상세 → 지니게 하기 → 포켓몬 박스에서 고르기 (경완 2026-10-29)
     if (b.dataset.takeit) { const Q = GA.S.box.find(x => String(x.id) === b.dataset.takeit); if (Q) GB().takeIt(Q); return draw(); }   // 지닌 도구 돌려받기 (경완 2026-10-29)
+    if (b.dataset.key) { const k = KEY_IT.find(x => x.k === b.dataset.key); if (k) pop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${IMG}${k.img}">${esc(k.n)}</h4><p class="gy-msg mi-d">${esc(k.d)}</p><p class="gy-msg key-note">중요한 물건이라 버리거나 팔 수 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close()); return; }
     if (b.dataset.it) { const id = b.dataset.it; return GB().itInfo(id, '지니게 하기', () => { el.remove(); GB().itPick(id, () => storePop()); }, '', g.itm?.[id] | 0); }
     if (b.dataset.mint) { const k = b.dataset.mint; return GB().mintInfo(k, '먹이기', () => { el.remove(); GB().mintPick(k, () => storePop()); }, '', g.mint?.[k] | 0); }
     if (b.dataset.vit != null) { const i = +b.dataset.vit; return GB().vitInfo(i, '먹이기', () => { el.remove(); GB().vitPick(i, () => storePop()); }, g.vit?.[GB().EV_VIT[i][0]] | 0); }   // v20.80 경완 '영양제 창고에서 바로 포켓몬 골라 먹이기'
@@ -2689,7 +2695,7 @@ const KANG_OPEN = () => [
   '도전자를 이기면 골드를 받고\n평판이 오른단다. 평판이 오르면\n체육관도 커지지.',
   '훈련장에서 포켓몬을 키우고,\n트레이너를 고용해 함께\n체육관을 지킬 수도 있단다.',
   '평판이 등급 끝까지 차면\n승급 심사를 받을 수 있지.\n이기면 등급 배지를 준단다!',
-  '모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n관장님!',
+  `모르는 게 있으면 안내원에게\n물어보렴. 그럼 힘내라,\n${NK()}!`,
 ];
 const tutSeen = k => { const g = st(); return !!(g?.[k] || gList().some(x => x[k])); };
 // v20.64 경완 '훈련장·트레이너 튜토리얼도 오프닝 튜토리얼처럼': 강박사 창이 버튼·딱지마다 옮겨 다니며 설명하고, 눌러 볼 건 유저가 직접 누른다 (본게임 tutFlow 와 같은 #tut 모양)
@@ -2725,7 +2731,7 @@ async function gtu(T) {
       if (!open) break;
       if (st.when && !st.when()) continue;
       if (st.pre) { lock = true; ov.classList.add('hide'); await st.pre(); await wait(st.hold || 500); }
-      const need = st.tap || st.t; if (need && typeof need === 'string') { let i = 0; for (; i < 25 && !gtEl(need); i++) await wait(100); if (st.tap && i >= 25) continue; }   // 눌러 볼 곳이 안 나타나면 그 단계는 건너뜀
+      const need = st.tap || st.t; if (need && typeof need === 'string') { let i = 0; const lim = st.tap ? 25 : 3; for (; i < lim && !gtEl(need); i++) await wait(100); if (st.tap && i >= 25) continue; }   // 눌러 볼 곳이 안 나타나면 그 단계는 건너뜀
       { const e = gtEl(st.t); (e?.sv || e)?.scrollIntoView?.({ block: 'nearest' }); }
       const wasHid = ov.classList.contains('hide') || !cur; cur = st; snap = true; ov.querySelector('.tu-n').textContent = st.c || '강박사'; ov.classList.remove('hide', 'tapon'); lock = false;
       { const e = gtEl(st.t), r = e && e.getBoundingClientRect(); placeBox(r && r.width ? r : null, wasHid); }
@@ -2747,6 +2753,7 @@ const GT_EGD = () => [
   { c: '특별한 기술', when: () => gtEl('.eg-pop .eg-cv .tg'), t: '.eg-pop .eg-cv .tg', s: '기술 이름은 비밀이지만\n타입과 물리·특수·변화는\n미리 알 수 있단다.' },
   { c: '집중 훈련', when: () => gtEl('.eg-pop .eg-fb'), t: '.eg-pop .eg-fb', s: '갖고 싶은 기술의\n\'집중하기\'를 누르면\n그 기술이 훨씬 빨리\n차오른단다.' },
   { c: '레어 기술', when: () => gtEl('.eg-pop .eg-r.rare .eg-cv'), t: '.eg-pop .eg-r.rare', s: '금빛 리본은 레어 기술!\n훈련으로는 깨달을 수 없는\n아주 특별한 기술이지.' },
+  { c: '레어 기술', when: () => gtEl('.eg-pop .eg-r.rare .eg-cv'), t: '.eg-pop .eg-r.rare', s: '어떻게 깨닫냐고? 글쎄…\n포켓몬에게 성심성의를 다하면\n특별한 일이 생길지도 모르지…?' },
   { c: '번뜩임', when: EG_IN, t: '.eg-pop .eg-l', s: '배틀에서 기술을 쓰다 보면\n가끔 머릿속이 번뜩여서\n집중 기술이 한 번에\n크게 오른단다.' },
   { c: '기술 코치', when: EG_IN, t: '.eg-pop .eg-l', s: '기술 코치를 두면\n게이지가 더 빨리\n차오르지.' },
   { c: '특별한 기술', when: () => gtEl('.eg-pop [data-a=x]'), t: '.eg-pop [data-a=x]', tap: '.eg-pop [data-a=x]', until: () => !gtEl('.eg-pop'), after: 600, s: '자, \'닫기\'를 눌러\n돌아가자.' }];
@@ -2754,19 +2761,20 @@ const GT_EGO = () => [
   { c: '특별한 기술', when: () => gtEl('.gy-pop .tp2-mvc'), t: '.gy-pop .tp2-mvc', tap: '.gy-pop .tp2-mvc', until: () => gtEl('.eg-pop'), after: 900, s: '포켓몬마다 특별한 기술이\n4가지 숨어 있단다.\n\'새 기술\'을 눌러 보렴!' },
   ...GT_EGD()];
 // v20.99 경완 '노력치 개념은 처음 떠오르는 체육관이 됐을 때, 동네 체육관에선 특별한 기술만': 노력치 설명은 GT_EVT 로 떼어 evOn(떠오르는 체육관부터) 일 때만
-const GT_EVT = g => [
+const GT_EVT = (g, P) => [
   { c: '노력치', t: '.gy-pop .ev-tr', s: '그리고 아주 중요한 것!\n바로 \'노력치\'란다.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.' },
   { c: '노력치 훈련', t: '.gy-pop .ev-trg', s: '훈련장에선 키울 능력치를\n직접 고를 수 있단다.\n고른 능력치에 노력치가\n꾸준히 쌓이지.' },
+  ...(P ? [{ c: '노력치 훈련', t: '.gy-pop .ev-trg', s: () => evRecS(P) }] : []),   // 경완 2026-11-12 '지금 포켓몬 설명해 주면서 박사가 키울 노력치 추천'
   { c: '노력치 훈련', t: '.gy-pop .ev-trg', tap: '.gy-pop .ev-tk', until: () => g.tr?.some(e => e.evk >= 0), after: 900, s: '키우고 싶은 능력치를\n하나 눌러 보렴!' },
   { c: '노력치 훈련', t: '.gy-pop .ev-tk.on', s: '좋아! 이제 이 능력치에\n노력치가 쌓인단다.\n같은 칸을 다시 누르면\n훈련을 멈추지.' },
-  { c: '노력치 훈련', t: '.gy-pop .ev-trq', s: '뭘 키울지 모르겠으면\n이 ? 를 눌러 보렴.\n지금 하기 좋은 훈련을\n알려 준단다.' },
+  { c: '노력치 훈련', t: '.gy-pop .ev-trq', s: '어떤 노력치를 키울지 헷갈리면\n이 ? 를 눌러 보렴.\n지금 그 포켓몬에게 좋은\n훈련을 알려 준단다.' },
 ];
 const GT_TREV = (eg = 1) => { const g = st(); return [
-  { c: '떠오르는 체육관', s: '오오, 관장님!\n체육관 소문이\n내 연구소까지 들리더구나!' },
+  { c: '떠오르는 체육관', s: () => `오오, ${NK()}!\n체육관 소문이\n내 연구소까지 들리더구나!` },
   { c: '떠오르는 체육관', s: '떠오르는 체육관이 된 걸\n진심으로 축하한다!' },
   { c: '떠오르는 체육관', s: '문 닫을 뻔한 체육관이\n이렇게 이름을 날리다니…\n정말 잘해 주었어.' },
   { c: '떠오르는 체육관', s: '하지만 이름이 알려질수록\n더 강한 도전자들이\n찾아올 거란다.' },
@@ -2785,10 +2793,10 @@ const GT_TRB = () => { const g = st(); return [
   ...GT_EGO(),
   ...(GB()?.evOn?.() ? GT_EVT(g) : []),
   { c: '코치', t: '.gy-menu [data-t=staff]', s: '트레이너를 코치로 보내면\n훈련이 더 빨라진단다.\n코치마다 실력이 다르지.' },
-  { c: '훈련장', s: '자, 포켓몬들을\n멋지게 키워 보렴,\n관장님!' }]; };
+  { c: '훈련장', s: () => `자, 포켓몬들을\n멋지게 키워 보렴,\n${NK()}!` }]; };
 // 훈련장 처음 들어올 때: + → 칸 → 포켓몬 고르기 → 보내기 → 카드 → 노력치 훈련
 const GT_TR = () => { const g = st(), n0 = g.tr?.length || 0; return [
-  { c: '훈련장', s: '오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, 관장님!' },
+  { c: '훈련장', s: () => `오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, ${NK()}!` },
   { c: '훈련장', t: '.ty-yd', s: '여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.' },
   { c: '훈련장', t: '.ty-yd', s: '훈련하면 경험치가 쌓여\n레벨이 오르고, 특별한\n기술도 조금씩 깨우치지.' },
   { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 + 버튼을\n눌러 보렴!' },
@@ -2817,7 +2825,7 @@ const GT_ST = () => [
   { c: '지원서', when: () => gtEl('.cv-dots'), t: '.cv-dots', s: '지원서가 여러 장이면\n옆으로 밀어서\n넘겨 볼 수 있지.' },
   { c: '고용하기', when: () => gtEl('.cv-card'), t: '.cv-card[data-i="0"] .cv-btns', s: '마음에 들면 \'고용하기\',\n아니면 \'돌려보내기\'를\n누르면 된단다.' },
   { c: '트레이너', t: '.gy-menu [data-t=train]', s: '고용한 트레이너는 체육관에\n세우거나, 훈련장 코치로\n보낼 수 있단다.' },
-  { c: '트레이너', s: '고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다. 힘내라, 관장님!' }];
+  { c: '트레이너', s: () => `고용할 수 있는 인원은\n체육관 등급이 오를수록\n늘어난단다. 힘내라, ${NK()}!` }];
 // 노력치: 처음 상세카드에서 노력치 박스를 볼 때(C) → 박스를 직접 눌러 설정 창을 열고 → 설정 창 칸별 설명(D)
 const GT_EVD = () => [
   { c: '노력치 설정', t: '.ev-pop .ev-pool', s: '여기가 노력치 설정 창이란다.\n위 막대가 남은 노력치와\n합계를 보여 주지.' },
@@ -3202,13 +3210,18 @@ const offMap = (D, [x, y]) => x < 0 || y < 0 || x >= D.w || y >= D.h;
 // 안내원이 문에서 자기 자리까지 걷는 길: 문 위 칸 → 자리 줄 → 자리
 const guyPath = D => { const [dx, dy] = D.door, [gx, gy] = D.guy; return [[dx, dy - 1], [dx, gy], [gx, gy]].filter((p, i, a) => i === 0 || p[0] !== a[i - 1][0] || p[1] !== a[i - 1][1]); };
 function enter() {
+  // 경완 2026-11-12 '운영자 모드 튜토리얼은 내 계정 체육관 말고 가상의 체육관으로': 승급 튜토리얼 시험은 시뮬(나가면 되돌림) 안에서 새 연습 체육관을 잠깐 만든다 (내 체육관 타입·옷만 가져옴)
+  if (window.gymSimOn && window.gymMegaTut) { const k = window.gymMegaTut, g0 = S.gym || {}, ty = g0.ty || 10; S.gym = { d: (DESIGNS.find(d => d.ty === ty) || DESIGNS[0]).id, ty, nm: '연습 체육관', rep: GRADES[k][0], gmax: k, rv: 6, lu: [[], [], []], tr: [], mon: {}, itm: {}, tms: {}, own: {}, dp: [], vis: Date.now(), fit: g0.fit }; }
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(p => p.mgT)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymMegaTest : null; window.gymMegaTest = null; if (k != null) setTimeout(() => megaTest(k), 900); }
-  { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(() => { const g = st(); if (!g?.d) return; g.rep = Math.max(g.rep || 0, GRADES[k][0]); g.gmax = Math.max(g.gmax | 0, k); ['mgRing', 'mgTut', 'trTut', 'egT', 'evTB', 'evTC', 'evTD'].forEach(x => delete g[x]); renderTop(); promoTut(k, 1); }, 900); }   // 운영자 메가진화 튜토리얼 (경완 2026-11-12, 시뮬이라 나가면 되돌아감)   // 운영자 메가진화 시험 (경완 2026-11-12)
+  { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
+    try { await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); } catch (e) {}
+    if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !P.mgT), P = L.find(P => (SPECIES[P.sp]?.t || []).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
+    save(); renderTop(); renderHome(); promoTut(k, 1); }, 900); }
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   if (tutW) setTimeout(() => { if (open) tutTest(tutW); }, 1600);
@@ -3435,30 +3448,66 @@ function mgCan() { const B = GB(), ty = st()?.ty, seen = new Set(), L = [];
   for (const P of S.box || []) { if (P.mgT || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
   return L.sort((a, b) => ((SPECIES[b.sp]?.t || []).includes(ty) - (SPECIES[a.sp]?.t || []).includes(ty))); }
 function ringPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
-  const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>메가링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/mega-bracelet.png"></div><p class="gy-msg mr-d">메가진화에 쓰는 팔찌.<br>메가스톤을 지닌 포켓몬과 마음이 통하면<br>배틀 중에 메가진화할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
+  const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>메가링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/mega-bracelet.png"></div><p class="gy-msg mr-d">메가진화에 쓰는 팔찌.<br>메가스톤을 지닌 포켓몬과 마음이 통하면<br>배틀 중에 메가진화할 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 /* 경완 2026-11-12 '승급할 때마다 강박사가 체육관에 들어와서 튜토리얼 진행하는 스토리 연출' (+ 개그): 동네 = 훈련장, 떠오르는 = 노력치, 이름난 = 메가진화(megaTut).
    승급창·보상창을 다 닫으면 강박사가 문으로 들어와 안내원과 티키타카 → 같이 그 메뉴로 가서 원래 튜토리얼(gtu) → 돌아와 한마디하고 나감. 배포 전이라 PROMO_ON 꺼짐, 운영자 '승급 튜토리얼'로 확인 */
+const evRecS = P => { const B = GB(), pl = B?.evPlan?.(P.sp), nm = SPECIES[P.sp]?.n || '이 포켓몬'; if (!pl) return '어떤 능력치를 키울지는\n포켓몬마다 다르단다.';
+  const L = pl.k.filter((k, j) => pl.v[j] >= 252).map(k => B.EV_N[k]), w = L.length > 1 ? `${L[0]}${jong(L[0]) ? '과' : '와'} ${L[1]}` : L[0] || B.EV_N[pl.k[0]];
+  return `${nm}${jong(nm) ? '은' : '는'} ${pl.nm || ''}이니까\n${w} 노력치를\n키우는 게 좋겠구나!`; };
 const PROMO_ON = false;
 const PROMO = {
-  1: { in: [['k', '관장님! 동네 체육관이 됐다며?\n축하하네!'], ['g', '강박사님! 소식 듣고 오신 거예요?\n저도 방금 전단지 붙이고 왔어요!'], ['k', '전단지?'], ['g', '네! \'우리 동네 최강 체육관\'이라고요.\n…옆 동네에도 붙였어요.'], ['k', '…그럼 동네 체육관이 아니잖나.'], ['k', '에헴. 아무튼 약속한 대로\n좋은 소식을 들고 왔다네.'], ['k', '오늘부터 체육관에\n훈련장이 열렸다네!\n포켓몬을 맡겨 두면 알아서\n강해지는 곳이지.'], ['k', '자, 같이 가 보세!']],
-    out: [['k', '어떤가, 훈련장 좋지?'], ['k', '나도 어릴 땐 샌드백을\n열심히 쳤었지.\n…샌드백한테 졌지만.'], ['g', '(샌드백한테…?)'], ['k', '다음 등급이 되면\n또 좋은 소식을 들고 오겠네.\n그럼 이만!']] },
-  2: { in: [['k', '관장님! 떠오르는 체육관이라니,\n이름처럼 쑥쑥 크는구먼!'], ['g', '강박사님! 이번엔 무슨\n좋은 소식이에요? 혹시…\n제 월급 인상?!'], ['k', '…그건 관장님께 여쭤보게.'], ['g', '(관장님을 빤히 쳐다본다…)'], ['k', '에헴! 오늘의 좋은 소식은\n바로 \'노력치\'라네.'], ['k', '같은 포켓몬이라도 어떻게\n키웠느냐에 따라 힘이\n완전히 달라지지.'], ['k', '훈련장으로 가 보세!']],
-    out: [['k', '노력치를 잘 쌓으면\n어떤 도전자도 무섭지 않을 걸세.'], ['k', '나도 젊었을 땐 노력치를 전부\n스피드에 몰아줬었지.'], ['g', '오, 그래서 어떻게 됐어요?'], ['k', '…도망만 아주 잘 쳤다네.\n허허허!'], ['k', '그럼 다음 등급에 또 보세!']] } };
-async function kangIn(D) { doorSe(); await wait(200); const k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' }); const CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } } return [k, CR]; }
+  1: { in: [['k', '{N}! 동네 체육관이 됐다면서?\n정말 축하한다!'], ['g', '강박사님! 소식 듣고 오신 거예요?\n저도 방금 전단지 붙이고 왔어요!'], ['k', '전단지?'], ['g', '네! \'우리 동네 최강 체육관\'이라고요.\n…옆 동네에도 붙였어요.'], ['k', '…그럼 동네 체육관이 아니잖니.'], ['k', '에헴. 아무튼 약속한 대로\n좋은 소식을 들고 왔단다.'], ['k', '오늘부터 체육관에\n훈련장이 열렸거든!\n포켓몬을 맡겨 두면 알아서\n강해지는 곳이지.'], ['k', '자, 같이 가 보자!']],
+    out: [['k', '어떠냐, 훈련장 좋지?'], ['k', '나도 어릴 땐 샌드백을\n열심히 쳤었지.\n…샌드백한테 졌지만.'], ['g', '(샌드백한테…?)'], ['k', '에헴! 그럼 난 이만\n연구소로 돌아가 보마.']],
+    st: [['k', '…아차차! 깜빡한 게 있었구나!'], ['g', '강박사님, 또요?\n지난번엔 지팡이도 두고 가셨잖아요.'], ['k', '그건 일부러 두고 간 거란다!\n…아마도.'], ['k', '{N}, 동네 체육관이 되면\n트레이너도 고용할 수 있단다.\n같이 보자!']],
+    bye: [['k', '이번엔 정말 다 말했단다.\n다음 등급이 되면\n또 좋은 소식을 들고 오마!'], ['g', '(…또 뭘 두고 가시는 건 아니겠지?)']] },
+  2: { in: [['k', '{N}! 떠오르는 체육관이라니,\n이름처럼 쑥쑥 크는구나!'], ['g', '강박사님! 이번엔 무슨\n좋은 소식이에요? 혹시…\n제 월급 인상?!'], ['k', '…그건 {N}에게 물어보렴.'], ['g', '(관장님을 빤히 쳐다본다…)'], ['k', '에헴! 오늘의 좋은 소식은\n바로 \'노력치\'란다.'], ['k', '훈련장에서 자세히 알려 주마.\n같이 가 보자!']],
+    out: [['k', '노력치를 잘 쌓으면\n어떤 도전자도 무섭지 않을 거란다.'], ['k', '나도 젊었을 땐 노력치를 전부\n스피드에 몰아줬었지.'], ['g', '오, 그래서 어떻게 됐어요?'], ['k', '…도망만 아주 잘 쳤단다.\n허허허!'], ['k', '그럼 다음 등급에 또 보자!']] } };
+// 경완 2026-11-12 '튜토리얼 들어오기 전에 강박사 항상 노크 먼저 > 강박사 관장님 보기': 똑똑똑! (화면 흔들림·관장·안내원 '!') → 문 열고 들어와 관장 앞까지 → 서로 마주 봄
+async function kangIn(D) {
+  let A = null; try { await loadJs('gymb/ev.js', 'GymEv'); A = window.GymEv?.tools?.(EV_API, { id: 'hof' }); } catch (e) {}
+  try { window.GymBGM?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR']); } catch (e) {}
+  await wait(600);
+  for (const r of [0, 1]) { root.classList.remove('dhide'); dlg(`<b>똑똑똑!${r ? ' 똑똑똑!' : ''}</b>`); for (let j = 0; j < 3; j++) { gse('HG_WALL_HIT', 1.6); GA.haptic?.(0); A?.shake?.(); await wait(190); } await wait(450); }
+  meEnt.f = 'd'; place(meEnt); A?.bub?.(meEnt, '!', 900); if (guyEnt) { A?.bub?.(guyEnt, '!', 900); face(guyEnt, { x: D.door[0], y: D.door[1] }); } gse('DP_REGI', .8); await wait(900);
+  await talk('누군가 체육관 문을 두드리고 있다!');
+  dlg(''); root.classList.add('dhide'); doorSe(); await wait(200);
+  const k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' }); root.classList.remove('dhide'); dlg('<b>강박사</b>가 들어왔다!');
+  const CR = chalRoute(D, [k]); if (CR?.path?.length) await walk(k, CR.path, 170);
+  dlg(''); root.classList.add('dhide'); face(k, meEnt); face(meEnt, k); if (guyEnt) face(guyEnt, k); await wait(350);
+  return [k, CR]; }
+// 강박사 나감: 아래 대화창이 빈 채로 남지 않게 먼저 닫고 걸어 나감 (경완 2026-11-12 '강박사 나갈 때 빈 대사창')
+async function kangOut(D, k, T) { dlg(''); root.classList.add('dhide'); T?.hide(true); await wait(250); T?.el?.remove(); await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120); }
 async function promoVisit(gi) {
   const g = st(), P = PROMO[gi]; if (!g?.d || !meEnt || !P) return; for (let i = 0; (busy || gtOn) && i < 80; i++) await wait(100); if (!open) return;
   await Promise.all([loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')), loadJs('gymb/bgm.js', 'GymBGM')]).catch(() => {});
   const D = dzOf(g.d); busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   let k = null, T = null; const gu = guyEnt;
-  const run = async L => { for (const [w, t] of L) { if (!open) return; if (gu) { if (w === 'g') { face(gu, k); } else face(k, gu || meEnt); } await T.say(t, w === 'g' ? { who: '안내원' } : {}); } if (gu) { face(k, meEnt); face(gu, meEnt); } };
+  const run = async L => { for (const [w, t] of L) { if (!open) return; if (gu) { if (w === 'g') { face(gu, k); } else face(k, gu || meEnt); } await T.say(t.replace(/\{N\}/g, NK()), w === 'g' ? { who: '안내원' } : {}); } if (gu) { face(k, meEnt); face(gu, meEnt); } };
   try {
     let CR; [k, CR] = await kangIn(D); T = storyTalk(); await run(P.in); if (!open) return;
     T.hide(true); k.el.style.visibility = 'hidden'; busy = false; root.classList.remove('busy');
-    if (gi === 1) { g.trTut = 1; g.egT = 1; if (GB()?.evOn?.()) g.evTB = 1; save(); openTab('train'); await wait(1400); await gtu(GT_TR().slice(1)); }
-    else { const eg = tutSeen('egT'); g.trTut = 1; g.evTB = 1; g.egT = 1; save(); openTab('train'); await wait(1400); await gtu(GT_TREV(eg).slice(6)); }
-    if (!open) return; root.querySelectorAll('.gy-pop').forEach(x => x.remove()); document.querySelectorAll('#gym .gy-boxw, #gym .gy-storew').forEach(x => x.remove()); openTab(null);
+    // 경완 2026-11-12: 훈련장 메뉴 버튼을 직접 눌러 들어감 → '여기가 바로 훈련장' → (동네) 보내기 → 필드에 나온 모습 → 그 포켓몬 눌러 상세카드 → 훈련 현황·특별한 기술 (노력치는 떠오르는 체육관에서만)
+    const eg = tutSeen('egT'); g.trTut = 1; g.egT = 1; if (gi === 2 || GB()?.evOn?.()) g.evTB = 1; save();
+    const n0 = g.tr?.length || 0, newId = () => (g.tr?.length || 0) > n0 ? g.tr.at(-1).id : g.tr?.[0]?.id, ydM = () => gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'), mNm = () => { const P2 = S.box.find(p => p.id === newId()); return SPECIES[P2?.sp]?.n || '포켓몬'; };
+    const CLOSE = () => { root.querySelectorAll('.gy-pop').forEach(x => x.remove()); document.querySelectorAll('#gym .gy-boxw, #gym .gy-storew').forEach(x => x.remove()); openTab(null); };
+    const GO = { c: '훈련장', t: '.gy-menu [data-t=train]', tap: '.gy-menu [data-t=train]', until: () => gtEl('.ty-yd:not(.ty-wait)'), after: 1200, s: '아래 \'훈련장\' 메뉴를\n눌러 보렴!' }, HERE = { c: '훈련장', t: '.ty-yd', s: '여기가 바로 훈련장이란다!' };
+    // 경완 2026-11-12 '메뉴도 다 직접 누르게': 카드 닫기 → 그 메뉴를 한 번 더 눌러 체육관으로
+    const SHUT = { c: '체육관', when: () => gtEl('.gy-pop [data-a=x]'), t: '.gy-pop [data-a=x]', tap: '.gy-pop [data-a=x]', until: () => !gtEl('.gy-pop'), after: 500, s: '이제 \'닫기\'를 눌러 보렴.' };
+    const BACK = (t, n) => ({ c: '체육관', t: `.gy-menu [data-t=${t}]`, tap: `.gy-menu [data-t=${t}]`, until: () => $g('.gy-sheet')?.hidden, after: 700, s: `'${n}' 메뉴를 한 번 더 누르면\n체육관으로 돌아간단다.` });
+    const CARD = [{ c: '훈련장', when: () => gtEl('.ts-win .bw-x'), t: '.ts-win .bw-x', tap: '.ts-win .bw-x', until: () => !gtEl('.ts-win'), after: 900, s: '이제 ‹ 를 눌러\n훈련장 마당으로 가 보자.' }, { c: '훈련장', when: ydM, t: ydM, s: () => `보렴, ${mNm()}${jong(mNm()) ? '이' : '가'}\n훈련을 시작했구나!` }, { c: '훈련장', when: ydM, t: ydM, s: '여기서 열심히 훈련하면서\n쑥쑥 강해질 거란다.' },
+      { c: '훈련 카드', when: ydM, t: ydM, tap: ydM, until: () => gtEl('.gy-pop .tp2-today'), after: 900, s: () => `이제 ${mNm()}${jong(mNm()) ? '을' : '를'}\n눌러 보렴!` }];
+    if (gi === 1) { const TB = GT_TRB(); await gtu([GO, HERE, ...GT_TR().slice(1, 10), ...CARD, TB[2], TB[3], ...GT_EGO(), SHUT, BACK('train', '훈련장')]); }
+    else { const P0 = S.box.find(p => p.id === newId()), TAP = { ...CARD[3], s: () => `훈련 중인 ${mNm()}${jong(mNm()) ? '을' : '를'}\n눌러 보렴!` };
+      await gtu([GO, TAP, ...(eg ? [] : GT_EGO()), { c: '노력치', t: '.gy-pop .ev-tr', s: '카드 아래에 \'노력치 훈련\'이\n새로 생겼지?' }, ...GT_EVT(g, P0).slice(1), SHUT, BACK('train', '훈련장')]); }
+    if (!open) return; CLOSE();
     busy = true; root.classList.add('busy'); k.el.style.visibility = ''; T.hide(false); await run(P.out);
-    T.el.remove(); T = null; await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
+    if (gi === 1 && P.st) {   // 나가려다 '아차! 깜빡한 게 있었네' → 트레이너 메뉴
+      const st0 = [Math.round(k.x), Math.round(k.y)], o = outRoute(D, k); if (o?.length) await walk(k, o.slice(0, Math.min(2, o.length - 1)), 200);
+      await wait(300); face(k, meEnt); await run(P.st); T.hide(true); k.el.style.visibility = 'hidden'; busy = false; root.classList.remove('busy');
+      g.sfTut = 1; save();
+      await gtu([{ c: '트레이너', t: '.gy-menu [data-t=staff]', tap: '.gy-menu [data-t=staff]', until: () => gtEl('.sp-tabs [data-sft=sf]'), after: 1200, s: '아래 \'트레이너\' 메뉴를\n눌러 보렴!' }, ...GT_ST().slice(1), BACK('staff', '트레이너')]);
+      if (!open) return; CLOSE(); busy = true; root.classList.add('busy'); k.el.style.visibility = ''; T.hide(false); await run(P.bye); }
+    await kangOut(D, k, T); T = null;
   } finally { T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; meEnt.f = 'd'; place(meEnt); save(); }
 }
 // 승급창·보상창을 다 닫은 뒤: 그 등급 강박사 이야기 (force = 운영자 시험)
@@ -3478,17 +3527,15 @@ async function megaTut(test) {
   let k = null, T = null, made = null, it0 = null; const B = GB(), H = B?.HOLD, stNm = () => H?.[M[1]]?.[0] || '메가스톤', price0 = H?.[M[1]]?.[1];
   const say = (t, o) => T.say(t, o), hideT = on => T?.hide(on);
   try {
-    doorSe(); await wait(200);
-    k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
-    const CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
+    let CR; [k, CR] = await kangIn(D); if (!open) return;
     T = storyTalk();
-    for (const t of [`${trName() ? trName() + ' ' : ''}관장님!\n이름난 체육관이 됐다는 소식을\n듣고 달려왔단다!`, '이제 이 동네에서 네 체육관을\n모르는 트레이너는 없을 거야.\n정말 축하한다!', '하지만 이름이 알려질수록\n더 강한 도전자들이\n몰려오기 마련이지.', '그래서 오늘은 포켓몬을\n한층 더 강하게 만드는\n특별한 힘을 알려 주마.', '바로 \'메가진화\'란다!', '메가진화는 배틀 중에 포켓몬이\n더 강한 모습으로 진화하는 거란다.\n배틀이 끝나면 원래대로 돌아오지.', '능력치가 크게 오르고,\n특성이나 타입이 바뀌기도\n한단다.', '메가진화에는 두 가지가 필요해.\n트레이너의 메가링, 그리고\n포켓몬이 지닌 메가스톤!', '자, 이걸 받으렴.']) { if (!open) return; await say(t); }
+    for (const t of [`${NK()}!\n이름난 체육관이 됐다는 소식을\n듣고 달려왔단다!`, '이제 이 동네에서 네 체육관을\n모르는 트레이너는 없을 거야.\n정말 축하한다!', '하지만 이름이 알려질수록\n더 강한 도전자들이\n몰려오기 마련이지.', '그래서 오늘은 포켓몬을\n한층 더 강하게 만드는\n특별한 힘을 알려 주마.', '바로 \'메가진화\'란다!', '메가진화는 배틀 중에 포켓몬이\n더 강한 모습으로 진화하는 거란다.\n배틀이 끝나면 원래대로 돌아오지.', '능력치가 크게 오르고,\n특성이나 타입이 바뀌기도\n한단다.', '메가진화에는 두 가지가 필요해.\n트레이너의 메가링, 그리고\n포켓몬이 지닌 메가스톤!', '자, 이걸 받으렴.']) { if (!open) return; await say(t); }
     hideT(true); await ringPop(); g.mgRing = 1; save(); hideT(false);
     { const gu = guyEnt, GW = { who: '안내원' }; if (gu) { face(gu, k); face(k, gu); }   // 개그 (경완 2026-11-12 '스토리 튜토리얼마다 개그요소')
       await say('와아, 반짝반짝해요!\n강박사님, 저도 하나만…!', GW); await say('자네는 메가진화할 포켓몬도\n없지 않나.'); await say('그럼 제가 메가진화하면\n되잖아요!', GW); await say('…사람은 메가진화가 안 된다네.\n내가 해 봐서 알아.'); await say('(해 보셨구나…)', GW); if (gu) { face(k, meEnt); face(gu, meEnt); } }
     for (const t of ['메가링은 트레이너와 포켓몬의\n마음을 이어 주는 팔찌란다.', '메가스톤을 지닌 포켓몬과\n마음이 통하면 메가링이 반응해서\n메가진화할 수 있지.', '단, 메가진화는 한 배틀에\n한 마리만 할 수 있단다.']) { if (!open) return; await say(t); }
-    const know = await T.ask('그런데 관장님,\n메가진화하는 방법은\n알고 있니?', {}, '네', '아니요'); if (!open) return;
-    if (know) await say('오, 역시 관장님이구나!\n그럼 설명은 건너뛰마.');
+    const know = await T.ask(`그런데 ${NK()},\n메가진화하는 방법은\n알고 있니?`, {}, '네', '아니요'); if (!open) return;
+    if (know) await say(`오, 역시 ${NK()}${jong(NK()) ? '이' : ''}구나!\n그럼 설명은 건너뛰마.`);
     else if (B && H?.[M[1]]) {
       const sp = SPECIES[M[0]]?.n || '포켓몬', sn = stNm();
       await say('허허, 그럼 직접 해 보는 게\n제일이지!');
@@ -3500,19 +3547,30 @@ async function megaTut(test) {
       // 상점에서 사기 (연습이라 0G) → 상세카드 → 지닌 도구 → 도구 사용 → 지니게 하기
       g.itm = g.itm || {}; it0 = g.itm[M[1]] | 0; H[M[1]][1] = 0;
       const sid = `[data-it="${M[1]}"]`, P = made, has = () => (g.itm[M[1]] | 0) > it0;
+      busy = false; root.classList.remove('busy');   // 아래 메뉴를 직접 누르게
       await gtu([
-        { c: '메가스톤', pre: async () => { window.gymShopIt = M[1]; openTab('shop'); for (let i = 0; i < 40 && !gtEl(`.sp-body ${sid}`); i++) await wait(100); }, hold: 400, t: `.sp-body ${sid}`, s: `도구 탭 맨 아래에\n메가스톤이 생겼단다.\n${sn}${pE(sn)} 눌러 보렴!`, tap: `.sp-body ${sid}`, until: () => gtEl('.gy-pop .mi-h'), after: 700 },
+        { c: '상점', pre: async () => { window.gymShopIt = M[1]; }, hold: 100, t: '.gy-menu [data-t=shop]', tap: '.gy-menu [data-t=shop]', until: () => gtEl(`.sp-body ${sid}`), after: 900, s: '아래 \'상점\' 메뉴를\n눌러 보렴!' },
+        { c: '메가스톤', t: `.sp-body ${sid}`, s: `도구 탭 맨 아래에\n메가스톤이 생겼단다.\n${sn}${pE(sn)} 눌러 보렴!`, tap: `.sp-body ${sid}`, until: () => gtEl('.gy-pop .mi-h'), after: 700 },
         { c: '메가스톤', when: () => gtEl('.gy-pop [data-a=t]'), t: '.gy-pop .win', s: '이번엔 연습이니까\n값은 내가 내 주마.\n\'사기\'를 눌러 보렴!', tap: '.gy-pop [data-a=t]', until: has, after: 700 },
         { c: '메가스톤', when: () => gtEl('.gy-pop.gy-note [data-a=x]'), t: '.gy-pop.gy-note .win', s: '창고에 들어갔구나.\n\'확인\'을 눌러 보렴.', tap: '.gy-pop.gy-note [data-a=x]', until: () => !gtEl('.gy-pop.gy-note'), after: 500 },
-        { c: '지니게 하기', pre: async () => { openTab(null); B._monPop(P.id, 'view'); for (let i = 0; i < 30 && !gtEl('.gy-pop .mp-thb'); i++) await wait(100); }, hold: 500, t: '.gy-pop .mp-head', s: `이제 ${sp}에게\n${sn}${pE(sn)} 지니게 하자.` },
-        { c: '지니게 하기', t: '.gy-pop .mp-thb', tap: '.gy-pop .mp-thb', until: () => gtEl('.gy-pop [data-a=use]') || gtEl('.gy-storew'), after: 700, s: '포켓몬 그림을 누르면\n지닌 도구를 볼 수 있단다.\n눌러 보렴!' },
+        // 경완 2026-11-12 '메뉴도 다 직접 누르게' + '테스트 포켓몬 카드에 지닌 도구 점선 박스': 포켓몬 메뉴 → 포켓몬 박스 → 빌린 포켓몬 → + 칸
+        { c: '지니게 하기', t: '.gy-menu [data-t=battle]', tap: '.gy-menu [data-t=battle]', until: () => gtEl('.gy-sheet [data-box]'), after: 900, s: `이제 ${sp}에게\n${sn}${pE(sn)} 지니게 하자.\n'포켓몬' 메뉴를 눌러 보렴!` },
+        { c: '지니게 하기', t: '.gy-sheet [data-box]', tap: '.gy-sheet [data-box]', until: () => gtEl(`.gy-boxw [data-id="${P.id}"]`), after: 800, s: '\'포켓몬 박스\'를 눌러 보렴.' },
+        { c: '지니게 하기', t: `.gy-boxw [data-id="${P.id}"]`, tap: `.gy-boxw [data-id="${P.id}"]`, until: () => gtEl('.gy-pop .mp-head'), after: 900, s: `내가 빌려준 ${sp}${pI(sp)}\n여기 있구나. 눌러 보렴!` },
+        { c: '지니게 하기', when: () => gtEl('.gy-pop .th-add'), t: '.gy-pop .th-add', tap: '.gy-pop .th-add', until: () => gtEl('.gy-pop [data-a=use]') || gtEl('.gy-storew'), after: 700, s: '그림 옆 점선 칸이\n지닌 도구 자리란다.\n+ 를 눌러 보렴!' },
+        { c: '지니게 하기', when: () => !gtEl('.gy-pop [data-a=use]') && !gtEl('.gy-storew') && gtEl('.gy-pop .mp-thb'), t: '.gy-pop .mp-thb', tap: '.gy-pop .mp-thb', until: () => gtEl('.gy-pop [data-a=use]') || gtEl('.gy-storew'), after: 700, s: '포켓몬 그림을 누르면\n지닌 도구를 볼 수 있단다.\n눌러 보렴!' },
         { c: '지니게 하기', when: () => gtEl('.gy-pop [data-a=use]'), t: '.gy-pop [data-a=use]', tap: '.gy-pop [data-a=use]', until: () => gtEl(`.gy-storew .sp-it${sid}`), after: 700, s: '아무것도 안 지녔구나.\n\'도구 사용\'을 눌러 보렴!' },
         { c: '지니게 하기', t: `.gy-storew .sp-it${sid}`, tap: `.gy-storew .sp-it${sid}`, until: () => gtEl('.gy-pop [data-a=t]'), after: 700, s: `방금 산 ${sn}${pI(sn)}\n여기 있지? 눌러 보렴!` },
         { c: '지니게 하기', when: () => gtEl('.gy-pop [data-a=t]'), t: '.gy-pop [data-a=t]', tap: '.gy-pop [data-a=t]', until: () => B.gm(P).it === M[1], after: 700, s: '\'지니게 하기\'를 눌러 보렴!' },
-        { c: '지니게 하기', when: () => gtEl('.gy-pop .gy-btns.one [data-a=x]'), t: '.gy-pop .gy-btns.one [data-a=x]', tap: '.gy-pop .gy-btns.one [data-a=x]', until: () => !gtEl('.gy-pop .gy-btns.one [data-a=x]'), after: 500, s: '좋아! \'확인\'을 누르렴.' }]);
+        { c: '지니게 하기', when: () => gtEl('.gy-pop .gy-btns.one [data-a=x]'), t: '.gy-pop .gy-btns.one [data-a=x]', tap: '.gy-pop .gy-btns.one [data-a=x]', until: () => !gtEl('.gy-pop .gy-btns.one [data-a=x]'), after: 500, s: '좋아! \'확인\'을 누르렴.' },
+        { c: '체육관', when: () => gtEl('.gy-storew .gy-back'), t: '.gy-storew .gy-back', tap: '.gy-storew .gy-back', until: () => !gtEl('.gy-storew'), after: 700, s: '잘했다! ◀ 를 눌러\n돌아가자.' },
+        { c: '지니게 하기', when: () => gtEl('.gy-pop .mp-head'), t: () => gtEl('.gy-pop .mp-head'), s: `${sn}${pE(sn)} 지닌 게 보이지?\n이제 카드를 닫자.` },
+        { c: '체육관', when: () => gtEl('.gy-pop [data-a=x]'), t: '.gy-pop [data-a=x]', tap: '.gy-pop [data-a=x]', until: () => !gtEl('.gy-pop'), after: 500, s: '✕ 를 눌러 보렴.' },
+        { c: '체육관', when: () => gtEl('.gy-boxw .bw-x'), t: '.gy-boxw .bw-x', tap: '.gy-boxw .bw-x', until: () => !gtEl('.gy-boxw'), after: 500, s: '‹ 를 눌러 한 번 더 돌아가자.' },
+        { c: '체육관', when: () => !$g('.gy-sheet')?.hidden, t: '.gy-menu [data-t=battle]', tap: '.gy-menu [data-t=battle]', until: () => $g('.gy-sheet')?.hidden, after: 700, s: '\'포켓몬\' 메뉴를 한 번 더 누르면\n체육관으로 돌아간단다.' }]);
       document.querySelectorAll('#gym .gy-storew, #gym .gy-boxw').forEach(x => x.remove()); root.querySelectorAll('.gy-pop').forEach(x => x.remove()); openTab(null);
       if (!B.gm(P).it && H[M[1]]) B.gm(P).it = M[1];   // 도중에 길이 막혀 못 지녔어도 배틀은 할 수 있게
-      if (!open) return; k.el.style.visibility = ''; hideT(false);
+      if (!open) return; busy = true; root.classList.add('busy'); k.el.style.visibility = ''; hideT(false);
       await say(`잘했다! 이제 ${sp}${pI(sp)}\n${sn}${pE(sn)} 지녔구나.`);
       await say('그럼 연습 배틀에서\n메가진화를 해 보자!\n내 연구소 연구원이 상대해 줄 거란다.');
       hideT(true);
@@ -3528,8 +3586,8 @@ async function megaTut(test) {
         { c: '메가진화', when: () => gtEl('.bt .gkb') && !done, t: '.bt .gkb', tap: '.bt .gkb', until: () => gtEl('.bt .gkb.on') || done, after: 400, s: '메가진화 버튼이 보이지?\n눌러서 켜 보렴!' },
         { c: '메가진화', when: () => gtEl('.bt .gkb.on') && !done, t: gtAll('.bt .mvb'), tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: '이제 쓸 기술을 고르면\n그 턴에 메가진화한단다!' }]);
       await run;
-      document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); bgmPlay('gym');
-      if (!open) return; hideT(false); k.el.style.visibility = ''; meEnt.f = CR?.mf || 'd'; place(meEnt);
+      document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); bgmPlay('gym');
+      if (!open) return; hideT(false); k.el.style.visibility = ''; face(meEnt, k); face(k, meEnt);
       await say('어떠냐, 멋지지?\n이게 바로 메가진화란다!');
       await say(`${sp}${pN(sp)} 이제 돌려받으마.\n${sn}${pN(sn)} 연습용이라\n같이 가져가겠네.`);
     }
@@ -3537,18 +3595,17 @@ async function megaTut(test) {
     const L = mgCan(), N = L.slice(0, 4).map(P => SPECIES[P.sp]?.n || ''), tyN = L.filter(P => (SPECIES[P.sp]?.t || []).includes(T0)).length;
     if (L.length) {
       const w = N.join(', ') + (L.length > 4 ? ' 등' : ''), last = N[N.length - 1];
-      await say(`그럼 관장님 포켓몬들을\n한번 볼까…`);
+      await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
       await say(`오호! ${w}${L.length > 4 ? '' : pI(last)}\n메가진화할 수 있을 것\n같구나!`);
       if (L.some(P => P.sp === 384)) await say('레쿠쟈는 메가스톤 대신\n\'화룡점정\'을 배우고 있으면\n메가진화할 수 있단다.');
       await say(tyN ? '맞는 메가스톤은 체육관\n상점에서 살 수 있지.\n꼭 한번 지니게 해 보렴!' : '다만 체육관 타입과 다른\n포켓몬은 체육관 배틀엔 못 나가니\n그 점은 기억해 두렴.');
     } else {
-      await say('그럼 관장님 포켓몬들을\n한번 볼까…');
+      await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
       await say('흠, 아직은 메가진화할 수 있는\n포켓몬이 없는 것 같구나.');
       await say('새로운 포켓몬을 만나면\n메가진화할 수 있는지\n꼭 살펴보렴!');
     }
-    await say('그럼 메가진화로 더 강해질\n체육관을 기대하마.\n건투를 빈다, 관장님!');
-    T.el.remove(); T = null;
-    await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
+    await say(`그럼 메가진화로 더 강해질\n체육관을 기대하마.\n건투를 빈다, ${NK()}!`);
+    await kangOut(D, k, T); T = null;
   } finally {
     T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); }
     if (H?.[M[1]] && price0 != null) H[M[1]][1] = price0;

@@ -176,8 +176,10 @@
     top.style.webkitMaskImage = top.style.maskImage = MK; top.style.webkitMaskComposite = 'source-in'; top.style.maskComposite = 'intersect';
     bt.appendChild(root);
     const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
-    const shake = (t, d, amp) => at(t, () => A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.08)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.08)` })), { duration: d, easing: 'linear', fill: 'none' }));
-    const vib = n => { try { window.GA?.haptic?.(n); } catch (e) {} };
+    // 경완 2026-11-12 '메가진화 할 때 진동 좀 더 빡세게': 진동은 늘 가장 센 단계(2)로, 단계가 클수록 여러 번 연달아 + 화면이 흔들리는 동안 계속 우르르
+    const hz = () => { try { window.GA?.haptic?.(2); } catch (e) {} };
+    const vib = n => { const c = [1, 2, 4, 7][n] || 2; for (let i = 0; i < c; i++) timers.push(setTimeout(hz, i * 70)); };
+    const shake = (t, d, amp) => at(t, () => { A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.08)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.08)` })), { duration: d, easing: 'linear', fill: 'none' }); for (let q = 0; q < d; q += 80) timers.push(setTimeout(hz, q)); });
     // 1) 위 화면을 그 포켓몬 쪽으로 화면 가득 (0~900)
     hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350 })));
     tAnim.push(A(top, [{ transform: T0 === 'none' ? 'none' : T0 }, { transform: `translate(${tx}px,${ty}px) scale(${zt})` }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
