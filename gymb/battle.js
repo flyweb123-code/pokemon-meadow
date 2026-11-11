@@ -10,7 +10,7 @@ const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
 const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
 /* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
-const TR_ANI = {"champion_cynthia":[22,79,"CHAMPION_Cynthia"],"champion_steven":[11,76,"CHAMPION_Steven"],"champion_wallace":[13,75,"LEADER_Wallace"],"elite_four_aaron":[11,88,"ELITEFOUR_Aaron"],"elite_four_bertha":[3,80,"ELITEFOUR_Bertha"],"elite_four_bruno":[19,80,"ELITEFOUR_Bruno"],"elite_four_flint":[11,80,"ELITEFOUR_Flint"],"elite_four_lance":[9,78,"ELITEFOUR_Lance"],"elite_four_lucian":[6,80,"ELITEFOUR_Lucian"],"hg_blaine":[7,82,"LEADER_Blaine"],"hg_brock":[7,59,"LEADER_Brock"],"hg_bruno2":[19,80,"ELITEFOUR_Bruno"],"hg_bugsy":[7,86,"LEADER_Bugsy"],"hg_chuck":[9,80,"LEADER_Chuck"],"hg_clair":[11,80,"LEADER_Clair"],"hg_erika":[10,72,"LEADER_Erika"],"hg_falkner":[5,58,"LEADER_Falkner"],"hg_janine":[10,106,"LEADER_Janine"],"hg_jasmine":[16,78,"LEADER_Jasmine"],"hg_karen":[10,80,"ELITEFOUR_Karen"],"hg_koga2":[9,86,"LEADER_Koga"],"hg_lance":[9,78,"ELITEFOUR_Lance"],"hg_misty":[11,84,"LEADER_Misty"],"hg_morty":[10,80,"LEADER_Morty"],"hg_pryce":[15,75,"LEADER_Pryce"],"hg_red":[7,69,"POKEMONTRAINER_Red"],"hg_sabrina":[20,84,"LEADER_Sabrina"],"hg_silver":[7,80,"POKEMONTRAINER_Silver"],"hg_surge":[15,81,"LEADER_Surge"],"hg_whitney":[10,88,"LEADER_Whitney"],"hg_will":[15,80,"ELITEFOUR_Will"],"leader_blaine":[7,82,"LEADER_Blaine"],"leader_brawly":[11,77,"LEADER_Brawly"],"leader_brock":[7,59,"LEADER_Brock"],"leader_byron":[14,81,"LEADER_Byron"],"leader_candice":[8,90,"LEADER_Candice"],"leader_erika":[10,72,"LEADER_Erika"],"leader_fantina":[17,89,"LEADER_Fantina"],"leader_flannery":[14,87,"LEADER_Flannery"],"leader_gardenia":[14,75,"LEADER_Gardenia"],"leader_giovanni":[5,80,"LEADER_Giovanni"],"leader_juan":[14,75,"LEADER_Juan"],"leader_koga":[9,86,"LEADER_Koga"],"leader_lt_surge":[15,81,"LEADER_Surge"],"leader_maylene":[14,75,"LEADER_Maylene"],"leader_misty":[11,84,"LEADER_Misty"],"leader_norman":[8,74,"LEADER_Norman"],"leader_roark":[12,76,"LEADER_Roark"],"leader_roxanne":[11,68,"LEADER_Roxanne"],"leader_sabrina":[20,84,"LEADER_Sabrina"],"leader_volkner":[8,78,"LEADER_Volkner"],"leader_wake":[16,79,"LEADER_Wake"],"leader_wallace":[13,75,"LEADER_Wallace"],"leader_wattson":[17,73,"LEADER_Wattson"],"leader_winona":[17,78,"LEADER_Winona"],"red":[7,69,"POKEMONTRAINER_Red"]};
+const TR_ANI = {"champion_cynthia":[22,79,"CHAMPION_Cynthia"],"champion_steven":[11,76,"CHAMPION_Steven"],"champion_wallace":[13,75,"LEADER_Wallace"],"elite_four_aaron":[11,88,"ELITEFOUR_Aaron"],"elite_four_bertha":[3,80,"ELITEFOUR_Bertha"],"elite_four_bruno":[19,80,"ELITEFOUR_Bruno"],"elite_four_flint":[11,80,"ELITEFOUR_Flint"],"elite_four_lance":[9,78,"ELITEFOUR_Lance"],"elite_four_lucian":[6,80,"ELITEFOUR_Lucian"],"hg_blaine":[7,82,"LEADER_Blaine"],"hg_brock":[7,59,"LEADER_Brock"],"hg_bruno2":[19,80,"ELITEFOUR_Bruno"],"hg_erika":[10,72,"LEADER_Erika"],"hg_koga2":[9,86,"LEADER_Koga"],"hg_lance":[9,78,"ELITEFOUR_Lance"],"hg_misty":[11,84,"LEADER_Misty"],"hg_sabrina":[20,84,"LEADER_Sabrina"],"hg_surge":[15,81,"LEADER_Surge"],"leader_blaine":[7,82,"LEADER_Blaine"],"leader_brawly":[11,77,"LEADER_Brawly"],"leader_brock":[7,59,"LEADER_Brock"],"leader_byron":[14,81,"LEADER_Byron"],"leader_candice":[8,90,"LEADER_Candice"],"leader_erika":[10,72,"LEADER_Erika"],"leader_fantina":[17,89,"LEADER_Fantina"],"leader_flannery":[14,87,"LEADER_Flannery"],"leader_gardenia":[14,75,"LEADER_Gardenia"],"leader_giovanni":[5,80,"LEADER_Giovanni"],"leader_juan":[14,75,"LEADER_Juan"],"leader_koga":[9,86,"LEADER_Koga"],"leader_lt_surge":[15,81,"LEADER_Surge"],"leader_maylene":[14,75,"LEADER_Maylene"],"leader_misty":[11,84,"LEADER_Misty"],"leader_norman":[8,74,"LEADER_Norman"],"leader_roark":[12,76,"LEADER_Roark"],"leader_roxanne":[11,68,"LEADER_Roxanne"],"leader_sabrina":[20,84,"LEADER_Sabrina"],"leader_volkner":[8,78,"LEADER_Volkner"],"leader_wake":[16,79,"LEADER_Wake"],"leader_wallace":[13,75,"LEADER_Wallace"],"leader_wattson":[17,73,"LEADER_Wattson"],"leader_winona":[17,78,"LEADER_Winona"],"red":[7,69,"POKEMONTRAINER_Red"]};   /* 필드 그림(걷기)이 있는 43명만 (경완 2026-11-12) */
 function trAni(el, k) { const a = TR_ANI[k]; if (!a) return null; const [n, h, f] = a; Object.assign(el.style, { backgroundImage: `url(${IMG}dbk/tr/${f}.png)`, width: h + 'px', height: h + 'px', backgroundSize: `${n * h}px ${h}px`, backgroundPosition: '0 0', marginLeft: (80 - h) / 2 + 'px', marginTop: (80 - h) + 'px' }); return a; }
 async function trPlay(el, a) { if (!a) return; const [n, h] = a, d = 1500 / n; for (let i = 1; i < n; i++) { await wait(d); if (!B) return; el.style.backgroundPosition = `${-i * h}px 0`; } }
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
@@ -454,7 +454,8 @@ function patOn(s, cls, url, size) { const m = monEl(s), cl = m?.querySelector('.
 function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px'); stPat(s, ''); }
 function dmaxOn(s, X) { const m = monEl(s); m.classList.add('dmx'); patOn(s, 'dp', `${IMG}dbk/pat/${X?.sp === 898 ? 'CALYREX' : 'dynamax'}.png`, '400px 96px'); stPat(s, ''); }
 function dmaxOff(s) { const m = monEl(s); m.classList.remove('dmx'); m.querySelector('.dpat')?.remove(); }
-function stPat(side, st) { const img = monEl(side)?.querySelector('img'); if (!img) return; if (B?.gmx?.[side] || monEl(side).classList.contains('tera')) img.style.filter = ''; else if (ST_PAT[st]) { stPatDefs(); img.style.filter = `url(#btSt_${st})`; } else img.style.filter = ''; }   /* 다이맥스 중엔 붉은 무늬 (DBK 도 다이맥스·테라 중엔 상태 무늬 안 함) */
+const DBK_ON = false;   /* v21.89 기믹·상태 무늬·상대 가방·배틀 정보는 경완 확인 전까지 꺼 둠 (트레이너 등장만 켬) */
+function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySelector('img'); if (!img) return; if (B?.gmx?.[side] || monEl(side).classList.contains('tera')) img.style.filter = ''; else if (ST_PAT[st]) { stPatDefs(); img.style.filter = `url(#btSt_${st})`; } else img.style.filter = ''; }   /* 다이맥스 중엔 붉은 무늬 (DBK 도 다이맥스·테라 중엔 상태 무늬 안 함) */
 
 // ---------- 포켓몬 그림 ----------
 // 1~649: 블랙·화이트 움직이는 gif (못 받으면 1~493 은 플래티넘 2장 그림+움직임, 494~649 는 한 장), 650~: 팬게임(pokeemerald-expansion) 2장 그림을 같은 판으로 (gym/img/pk/anim.json)
@@ -620,6 +621,7 @@ function mainPanel(A) {
       <button class="bb bag" data-a="bag"><span>가방</span></button>
       <button class="bb run" data-a="run"><span>${B.practice ? '그만두기' : '기권'}</span></button>
       <button class="bb mon" data-a="mon"><span>포켓몬</span></button>
+      ${DBK_ON ? '<button class="bb binfo" data-a="info" aria-label="배틀 정보"><span>정보</span></button>' : ''}
       <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p></div>`);
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a); };
   });
@@ -674,6 +676,53 @@ function movePanel(req) {
   });
 }
 // 기술 설명: 타입·분류·위력·명중·PP·설명 (아래 화면)
+/* v21.89 [DBK] Enhanced Battle UI '배틀러 정보': 싸우기 메뉴의 정보 버튼 → 지금 나와 있는 포켓몬(내 쪽·상대)의 레벨·타입·테라·능력 변화(▲▼)·급소·특성/도구(내 포켓몬만)·마지막 기술·턴·걸린 효과와 남은 턴. ◀▶로 넘김 */
+const BI_FX = { sunnyday: ['쾌청', '불꽃 기술 위력 1.5배, 물 기술 위력 반감.'], desolateland: ['아주 강한 햇살', '불꽃 기술 위력 1.5배, 물 기술이 사라진다.'], raindance: ['비', '물 기술 위력 1.5배, 불꽃 기술 위력 반감.'], primordialsea: ['강한 비', '물 기술 위력 1.5배, 불꽃 기술이 사라진다.'], sandstorm: ['모래바람', '매 턴 HP가 줄 수 있다. 바위 타입 특수방어 1.5배.'], hail: ['싸라기눈', '매 턴 HP가 줄 수 있다. 눈보라가 반드시 맞는다.'], snow: ['설경', '얼음 타입 방어 1.5배. 눈보라가 반드시 맞는다.'], deltastream: ['난기류', '비행 타입의 약점이 없어진다.'],
+  electricterrain: ['일렉트릭필드', '땅에 있는 포켓몬은 잠들지 않는다. 전기 기술 위력 1.3배.'], grassyterrain: ['그래스필드', '땅에 있는 포켓몬은 매 턴 HP가 조금 회복된다. 풀 기술 위력 1.3배.'], mistyterrain: ['미스트필드', '땅에 있는 포켓몬은 상태 이상이 되지 않는다. 드래곤 기술 위력 반감.'], psychicterrain: ['사이코필드', '땅에 있는 포켓몬은 선공기를 받지 않는다. 에스퍼 기술 위력 1.3배.'],
+  trickroom: ['트릭룸', '느린 포켓몬부터 먼저 움직인다.'], gravity: ['중력', '모두 땅에 붙고 명중률이 오른다.'], magicroom: ['매직룸', '모두 지닌 도구를 쓸 수 없다.'], wonderroom: ['원더룸', '모두 방어와 특수방어가 바뀐다.'], mudsport: ['흙놀이', '전기 기술의 데미지가 줄어든다.'], watersport: ['물놀이', '불꽃 기술의 데미지가 줄어든다.'], iondeluge: ['플라스마샤워', '노말 기술이 전기 타입이 된다.'], fairylock: ['페어리록', '아무도 도망칠 수 없다.'],
+  reflect: ['리플렉터', '물리 기술 데미지가 줄어든다.'], lightscreen: ['빛의장막', '특수 기술 데미지가 줄어든다.'], auroraveil: ['오로라베일', '모든 공격 데미지가 줄어든다.'], tailwind: ['순풍', '이쪽 포켓몬의 스피드가 2배.'], safeguard: ['신비의부적', '상태 이상이 되지 않는다.'], mist: ['흰안개', '능력이 떨어지지 않는다.'], luckychant: ['주술', '급소에 맞지 않는다.'],
+  stealthrock: ['스텔스록', '나올 때 바위 타입 데미지를 받는다.'], spikes: ['압정뿌리기', '땅에 있는 포켓몬이 나올 때 HP가 준다.'], toxicspikes: ['독압정', '땅에 있는 포켓몬이 나올 때 독이 된다.'], stickyweb: ['끈적끈적네트', '땅에 있는 포켓몬이 나올 때 스피드가 떨어진다.'], gmaxsteelsurge: ['강철 가시', '나올 때 강철 타입 데미지를 받는다.'],
+  gmaxvinelash: ['거다이편달', '매 턴 HP가 준다. 풀 타입은 괜찮다.'], gmaxwildfire: ['거다이전화', '매 턴 HP가 준다. 불꽃 타입은 괜찮다.'], gmaxcannonade: ['거다이포격', '매 턴 HP가 준다. 물 타입은 괜찮다.'], gmaxvolcalith: ['거다이분석', '매 턴 HP가 준다. 바위 타입은 괜찮다.'], firepledge: ['불바다', '매 턴 HP가 준다. 불꽃 타입은 괜찮다.'], waterpledge: ['무지개', '기술의 추가 효과가 잘 나온다.'], grasspledge: ['습원', '스피드가 반으로 줄어든다.'],
+  quickguard: ['퍼스트가드', '선공기를 막는다.'], wideguard: ['와이드가드', '여럿을 공격하는 기술을 막는다.'], craftyshield: ['트릭가드', '변화 기술을 막는다.'], matblock: ['마룻바닥세워막기', '공격 기술을 막는다.'],
+  futuremove: ['미래 공격', '몇 턴 뒤 이 자리에 공격이 온다.'], wish: ['희망사항', '다음 턴 이 자리의 포켓몬 HP가 회복된다.'], healingwish: ['치유소원', '이 자리에 나오는 포켓몬이 다 회복된다.'], lunardance: ['초승달춤', '이 자리에 나오는 포켓몬이 다 회복된다.'],
+  substitute: ['대타출동', '분신이 대신 공격을 받는다.'], aquaring: ['아쿠아링', '매 턴 HP가 조금 회복된다.'], ingrain: ['뿌리박기', '매 턴 HP가 회복되지만 교체할 수 없다.'], leechseed: ['씨뿌리기', '매 턴 HP를 빼앗긴다.'], curse: ['저주', '매 턴 HP가 크게 준다.'], nightmare: ['악몽', '잠든 동안 매 턴 HP가 준다.'], saltcure: ['소금절이', '매 턴 HP가 준다. 강철·물 타입은 더 많이.'], healblock: ['회복봉인', 'HP를 회복할 수 없다.'], attract: ['헤롱헤롱', '사랑에 빠져 기술을 못 쓸 때가 있다.'], confusion: ['혼란', '스스로를 공격할 때가 있다.'], lockedmove: ['난동', '몇 턴 날뛴 뒤 혼란에 빠진다.'],
+  torment: ['트집', '같은 기술을 연달아 쓸 수 없다.'], throatchop: ['지옥찌르기', '소리 기술을 쓸 수 없다.'], encore: ['앵콜', '같은 기술만 쓸 수 있다.'], disable: ['사슬묶기', '기술 하나를 쓸 수 없다.'], taunt: ['도발', '변화 기술을 쓸 수 없다.'], embargo: ['금제', '도구를 쓸 수 없다.'], charge: ['충전', '다음 전기 기술 위력이 2배.'], electrify: ['송전', '다음 기술이 전기 타입이 된다.'], magnetrise: ['전자부유', '떠 있어서 땅 기술을 받지 않는다.'], powder: ['분진', '불꽃 기술을 쓰면 폭발한다.'], tarshot: ['타르샷', '불꽃 기술에 약해졌다.'], smackdown: ['떨어뜨리기', '땅에 떨어져 땅 기술을 받는다.'], foresight: ['꿰뚫어보기', '회피율 변화가 무시된다.'], miracleeye: ['미라클아이', '회피율 변화가 무시된다.'], rage: ['분노', '공격을 받으면 공격이 오른다.'], helpinghand: ['도우미', '다음 기술 위력이 오른다.'], powertrick: ['파워트릭', '공격과 방어가 바뀌었다.'], laserfocus: ['일점집중', '다음 공격이 반드시 급소에 맞는다.'], stockpile: ['비축하기', '힘을 모으고 있다.'], minimize: ['작아지기', '몇몇 기술에 더 큰 데미지를 받는다.'], telekinesis: ['텔레키네시스', '떠 있지만 공격을 피할 수 없다.'], lockon: ['록온', '다음 기술이 반드시 맞는다.'], syrupbomb: ['물엿범벅', '매 턴 스피드가 떨어진다.'], noretreat: ['배수의진', '도망치거나 교체할 수 없다.'], partiallytrapped: ['묶임', '갇혀서 매 턴 HP가 준다.'], trapped: ['도망칠 수 없음', '교체할 수 없다.'], octolock: ['문어굳히기', '교체할 수 없고 매 턴 방어·특수방어가 떨어진다.'], jawlock: ['엉겨붙기', '서로 교체할 수 없다.'],
+  magiccoat: ['매직코트', '변화 기술을 튕겨낸다.'], protect: ['방어', '공격을 막는다.'], banefulbunker: ['토치카', '공격을 막고, 닿으면 독.'], spikyshield: ['니들가드', '공격을 막고, 닿으면 데미지.'], kingsshield: ['킹실드', '공격을 막고, 닿으면 공격이 떨어진다.'], obstruct: ['블로킹', '공격을 막고, 닿으면 방어가 떨어진다.'], silktrap: ['실크트랩', '공격을 막고, 닿으면 스피드가 떨어진다.'], burningbulwark: ['불타는철벽', '공격을 막고, 닿으면 화상.'], endure: ['버티기', '이번 턴 HP 1로 버틴다.'], twoturnmove: ['기 모으기', '다음 턴에 기술을 쓴다.'], mustrecharge: ['반동', '이번 턴은 움직일 수 없다.'], yawn: ['하품', '다음 턴에 잠든다.'], perishsong: ['멸망의노래', '카운트가 0이 되면 쓰러진다.'], slowstart: ['슬로스타트', '공격과 스피드가 반으로 줄어든다.'], uproar: ['소란', '아무도 잠들 수 없다.'], imprison: ['봉인', '상대가 같은 기술을 쓸 수 없다.'], gastroacid: ['특성 없음', '특성이 사라졌다.'], glaiverush: ['무방비', '공격을 피할 수 없고 데미지 2배.'], destinybond: ['길동무', '쓰러뜨린 상대도 함께 쓰러진다.'], grudge: ['원한', '쓰러뜨린 기술의 PP가 0이 된다.'], flashfire: ['타오르는불꽃', '불꽃 기술 위력이 오른다.'], focusenergy: ['기충전', '급소에 맞기 쉬워졌다.'] };
+const BI_ST = [['atk', '공격'], ['def', '방어'], ['spa', '특수공격'], ['spd', '특수방어'], ['spe', '스피드'], ['accuracy', '명중률'], ['evasion', '회피율']];
+function biFx(pk) {
+  const btl = B.btl, f = btl.field, sd = pk.side, L = [], t = s => s && s.duration ? `남은 ${s.duration}턴` : '—', add = (id, tk, nm) => { const x = BI_FX[id]; if (x) L.push([nm || x[0], tk, x[1]]); };
+  if (pk.species.isMega) L.push(['메가진화', '—', '메가진화한 모습이다.']); if (pk.species.isPrimal) L.push(['원시회귀', '—', '원시의 모습이다.']);
+  if (pk.volatiles.dynamax) L.push([pk.gigantamax ? '거다이맥스' : '다이맥스', t(pk.volatiles.dynamax), 'HP가 2배이고 다이맥스 기술을 쓴다.']);
+  if (pk.terastallized) L.push(['테라스탈', '—', `${TYK[pk.terastallized] || pk.terastallized} 타입으로 테라스탈했다.`]);
+  if (pk.status === 'tox') L.push(['맹독', '—', '독 데미지가 매 턴 커진다.']);
+  if (f.weather) add(f.weather, t(f.weatherState)); if (f.terrain) add(f.terrain, t(f.terrainState));
+  for (const id in f.pseudoWeather) add(id, t(f.pseudoWeather[id]));
+  for (const id in sd.sideConditions) { const s = sd.sideConditions[id]; add(id, s.layers > 1 ? `${s.layers}층` : s.duration ? t(s) : '—'); }
+  const sl = sd.slotConditions?.[pk.position] || {}; for (const id in sl) add(id, t(sl[id]));
+  for (const id in pk.volatiles) { if (id === 'dynamax') continue; const v = pk.volatiles[id];
+    if (id === 'encore' || id === 'disable') { const m = v.move; add(id, t(v), `${BI_FX[id][0]}: ${mvKo(m || '')}`); continue; }
+    if (id === 'stockpile') { add(id, `${v.layers || 1}번`); continue; } if (id === 'perishsong') { add(id, `카운트 ${v.duration}`); continue; }
+    add(id, v.duration ? t(v) : '—'); }
+  return L; }
+function battlerInfo() {
+  const btl = B.btl, L = [btl.p1.active[0], btl.p2.active[0]].filter(p => p && !p.fainted); let i = 0;
+  return new Promise(res => { const draw = () => { const pk = L[i], mine = pk.side === btl.p1, X = B.act?.[mine ? 'p' : 'e'];
+    const nm = pk.name, base = pk.terastallized ? (pk.species.types) : pk.getTypes(), nat = mine ? btl.dex.natures.get(pk.set?.nature || '') : null;
+    const crit = Math.min(3, (pk.volatiles.focusenergy ? 2 : 0) + (pk.volatiles.laserfocus ? 3 : 0) + (pk.volatiles.dragoncheer ? 1 : 0));
+    const row = ([k, n]) => { const s = k === 'crit' ? crit : pk.boosts[k] | 0, c = nat?.plus === k ? ' np' : nat?.minus === k ? ' nm' : '';
+      return `<li><span class="bi-sn${c}">${n}</span><b class="${s > 0 ? 'up' : s < 0 ? 'dn' : ''}">${s ? (s > 0 ? '▲' : '▼').repeat(Math.abs(s)) : '—'}</b></li>`; };
+    const fx = biFx(pk), lm = pk.lastMove ? mvKo(pk.lastMove.id) : '—', hp = mine ? `${pk.hp}/${pk.maxhp}` : `${Math.ceil(pk.hp / pk.maxhp * 100)}%`, hr = pk.hp / pk.maxhp;
+    const it = pk.item ? itKo(btl.dex.items.get(pk.item).name) : '없음';
+    panel(`<div class="bp-binfo"><div class="bi-hd"><button class="bb bi-arr" data-d="-1" aria-label="이전"><span>◀</span></button>
+      <div class="bi-nm"><small>${mine ? '내 포켓몬' : esc(B.foeNm || '상대')}</small><b>${esc(nm)} <em>Lv.${pk.level}</em></b><span class="bi-ty">${base.map(ty => tyTag(TY_EN.indexOf(ty))).join('')}${pk.terastallized ? `<i class="bi-tera">테라 ${TYK[pk.terastallized] || ''}</i>` : ''}</span></div>
+      <button class="bb bi-arr" data-d="1" aria-label="다음"><span>▶</span></button></div>
+      <div class="bi-hp"><i style="width:${Math.max(1, hr * 100)}%;background:${hr > .5 ? '#3ec84a' : hr > .25 ? '#f0c030' : '#e84838'}"></i><span>${hp}</span><small>${btl.turn}턴째</small></div>
+      <div class="bi-body"><ul class="bi-st">${[...BI_ST, ['crit', '급소']].map(row).join('')}</ul>
+        <dl class="bi-dl">${mine ? `<dt>특성</dt><dd>${esc(abKo(pk.ability))}</dd><dt>도구</dt><dd>${esc(it)}</dd>` : ''}<dt>마지막 기술</dt><dd>${esc(lm)}</dd></dl></div>
+      <ul class="bi-fx">${fx.length ? fx.map(([n, tk, d]) => `<li><b>${esc(n)}</b><em>${esc(tk)}</em><p>${esc(d)}</p></li>`).join('') : '<li class="none">걸린 효과가 없다</li>'}</ul>
+      <button class="bb cancel" data-x><span>돌아가기</span></button></div>`).onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.dataset.d) { i = (i + +b.dataset.d + L.length) % L.length; draw(); } else res(); }; };
+    draw(); });
+}
 function moveInfo(m) {
   return new Promise(res => {
     const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
@@ -737,7 +786,7 @@ function foeEntry(sp, lv, tier = 0) {
 const IT_AI = { potion: ['상처약', 'hp', 20, 'Potion'], superpotion: ['좋은상처약', 'hp', 60, 'Super Potion'], hyperpotion: ['고급상처약', 'hp', 120, 'Hyper Potion'], maxpotion: ['풀회복약', 'hp', 999, 'Max Potion'],
   fullrestore: ['회복약', 'fr', 999, 'Full Restore'], fullheal: ['만병통치제', 'cure', 0, 'Full Heal'], revive: ['기력의조각', 'rev', 5, 'Revive'], maxrevive: ['기력의덩어리', 'rev', 7, 'Max Revive'],
   xattack: ['플러스파워', 'x', 'atk', 'X Attack'], xdefense: ['디펜드업', 'x', 'def', 'X Defense'], xspatk: ['스페셜업', 'x', 'spa', 'X Sp. Atk'], xspdef: ['스페셜가드', 'x', 'spd', 'X Sp. Def'], xspeed: ['스피드업', 'x', 'spe', 'X Speed'], xaccuracy: ['잘-맞히기', 'x', 'accuracy', 'X Accuracy'] };
-const FOE_BAG = [[], ['superpotion'], ['hyperpotion', 'hyperpotion', 'fullheal']];   // 도전자 실력별 기본 가방 (opts.foe.bag 으로 따로 줄 수 있음)
+const FOE_BAG_ON = [[], ['superpotion'], ['hyperpotion', 'hyperpotion', 'fullheal']], FOE_BAG = [[], [], []];   /* 기본 가방은 경완 확인 뒤 FOE_BAG_ON 으로 */   // 도전자 실력별 기본 가방 (opts.foe.bag 으로 따로 줄 수 있음)
 function aiItem(btl) {
   const bag = B?.bag; if (!bag?.length) return null;
   const side = btl.p2, me = side.active[0], foe = btl.p1.active[0], R = side.activeRequest;
@@ -1021,6 +1070,7 @@ async function choose(req) {
     const a = await mainPanel(A);
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; return 'move ' + (i + 1) + (B.gkSel ? ' ' + B.gkSel.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); }
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
+    if (a === 'info') { await battlerInfo(); continue; }
     if (a === 'bag') { await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
     if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
