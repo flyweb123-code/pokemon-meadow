@@ -4016,3 +4016,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rkMe2{50%{opacity:.35}}
 /* v21.96 경완 'B 좋다': 랭킹 배경 붉은 배틀 타워 */
 #gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
+/* v22.09 등급표 제목 '[아이콘] 불 타입 체육관 등급' */
+#gym .gy-pop h4.pk-h{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}#gym h4.pk-h .pk-ty{display:inline-flex;align-items:center;gap:4px}#gym h4.pk-h .pk-ty :is(img,svg,i){width:20px;height:20px}
