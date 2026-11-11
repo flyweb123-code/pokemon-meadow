@@ -144,7 +144,7 @@
     const tx = Wd / 2 - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   // 그 포켓몬이 화면 한가운데 오게 위 화면을 키움 (남는 곳은 뒤 배경판)
     const T0 = getComputedStyle(top).transform, tAnim = [], timers = [], A = (el, kf, o) => el.animate(kf, { fill: 'forwards', easing: 'ease-out', ...o });   // 'both' 면 뒤에 시작할 애니메이션 첫 칸이 미리 덮어씀
     const hide = [...bt.querySelectorAll('.bt-hb,.bt-pty,.bt-bot,.bt-mid,.bt-msg')];
-    const root = document.createElement('div'); root.className = 'dx-scene mgf'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;pointer-events:auto;contain:strict';
+    const root = document.createElement('div'); root.className = 'dx-scene mgf'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;pointer-events:auto;contain:strict;transform:scale(1.08)';   // 흔들 때 가장자리 빈틈 안 보이게 늘 조금 크게
     const mk = (css, tag = 'div') => { const e = document.createElement(tag); e.style.cssText = 'position:absolute;pointer-events:none;' + css; root.appendChild(e); return e; };
     const mon = c.monEl.querySelector('img'), opp = c.opp, side = opp ? 1 : -1;
     // 층
@@ -176,7 +176,7 @@
     top.style.webkitMaskImage = top.style.maskImage = MK; top.style.webkitMaskComposite = 'source-in'; top.style.maskComposite = 'intersect';
     bt.appendChild(root);
     const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
-    const shake = (t, d, amp) => at(t, () => A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'none' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px)` })), { duration: d, easing: 'linear', fill: 'none' }));
+    const shake = (t, d, amp) => at(t, () => A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.08)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.08)` })), { duration: d, easing: 'linear', fill: 'none' }));
     const vib = n => { try { window.GA?.haptic?.(n); } catch (e) {} };
     // 1) 위 화면을 그 포켓몬 쪽으로 화면 가득 (0~900)
     hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350 })));

@@ -416,7 +416,8 @@ const DX_MP3 = { 'DX Action': 'dxaction', 'Z-Move Title': 'ztitle' };
 function dxSe(n, pan) { if (DX_MP3[n]) { try { const a = new Audio(`${IMG}dbk/se/${DX_MP3[n]}.mp3`); a.volume = .8; a.play().catch(() => {}); } catch (e) {} return; } if (DX_SE[n]) se(DX_SE[n], { pan }); }
 async function dxCtx(s, X, from, to, item) {
   const bg = $b('.bt-bg'), cs = getComputedStyle(bg), bu = (bg.style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1] || `${IMG}bt/bg_in1.png`, bp = cs.backgroundPosition.split(' ').map(v => parseFloat(v) * 2 + 'px').join(' ');
-  const [mon, too, tr, it] = await Promise.all([dxMon(from), dxMon(to), dxImg(B.trU?.[s]), dxImg(item)]);
+  let [mon, too, tr, it] = await Promise.all([dxMon(from), dxMon(to), dxImg(B.trU?.[s]), dxImg(item)]);
+  if (!mon && from !== to) mon = await dxMon(pkSrc(X.sp, { s: X.shiny }));   // 움직이는 그림을 못 받으면 원래 모습 그림으로 (메가 모습으로 대신하면 진화 전부터 메가로 보임)
   return { host: $b('.bt-top'), path: `${IMG}dbk/`, opp: s === 'e', wild: false, bg: { url: bu, pos: bp, size: '1024px 384px' }, base: { url: `${IMG}bt/pl_e.png`, w: 256, h: 128 },
     tr: { url: B.trU?.[s] || `${IMG}tr/pt_m.png`, w: (tr?.w || 80) * 2, h: (tr?.h || 80) * 2 }, item: it ? { url: item, w: it.w > 40 ? it.w : it.w * 1.6, h: it.w > 40 ? it.h : it.h * 1.6 } : null,
     mon: mon || too, to: too || mon, se: n => dxSe(n, panOf(s)), cry: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } };
@@ -429,7 +430,9 @@ async function gmFx(s, X, kind, ty) {
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
       if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/key-stone.png`), st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
-        if (GymDBK.megaFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.onSwap = () => { if (X.gmPend) { X.gmPend = 0; swap(); } }; await GymDBK.megaFull(c); } else await GymDBK.mega(c); if (X.gmPend) { X.gmPend = 0; swap(); } return; }   // 경완 2026-11-12: 전체 화면 메가진화
+        if (GymDBK.megaFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.onSwap = () => { if (X.gmPend) { X.gmPend = 0; swap(); } };
+          const bm = window.GymBGM?.name; M('stop', .25); M('play', 'shinka');   // 경완 2026-11-12: 메가진화 동안 배틀 곡 끊고 진화 곡, 끝나면 다시 배틀 곡
+          await GymDBK.megaFull(c); M('stop', .5); if (bm && B) setTimeout(() => { if (B && window.GymBGM?.name == null) M('play', bm); }, 550); } else await GymDBK.mega(c); if (X.gmPend) { X.gmPend = 0; swap(); } return; }   // 경완 2026-11-12: 전체 화면 메가진화
       if (kind === 'z') { const zid = ty?.id || '', zt = zid && (ZT_ID[zid] || zid.toUpperCase()), c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/ZRING.png`), cr = toID(ty?.item || '');
         if (cr) { const z = await dxImg(`${IMG}dbk/it/${cr.toUpperCase()}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${cr.toUpperCase()}.png`, w: z.w, h: z.h }; }
         c.type = ty?.type || 'Normal'; if (zt && PSim.Dex.moves.get(zid).isZ && PSim.Dex.moves.get(zid).category !== 'Status') { const T = await dxImg(`${IMG}dbk/Z-Power/Z-Titles/${zt}.png`); if (T) { c.title = `${IMG}dbk/Z-Power/Z-Titles/${zt}.png`; c.titleW = T.w; c.titleH = T.h; c.upper = /^(catastropika|10000000voltthunderbolt|letssnuggleforever)$/.test(zid); } }
@@ -985,7 +988,7 @@ async function run(opts) {
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
-  const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
+  const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
   const encDone = await encounter(opts);
