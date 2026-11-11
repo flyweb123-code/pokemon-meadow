@@ -2251,7 +2251,7 @@ function perkPop() {
     if (i === GRADES.length - 1) R.push(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알`);   /* v18.87 경완 '등급표에 승급 보상이랑 등급 혜택 나눠서': 처음 오를 때 한 번 받는 것 / 그 등급의 혜택 */
     const ul = (h, A) => A.length ? `<h6 class="pk-gh">${h}</h6><ul>${A.map(t => `<li>${t}</li>`).join('')}</ul>` : '';   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
-  pop(`<h4>체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+  pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 // 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
