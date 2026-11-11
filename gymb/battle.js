@@ -398,9 +398,13 @@ const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
 // v21.73 경완 '팬 도트 gif로 다 바꿔줘': 650~1025·지역 폼은 PokeAPI/sprites(고정 커밋)의 블랙·화이트풍 팬 도트 gif. 있는 것만 (gym/img/pk/bwa.json: 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷), 없으면 예전 그림
 const BWG = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';
 let BWA = {};
-function bwUrl(sp, b, sh, f) { const m = BWA[sp]; if (m == null) return null;
-  if (b) { const d = f && !sh && m & 16 ? 'back/female/' : sh && m & 4 ? 'back/shiny/' : m & 1 ? 'back/' : null; return d && `${BWG}${d}${sp}.gif`; }
-  return `${BWG}${f && !sh && m & 8 ? 'female/' : sh && m & 2 ? 'shiny/' : ''}${sp}.gif`; }
+// v21.75 경완 고른 것: bwa.json {r: PokeAPI 비트, l: 저장소 gym/img/pk/bw 비트(EeveeExpo 묶음, 32 앞 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷)}. 저장소 것이 먼저
+function bwUrl(sp, b, sh, f) { const L = BWA.l?.[sp] || 0, R = BWA.r?.[sp], loc = p => `${IMG}pk/bw/${p}${sp}.gif?v=1`, rem = d => `${BWG}${d}${sp}.gif`, has = x => R != null && R & x;
+  if (b) { if (f && !sh) { if (L & 16) return loc('bf'); if (has(16)) return rem('back/female/'); }
+    if (sh) { if (L & 4) return loc('bs'); if (has(4)) return rem('back/shiny/'); }
+    return L & 1 ? loc('b') : has(1) ? rem('back/') : null; }
+  if (L & 32) return loc(f && !sh && L & 8 ? 'f' : sh && L & 2 ? 's' : '');
+  return R == null ? null : rem(f && !sh && R & 8 ? 'female/' : sh && R & 2 ? 'shiny/' : ''); }
 // 배틀 중 바뀐 폼 (tools/gym/mkforms.py): 1~649 는 블랙·화이트 gif 폼 이름, 650~ 은 gym/img/pk/fm/<쇼다운 id>.png
 const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette',
   rotomheat: 'rotom-oheat', rotomwash: 'rotom-owash', rotomfrost: 'rotom-ofrost', rotomfan: 'rotom-ofan', rotommow: 'rotom-omow', tornadustherian: 'tornadus-otherian', thundurustherian: 'thundurus-otherian', landorustherian: 'landorus-otherian',
