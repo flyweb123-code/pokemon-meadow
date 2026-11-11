@@ -1624,7 +1624,7 @@ async function expGain(X) {
 /* v22.15 경완 '상 번뜩임은 파칭 그대로 + 머리를 스치는 번개': 파칭과 함께 머리 위를 가로지르는 번개 두 줄기 (0.12초·0.38초), 레어는 무지갯빛 */
 /* v22.15 경완 '번개는 포켓몬 한쪽에서 반대편으로 뚫고 들어가는 느낌', '스프라이트 뒤로 지나가게': 번개가 몸 바깥 한쪽에서 그어지며 몸을 꿰뚫고 반대편으로 빠져나감 (들어간 자리·나간 자리 불꽃), 왼→오 · 오→왼 두 번, 칠 때 화면 번쩍 + 천둥 DP_KAMI */
 const egZp = () => { let p = 'M0 18'; for (let i = 1; i <= 10; i++) p += ` L${i * 17.6} ${(18 + (i === 10 ? 0 : (Math.random() * 2 - 1) * (i % 2 ? 14 : 9))).toFixed(1)}`; return p; };
-function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy;
+function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy; const mw = $b('.bt-mw.p'); if (c && mw) { mw.classList.add('egzr'); setTimeout(() => mw.classList.remove('egzr'), 1500); }   /* 레어: 어두운 판(z 4) 위로 번개(z 5)·포켓몬(z 6) — 경완 '검은 그림자 뒤로 간 거 같아' */
   [[1, -14, -8, 280], [-1, 6, 7, 640]].forEach(([dr, dy, r, ms]) => setTimeout(() => { if (!B) return; const p = egZp(), y = Y + dy;
     const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`, $b('.bt-mw.p')); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
     add('bt-egzb' + c, X - 88 * dr, y, '<i></i>'); setTimeout(() => B && add('bt-egzb o' + c, X + 88 * dr, y, '<i></i>'), 150); add('bt-egzf' + c, 0, 0); }, ms)); }
