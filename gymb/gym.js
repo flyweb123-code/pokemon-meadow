@@ -2259,7 +2259,11 @@ function mgPop() {
 }
 // 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
 // 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
-const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련하며 깨닫는 그 포켓몬만의 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '어떻게 키웠느냐에 따라 능력치가 달라져요' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
+const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련으로 깨닫는 숨은 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '키운 만큼 쌓이는 능력치' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
+/* 비기 다시 보기: 그 튜토리얼의 강박사 설명만 차례로 (눌러 보기 단계·저장 바꾸는 건 빼고, 비출 곳이 화면에 없으면 그냥 말만) */
+const gtTalk = L => L.filter(x => !x.tap && !x.until && typeof x.t !== 'function').map(x => ({ c: x.c, t: typeof x.t === 'string' ? x.t : undefined, s: x.s }));
+PK_TIP[1].re = () => [{ c: '특별한 기술', s: '포켓몬마다 특별한 기술이\n4가지 숨어 있단다.\n훈련장 포켓몬의\n\'새 기술\'에서 볼 수 있지.' }, ...gtTalk(GT_EGD())];
+PK_TIP[2].re = () => { const L = gtTalk([...GT_EVT(st()), ...GT_EV(), ...GT_EVD()]); if (L[0]) L[0].s = '포켓몬을 강하게 키우는\n아주 중요한 것!\n바로 \'노력치\'란다.'; return L; };
 const PK_NTH = ['', '첫 번째', '두 번째', '세 번째'];
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
@@ -2272,9 +2276,14 @@ function perkPop() {
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
      계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
-  const tip = i => { const T = PK_TIP[i]; if (!T) return ''; const K = [].concat(T.k), on = K.some(k => g[k]); if (!on && K.some(tutSeen)) return '';   /* 노력치는 훈련장 노력치 설명(evTB)이든 노력치 화면 설명(evTC)이든 하나만 봤어도 배운 걸로 */
-    return `<li class="pk-tip${on ? ' on' : ''}"><i class="pk-ar"></i><div class="pk-tc"><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div></div><i class="pk-ar"></i></li>`; };
-  pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><ol class="gy-perk">${GRADES.map((G, i) => tip(i) + row(G, i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+  /* 경완 2026-11-12 '비기는 항상 살려 놓고 등급 탭·비기 탭 나눠서': 비기는 계정 어느 체육관에서든 배웠으면 열림(tutSeen), 아니면 실루엣 */
+  const tip = i => { const T = PK_TIP[i], on = [].concat(T.k).some(tutSeen);   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
+    const tg = on && T.re ? 'button' : 'div';   // 경완 '비기 누르면 튜토리얼 다시 볼 수 있게'
+    return `<li class="pk-tip${on ? ' on' : ''}"><${tg} class="pk-tc"${tg === 'button' ? ` type="button" data-a="sk${i}"` : ''}><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div>${tg === 'button' ? '<em class="pk-re">다시 보기 ›</em>' : ''}</${tg}></li>`; };
+  const p = pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><div class="sp-tabs pk-tabs" role="tablist"><button role="tab" data-a="tg" aria-selected="true">등급</button><button role="tab" data-a="ts" aria-selected="false">비기</button></div><ol class="gy-perk pk-gl">${GRADES.map(row).join('')}</ol><ol class="gy-perk pk-sl" hidden>${Object.keys(PK_TIP).map(i => tip(+i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
+    if (a === 'tg' || a === 'ts') { const s = a === 'ts'; p.querySelector('.pk-gl').hidden = s; p.querySelector('.pk-sl').hidden = !s; p.querySelectorAll('.pk-tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String((b.dataset.a === 'ts') === s))); return; }
+    const sk = /^sk(\d)$/.exec(a || ''); if (sk) { close(); const T = PK_TIP[sk[1]]; setTimeout(() => gtu(T.re()), 250); return; }
+    close(); });
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 // 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
