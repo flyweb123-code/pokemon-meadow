@@ -1907,7 +1907,7 @@ function mecLay(stg) {
       big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = C + RY * Math.sqrt(1 - u * u); });   // 가운데일수록 발판 뒤쪽 (발판 안)
       tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
       A.forEach(a => { a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); }); }
-    if (!ok) { if (gk > .4 && A.some(a => a.h < a.h0 - 1)) gk *= .93; else k *= .96; } }   // 넘치면 무대 높이로 잘린 아주 큰 포켓몬(가이오가 등)부터 줄이고, 관장은 마지막에
+    if (!ok) k *= .96; }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
   const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
