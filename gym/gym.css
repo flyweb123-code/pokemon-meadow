@@ -3852,3 +3852,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-plw{position:relative;display:block;width:100%;pointer-events:none}
 /* v21.68 경완 '새 단장 창 타입 아이콘이랑 타입 텍스트 정렬 틀어짐': 아이콘·글자를 한 줄 가운데로 */
 #gym .gy-re .re-sign small{display:inline-flex;align-items:center;justify-content:center;gap:4px;line-height:16px}#gym .gy-re .re-sign small .tyi{vertical-align:0;flex:none;margin:0}
+/* v21.69 경완 '새로 배울 기술 딱지 또 잘림'(아이폰): overflow-x:clip + y:visible 이 아이폰에선 위로 삐져나온 딱지를 자름 → 창은 overflow 다 보이게, 옆으로 넘치는 건 clip-path(위로 24px 여유)로만 */
+#gym .gy-pop .win.mv-neww:has(.mv-learn){overflow:visible!important;clip-path:inset(-24px -12px -12px -12px)}
