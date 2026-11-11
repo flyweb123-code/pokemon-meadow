@@ -59,6 +59,30 @@ def draw(e, force=False):
     sm.save(p, optimize=True)
     json.dump({'la0': la0, 'lo0': lo0, 'la1': la1, 'lo1': lo1, 'w': W, 'h': H, 'src': '© OpenStreetMap contributors'}, open(f"{OUT}/{e['id']}.json", 'w'))
     print('ok', e['id'], len(E))
+
+def tile_map(e, force=False):   # v22.19 경완 '도트 느낌 말고 그냥 지도 형태': OSM 기본 지도 타일을 이어 붙여 한 장으로 (이벤트마다 한 번만 받음)
+    import io
+    os.makedirs(OUT, exist_ok=True); p = f"{OUT}/{e['id']}.jpg"
+    if os.path.exists(p) and not force: return
+    la, lo, r = e['la'], e['lo'], e['r']; PW, PH = 576, 432
+    half = r * 1.45; mpp = half * 2 / PH   # 한 픽셀 몇 m
+    z = max(10, min(17, int(math.log2(156543.03 * math.cos(math.radians(la)) / mpp))))
+    n = 2 ** z; fx = (lo + 180) / 360 * n; fy = (1 - math.asinh(math.tan(math.radians(la))) / math.pi) / 2 * n
+    scale = 156543.03 * math.cos(math.radians(la)) / n * 256 / 256 / mpp   # 타일 픽셀 → 그림 픽셀
+    tw = 256 * scale; x0 = fx * tw - PW / 2; y0 = fy * tw - PH / 2
+    im = Image.new('RGB', (PW, PH), (240, 236, 228))
+    for tx in range(int(x0 // tw), int((x0 + PW) // tw) + 1):
+        for ty in range(int(y0 // tw), int((y0 + PH) // tw) + 1):
+            url = f'https://tile.openstreetmap.org/{z}/{tx % n}/{ty}.png'
+            for k in range(3):
+                try: t = Image.open(io.BytesIO(urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'pokemon-meadow-evmap/1 (github.com/flyweb123-code/pokemon-meadow)'}), timeout=30).read())).convert('RGB'); break
+                except Exception as x: print('tile', url, x); time.sleep(2)
+            else: continue
+            t = t.resize((math.ceil(tw), math.ceil(tw)), Image.LANCZOS); im.paste(t, (round(tx * tw - x0), round(ty * tw - y0))); time.sleep(.3)
+    im.save(p, quality=82, optimize=True)
+    dla = half / 111320; dlo = dla * PW / PH / math.cos(math.radians(la))
+    json.dump({'la0': la - dla, 'lo0': lo - dlo, 'la1': la + dla, 'lo1': lo + dlo, 'w': PW, 'h': PH, 'src': '© OpenStreetMap contributors'}, open(f"{OUT}/{e['id']}.json", 'w'))
+    print('ok tile', e['id'], z)
 if __name__ == '__main__':
     a = [x for x in sys.argv[1:] if not x.startswith('--')]; f = a[0] if a else 'config/spawn-ev.json'
-    for e in json.load(open(f))['ev']: draw(e, '--force' in sys.argv); time.sleep(2)
+    for e in json.load(open(f))['ev']: (tile_map if '--dot' not in sys.argv else draw)(e, '--force' in sys.argv); time.sleep(2)
