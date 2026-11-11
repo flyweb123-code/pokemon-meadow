@@ -3897,7 +3897,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-moves .gk-row{grid-column:1/-1;display:flex;gap:7px;min-width:0}
 .bt.mob .bp-moves .gk-row .bb{flex:1 1 0;min-width:0}
 .bt.mob .bp-moves .gk-row .cancel{flex:0 0 30%}
-.bt.mob .bb.gkb span{font-size:13px;white-space:nowrap}.bt.mob .bb.gkb small{font-size:11px;opacity:.9}
+.bt.mob .bb.gkb{flex-direction:column;justify-content:center;line-height:1.15}.bt.mob .bb.gkb span{font-size:13px;white-space:nowrap}.bt.mob .bb.gkb small{font-size:11px;opacity:.9}
 .bt.mob .bb.gkb.mega{--c1:#9a7ad8;--c2:#6a48b0}.bt.mob .bb.gkb.zmove{--c1:#e8b838;--c2:#b8841a}.bt.mob .bb.gkb.dynamax{--c1:#f0507a;--c2:#b8204a}.bt.mob .bb.gkb.terastallize{--c1:#5cc8e8;--c2:#2a8cb8}
 .bt.mob .bb.gkb.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 2.5px #fff,0 0 12px 3px var(--c1),0 3px 0 rgba(0,0,0,.18);animation:gkOn 1.2s ease-in-out infinite}
 @keyframes gkOn{50%{filter:brightness(1.18)}}

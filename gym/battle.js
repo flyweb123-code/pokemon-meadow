@@ -9,6 +9,10 @@ const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
 const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
+/* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
+const TR_ANI = {"champion_cynthia":[22,79,"CHAMPION_Cynthia"],"champion_steven":[11,76,"CHAMPION_Steven"],"champion_wallace":[13,75,"LEADER_Wallace"],"elite_four_aaron":[11,88,"ELITEFOUR_Aaron"],"elite_four_bertha":[3,80,"ELITEFOUR_Bertha"],"elite_four_bruno":[19,80,"ELITEFOUR_Bruno"],"elite_four_flint":[11,80,"ELITEFOUR_Flint"],"elite_four_lance":[9,78,"ELITEFOUR_Lance"],"elite_four_lucian":[6,80,"ELITEFOUR_Lucian"],"hg_blaine":[7,82,"LEADER_Blaine"],"hg_brock":[7,59,"LEADER_Brock"],"hg_bruno2":[19,80,"ELITEFOUR_Bruno"],"hg_bugsy":[7,86,"LEADER_Bugsy"],"hg_chuck":[9,80,"LEADER_Chuck"],"hg_clair":[11,80,"LEADER_Clair"],"hg_erika":[10,72,"LEADER_Erika"],"hg_falkner":[5,58,"LEADER_Falkner"],"hg_janine":[10,106,"LEADER_Janine"],"hg_jasmine":[16,78,"LEADER_Jasmine"],"hg_karen":[10,80,"ELITEFOUR_Karen"],"hg_koga2":[9,86,"LEADER_Koga"],"hg_lance":[9,78,"ELITEFOUR_Lance"],"hg_misty":[11,84,"LEADER_Misty"],"hg_morty":[10,80,"LEADER_Morty"],"hg_pryce":[15,75,"LEADER_Pryce"],"hg_red":[7,69,"POKEMONTRAINER_Red"],"hg_sabrina":[20,84,"LEADER_Sabrina"],"hg_silver":[7,80,"POKEMONTRAINER_Silver"],"hg_surge":[15,81,"LEADER_Surge"],"hg_whitney":[10,88,"LEADER_Whitney"],"hg_will":[15,80,"ELITEFOUR_Will"],"leader_blaine":[7,82,"LEADER_Blaine"],"leader_brawly":[11,77,"LEADER_Brawly"],"leader_brock":[7,59,"LEADER_Brock"],"leader_byron":[14,81,"LEADER_Byron"],"leader_candice":[8,90,"LEADER_Candice"],"leader_erika":[10,72,"LEADER_Erika"],"leader_fantina":[17,89,"LEADER_Fantina"],"leader_flannery":[14,87,"LEADER_Flannery"],"leader_gardenia":[14,75,"LEADER_Gardenia"],"leader_giovanni":[5,80,"LEADER_Giovanni"],"leader_juan":[14,75,"LEADER_Juan"],"leader_koga":[9,86,"LEADER_Koga"],"leader_lt_surge":[15,81,"LEADER_Surge"],"leader_maylene":[14,75,"LEADER_Maylene"],"leader_misty":[11,84,"LEADER_Misty"],"leader_norman":[8,74,"LEADER_Norman"],"leader_roark":[12,76,"LEADER_Roark"],"leader_roxanne":[11,68,"LEADER_Roxanne"],"leader_sabrina":[20,84,"LEADER_Sabrina"],"leader_volkner":[8,78,"LEADER_Volkner"],"leader_wake":[16,79,"LEADER_Wake"],"leader_wallace":[13,75,"LEADER_Wallace"],"leader_wattson":[17,73,"LEADER_Wattson"],"leader_winona":[17,78,"LEADER_Winona"],"red":[7,69,"POKEMONTRAINER_Red"]};
+function trAni(el, k) { const a = TR_ANI[k]; if (!a) return null; const [n, h, f] = a; Object.assign(el.style, { backgroundImage: `url(${IMG}dbk/tr/${f}.png)`, width: h + 'px', height: h + 'px', backgroundSize: `${n * h}px ${h}px`, backgroundPosition: '0 0', marginLeft: (80 - h) / 2 + 'px', marginTop: (80 - h) + 'px' }); return a; }
+async function trPlay(el, a) { if (!a) return; const [n, h] = a, d = 1500 / n; for (let i = 1; i < n; i++) { await wait(d); if (!B) return; el.style.backgroundPosition = `${-i * h}px 0`; } }
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -655,11 +659,11 @@ function gkMove(R, i, m, d, gk) {
 function movePanel(req) {
   return new Promise(res => {
     const R = req.active[0], mv = R.moves, go = gkOpts(R), gk = go.includes(B.gkSel) ? B.gkSel : null; if (!gk) B.gkSel = null;
-    const tera = R.canTerastallize && TYK[R.canTerastallize] ? ` <small>${TYK[R.canTerastallize]}</small>` : '', gmx = R.maxMoves?.gigantamax && !R.maxMoves.maxMoves?.every(x => !/^gmax/.test(toID(x.move)));
-    const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k] + (k === 'terastallize' ? tera : '');
+    const tera = R.canTerastallize && TYK[R.canTerastallize] || '', gmx = R.maxMoves?.gigantamax && !R.maxMoves.maxMoves?.every(x => !/^gmax/.test(toID(x.move)));
+    const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k];
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
       return mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); }).join('')}
-      ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}"><span>${gkNm(k)}</span></button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
+      ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}"><span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
       if (b.hasAttribute('data-x')) { B.gkSel = null; return res(null); }
@@ -728,6 +732,84 @@ function foeEntry(sp, lv, tier = 0) {
 
 // ---------- AI (난이도: 0 쉬움 1 보통 2 어려움) ----------
 // v21.89 상대 기믹 (DBK 트레이너처럼): 메가진화는 바로, 다이맥스·테라스탈은 마지막 남은 포켓몬(에이스)이나 위기 때, Z기술은 그 Z기술로 크게 때릴 수 있을 때
+/* v21.89 DBK Improved Item AI 이식: 상대 트레이너가 가방 도구(상처약·회복약·기력의조각·플러스파워 등)를 언제 쓸지 점수로 고름.
+   본가 플러그인 [DBK_007] 그대로: 기본 100점, 쓸모없음 60·실패 20, 실력(쉬움 16·보통 48·어려움 100)에 따라 문턱 0.6+0.35√(실력/100) 아래는 버리고, 남은 점수 비율로 뽑기. 도구를 쓰면 그 턴은 기술 대신 도구 */
+const IT_AI = { potion: ['상처약', 'hp', 20, 'Potion'], superpotion: ['좋은상처약', 'hp', 60, 'Super Potion'], hyperpotion: ['고급상처약', 'hp', 120, 'Hyper Potion'], maxpotion: ['풀회복약', 'hp', 999, 'Max Potion'],
+  fullrestore: ['회복약', 'fr', 999, 'Full Restore'], fullheal: ['만병통치제', 'cure', 0, 'Full Heal'], revive: ['기력의조각', 'rev', 5, 'Revive'], maxrevive: ['기력의덩어리', 'rev', 7, 'Max Revive'],
+  xattack: ['플러스파워', 'x', 'atk', 'X Attack'], xdefense: ['디펜드업', 'x', 'def', 'X Defense'], xspatk: ['스페셜업', 'x', 'spa', 'X Sp. Atk'], xspdef: ['스페셜가드', 'x', 'spd', 'X Sp. Def'], xspeed: ['스피드업', 'x', 'spe', 'X Speed'], xaccuracy: ['잘-맞히기', 'x', 'accuracy', 'X Accuracy'] };
+const FOE_BAG = [[], ['superpotion'], ['hyperpotion', 'hyperpotion', 'fullheal']];   // 도전자 실력별 기본 가방 (opts.foe.bag 으로 따로 줄 수 있음)
+function aiItem(btl) {
+  const bag = B?.bag; if (!bag?.length) return null;
+  const side = btl.p2, me = side.active[0], foe = btl.p1.active[0], R = side.activeRequest;
+  if (!me || me.fainted || !R || R.forceSwitch || R.wait || R.teamPreview) return null;
+  if (me.getLockedMove?.() || me.volatiles.mustrecharge || me.volatiles.twoturnmove || me.volatiles.commanding) return null;
+  const d = B.diff | 0, sk = d <= 0 ? 16 : d === 1 ? 48 : 100, med = sk >= 32, high = sk >= 48, hpAw = med, dex = btl.dex;
+  const FAIL = 20, USELESS = 60, BASE = 100;
+  const abil = p => p.ability, mvs = p => p.moveSlots.map(m => dex.moves.get(m.id));
+  const eor = p => { let n = 0, h = p.maxhp; if (p.status === 'brn') n += h / 16; if (p.status === 'psn') n += h / 8; if (p.status === 'tox') n += h * ((p.statusState?.stage | 0) + 1) / 16; if (p.volatiles.leechseed) n += h / 8; if (abil(p) === 'magicguard') n = 0; if (abil(p) === 'poisonheal' && /psn|tox/.test(p.status)) n = 0; return n; };
+  const pf = eor(me) >= me.hp;
+  const nonAct = side.pokemon.filter(p => !p.fainted && !p.isActive).length, ableN = side.pokemon.filter(p => !p.fainted).length;
+  const wantsSt = (p, st) => ['guts', 'marvelscale', 'quickfeet'].includes(abil(p)) || (/psn|tox/.test(st) && ['poisonheal', 'toxicboost'].includes(abil(p))) || (st === 'brn' && abil(p) === 'flareboost') || mvs(p).some(m => m.id === 'facade');
+  const ITEM_CURES = { slp: 'chestoberry', psn: 'pechaberry', tox: 'pechaberry', par: 'cheriberry', brn: 'rawstberry', frz: 'aspearberry' };
+  const stSc = p => { const st = p.status; if (!st) return USELESS; const act = p.isActive; let s = BASE;
+    if (st === 'slp' && act && (p.statusState?.time | 0) <= 1) return USELESS;   // 곧 깰 잠은 그냥 둠 (statusCount<=2)
+    if (wantsSt(p, st) || p.item === ITEM_CURES[st] || p.item === 'lumberry') return USELESS;
+    if (!act) return s + 20;
+    s += st === 'slp' || st === 'frz' ? 15 : 10;
+    if (hpAw && /psn|tox|brn/.test(st) && p.hp < p.maxhp / 2) s += 10;
+    if (eor(p) >= p.hp) s += 8;
+    if (med) { if (st === 'tox') s += 8 * (p.statusState?.stage | 0); if (['naturalcure', 'shedskin'].includes(abil(p))) s -= 8; if (abil(p) === 'hydration' && /rain/.test(btl.field.weather)) s -= 20;
+      if (st === 'brn' && mvs(p).some(m => m.category === 'Physical')) s += 10; if (st === 'par' && foe && p.getStat('spe') * 2 > foe.getStat('spe')) s += 10;
+      if (mvs(p).some(m => ['rest', 'refresh', 'healbell', 'aromatherapy', 'psychoshift'].includes(m.id))) s -= 30; }
+    return s; };
+  const hpSc = (p, heal) => { if (p.fainted || p.hp >= p.maxhp) return FAIL; let s = BASE; if (heal >= 999) { s -= 5; heal = p.maxhp - 1; }
+    if (p.hp > p.maxhp * .55) return USELESS; if (p.isActive && pf) s += 20;
+    if (hpAw) { const H = p.maxhp; s += Math.floor(20 * (H - p.hp) / H) + Math.floor(20 * Math.min(heal, H - p.hp) / H) + (p.hp <= H / 2 ? 5 : 0) + (p.hp <= H / 4 ? 5 : 0);
+      if (med) { if (ableN === 1) s += 10; const M = mvs(p).map(m => m.id); if (M.some(m => ['eruption', 'waterspout', 'dragonenergy', 'finalgambit'].includes(m))) s += 15; if (M.some(m => ['flail', 'reversal', 'endeavor'].includes(m))) s -= 15;
+        const hh = p.hp + heal; if (hh >= H) { if (p.item === 'focussash' || ['sturdy', 'multiscale', 'shadowshield'].includes(abil(p))) s += 8; } else if (p.hp < H / 2 && hh > H / 2 && ['defeatist', 'berserk', 'angershell'].includes(abil(p))) s += 8; } }
+    return s; };
+  const cureSc = p => { if (!p.status && !(p.isActive && p.volatiles.confusion)) return USELESS; let s = BASE; if (p.status) s += stSc(p) - BASE; if (p.isActive && p.volatiles.confusion) s += 20; return s; };
+  const revSc = (p, v) => { if (!p.fainted) return FAIL; let s = BASE + 20 + v * (nonAct === 0 ? 5 : 1);
+    if (med && foe) for (const m of mvs(p)) { if (m.category === 'Status') continue; if (!dex.getImmunity(m.type, foe)) { s -= 8; continue; } const e = dex.getEffectiveness(m.type, foe); s += e > 0 ? 7 : e < 0 ? -7 : 0; }
+    return s; };
+  const xSc = (p, st) => { if (pf) return USELESS; const stg = p.boosts[st] | 0; if (stg >= 6) return FAIL; const M = mvs(p), F = foe ? mvs(foe) : [];
+    const worth = st === 'atk' ? M.some(m => m.category === 'Physical') : st === 'spa' ? M.some(m => m.category === 'Special') : st === 'def' ? F.some(m => m.category === 'Physical') : st === 'spd' ? F.some(m => m.category === 'Special') : st === 'spe' ? foe && p.getStat('spe') <= foe.getStat('spe') * 1.5 && !btl.field.pseudoWeather.trickroom : M.some(m => m.accuracy !== true && m.accuracy < 100);
+    if (!worth) return USELESS; if (foe && abil(foe) === 'unaware') return USELESS;
+    let s = BASE, inc = Math.min(abil(p) === 'simple' ? 4 : 2, 6 - stg); if (abil(p) === 'contrary') return USELESS;
+    if (hpAw) s += inc * ((100 * p.hp / p.maxhp) - 50) / 8;
+    if (F.some(m => ['haze', 'clearsmog', 'topsyturvy', 'psychup', 'spectralthief', 'punishment'].includes(m.id))) s -= 20;
+    if (M.some(m => m.category === 'Status' && m.boosts && m.boosts[st] > 0 && m.target === 'self')) s -= 30;
+    s += stg >= 2 ? -10 * (stg - 1) : 10 * inc / 2;
+    return Math.round(s); };
+  const cnt = id => bag.filter(x => x === id).length, last = B.lastIt; B.lastIt = null;
+  const gen = (s, id, pi) => { const n = cnt(id) - 1; s += n > 0 ? 5 * n : -8;
+    if (last) { s -= high ? 60 : med ? 50 : 40; const k0 = IT_AI[last[0]]?.[1], k1 = IT_AI[id][1]; if (pi === last[1] && ableN > 1 && (k0 === k1 || /hp|fr/.test(k0) && /hp|fr/.test(k1))) s -= 20; }
+    return s; };
+  const C = [];
+  for (const id of new Set(bag)) { const T = IT_AI[id]; if (!T) continue; const [, k, v] = T;
+    if (k === 'x') { C.push([gen(xSc(me, v), id, me.position), id, side.pokemon.indexOf(me)]); continue; }
+    if (k === 'hp' && pf) continue;
+    side.pokemon.forEach((p, pi) => { let s;
+      if (k === 'hp') s = hpSc(p, v); else if (k === 'rev') s = revSc(p, v); else if (k === 'cure') s = cureSc(p);
+      else { const h = hpSc(p, 999), c = cureSc(p); s = c > USELESS ? (h > USELESS ? c + h - BASE + 10 : USELESS) : h > USELESS ? h - (bag.some(x => IT_AI[x]?.[1] === 'hp') ? 10 : 0) : Math.round((h + c) / 2); }
+      if (k !== 'rev' && p.fainted) return; if (s <= FAIL) return; C.push([gen(s, id, pi), id, pi]); }); }
+  if (!C.length || !C.some(c => c[0] > FAIL)) return null;
+  const mx = Math.max(...C.map(c => c[0])), thr = .6 + .35 * Math.sqrt(Math.min(sk, 100) / 100);
+  if (high && (mx <= USELESS || (mx < BASE * thr && Math.random() < .8))) return null;
+  const cut = Math.floor(mx * thr), W = C.map(c => Math.max(c[0] - cut, 0)), tot = W.reduce((a, b) => a + b, 0); if (!tot) return null;
+  let r = Math.random() * tot; for (let i = 0; i < C.length; i++) { r -= W[i]; if (r < 0) { B.lastIt = [C[i][1], C[i][2]]; return C[i]; } }
+  return null;
+}
+// 고른 도구를 바로 씀 (턴 맨 앞, 기술보다 먼저): 로그 |-dxitem| 뒤에 회복·치료·능력 오름 줄
+function foeUseItem(btl, ch) {
+  const [, id, pi] = ch, T = IT_AI[id], side = btl.p2, p = side.pokemon[pi], [, k, v, en] = T, H = p.maxhp; B.bag.splice(B.bag.indexOf(id), 1);
+  btl.add('-dxitem', side.active[0], id, p.isActive ? '' : 'p2: ' + p.name);
+  const cure = () => { if (p.status) p.cureStatus(); if (p.isActive && p.volatiles.confusion) p.removeVolatile('confusion'); };
+  if (k === 'hp' || k === 'fr') { const h = p.heal(v >= 999 ? H : v); if (h && p.isActive) btl.add('-heal', p, p.getHealth, '[from] item: ' + en); if (k === 'fr') cure(); }
+  else if (k === 'cure') cure();
+  else if (k === 'rev') { p.fainted = false; p.faintQueued = false; p.subFainted = false; p.status = ''; p.hp = 1; p.sethp(v >= 7 ? H : Math.floor(H / 2)); btl.add('-dxrevive', 'p2: ' + p.name); }
+  else if (k === 'x') { const n = p.boostBy({ [v]: 2 }); btl.add('-boost', p, v, n); }
+}
 function aiGmk(btl, c) {
   const G = B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[0], me = side.active[0], foe = btl.p1.active[0];
   if (!c || !/^move \d+$/.test(c) || !G || !R || !me) return c;
@@ -851,8 +933,8 @@ async function run(opts) {
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {} };
-  frHooks(btl); try { erHooks(btl); } catch (e) {} B.picks = [];
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null };
+  frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
@@ -863,14 +945,14 @@ async function run(opts) {
   // 지난 배틀의 away·back·throw 가 남아 있으면 트레이너가 미끄러져 들어오지 않고 제자리에 있었다 (경완 2026-10-28 '발판만 움직이고 캐릭터는 안 움직임')
   const trE = $b('.bt-tr.e'), trP = $b('.bt-tr.p'), uE = trSrc(opts.foe.tr), uP = opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`;
   trE.className = 'bt-tr e'; trP.className = 'bt-tr p';
-  trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`;
+  trE.style.cssText = ''; trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`; const trA = trAni(trE, opts.foe.tr), uEp = trA ? `${IMG}dbk/tr/${trA[2]}.png` : uE;
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
-  await Promise.race([Promise.all([uE, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
+  await Promise.race([Promise.all([uEp, uP].map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
-  await wait(900); el.classList.remove('intro');
+  await wait(900); el.classList.remove('intro'); await trPlay(trE, trA);
   const foeNm = B.foeNm = `${opts.foe.cls} ${opts.foe.nm}`;
   tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900);
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
@@ -912,7 +994,7 @@ async function play() {
     const r1 = btl.p1.activeRequest, r2 = btl.p2.activeRequest;
     let c1 = null;
     if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
-    const c2 = r2 && !r2.wait ? aiGmk(btl, aiChoice(btl, B.diff)) : null;
+    let c2 = null; if (r2 && !r2.wait) { const it = aiItem(btl); if (it) { foeUseItem(btl, it); btl.p2.__ip = 1; c2 = 'pass'; } else c2 = aiGmk(btl, aiChoice(btl, B.diff)); }
     if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
     if (B.picks) B.picks.push([btl.turn, c1 || '', c2 || '']);   // 배틀 기록: 이 턴에 관장이 고른 것·상대 AI 가 고른 것
@@ -1095,6 +1177,8 @@ async function handle(a) {
       else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false); await hitFx(s, effAhead(a[2])); }
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
+    case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
+    case '-dxrevive': { hbBalls('e'); tray(); await msg(`${eun(nmIn(a[2]))} 기운을 되찾았다!`); break; }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
