@@ -1970,6 +1970,7 @@ function mecLay(stg) {
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
   const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+  return true;
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
@@ -2140,6 +2141,11 @@ const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.s
   return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0),
     lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
 const meCard = () => meCardOf(rkCard(st()), true);
+// v22.27 경완 '관장 카드 지연 더 줄여': 카드에 쓸 그림(포켓몬 앞모습 png·gif, 관장 옷, 얼굴 자리)을 미리 받아 둠 — 체육관 들어올 때 내 카드, 랭킹 열 때 위 10줄, 줄을 누르기 시작할 때 그 줄
+const mecPreS = new Set();
+async function mecPre(D0, mine) { try { const D = rkClean(D0), key = JSON.stringify([mine ? 1 : 0, D.fit, D.sx, D.lu]); if (mecPreS.has(key)) return; mecPreS.add(key); mecFace();
+  const src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`; new Image().src = src;
+  D.lu.forEach(P => { try { GA.pkFront?.(document.createElement('span'), { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (e) {} }); } catch (e) {} }
 async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.gm), src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = D.lu;   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = +D.bd[t - 1] || 0; return `<div class="${L ? 'on' : ''}${D.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
   const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[D.ty] || '#5a6a9a'}">
@@ -2147,7 +2153,12 @@ async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.
     <div class="mec-id"><span class="mec-ty">${tyIcon(D.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[D.ty] || ''} 타입 관장</span><h4 class="mec-h">${esc(D.n || (mine ? '나' : '트레이너'))}</h4><p class="mec-wl"><b>${D.w + D.l}</b>전 <b>${D.w}</b>승 <b>${D.l}</b>패</p></div>${bd}</div><p class="mec-gn"><em class="gr-tag" data-g="${G.i}">${G.n}</em>${D.bn ? `<b>${esc(D.bn)}</b>` : ''}</p>${mine ? `<button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button>` : ''}<div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
   p.querySelectorAll('.mec-pk>span:first-child').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
-  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); }
+  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0;
+    /* 경완 2026-11-12 '관장 카드 켤 때 잠깐 박스 레이아웃 무너졌다가 카드 뜸': 포켓몬 그림·여백 읽기·얼굴 자리·무대 높이가 다 맞춰질 때까지 카드를 가려 둠 (늦어도 1.5초 뒤엔 보임) */
+    const show = () => w?.classList.remove('mec-wait'); w?.classList.add('mec-wait'); setTimeout(show, 1500);
+    const ready = () => MEC_FACE && [...stg.querySelectorAll('.mec-pk>span:first-child, .mec-tr')].every(e => { if (e.tagName !== 'IMG' && !e.dataset.pkd) return false; const im = e.tagName === 'IMG' ? e : e.querySelector('img'); if (!im) return !!e.querySelector('i,canvas'); return im.complete && (!im.naturalWidth || im._trim); });
+    let sig = '', same = 0; const sg = () => [...stg.querySelectorAll('.mec-pk,.mec-tr')].map(e => { const r = e.getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map(Math.round).join(); }).join(';') + stg.style.height;   // 그림이 움직이는 그림으로 바뀌며 한 번 더 줄 서기도 해서, 자리가 0.2초 동안 그대로일 때 보여 줌
+    const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (!stg.isConnected) return; const ok = mecLay(stg) && ready(); if (!w?.classList.contains('mec-wait')) return; const s = sg(); same = ok && s === sig ? same + 1 : 0; sig = s; if (same >= 2) requestAnimationFrame(show); else setTimeout(go, 16); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); stg.addEventListener('load', go, true); go(); }
   return p; }
 function sfCard(s) { loadJs('gym/battle.js', 'GymBattle').then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
@@ -2365,11 +2376,12 @@ function rkPop() {
       const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
       const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
       body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}`;
-      el._L = L;
+      el._L = L; L.slice(0, 10).forEach(x => x.mine ? mecPre(rkCard(), true) : mecPre(x.D, false));
     }
     el.innerHTML = `${head}<div class="gy-body">${body}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
   };
   draw();
+  el.onpointerdown = e => { const b = e.target.closest('.rk-row'); if (!b) return; const x = el._L?.[+b.dataset.i]; if (b.dataset.me || x?.mine) mecPre(rkCard(), true); else if (x) mecPre(x.D, false); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
     if (b.dataset.me) return meCardOf(rkCard(), true);   // v21.93 경완 '랭킹 슬롯 누르면 그 타입 체육관에 등록된 관장 카드': 내 줄도 지금 운영 중인 곳 말고 랭킹에 오른 체육관(평판 최고)
@@ -3193,7 +3205,7 @@ function enter() {
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   if (tutW) setTimeout(() => { if (open) tutTest(tutW); }, 1600);
-  setTimeout(() => rkPush(), 3000);   // v21.89 랭킹: 들어올 때 평판 올림 (바뀐 게 있을 때만)
+  setTimeout(() => { rkPush(); if (open) { mecPre(rkCard(st()), true); mecPre(rkCard(), true); } }, 3000);   // v21.89 랭킹: 들어올 때 평판 올림 (바뀐 게 있을 때만) · v22.27 관장 카드 그림 미리 받기
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
