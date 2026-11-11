@@ -565,7 +565,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '4.04';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '4.05';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2240,6 +2240,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['4.05', '11월 12일', ['이번 주 전설 13무리 모두 (무리마다 후보 명소 가운데 매주 무작위)']],
   ['4.04', '11월 12일', ['자동 범위 맨 위에 <b>이번 주 전설</b> 자리 (금색 원) — 전설은 그 한 곳에서만, 시·군·도·다른 명소 목록에서는 뺌']],
   ['4.03', '11월 12일', ['자동 범위 토박이 확률을 게임 v22.13 몫 방식으로 표시 (낯선 곳이면 시·군 토박이 합쳐 25%)']],
   ['4.02', '11월 12일', ['자동 범위에 <b>시·군 토박이</b> 87곳 (청주·익산·군산처럼 시·군마다, 레어 한두 마리씩)']],
@@ -3372,7 +3373,7 @@ const auTier = sp => { const t = A.TIER?.[sp] ?? A.TIER?.[A.baseOf?.(sp)]; retur
 function auNatP(o, T, aw) { const nl = new Set(o.sps.filter(sp => auTier(sp) > 2).map(sp => A.TIER?.[sp] ? sp : A.baseOf(sp))).size || 1; return sp => auTier(sp) > 2 ? (T ? T[aw ? 1 : 0] / nl : auP(sp, o.x(sp))) : auP(sp, o.x(sp)); }   // 그 반경 안에서 주운 알 1개가 그 포켓몬일 확률 (게임 spotHit 와 같은 x·b, 여러 마리가 겹치면 조금 낮아짐)
 function auList() { const q = auQ.trim(), aw = auAwOn(), L = [];
   const nl = sps => A.auLeg ? sps.filter(sp => !A.auLeg(sp)) : sps;   // v4.04: 게임 v22.15 — 전설은 이번 주 전설 명소에서만
-  const lg = A.auLgNow?.(); if (lg) L.push({ kind: 'lm', lg: 1, i: 'w', n: `이번 주 전설 · ${lg.n}`, why: `${lg.why} — 월요일 0시마다 다른 명소로 옮겨 가요. 반경 ${lg.r}m 안 알 ${Math.round(A.AU_LG_P * 100)}%, 한 주에 1개`, la: lg.la, lo: lg.lo, r: lg.r, sps: lg.L, x: () => 0, p: () => A.AU_LG_P });
+  (A.auLgNow?.() || []).forEach(lg => L.push({ kind: 'lm', lg: 1, i: 'w' + lg.i, n: `이번 주 전설 · ${lg.n}`, why: `${lg.why} — 월요일 0시마다 후보 ${A.AU_LGP?.[lg.i]?.[1]?.length || 0}곳 가운데 다른 곳으로 옮겨 가요 (${(A.AU_LGP?.[lg.i]?.[1] || []).map(x => x[0]).join(' · ')}). 반경 ${lg.r}m 안 알 ${Math.round(A.AU_LG_P * 100)}%, 한 주에 1개`, la: lg.la, lo: lg.lo, r: lg.r, sps: lg.L, x: () => 0, p: () => A.AU_LG_P }));   // v4.05: 전설 무리 13개 모두
   (A.AU_REG || []).forEach((g, i) => L.push({ kind: 'rg', i, n: g.n, why: g.why, la: g.la, lo: g.lo, r: g.r, r2: g.r2, rot: g.rot, sps: nl(g.L), x: () => A.AU_RG_X[aw ? 1 : 0], T: A.AU_RG_T }));
   (A.AU_CTY || []).forEach((c, i) => L.push({ kind: 'ct', i, n: c.n, why: c.why, la: c.la, lo: c.lo, r: c.r, sps: nl(c.L), x: () => (A.AU_CT_X || A.AU_RG_X)[aw ? 1 : 0], T: A.AU_CT_T }));   // v4.02 경완: 시·군 토박이
   (A.AU_LM || []).forEach(([n, la, lo, r, why, sps], i) => nl(sps).length && L.push({ kind: 'lm', i, n, why, la, lo, r, sps: nl(sps), x: sp => A.AU_X(sp) * (aw ? A.AU_AW_LM : 1) }));
