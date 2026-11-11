@@ -237,7 +237,7 @@ async function handle(env, b) {
       const ev = Array.isArray(b.ev) ? b.ev.slice(0, 50) : []; if (!ev.length) return 0;
       const st = [];
       for (const e of ev) {
-        const k = ['gym', 'sf', 'mg'].includes(e?.k) ? e.k : null, d = JSON.stringify(e?.d ?? null), t = +e?.t || now;
+        const k = ['gym', 'sf', 'mg', 'gold', 'egg'].includes(e?.k) ? e.k : null, d = JSON.stringify(e?.d ?? null), t = +e?.t || now;
         if (!k || d.length > 2000) continue;
         st.push(db.prepare('INSERT INTO bal (code, kind, ver, beta, t, at, d) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(me, k, str(e.v, 20) || '', b.beta ? 1 : 0, Math.min(t, now), now, d));
       }
