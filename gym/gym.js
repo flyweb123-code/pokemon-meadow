@@ -1883,24 +1883,32 @@ function mecLay(stg) {
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
-  // 경완 11-11 '관장 주변을 원형으로 감싸듯이': 관장 발밑 타원(Rx·Ry) 둘레에 세움. 큰 포켓몬은 뒤쪽 호(위로·관장 뒤), 작은 포켓몬은 앞쪽 호(아래로·관장 다리 앞)
-  const LB = 14, RY = 20, n = A.length, S = [...A].sort((x, y) => y.r - x.r);
-  const L0 = Math.min(84, (H - LB - RY - M) / Math.max(1, ...A.filter(a => a.r <= 18 / 17).map(a => a.r)));   // 1.8m 까지는 무대 높이 안에 다 들어가게, 더 큰 건 무대 높이로 자름
-  const ctr = n % 2 ? S.shift() : null, Ls = [], Rs = []; S.forEach((a, i) => (i % 2 ? Ls : Rs).push(a));
-  const ang = (m, j) => m < 2 ? 25 : 64 - j * 116 / (m - 1);   // 뒤 64° → 앞 -52°
-  if (ctr) { ctr.th = 90; ctr.sd = n % 4 === 1 ? -1 : 1; } [[Ls, -1], [Rs, 1]].forEach(([L, sd]) => L.forEach((a, j) => { a.th = ang(L.length, j); a.sd = sd; }));
-  let LH = L0;
-  for (let k = 1, it = 0; it < 30; it++, k *= .96) { LH = L0 * k; const LW = trF[0] * LH;
-    A.forEach(a => { const t = a.th * Math.PI / 180; a.c = Math.cos(t); a.b = Math.max(1, LB + RY * Math.sin(t)); a.h = Math.max(18, Math.min(LH * a.r, H - a.b - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
-    if (A.some(a => a.w > W - M * 2)) continue;
-    const sides = A.filter(a => a !== ctr), mw = sides.length ? sides.reduce((p, a) => p + a.w, 0) / sides.length : 0;
-    let Rx = LW / 2 + mw * .55 + 6 * Math.ceil(sides.length / 2);   // 빈틈 많지 않게: 몸 폭 평균만큼만 벌림
-    sides.forEach(a => { if (a.c > .05) Rx = Math.min(Rx, (W / 2 - M - a.w / 2) / a.c); });
-    if (Rx < LW / 2 && sides.length) continue;
-    A.forEach(a => { a.x = a === ctr ? cx + a.sd * Math.min(26, 6 + a.w * .14) : cx + a.sd * Rx * a.c; /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
-      a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); });
-    break; }
-  const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = LH / trF[1] + 'px';   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
+  // 경완 11-11 '관장 주변을 원형으로 감싸듯이' + '발판 뒤로 넘어가지 않게, 겹침은 아까 정도': 발판 타원 안에서 큰 포켓몬은 뒤쪽 호(가운데일수록 뒤), 작은 포켓몬은 앞쪽 호(관장 다리 앞).
+  // 옆으로는 예전처럼 몸 폭의 20% 정도만 겹치며 바깥으로 줄 세움 (넘치면 겹침을 늘리고, 그래도 안 되면 그때만 조금씩 줄임)
+  const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
+  const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= 18 / 17).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
+  let LH = L0, LB = 14, ok = false, gk = 1;
+  for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
+    A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
+    for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Hb = a => Math.max(1, C + RY), Ht = 1;
+      // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜)
+      let le = cx, re = cx, pL = null, pR = null;
+      big.forEach((a, i) => { a.h = Math.max(18, Math.min(a.h0, (H - C - RY - M) * gk)); a.s = a.h / a.bh; a.w = a.bw * a.s;
+        if (!i && big.length % 2) { a.x = cx + (n % 4 === 1 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
+        const sd = re - cx <= cx - le ? 1 : -1, pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
+        if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
+      // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
+      let tl = cx - LW * .15, tr = cx + LW * .15;
+      tiny.forEach(a => { a.h = Math.max(18, a.h0); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
+        if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
+      const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) continue;
+      const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); ok = true;
+      const R = 68 * LH / 66;   // 발판 반폭: 발판 밖 옆으로 나간 포켓몬은 발판 가운데 줄 높이에 (발판 뒤로 안 넘어가게)
+      big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = C + RY * Math.sqrt(1 - u * u); });   // 가운데일수록 발판 뒤쪽 (발판 안)
+      tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
+      A.forEach(a => { a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); }); }
+    if (!ok) { if (gk > .4 && A.some(a => a.h < a.h0 - 1)) gk *= .93; else k *= .96; } }   // 넘치면 무대 높이로 잘린 아주 큰 포켓몬(가이오가 등)부터 줄이고, 관장은 마지막에
+  const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
