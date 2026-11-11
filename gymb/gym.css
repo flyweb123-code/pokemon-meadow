@@ -4127,3 +4127,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* 관장 카드: 무대 줄 세우기가 끝날 때까지 가려 둠 */
 #gym .gy-pop .win.mec-wait{visibility:hidden}
+
+/* v22.28 경완: 비기 카드 = 등급 카드와 같은 폭·여백, 해금한 건 지나간 등급 카드와 같은 색 */
+#gym .gy-perk .pk-tc{margin:0;padding:8px 10px}
+#gym .gy-perk>li.pk-tip.on>.pk-ar{border-top-color:var(--frame)}
+#gym .gy-perk>li.pk-tip.on .pk-tc{border:2px solid var(--frame);background:#eef7ec}
+#gym .gy-perk>li.pk-tip.on .pk-tc b{color:inherit}
+#gym .gy-perk>li.pk-tip.on .pk-tc small,#gym .gy-perk>li.pk-tip.on .pk-tc p{color:var(--dim)}
+#gym .gy-perk .pk-kg{margin:0 5px}   /* 등급 카드 배지 칸(42px)과 글자 줄 맞춤 */
