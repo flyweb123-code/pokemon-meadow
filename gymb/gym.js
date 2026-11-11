@@ -3440,7 +3440,7 @@ async function megaTest(k, foe) {
   const mk = (id, sp, mv, it, ab) => { const P = { id, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, mgT: 1 }; S.box.push(P); made.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 52, it: it || '', ab }); return P; };
   const my = foe ? [mk(990001, 445, ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], '', 'roughskin'), mk(990002, 248, ['stoneedge', 'crunch', 'earthquake', 'dragondance'], '', 'sandstream')] : [mk(990001, M[0], M[2], M[1], M[3]), M[0] === 448 ? mk(990002, 6, ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], '', 'blaze') : mk(990002, 448, ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], '', 'innerfocus')];
   const fe = (sp, nm, lv, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'adamant', iv: [24, 24, 24, 24, 24, 24], g: 'M' });
-  const team = foe ? [fe(95, '롱스톤', 46, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), { ...fe(M[0], SPECIES[M[0]]?.n || '', 50, M[2], M[3]), it: M[1] }] : [fe(95, '롱스톤', 44, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), fe(408, '두개도스', 45, ['headsmash', 'zenheadbutt', 'crunch', 'firepunch'], 'moldbreaker'), fe(409, '램펄드', 47, ['headsmash', 'earthquake', 'firepunch', 'icebeam'], 'moldbreaker')];
+  const team = foe ? [{ ...fe(M[0], SPECIES[M[0]]?.n || '', 50, M[2], M[3]), it: M[1] }, fe(95, '롱스톤', 46, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy')] :   /* 경완: 첫 포켓몬이 바로 메가진화 */ [fe(95, '롱스톤', 44, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), fe(408, '두개도스', 45, ['headsmash', 'zenheadbutt', 'crunch', 'firepunch'], 'moldbreaker'), fe(409, '램펄드', 47, ['headsmash', 'earthquake', 'firepunch', 'icebeam'], 'moldbreaker')];
   document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   try { await GB().run({ my, foe: { tr: 'leader_roark', cls: '관장', nm: '강석', team, hold: 2, say: foe ? { win: '메가진화까지 막아 내다니!', lose: '이게 바로 메가진화의 힘이지!' } : { win: '대단한 메가진화였어!', lose: '바위처럼 단단하게 버텼지!' } }, practice: true, diff: 2, bg: 'in2', music: 'gymBattle', gmk: { mega: 1 }, meBackUrl: await fitSrc('trb') }); }
   catch (e) { console.error(e); }
@@ -3455,7 +3455,7 @@ const MG_TID = 990011;
 /* 경완 2026-11-12 '메가진화 해금되면 도전자들도 쓰는데 한동안은 안 쓰게 (메가진화로 쭉쭉 미는 맛), 강박사의 비기는 다 이런 식' (다음 거다이맥스도 같은 틀) + '일수 말고 판수로':
    메가링 받은 뒤 관장이 직접 싸운 도전자 배틀 수(g.mgN)로 센다. MG_FOE.wait 판은 아무도 안 씀 → 그 뒤 MG_FOE.ramp 판 동안 확률이 0 에서 최대까지 오름. 최대는 도전자 세기별.
    쓸 수 있으면 팀에서 메가진화할 수 있는 포켓몬(뒤쪽 = 에이스 먼저) 하나에 메가스톤을 지니게 함 */
-const MG_FOE = { wait: 20, ramp: 20, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
+const MG_FOE = { wait: 10, ramp: 10, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
 function foeMgP(c) { const g = st(); if (!MEGA_ON || !g?.mgRing) return 0; const d = (g.mgN | 0) - MG_FOE.wait; if (d < 0) return 0;
   const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / MG_FOE.ramp); }
 function foeMega(c, team, force) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c))) return false;
