@@ -2277,7 +2277,7 @@ function perkPop() {
   /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
      계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
   /* 경완 2026-11-12 '비기는 항상 살려 놓고 등급 탭·비기 탭 나눠서': 비기는 계정 어느 체육관에서든 배웠으면 열림(tutSeen), 아니면 실루엣 */
-  const tip = i => { const T = PK_TIP[i], on = [].concat(T.k).some(tutSeen);   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
+  const tip = i => { const T = PK_TIP[i], on = (i !== 3 || (typeof MEGA_ON !== 'undefined' && MEGA_ON)) && [].concat(T.k).some(tutSeen);   /* 경완 11-12: 메가진화는 배포(MEGA_ON) 전까진 등급이 돼도 실루엣 그대로 */   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
     const tg = on && T.re ? 'button' : 'div';   // 경완 '비기 누르면 튜토리얼 다시 볼 수 있게'
     return `<li class="pk-tip${on ? ' on' : ''}"><${tg} class="pk-tc"${tg === 'button' ? ` type="button" data-a="sk${i}"` : ''}><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div>${tg === 'button' ? '<em class="pk-re">다시 보기 ›</em>' : ''}</${tg}></li>`; };
   const p = pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><div class="sp-tabs pk-tabs" role="tablist"><button role="tab" data-a="tg" aria-selected="true">등급</button><button role="tab" data-a="ts" aria-selected="false">비기</button></div><ol class="gy-perk pk-gl">${GRADES.map(row).join('')}</ol><ol class="gy-perk pk-sl" hidden>${Object.keys(PK_TIP).map(i => tip(+i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
