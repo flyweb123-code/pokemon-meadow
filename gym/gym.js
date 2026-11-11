@@ -248,6 +248,7 @@ function build() {
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
       <button class="gy-store gy-sq" type="button" aria-label="창고"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg></button>
       <button class="gy-jnl gy-sq" type="button" aria-label="체육관 일지"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M3 1h10v1H3zM2 2h1v13H2zM13 2h1v13h-1zM3 15h10v1H3z"/><path fill="#3c7cc8" d="M3 2h10v13H3z"/><path fill="#2a5a98" d="M3 2h2v13H3z"/><path fill="#f8f4e8" d="M6 3h6v11H6z"/><path fill="#8890a8" d="M7 5h4v1H7zM7 7h4v1H7zM7 9h4v1H7zM7 11h3v1H7z"/></svg></button>
+      <button class="gy-rk gy-sq" type="button" aria-label="체육관 랭킹"><svg viewBox="-1 0 18 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 0h12v1h-12zM1 1h1v1h-1zM14 1h1v1h-1zM-1 2h1v4h-1zM0 1h1v1h-1zM0 6h2v1h-2zM2 2h1v1h-1zM16 2h1v4h-1zM15 1h1v1h-1zM14 6h2v1h-2zM13 2h1v1h-1zM2 3h1v1h-1zM13 3h1v1h-1zM2 4h1v1h-1zM13 4h1v1h-1zM2 5h1v1h-1zM13 5h1v1h-1zM2 6h1v1h-1zM13 6h1v1h-1zM2 7h1v1h-1zM13 7h1v1h-1zM3 8h1v1h-1zM12 8h1v1h-1zM4 9h2v1h-2zM10 9h2v1h-2zM6 10h1v1h-1zM9 10h1v1h-1zM5 11h2v1h-2zM9 11h2v1h-2zM4 12h1v1h-1zM11 12h1v1h-1zM3 13h1v1h-1zM12 13h1v1h-1zM3 14h1v1h-1zM12 14h1v1h-1zM3 15h10v1h-10z"/><path fill="#fffbe0" d="M2 1h2v1h-2zM3 3h1v1h-1zM3 4h1v1h-1z"/><path fill="#ffe98a" d="M4 1h8v1h-8zM3 2h1v1h-1zM7 3h2v1h-2zM7 4h2v1h-2zM3 5h1v1h-1zM5 5h6v1h-6zM6 6h4v1h-4zM5 7h2v1h-2zM9 7h2v1h-2z"/><path fill="#f2c641" d="M12 1h1v1h-1zM4 2h8v1h-8zM4 3h3v1h-3zM9 3h3v1h-3zM4 4h3v1h-3zM9 4h3v1h-3zM4 5h1v1h-1zM11 5h1v1h-1zM3 6h3v1h-3zM10 6h2v1h-2zM3 7h2v1h-2zM7 7h2v1h-2zM11 7h1v1h-1zM4 8h7v1h-7zM6 9h3v1h-3zM7 10h1v1h-1zM7 11h1v1h-1z"/><path fill="#c98a10" d="M13 1h1v1h-1zM12 2h1v1h-1zM12 3h1v1h-1zM12 4h1v1h-1zM12 5h1v1h-1zM12 6h1v1h-1zM12 7h1v1h-1zM11 8h1v1h-1zM9 9h1v1h-1zM8 10h1v1h-1zM8 11h1v1h-1zM5 12h6v1h-6z"/><path fill="#ffe98a" d="M0 2h2v1h-2zM0 3h1v2h-1z"/><path fill="#f2c641" d="M14 2h1v1h-1z"/><path fill="#c98a10" d="M0 5h2v1h-2zM15 2h1v4h-1zM14 5h1v1h-1z"/><path fill="#9a5a2e" d="M4 13h8v1h-8z"/><path fill="#6a3a1e" d="M4 14h8v1h-8z"/></svg></button>
       <button class="gy-qbtn" type="button" aria-label="도전자 받기"><i class="gy-qdot" hidden></i></button><p class="gy-qcap" hidden></p>
       <button class="win gy-simb" type="button">시뮬</button>
       <div class="win blue gy-dlg" aria-live="polite"></div>
@@ -265,6 +266,7 @@ function build() {
     pl.addEventListener('pointerdown', () => pl.classList.add('prs')); ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => pl.addEventListener(k, off)); }
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
+  $g('.gy-rk').onclick = () => { sfx('tap'); if (ded) ded.end?.(); rkPop(); };   // v21.89 경완 '일지 아이콘 오른쪽 옆에 트로피 아이콘으로 랭킹'
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
   $g('.gy-simb').onclick = () => { sfx('tap'); simPop(); };
   $g('.gy-menu').onclick = e => { const b = e.target.closest('button'); if (!b) return; const t = b.dataset.t; if (t === 'out') return exit(); if (t === 'battle') gse('DP_WIN_OPEN'); else sfx('tap');   /* v20.62 경완: 포켓몬 메뉴는 본가 포켓몬 창 여는 철컥 (v20.66 후보 3번 DP_WIN_OPEN) */   /* v14.14 경완: 라인업 고르기 중에도 메뉴 잠그지 않음 — 다른 메뉴나 포켓몬 메뉴를 다시 누르면 고르기를 그만두고(luRes null) 배틀 시작 전 대사로 돌아감 */
@@ -280,7 +282,7 @@ function build() {
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
   $g('.gy-qbtn').onclick = () => { const g = st(); qSeen0 = g?.qSeen | 0; if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
     if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); const s0 = qSeen0 ?? (g.qSeen | 0); qSeen0 = null; qPop(s0); };
-  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-jnl', '일지'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
+  [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-jnl', '일지'], ['.gy-rk', '랭킹'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
   $g('.gy-stage').addEventListener('click', e => { if (ded || busy || root.classList.contains('pre') || root.querySelector('.gy-kang,.gy-pop,.gy-setup') || e.target.closest('.tap,.gy-prop.tap')) return;
     root.classList.toggle('gview'); sfx('tap'); });
@@ -302,7 +304,7 @@ function layout(D = dzOf(st().d)) {
   stg.style.paddingLeft = pl + 'px'; stg.style.paddingRight = pr + 'px';
   // 체육관이 화면에 다 들어올 만큼 작으면 위 타이틀·버튼과 아래 도전자 받기 사이 가운데에 (경완 2026-10-29 '위아래 여백 정렬')
   const sr = stg.getBoundingClientRect(), bot = q => { const r = $g(q)?.getBoundingClientRect(); return r && r.height ? r.bottom - sr.top : 0; };
-  const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-jnl'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
+  const t0 = Math.max(bot('.gy-rpa'), bot('.gy-deco'), bot('.gy-store'), bot('.gy-jnl'), bot('.gy-rk'), bot('.gy-plate')) + 8, qr = $g('.gy-qbtn')?.getBoundingClientRect(), b0 = (qr?.height ? qr.top - sr.top : H - B) - 8, fits = t0 > 0 && mh * sc <= b0 - t0;
   if (!(root.classList.contains('ded') && map.style.marginTop)) map.style.marginTop = (fits ? Math.max(0, t0 + (b0 - t0 - mh * sc) / 2 - T) : Math.max(0, cy - T - ly)) + 'px', map.style.marginBottom = (fits ? 0 : Math.max(0, (H - cy) - (mh * sc - ly) - B)) + 'px';   /* v15.56 경완: 꾸미기 모드에선 체육관 위치 그대로 */
   const vk = mk + '|' + sc + '|' + W + 'x' + H + '|' + fits; stg.classList.toggle('fit', fits);   // 화면에 다 들어오면 위아래·좌우 스크롤 막기 (경완 2026-10-29)
   if (fits) { stg.dataset.vk = vk; stg.scrollTop = 0; stg.scrollLeft = pl + lx - W / 2; } else if (stg.dataset.vk !== vk) { stg.dataset.vk = vk; requestAnimationFrame(() => { const mt = parseFloat(map.style.marginTop), s1 = T + mt + ly - cy, s2 = T + mt + mh * sc - (H - B);   // 레이아웃 C: 관장이 보이면 문(아래 끝)이 행동 줄 바로 위에 오게
@@ -2129,14 +2131,24 @@ function mtfOn(win, ty, g) {
     x.restore(); x.globalCompositeOperation = 'source-over'; spiralF(); };
   const stop = () => { run = false; ro.disconnect(); }; cv._stop = stop; requestAnimationFrame(step);
 }
-async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6);   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
-  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
-    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}" data-st="${mecSt(P.sp) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
-    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-gn"><em data-g="${G.i}">${G.n}</em><b>${esc(g.nm || '')}</b></p><p class="mec-wl"><b>${(g.w || 0) + (g.l || 0)}</b>전 <b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[(g.ty | 0) - 1], G.i); }
-  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
-  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); } }
+/* v21.89 경완 '체육관 랭킹 … 슬롯이나 프로필 박스 눌렀을 때 관장 카드': 관장 카드를 데이터로 그림. 내 카드 = rkCard(), 남의 카드 = 랭킹 서버 카드 */
+const rkBest = () => gList().reduce((a, x) => !a || (x.rep | 0) > (a.rep | 0) ? x : a, null);   // 관리 중인 체육관 중 평판이 가장 높은 곳
+function rkCard(g0) { const me = st(), g = g0 || rkBest(); if (!me || !g) return null;
+  const lu = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '']);
+  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: me.w | 0, l: me.l | 0, lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
+const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.sx === 'f' ? 'f' : 'm';
+  return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0),
+    lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
+const meCard = () => meCardOf(rkCard(st()), true);
+async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.gm), src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = D.lu;   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
+  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = +D.bd[t - 1] || 0; return `<div class="${L ? 'on' : ''}${D.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
+  const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[D.ty] || '#5a6a9a'}">
+    <div class="bd-pic mec-stg mecT${D.ty}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P[0]}" data-h="${SPECIES[P[0]]?.h || 10}" data-st="${mecSt(P[0]) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
+    <div class="mec-id"><span class="mec-ty">${tyIcon(D.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[D.ty] || ''} 타입 관장</span><h4 class="mec-h">${esc(D.n || (mine ? '나' : '트레이너'))}</h4><p class="mec-gn"><em class="gr-tag" data-g="${G.i}">${G.n}</em>${D.bn ? `<b>${esc(D.bn)}</b>` : ''}</p></div>${bd}</div>${mine ? `<button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button>` : ''}<div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
+  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
+  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
+  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); }
+  return p; }
 function sfCard(s) { loadJs('gym/battle.js', 'GymBattle').then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
@@ -2319,6 +2331,53 @@ function jnlPop() {
   /* 옆으로 밀어서 날짜 넘기기 */
   let sx = null; el.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
   el.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 60) return; const b = el.querySelector(`.jn-nav [data-mv="${dx > 0 ? 1 : -1}"]`); if (b && !b.disabled) b.click(); });
+}
+// 체육관 랭킹 (v21.89 경완 '트레이너들의 현재 체육관 평판 랭킹, 관리 중인 체육관 중 가장 높은 평판의 체육관이 배지랑 같이'): 친구 서버 score 표 game 'gymrep' (best = 평판, card = 관장 카드)
+const RK_G = 'gymrep';
+let rkBusy = null, rkRows = null, rkAt = 0;
+function rkPush(force) {   // 바뀐 게 있을 때만 올림. 운영자 시험·시뮬·이벤트 시험은 본 계정 기록을 안 올림
+  const g = st(); if (!g?.d || !GA.frOn?.() || window.gymSimOn || window.gymEvTest || g.ev?.test) return Promise.resolve();
+  const D = rkCard(); if (!D) return Promise.resolve(); const c = JSON.stringify(D);
+  if (!force && S.gymRkUp === c) return Promise.resolve();
+  if (rkBusy) return rkBusy;
+  return rkBusy = Promise.resolve(GA.frMe?.()).then(() => GA.frAsk({ op: 'score', game: RK_G, best: D.rep, card: c })).then(() => { S.gymRkUp = c; rkAt = 0; save(); }).catch(() => {}).finally(() => { rkBusy = null; });
+}
+const RK_MED = ['#f2c641', '#c8d0e0', '#d88a48'];
+function rkPop() {
+  root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
+  const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-rkw'; $g('.gy-main').appendChild(el);
+  let me = '', rows = null, err = '';
+  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b></div>`;
+  const trSrcOf = D => D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;
+  const draw = () => {
+    const mine = rkCard(), mineC = mine && rkClean(mine);
+    let body;
+    if (err) body = `<p class="rk-msg">${err}</p>`;
+    else if (!rows) body = `<p class="rk-msg">랭킹을 불러오는 중…</p>`;
+    else {
+      const L = rows.map(r => ({ code: r.code, D: r.code === me && mineC ? mineC : rkClean(r.c), mine: r.code === me })); L.forEach(x => { if (!x.D.n) x.D.n = x.mine ? '나' : '트레이너'; }); if (mineC && !mineC.n) mineC.n = '나';
+      const myI = L.findIndex(x => x.mine);
+      const G = D => gradeOf(D.rep, D.gm);
+      const pod = L.slice(0, 3), order = [1, 0, 2].filter(i => pod[i]);
+      const podium = pod.length ? `<div class="rk-pod">${order.map(i => { const x = pod[i], g = G(x.D); return `<button type="button" class="rk-pd p${i + 1}${x.mine ? ' me' : ''}" data-i="${i}" style="--tc:${GA.TYPE_C?.[x.D.ty] || '#5a6a9a'}"><span class="rk-pt"><img alt="" src="${trSrcOf(x.D)}" loading="lazy"></span><span class="rk-pb"><i class="rk-pn">${i + 1}</i>${bdHtml(x.D.ty, g.i + 1, 'rk-pbd')}<b>${esc(x.D.bn || '이름 없는 체육관')}</b><small>${esc(x.D.n)}</small><em>평판 ${x.D.rep.toLocaleString()}</em></span></button>`; }).join('')}</div>` : '';
+      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i < 3 ? ' top' : ''}" data-i="${i}" style="--tc:${GA.TYPE_C?.[x.D.ty] || '#5a6a9a'}${i < 3 ? ';--md:' + RK_MED[i] : ''}"><span class="rk-no">${i < 0 ? '-' : i + 1}</span><span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.bn || '이름 없는 체육관')}</b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>관장 ${esc(x.D.n)}</span></small></span><span class="rk-rep"><b>${x.D.rep.toLocaleString()}</b><small>평판</small></span></button></li>`; };
+      const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1).replace('data-i="-1"', 'data-me="1"')}</ol></div>` : '';
+      body = `<div class="rk-hero"><b>평판 순위</b><span>${myI >= 0 ? `내 순위 <i>${myI + 1}위</i> · ` : ''}${L.length}명의 관장</span></div>${podium}${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요. 줄을 누르면 관장 카드를 볼 수 있어요.</p>`;
+      el._L = L;
+    }
+    el.innerHTML = `${head}<div class="gy-body">${body}</div>`;
+  };
+  draw();
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.me) return meCard();
+    const x = el._L?.[+b.dataset.i]; if (!x) return; x.mine ? meCard() : meCardOf(x.D, false); };
+  if (!GA.frOn?.()) { err = '체육관 랭킹은 앱에서 친구 서버에 연결되어 있을 때 볼 수 있어요'; return draw(); }
+  const fresh = rkRows && Date.now() - rkAt < 60_000;
+  if (fresh) { rows = rkRows; Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; draw(); }); return draw(); }
+  Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; return rkPush(); }).then(() => GA.frAsk({ op: 'mgtop', game: RK_G }))
+    .then(got => { rows = (got || []).map(r => { try { return { code: r.code, c: { ...JSON.parse(r.card), rep: +r.best || 0 } }; } catch (e) { return null; } }).filter(Boolean); rkRows = rows; rkAt = Date.now(); if (el.isConnected) draw(); })
+    .catch(e => { err = '랭킹을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요'; if (el.isConnected) draw(); });
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm', stPow = 1;
@@ -3132,6 +3191,7 @@ function enter() {
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   if (tutW) setTimeout(() => { if (open) tutTest(tutW); }, 1600);
+  setTimeout(() => rkPush(), 3000);   // v21.89 랭킹: 들어올 때 평판 올림 (바뀐 게 있을 때만)
   setTimeout(() => gymLoad.hide(), 120);
   // 아래 메뉴(포켓몬·훈련장·트레이너·상점)가 쓰는 배틀 자료·관리 코드를 미리 받아 둔다: 처음 누를 때 '불러오는 중'에 멈춰 있지 않게 (경완 2026-10-30 '훈련장 처음 눌렀을 때 화면 바로 안 뜸')
   // 정보 카드·기술 창의 타입·분류 아이콘을 미리 받아 둔다 (처음 열 때 글자만 보이다 늦게 뜨던 것, 경완 2026-10-30)
@@ -3255,7 +3315,7 @@ async function later() {
 }
 let leaving = false;
 async function exit(tx = '퇴근하는 중') {
-  if (leaving || !open) return; leaving = true;
+  if (leaving || !open) return; leaving = true; rkPush();   // v21.89 랭킹: 나갈 때 평판 올림
   // 퇴근 누르면 로딩 화면부터 바로 (서서히 나타나지 않게, 경완 2026-10-27)
   const L = document.getElementById('gymLoad'); L?.classList.add('inst'); gymLoad.show(tx, '', true); void L?.offsetWidth; L?.classList.remove('inst');
   // 로딩 화면이 실제로 그려진 다음에 정리한다: 체육관 화면은 곧바로 숨겨 휴대폰이 더 그리지 않게 (경완 2026-10-28 '화면 먼저 띄우고 뒤에서 로딩')
@@ -3328,7 +3388,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
