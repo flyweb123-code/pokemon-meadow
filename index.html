@@ -9544,6 +9544,7 @@ const PK_BW = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd22
 let pkBwJ = null; const pkBwG = () => pkBwJ || (pkBwJ = fetch('gym/img/pk/bwa.json').then(r => r.json()).catch(() => { pkBwJ = null; return {}; }));
 const pkBw = (M, sp, sh, f) => { const L = M.l?.[sp] || 0, m = M.r?.[sp];   // v21.75 경완 고른 EeveeExpo 그림(gym/img/pk/bw, 비트 32 앞)이 먼저
   if (L & 32) return `gym/img/pk/bw/${f && !sh && L & 8 ? 'f' : sh && L & 2 ? 's' : ''}${sp}.gif?v=1`;
+  if (sh && L & 2) return `gym/img/pk/bw/s${sp}.gif?v=1`;   // PokeAPI 에 이로치만 없는 종 (오거래곤·대여르)
   return m == null ? null : `${PK_BW}${f && !sh && m & 8 ? 'female/' : sh && m & 2 ? 'shiny/' : ''}${sp}.gif`; };
 let pkFaJ = null; const pkFaG = () => pkFaJ || (pkFaJ = fetch('gym/img/pk/fa/fa.json').then(r => r.json()).catch(() => { pkFaJ = null; return {}; }));
 function pkFront(el, rp) {   // v16.52 경완: 494~649 는 한 장짜리 그림이라 2장 판 크기로 늘려 그리면 처음에 엄청 크게 보였다가 gif 로 줄어듦 → 그림 크기를 재서 1.5배로, 650~ 은 2장 판으로 본가처럼 움직임
@@ -9551,9 +9552,9 @@ function pkFront(el, rp) {   // v16.52 경완: 494~649 는 한 장짜리 그림�
   let gif = false; el.querySelectorAll(':scope>i,:scope>img').forEach(x => x.remove());
   if (+rp.sp >= 650) pkBwG().then(M => { const u = pkBw(M, rp.sp, !!rp.sh, rp.sx === 'f'); if (!u || !live()) return; const im = new Image(); im.alt = '';
     im.onload = () => { if (!live()) return; gif = true; im.style.width = im.naturalWidth * 1.5 + 'px'; im.style.height = im.naturalHeight * 1.5 + 'px'; put(im); }; im.src = u; });
-  if (+rp.sp >= 650 && !rp.sh && !RFORM[rp.sp]) Promise.all([pkFaG(), pkBwG()]).then(([F, M]) => { if (pkBw(M, rp.sp, false, rp.sx === 'f')) return; const e = F[rp.sp], n = Array.isArray(e) ? e[0] : e, w = Array.isArray(e) ? e[1] : 80; if (!(n > 1) || !live()) return;   // v16.94 경완: 650~1025 앞모습 PixelLab 움직이는 그림 (체육관 배틀과 같은 gym/img/pk/fa, 110ms)
+  if (+rp.sp >= 650 && !RFORM[rp.sp]) Promise.all([pkFaG(), pkBwG()]).then(([F, M]) => { if (pkBw(M, rp.sp, !!rp.sh, rp.sx === 'f') || rp.sh && !(M.fs || []).includes(+rp.sp)) return; const e = F[rp.sp], n = Array.isArray(e) ? e[0] : e, w = Array.isArray(e) ? e[1] : 80; if (!(n > 1) || !live()) return;   // v16.94 경완: 650~1025 앞모습 PixelLab 움직이는 그림 (체육관 배틀과 같은 gym/img/pk/fa, 110ms)
     const sh = new Image(); sh.onload = () => { if (!live()) return; gif = true; const i = document.createElement('i'), W = w * 1.5; i.className = 'fa'; i.style.cssText = `width:${W}px;height:${W}px;background-image:url(${sh.src});background-size:${n * W}px ${W}px`; put(i);
-      let f = 0; const t = setInterval(() => { if (!live() || !i.isConnected) return clearInterval(t); f = (f + 1) % n; i.style.backgroundPosition = `${-f * W}px 0`; }, 110); }; sh.src = `gym/img/pk/fa/${rp.sp}.png`; });
+      let f = 0; const t = setInterval(() => { if (!live() || !i.isConnected) return clearInterval(t); f = (f + 1) % n; i.style.backgroundPosition = `${-f * W}px 0`; }, 110); }; sh.src = `gym/img/pk/fa/${rp.sp}${rp.sh ? 's' : ''}.png`; });   // v21.76 경완: 이로치는 지금 움직이는 그림에 이로치 색만 입힌 것 (bwa.json fs)
   const png = new Image(); png.alt = ''; png.onload = () => { if (gif || !live()) return; const w = png.naturalWidth, h = png.naturalHeight;
     if (w === 160 && h === 80) { const i = document.createElement('i'); i.style.backgroundImage = `url(${png.src})`; put(i); if (+rp.sp >= 650) { if (!pkSame(png)) pkAnimG().then(() => pkSheetAnim(el, i, tok, rp.sp)); } }
     else { png.style.width = w * 1.5 + 'px'; png.style.height = h * 1.5 + 'px'; put(png); } };
