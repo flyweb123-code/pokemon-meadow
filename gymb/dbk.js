@@ -214,7 +214,7 @@
       A(p, [{ opacity: 0, transform: `translate(${cx + Math.cos(a) * r}px,${cy + Math.sin(a) * r}px) scale(1.6)` }, { opacity: 1, offset: .2 }, { opacity: 1, transform: `translate(${cx}px,${cy}px) scale(.3)` }], { duration: 800, delay: 4400 + (i % 13) * 110, easing: 'cubic-bezier(.6,0,1,.6)' }); });
     shake(4600, 400, 2); shake(5100, 400, 4); at(4700, () => vib(1)); at(5200, () => { vib(2); c.se('Psych Up'); });
     // 6) 진화하는 모습: 하얀 원래 모습 ↔ 하얀 메가 모습이 점점 빨리 번갈아 (5000~6300)
-    at(5000, () => { meg.style.opacity = 0; let t = 0; const gaps = [300, 260, 220, 180, 150, 120, 100, 80, 65, 55, 50, 45]; gaps.forEach((g, i) => { t += g; at(t, () => { const m = i % 2 === 0; meg.style.opacity = m ? 1 : 0; org.style.opacity = m ? 0 : 1; meg.style.transform = org.style.transform = `scale(${1 + i * .012})`; if (i % 3 === 0) c.se('Ice5'); }); }); });
+    at(5000, () => { [org, meg].forEach(e => e.getAnimations().forEach(a => a.cancel())); org.style.opacity = 1; meg.style.opacity = 0;   /* 들어오는 애니메이션이 opacity 를 붙잡고 있어 원래 모습 흰 실루엣이 안 사라지던 것 */ let t = 0; const gaps = [300, 260, 220, 180, 150, 120, 100, 80, 65, 55, 50, 45]; gaps.forEach((g, i) => { t += g; at(t, () => { const m = i % 2 === 0; meg.style.opacity = m ? 1 : 0; org.style.opacity = m ? 0 : 1; meg.style.transform = org.style.transform = `scale(${1 + i * .012})`; if (i % 3 === 0) c.se('Ice5'); }); }); });
     shake(5700, 600, 8); at(5900, () => vib(2));
     // 7) 번쩍 + 메가 모습 (6300~)
     A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 250, delay: 6250, easing: 'ease-in' });
