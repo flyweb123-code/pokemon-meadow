@@ -1627,7 +1627,7 @@ const egZp = () => { let p = 'M0 18'; for (let i = 1; i <= 10; i++) p += ` L${i 
 function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy; const mw = $b('.bt-mw.p'); if (c && mw) { mw.classList.add('egzr'); setTimeout(() => mw.classList.remove('egzr'), 1500); }   /* 레어: 어두운 판(z 4) 위로 번개(z 5)·포켓몬(z 6) — 경완 '검은 그림자 뒤로 간 거 같아' */
   [[1, -14, -8, 280], [-1, 6, 7, 640]].forEach(([dr, dy, r, ms]) => setTimeout(() => { if (!B) return; const p = egZp(), y = Y + dy;
     const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`, $b('.bt-mw.p')); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
-    add('bt-egzb' + c, X - 88 * dr, y, '<i></i>'); setTimeout(() => B && add('bt-egzb o' + c, X + 88 * dr, y, '<i></i>'), 150); add('bt-egzf' + c, 0, 0); }, ms)); }
+    add('bt-egzb' + c, X - 88 * dr, y, '<i></i>'); setTimeout(() => B && add('bt-egzb o' + c, X + 88 * dr, y, '<i></i>'), 150); add('bt-egzf' + c, 0, 0); try { GA.haptic?.(2); } catch (e) {} }, ms)); }   /* v22.15 경완: 번개 칠 때 진동 */
 /* v22.15 경완 '번뜩일 때 배경 곡 줄이기': 보통 중·상, 레어는 모두 — 곡을 ¼ 로 줄였다가 ms 뒤 다시 */
 const egDuck = ms => { try { window.GymBGM?.duck?.(.25, .15); setTimeout(() => { try { window.GymBGM?.duck?.(1, .5); } catch (e) {} }, ms); } catch (e) {} };
 function egFx(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
