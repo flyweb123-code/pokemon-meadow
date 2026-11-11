@@ -16,8 +16,12 @@ struct GameView: UIViewRepresentable {
         config.allowsInlineMediaPlayback = true
         // 배경 음악이 앱을 켜자마자 나오게 (터치 없이 재생 허용)
         config.mediaTypesRequiringUserActionForPlayback = []
-        // 2026-11-07 경완 '꾹 누르면 돋보기처럼 나오는 거 게임에서 다 막아줘': 글자 선택·돋보기를 끈다 (입력 칸에 글자 치기는 그대로 됨)
-        config.preferences.isTextInteractionEnabled = false
+        // 2026-11-07 경완 '꾹 누르면 돋보기처럼 나오는 거 게임에서 다 막아줘': 글자 선택·돋보기를 끈다.
+        // 2026-11-11 경완 '박스·도감 검색창에 키보드는 올라오는데 안 써짐': 이걸 끄면 입력 칸에 글자(한글)가 안 들어간다.
+        // 그래서 처음엔 켜 두고, 게임이 'textIx' 로 알려 준다: 입력 칸을 누르거나 쓰는 동안 true, 다 쓰면 false (돋보기 막기).
+        // 예전 게임(알려 주지 않는 판)에서도 글자는 늘 쳐진다.
+        config.preferences.isTextInteractionEnabled = true
+        config.userContentController.add(TextIxHandler(config.preferences), name: "textIx")
         config.userContentController.add(WeakHandler(bridge), name: "pokeRun")
         config.userContentController.add(HapticHandler(), name: "haptic")
         config.userContentController.add(HumHandler(), name: "hum")
@@ -117,6 +121,16 @@ final class WeakHandler: NSObject, WKScriptMessageHandler {
 }
 
 // 알 두드리기 진동: 게임이 haptic 메시지로 0(약하게)·1(보통)·2(세게)를 보낸다
+// 게임이 입력 칸을 쓰는 동안만 글자 다루기(커서·한글 조합)를 켠다 (2026-11-11)
+final class TextIxHandler: NSObject, WKScriptMessageHandler {
+    private let prefs: WKPreferences
+    init(_ prefs: WKPreferences) { self.prefs = prefs }
+    func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
+        let on = (message.body as? Bool) ?? ((message.body as? Int) ?? 1) != 0
+        if prefs.isTextInteractionEnabled != on { prefs.isTextInteractionEnabled = on }
+    }
+}
+
 final class HapticHandler: NSObject, WKScriptMessageHandler {
     private let gens: [UIImpactFeedbackGenerator] = [.init(style: .light), .init(style: .medium), .init(style: .heavy)]
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
