@@ -222,11 +222,11 @@
       gw.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
       gv.animate([{ strokeDashoffset: cir }, { strokeDashoffset: 0 }], { duration: D, fill: 'forwards', easing: 'cubic-bezier(.5,0,.85,.6)' });   /* 처음엔 천천히, 끝으로 갈수록 빨리 차오름 */
       gw.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(200deg)' }], { duration: D, fill: 'forwards', easing: 'ease-in', composite: 'add' });
-      org.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)', offset: .5 }, { transform: 'scale(1.1)' }], { duration: D, fill: 'forwards', easing: 'ease-in' });
+      org.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)', offset: .5 }, { transform: 'scale(1.38)' }], { duration: D, fill: 'forwards', easing: 'cubic-bezier(.55,0,.9,.5)' });   /* 경완 '흰 실루엣 크기 서서히 커지다가 팍 터지게' */
       orgI.animate([{ filter: WH }, { filter: `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .06}px #fff) drop-shadow(0 0 ${Wd * .12}px #e2c8ff)` }], { duration: D, fill: 'forwards', easing: 'ease-in' });
       A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.45)' }], { duration: D, easing: 'ease-in' });
       [300, 650, 950, 1180].forEach((t, j) => at(t, () => { c.se('Ice5'); vib(1 + (j > 1)); }));   /* 차오르는 반짝 소리, 점점 촘촘히 */
-      at(D, () => { c.se('Saint7'); gw.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' }); }); });
+      at(D, () => { org.animate([{ transform: 'scale(1.38)', opacity: 1 }, { transform: 'scale(1.9)', opacity: 0 }], { duration: 160, fill: 'forwards', easing: 'ease-out' }); c.se('Saint7'); gw.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' }); }); });
     shake(5700, 600, 8); at(5900, () => vib(2));
     // 7) 번쩍 + 메가 모습 (6300~)
     A(glow, [{ opacity: 1, transform: 'scale(1.45)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 120, delay: 6360, easing: 'ease-in' });
