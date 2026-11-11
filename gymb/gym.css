@@ -3959,3 +3959,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop.mec-wrap .win>.mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2;white-space:nowrap}
 #gym .gy-pop.mec-wrap .win>.mec-gn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:#2a2a3a;padding-left:2px}
 #gym .mec .bd-pic.mec-stg{margin-top:46px}
+/* v21.90 경완 '물 타입 관장 이 부분은 딱지 말고 텍스트로만' */
+#gym .mec-id .mec-ty{padding:0;border:0;border-radius:0;background:none;font-size:13px;color:color-mix(in srgb,var(--tc,#888) 60%,#000)}
