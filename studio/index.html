@@ -124,6 +124,7 @@ table.t th{font-family:var(--px);font-size:11px;font-weight:400;color:var(--mute
 .gb{position:relative;display:inline-block;max-width:100%;text-align:center;word-break:keep-all;overflow-wrap:anywhere;background:#f8f8f8;color:#282830;border:2px solid #383848;padding:1px 6px 2px;font:13px/1.25 var(--px);white-space:normal}
 .gb::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-4px;border:4px solid transparent;border-bottom:0;border-top:5px solid #383848}
 .gb.heart{color:#e0405a}.gb.anger{color:#d62f2f}.gb.note{color:#2b6cc4}.gb.zz{color:#5560a8;background:#e8eaff}.gb.star{color:#c08000;background:#fff6c8}.gb svg{display:block;width:16px;height:16px;margin:1px 0 0}
+.sprg{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:8px;padding:2px}.sprc{background:var(--card,var(--bg));border:1px solid var(--line,#8884);border-radius:8px;padding:6px 8px;min-width:0}.sprc b .num{margin-left:4px}.sprr{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px}.sprr>div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:110px;font-size:11px;text-align:center;overflow:hidden}.sprr img,.sprr i{image-rendering:pixelated;display:block;max-width:100%}.sprr i{background-repeat:no-repeat}.sprr .st{color:#d0701a}.sprr .pl{color:#4a90d0}.sprr .no{opacity:.5}.sprmore{display:block;margin:10px auto}
 .bubs ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;align-items:flex-start;gap:4px}.bubs li{background:var(--chip);border-radius:4px;padding:3px 8px;font-size:12.5px;line-height:1.4;color:var(--fg)}.nmg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}.nmc{display:grid;gap:4px;justify-items:start;background:var(--deep);border:1px solid var(--chip);border-radius:6px;padding:8px;color:var(--fg);font:inherit;text-align:left;cursor:pointer}.nmc:hover{border-color:var(--acc)}.nmc .cv{display:flex;gap:6px}.nmc canvas{width:96px;height:96px;background:#5d9a3e;border-radius:4px}.nmc canvas[data-o]{opacity:.75}.seg .chip{touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.seg .chip.drag{opacity:.35}.tmv .chip{padding:2px 4px;min-width:0}.tmv .chip.on{outline:2px solid var(--acc)}.tmv .chip .tag{min-width:22px;text-align:center}.bubs .bn{font-size:13px;font-weight:600;color:var(--fg)}.bubs li.bch{display:flex;align-items:center;gap:6px;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:pan-y}.bubs li.bch.mv{background:#a2581d;color:#fff}.bubs li.bch.drag{opacity:.35;filter:grayscale(1)}.bch .bx{background:none;border:0;color:inherit;opacity:.6;cursor:pointer;font:inherit;font-size:15px;line-height:1;padding:0 2px}.bch .bx:hover{opacity:1;color:var(--bad)}.bubs li.bem{background:none;color:var(--soft);font-size:12px}.bubs .bc.drop{box-shadow:inset 0 0 0 2px var(--acc)}.bubs .bc.gone .bw{background:#5a4a4a}li.prg.bch{background:var(--chip);color:var(--fg);padding:3px 8px;font-size:12.5px;display:flex;gap:6px}
 .plist{display:grid;gap:2px}
 .pr,.prh{display:grid;grid-template-columns:44px 40px minmax(90px,170px) 40px minmax(0,1fr) 64px 92px;align-items:center;gap:10px;padding:3px 8px;border-radius:4px;background:none;border:0;text-align:left;color:inherit}
@@ -443,6 +444,15 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
       <div class="vc scroll"><div class="cards" id="newmoC"></div></div>
       <aside class="vi" id="newmoI"><h4>새 모션</h4><div class="small mute">원래 가져온 스프라이트에 없어서 새로 만들어 넣은 동작만 모았어요. 카드를 누르면 포켓몬 화면에서 그 포켓몬을 열어요.</div></aside>
     </section>
+    <!-- v3.98 경완: 배틀 스프라이트 (모든 종 앞·뒤·이로치, 게임 배틀이 실제로 쓰는 그림) -->
+    <section class="view" data-v="spr" hidden>
+      <div class="seg" data-g="mon"></div>
+      <div class="vc">
+        <div class="tools"><div class="search" style="flex:1;min-width:180px"><input id="sprQ" placeholder="이름이나 번호로 찾기" autocomplete="off" enterkeyhint="search"></div><span class="chips" id="sprF"></span></div>
+        <div id="sprC" style="overflow:auto;align-content:start"></div>
+      </div>
+      <aside class="vi" id="sprI"><h4>배틀 스프라이트</h4><div class="small mute">체육관 배틀에서 실제로 쓰는 그림이에요. 종마다 앞·뒤·이로치 앞·이로치 뒤(암컷 그림이 따로 있으면 암컷도)를 보여 줘요. 칸 아래 글씨가 그림 종류예요: <b>움직임</b> = gif, <b>움직임(PixelLab)</b> = 직접 만든 움직이는 그림, <b>멈춤</b> = 안 움직이는 그림.</div></aside>
+    </section>
     <!-- 포켓몬·모션 -->
     <section class="view" data-v="mon" hidden>
       <div class="seg" data-g="mon"></div>
@@ -546,7 +556,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.97';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '3.98';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -564,10 +574,10 @@ const ICO = {
   bub: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M2 1h8v1h1v5h-1v1H6v1H5v1H4v1H3V8H2V7H1V2h1zm0 1v5h2v2h1V8h5V2z"/></svg>',
   more: '<svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="currentColor" d="M1 5h2v2H1zm4 0h2v2H5zm4 0h2v2H9z"/></svg>',
 };
-const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], sca: ['스칼렛의 작업물', 'sca'], shop: ['상점', 'shop'], art: ['그림 모음', 'art'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
+const VIEWS = { map: ['맵', 'map'], mon: ['포켓몬', 'poke'], newmo: ['새 모션', 'poke'], odds: ['알 수집 확률', 'egg'], pool: ['알 등급별 포켓몬', 'egg'], hatch: ['알 부화 거리', 'egg'], rank: ['랭크 확률', 'egg'], geo: ['지도', 'map'], thm: ['장소 특성', 'map'], bub: ['말풍선', 'bub'], ver: ['버전 기록', 'doc'], egg: ['알', 'egg'], tier: ['티어', 'tier'], bal: ['밸런스', 'bal'], sca: ['스칼렛의 작업물', 'sca'], shop: ['상점', 'shop'], art: ['그림 모음', 'art'], spr: ['배틀 스프라이트', 'poke'], work: ['배포하기', 'doc'], test: ['테스트 도구', 'tool'] };
 const NAV = [['게임 화면', ['map', 'mon', 'bub']], ['데이터', ['egg', 'geo', 'tier', 'bal', 'shop']], ['직원', ['sca']], ['기타', ['art', 'work', 'ver', 'test']]];
-const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['staff', '직원', 'sca', ['sca']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
-const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션']], staff: [['sca', '스칼렛의 작업물']] };
+const MTABS = [['map', '맵', 'map', ['map']], ['mon', '포켓몬', 'poke', ['mon', 'newmo', 'spr']], ['egg', '알', 'egg', ['odds', 'pool', 'hatch', 'rank', 'tier']], ['art', '그림', 'art', ['art']], ['staff', '직원', 'sca', ['sca']], ['more', '더보기', 'more', ['geo', 'thm', 'bal', 'shop', 'work', 'test', 'bub', 'ver']]];
+const SEGS = { egg: [['odds', '수집 확률'], ['pool', '등급별 포켓몬'], ['hatch', '부화 거리'], ['rank', '랭크'], ['tier', '티어']], more: [['geo', '지도'], ['thm', '장소 특성'], ['bal', '밸런스'], ['shop', '상점'], ['work', '배포하기'], ['test', '테스트'], ['bub', '말풍선'], ['ver', '버전']], mon: [['mon', '포켓몬'], ['newmo', '새 모션'], ['spr', '배틀 스프라이트']], staff: [['sca', '스칼렛의 작업물']] };
 const GN = ['', '일반', '우수', '레어', '에픽', '전설'], GC = ['', '#9aa0a8', '#4aa8f0', '#8a6ae0', '#e0a020', '#e05050'];
 const TC = t => `hsl(${(t - 1) * 26} 60% ${t < 4 ? 58 : 66}%)`;
 let A = null, view = 'map';
@@ -582,7 +592,7 @@ const vname = v => NAMES[v] || VIEWS[v][0];
 function renderNav() { setTimeout(scDot); $('#nav').innerHTML = NAV.map(([s, L]) => `<div class="sec">${s}</div>` + L.map(v => `<a data-v="${v}">${ICO[VIEWS[v][1]]}<span class="lb">${esc(vname(v))}</span><button class="ren" data-ren="${v}" aria-label="메뉴 이름 바꾸기" title="이름 바꾸기">${PEN}</button><span class="n" data-n="${v}"></span></a>`).join('')).join('');
   $('#tabs').innerHTML = MTABS.map(([k, n, i, L]) => `<a data-t="${k}">${ICO[i]}${esc(L.length === 1 && NAMES[L[0]] || n)}</a>`).join('');
   $$('.seg').forEach(s => s.innerHTML = segOrd(s.dataset.g).map(([v, n]) => `<button class="chip" data-v="${v}">${s.dataset.g === 'egg' && v !== 'tier' && v !== 'rank' ? eggI(v === 'odds' ? 3 : v === 'hatch' ? 1 : 5) : ''}${esc(NAMES[v] || n)}</button>`).join(''));
-  if (typeof view !== 'undefined' && view) { $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === view || (a.dataset.v === 'egg' && EGGV.includes(view)) || (a.dataset.v === 'mon' && view === 'newmo'))); $$('.seg .chip').forEach(c => c.classList.toggle('on', c.dataset.v === view)); $$('.tabs a').forEach(a => a.classList.toggle('on', MTABS.find(t => t[0] === a.dataset.t)[3].includes(view))); $('#crumb').textContent = vname(view); }
+  if (typeof view !== 'undefined' && view) { $$('.nav a').forEach(a => a.classList.toggle('on', a.dataset.v === view || (a.dataset.v === 'egg' && EGGV.includes(view)) || (a.dataset.v === 'mon' && (view === 'newmo' || view === 'spr')))); $$('.seg .chip').forEach(c => c.classList.toggle('on', c.dataset.v === view)); $$('.tabs a').forEach(a => a.classList.toggle('on', MTABS.find(t => t[0] === a.dataset.t)[3].includes(view))); $('#crumb').textContent = vname(view); }
   if (typeof dstat === 'function' && ORIG) dstat(); }
 const EGGV = ['odds', 'pool', 'hatch', 'rank'];
 // v2.13 경완: 메뉴 안 탭은 끌어서 순서를 바꾼다 (이 기기에 기억)
@@ -1479,6 +1489,35 @@ addEventListener('keydown', e => { if (view !== 'mon' || e.altKey || e.ctrlKey |
   const k = { ArrowLeft: () => monStep(-1), ArrowRight: () => monStep(1), ArrowUp: () => animStep(-1), ArrowDown: () => animStep(1) }[e.key]; if (k) { e.preventDefault(); k(); } });
 // v2.11 경완: 새로 만든 동작(META.gen)만 한 화면에 모두 움직여 보기
 const GENW = { Idle: '숨쉬기 프레임 추가', Sleep: '잠 프레임 추가', Attack: '대기 그림 돌진', Hurt: '대기 그림 깜빡임', Hop: '대기 그림 깡충' };
+// v3.98 경완 '모든 종 움직이는 스프라이트 이로치 포함해서 앞, 뒤 확인할 수 있는 메뉴': 게임 배틀 코드(GymBattle.gifUrl·pkSrc)를 미리보기 게임 창에서 불러와 그대로 씀
+const SPR_RF = {"10091": "알로라 꼬렛", "10092": "알로라 레트라", "10100": "알로라 라이츄", "10101": "알로라 모래두지", "10102": "알로라 고지", "10103": "알로라 식스테일", "10104": "알로라 나인테일", "10105": "알로라 디그다", "10106": "알로라 닥트리오", "10107": "알로라 나옹", "10108": "알로라 페르시온", "10161": "가라르 나옹", "10229": "히스이 가디", "10230": "히스이 윈디", "10109": "알로라 꼬마돌", "10110": "알로라 데구리", "10111": "알로라 딱구리", "10162": "가라르 포니타", "10163": "가라르 날쌩마", "10164": "가라르 야돈", "10165": "가라르 야도란", "10172": "가라르 야도킹", "10166": "가라르 파오리", "10112": "알로라 질퍽이", "10113": "알로라 질뻐기", "10231": "히스이 찌리리공", "10232": "히스이 붐볼", "10114": "알로라 나시", "10115": "알로라 텅구리", "10167": "가라르 또도가스", "10168": "가라르 마임맨", "10250": "팔데아 켄타로스 컴뱃종", "10251": "팔데아 켄타로스 블레이즈종", "10252": "팔데아 켄타로스 워터종", "10169": "가라르 프리져", "10170": "가라르 썬더", "10171": "가라르 파이어", "10233": "히스이 블레이범", "10253": "팔데아 우파", "10234": "히스이 침바루", "10235": "히스이 포푸니", "10173": "가라르 코산호", "10174": "가라르 지그제구리", "10175": "가라르 직구리", "10236": "히스이 대검귀", "10237": "히스이 드레디어", "10176": "가라르 달막화", "10177": "가라르 불비달마", "10179": "가라르 데스마스", "10238": "히스이 조로아", "10239": "히스이 조로아크", "10180": "가라르 메더", "10240": "히스이 워글", "10241": "히스이 미끄네일", "10242": "히스이 미끄래곤", "10243": "히스이 크레베이스", "10244": "히스이 모크나이퍼"};
+let SPR = null, sprF = 'all', sprN = 60, sprT = 0;
+async function sprLoad() {
+  if (SPR) return SPR; const gw = $('#game').contentWindow; if (!gw?.document) throw new Error('game');
+  if (!gw.GymBattle) await new Promise(ok => { const x = gw.document.createElement('script'); x.src = `${BETA ? 'gymb' : 'gym'}/battle.js?v=${(gameVer() || '').slice(1)}`; x.onload = x.onerror = () => ok(); gw.document.head.appendChild(x); });
+  const GB = gw.GymBattle; if (!GB) throw new Error('battle'); await GB.loadData();
+  const gj = u => fetch(`../gym/img/pk/${u}?v=${Date.now() >> 20}`).then(r => r.ok ? r.json() : {}).catch(() => ({}));
+  const [FA, BW] = await Promise.all([gj('fa/fa.json'), gj('bwa.json')]), fs = new Set(BW.fs || []);
+  const U = u => u && !/^https?:/.test(u) ? '../' + u : u;
+  const cell = (sp, b, sh, f) => { const g = GB.gifUrl(sp, b, sh, f); if (g) return { k: 'g', u: U(g) };
+    const fa = FA[sp]; if (!b && +sp >= 650 && !SPR_RF[sp] && fa && (!sh || fs.has(+sp))) { const [n, w] = Array.isArray(fa) ? fa : [fa, 80]; return { k: 'p', u: `../gym/img/pk/fa/${sp}${sh ? 's' : ''}.png`, n, w }; }
+    return { k: 's', u: U(GB.pkSrc(sp, { b, s: sh, f })) }; };
+  const L = Object.keys(GB.D.sp).map(Number).sort((a, b) => a - b).map(sp => { const nm = SPR_RF[sp] || A?.SPECIES?.[sp]?.n || GB.D.sp[sp].id, c = [cell(sp, 0, 0), cell(sp, 1, 0), cell(sp, 0, 1), cell(sp, 1, 1)], fc = [cell(sp, 0, 0, 1), cell(sp, 1, 0, 1)];
+    const fem = fc.some((x, i) => x.u !== c[i].u) ? fc : null; return { sp, nm, c, fem, st: c.some(x => x.k === 's') }; });
+  return SPR = L; }
+const sprCell = (x, lb) => { const tag = x.k === 'g' ? '<span>움직임</span>' : x.k === 'p' ? '<span class="pl">움직임(PixelLab)</span>' : '<span class="st">멈춤</span>';
+  const im = x.k === 'g' ? `<img loading="lazy" src="${x.u}" alt="">` : `<i class="${x.k === 'p' ? 'sfa' : 'sst'}" data-u="${x.u}" data-n="${x.n || 0}" data-w="${x.w || 0}"></i>`;
+  return `<div>${im}<span class="mute">${lb}</span>${tag}</div>`; };
+async function renderSpr() {
+  const C = $('#sprC'); $('#sprF').innerHTML = [['all', '전체'], ['st', '멈춘 그림 있는 종'], ['fem', '암컷 그림 따로']].map(([k, n]) => `<button class="chip${sprF === k ? ' on' : ''}" data-sf="${k}">${n}</button>`).join('');
+  let L; try { L = await sprLoad(); } catch (e) { C.innerHTML = '<div class="empty">게임 미리보기가 다 뜬 뒤에 다시 열어 주세요.</div>'; return; }
+  const q = ($('#sprQ').value || '').trim(), R = L.filter(r => (sprF !== 'st' || r.st) && (sprF !== 'fem' || r.fem) && (!q || r.nm.includes(q) || String(r.sp) === q.replace(/^no\.?/i, '')));
+  const V = R.slice(0, sprN);
+  C.innerHTML = `<div class="small mute" style="margin:2px 2px 6px">${R.length}종${sprF === 'all' && !q ? ` · 멈춘 그림 있는 종 ${L.filter(r => r.st).length}` : ''}</div><div class="sprg">${V.map(r => `<div class="sprc"><b>${esc(r.nm)}<span class="num mute small">No.${r.sp}</span></b><div class="sprr">${sprCell(r.c[0], '앞')}${sprCell(r.c[1], '뒤')}${sprCell(r.c[2], '이로치 앞')}${sprCell(r.c[3], '이로치 뒤')}${r.fem ? sprCell(r.fem[0], '암컷 앞') + sprCell(r.fem[1], '암컷 뒤') : ''}</div></div>`).join('')}</div>${R.length > V.length ? `<button class="chip sprmore" id="sprMore">더 보기 (${R.length - V.length}종 남음)</button>` : ''}`;
+  for (const e of C.querySelectorAll('i.sfa, i.sst')) { const im = new Image(); im.onload = () => { const fa = e.classList.contains('sfa'), n = fa ? +e.dataset.n : (im.naturalWidth >= im.naturalHeight * 2 ? 2 : 1), w = fa ? +e.dataset.w : im.naturalWidth / n, h = im.naturalHeight; e.dataset.n = n; e.dataset.w = w; Object.assign(e.style, { width: w + 'px', height: h + 'px', backgroundImage: `url(${e.dataset.u})`, backgroundSize: `${n * w}px ${h}px` }); }; im.src = e.dataset.u; }
+  clearInterval(sprT); let f = 0; sprT = setInterval(() => { if (view !== 'spr') return clearInterval(sprT); f++; for (const e of C.querySelectorAll('i.sfa')) { const n = +e.dataset.n || 1; e.style.backgroundPosition = `${-(f % n) * e.dataset.w}px 0`; } if (f % 5 === 0) for (const e of C.querySelectorAll('i.sst')) { const n = +e.dataset.n || 1; e.style.backgroundPosition = `${-((f / 5) % n) * e.dataset.w}px 0`; } }, 100); }
+document.addEventListener('click', e => { const c = e.target.closest('[data-sf]'); if (c) { sprF = c.dataset.sf; sprN = 60; renderSpr(); return; } if (e.target.closest('#sprMore')) { sprN += 60; renderSpr(); } });
+document.addEventListener('input', e => { if (e.target.id === 'sprQ') { sprN = 60; clearTimeout(renderSpr.t); renderSpr.t = setTimeout(renderSpr, 200); } });
 let nmRaf = 0;
 async function renderNewmo() {
   const G = META.gen || {}, L = Object.keys(G).map(Number).sort((a, b) => a - b), cnt = L.reduce((a, sp) => a + G[sp].length, 0);
@@ -2180,6 +2219,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['3.98', '11월 11일', ['포켓몬 메뉴에 \'배틀 스프라이트\' 탭이 생겼어요. 모든 종의 배틀 그림을 앞·뒤·이로치 앞·이로치 뒤(암컷 그림이 따로 있으면 암컷도)로 한눈에 봐요. 칸 아래에 움직이는 그림인지 멈춘 그림인지 나와요']],
   ['3.97', '11월 6일', ['직원 메뉴에서 \'뉴트럴의 조언\'(밸런스 시뮬레이터)을 없앴어요. 그 뒤로 기능이 많이 늘어 수치를 믿기 어려워서, 밸런스는 Claude 에게 바로 물어보면 돼요. 매일 아침 작업은 스칼렛만 해요']],
   ['3.96', '11월 3일', ['상점 메뉴에 \'의상\' 탭이 생겼어요. 파는 옷 24벌(전신·필드 그림, 가격, 성별)과 전신 그림만 있어 상점에 없는 옷을 볼 수 있어요. 전신과 필드 그림이 둘 다 있어야 상점에 넣어요']],
   ['3.95', '10월 29일', ['밸런스에 \'체육관 골드\'(난이도별 배틀 골드, 고용 트레이너가 막았을 때 몇 %)와 \'직원 고용 · 월급\'(기본·레벨당·최대 월급) 칸이 따로 생겼어요. 배포하면 게임 체육관이 이 값을 써요 (게임 10.78)', '뉴트럴: 체육관 배틀·트레이너가 막아서 번 골드, 직원 월급, 상점(향로·부적·진화 도구)·체육관 상점(기술머신·꾸미기·의상)에 쓴 골드를 따로 나눠 90일 동안 돌려요. 뉴트럴 화면에 \'골드 들어오고 나가는 곳\' 표와 \'체육관 하루 순수익\' 칸이 생겼어요']],
@@ -3636,7 +3676,7 @@ for (const id of ['#scaC']) {
   $(id).addEventListener('click', e => { if (e.target.dataset.fbs) fbSend(e.target.closest('.fb')); });
   $(id).addEventListener('keydown', e => { if (e.target.closest('.fb-in') && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); fbSend(e.target.closest('.fb')); } }); }
 setTimeout(() => { scaLoad(); fbLoad(); }, 1500);
-const RENDER = { sca: renderSca, ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, shop: renderShop, work: renderWork, test: renderTest };
+const RENDER = { spr: renderSpr, sca: renderSca, ver: renderVer, bub: renderBub, newmo: renderNewmo, map: () => {}, mon: renderMon, odds: renderOdds, pool: renderPool, hatch: renderHatch, rank: renderRank, geo: renderGeo, thm: renderThm, tier: renderTier, bal: renderBal, shop: renderShop, work: renderWork, test: renderTest };
 
 // ---------- 게임과 연결 ----------
 function hook() {
