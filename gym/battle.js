@@ -399,7 +399,7 @@ const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
 const BWG = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';
 let BWA = {};
 // v21.75 경완 고른 것: bwa.json {r: PokeAPI 비트, l: 저장소 gym/img/pk/bw 비트(EeveeExpo 묶음, 32 앞 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷)}. 저장소 것이 먼저
-function bwUrl(sp, b, sh, f) { const L = BWA.l?.[sp] || 0, R = BWA.r?.[sp], loc = p => `${IMG}pk/bw/${p}${sp}.gif?v=1`, rem = d => `${BWG}${d}${sp}.gif`, has = x => R != null && R & x;
+function bwUrl(sp, b, sh, f) { const L = BWA.l?.[sp] || 0, R = BWA.r?.[sp], loc = p => `${IMG}pk/bw/${p}${sp}.gif?v=${p === 's' ? 2 : 1}`, rem = d => `${BWG}${d}${sp}.gif`, has = x => R != null && R & x;
   if (b) { if (f && !sh) { if (L & 16) return loc('bf'); if (has(16)) return rem('back/female/'); }
     if (sh) { if (L & 4) return loc('bs'); if (has(4)) return rem('back/shiny/'); }
     return L & 1 ? loc('b') : has(1) ? rem('back/') : null; }
