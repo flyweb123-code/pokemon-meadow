@@ -24,13 +24,13 @@ jobs:
           sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
       - name: Read
         run: |
-          for a in flyweb test; do
+          for a in flyweb; do
           npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT p.i, p.data FROM save_part p JOIN (SELECT code FROM save WHERE acct='$a' ORDER BY saved DESC, at DESC LIMIT 1) s ON p.code=s.code WHERE p.acct='$a' ORDER BY p.i" > /tmp/$a.json || true
           node -e "
           const r=JSON.parse(require('fs').readFileSync('/tmp/$a.json','utf8'));const rows=(r[0]||r).results||[];const S=JSON.parse(rows.map(x=>x.data).join(''));
           console.log('== $a', 'ver', S.ver||S.v, 'box', S.box.length);
           const mon=(S.gym&&S.gym.mon)||{};
-          S.box.filter(P=>[92,93,94].includes(+P.sp)).forEach(P=>console.log(JSON.stringify({id:P.id,sp:P.sp,nm:P.nm,rk:P.rk||P.r,m:mon[P.id]})));
-          const lu=(S.gym&&S.gym.lu)||[];console.log('lu',JSON.stringify(lu));
+          console.log(JSON.stringify(S.box[0]));S.box.filter(P=>[92,93,94,'92','93','94'].includes(P.sp)||/gengar|팬텀|고우스트|고오스/i.test(JSON.stringify(P))).forEach(P=>console.log(JSON.stringify({id:P.id,sp:P.sp,nm:P.nm,rk:P.rk||P.r,m:mon[P.id]})));
+          const lu=(S.gym&&S.gym.lu)||[];console.log('lu',JSON.stringify(lu));lu.flat().forEach(id=>{const P=S.box.find(p=>p.id===id);console.log('LU',JSON.stringify({sp:P&&P.sp,m:mon[id]}))});
           "
           done
