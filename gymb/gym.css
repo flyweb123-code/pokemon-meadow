@@ -4101,3 +4101,19 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .mr-get{padding:16px 0 10px}#gym .gy-pop .mr-get img{width:150px;height:116px;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(190,140,255,.7));animation:mrGlow 2.4s ease-in-out infinite}
 @keyframes mrGlow{50%{filter:drop-shadow(0 0 16px rgba(255,200,255,.95))}}
 #gym .gy-pop .mr-d{text-align:center;font-size:13px;line-height:1.55}
+
+/* 경완 2026-11-12: 지금 등급 빛 테두리가 목록 스크롤 칸에 좌우가 잘리던 것 → 목록 안쪽 여백 */
+#gym .gy-pop .gy-perk{padding:3px 4px}
+/* 승급 사이 강박사 카드 (실루엣 → 튜토리얼 뒤 열림) */
+#gym .gy-perk>li.pk-tip{display:flex;flex-direction:column;align-items:center;gap:3px;padding:0;border:0;background:none;opacity:1}
+#gym .gy-perk>li.pk-tip>.pk-ar{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:8px solid #b9a77a}
+#gym .gy-perk .pk-tc{align-self:stretch;margin:0 22px;display:flex;align-items:center;gap:10px;padding:7px 10px;border:2px dashed #b9a77a;border-radius:6px;background:#f1ecdf}
+#gym .gy-perk .pk-kg{flex:none;width:32px;height:32px;background-size:288px 32px;background-position:0 0;image-rendering:pixelated;filter:brightness(0);opacity:.28}
+#gym .gy-perk .pk-tc>div{display:flex;flex-direction:column;min-width:0}
+#gym .gy-perk .pk-tc small{font-size:10px;color:#8a7a50;padding:0!important}
+#gym .gy-perk .pk-tc b{font-size:13px;color:#6a5a38;letter-spacing:1px}
+#gym .gy-perk .pk-tc p{margin:1px 0 0;font-size:11px;line-height:1.35;color:#8a7a50}
+#gym .gy-perk>li.pk-tip.on>.pk-ar{border-top-color:#e0a820}
+#gym .gy-perk>li.pk-tip.on .pk-tc{border-style:solid;border-color:#e0a820;background:#fff8dc}
+#gym .gy-perk>li.pk-tip.on .pk-kg{filter:none;opacity:1}
+#gym .gy-perk>li.pk-tip.on .pk-tc b{color:#8a5a10;letter-spacing:0}
