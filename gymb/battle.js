@@ -27,9 +27,9 @@ const getJ = u => fetch(`${u}?v=${VER}`).then(r => r.ok ? r.json() : null).catch
 function loadData() {
   return dataP || (dataP = Promise.all([
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
-    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gymb/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json'), getJ(`${IMG}pk/bwa.json`)
+    getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gymb/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json'), getJ(`${IMG}pk/bwa.json`), getJ(`${IMG}pk/off.json`)
     , evyLoad()
-  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw]) => { BWA = bw || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
+  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off]) => { BWA = bw || {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = ds?.ab || {}; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -398,7 +398,7 @@ const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f00
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
 // v21.73 경완 '팬 도트 gif로 다 바꿔줘': 650~1025·지역 폼은 PokeAPI/sprites(고정 커밋)의 블랙·화이트풍 팬 도트 gif. 있는 것만 (gym/img/pk/bwa.json: 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷), 없으면 예전 그림
 const BWG = 'https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/pokemon/versions/generation-v/black-white/animated/';
-let BWA = {};
+let BWA = {}, SOFF = {};
 // v21.75 경완 고른 것: bwa.json {r: PokeAPI 비트, l: 저장소 gym/img/pk/bw 비트(EeveeExpo 묶음, 32 앞 1 뒤 2 이로치 4 뒤 이로치 8 암컷 16 뒤 암컷)}. 저장소 것이 먼저
 function bwUrl(sp, b, sh, f) { const L = BWA.l?.[sp] || 0, R = BWA.r?.[sp], loc = p => `${IMG}pk/bw/${p}${sp}.gif?v=4`, rem = d => `${BWG}${d}${sp}.gif`, has = x => R != null && R & x;
   if (b) { if (f && !sh) { if (L & 16) return loc('bf'); if (has(16)) return rem('back/female/'); }
@@ -454,12 +454,15 @@ function showMon(side, A, on = true) {
   img.style.width = '';
   if (A && A.gif) { m._fa = null; m.classList.remove('fa'); img.style.height = ''; img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
     // 블랙·화이트 뒷모습 gif 는 앞모습과 거의 같은 크기라 모두 같은 배율로 키운다: 종끼리 크기 비율은 그대로, 플래티나 뒷모습(2장 그림)과 비슷한 크기 (경완 2026-10-31 '밀탱크 뒷모습 너무 작아')
-    const k = side === 'p' ? 1.4 : 1, fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
+    /* v21.80 경완 '스프라이트 상하좌우 불필요한 여백·앞뒤 크기 다른 것': gif 의 아래 빈 줄·좌우 치우침만큼 옮기고(SOFF [가로, 아래 빈 줄, 뒷모습 배율]), 앞모습과 크기가 많이 다른 뒷모습은 앞모습 크기에 맞춤 (gym/img/pk/off.json, 기본 폼 그림만) */
+    const so = A.gif === gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F') ? SOFF[A.sp]?.[side === 'p' ? 'b' : 'f'] : null, cl = m.querySelector('.clip');
+    const k = (side === 'p' ? 1.4 : 1) * (so?.[2] || 1), fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
-    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t) * k; if (y < GIF_TOP) m.style.top = (48 + Math.round(GIF_TOP - y)) + 'px'; }); }
+    if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
+    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; if (y < GIF_TOP) m.style.top = (48 + Math.round(GIF_TOP - y)) + 'px'; }); }
     m._gif = A.gif; }
   else if (A) {
-    m._gif = null; m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
+    m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
     const fa = side === 'e' && !fm && (!A.shiny || (BWA.fs || []).includes(+A.sp)) && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
     m._fa = fa ? (Array.isArray(fa) ? { n: fa[0], w: fa[1] } : { n: fa, w: 80 }) : null; m.classList.toggle('fa', !!fa);
