@@ -14,8 +14,10 @@ def overpass(q):
                 return json.load(urllib.request.urlopen(req, timeout=90))
             except Exception as e: print('overpass', url, e); time.sleep(5 * (k + 1))
     raise SystemExit('overpass 실패')
-def draw(e, force=False):
+PAL2 = {'bg': (243, 240, 232), 'green': (198, 228, 176), 'water': (166, 208, 242), 'road': (255, 255, 255), 'road2': (222, 216, 204), 'big': (255, 236, 186), 'big2': (232, 196, 130), 'rail': (190, 184, 176), 'bld': (232, 227, 216)}
+def draw(e, force=False, smooth=False):
     os.makedirs(OUT, exist_ok=True); p = f"{OUT}/{e['id']}.png"
+    if smooth: p = f"{OUT}/{e['id']}.png"
     if os.path.exists(p) and not force: return
     la, lo, r = e['la'], e['lo'], e['r']
     half = r * 1.45; dla = half / 111320; dlo = dla * W / H / math.cos(math.radians(la))   # 원이 그림 가운데 70% 쯤
@@ -25,7 +27,7 @@ def draw(e, force=False):
       way["leisure"~"park|garden|golf_course|pitch|stadium"]({bb}); way["landuse"~"grass|forest|meadow|recreation_ground|farmland"]({bb}); way["natural"~"wood|scrub|grassland"]({bb});
       way["highway"~"^(motorway|trunk|primary|secondary|tertiary)$"]({bb}); way["railway"="rail"]({bb}); way["building"]({bb}););out geom;'''
     d = overpass(q)
-    S = 4; im = Image.new('RGB', (W * S, H * S), PAL['bg']); g = ImageDraw.Draw(im)
+    C = PAL2 if smooth else PAL; S = 24 if smooth else 4; im = Image.new('RGB', (W * S, H * S), C['bg']); g = ImageDraw.Draw(im)
     xy = lambda pt: ((pt['lon'] - lo0) / (lo1 - lo0) * W * S, (la1 - pt['lat']) / (la1 - la0) * H * S)
     def geoms(el):
         if el['type'] == 'way' and el.get('geometry'): yield el['geometry']
@@ -45,11 +47,17 @@ def draw(e, force=False):
             for gm in geoms(el):
                 P = [xy(pt) for pt in gm]
                 if len(P) < 2: continue
-                if k in ('green', 'water', 'bld') and len(P) > 2: g.polygon(P, fill=PAL[k])
-                elif k == 'river': g.line(P, fill=PAL['water'], width=int(S * 2.5))
-                elif k == 'rail': g.line(P, fill=PAL['rail'], width=S)
+                u = S / 4 if smooth else S
+                if k in ('green', 'water', 'bld') and len(P) > 2: g.polygon(P, fill=C[k])
+                elif k == 'river': g.line(P, fill=C['water'], width=int(u * 2.5), joint='curve')
+                elif k == 'rail': g.line(P, fill=C['rail'], width=int(u * (1.5 if smooth else 1)), joint='curve')
                 elif k == 'road':
-                    big = el['tags']['highway'] in ('motorway', 'trunk', 'primary'); g.line(P, fill=PAL['road2'], width=S * (4 if big else 3)); g.line(P, fill=PAL['road'], width=S * (2 if big else 1))
+                    big = el['tags']['highway'] in ('motorway', 'trunk', 'primary')
+                    if smooth: g.line(P, fill=C['big2' if big else 'road2'], width=int(u * (5 if big else 3.4)), joint='curve'); g.line(P, fill=C['big' if big else 'road'], width=int(u * (3.4 if big else 2)), joint='curve')
+                    else: g.line(P, fill=PAL['road2'], width=S * (4 if big else 3)); g.line(P, fill=PAL['road'], width=S * (2 if big else 1))
+    if smooth:   # v22.19 경완 '글자 없이 그래픽 형태로': 크게 그려 부드럽게 줄임 (576×432)
+        im.resize((W * 6, H * 6), Image.LANCZOS).save(p, optimize=True)
+        json.dump({'la0': la0, 'lo0': lo0, 'la1': la1, 'lo1': lo1, 'w': W * 6, 'h': H * 6}, open(f"{OUT}/{e['id']}.json", 'w')); print('ok vec', e['id'], len(E)); return
     sm = im.resize((W, H), Image.NEAREST)   # 그린 색이 PAL 뿐이라 그대로 도트
     px = sm.load()   # 도트 느낌: 녹지·물 가장자리 아래쪽 한 칸 진하게 (작은 그림자)
     for y in range(H - 1, 0, -1):
@@ -85,4 +93,4 @@ def tile_map(e, force=False):   # v22.19 경완 '도트 느낌 말고 그냥 지
     print('ok tile', e['id'], z)
 if __name__ == '__main__':
     a = [x for x in sys.argv[1:] if not x.startswith('--')]; f = a[0] if a else 'config/spawn-ev.json'
-    for e in json.load(open(f))['ev']: (tile_map if '--dot' not in sys.argv else draw)(e, '--force' in sys.argv); time.sleep(2)
+    for e in json.load(open(f))['ev']: (tile_map(e, '--force' in sys.argv) if '--tile' in sys.argv else draw(e, '--force' in sys.argv, smooth='--dot' not in sys.argv)); time.sleep(2)
