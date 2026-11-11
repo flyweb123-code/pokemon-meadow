@@ -1970,6 +1970,7 @@ function mecLay(stg) {
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
   const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+  return true;
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
@@ -2147,7 +2148,12 @@ async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.
     <div class="mec-id"><span class="mec-ty">${tyIcon(D.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[D.ty] || ''} 타입 관장</span><h4 class="mec-h">${esc(D.n || (mine ? '나' : '트레이너'))}</h4><p class="mec-wl"><b>${D.w + D.l}</b>전 <b>${D.w}</b>승 <b>${D.l}</b>패</p></div>${bd}</div><p class="mec-gn"><em class="gr-tag" data-g="${G.i}">${G.n}</em>${D.bn ? `<b>${esc(D.bn)}</b>` : ''}</p>${mine ? `<button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button>` : ''}<div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
   p.querySelectorAll('.mec-pk>span:first-child').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
-  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); }
+  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0;
+    /* 경완 2026-11-12 '관장 카드 켤 때 잠깐 박스 레이아웃 무너졌다가 카드 뜸': 포켓몬 그림·여백 읽기·얼굴 자리·무대 높이가 다 맞춰질 때까지 카드를 가려 둠 (늦어도 1.5초 뒤엔 보임) */
+    const show = () => w?.classList.remove('mec-wait'); w?.classList.add('mec-wait'); setTimeout(show, 1500);
+    const ready = () => MEC_FACE && [...stg.querySelectorAll('.mec-pk>span:first-child, .mec-tr')].every(e => { if (e.tagName !== 'IMG' && !e.dataset.pkd) return false; const im = e.tagName === 'IMG' ? e : e.querySelector('img'); if (!im) return !!e.querySelector('i,canvas'); return im.complete && (!im.naturalWidth || im._trim); });
+    let sig = '', same = 0; const sg = () => [...stg.querySelectorAll('.mec-pk,.mec-tr')].map(e => { const r = e.getBoundingClientRect(); return [r.left, r.top, r.width, r.height].map(Math.round).join(); }).join(';') + stg.style.height;   // 그림이 움직이는 그림으로 바뀌며 한 번 더 줄 서기도 해서, 자리가 0.2초 동안 그대로일 때 보여 줌
+    const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (!stg.isConnected) return; const ok = mecLay(stg) && ready(); if (!w?.classList.contains('mec-wait')) return; const s = sg(); same = ok && s === sig ? same + 1 : 0; sig = s; if (same >= 2) requestAnimationFrame(show); else setTimeout(go, 60); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); stg.addEventListener('load', go, true); go(); }
   return p; }
 function sfCard(s) { loadJs('gym/battle.js', 'GymBattle').then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
