@@ -134,6 +134,126 @@
     return sc.run();
   }
 
+  // ---------- 메가진화 전체 화면 연출 (경완 2026-11-12 '배틀 화면이 핸드폰 전체로 늘어나면서 가운데서 진화, 트레이너·메가스톤 반응은 살림') ----------
+  // c.bt = 배틀 전체(.bt), c.top = 위 화면(.bt-top), c.monEl = 메가진화하는 포켓몬 칸. 위 화면을 그 포켓몬 쪽으로 화면 가득 당긴 뒤
+  // 트레이너 컷인(키스톤) ↔ 메가스톤 빛줄기 → 포켓몬 하얗게·빛 모임·떨림 → 번쩍 → 가운데 메가 모습 크게 + 빛살·충격파 → 원래 화면으로
+  async function megaFull(c) {
+    const P = c.path; await preload({ ...c, extra: [P + 'particle.png', P + 'Mega/mark.png', P + 'burst.png'] });
+    const bt = c.bt, top = c.top, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q }), R = { left: 0, top: 0 }, tR = rel(top.getBoundingClientRect()), mR = rel((c.monEl.querySelector('img') || c.monEl).getBoundingClientRect());   // 바깥에서 줄여 보여도(시연 틀) 배틀 안쪽 좌표로
+    const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.5, Math.min(k0 * 2.6, Hd * .25 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
+    const tx = (mR.left + mR.width / 2) - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   // 그 포켓몬 가로 자리는 그대로 두고 키우며 수직으로만 내림 (경완 2026-11-12 '대각으로 말고 수직으로, 중앙까진 안 맞춰도 됨'), 남는 곳은 뒤 배경판
+    const T0 = getComputedStyle(top).transform, tAnim = [], timers = [], A = (el, kf, o) => el.animate(kf, { fill: 'forwards', easing: 'ease-out', ...o });   // 'both' 면 뒤에 시작할 애니메이션 첫 칸이 미리 덮어씀
+    const hide = [...bt.querySelectorAll('.bt-hb,.bt-pty,.bt-bot,.bt-mid,.bt-msg')];
+    const root = document.createElement('div'); root.className = 'dx-scene mgf'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;pointer-events:auto;contain:strict;transform:scale(1.08)';   // 흔들 때 가장자리 빈틈 안 보이게 늘 조금 크게
+    const mk = (css, tag = 'div') => { const e = document.createElement(tag); e.style.cssText = 'position:absolute;pointer-events:none;' + css; root.appendChild(e); return e; };
+    const mon = c.monEl.querySelector('img'), opp = c.opp, side = opp ? 1 : -1;
+    // 층
+    const dim = mk('inset:0;background:radial-gradient(circle at 50% 50%,rgba(30,8,60,.35) 0 22%,rgba(4,0,12,.96) 70%);opacity:0');
+    const lines = mk(`inset:-10%;background:url(${P}burst.png) center/cover;filter:hue-rotate(70deg) saturate(1.6);mix-blend-mode:screen;opacity:0`);
+    const rays = mk(`left:50%;top:52%;width:${Math.hypot(Wd, Hd) * 1.3}px;height:${Math.hypot(Wd, Hd) * 1.3}px;margin:${-Math.hypot(Wd, Hd) * .65}px 0 0 ${-Math.hypot(Wd, Hd) * .65}px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.32) 0 4deg,rgba(255,255,255,0) 4deg 14deg);-webkit-mask:radial-gradient(circle,#000 10%,transparent 62%);mask:radial-gradient(circle,#000 10%,transparent 62%);opacity:0;mix-blend-mode:screen`);
+    const rainbow = mk(`left:50%;top:52%;width:${Wd * 1.1}px;height:${Wd * 1.1}px;margin:${-Wd * .55}px 0 0 ${-Wd * .55}px;border-radius:50%;background:conic-gradient(#ff4d6d,#ffb347,#fff275,#6dff8a,#4dd2ff,#7a6dff,#ff6df0,#ff4d6d);filter:blur(${Wd * .06}px);opacity:0;mix-blend-mode:screen`);
+    const glow = mk(`left:50%;top:52%;width:${Wd * .9}px;height:${Wd * .9}px;margin:${-Wd * .45}px 0 0 ${-Wd * .45}px;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(255,240,255,.9) 30%,rgba(190,140,255,.45) 50%,rgba(120,80,255,0) 70%);opacity:0;transform:scale(.2)`);
+    // 원래 앞모습(org) → 메가 모습(meg): 둘 다 가운데, 같은 배율 (경완 2026-11-12 '진화하기 전에 원래 앞모습 나와서 진화하는 모습')
+    const ow = c.mon.w / 2, oh = c.mon.h / 2, mw = c.to.w / 2, mh = c.to.h / 2, mz = Math.min(Hd * .36 / Math.max(mh, oh), Wd * .78 / Math.max(mw, ow)), MW = mw * mz, MH = mh * mz, OW = ow * mz, OH = oh * mz, FY = Hd * .52 + Math.max(MH, OH) * .45, CY = Hd * .52;   /* CY: 진화 전·후 모습 둘 다 이 점에 가운데 맞춤, 잔상도 가운데서 사방으로 (경완 2026-11-12) */   // FY = 발끝
+    const WH = `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .03}px #fff) drop-shadow(0 0 ${Wd * .05}px #c89bff)`, NORM = `brightness(1) invert(0) drop-shadow(0 0 ${Wd * .02}px rgba(255,255,255,.7)) drop-shadow(0 0 0 rgba(0,0,0,0))`;
+    const sprite = (u, w, h, o = '50% 50%') => { const b = mk(`left:${(Wd - w) / 2}px;top:${CY - h / 2}px;width:${w}px;height:${h}px;opacity:0;transform-origin:${o}`), i = document.createElement('img'); i.src = u; i.alt = ''; i.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}`; b.appendChild(i); return [b, i]; };
+    const [org, orgI] = sprite(c.mon.url, OW, OH), [meg, megI] = sprite(c.to.url, MW, MH); megI.style.filter = WH;
+    const icon = mk(`left:50%;top:${CY - MH / 2 - 54 * mz * .45 - 8}px;width:${44 * mz * .45}px;height:${54 * mz * .45}px;margin-left:${-22 * mz * .45}px;background:url(${P}Mega/mark.png) center/contain no-repeat;opacity:0;filter:drop-shadow(0 0 6px #fff)`);
+    // 트레이너 컷인 띠
+    const bandH = Hd * .3, band = mk(`left:-10%;right:-10%;top:${Hd * .66}px;height:${bandH}px;background:linear-gradient(${opp ? 'to left' : 'to right'},rgba(255,255,255,.95),rgba(220,190,255,.9) 45%,rgba(120,70,220,.0));transform:skewY(-8deg) translateX(${side * 110}%);opacity:0;box-shadow:0 0 30px rgba(180,120,255,.8)`);
+    const tw = c.tr.w / 2, th = c.tr.h / 2, tz = bandH * 1.25 / th, TW = tw * tz, TH = th * tz, trX = opp ? Wd - TW - Wd * .02 : Wd * .02;
+    const trn = mk(`left:${trX}px;top:${Hd * .66 + bandH - TH}px;width:${TW}px;height:${TH}px;background:url(${c.tr.url}) left center/${c.tr.w / 2 * tz}px ${TH}px no-repeat;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}opacity:0`);
+    const ks = c.item ? mk(`left:${opp ? trX + TW * .15 : trX + TW * .62}px;top:${Hd * .66 + bandH - TH * .78}px;width:${Wd * .13}px;height:${Wd * .13}px;background:url(${c.item.url}) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px #e0b0ff);opacity:0`) : null;
+    const ms = c.stone ? mk(`left:${Wd / 2 - Wd * .09}px;top:${Hd * .5 - mhU * zt * .55 - Wd * .2}px;width:${Wd * .18}px;height:${Wd * .18}px;background:url(${c.stone.url}) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 12px #ffe08a);opacity:0`) : null;
+    // 키스톤 → 메가스톤 빛줄기 (두 줄이 꼬이며 이어짐)
+    const beam = mk('inset:0;opacity:0', 'canvas'); beam.width = Wd * 2; beam.height = Hd * 2; beam.style.width = Wd + 'px'; beam.style.height = Hd + 'px';
+    const parts = Array.from({ length: 26 }, (_, i) => mk(`left:0;top:0;width:${Wd * .06}px;height:${Wd * .06}px;background:url(${P}particle.png) center/contain;opacity:0;mix-blend-mode:screen;filter:hue-rotate(${i * 37}deg) saturate(2)`));
+    const ring = mk(`left:50%;top:52%;width:${Wd * .4}px;height:${Wd * .4}px;margin:${-Wd * .2}px 0 0 ${-Wd * .2}px;border-radius:50%;border:${Wd * .025}px solid #fff;box-shadow:0 0 24px #d6a8ff,inset 0 0 24px #d6a8ff;opacity:0`);
+    const ring2 = mk(`left:50%;top:52%;width:${Wd * .4}px;height:${Wd * .4}px;margin:${-Wd * .2}px 0 0 ${-Wd * .2}px;border-radius:50%;border:${Wd * .015}px solid #ffe7a8;opacity:0`);
+    const flash = mk('inset:0;background:#fff;opacity:0');
+    const ds = top.parentNode, bgF = document.createElement('div'); bgF.className = 'mgf-bg'; bgF.style.cssText = `position:absolute;inset:-6%;z-index:0;pointer-events:none;background:url(${c.bg.url}) ${-(256 * Hd * 1.12 / 150 - Wd * 1.12) / 2}px 0/${512 * Hd * 1.12 / 150}px ${192 * Hd * 1.12 / 150}px no-repeat;image-rendering:pixelated;filter:blur(3px) brightness(.55) saturate(1.2);opacity:0`; ds.insertBefore(bgF, ds.firstChild);
+    const MK = 'linear-gradient(to bottom,transparent,#000 14%,#000 84%,transparent),linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)';   // 키운 위 화면 가장자리가 뒤 배경판에 스며들게
+    top.style.webkitMaskImage = top.style.maskImage = MK; top.style.webkitMaskComposite = 'source-in'; top.style.maskComposite = 'intersect';
+    bt.appendChild(root);
+    const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
+    const shake = (t, d, amp) => at(t, () => A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.08)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.08)` })), { duration: d, easing: 'linear', fill: 'none' }));
+    const vib = n => { try { window.GA?.haptic?.(n); } catch (e) {} };
+    // 1) 위 화면을 그 포켓몬 쪽으로 화면 가득 (0~900)
+    hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350 })));
+    tAnim.push(A(top, [{ transform: T0 === 'none' ? 'none' : T0 }, { transform: `translate(${tx}px,${ty}px) scale(${zt})` }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    tAnim.push(A(bgF, [{ opacity: 0, transform: 'scale(1.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    at(0, () => c.se('fog2')); at(600, () => vib(1));
+    // 2) 어두워지며 원래 앞모습이 가운데 (850~1500)
+    A(dim, [{ opacity: 0 }, { opacity: .88 }], { duration: 600, delay: 850 });
+    A(org, [{ opacity: 0, transform: 'scale(.8) translateY(10px)' }, { opacity: 1, transform: 'scale(1.04)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 600, delay: 950 });
+    at(950, () => { c.se('Battle throw'); if (mon) mon.style.visibility = 'hidden'; });   // 키운 뒷모습은 숨기고 가운데 앞모습만
+    // 3) 트레이너 컷인 + 키스톤, 메가스톤 반응 (1700~2700)
+    A(band, [{ opacity: 1, transform: `skewY(-8deg) translateX(${side * 110}%)` }, { opacity: 1, transform: 'skewY(-8deg) translateX(0)' }], { duration: 420, delay: 1700, easing: 'cubic-bezier(.2,.9,.3,1.1)' });
+    A(trn, [{ opacity: 0, transform: `${opp ? '' : 'scaleX(-1) '}translateX(${side * 70}px)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}translateX(0)` }], { duration: 450, delay: 1780 });
+    at(1720, () => c.se('Battle recall'));
+    at(2250, () => { c.se('DX Action'); vib(1); });
+    if (ks) A(ks, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.6)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 500, delay: 2250 });
+    if (ks) at(2750, () => ks.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1.1)' }], { duration: 380, iterations: 4, composite: 'replace' }));
+    at(2500, () => c.se('Saint7'));
+    if (ms) A(ms, [{ opacity: 0, transform: 'translateY(24px) scale(.3)' }, { opacity: 1, transform: 'translateY(0) scale(1.5)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 520, delay: 2500 });
+    if (ms) at(3000, () => ms.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1.1)' }], { duration: 380, iterations: 3 }));
+    // 4) 빛줄기 이어짐 (2900~4100)
+    at(2900, () => { c.se('Psych Up'); vib(1); const g = beam.getContext('2d'); const ax = (ks ? parseFloat(ks.style.left) + Wd * .065 : trX + TW / 2) * 2, ay = (ks ? parseFloat(ks.style.top) + Wd * .065 : Hd * .7) * 2, bx = Wd, by = (ms ? parseFloat(ms.style.top) + Wd * .09 : Hd * .4) * 2, t0 = performance.now();
+      beam.style.opacity = 1; const draw = now => { const p = Math.min(1, (now - t0) / 650), q = (now - t0) / 1000; g.clearRect(0, 0, beam.width, beam.height); g.globalCompositeOperation = 'lighter';
+        [[0, '#ff8af0'], [Math.PI, '#8ad8ff']].forEach(([ph, col]) => { g.beginPath(); for (let i = 0; i <= 60 * p; i++) { const u = i / 60, x = ax + (bx - ax) * u, y = ay + (by - ay) * u, n = Math.sin(u * 9 + q * 12 + ph) * Wd * .05 * Math.sin(u * Math.PI); const nx = -(by - ay), ny = bx - ax, L = Math.hypot(nx, ny); i ? g.lineTo(x + nx / L * n, y + ny / L * n) : g.moveTo(x, y); } g.strokeStyle = col; g.lineWidth = Wd * .02; g.shadowColor = col; g.shadowBlur = 30; g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = Wd * .007; g.stroke(); });
+        if (now - t0 < 1200 && root.isConnected) requestAnimationFrame(draw); else A(beam, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }); };
+      requestAnimationFrame(draw); });
+    // 5) 메가스톤 빛이 포켓몬에게, 하얗게 빛남, 빛 모임·떨림 (4000~6000)
+    [band, trn, ks].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, delay: 4000 }));
+    if (ms) A(ms, [{ opacity: 1, transform: 'scale(1.1)' }, { opacity: 0, transform: `translateY(${CY - parseFloat(ms.style.top) - Wd * .09}px) scale(2.6)` }], { duration: 500, delay: 3950, easing: 'ease-in' });
+    at(4300, () => { orgI.animate([{ filter: NORM }, { filter: WH }], { duration: 500, fill: 'forwards' }); c.se('Psych Up'); vib(1); });
+    A(rainbow, [{ opacity: 0, transform: 'scale(.3) rotate(0)' }, { opacity: .55, transform: 'scale(1) rotate(300deg)' }], { duration: 1800, delay: 4300, easing: 'ease-in' });
+    A(glow, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: .9, transform: 'scale(1)' }], { duration: 1800, delay: 4300, easing: 'ease-in' });
+    A(lines, [{ opacity: 0 }, { opacity: .35 }], { duration: 800, delay: 4400 });
+    parts.forEach((p, i) => { const a = i / parts.length * Math.PI * 2 + Math.random() * .3, r = Math.hypot(Wd, Hd) * (.55 + Math.random() * .25), cx = Wd / 2 - Wd * .03, cy = Hd * .52 - Wd * .03;
+      A(p, [{ opacity: 0, transform: `translate(${cx + Math.cos(a) * r}px,${cy + Math.sin(a) * r}px) scale(1.6)` }, { opacity: 1, offset: .2 }, { opacity: 1, transform: `translate(${cx}px,${cy}px) scale(.3)` }], { duration: 800, delay: 4400 + (i % 13) * 110, easing: 'cubic-bezier(.6,0,1,.6)' }); });
+    shake(4600, 400, 2); shake(5100, 400, 4); at(4700, () => vib(1)); at(5200, () => { vib(2); c.se('Psych Up'); });
+    // 6) 진화하는 모습: 하얀 원래 모습이 서서히 더 밝아지며 둘레 게이지가 차오름 → 다 차면 팍 터짐 (경완 2026-11-12 '깜빡이기보다 서서히 빛나면서 게이지 모이는 느낌, 팍 터지면서 진화')
+    at(5000, () => { [org, meg].forEach(e => e.getAnimations().forEach(a => a.cancel())); org.style.opacity = 1; meg.style.opacity = 0; c.se('Charge');
+      const D = 1350, R0 = Math.min(Math.max(OW, OH) * .62, Wd * .4), cx = Wd / 2, cy = CY, gz = R0 * 2 + 40, cir = 2 * Math.PI * R0;
+      const gw = document.createElement('div'); gw.style.cssText = `position:absolute;pointer-events:none;left:${cx - gz / 2}px;top:${cy - gz / 2}px;width:${gz}px;height:${gz}px;filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #ff8ad8) drop-shadow(0 0 18px #8ab8ff)`;
+      gw.innerHTML = `<svg width="${gz}" height="${gz}" viewBox="0 0 ${gz} ${gz}"><circle cx="${gz / 2}" cy="${gz / 2}" r="${R0}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="${Wd * .018}"/><circle class="gv" cx="${gz / 2}" cy="${gz / 2}" r="${R0}" fill="none" stroke="#fff6ff" stroke-width="${Wd * .024}" stroke-linecap="round" stroke-dasharray="${cir}" stroke-dashoffset="${cir}" transform="rotate(-90 ${gz / 2} ${gz / 2})"/></svg>`;
+      root.insertBefore(gw, flash); const gv = gw.querySelector('.gv');
+      gw.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+      gv.animate([{ strokeDashoffset: cir }, { strokeDashoffset: 0 }], { duration: D, fill: 'forwards', easing: 'cubic-bezier(.5,0,.85,.6)' });   /* 처음엔 천천히, 끝으로 갈수록 빨리 차오름 */
+      gw.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(200deg)' }], { duration: D, fill: 'forwards', easing: 'ease-in', composite: 'add' });
+      org.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.1)', offset: .5 }, { transform: 'scale(1.38)' }], { duration: D, fill: 'forwards', easing: 'cubic-bezier(.55,0,.9,.5)' });   /* 경완 '흰 실루엣 크기 서서히 커지다가 팍 터지게' */
+      orgI.animate([{ filter: WH }, { filter: `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .06}px #fff) drop-shadow(0 0 ${Wd * .12}px #e2c8ff)` }], { duration: D, fill: 'forwards', easing: 'ease-in' });
+      A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.45)' }], { duration: D, easing: 'ease-in' });
+      [300, 650, 950, 1180].forEach((t, j) => at(t, () => { c.se('Ice5'); vib(1 + (j > 1)); }));   /* 차오르는 반짝 소리, 점점 촘촘히 */
+      at(D, () => { org.animate([{ transform: 'scale(1.38)', opacity: 1 }, { transform: 'scale(1.9)', opacity: 0 }], { duration: 160, fill: 'forwards', easing: 'ease-out' }); c.se('Saint7'); gw.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' }); }); });
+    shake(5700, 600, 8); at(5900, () => vib(2));
+    // 7) 번쩍 + 메가 모습 (6300~)
+    A(glow, [{ opacity: 1, transform: 'scale(1.45)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 120, delay: 6360, easing: 'ease-in' });
+    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: 620, delay: 6450, easing: 'linear' });
+    at(6480, () => { c.se('Explosion3'); c.se('Burst'); c.se('fog2'); vib(3); org.style.opacity = 0; meg.style.opacity = 0; if (mon) mon.style.visibility = 'hidden'; });
+    at(6550, () => { A(dim, [{ opacity: .88 }, { opacity: 1 }], { duration: 400 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 800 }); });
+    at(6650, () => A(meg, [{ opacity: 0, transform: 'scale(1.4)' }, { opacity: 1, transform: 'scale(.93)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.2,1.4,.4,1)' }));   /* 5000 에서 meg 애니메이션을 지우므로 그 뒤에 만듦 (안 그러면 하얀 실루엣만 남음) */
+    at(6880, () => { for (let i = 0; i < 5; i++) { const [g, gi] = sprite(c.to.url, MW, MH); gi.style.filter = `brightness(0) invert(1) sepia(1) saturate(6) hue-rotate(${[280, 230, 170, 100, 20][i]}deg) brightness(1.1) drop-shadow(0 0 ${Wd * .04}px #fff)`; g.style.mixBlendMode = 'screen';   /* 경완 '화악 터지는 듯한 잔상': 하얀 메가 모습이 번져 나가며 사라짐 */
+      A(g, [{ opacity: .9 - i * .08, transform: 'scale(1)' }, { opacity: 0, transform: `scale(${1.6 + i * .4})` }], { duration: 800 + i * 140, delay: i * 80, easing: 'cubic-bezier(.1,.7,.3,1)' }); } });
+    at(6750, () => megI.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }));
+    A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .12 }, { opacity: .9, transform: 'rotate(200deg) scale(1.05)' }], { duration: 4100, delay: 6550, easing: 'linear' });
+    A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(300deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(640deg)' }], { duration: 4100, delay: 6550, easing: 'linear' });
+    A(lines, [{ opacity: .35 }, { opacity: .45 }], { duration: 300, delay: 6550 });
+    [ring, ring2].forEach((r, i) => A(r, [{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: `scale(${5 + i * 2})` }], { duration: 900 + i * 250, delay: 6650 + i * 150, easing: 'cubic-bezier(.1,.7,.3,1)' }));
+    shake(6650, 650, 12); at(7000, () => (c.cryBig || c.cry)());
+    A(icon, [{ opacity: 0, transform: 'translateY(16px) scale(.4)' }, { opacity: 1, transform: 'translateY(0) scale(1.25)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 500, delay: 7300 });
+    at(7300, () => c.se('Saint7'));
+    // 8) 원래 화면으로 (8800~)
+    const END = 10800;   /* 경완 '진화하고 나서 모습 좀 더 길게': 메가 모습 1.5초 더 */
+    return new Promise(res => { let done = false;
+      const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => { clearTimeout(t); clearInterval(t); }); if (mon) { if (mon.dataset.mgf != null) { mon.style.filter = mon.dataset.mgf; delete mon.dataset.mgf; } mon.style.visibility = ''; }
+        top.style.webkitMaskImage = top.style.maskImage = '';   /* 돌아갈 때 가장자리 마스크 먼저 지움 (검은 테두리 안 보이게) */
+        const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];   /* 아래 화면 등은 바로 보이게: 늦게 나오면 그 틈에 검은 바탕이 보임 (경완 2026-11-12) */
+        tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
+      root.addEventListener('pointerdown', fin, { once: true }); setTimeout(fin, END - 500); });
+  }
+
   // ---------- Z기술 ([DBK] Z-Power [008] Z-Move Animation.rb) ----------
   async function zmove(c) {
     const P = c.path, [tO, tB] = tyCol(c.type); await preload({ ...c, extra: [P + 'burst.png', P + 'Z-Power/particle.png', P + 'pulse.png', c.title] });
@@ -230,5 +350,5 @@
   }
 
   { const st = document.createElement('style'); st.textContent = '@keyframes dxPatL{to{background-position:-800px 0}}@keyframes dxPatT{25%{background-position:200px 6px}50%{background-position:400px -4px}75%{background-position:600px 5px}to{background-position:800px 0}}'; document.head.appendChild(st); }
-  window.GymDBK = { mega, zmove, tera, dynamax, tyCol };
+  window.GymDBK = { mega, megaFull, zmove, tera, dynamax, tyCol };
 })();
