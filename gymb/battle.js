@@ -1651,12 +1651,12 @@ async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P || (S.gym?.gmax | 0) < 1) return;   /* v21.70 경완 '번뜩이는 것도 훈련장 열리고부터': 동네 체육관(훈련장 열림) 전엔 번뜩임 없음 */ const D = B.egDone || (B.egDone = new Set()); if (D.has(pid)) return;
   { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && Math.random() < egRfp(P, m)) {   /* v22.07 경완 '레어는 친밀도 만점일 때 번뜩임 비율 높게': 만점 4%, 아니면 1.5% */ D.add(pid); const tr = egTier(P), bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(tr); egDuck([0, 2200, 2800, 3200][tr]); se('KIRAKIRA2', { gain: [0, 1.1, 1.5, 1.8][tr] }); if (tr > 1) setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); if (tr > 2) setTimeout(() => B && GA.haptic?.(1), 1300); await wait([0, 1100, 1500, 1700][tr]); if (!B) return;
-    bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_TA[tr], 1); await msgTap(x ? `${X.nm}의 잠들어 있던 힘이 깨어났다…!` : X.nm + EG_TT.r[tr]); bm.classList.remove('er'); if (!B) return;
+    bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_TA[tr], 1); await msgTap(X.nm + EG_TT.r[tr]);   /* v22.15 경완 '깨달은 건 배틀 화면에서 스포하지 말고 끝나고 알림창으로' */ bm.classList.remove('er'); if (!B) return;
     await frFx('p'); if (!B) return; await msgTap(egFrT(X.nm, P)); if (!B) return;
-    if (x) { bm.classList.add('er'); await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; } (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id, tr }); GA.save?.(); return; } }   /* v22.07 경완: 레어 게이지는 레어 번뜩임으로만, 번뜩임 상중하(친밀도 높을수록 상), 번뜩인 뒤 친밀도 꿀렁 + 대사 */
+    (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id, tr }); GA.save?.(); return; } }   /* v22.07 경완: 레어 게이지는 레어 번뜩임으로만, 번뜩임 상중하(친밀도 높을수록 상), 번뜩인 뒤 친밀도 꿀렁 + 대사 */
   const f = egFocus(P); if (f < 0 || Math.random() >= EG_FLP) return; D.add(pid); const tr = egTier(P);
   $b('.bt-msg .t').textContent = ''; egFx(tr); if (tr > 1) egDuck([0, 0, 2000, 2600][tr]); se('KIRAKIRA2', { gain: [0, 1, 1.4, 1.8][tr] }); if (tr > 2) setTimeout(() => B && se('EXPMAX2'), 600);   /* v21.70 경완 '번뜩이는 거 효과음도': 예전엔 'DP_' 가 두 번 붙어 소리가 안 났음 */ GA.haptic?.(1); await wait([0, 700, 900, 1200][tr]); if (!B) return; await msgTap(X.nm + EG_TT.n[tr]); if (!B) return; await frFx('p'); if (!B) return; await msgTap(egFrT(X.nm, P)); if (!B) return;
-  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_TA[tr]); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x, tr });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
+  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_TA[tr]); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x, mv: egList(P).find(r => r.i === f)?.id, tr });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
   GA.save?.();
 }
 async function learnAsk(P, i, id) {
