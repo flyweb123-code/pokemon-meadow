@@ -1886,7 +1886,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .bt .bt-shw{position:absolute;left:6px;right:6px;top:6px;padding:6px 10px 10px;background:#fff;color:#484848;text-shadow:1px 1px 0 #d0d0c8;font-size:10px;line-height:12px;z-index:6;
   box-shadow:inset 0 0 0 3px #94785c,inset 0 0 0 4px #b8a898,inset 0 0 0 5px #e0d8d0,0 0 0 2px #283028;border-radius:2px;animation:lvwIn .15s steps(3) both}
 .bt .bt-shw[hidden]{display:none}
-.bt .bt-shw p{margin:0 0 3px;font-size:10px}
+.bt .bt-shw p{margin:0 0 3px;font-size:10px;display:flex;align-items:center;gap:2px}.bt .bt-shw .sh-esi{width:15px;height:15px;margin:-3px 0 -3px -3px;image-rendering:pixelated;flex:none}   /* v22.12 경완 '학습장치 글자 왼쪽에 학습장치 아이콘' */
 .bt .bt-shw .sh-r{display:grid;grid-template-columns:20px 1fr 34px 64px;align-items:center;column-gap:5px;height:20px;position:relative}
 .bt .bt-shw .sh-ic{width:20px;height:20px;overflow:hidden;display:grid;place-items:center}.bt .bt-shw .sh-ic img{width:20px;height:20px;object-fit:contain;image-rendering:pixelated}
 .bt .bt-shw .sh-r b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4018,3 +4018,84 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
 /* v22.09 등급표 제목 '[아이콘] 불 타입 체육관 등급' */
 #gym .gy-pop h4.pk-h{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}#gym h4.pk-h .pk-ty{display:inline-flex;align-items:center;gap:4px}#gym h4.pk-h .pk-ty :is(img,svg,i){width:20px;height:20px}
+/* 경완 2026-11-12: 기믹 버튼 켜면 아래 화면 바탕색, 메가진화한 포켓몬이 나와 있는 동안 계속 */
+.bt.mob .bt-bot{transition:background-color .35s}
+.bt.mob:is(.gkbg-mega,.gkbg-zmove,.gkbg-dynamax,.gkbg-terastallize) .bt-bot{background-blend-mode:multiply}.bt.mob.gkbg-mega .bt-bot{background-color:#e6d9ff}.bt.mob.gkbg-zmove .bt-bot{background-color:#fff1c8}.bt.mob.gkbg-dynamax .bt-bot{background-color:#ffd9e4}.bt.mob.gkbg-terastallize .bt-bot{background-color:#d6f3ff}
+/* 경완 2026-11-12 '메가진화 버튼 배경 퀄 높여': 메가 켜면 아래 화면 = 연보라 바탕 + 천천히 도는 빛살 + 가운데 무지개 고리 + 메가 마크 + 떠오르는 반짝이 (몬스터볼 자리) */
+.bt.mob .bt-bot::before,.bt.mob .bt-bot::after{content:'';position:absolute;pointer-events:none;opacity:0;transition:opacity .45s;z-index:0}
+.bt.mob .bt-panel{z-index:1}
+.bt.mob .bt-bot::before{inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),linear-gradient(160deg,#e6d6ff,#ffd6ec 40%,#d8e6ff 75%,#e6d6ff);animation:gkHue 20s linear infinite}   /* 경완 '빛줄기 없애고 은은하게 계속 바뀌게': 파스텔 띠가 천천히 흘러감 */
+.bt.mob .bt-bot::after{inset:0;background:radial-gradient(1.6px 1.6px at 18% 30%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 72% 22%,#fff 60%,transparent),radial-gradient(2px 2px at 84% 64%,#fff 60%,transparent),radial-gradient(1.4px 1.4px at 30% 78%,#fff 60%,transparent),radial-gradient(1.8px 1.8px at 56% 88%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 8% 60%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 94% 40%,#fff 60%,transparent);
+  background-size:100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px;filter:drop-shadow(0 0 6px rgba(190,140,255,.9));animation:gkSpark 5s linear infinite}
+.bt.mob.gkbg-mega .bt-bot{background-image:linear-gradient(#f4edff,#dccbff 55%,#efe6ff);background-blend-mode:normal}
+.bt.mob.gkbg-mega .bt-bot::before{opacity:1}.bt.mob.gkbg-mega .bt-bot::after{opacity:.55}
+@keyframes gkHue{to{filter:hue-rotate(360deg)}}
+@keyframes gkSpark{to{background-position:0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px}}
+
+/* 경완 2026-11-12 '위아래 검정 여백 다 채워줘': 아래 화면은 홈 막대 자리까지(버튼판만 --pb 위로), 위 상태 막대 자리는 배틀 배경 윗줄을 거울처럼 이어 붙임 */
+.bt.mob .bt-panel{bottom:var(--pb,0px)}
+.bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
+.bt.mob::after{display:none}
+.bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
+/* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
+.bt .gk-mark{display:none}
+.bt.mob .gk-mark{display:block;position:absolute;left:50%;top:calc((100% - var(--pb,0px)) / 2);width:74px;height:90px;margin:-45px 0 0 -37px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;opacity:0;transition:opacity .45s;pointer-events:none;z-index:0;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(190,140,255,.6))}
+.bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s linear infinite}
+@keyframes gkMark{0%,55%{transform:perspective(320px) rotateY(0) scale(1)}61%{transform:perspective(320px) rotateY(-28deg) scale(.94);animation-timing-function:cubic-bezier(.3,0,.2,1)}86%{transform:perspective(320px) rotateY(735deg) scale(1.08);animation-timing-function:ease-in-out}93%{transform:perspective(320px) rotateY(712deg) scale(.98)}100%{transform:perspective(320px) rotateY(720deg) scale(1)}}   /* 경완 '뒤집는 느낌 말고 찰지게': 살짝 뒤로 감았다가 두 바퀴 휙 → 조금 넘쳤다 되돌아와 멈춤 */
+.bt-hb .gkm-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkm .nm{max-width:74px}
+
+/* v22.07 레어 번뜩임 (무지개 각성) — 보통 번뜩임(금빛)과 다른 색·효과 */
+.bt-top.ershk{animation:btErS .55s .2s steps(10) both}
+@keyframes btErS{0%,100%{translate:0 0}10%{translate:-3px 1px}20%{translate:3px -1px}30%{translate:-3px -2px}40%{translate:2px 2px}50%{translate:-2px 1px}60%{translate:2px -1px}70%{translate:-1px 1px}80%{translate:1px 0}90%{translate:-1px 0}}
+.bt-mon.erk img{animation:btErk 3.2s ease-out}
+@keyframes btErk{0%{filter:none}5%{filter:brightness(0) invert(1) drop-shadow(0 0 6px #fff)}14%{filter:brightness(1.5) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #c070ff)}30%{filter:brightness(1.4) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #40d8ff)}46%{filter:brightness(1.35) drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #ff70c8)}62%{filter:brightness(1.3) drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #70ffb0)}80%{filter:brightness(1.15) drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px #b080ff)}100%{filter:none}}
+.bt-erv{position:absolute;left:0;top:0;width:256px;height:192px;z-index:4;pointer-events:none;background:radial-gradient(circle at var(--x,31%) var(--y,62%),rgba(20,6,50,0) 0,rgba(20,6,50,0) 13%,rgba(10,2,30,.9) 32%,rgba(2,0,10,.96) 100%);animation:btErV 3.1s ease-out both}
+@keyframes btErV{0%{opacity:0}8%{opacity:1}70%{opacity:.9}100%{opacity:0}}
+.bt-erm{position:absolute;width:124px;height:124px;margin:-62px 0 0 -62px;pointer-events:none;animation:btErM 3s ease-out both}
+.bt-erm::before,.bt-erm::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(#ff6ad5,#c774e8,#ad8cff,#8795e8,#94d0ff,#6affc8,#ffe56a,#ff6ad5);-webkit-mask:radial-gradient(circle,transparent 57%,#000 59%,#000 63%,transparent 65%,transparent 75%,#000 77%,#000 79%,transparent 81%);mask:radial-gradient(circle,transparent 57%,#000 59%,#000 63%,transparent 65%,transparent 75%,#000 77%,#000 79%,transparent 81%);animation:btErSp 3s linear both}
+.bt-erm::after{inset:22px;border-radius:0;opacity:.7;-webkit-mask:none;mask:none;clip-path:polygon(50% 0,61% 31%,93% 25%,72% 50%,93% 75%,61% 69%,50% 100%,39% 69%,7% 75%,28% 50%,7% 25%,39% 31%);animation-direction:reverse}
+@keyframes btErM{0%{opacity:0;transform:scaleY(.3) scale(.2)}16%{opacity:1;transform:scaleY(.3) scale(1.05)}80%{opacity:1;transform:scaleY(.3) scale(1)}100%{opacity:0;transform:scaleY(.3) scale(1.25)}}
+@keyframes btErSp{to{rotate:360deg}}
+.bt-erp{position:absolute;width:60px;height:210px;margin:-210px 0 0 -30px;z-index:5;pointer-events:none;transform-origin:50% 100%;mix-blend-mode:screen;background:linear-gradient(90deg,transparent 8%,rgba(200,140,255,.55) 30%,#fff 50%,rgba(130,220,255,.55) 70%,transparent 92%);-webkit-mask:linear-gradient(transparent,#000 35%,#000 88%,transparent);mask:linear-gradient(transparent,#000 35%,#000 88%,transparent);animation:btErP 2.3s ease-out both,btErH 1.1s linear infinite}
+@keyframes btErP{0%{opacity:0;transform:scaleX(.1) scaleY(0)}18%{opacity:1;transform:scaleX(1.15) scaleY(1)}45%{transform:scaleX(.75) scaleY(1)}100%{opacity:0;transform:scaleX(.12) scaleY(1)}}
+@keyframes btErH{to{filter:hue-rotate(360deg)}}
+.bt-err{position:absolute;width:230px;height:230px;margin:-115px 0 0 -115px;border-radius:50%;pointer-events:none;background:repeating-conic-gradient(rgba(255,120,220,.6) 0 5deg,transparent 5deg 15deg,rgba(120,200,255,.6) 15deg 20deg,transparent 20deg 30deg,rgba(255,230,120,.6) 30deg 35deg,transparent 35deg 45deg);-webkit-mask:radial-gradient(circle,#000 12%,rgba(0,0,0,.6) 34%,transparent 68%);mask:radial-gradient(circle,#000 12%,rgba(0,0,0,.6) 34%,transparent 68%);animation:btErR 3s ease-out both}
+@keyframes btErR{0%{opacity:0;transform:scale(.2) rotate(0)}20%{opacity:1;transform:scale(1) rotate(30deg)}100%{opacity:0;transform:scale(1.35) rotate(150deg)}}
+.bt-erc{position:absolute;width:60px;height:60px;margin:-30px 0 0 -30px;z-index:5;border-radius:50%;pointer-events:none;background:conic-gradient(#ff6ad5,#ad8cff,#94d0ff,#6affc8,#ffe56a,#ff6ad5);-webkit-mask:radial-gradient(circle,transparent 60%,#000 65%,#000 71%,transparent 77%);mask:radial-gradient(circle,transparent 60%,#000 65%,#000 71%,transparent 77%);animation:btErC 1s ease-out both}
+@keyframes btErC{0%{opacity:1;transform:scale(.2) rotate(0)}100%{opacity:0;transform:scale(3.4) rotate(90deg)}}
+.bt-ers{position:absolute;width:8px;height:15px;margin:-7px 0 0 -4px;z-index:6;pointer-events:none;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:linear-gradient(hsl(var(--h) 100% 94%),hsl(var(--h) 100% 66%));opacity:0;animation:btErSh 1.5s var(--d) ease-out both}
+@keyframes btErSh{0%{opacity:0;transform:translate(0,0) scale(.3) rotate(0)}18%{opacity:1}100%{opacity:0;transform:translate(var(--x),-84px) scale(1) rotate(220deg)}}
+.bt-egf.er{animation-duration:2.4s}.bt-egf.er>b{left:-62px;width:124px;background:radial-gradient(ellipse at center,#fff 0,#f2dcff 30%,rgba(170,120,255,.55) 55%,rgba(170,120,255,0) 72%)}.bt-egf.er>i{left:-14px;top:-14px;width:28px;height:28px;background:radial-gradient(circle,#fff 0,#e8f6ff 30%,rgba(120,200,255,.6) 55%,rgba(120,200,255,0) 72%)}.bt-egf.er>*{animation:btErH 1s linear infinite}
+.bt-erw{position:absolute;left:0;top:0;width:256px;height:192px;z-index:7;pointer-events:none;background:radial-gradient(circle at var(--x,31%) var(--y,62%),#fff 0,rgba(255,255,255,.92) 28%,rgba(232,214,255,.6) 60%,rgba(232,214,255,0) 100%);animation:btErW .75s ease-out both}
+@keyframes btErW{0%{opacity:0}14%{opacity:1}100%{opacity:0}}
+.bt-msg.er .t{background:linear-gradient(90deg,#d0389c,#7a4ce0,#2a86d0,#1e9a68,#c89010);-webkit-background-clip:text;background-clip:text;color:transparent}
+#gym .eg-pop h4.eg-ft.er{background:linear-gradient(90deg,#d0389c,#7a4ce0,#2a86d0,#1e9a68);-webkit-background-clip:text;background-clip:text;color:transparent}#gym .eg-r.rare .eg-cv{--tc:#b06ae0}#gym .eg-r.rare .eg-fl{background:linear-gradient(90deg,#ff7ad0,#a88cff,#7cc8ff,#6ae8b8)}   /* v22.07 레어 게이지 = 무지개 (레어 번뜩임으로만 참) */
+/* v22.07 번뜩임 상중하 */
+.bt-egv.t1{opacity:.6}.bt-egr.t3{width:230px;height:230px;margin:-115px 0 0 -115px}.bt-egf.t3>b{left:-60px;width:120px}.bt-egf.t3>i{left:-15px;top:-15px;width:30px;height:30px}.bt-err.t3{width:280px;height:280px;margin:-140px 0 0 -140px}.bt-egf.er.t3>b{left:-80px;width:160px}
+.bt-egw{position:absolute;left:0;top:0;width:256px;height:192px;z-index:7;pointer-events:none;background:radial-gradient(circle at var(--x,31%) var(--y,62%),#fff 0,rgba(255,250,220,.9) 26%,rgba(255,214,90,.5) 58%,rgba(255,214,90,0) 100%);animation:btErW .7s ease-out both}
+#gym .eg-pop h4.eg-ft .eg-tier{display:inline-block;margin-left:8px;padding:2px 7px 1px;border-radius:6px;font-style:normal;font-size:13px;letter-spacing:0;vertical-align:2px;color:#fff;-webkit-text-fill-color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}#gym .eg-tier.t1{background:#9a96a8}#gym .eg-tier.t2{background:#e09a20}#gym .eg-tier.t3{background:linear-gradient(90deg,#ff5a5a,#ff9a3a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2),0 0 8px rgba(255,120,60,.7)}
+/* v22.19 대박 번뜩임: 몸을 꿰뚫는 번개 (battle.js egZap) */
+.bt-egz{position:absolute;width:176px;height:36px;pointer-events:none;transform:rotate(var(--r,0deg)) scaleX(var(--s,1));animation:btEgZ .8s linear both}
+.bt-egz svg{display:block;width:100%;height:100%;overflow:visible}
+.bt-egz path{fill:none;stroke:#ffe14a;stroke-width:4.4;stroke-linejoin:miter;stroke-linecap:round;stroke-dasharray:100 100;stroke-dashoffset:100;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 4px #ffd23c) drop-shadow(0 0 9px rgba(255,190,30,.9));animation:btEgZd .16s cubic-bezier(.4,0,.8,.6) forwards}
+.bt-egz path.c{stroke:#fff;stroke-width:1.8;filter:none}
+.bt-egz.er path{stroke:#d4b0ff;filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 4px #9fe2ff) drop-shadow(0 0 9px rgba(170,110,255,.95))}
+.bt-egz.er path.c{stroke:#fff;filter:none}
+.bt-egzb{position:absolute;width:0;height:0;z-index:12;pointer-events:none}
+.bt-egzb>i{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;background:radial-gradient(circle,#fff 0,#fff6c0 28%,rgba(255,200,40,.7) 52%,rgba(255,200,40,0) 72%);animation:btEgZb .35s ease-out both}
+.bt-egzb.o>i{left:-20px;top:-20px;width:40px;height:40px}
+.bt-egzb.er>i{background:radial-gradient(circle,#fff 0,#efe0ff 28%,rgba(170,120,255,.75) 52%,rgba(170,120,255,0) 72%)}
+.bt-egzf{position:absolute;left:0;top:0;right:0;bottom:0;z-index:7;pointer-events:none;background:#fffbe0;mix-blend-mode:screen;animation:btEgZf .24s linear both}
+.bt-egzf.er{background:#efe4ff}
+@keyframes btEgZd{to{stroke-dashoffset:0}}
+@keyframes btEgZ{0%{opacity:1}42%{opacity:1}48%{opacity:.35}54%{opacity:1}66%{opacity:.45}72%{opacity:1}100%{opacity:0}}
+@keyframes btEgZb{0%{transform:scale(.3);opacity:1}60%{opacity:1}100%{transform:scale(1.5);opacity:0}}
+@keyframes btEgZf{0%{opacity:.4}30%{opacity:.08}45%{opacity:.25}100%{opacity:0}}
+/* v22.19 경완 하중상 → 조금·완전·대박 번뜩임! (이름 글자만 색) */
+.eg-tw{font-style:normal;-webkit-text-fill-color:currentColor}
+.eg-tw.t1{color:#8a86a0}
+.eg-tw.t2{color:#e08a10}
+.eg-tw.t3{background:linear-gradient(90deg,#ff4a4a,#ff9a2a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 3px rgba(255,120,60,.55))}
+.bt-egz.er{z-index:5}
+.bt .bt-mw.p.egzr{z-index:6}
