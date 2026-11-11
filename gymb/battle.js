@@ -237,7 +237,10 @@ function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv 
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
-const EG_RARE = 2, EG_FL = 25, EG_FLP = .05, EG_RFP = .015, EG_RFL = 25;   // v22.07 레어 번뜩임: 기술 쓴 턴마다 1.5%, 레어 게이지 +25% (네 번이면 익힘). 배틀당 포켓몬마다 번뜩임은 한 번
+const EG_RARE = 2, EG_FL = 25, EG_FLP = .05, EG_RFP = .015, EG_RFP5 = .04, EG_TA = [0, 10, 20, 35];   // v22.07 경완 '번뜩임 상중하': 하 +10 · 중 +20 · 상 +35 (레어도 같음)
+const egTier = P => { const t = Math.min(255, P?.fr || 0) / 255, r = Math.random(); return r < .08 + .32 * t ? 3 : r < .38 + .42 * t ? 2 : 1; };   // 친밀도 높을수록 상 (상 8→40%, 중 30→40%)
+const EG_TT = { n: ['', '의 머릿속에 무언가 스쳐 지나갔다!', '의 머릿속에 무언가 번뜩였다!', '의 머릿속에 번개처럼 무언가 번뜩였다!!'], r: ['', '의 잠들어 있던 힘이 살짝 꿈틀거렸다…', '의 잠들어 있던 힘이 꿈틀거렸다…!', '의 잠들어 있던 힘이 크게 요동친다…!!'] };
+const egFrT = (nm, P) => { const h = Math.min(255, P?.fr || 0), tr = frTr(); return h >= 255 ? `${wa(nm)} ${tr}의 마음이 하나가 된 것 같다!` : h >= 204 ? `${eun(nm)} ${eul(tr)} 돌아보며 힘차게 고개를 끄덕였다!` : h >= 102 ? `${eun(nm)} ${tr}의 기대에 보답하고 싶어 한다!` : `${eun(nm)} ${tr}에게 잘 보이고 싶은 것 같다!`; };   // 번뜩인 뒤 친밀도 꿀렁(frFx) + 친밀도 대사   // v22.07 레어 번뜩임: 기술 쓴 턴마다 1.5%, 레어 게이지 +25% (네 번이면 익힘). 배틀당 포켓몬마다 번뜩임은 한 번
    // v20.85 번뜩임: 내 포켓몬이 기술을 쓴 턴이 끝날 때 5%, 한 배틀에 포켓몬마다 한 번 +25% (경완 '적당히 밸런스')
 const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(id) })).filter(r => r.x);
 const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
@@ -1615,31 +1618,33 @@ async function expGain(X) {
 // 새 기술을 배우려는데 기술이 4개일 때 (본가처럼): 잊을 기술을 고르거나 배우기를 포기한다 (경완 2026-10-30 '알아서 잊어버리는데 선택할 수 있게')
 /* v20.85 경완 '배틀 번뜩임은 배틀 중간에': 내 포켓몬이 기술을 쓰고 그 턴이 끝나면(다음 턴 시작 전) 가끔 번뜩임 → 집중 중인 특별한 기술 깨달음 +34% */
 /* v20.85 경완 '번뜩일 때 스프라이트 효과 다시 — 도트 아니어도 되니 퀄 높게': 포켓몬이 하얗게 번쩍 → 금빛 광채, 뒤로 빛줄기 회전, 머리 위 렌즈 플레어 별, 주위 반짝이, 화면 금빛 비네트 */
-function egFx() { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
+function egFx(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;
   const T = t.getBoundingClientRect(), R = im.getBoundingClientRect(), k = T.width / 256 || 1, cx = (R.left + R.width / 2 - T.left) / k, cy = (R.top + R.height * .55 - T.top) / k, hy = (R.top + R.height * .12 - T.top) / k, hx = (R.left + R.width * .58 - T.left) / k;
   me.classList.remove('egk'); void me.offsetWidth; me.classList.add('egk'); setTimeout(() => me.classList.remove('egk'), 2200);
   const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 2400); return e; };
-  add('bt-egv', 0, 0); add('bt-egr', cx, cy, '', $b('.bt-mw.p')); add('bt-egf', hx, hy, '<i></i><b></b><b class="v"></b>'); add('bt-egc', cx, cy); setTimeout(() => B && add('bt-egc', cx, cy), 220);
-  [[-30, -6, .1], [34, 4, .3], [-22, 30, .45], [26, -34, .2], [6, 44, .6], [-40, -38, .38], [44, -12, .7]].forEach(([x, y, dl]) => { const e = add('bt-egt', cx, cy - 8); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px'); e.style.setProperty('--d', dl + 's'); }); }
-function egFxR() { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;   /* v22.07 경완 '레어는 적은 확률로 배틀에서 번뜩, 기존이랑 다른 색·부가 효과·다른 문장': 무지개 각성 — 시간 멈춤(어두운 화면)·흔들림·발밑 마법진·빛기둥·무지개 빛줄기·충격파·프리즘 조각·마지막 섬광 */
+  add('bt-egv' + (tr < 2 ? ' t1' : ''), 0, 0); if (tr > 1) { add('bt-egr' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b('.bt-mw.p')); add('bt-egf' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>'); } add('bt-egc', cx, cy); if (tr > 1) setTimeout(() => B && add('bt-egc', cx, cy), 220);   /* v22.07 하 = 빛 고리·반짝이만, 중 = 예전 그대로, 상 = 더 크게 + 흔들림·세 번째 고리·금빛 섬광 */
+  if (tr > 2) { t.classList.remove('ershk'); void t.offsetWidth; t.classList.add('ershk'); setTimeout(() => t.classList.remove('ershk'), 1400); setTimeout(() => B && add('bt-egc', cx, cy), 460); setTimeout(() => { if (!B) return; const w = add('bt-egw', 0, 0); w.style.setProperty('--x', (cx / 2.56).toFixed(1) + '%'); w.style.setProperty('--y', (cy / 1.92).toFixed(1) + '%'); }, 900); }
+  [[-30, -6, .1], [34, 4, .3], [-22, 30, .45], [26, -34, .2], [6, 44, .6], [-40, -38, .38], [44, -12, .7], [-48, 12, .52], [50, 26, .25], [-10, -52, .66], [16, 56, .8], [-56, -20, .9]].slice(0, [0, 4, 7, 12][tr]).forEach(([x, y, dl]) => { const e = add('bt-egt', cx, cy - 8); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px'); e.style.setProperty('--d', dl + 's'); }); }
+function egFxR(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;   /* v22.07 경완 '레어는 적은 확률로 배틀에서 번뜩, 기존이랑 다른 색·부가 효과·다른 문장': 무지개 각성 — 시간 멈춤(어두운 화면)·흔들림·발밑 마법진·빛기둥·무지개 빛줄기·충격파·프리즘 조각·마지막 섬광 */
   const T = t.getBoundingClientRect(), R = im.getBoundingClientRect(), k = T.width / 256 || 1, cx = (R.left + R.width / 2 - T.left) / k, cy = (R.top + R.height * .55 - T.top) / k, fy = Math.min((R.top + R.height * .92 - T.top) / k, 134), hy = (R.top + R.height * .12 - T.top) / k, hx = (R.left + R.width * .58 - T.left) / k;
   const on = (el, c, ms) => { el.classList.remove(c); void el.offsetWidth; el.classList.add(c); setTimeout(() => el.classList.remove(c), ms); };
-  on(t, 'ershk', 1400); on(me, 'erk', 3300);
+  if (tr > 1) on(t, 'ershk', 1400); on(me, 'erk', 3300);   /* v22.07 하 = 어둠·마법진·고리·조각 조금, 중 = 빛기둥·빛줄기·십자 더함, 상 = 고리 세 번·조각 두 배·마지막 섬광 */
   const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 3400); return e; };
   const at = (ms, f) => setTimeout(() => B && f(), ms), pc = e => { e.style.setProperty('--x', (cx / 2.56).toFixed(1) + '%'); e.style.setProperty('--y', (cy / 1.92).toFixed(1) + '%'); return e; };
-  pc(add('bt-erv', 0, 0)); add('bt-erm', cx, fy, '', $b('.bt-mw.p')); add('bt-err', cx, cy, '', $b('.bt-mw.p')); at(120, () => add('bt-erp', cx, fy));
-  at(300, () => add('bt-erc', cx, cy)); at(650, () => add('bt-erc', cx, cy)); at(380, () => add('bt-egf er', hx, hy, '<i></i><b></b><b class="v"></b>'));
-  [[-26, .25, 300], [18, .35, 200], [-8, .5, 40], [30, .6, 120], [-34, .7, 260], [10, .8, 320], [-18, .95, 80], [24, 1.05, 180], [-2, 1.15, 0], [36, 1.25, 240], [-30, 1.35, 140], [14, 1.45, 60]].forEach(([x, d, h]) => { const e = add('bt-ers', cx + x * .5, fy - 6); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--d', d + 's'); e.style.setProperty('--h', h); });
-  at(1300, () => pc(add('bt-erw', 0, 0))); }
+  pc(add('bt-erv', 0, 0)); add('bt-erm', cx, fy, '', $b('.bt-mw.p')); if (tr > 1) { add('bt-err' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b('.bt-mw.p')); at(120, () => add('bt-erp', cx, fy)); at(380, () => add('bt-egf er' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>')); }
+  at(300, () => add('bt-erc', cx, cy)); if (tr > 1) at(650, () => add('bt-erc', cx, cy)); if (tr > 2) at(1000, () => add('bt-erc', cx, cy));
+  [[-26, .25, 300], [18, .35, 200], [-8, .5, 40], [30, .6, 120], [-34, .7, 260], [10, .8, 320], [-18, .95, 80], [24, 1.05, 180], [-2, 1.15, 0], [36, 1.25, 240], [-30, 1.35, 140], [14, 1.45, 60], [-40, .3, 280], [40, .45, 100], [-14, .6, 220], [6, .75, 20], [-24, .9, 330], [28, 1.0, 160], [-36, 1.1, 50], [20, 1.2, 260], [-4, 1.3, 120], [32, 1.4, 300], [-20, 1.5, 0], [12, 1.6, 200]].slice(0, [0, 6, 12, 24][tr]).forEach(([x, d, h]) => { const e = add('bt-ers', cx + x * .5, fy - 6); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--d', d + 's'); e.style.setProperty('--h', h); });
+  if (tr > 2) at(1300, () => pc(add('bt-erw', 0, 0))); }
 async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P || (S.gym?.gmax | 0) < 1) return;   /* v21.70 경완 '번뜩이는 것도 훈련장 열리고부터': 동네 체육관(훈련장 열림) 전엔 번뜩임 없음 */ const D = B.egDone || (B.egDone = new Set()); if (D.has(pid)) return;
-  { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && Math.random() < EG_RFP) { D.add(pid); const bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(); se('KIRAKIRA2', { gain: 1.6 }); setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); setTimeout(() => B && GA.haptic?.(1), 1300); await wait(1600); if (!B) return;
-    bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_RFL, 1); await msgTap(x ? `${X.nm}의 잠들어 있던 힘이 깨어났다…!` : `${X.nm}의 잠들어 있던 힘이 꿈틀거렸다…!`); if (!B) return;
-    if (x) await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id }); GA.save?.(); return; } }   /* v22.07 경완: 레어 기술은 배틀 중 아주 낮은 확률로만, 깨달으면 그 자리에서 익힘 */
-  const f = egFocus(P); if (f < 0 || Math.random() >= EG_FLP) return; D.add(pid);
-  $b('.bt-msg .t').textContent = ''; egFx(); se('KIRAKIRA2', { gain: 1.4 });   /* v21.70 경완 '번뜩이는 거 효과음도': 예전엔 'DP_' 가 두 번 붙어 소리가 안 났음 */ GA.haptic?.(1); await wait(900); if (!B) return; await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
-  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_FL); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
+  { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && Math.random() < ((P.fr || 0) >= 255 ? EG_RFP5 : EG_RFP)) {   /* v22.07 경완 '레어는 친밀도 만점일 때 번뜩임 비율 높게': 만점 4%, 아니면 1.5% */ D.add(pid); const tr = egTier(P), bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(tr); se('KIRAKIRA2', { gain: [0, 1.1, 1.5, 1.8][tr] }); if (tr > 1) setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); if (tr > 2) setTimeout(() => B && GA.haptic?.(1), 1300); await wait([0, 1100, 1500, 1700][tr]); if (!B) return;
+    bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_TA[tr], 1); await msgTap(x ? `${X.nm}의 잠들어 있던 힘이 깨어났다…!` : X.nm + EG_TT.r[tr]); bm.classList.remove('er'); if (!B) return;
+    await frFx('p'); if (!B) return; await msgTap(egFrT(X.nm, P)); if (!B) return;
+    if (x) { bm.classList.add('er'); await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; } (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id, tr }); GA.save?.(); return; } }   /* v22.07 경완: 레어 게이지는 레어 번뜩임으로만, 번뜩임 상중하(친밀도 높을수록 상), 번뜩인 뒤 친밀도 꿀렁 + 대사 */
+  const f = egFocus(P); if (f < 0 || Math.random() >= EG_FLP) return; D.add(pid); const tr = egTier(P);
+  $b('.bt-msg .t').textContent = ''; egFx(tr); se('KIRAKIRA2', { gain: [0, 1, 1.4, 1.8][tr] }); if (tr > 2) setTimeout(() => B && se('EXPMAX2'), 600);   /* v21.70 경완 '번뜩이는 거 효과음도': 예전엔 'DP_' 가 두 번 붙어 소리가 안 났음 */ GA.haptic?.(1); await wait([0, 700, 900, 1200][tr]); if (!B) return; await msgTap(X.nm + EG_TT.n[tr]); if (!B) return; await frFx('p'); if (!B) return; await msgTap(egFrT(X.nm, P)); if (!B) return;
+  const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_TA[tr]); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x, tr });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
   GA.save?.();
 }
 async function learnAsk(P, i, id) {
