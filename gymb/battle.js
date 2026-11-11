@@ -1622,11 +1622,11 @@ async function expGain(X) {
 /* v20.85 경완 '배틀 번뜩임은 배틀 중간에': 내 포켓몬이 기술을 쓰고 그 턴이 끝나면(다음 턴 시작 전) 가끔 번뜩임 → 집중 중인 특별한 기술 깨달음 +34% */
 /* v20.85 경완 '번뜩일 때 스프라이트 효과 다시 — 도트 아니어도 되니 퀄 높게': 포켓몬이 하얗게 번쩍 → 금빛 광채, 뒤로 빛줄기 회전, 머리 위 렌즈 플레어 별, 주위 반짝이, 화면 금빛 비네트 */
 /* v22.15 경완 '상 번뜩임은 파칭 그대로 + 머리를 스치는 번개': 파칭과 함께 머리 위를 가로지르는 번개 두 줄기 (0.12초·0.38초), 레어는 무지갯빛 */
-/* v22.15 경완 '번개는 포켓몬 한쪽에서 반대편으로 뚫고 들어가는 느낌': 번개가 몸 바깥 한쪽에서 그어지며 몸을 꿰뚫고 반대편으로 빠져나감 (들어간 자리·나간 자리 불꽃), 왼→오 · 오→왼 두 번, 칠 때 화면 번쩍 + 천둥 DP_KAMI */
+/* v22.15 경완 '번개는 포켓몬 한쪽에서 반대편으로 뚫고 들어가는 느낌', '스프라이트 뒤로 지나가게': 번개가 몸 바깥 한쪽에서 그어지며 몸을 꿰뚫고 반대편으로 빠져나감 (들어간 자리·나간 자리 불꽃), 왼→오 · 오→왼 두 번, 칠 때 화면 번쩍 + 천둥 DP_KAMI */
 const egZp = () => { let p = 'M0 18'; for (let i = 1; i <= 10; i++) p += ` L${i * 17.6} ${(18 + (i === 10 ? 0 : (Math.random() * 2 - 1) * (i % 2 ? 14 : 9))).toFixed(1)}`; return p; };
 function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy;
   [[1, -14, -8, 280], [-1, 6, 7, 640]].forEach(([dr, dy, r, ms]) => setTimeout(() => { if (!B) return; const p = egZp(), y = Y + dy;
-    const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
+    const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`, $b('.bt-mw.p')); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
     add('bt-egzb' + c, X - 88 * dr, y, '<i></i>'); setTimeout(() => B && add('bt-egzb o' + c, X + 88 * dr, y, '<i></i>'), 150); add('bt-egzf' + c, 0, 0); }, ms)); }
 /* v22.15 경완 '번뜩일 때 배경 곡 줄이기': 보통 중·상, 레어는 모두 — 곡을 ¼ 로 줄였다가 ms 뒤 다시 */
 const egDuck = ms => { try { window.GymBGM?.duck?.(.25, .15); setTimeout(() => { try { window.GymBGM?.duck?.(1, .5); } catch (e) {} }, ms); } catch (e) {} };
