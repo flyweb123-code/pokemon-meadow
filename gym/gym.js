@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1144,7 +1141,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
@@ -1865,118 +1862,17 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
 // 관장 카드 우상단 옷장 (경완 2026-11-08 '관장 카드에도 옷장 아이콘 넣어서 옷 갈아입을 수 있게'): 가진 옷 고르기 → 입고 카드 다시
-// v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨' + '스라크가 관장보다 작아?'
-// 키(SPECIES h, 0.1m) 그대로 비율: 관장 = 1.4m. 무대에 안 들어가는 거대한 포켓몬만 무대 높이까지. 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 관장 절반보다 작으면 관장 발 앞.
-// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄).
-// 폭이 넘치면 ① 겹침을 늘리고 ② 앞줄에서 큰 걸 뒷줄로 올리고 ③ 그래도 넘치면 관장까지 다 같이 줄임 (키 비율은 안 깨짐).
-function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비율 [왼쪽, 오른쪽] (아직 못 읽으면 0, 다른 곳 그림은 CORS 로 한 번 더 받아 읽고 again())
-  if (im.tagName !== 'IMG' || !im.naturalWidth) return [0, 0, 0, 0]; if (im._trim) return im._trim;
-  const rd = src => { const w = src.naturalWidth, h = src.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0);
-    const d = x.getImageData(0, 0, w, h).data; let l = w, r = -1, t = h, b = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < l) l = i; if (i > r) r = i; if (y < t) t = y; b = y; }
-    return r < 0 ? [0, 0, 0, 0] : [l / w, (w - 1 - r) / w, t / h, (h - 1 - b) / h]; };
-  try { return im._trim = rd(im); } catch (e) {}
-  if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0, 0, 0]; } }; c.onerror = () => { im._trim = [0, 0, 0, 0]; }; c.src = im.src; }
-  return [0, 0, 0, 0]; }
-const mecSt = sp => { const o = SPECIES[sp]; return !!o && !!(o.leg || o.my || (o.bs || []).reduce((x, y) => x + y, 0) >= 580); };   // 전설·환상·종족값 580 이상 = 센 포켓몬 (왼쪽 자리)
-let MEC_FACE = null, mecFq = null;
-function mecFace(again) { if (MEC_FACE) return MEC_FACE; if (!mecFq) mecFq = fetch('gym/img/pk/face.json').then(r => r.json()).then(d => { MEC_FACE = d; }).catch(() => { MEC_FACE = {}; }); mecFq.then(() => again?.()); return null; }
-function mecLay(stg) {
-  const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
-  const cx = W / 2, BB = 34, FB = 4, M = 4;
-  const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
-    const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
-  if (!A.length || A.some(a => !a)) return;
-  const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
-  const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
-  // 경완 11-11 '관장 주변을 원형으로 감싸듯이' + '발판 뒤로 넘어가지 않게, 겹침은 아까 정도': 발판 타원 안에서 큰 포켓몬은 뒤쪽 호(가운데일수록 뒤), 작은 포켓몬은 앞쪽 호(관장 다리 앞).
-  // 옆으로는 예전처럼 몸 폭의 20% 정도만 겹치며 바깥으로 줄 세움 (넘치면 겹침을 늘리고, 그래도 안 되면 그때만 조금씩 줄임)
-  const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
-  const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= Math.pow(18 / 17, .6)).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
-  let LH = L0, LB = 14, ok = false, G = null;
-  const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
-  const FC0 = mecFace(() => stg.isConnected && mecLay(stg));
-  const fb0 = a => { const f = FC0?.[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
-  const bd0 = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];
-  const ov0 = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
-  for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
-    A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
-    /* 경완 11-11 '배치 규칙을 어떻게 해야하나' (비키면 다른 데서 가려짐): 큰 포켓몬마다 왼쪽·오른쪽을 바꾼 후보 배치를 모두 만들어 보고
-       프레임 안에 들어오는 것 중 점수가 가장 낮은 것 — 얼굴 가림(앞 포켓몬 몸·관장) ×10, 센 포켓몬이 오른쪽 +1.5, 좌우 치우침 */
-    for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
-      const place = (mk, ord, co = 0) => {
-        // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜). 어느 쪽으로 갈지는 mk 의 i 번째 비트
-        let le = cx, re = cx, pL = null, pR = null;
-        ord.forEach((a, i) => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, Math.min(a.h0, (H - C - RY - M) * k))));   /* 경완 '약어리가 콩둘기보다 작음': 원본 그림이 작아도 최소 크기는 지킴, '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기까지만 */ a.s = a.h / a.bh; a.w = a.bw * a.s;
-          const sd = (mk >> i) & 1 ? 1 : -1;
-          if (!i && ord.length % 2) { a.x = cx + sd * (co ? a.w * co : Math.min(26, 6 + a.w * .14)); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
-          const pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
-          if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
-        // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
-        let tl = cx - LW * .15, tr = cx + LW * .15;
-        tiny.forEach(a => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, a.h0))); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
-          if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
-        const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) return false;
-        const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d);
-        const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로, 가운데일수록 뒤 */
-        big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });
-        tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
-        [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; });   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~) (경완 '한카리아스가 더 앞인데 뒤로') */
-        return true; };
-      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH]; let s = 0;
-        A.forEach(a => { const fa = fb0(a); if (fa) { if (a.z < 25) s += 10 * Math.max(0, ov0(fa, trB) - .1); A.forEach(b => { if (b.z > a.z) s += 10 * Math.max(0, ov0(fa, bd0(b)) - .1); }); }
-          const ba = bd0(a); let cv = a.z < 25 ? ov0(ba, trB) : 0; A.forEach(b => { if (b.z > a.z) cv += ov0(ba, bd0(b)); }); s += 3 * Math.max(0, cv - .35);   // 몸도 거의 다 가려지면 벌점
-          if (a.st && a.x > cx + 6) s += 1.5; });   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
-        const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); return s + Math.abs((cx - lo) - (hi - cx)) / W * 3; };
-      let best = null, bs = Infinity;   // 크기 순서 그대로 + 이웃한 둘을 바꾼 순서도 (조금 벌점)
-      const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
-      /* 경완 '저런 경우가 안 나오게 규칙을': 관장 바로 뒤 가운데 포켓몬은 얼굴이 관장 머리에 가리면 더 비켜 선 자리(몸 폭 .3·.45)도 후보로 (조금 벌점) */
-      ords.forEach((ord, oi) => { for (const co of ord.length % 2 ? [0, .3, .45] : [0]) for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord, co)) continue; const sc = score() + (oi ? .4 : 0) + (co ? co : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord, co]; } } });
-      if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
-        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
-    if (!ok) k *= .96; }
-  if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
-  if (G) { const trB = [cx - trF[0] * LH * .42, LB, cx + trF[0] * LH * .42, LB + LH]; let fc = 0;   // 가장 많이 가려진 얼굴 비율 (검사용 data-fc)
-    A.forEach(a => { const fa = fb0(a); if (!fa) return; let c = a.z < 25 ? ov0(fa, trB) : 0; A.forEach(b => { if (b.z > a.z) c += ov0(fa, bd0(b)); }); fc = Math.max(fc, c); }); stg.dataset.fc = fc.toFixed(2); stg.dataset.k = (LH / L0).toFixed(2); }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
-  const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
-  const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
-  // 경완 11-11 '스프라이트마다 얼굴 인식해서 안 가리게': gym/img/pk/face.json = 종마다 얼굴 상자(보이는 그림 기준 비율, 왼쪽 보는 원본). 앞에 선 포켓몬·관장이 얼굴을 덮으면 앞뒤를 바꾸거나 옆으로 비킴
-  const FC = mecFace(() => stg.isConnected && mecLay(stg));
-  if (FC) { const LWv = trF[0] * LH;
-    const fb = a => { const f = FC[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
-    const body = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];   // 몸 상자는 그림보다 조금 좁게 (가장자리 투명·꼬리)
-    const ovl = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
-    const trB = [cx - LWv * .42, LB, cx + LWv * .42, LB + LH];
-    for (let pass = 0; pass < 0; pass++)   /* 후보 배치 점수로 고르니 나중에 비키기는 끔 (비키면 다른 데서 가려짐, 경완 11-11) */ { let ch = false;
-      for (const a of A) { const fa = fb(a); if (!fa) continue;
-        if (a.z < 25 && ovl(fa, trB) > .3) { const sd = a.x >= cx ? 1 : -1, need = sd > 0 ? trB[2] - fa[0] : fa[2] - trB[0]; a.x += sd * Math.min(need + 2, 34); ch = true; continue; }   // 관장 뒤에서 얼굴이 가리면 옆으로
-        for (const b of A) { if (b === a || b.z < a.z || (b.z === a.z && A.indexOf(b) < A.indexOf(a)) || ovl(fa, body(b)) <= .3) continue;   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 같은 z 면 나중 것이 위에 그려지니 그것도 가림 */
-          const oa = ovl(fa, body(b)), ob = ovl(fb(b), body(a));   /* 경완 '갸라도스가 라프라스한테 얼굴 가려짐': 서로 가리면 덜 가리는 쪽으로 앞뒤 */
-          if (Math.abs(a.b - b.b) < 1.5 && (ob < .2 || ob < oa - .25)) {   /* 경완 '한카리아스가 더 앞인데 왜 뒤로': 깊이가 다르면 앞뒤는 그대로, 옆으로만 비킴 */ const t = a.z; a.z = b.z; b.z = t; if (a.z === b.z) a.z++; }   // 같은 줄이면 앞뒤 바꾸기
-          else { const sd = a.x >= b.x ? 1 : -1; a.x += sd * 8; b.x -= sd * 8; }   // 아니면 서로 조금씩 비킴
-          ch = true; } }
-      if (!ch) break; }
-    /* 경완 '대짱이 오른쪽 프레임에 잘림': 얼굴 피해 비킨 뒤 폭이 넘치면 가운데 쪽으로 모아서 좌우 프레임 안에 */
-    for (let it = 0; it < 30; it++) { const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2));
-      if (hi - lo <= W - M * 2) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); break; }
-      const m = (lo + hi) / 2; A.forEach(a => { a.x = m + (a.x - m) * .97; }); } }
-  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
-  // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
-  const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
-}
-const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
+const CLOSET_SVG = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 1h12v1H2zM1 2h1v12H1zM14 2h1v12h-1zM2 14h12v1H2zM7 2h2v12H7zM2 15h2v1H2zM12 15h2v1h-2z"/><path fill="#c88a50" d="M2 2h5v12H2zM9 2h5v12H9z"/><path fill="#e8b070" d="M3 3h3v10H3zM10 3h3v10h-3z"/><path fill="#20202c" d="M5 7h1v2H5zM10 7h1v2h-1z"/></svg>';
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
   const p = pop(`<h4>옷 갈아입기</h4><div class="ft-grid mec-fts">${['', ...fk].map(k => `<button type="button" data-a="f:${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { if (a === 'x') { close(); return meCard(); } if (!a.startsWith('f:')) return; const k = a.slice(2); close(); if (k !== cf) { fitSet(k); save(); renderHome(true); } meCard(); });
   p.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; })); }
-async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6);   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
+async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
-  const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
-    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}" data-st="${mecSt(P.sp) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
-    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${(g.w || 0) + (g.l || 0)}</b>전 <b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i;
-  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
-  const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); } }
+  const p = pop(`<div class="gy-body mec">
+    <div class="bd-pic"><img alt="" src="${src}" onload="this.style.width=this.naturalWidth*2+'px';this.style.height=this.naturalHeight*2+'px'"></div>
+    <h4>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
+  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i; }
 function sfCard(s) { loadJs('gym/battle.js', 'GymBattle').then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
 function infoPop() {
