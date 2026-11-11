@@ -754,7 +754,7 @@ const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) *
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
 const teamIc = (T, key) => `<span class="sf-team">${T.map(([sp, lv], i) => `<span${key != null ? ` class="sf-tp" role="button" data-tsp="${sp}" data-tlv="${lv}" data-tk="${key}-${i}"` : ''}><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;   // key 가 있으면 눌러서 상세카드 (지원서)
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
-const trtBox = (s, full, bare) => { const k = s?.trait, T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${k === 'kind' ? `코치로 있으면 훈련장 친밀도 ${trM(s)}배` : T.d}</small>` : ''}</span>` : ''; };   // v21.83 다정함은 코치 % 에 안 들어가 세기를 여기서
+const trtBox = (s, full, bare) => { const k = s?.trait, T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${k === 'kind' ? `코치로 있으면 훈련장 친밀도 ${trM(s)}배` : k === 'star' || k === 'money' ? `도전자를 막으면 ${k === 'star' ? '평판' : '골드'} +${Math.round((K.trX(s) - 1) * 100)}%` : T.d}</small>` : ''}</span>` : ''; };   // v21.83 다정함은 코치 % 에 안 들어가 세기를 여기서
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
 let sfT = 'sf';   // v17.40 경완: 트레이너 메뉴는 고용 관리 탭이 먼저
 // 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡

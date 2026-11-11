@@ -668,7 +668,9 @@ const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
 const repWin = r => r;
 const repLose = () => -1;
 /* v15.80 경완 '골드 30%·평판 2명당 +1': 트레이너가 막은 평판은 반씩 쌓아 두었다가 1이 차면 오른다 (인기인 ×1.5) */
-const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? 1.5 : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
+/* v21.84 경완 '수완가 이런 것도 다 수치 개체별로': 특성 세기 s.tv 0~100 (manage.js trV 와 같은 식) — 인기인·수완가 ×1.3~1.7, 근성 +.25~.55, 느긋함 쉬는 확률 10~30%, 검소함 주급 ×.9~.7, 성장형 30~18시간마다 */
+const trV = s => (s.tv ?? ((Math.imul((s.id | 0) ^ 0x5bd1e995, 2654435761) >>> 7) % 101)) / 100, trX = s => Math.round((1.3 + .4 * trV(s)) * 20) / 20;
+const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? trX(s) : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
 const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
@@ -892,7 +894,7 @@ const TRAITS = {
 // 고용 트레이너 포켓몬은 시간이 지나도 조금씩 큰다: 하루 반마다(성장형은 하루마다) +1, 내 라인업 평균 -1 까지만. 쉬는 중엔 안 큼 (경완 2026-10-29)
 function sfGrow(now) {
   const g = st(), cap = Math.max(5, myAvg() - 1);
-  for (const s of g.sf || []) { const step = (s.trait === 'grow' ? 24 : 36) * H; if (!s.gt) { s.gt = now; continue; }
+  for (const s of g.sf || []) { const step = (s.trait === 'grow' ? 30 - 12 * trV(s) : 36) * H; if (!s.gt) { s.gt = now; continue; }
     let k = 0; while (now - s.gt >= step && k++ < 30) { s.gt += step; if (!s.rest && teamLv(s.team) < cap) s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(100, cap, m[1] + 1)); }); } }
 }
 // 고용 트레이너가 차례로 도전자와 싸운다 (자동, 레벨·마릿수로 승패 확률)
@@ -901,8 +903,8 @@ function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})
 function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
-    if (s.rest || !inGym(s) || (s.trait === 'lazy' && Math.random() < .2)) continue;   // 체육관에 서 있는 트레이너만 도전자를 상대한다 (훈련장 코치를 겸해도 된다)
-    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .4 : 0) - .2;   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
+    if (s.rest || !inGym(s) || (s.trait === 'lazy' && Math.random() < .1 + .2 * trV(s))) continue;   // 체육관에 서 있는 트레이너만 도전자를 상대한다 (훈련장 코치를 겸해도 된다)
+    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) - .2;   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
     if (Math.random() < 1 / (1 + Math.exp(-z))) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
       if (s.xp >= (s.trait === 'grow' ? 2 : 3)) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
@@ -924,7 +926,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? 1.5 : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
@@ -972,17 +974,17 @@ function payDay(now) {
    sfEV = 이 트레이너가 맨 앞 자리에서 일주일(하루 도전자 약 15명) 막아서 벌 골드 기댓값 (staffFight 승률 식·지금 등급의 쉬운/어려운 도전자 비율·GYM_G·GYM_SF_PCT 그대로).
    주급 = 보통 트레이너(내 평균 -2레벨·3마리) 기댓값 근처 + 실력 차이의 35%만 반영 → 잘하는 트레이너는 남고, 약한 트레이너는 손해. 뒤 자리 트레이너는 앞에서 놓친 도전자만 상대해서 덜 번다 */
 const sig = z => 1 / (1 + Math.exp(-z));
-function sfEV(rel, n, trait) { const g = st(), G = gradeOf(g.rep || 0), f = bdPh(g.rep || 0), W = GYMB();
-  const pE = Math.min(1, [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8)), lu = Math.max(1, luNow().length || 3), lv = Math.min(rel, 3), gu = trait === 'guts' ? .4 : 0;
+function sfEV(rel, n, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), f = bdPh(g.rep || 0), W = GYMB();
+  const pE = Math.min(1, [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8)), lu = Math.max(1, luNow().length || 3), lv = Math.min(rel, 3), gu = trait === 'guts' ? .25 + .3 * v : 0;
   const zE = (lv - (-7 + Math.round(f * 8))) / 8 + (n - (2.5 + (f > .5))) * .2 + gu - .2, nH = (3 + clampN(lu + 1 + (f > .4) + (f > .8), 3, 6)) / 2, zH = (lv - (-1 + Math.round(f * 9))) / 8 + (n - nH) * .2 + gu - .2;
-  const gold = (pE * sig(zE) * W.GYM_G[0] + (1 - pE) * sig(zH) * W.GYM_G[1]) * W.GYM_SF_PCT / 100 * (trait === 'money' ? 1.5 : 1);
-  return 7 * 15 * (trait === 'lazy' ? .8 : 1) * gold; }
-const sfWage = (rel, n, trait) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .8 : 1) * (.9 + Math.random() * .2) / 10) * 10); };
+  const gold = (pE * sig(zE) * W.GYM_G[0] + (1 - pE) * sig(zH) * W.GYM_G[1]) * W.GYM_SF_PCT / 100 * (trait === 'money' ? 1.3 + .4 * v : 1);
+  return 7 * 15 * (trait === 'lazy' ? .9 - .2 * v : 1) * gold; }
+const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .9 - .2 * v : 1) * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS));
-  const wage = sfWage(lv - avg, n, trait);
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv: rndI(0, 100), team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
 /* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
@@ -3170,7 +3172,7 @@ async function visit(F, code) {
 
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { trX, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
