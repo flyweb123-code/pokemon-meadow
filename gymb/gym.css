@@ -3961,3 +3961,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec .bd-pic.mec-stg{margin-top:46px}
 /* v21.90 경완 '물 타입 관장 이 부분은 딱지 말고 텍스트로만' */
 #gym .mec-id .mec-ty{padding:0;border:0;border-radius:0;background:none;font-size:13px;color:color-mix(in srgb,var(--tc,#888) 60%,#000)}
+/* v21.91 경완 '관장 카드에 올라오는 포켓몬 움직이는 스프라이트에도 랭크에 따라 후광, 이로치면 이로치 효과': 필드·훈련장과 같은 S 금빛·A 붉은 후광, 이로치는 반짝이 (상세카드 tcv-tw) */
+#gym .mec-pk.rkS>span:first-child{animation:sglow 4s ease-in-out infinite}#gym .mec-pk.rkA>span:first-child{animation:aglowM 4s ease-in-out infinite}
+#gym .mec-pk>.tcv-tw{position:absolute;inset:0;display:block;width:auto;z-index:2}
