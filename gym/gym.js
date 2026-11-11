@@ -1864,15 +1864,15 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 관장 카드 우상단 옷장 (경완 2026-11-08 '관장 카드에도 옷장 아이콘 넣어서 옷 갈아입을 수 있게'): 가진 옷 고르기 → 입고 카드 다시
 // v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨'
 // 키(SPECIES h, 0.1m) → 그림 높이: 관장(1.4m, 66px) 기준 (키/1.4)^0.75 (거대한 포켓몬은 무대 높이까지). 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 아주 작은 건 관장 발 앞.
-// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 왼쪽 포켓몬은 좌우 반전해 가운데를 봄(5세대 앞모습은 왼쪽을 봄). 폭이 넘치면 겹침을 늘리고, 그래도 넘치면 그 줄만 줄임.
+// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄). 폭이 넘치면 겹침을 늘리고, 그래도 넘치면 그 줄만 줄임.
 function mecLay(stg) {
-  const W = stg.clientWidth, H = stg.clientHeight; if (!W || !H) return;
+  const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     return { e, bw: sp.offsetWidth * sh, bh: sp.offsetHeight * sh, r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 14), .75) }; });
   if (!A.length || A.some(a => !a)) return;
   // 무대를 채우게 관장 크기(LH)부터 정함: 가장 큰 포켓몬이 무대 높이 거의 끝까지 (관장 60~104px), 키 비율은 그대로
-  const rm = Math.max(1, ...A.map(a => a.r)), LH = Math.max(60, Math.min(104, (H - (rm > 1.3 ? BB : FB) - 14) / rm)), LW = 36 * LH / 53;
+  const rm = Math.max(1, ...A.map(a => a.r)), LH = Math.max(60, Math.min(84, (H - (rm > 1.3 ? BB : FB) - 8) / rm)), LW = 36 * LH / 53;
   A.forEach(a => { a.th = LH * a.r; });
   const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = 80 * LH / 53 + 'px'; }
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
@@ -1892,7 +1892,9 @@ function mecLay(stg) {
       if (hi - lo <= W - M * 2 || k < .45) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; L.forEach(a => a.x += d); return; }
       if (boost < .3) boost += .1; else k *= .92; } };
   row(back, BB, 'b'); row(front, FB, 'f');
-  A.forEach(a => { const f = a.x < cx - 6 ? ' scaleX(-1)' : ''; Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
+  // v21.70 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
+  const top = Math.max(LH * 1.25 + 14, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* v21.70 경완 '관장을 중심으로 바깥쪽을 보게': 5세대 앞모습은 왼쪽을 봄 → 오른쪽 포켓몬만 반전 */ Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
