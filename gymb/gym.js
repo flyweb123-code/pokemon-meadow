@@ -2247,6 +2247,8 @@ function mgPop() {
   draw();
 }
 // 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
+// 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
+const PK_TIP = { 1: { k: 'trTut', t: '훈련장', d: '포켓몬을 맡기면 알아서 강해져요' }, 2: { k: 'evTB', t: '노력치', d: '어떻게 키웠느냐에 따라 능력치가 달라져요' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
 function perkPop() {
   const g = st(), gi = gradeOf(g.rep || 0).i;
   const row = ([v, n], i) => { const k = STAGE[i];
@@ -2256,7 +2258,11 @@ function perkPop() {
     if (i === GRADES.length - 1) R.push(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알`);   /* v18.87 경완 '등급표에 승급 보상이랑 등급 혜택 나눠서': 처음 오를 때 한 번 받는 것 / 그 등급의 혜택 */
     const ul = (h, A) => A.length ? `<h6 class="pk-gh">${h}</h6><ul>${A.map(t => `<li>${t}</li>`).join('')}</ul>` : '';   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
-  pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><ol class="gy-perk">${GRADES.map(row).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
+  /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
+     계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
+  const tip = i => { const T = PK_TIP[i]; if (!T) return ''; const on = !!g[T.k]; if (!on && tutSeen(T.k)) return '';
+    return `<li class="pk-tip${on ? ' on' : ''}"><i class="pk-ar"></i><div class="pk-tc"><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>${on ? '강박사가 알려 준 비밀' : `${GRADES[i][1]}이 되면`}</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : '강박사가 좋은 소식을 들고 찾아온대요'}</p></div></div><i class="pk-ar"></i></li>`; };
+  pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><ol class="gy-perk">${GRADES.map((G, i) => row(G, i) + tip(i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => close());
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 // 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')
