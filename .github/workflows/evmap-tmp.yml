@@ -1,0 +1,14 @@
+# 임시 (도트 지도 시안 만들기, 끝나면 지움)
+name: evmap tmp
+on:
+  push:
+    branches: [claude/project-thread-kyjv32]
+    paths: ['tools/ev-map*', '.github/workflows/evmap-tmp.yml']
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow && python3 tools/ev-map.py tools/ev-map-sample.json --force
+      - uses: actions/upload-artifact@v4
+        with: { name: evmap, path: config/ev-map }
