@@ -4033,8 +4033,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
 .bt.mob::after{display:none}
 .bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
-/* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (평면에서 도는 회전) */
+/* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
 .bt .gk-mark{display:none}
 .bt.mob .gk-mark{display:block;position:absolute;left:50%;top:calc((100% - var(--pb,0px)) / 2);width:74px;height:90px;margin:-45px 0 0 -37px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;opacity:0;transition:opacity .45s;pointer-events:none;z-index:0;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(190,140,255,.6))}
 .bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s cubic-bezier(.6,0,.3,1) infinite}
-@keyframes gkMark{0%,62%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes gkMark{0%,62%{transform:perspective(320px) rotateY(0)}81%{transform:perspective(320px) rotateY(180deg) scale(1.06)}100%{transform:perspective(320px) rotateY(360deg)}}   /* 경완 '입체라 생각하고 세로 축으로': 동전처럼 세로 축으로 한 바퀴 */
