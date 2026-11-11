@@ -1,6 +1,1029 @@
 {
  "days": [
   {
+   "at": 1794437310729,
+   "theme": "숲속 꼬마 미술 교실",
+   "note": "오늘은 숲속에 작은 미술 교실을 열었어요! 이젤·석고상·금빛 액자처럼 포켓몬이 들여다보고 흉내 내고 얼굴을 내밀 수 있는 소품 위주로 그렸고, 석고상엔 누가 베레모를 씌워 놓은 장난도 숨겨 뒀어요. 색상환 바람개비는 원판만 빙글빙글 돌아요.",
+   "items": [
+    {
+     "id": "paint-easel",
+     "n": "그림 이젤",
+     "k": "미술",
+     "d": "세 다리 나무 이젤에 그리다 만 풍경화(파란 하늘·해·초록 언덕)가 올려져 있어요. 아래 받침대에 물감이 묻은 분필 토막이 놓여 있어요.",
+     "px": [
+      "...........kk...........",
+      "..........kaak..........",
+      "...kkkkkkkkavkkkkkkkk...",
+      "..kCCCCCCCCCCCCCCCCCCk..",
+      "..kCccccccccccccccccdk..",
+      "..kCcssssssssssyysscdk..",
+      "..kCcsssssssssyyyyscdk..",
+      "..kCcsssssssssyyyyscdk..",
+      "..kCcssssssssssyysscdk..",
+      "..kCcsssssssssssssscdk..",
+      "..kCcsggggssssssssscdk..",
+      "..kCcgggggyggsssssscdk..",
+      "..kCcggrgggggghhhhhcdk..",
+      "..kCcgggggggggghrhhcdk..",
+      "..kCcgggggggggghhhhcdk..",
+      "..kCccccccccccccccccdk..",
+      "..kCddrsddddddddyddddk..",
+      ".kaaaaaaaaaaaaaaaaaaaak.",
+      ".kavvvvvvvvvvvvvvvvvvuk.",
+      "..kkkkawvkkvukkkawvkkk..",
+      ".....kawvkkvuk.kawvk....",
+      "....kawvk.kvuk..kawvk...",
+      "...kawvk..kvuk..kawvk...",
+      "...kawvk..kvuk..kawvk...",
+      "...kawvk..kvuk...kawvk..",
+      "..kawvk...kvuk...kawvk..",
+      ".kawvk....kvuk....kawvk.",
+      ".kawvk.....kk.....kawvk.",
+      "..kkk..............kkk..",
+      "........................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e0a868",
+      "w": "#b47c46",
+      "v": "#8a5a30",
+      "u": "#5e3a20",
+      "C": "#fbf4e2",
+      "c": "#eadcc0",
+      "d": "#c8b48e",
+      "s": "#8ec0d8",
+      "y": "#f2c64a",
+      "g": "#8cb860",
+      "h": "#6e9a48",
+      "r": "#d0564a"
+     },
+     "fit": "꽃밭 옆, 연못이 보이는 자리",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "이젤 앞에 앉아 그리다 만 풍경화를 고개 갸웃하며 바라봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "이젤 앞에 앉아 그리다 만 풍경화를 고개를 갸웃하며 감상한다.",
+        "풍경화 속 해님과 진짜 해님을 번갈아 쳐다본다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "이젤 세 다리 사이로 쏙 들어가 숨었다가 고개만 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "이젤 다리 사이에 쏙 숨었다가 고개만 빼꼼 내민다.",
+        "이젤 밑에 숨어 술래가 지나가길 기다린다."
+       ]
+      },
+      {
+       "w": "전기 타입 / 불꽃 타입",
+       "a": "캔버스 하늘에 기술을 써서 번개·불꽃 무늬를 그려 넣어요",
+       "x": {
+        "m": "skill",
+        "an": "Attack",
+        "fx": "glow"
+       },
+       "l": [
+        "캔버스 하늘에 기술로 반짝이는 무늬를 그려 넣었다.",
+        "풍경화에 제 기술로 멋진 마무리를 했다... 고 생각한다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "이젤 꼭대기 나무 손잡이에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "이젤 꼭대기에 날아와 앉아 그림을 내려다본다.",
+        "이젤 꼭대기에 앉아 화가처럼 깃털을 고른다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "paint-pails",
+     "n": "물감 통 삼총사",
+     "k": "미술",
+     "d": "빨강·노랑·파랑 물감이 찰랑찰랑 담긴 양철 통 세 개예요. 통마다 넘친 물감이 옆으로 흘러내렸어요.",
+     "px": [
+      "..........................",
+      "...kkk.....kkk.....kkk....",
+      "..kRRRk...kYYYk...kBBBk...",
+      ".kRrrrqk.kYyyyxk.kBbbbek..",
+      "kmmmmmmmkmmmmmmmkmmmmmmmk.",
+      "kmnrnnrokmnynnyokmnbnnbok.",
+      "kmnrnnnokmnynnnokmnbnnnok.",
+      "kmnrnnnokmnynnnokmnbnnnok.",
+      "kmnqnnnokmnxnnnokmnennnok.",
+      "kmmmmmmokmmmmmmokmmmmmmok.",
+      "koooooookoooooookoooooook.",
+      "kmnnnnnokmnnnnnokmnnnnnok.",
+      "kmnnnnnokmnnnnnokmnnnnnok.",
+      "kmnnnnnokmnnnnnokmnnnnnok.",
+      "kmooooookmooooookmooooook.",
+      ".kkkkkkk.kkkkkkk.kkkkkkk..",
+      ".........................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "m": "#e4e8ec",
+      "n": "#b4bcc6",
+      "o": "#7e8896",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "q": "#9e3a34",
+      "Y": "#fbe39a",
+      "y": "#e8b84a",
+      "x": "#b88a2e",
+      "B": "#8ab4e4",
+      "b": "#4a7ac0",
+      "e": "#2e5290"
+     },
+     "fit": "이젤 옆, 꽃밭 가장자리",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "물 타입",
+       "a": "물감 통에 물대포를 쏘아 세 가지 색을 섞어 버려요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "물감 통에 물대포를 쏘아 세 색을 몽땅 섞어 버렸다.",
+        "물감 통 셋을 섞어 이상한 갈색을 만들고 뿌듯해한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "물감 통 뒤에 숨어 귀나 꼬리만 살짝 내놓아요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "물감 통 뒤에 숨었는데 꼬리 끝에 물감이 묻었다.",
+        "물감 통 뒤에 숨어 옆으로 빼꼼 내다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "물감 통을 톡 건드려 보고 발에 묻은 물감으로 발자국을 찍으며 걸어가요",
+       "x": {
+        "m": "push walk"
+       },
+       "l": [
+        "물감 통을 건드렸다가 발에 물감이 묻어 알록달록 발자국을 찍고 다닌다.",
+        "물감 통 옆을 지나며 빨강·노랑·파랑 발자국을 남겼다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "giant-crayon-box",
+     "n": "큰 크레파스 상자",
+     "k": "미술",
+     "d": "포켓몬만 한 크레파스 다섯 자루가 키 순서 없이 삐죽삐죽 꽂힌 주황 상자예요. 앞에 하얀 이름표와 색 점 네 개가 찍혀 있어요.",
+     "px": [
+      ".........kk...........",
+      "...kk...kGgk..........",
+      "..kRrk.kkGgkk..kk.....",
+      "..kRrkkkkGgkkkkPpk....",
+      "..kRrkkkknnkBbkPpk....",
+      "..knnkYykGgkBbkPpk....",
+      "..kRrkYyknnkBbknnk....",
+      "..knnkYykGgknnkPpk....",
+      "..kRrknnkGgkBbknnk....",
+      "..kRrkYykGgknnkPpkkk..",
+      ".kOOOOOOOOOOOOOOOOOOk.",
+      ".kOoooooooooooooooosk.",
+      ".kOoooooooooooooooosk.",
+      ".kOommmmmmmmmmmmmmosk.",
+      ".kOommrmmymmbmmgmnosk.",
+      ".kOommssssssssssmnosk.",
+      ".kOommmmmmmmmmmmmnosk.",
+      ".kOomnnnnnnnnnnnnnosk.",
+      ".kOoooooooooooooooosk.",
+      ".kOoooooooooooooooosk.",
+      ".kOoooooooooooooooosk.",
+      ".kOssssssssssssssssSk.",
+      "..kkkkkkkkkkkkkkkkkk..",
+      "......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "Y": "#fbe39a",
+      "y": "#e8b84a",
+      "G": "#a8cc7a",
+      "g": "#6e9a48",
+      "B": "#8ab4e4",
+      "b": "#4a7ac0",
+      "P": "#d8a0d8",
+      "p": "#a06aa8",
+      "n": "#f4ecd8",
+      "m": "#fbf4e2",
+      "O": "#f4a860",
+      "o": "#e07c34",
+      "s": "#b05a22",
+      "S": "#7e3e18"
+     },
+     "fit": "이젤 옆 풀밭",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "벌레 타입",
+       "a": "삐져나온 크레파스 끝을 사각사각 갉아 먹어 봐요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Eat"
+       },
+       "l": [
+        "크레파스 끝을 사각사각 갉아 먹었다가 입이 파래졌다.",
+        "상자 위 크레파스를 갉다가 맛이 없는지 퉤 뱉는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 뒤에 숨어 크레파스 사이로 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "크레파스 사이로 고개를 쏙 내밀어 크레파스인 척한다.",
+        "크레파스 상자 뒤에 숨어 여섯 번째 크레파스 흉내를 낸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "상자를 앞발로 밀어 크레파스를 달그락달그락 흔들어 봐요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "크레파스 상자를 밀어 달그락달그락 소리를 낸다.",
+        "크레파스 상자를 흔들어 보고 제일 긴 것을 골라 본다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "plaster-bust",
+     "n": "빨간 베레모 석고상",
+     "k": "미술",
+     "d": "돌기둥 위에 눈을 감은 하얀 석고 흉상이 서 있어요. 누가 장난으로 빨간 화가 베레모를 비스듬히 씌워 놨어요.",
+     "px": [
+      "......kkkkkqk.......",
+      "....kkRRRrrrrkk.....",
+      "...kRRRRRrrrrrrk....",
+      "...kqqqqqqqqqqqk....",
+      "....kkWWWwwwwxk.....",
+      ".....kWWwwwwwxk.....",
+      ".....kWwXXwXXxk.....",
+      ".....kwwwwxxxXk.....",
+      ".....kwwwwwxXXk.....",
+      "......kwwxxxXk......",
+      ".......kWxXxk.......",
+      ".....kkkWxxXkkk.....",
+      "....kWWWwwwwwxxk....",
+      "...kWWWWwwwwwxxxk...",
+      "...kWWWWwwwwwxxxk...",
+      "..kSSSSSSSSSSSSSSk..",
+      "..kSttttttttttttTk..",
+      "...kkSSSSSSSSSSkk...",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "....kSsSsssststk....",
+      "...kkSttttttttTkk...",
+      "..kSSSSSSSSSSSSSSk..",
+      "..kSttttttttttttTk..",
+      "...kkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#fbf8f0",
+      "w": "#e6e0d4",
+      "x": "#c2b8a8",
+      "X": "#8e8474",
+      "S": "#e4d6bc",
+      "s": "#c8b48e",
+      "t": "#a08c6a",
+      "T": "#76664c",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "q": "#9e3a34"
+     },
+     "fit": "미술 교실 가운데, 이젤과 마주 보게",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "석고상 앞에 서서 눈 감은 얼굴을 똑같이 따라 해 봐요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "석고상 앞에서 눈을 감고 똑같은 표정을 지어 본다.",
+        "석고상 흉내를 내다가 진짜로 꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "석고상 뒤로 스르르 사라졌다가 반대쪽에서 나타나 놀래 줘요",
+       "x": {
+        "m": "blink",
+        "back": true
+       },
+       "l": [
+        "석고상 뒤로 스르르 사라졌다가 반대쪽에서 나타났다.",
+        "석고상인 척 가만히 있다가 눈을 번쩍 떴다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "석고상 옆에서 근육 자랑 포즈를 잡고 기술을 써 보여요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "석고상 옆에서 근육 포즈를 잡고 기합을 넣었다.",
+        "석고상보다 더 멋진 포즈를 잡으려고 애쓴다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "석고상 베레모 위에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "석고상 빨간 베레모 위에 날아와 앉았다.",
+        "베레모 위에 앉아 석고상의 새 모자가 되었다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "gold-photo-frame",
+     "n": "금빛 액자 포토존",
+     "k": "미술",
+     "d": "나무 다리로 세운 커다란 빈 금빛 액자예요. 네 모서리에 빨간 보석이 박혀 있고, 아래 은빛 이름표엔 아직 작품 이름이 없어요.",
+     "px": [
+      "..kkkkkkkkkkkkkkkkkkkk..",
+      ".kGGGGGGGGGHHGGGGGGGGGk.",
+      ".kGrGGGGGGGGGGGGGGGGrhk.",
+      ".kGGhhhhhhhhhhhhhhhGghk.",
+      ".kGGhkkkkkkkkkkkkkkGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhk............kGghk.",
+      ".kGGhkkkkkkkkkkkkkkGghk.",
+      ".kGGGGGGGGGGGGGGGGGGghk.",
+      ".kGrggggggggggggggggrhk.",
+      ".kGhhhhhhhhGGhhhhhhhhHk.",
+      "..kkkawvkmmmmmmkawvkkk..",
+      "....kawvkmnnnnnkawvk....",
+      "...kawvkkmnnnnokkawvk...",
+      "...kawvk.kkkkkk.kawvk...",
+      "...kawvk........kawvk...",
+      "...kawvk........kawvk...",
+      "..kawvk..........kawvk..",
+      "..kawvk..........kawvk..",
+      "...kkk............kkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "G": "#fbe39a",
+      "g": "#e8b84a",
+      "h": "#b88a2e",
+      "H": "#7e5a1e",
+      "r": "#d0564a",
+      "a": "#e0a868",
+      "w": "#b47c46",
+      "v": "#8a5a30",
+      "m": "#eef0f2",
+      "n": "#b4bcc6",
+      "o": "#7e8896"
+     },
+     "fit": "꽃밭 앞, 탁 트인 자리",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "액자 뒤에 서서 빈 칸 가운데로 얼굴을 내밀고 초상화인 척해요",
+       "x": {
+        "at": [
+         0.5,
+         0.38
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "액자 뒤에서 얼굴을 내밀고 명화 속 주인공인 척한다.",
+        "액자 속에서 꼼짝 않고 버티다가 재채기를 했다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 액자 위 가장자리에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "금빛 액자 위에 날아와 앉아 꼬리를 늘어뜨린다.",
+        "액자 꼭대기에 앉아 액자 속을 내려다본다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "액자 다리 아래 그늘에 기대어 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "액자 다리 아래 그늘에 기대어 새근새근 잔다.",
+        "이름표 밑에서 잠들어 스스로 작품이 되었다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "palette-signpost",
+     "n": "팔레트 간판",
+     "k": "미술",
+     "d": "나무 기둥에 커다란 화가 팔레트를 얹은 미술 교실 간판이에요. 다섯 가지 물감 방울이 찍혀 있고, 엄지 구멍이 뻥 뚫려 있어요.",
+     "px": [
+      ".........kkkk.........",
+      "......kkkaaaakkk......",
+      "....kkaaaaaaawwwkk....",
+      "...kaaaaaaawYywwwwk...",
+      "..kaaaaaRrwwyywwwwwk..",
+      ".kaaaaaarrwwwwwwBbwvk.",
+      ".kaaaaawwwwwwwwwbbvvk.",
+      ".kaaaawwwwwwwwwwvvvvk.",
+      ".kaawwwwwwwwwwwvvvvvk.",
+      ".kawwkkwwwwwwwvvvGguk.",
+      ".kwwk..kwwwwvPpvvgguk.",
+      "..kwwkkwwwwvvppvuuuk..",
+      "...kwwwwwvvvvvRyuuk...",
+      "....kkwwvvvvvuuukk....",
+      "......kkkvvvukkk......",
+      ".........kavk.........",
+      ".........kavk.........",
+      ".........kavk.........",
+      ".........kavk.........",
+      ".........kavk.........",
+      ".........kavk.........",
+      ".......kkkavkkk.......",
+      "......kwwwwwwwwk......",
+      "......kwvvvvvvuk......",
+      ".......kkkkkkkk......."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e0a868",
+      "w": "#b47c46",
+      "v": "#8a5a30",
+      "u": "#5e3a20",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "Y": "#fbe39a",
+      "y": "#e8b84a",
+      "B": "#8ab4e4",
+      "b": "#4a7ac0",
+      "G": "#a8cc7a",
+      "g": "#6e9a48",
+      "P": "#d8a0d8",
+      "p": "#a06aa8"
+     },
+     "fit": "미술 교실 들어가는 길목",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "팔레트 뒤에 서서 엄지 구멍으로 얼굴을 쏙 내밀어요",
+       "x": {
+        "at": [
+         0.28,
+         0.45
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "팔레트 엄지 구멍으로 얼굴을 쏙 내밀었다.",
+        "엄지 구멍에 얼굴을 끼우고 여섯 번째 물감인 척한다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "팔레트 가장자리에 날아와 앉아 물감 방울을 콕콕 쪼아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "팔레트 위에 날아와 앉아 물감 방울을 콕콕 쪼았다.",
+        "팔레트 위에서 부리에 파란 물감을 묻혀 왔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "나무 기둥에 등을 대고 기대 쉬어요",
+       "x": {
+        "at": "under"
+       },
+       "l": [
+        "팔레트 간판 기둥에 등을 대고 기대 쉰다.",
+        "간판 기둥에 기대 앉아 미술 교실을 지킨다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "brush-jar",
+     "n": "붓 꽂이 항아리",
+     "k": "미술",
+     "d": "푸른 유약을 바른 통통한 항아리에 물감 묻은 붓 네 자루가 꽂혀 있어요. 가운데에 하얀 띠 무늬가 한 줄 둘러져 있어요.",
+     "px": [
+      "......kYykkk......",
+      "...kk.kYykBbk.....",
+      "..kRrkknkkBbk.kk..",
+      "..kRrkkwkknk.kGgk.",
+      "..knk.kwkkwk.kGgk.",
+      "..kwk.kwkkwk.knk..",
+      "...kwkkwkkwk.kwk..",
+      "...kwkkwkkwkkwk...",
+      "...kwkkwkkwkkwk...",
+      "...kwkkwkkwkkwk...",
+      "...kEEEEEEEEEEk...",
+      "...kffffffffffk...",
+      "....kEEEEEeeek....",
+      "...kEEEEEeeeeek...",
+      "..kEEEEEeeeeeeek..",
+      "..kEEEEeeeeeeefk..",
+      ".kEEEmMmmmmmmfffk.",
+      ".kEEEeeeeeeeffffk.",
+      ".kEEeeeeeeeffffFk.",
+      "..keeeeeeeffffFk..",
+      "..keeeeeeffffFFk..",
+      "...keeeeffffFFk...",
+      "....keeffffFFk....",
+      ".....kkkkkkkk.....",
+      ".................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "Y": "#fbe39a",
+      "y": "#e8b84a",
+      "B": "#8ab4e4",
+      "b": "#4a7ac0",
+      "G": "#a8cc7a",
+      "g": "#6e9a48",
+      "n": "#c4ccd6",
+      "w": "#b47c46",
+      "E": "#9cc4cc",
+      "e": "#5e98a6",
+      "f": "#3e6e7c",
+      "F": "#284a56",
+      "m": "#eef0f2",
+      "M": "#fbfcfd"
+     },
+     "fit": "이젤과 물감 통 사이",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "항아리에 꽂힌 붓털에 얼굴을 비벼 보고 간지러워 재채기해요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "붓털에 얼굴을 비비다가 간지러워 에취 재채기를 했다.",
+        "붓 끝에 코를 대 보고 노랗게 물든 코로 돌아왔다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "덩굴을 뻗어 붓 한 자루를 쏙 뽑아 휘휘 저어 봐요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "덩굴로 붓 한 자루를 뽑아 허공에 그림을 그린다.",
+        "덩굴로 붓을 휘두르다 제 머리에 물감을 묻혔다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "제일 키 큰 노란 붓 끝에 날아와 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "제일 키 큰 붓 끝에 날아와 아슬아슬하게 앉았다.",
+        "붓 끝에 앉았다가 붓과 같이 기우뚱한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "giant-sharpener",
+     "n": "큰 연필깎이",
+     "k": "미술",
+     "d": "빨간 몸통에 은빛 뚜껑, 옆에 나무 손잡이 핸들이 달린 커다란 연필깎이예요. 노란 연필 한 자루가 깎이다 만 채 구멍에 꽂혀 있고 밑에 연필밥이 떨어져 있어요.",
+     "px": [
+      "..........................",
+      "..........................",
+      "..........................",
+      ".......kkkkkkkkkkkk.......",
+      "......kmMMMMMMMMMMmk......",
+      "......kmnnnnnnnnnnnk......",
+      "......kmnnnnnnnnnnok..kk..",
+      "......kRrrrrrrrrrrqkkkaak.",
+      ".kkkkkkRrrQQrrrrrrqnnnavk.",
+      "kPPnnYYYYQQQQrrrrrqoooavk.",
+      "kPPnnyyyyaQQQQrrrrqkkkavk.",
+      "kPpnnyyyyakQQQrrrrqk.kavk.",
+      "kPpnnyyyywQQQrrrrrqk.kavk.",
+      "kPpnoxxxxxQQrrrrrrqk.kavk.",
+      ".kkkkkkRrrrrrrrrrrqk..kk..",
+      "......kRrrrrrrrrrrqk......",
+      ".....kmmmmmmmmmmmmmmk.....",
+      ".....kmoooooooooooook.....",
+      "......kkakwkkakkkkkk......",
+      "........k.k..k............"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#ec8a76",
+      "r": "#d0564a",
+      "q": "#9e3a34",
+      "Q": "#5a2228",
+      "m": "#eef0f2",
+      "M": "#fbfcfd",
+      "n": "#b4bcc6",
+      "o": "#7e8896",
+      "Y": "#fbe39a",
+      "y": "#e8b84a",
+      "x": "#b88a2e",
+      "P": "#f2b4b8",
+      "p": "#d4868e",
+      "a": "#e0a868",
+      "w": "#b47c46",
+      "v": "#8a5a30"
+     },
+     "fit": "크레파스 상자 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "옆 손잡이를 잡고 힘껏 돌려 꽂힌 연필을 깎아요",
+       "x": {
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "연필깎이 손잡이를 힘껏 돌려 연필을 사각사각 깎았다.",
+        "손잡이를 너무 세게 돌려 연필이 반으로 줄었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "연필깎이를 타고 올라가 은빛 뚜껑 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "연필깎이 은빛 뚜껑 위에 올라앉아 다리를 흔든다.",
+        "연필깎이 위에 올라가 꽂힌 연필을 내려다본다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "떨어진 연필밥 냄새를 킁킁 맡아 봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "연필밥 냄새를 킁킁 맡다가 나무 냄새에 기분이 좋아졌다.",
+        "연필밥을 코로 밀어 작은 산을 만든다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "꽂힌 연필 끝 지우개를 꾹꾹 눌러 봐요",
+       "x": {
+        "at": [
+         0.1,
+         0.6
+        ],
+        "m": "push"
+       },
+       "l": [
+        "연필 끝 분홍 지우개를 꾹꾹 눌러 말랑함을 확인한다.",
+        "지우개를 누르다가 제 발자국까지 지워질까 걱정한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "color-wheel-spinner",
+     "n": "색상환 바람개비",
+     "k": "미술",
+     "d": "나무 기둥 위에 빨주노초파보 여섯 색 원판이 달려 있어요. 바람이 불면 원판이 돌면서 색이 섞여 하얗게 보여요.",
+     "px": [
+      ".....................",
+      "........kkkkk........",
+      "......kkPPRRRkk......",
+      ".....kPPPPRRRRRk.....",
+      "....kPPPPPRRRRRRk....",
+      "...kPPPPPPRRRRRRrk...",
+      "...kBPPPPPRRRRRrok...",
+      "..kBBBBPPPRRRRooook..",
+      "..kBBBBBBnnnOoooook..",
+      "..kBBBBBBnmnooooook..",
+      "..kBBBBBBnnnooooook..",
+      "..kBBBBGGGgyyyooook..",
+      "...kBGGGGggyyyyyok...",
+      "...kGGGGgggyyyyyyk...",
+      "....kGGggggyyyyyk....",
+      ".....kgggggyyyyk.....",
+      "......kkgggyykk......",
+      "........kkkkk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "........kaavk........",
+      "......kkkaavkkk......",
+      ".....kaaaaaaaaak.....",
+      ".....kavvvvvvvuk.....",
+      "......kkkkkkkkk......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#ec8a76",
+      "r": "#c04a40",
+      "O": "#f4a860",
+      "o": "#d47a34",
+      "y": "#e0b048",
+      "G": "#a8cc7a",
+      "g": "#6e9a48",
+      "B": "#8ab4e4",
+      "P": "#d8a0d8",
+      "m": "#fbfcfd",
+      "n": "#b4bcc6",
+      "a": "#e0a868",
+      "v": "#8a5a30",
+      "u": "#5e3a20"
+     },
+     "mv": {
+      "st": [
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "........kaavk........",
+       "......kkkaavkkk......",
+       ".....kaaaaaaaaak.....",
+       ".....kavvvvvvvuk.....",
+       "......kkkkkkkkk......"
+      ],
+      "mp": [
+       ".....................",
+       "........kkkkk........",
+       "......kkPPRRRkk......",
+       ".....kPPPPRRRRRk.....",
+       "....kPPPPPRRRRRRk....",
+       "...kPPPPPPRRRRRRrk...",
+       "...kBPPPPPRRRRRrok...",
+       "..kBBBBPPPRRRRooook..",
+       "..kBBBBBBnnnOoooook..",
+       "..kBBBBBBnmnooooook..",
+       "..kBBBBBBnnnooooook..",
+       "..kBBBBGGGgyyyooook..",
+       "...kBGGGGggyyyyyok...",
+       "...kGGGGgggyyyyyyk...",
+       "....kGGggggyyyyyk....",
+       ".....kgggggyyyyk.....",
+       "......kkgggyykk......",
+       "........kkkkk........",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "....................."
+      ],
+      "o": [
+       10.5,
+       9.5
+      ],
+      "k": "spin"
+     },
+     "fit": "바람 잘 드는 언덕, 꽃밭 옆",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "원판 앞에서 날갯짓해 바람을 일으켜 빙글빙글 돌려요",
+       "x": {
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "색상환 앞에서 날갯짓해 원판을 빙글빙글 돌렸다.",
+        "날갯바람으로 원판을 돌려 여섯 색을 하얗게 섞었다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "염력으로 원판을 천천히 돌렸다 빨리 돌렸다 해요",
+       "x": {
+        "m": "skill",
+        "an": "Attack",
+        "fx": "spin"
+       },
+       "l": [
+        "염력으로 색상환을 천천히, 또 빠르게 돌려 본다.",
+        "염력으로 원판을 돌리다 제가 더 어지러워졌다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 옆에 앉아 빙글빙글 도는 색을 넋 놓고 바라봐요",
+       "x": {
+        "fx": "spin"
+       },
+       "l": [
+        "색상환 옆에 앉아 빙글빙글 도는 색을 넋 놓고 바라본다.",
+        "도는 원판을 쳐다보다 눈이 뱅글뱅글해졌다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "stained-glass-panel",
+     "n": "스테인드글라스 칸막이",
+     "k": "미술",
+     "d": "둥근 아치 나무틀에 빨강·파랑·초록·보라 유리 조각을 해님 무늬로 이어 붙인 칸막이예요. 햇빛이 비치면 바닥에 알록달록 그림자가 생겨요.",
+     "px": [
+      ".......kkkkkk.......",
+      ".....kkaaaaaakk.....",
+      "....kaawwwwwwaak....",
+      "...kawwBBBlGGwwak...",
+      "..kawwBBBBlGGGwwak..",
+      ".kawwBBBBBlGGGGwwak.",
+      ".kawRlBBBBGGGGlPwvk.",
+      ".kawRRlBBBGGGlPPwvk.",
+      ".kawRRRlBllGlPPPwvk.",
+      ".kawRRRRYYYYPPPPwvk.",
+      ".kawlRRlYYYYlPPPwvk.",
+      ".kawPPPlYYYYlRRlwvk.",
+      ".kawPPPPYYYYRRRRwvk.",
+      ".kawPPPlGllBlRRRwvk.",
+      ".kawPPlGGGBBBlRRwvk.",
+      ".kawllllllllllllwvk.",
+      ".kawlGGGGlBBBBBlwvk.",
+      ".kawGGGGGlBBBBBlwvk.",
+      ".kawGGGGGlBBBBBBwvk.",
+      ".kawGGGGGlBBBBBBwvk.",
+      ".kawwwwwwwwwwwwwwvk.",
+      ".kavvvvvvvvvvvvvvvk.",
+      "kaawvaakkkkkkaawvaak",
+      "kavwvvuk....kavwvvuk",
+      ".kkwvkk......kkwvkk.",
+      "kaaaaaak....kaaaaaak",
+      "kavvvvuk....kavvvvuk",
+      ".kkkkkk......kkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e0a868",
+      "w": "#b47c46",
+      "v": "#8a5a30",
+      "u": "#5e3a20",
+      "l": "#3a3a48",
+      "Y": "#fbe39a",
+      "R": "#ec8a76",
+      "B": "#8ab4e4",
+      "G": "#a8cc7a",
+      "P": "#d8a0d8"
+     },
+     "fit": "해가 잘 드는 자리, 석고상 뒤",
+     "glow": 0,
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "유리 앞에 서서 알록달록한 빛을 몸에 받아 봐요",
+       "x": {
+        "at": "front",
+        "fx": "glow"
+       },
+       "l": [
+        "스테인드글라스 앞에서 알록달록한 빛을 온몸에 받았다.",
+        "유리 빛에 몸이 무지개색이 되어 신기해한다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "유리 뒤로 스르르 사라졌다가 해님 무늬 가운데에 얼굴을 비춰요",
+       "x": {
+        "m": "blink",
+        "back": true
+       },
+       "l": [
+        "유리 뒤로 스르르 사라졌다가 해님 무늬 속에 얼굴을 비췄다.",
+        "스테인드글라스 속 그림인 척하다 들켰다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "칸막이 나무 받침에 기대 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "칸막이 받침에 기대 알록달록한 햇빛 아래 잠들었다.",
+        "유리 그림자 속에서 새근새근 잔다."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
    "at": 1794350871531,
    "theme": "숲속 꼬마 소방서",
    "note": "오늘은 숲속 꼬마 소방서예요! 소화전·호스 릴·손펌프 수레·물대포 과녁은 물 타입이 기술로 노는 자리, 망루 종·헬멧 걸이는 줄과 종을 울리는 자리, 구조 사다리·구조 매트는 오르고 튀는 자리로 나눴어요. 빨강·금빛·크림 세 가지로 한 동네처럼 맞췄고, 밤엔 경광등이 붉게 빛나요.",
