@@ -4036,5 +4036,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
 .bt .gk-mark{display:none}
 .bt.mob .gk-mark{display:block;position:absolute;left:50%;top:calc((100% - var(--pb,0px)) / 2);width:74px;height:90px;margin:-45px 0 0 -37px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;opacity:0;transition:opacity .45s;pointer-events:none;z-index:0;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(190,140,255,.6))}
-.bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s cubic-bezier(.6,0,.3,1) infinite}
-@keyframes gkMark{0%,62%{transform:perspective(320px) rotateY(0)}81%{transform:perspective(320px) rotateY(180deg) scale(1.06)}100%{transform:perspective(320px) rotateY(360deg)}}   /* 경완 '입체라 생각하고 세로 축으로': 동전처럼 세로 축으로 한 바퀴 */
+.bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s linear infinite}
+@keyframes gkMark{0%,55%{transform:perspective(320px) rotateY(0) scale(1)}61%{transform:perspective(320px) rotateY(-28deg) scale(.94);animation-timing-function:cubic-bezier(.3,0,.2,1)}86%{transform:perspective(320px) rotateY(735deg) scale(1.08);animation-timing-function:ease-in-out}93%{transform:perspective(320px) rotateY(712deg) scale(.98)}100%{transform:perspective(320px) rotateY(720deg) scale(1)}}   /* 경완 '뒤집는 느낌 말고 찰지게': 살짝 뒤로 감았다가 두 바퀴 휙 → 조금 넘쳤다 되돌아와 멈춤 */
+.bt-hb .gkm-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkm .nm{max-width:74px}

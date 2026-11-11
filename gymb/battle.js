@@ -369,7 +369,7 @@ function hpCol(r) { return r > .5 ? 'g' : r > .2 ? 'y' : 'r'; }
 const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp * 48));
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
-  hb.querySelector('.nm').textContent = A.nm; hb.querySelector('.lvn').textContent = A.lv;
+  { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } const k = String(A.tsp || A.sp); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = (SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join(''); } }   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
@@ -425,11 +425,11 @@ async function dxCtx(s, X, from, to, item) {
 const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
   const m = monEl(s); if (!m || !B) return; const pan = panOf(s), DBK = await dbkLoad();
-  const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); };
+  const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); paintHb(s, X); };
   if (DBK && X && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
-      if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/key-stone.png`), st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
+      if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-ring.png`)   /* 경완 '키스톤은 메가링 스프라이트' */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
         if (GymDBK.megaFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.onSwap = () => { if (X.gmPend) { X.gmPend = 0; swap(); } };
           const bm = window.GymBGM?.name; M('stop', .25); M('play', 'shinka');   // 경완 2026-11-12: 메가진화 동안 배틀 곡 끊고 진화 곡, 끝나면 다시 배틀 곡
           await GymDBK.megaFull(c); M('stop', .5); if (bm && B) setTimeout(() => { if (B && window.GymBGM?.name == null) M('play', bm); }, 550); } else await GymDBK.mega(c); if (X.gmPend) { X.gmPend = 0; swap(); } return; }   // 경완 2026-11-12: 전체 화면 메가진화
@@ -1076,7 +1076,7 @@ async function choose(req) {
   { const M = req.active?.[0]?.moves || []; if (M.length === 1 && M[0].pp == null) return 'move 1'; }   // 꽃잎댄스·역린 같은 연속 공격, 반동으로 쉬기: 본가처럼 고르지 않고 바로 (경완 2026-11-02 'PP undefined')
   for (;;) {
     const a = await mainPanel(A);
-    if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; return 'move ' + (i + 1) + (B.gkSel ? ' ' + B.gkSel.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); }
+    if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
     if (a === 'bag') { await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }

@@ -235,15 +235,15 @@
     at(6550, () => { A(dim, [{ opacity: .88 }, { opacity: 1 }], { duration: 400 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 800 }); });
     at(6650, () => A(meg, [{ opacity: 0, transform: 'scale(1.4)' }, { opacity: 1, transform: 'scale(.93)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.2,1.4,.4,1)' }));   /* 5000 에서 meg 애니메이션을 지우므로 그 뒤에 만듦 (안 그러면 하얀 실루엣만 남음) */
     at(6750, () => megI.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }));
-    A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .12 }, { opacity: .9, transform: 'rotate(130deg) scale(1.05)' }], { duration: 2600, delay: 6550, easing: 'linear' });
-    A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(300deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(520deg)' }], { duration: 2600, delay: 6550, easing: 'linear' });
+    A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .12 }, { opacity: .9, transform: 'rotate(200deg) scale(1.05)' }], { duration: 4100, delay: 6550, easing: 'linear' });
+    A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(300deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(640deg)' }], { duration: 4100, delay: 6550, easing: 'linear' });
     A(lines, [{ opacity: .35 }, { opacity: .45 }], { duration: 300, delay: 6550 });
     [ring, ring2].forEach((r, i) => A(r, [{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: `scale(${5 + i * 2})` }], { duration: 900 + i * 250, delay: 6650 + i * 150, easing: 'cubic-bezier(.1,.7,.3,1)' }));
     shake(6650, 650, 12); at(7000, () => (c.cryBig || c.cry)());
     A(icon, [{ opacity: 0, transform: 'translateY(16px) scale(.4)' }, { opacity: 1, transform: 'translateY(0) scale(1.25)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 500, delay: 7300 });
     at(7300, () => c.se('Saint7'));
     // 8) 원래 화면으로 (8800~)
-    const END = 9300;
+    const END = 10800;   /* 경완 '진화하고 나서 모습 좀 더 길게': 메가 모습 1.5초 더 */
     return new Promise(res => { let done = false;
       const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => { clearTimeout(t); clearInterval(t); }); if (mon) { if (mon.dataset.mgf != null) { mon.style.filter = mon.dataset.mgf; delete mon.dataset.mgf; } mon.style.visibility = ''; }
         const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
