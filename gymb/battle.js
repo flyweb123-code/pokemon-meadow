@@ -429,7 +429,7 @@ async function gmFx(s, X, kind, ty) {
   if (DBK && X && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
-      if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-ring.png`)   /* 경완 '키스톤은 메가링 스프라이트' */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
+      if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-bracelet.png`)   /* 경완 '키스톤은 메가링' → 경완이 준 메가바클 그림 (2026-11-12) */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
         if (GymDBK.megaFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.onSwap = () => { if (X.gmPend) { X.gmPend = 0; swap(); } };
           const bm = window.GymBGM?.name; M('stop', .25); M('play', 'shinka');   // 경완 2026-11-12: 메가진화 동안 배틀 곡 끊고 진화 곡, 끝나면 다시 배틀 곡
           await GymDBK.megaFull(c); M('stop', .5); if (bm && B) setTimeout(() => { if (B && window.GymBGM?.name == null) M('play', bm); }, 550); } else await GymDBK.mega(c); if (X.gmPend) { X.gmPend = 0; swap(); } return; }   // 경완 2026-11-12: 전체 화면 메가진화

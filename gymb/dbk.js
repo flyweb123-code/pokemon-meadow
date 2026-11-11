@@ -230,10 +230,12 @@
     shake(5700, 600, 8); at(5900, () => vib(2));
     // 7) 번쩍 + 메가 모습 (6300~)
     A(glow, [{ opacity: 1, transform: 'scale(1.45)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 120, delay: 6360, easing: 'ease-in' });
-    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: 900, delay: 6450, easing: 'linear' });
+    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: 620, delay: 6450, easing: 'linear' });
     at(6480, () => { c.se('Explosion3'); c.se('Burst'); c.se('fog2'); vib(3); org.style.opacity = 0; meg.style.opacity = 0; if (mon) mon.style.visibility = 'hidden'; });
     at(6550, () => { A(dim, [{ opacity: .88 }, { opacity: 1 }], { duration: 400 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 800 }); });
     at(6650, () => A(meg, [{ opacity: 0, transform: 'scale(1.4)' }, { opacity: 1, transform: 'scale(.93)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.2,1.4,.4,1)' }));   /* 5000 에서 meg 애니메이션을 지우므로 그 뒤에 만듦 (안 그러면 하얀 실루엣만 남음) */
+    at(6880, () => { for (let i = 0; i < 5; i++) { const [g, gi] = sprite(c.to.url, MW, MH); gi.style.filter = `brightness(0) invert(1) sepia(1) saturate(6) hue-rotate(${[280, 230, 170, 100, 20][i]}deg) brightness(1.1) drop-shadow(0 0 ${Wd * .04}px #fff)`; g.style.mixBlendMode = 'screen';   /* 경완 '화악 터지는 듯한 잔상': 하얀 메가 모습이 번져 나가며 사라짐 */
+      A(g, [{ opacity: .9 - i * .08, transform: 'scale(1)' }, { opacity: 0, transform: `scale(${1.6 + i * .4})` }], { duration: 800 + i * 140, delay: i * 80, easing: 'cubic-bezier(.1,.7,.3,1)' }); } });
     at(6750, () => megI.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }));
     A(rays, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(30deg) scale(1)', offset: .12 }, { opacity: .9, transform: 'rotate(200deg) scale(1.05)' }], { duration: 4100, delay: 6550, easing: 'linear' });
     A(rainbow, [{ opacity: .55, transform: 'scale(1) rotate(300deg)' }, { opacity: .14, transform: 'scale(1.5) rotate(640deg)' }], { duration: 4100, delay: 6550, easing: 'linear' });
@@ -246,8 +248,9 @@
     const END = 10800;   /* 경완 '진화하고 나서 모습 좀 더 길게': 메가 모습 1.5초 더 */
     return new Promise(res => { let done = false;
       const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => { clearTimeout(t); clearInterval(t); }); if (mon) { if (mon.dataset.mgf != null) { mon.style.filter = mon.dataset.mgf; delete mon.dataset.mgf; } mon.style.visibility = ''; }
-        const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 200 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
-        tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 0 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
+        top.style.webkitMaskImage = top.style.maskImage = '';   /* 돌아갈 때 가장자리 마스크 먼저 지움 (검은 테두리 안 보이게) */
+        const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];   /* 아래 화면 등은 바로 보이게: 늦게 나오면 그 틈에 검은 바탕이 보임 (경완 2026-11-12) */
+        tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
       root.addEventListener('pointerdown', fin, { once: true }); setTimeout(fin, END - 500); });
   }
 
