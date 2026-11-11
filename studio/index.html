@@ -451,7 +451,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
         <div class="tools"><div class="search" style="flex:1;min-width:180px"><input id="sprQ" placeholder="이름이나 번호로 찾기" autocomplete="off" enterkeyhint="search"></div><span class="chips" id="sprF"></span></div>
         <div id="sprC" style="overflow:auto;align-content:start"></div>
       </div>
-      <aside class="vi" id="sprI"><h4>배틀 스프라이트</h4><div class="small mute">체육관 배틀에서 실제로 쓰는 그림이에요. 종마다 앞·뒤·이로치 앞·이로치 뒤(암컷 그림이 따로 있으면 암컷도)를 보여 줘요. 칸 아래 글씨가 그림 종류예요: <b>움직임</b> = gif, <b>움직임(PixelLab)</b> = 직접 만든 움직이는 그림, <b>멈춤</b> = 안 움직이는 그림.</div></aside>
+      <aside class="vi" id="sprI"><h4>배틀 스프라이트</h4><div class="small mute">체육관 배틀에서 실제로 쓰는 그림이에요. 종마다 앞·뒤·이로치 앞·이로치 뒤(암컷 그림이 따로 있으면 암컷도)를 보여 줘요. 칸 아래 글씨가 그림 종류예요: <b>움직임</b> = gif, <b>움직임(PixelLab)</b> = 직접 만든 움직이는 그림, <b>멈춤</b> = 안 움직이는 그림. <b>배틀 기믹</b>(메가진화·거다이맥스 등)은 게임엔 아직 안 쓰고 여기서만 보여요.</div></aside>
     </section>
     <!-- 포켓몬·모션 -->
     <section class="view" data-v="mon" hidden>
@@ -556,7 +556,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '3.99';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '4.00';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1510,7 +1510,9 @@ async function sprLoad() {
   for (const [sp, o] of Object.entries(BFM)) for (const v of Object.values(o)) { const k = Array.isArray(v) ? v[0] : v; if (k && k !== GB.D.sp[sp]?.id) FS.set(k, +sp); }
   for (const k of [...Object.keys(FMG), ...Object.keys(FMJ)]) if (!FS.has(k)) { const h = ID.find(([id]) => k.startsWith(id) && k !== id); if (h) FS.set(k, h[1]); }
   const fcell = (sp, fm, b, sh) => { const g = GB.gifUrl(sp, b, sh, 0, fm); if (g) return { k: 'g', u: U(g) }; if (FMJ[fm]) return { k: 's', u: `../gym/img/pk/fm/${fm}${b ? 'b' : ''}${sh ? 's' : ''}.png` }; return { k: 'x', u: U(GB.pkSrc(sp, { b, s: sh })) }; };
-  const out = []; for (const r of L) { out.push(r); for (const [fm, sp] of FS) if (sp === r.sp) { const c = [fcell(sp, fm, 0, 0), fcell(sp, fm, 1, 0), fcell(sp, fm, 0, 1), fcell(sp, fm, 1, 1)]; out.push({ sp, fm, nm: `${r.nm} ${sprFmName(fm, GB.D.sp[sp].id)}`, c, st: c.some(x => x.k === 's' || x.k === 'x') }); } }
+  /* v21.85 경완 '배틀 기믹 움직이는 스프라이트 작업실에 넣어놔줘': 메가진화·원시회귀·거다이맥스·무한다이맥스 (EeveeExpo, gym/img/pk/gm — 게임엔 아직 안 씀) */
+  const GM = await gj('gm/gm.json'), gmc = (k, pre, bit, L2) => L2 & bit ? { k: 'g', u: `../gym/img/pk/gm/${pre}${k}.gif?v=1` } : { k: 'x', u: '' };
+  const out = []; for (const r of L) { out.push(r); for (const [fm, sp] of FS) if (sp === r.sp) { const c = [fcell(sp, fm, 0, 0), fcell(sp, fm, 1, 0), fcell(sp, fm, 0, 1), fcell(sp, fm, 1, 1)]; out.push({ sp, fm, nm: `${r.nm} ${sprFmName(fm, GB.D.sp[sp].id)}`, c, st: c.some(x => x.k === 's' || x.k === 'x') }); }  for (const [k, [sp, lb, bt]] of Object.entries(GM)) if (sp === r.sp) out.push({ sp, fm: k, gm: 1, nm: `${r.nm} ${lb}`, c: [gmc(k, '', 32, bt), gmc(k, 'b', 1, bt), gmc(k, 's', 2, bt), gmc(k, 'bs', 4, bt)], st: !(bt & 1) }); }
   return SPR = out; }
 const SPR_FMK = { heat: '히트', wash: '워시', frost: '프로스트', fan: '스핀', mow: '커트', therian: '영물폼', origin: '오리진폼', sky: '스카이폼', attack: '어택폼', defense: '디펜스폼', speed: '스피드폼', zen: '달마모드', pirouette: '스텝폼', rainy: '빗방울의 모습', sunny: '태양의 모습', snowy: '설운의 모습', sunshine: '포지폼', blade: '블레이드폼', school: '군집의 모습', busted: '들킨 모습', noice: '나이스페이스', gulping: '그대로먹기', gorging: '통째로먹기', hero: '마이티폼', complete: '퍼펙트폼', ash: '지우개굴닌자', hangry: '배고픈 모양', '': '코어', midnight: '한밤중의 모습', dusk: '황혼의 모습', lowkey: '로우한 모습', rapidstrike: '연격의 태세', black: '블랙', white: '화이트', douse: '아쿠아 카세트', shock: '번개 카세트', burn: '블레이즈 카세트', chill: '프리즈 카세트', unbound: '굴레를 벗어난 모습', crowned: '검왕/방패왕', '10': '10%폼', pompom: '파칙스타일', pau: '훌라스타일', sensu: '하늘하늘스타일', wellspring: '우물의 가면', hearthflame: '화덕의 가면', cornerstone: '주춧돌의 가면' };
 const SPR_TYK = { bug: '벌레', dark: '악', dragon: '드래곤', electric: '전기', fighting: '격투', fire: '불꽃', flying: '비행', ghost: '고스트', grass: '풀', ground: '땅', ice: '얼음', poison: '독', psychic: '에스퍼', rock: '바위', steel: '강철', water: '물', fairy: '페어리' };
@@ -1519,11 +1521,11 @@ const sprCell = (x, lb) => { const tag = x.k === 'g' ? '<span>움직임</span>' 
   const im = x.k === 'g' ? `<img loading="lazy" src="${x.u}" alt="">` : `<i class="${x.k === 'p' ? 'sfa' : 'sst'}" data-u="${x.u}" data-n="${x.n || 0}" data-w="${x.w || 0}"></i>`.replace('class="sst"', x.k === 'x' ? 'class="sst no"' : 'class="sst"');
   return `<div>${im}<span class="mute">${lb}</span>${tag}</div>`; };
 async function renderSpr() {
-  const C = $('#sprC'); $('#sprF').innerHTML = [['all', '전체'], ['fm', '폼 체인지'], ['st', '멈춘 그림 있는 종'], ['fem', '암컷 그림 따로']].map(([k, n]) => `<button class="chip${sprF === k ? ' on' : ''}" data-sf="${k}">${n}</button>`).join('');
+  const C = $('#sprC'); $('#sprF').innerHTML = [['all', '전체'], ['fm', '폼 체인지'], ['gm', '배틀 기믹'], ['st', '멈춘 그림 있는 종'], ['fem', '암컷 그림 따로']].map(([k, n]) => `<button class="chip${sprF === k ? ' on' : ''}" data-sf="${k}">${n}</button>`).join('');
   let L; try { L = await sprLoad(); } catch (e) { C.innerHTML = '<div class="empty">게임 미리보기가 다 뜬 뒤에 다시 열어 주세요.</div>'; return; }
-  const q = ($('#sprQ').value || '').trim(), R = L.filter(r => (sprF !== 'st' || r.st) && (sprF !== 'fem' || r.fem) && (sprF !== 'fm' || r.fm) && (!q || r.nm.includes(q) || String(r.sp) === q.replace(/^no\.?/i, '')));
+  const q = ($('#sprQ').value || '').trim(), R = L.filter(r => (sprF !== 'st' || r.st) && (sprF !== 'fem' || r.fem) && (sprF !== 'fm' || r.fm && !r.gm) && (sprF !== 'gm' || r.gm) && (!q || r.nm.includes(q) || String(r.sp) === q.replace(/^no\.?/i, '')));
   const V = R.slice(0, sprN);
-  C.innerHTML = `<div class="small mute" style="margin:2px 2px 6px">${R.length}개${sprF === 'all' && !q ? ` · 폼 체인지 ${L.filter(r => r.fm).length} · 멈춘 그림 있는 것 ${L.filter(r => r.st).length}` : ''}</div><div class="sprg">${V.map(r => `<div class="sprc"><b>${esc(r.nm)}<span class="num mute small">No.${r.sp}${r.fm ? ' · ' + esc(r.fm) : ''}</span></b><div class="sprr">${sprCell(r.c[0], '앞')}${sprCell(r.c[1], '뒤')}${sprCell(r.c[2], '이로치 앞')}${sprCell(r.c[3], '이로치 뒤')}${r.fem ? sprCell(r.fem[0], '암컷 앞') + sprCell(r.fem[1], '암컷 뒤') : ''}</div></div>`).join('')}</div>${R.length > V.length ? `<button class="chip sprmore" id="sprMore">더 보기 (${R.length - V.length}종 남음)</button>` : ''}`;
+  C.innerHTML = `<div class="small mute" style="margin:2px 2px 6px">${R.length}개${sprF === 'all' && !q ? ` · 폼 체인지 ${L.filter(r => r.fm && !r.gm).length} · 배틀 기믹 ${L.filter(r => r.gm).length} · 멈춘 그림 있는 것 ${L.filter(r => r.st).length}` : ''}</div><div class="sprg">${V.map(r => `<div class="sprc"><b>${esc(r.nm)}<span class="num mute small">No.${r.sp}${r.fm ? ' · ' + esc(r.fm) : ''}</span></b><div class="sprr">${sprCell(r.c[0], '앞')}${sprCell(r.c[1], '뒤')}${sprCell(r.c[2], '이로치 앞')}${sprCell(r.c[3], '이로치 뒤')}${r.fem ? sprCell(r.fem[0], '암컷 앞') + sprCell(r.fem[1], '암컷 뒤') : ''}</div></div>`).join('')}</div>${R.length > V.length ? `<button class="chip sprmore" id="sprMore">더 보기 (${R.length - V.length}종 남음)</button>` : ''}`;
   for (const e of C.querySelectorAll('i.sfa, i.sst')) { const im = new Image(); im.onload = () => { const fa = e.classList.contains('sfa'), n = fa ? +e.dataset.n : (im.naturalWidth >= im.naturalHeight * 2 ? 2 : 1), w = fa ? +e.dataset.w : im.naturalWidth / n, h = im.naturalHeight; e.dataset.n = n; e.dataset.w = w; Object.assign(e.style, { width: w + 'px', height: h + 'px', backgroundImage: `url(${e.dataset.u})`, backgroundSize: `${n * w}px ${h}px` }); }; im.src = e.dataset.u; }
   clearInterval(sprT); let f = 0; sprT = setInterval(() => { if (view !== 'spr') return clearInterval(sprT); f++; for (const e of C.querySelectorAll('i.sfa')) { const n = +e.dataset.n || 1; e.style.backgroundPosition = `${-(f % n) * e.dataset.w}px 0`; } if (f % 5 === 0) for (const e of C.querySelectorAll('i.sst')) { const n = +e.dataset.n || 1; e.style.backgroundPosition = `${-((f / 5) % n) * e.dataset.w}px 0`; } }, 100); }
 document.addEventListener('click', e => { const c = e.target.closest('[data-sf]'); if (c) { sprF = c.dataset.sf; sprN = 60; renderSpr(); return; } if (e.target.closest('#sprMore')) { sprN += 60; renderSpr(); } });
@@ -2229,6 +2231,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['4.00', '11월 12일', ['배틀 스프라이트에 <b>배틀 기믹</b> 칸 — 메가진화(Z-A 새 메가 포함)·원시회귀·거다이맥스·무한다이맥스 133개의 움직이는 그림 (앞·뒤·이로치). 게임 배틀엔 아직 안 써요.']],
   ['3.99', '11월 11일', ['배틀 스프라이트에 배틀에서 바뀌는 폼(돌핀맨 마이티폼, 킬가르도 블레이드폼, 로토무 가전제품, 아르세우스 타입 등)도 그 종 바로 뒤에 나와요. \'폼 체인지\' 버튼으로 폼만 모아 볼 수 있어요']],
   ['3.98', '11월 11일', ['포켓몬 메뉴에 \'배틀 스프라이트\' 탭이 생겼어요. 모든 종의 배틀 그림을 앞·뒤·이로치 앞·이로치 뒤(암컷 그림이 따로 있으면 암컷도)로 한눈에 봐요. 칸 아래에 움직이는 그림인지 멈춘 그림인지 나와요']],
   ['3.97', '11월 6일', ['직원 메뉴에서 \'뉴트럴의 조언\'(밸런스 시뮬레이터)을 없앴어요. 그 뒤로 기능이 많이 늘어 수치를 믿기 어려워서, 밸런스는 Claude 에게 바로 물어보면 돼요. 매일 아침 작업은 스칼렛만 해요']],
