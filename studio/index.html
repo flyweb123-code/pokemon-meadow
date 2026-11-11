@@ -565,7 +565,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '4.02';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '4.03';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -2240,6 +2240,7 @@ function reloadGame() { A = null; ORIG = null; $('#gLoad').hidden = false; $('#g
 
 // v1.7 경완: 작업실 버전마다 바뀐 것
 const SVERS = [
+  ['4.03', '11월 12일', ['자동 범위 토박이 확률을 게임 v22.13 몫 방식으로 표시 (낯선 곳이면 시·군 토박이 합쳐 25%)']],
   ['4.02', '11월 12일', ['자동 범위에 <b>시·군 토박이</b> 87곳 (청주·익산·군산처럼 시·군마다, 레어 한두 마리씩)']],
   ['4.01', '11월 12일', ['알 › 지도에 <b>자동 범위</b> 탭 — 게임이 전국 명소(석굴암=봉인된 석실 → 레지 같은 본가 장소 짝)와 지역 토박이로 자동으로 뿌리는 출현 범위를 지도에서 봄. 직접 놓은 출현 지역은 그대로']],
   ['4.00', '11월 12일', ['배틀 스프라이트에 <b>배틀 기믹</b> 칸 — 메가진화(Z-A 새 메가 포함)·원시회귀·거다이맥스·무한다이맥스 133개의 움직이는 그림 (앞·뒤·이로치). 게임 배틀엔 아직 안 써요.']],
@@ -3364,11 +3365,15 @@ document.addEventListener('click', e => { const b = e.target.closest('.gvt [data
 let auM = null, auL = null, auSel = null, auQ = '';
 const auAwOn = () => $('#auAw')?.checked;
 const auPct = v => !(v > 0) ? '—' : v >= .1 ? (v * 100).toFixed(0) + '%' : v >= .01 ? (v * 100).toFixed(1) + '%' : (v * 100).toFixed(2) + '%';
-function auP(sp, x) { const b = geoBase(sp).b; return Math.min(x * b, A.AU_CAP ?? .12); }   // 그 반경 안에서 주운 알 1개가 그 포켓몬일 확률 (게임 spotHit 와 같은 x·b, 여러 마리가 겹치면 조금 낮아짐)
+function auP(sp, x) { const b = geoBase(sp).b; return Math.min(x * b, A.AU_CAP ?? .12); }
+const auTier = sp => { const t = A.TIER?.[sp] ?? A.TIER?.[A.baseOf?.(sp)]; return t || 10; };
+// v4.03: 게임 v22.13 — 토박이는 몫(AU_CT_T·AU_RG_T)을 전설 아닌 종이 고르게 나눔, 전설은 배수
+function auNatP(o, T, aw) { const nl = new Set(o.sps.filter(sp => auTier(sp) > 2).map(sp => A.TIER?.[sp] ? sp : A.baseOf(sp))).size || 1; return sp => auTier(sp) > 2 ? (T ? T[aw ? 1 : 0] / nl : auP(sp, o.x(sp))) : auP(sp, o.x(sp)); }   // 그 반경 안에서 주운 알 1개가 그 포켓몬일 확률 (게임 spotHit 와 같은 x·b, 여러 마리가 겹치면 조금 낮아짐)
 function auList() { const q = auQ.trim(), aw = auAwOn(), L = [];
-  (A.AU_REG || []).forEach((g, i) => L.push({ kind: 'rg', i, n: g.n, why: g.why, la: g.la, lo: g.lo, r: g.r, r2: g.r2, rot: g.rot, sps: g.L, x: () => A.AU_RG_X[aw ? 1 : 0] }));
-  (A.AU_CTY || []).forEach((c, i) => L.push({ kind: 'ct', i, n: c.n, why: c.why, la: c.la, lo: c.lo, r: c.r, sps: c.L, x: () => (A.AU_CT_X || A.AU_RG_X)[aw ? 1 : 0] }));   // v4.02 경완: 시·군 토박이
+  (A.AU_REG || []).forEach((g, i) => L.push({ kind: 'rg', i, n: g.n, why: g.why, la: g.la, lo: g.lo, r: g.r, r2: g.r2, rot: g.rot, sps: g.L, x: () => A.AU_RG_X[aw ? 1 : 0], T: A.AU_RG_T }));
+  (A.AU_CTY || []).forEach((c, i) => L.push({ kind: 'ct', i, n: c.n, why: c.why, la: c.la, lo: c.lo, r: c.r, sps: c.L, x: () => (A.AU_CT_X || A.AU_RG_X)[aw ? 1 : 0], T: A.AU_CT_T }));   // v4.02 경완: 시·군 토박이
   (A.AU_LM || []).forEach(([n, la, lo, r, why, sps], i) => L.push({ kind: 'lm', i, n, why, la, lo, r, sps, x: sp => A.AU_X(sp) * (aw ? A.AU_AW_LM : 1) }));
+  L.forEach(o => { if (o.T) o.p = auNatP(o, o.T, aw); });
   return q ? L.filter(o => o.n.includes(q) || o.why.includes(q) || o.sps.some(sp => spName(sp).includes(q))) : L; }
 const auKey = o => o.kind + o.i;
 function auEllPts(o, n = 60) { const t = (o.rot || 0) * Math.PI / 180, a = o.r, b = o.r2 || o.r, c = Math.cos(t), s = Math.sin(t), out = [];
@@ -3382,9 +3387,9 @@ function auDraw() { if (!auM) return; auL.clearLayers(); const L = auList();
   fillThumbs($('#auMap')); }
 function auPick(o, fly) { auSel = auKey(o); auDraw(); auSide(); if (fly) auM.flyToBounds(L_.latLngBounds(auEllPts(o, 16)), { padding: [30, 30], maxZoom: 15 }); }
 function auSide() { const L = auList(), aw = auAwOn(), o = L.find(x => auKey(x) === auSel);
-  const sps = o => `<div class="aups">${o.sps.map(sp => `<span title="${esc(spName(sp))} · ×${o.x(sp)}"><img alt="" data-th="${sp}">${esc(spName(sp))} <b>${auPct(auP(sp, o.x(sp)))}</b></span>`).join('')}</div>`;
+  const sps = o => `<div class="aups">${o.sps.map(sp => `<span title="${esc(spName(sp))} · ×${o.x(sp)}"><img alt="" data-th="${sp}">${esc(spName(sp))} <b>${auPct(o.p ? o.p(sp) : auP(sp, o.x(sp)))}</b></span>`).join('')}</div>`;
   const row = o => `<button class="aur${auSel === auKey(o) ? ' on' : ''}" data-au="${auKey(o)}"><b>${esc(o.n)}</b><span class="why">${esc(o.why)}</span>${sps(o)}</button>`;
-  $('#auI').innerHTML = `<h4>자동 범위</h4><p class="small mute">게임이 전국에 자동으로 뿌리는 출현 범위예요. 빨간 원 = 명소(본가 장소와 닮은 곳), 잔 점선 = 시·군 토박이(마지막 한두 마리는 레어), 굵은 점선 = 도 토박이(점선 사이 빈 곳도 반지름 1.5배 안이면 가장 가까운 지역으로 쳐요). 작업실에서 직접 놓은 출현 지역은 그대로 먼저 쓰이고, 직접 놓은 반경 안에서는 명소 자동 반경이 안 쓰여요. 평소 다니지 않던 지역(낯선 곳)에서는 시·군 토박이 ×${(A.AU_CT_X || A.AU_RG_X)[1]}(평소 ×${(A.AU_CT_X || A.AU_RG_X)[0]}), 도 토박이 ×${A.AU_RG_X[1]}(평소 ×${A.AU_RG_X[0]}), 명소 ×${A.AU_AW_LM}배가 돼요. 숫자 = 그 범위 안에서 주운 알 1개가 그 포켓몬일 확률${aw ? ' (낯선 곳일 때)' : ' (평소)'}.</p>`
+  $('#auI').innerHTML = `<h4>자동 범위</h4><p class="small mute">게임이 전국에 자동으로 뿌리는 출현 범위예요. 빨간 원 = 명소(본가 장소와 닮은 곳), 잔 점선 = 시·군 토박이(마지막 한두 마리는 레어), 굵은 점선 = 도 토박이(점선 사이 빈 곳도 반지름 1.5배 안이면 가장 가까운 지역으로 쳐요). 작업실에서 직접 놓은 출현 지역은 그대로 먼저 쓰이고, 직접 놓은 반경 안에서는 명소 자동 반경이 안 쓰여요. 토박이는 알 1개에서 차지하는 몫이 정해져 있고 목록 안 포켓몬이 고르게 나눠요: 시·군 토박이 낯선 곳 ${Math.round((A.AU_CT_T?.[1] ?? 0) * 100)}%(평소 ${Math.round((A.AU_CT_T?.[0] ?? 0) * 100)}%), 도 토박이 낯선 곳 ${Math.round((A.AU_RG_T?.[1] ?? 0) * 100)}%(평소 ${Math.round((A.AU_RG_T?.[0] ?? 0) * 100)}%). 전설은 배수(시·군 ×${(A.AU_CT_X || A.AU_RG_X)[1]}), 명소는 낯선 곳에서 ×${A.AU_AW_LM}배. 숫자 = 그 범위 안에서 주운 알 1개가 그 포켓몬일 확률${aw ? ' (낯선 곳일 때)' : ' (평소)'}.</p>`
     + (o ? `<div class="auh">고른 곳</div>${row(o)}` : '')
     + `<div class="auh">명소 ${L.filter(x => x.kind === 'lm').length}곳</div><div class="aul">${L.filter(x => x.kind === 'lm').map(row).join('')}</div>`
     + `<div class="auh">시·군 토박이 ${L.filter(x => x.kind === 'ct').length}곳</div><div class="aul">${L.filter(x => x.kind === 'ct').map(row).join('')}</div>`
