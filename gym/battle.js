@@ -234,6 +234,9 @@ const frAdd = (P, a) => { if (!P) return; if (a > 0 && GA.addFr) GA.addFr(P.id, 
 function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
   (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
     if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, B.frw || [3, 2, 1]))   /* v22.14 체육관 도전자 배틀은 gym.js FR_W (난이도별) */; }); }
+// v22.13 경완 '레어 번뜩임은 그 포켓몬이 배틀에 나가 3연승 이상일 때만': m.ws = 내보낸 배틀 연승 수 (이기고 안 쓰러지면 +1, 지거나 쓰러지면 0, 안 나간 배틀은 그대로)
+function wsBattle(won) { (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk || !B.used?.has(e.pid)) return; const m = gm(P); m.ws = won && !pk.fainted ? (m.ws | 0) + 1 : 0; }); }
+const EG_WS = 3;
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
@@ -1019,7 +1022,7 @@ async function run(opts) {
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
   try { if (!cut) erEnd(); } catch (e) {}
-  try { if (B && !B.practice && !cut && out !== 'quit') frBattle(won); } catch (e) { console.error(e); }
+  try { if (B && !B.practice && !cut && out !== 'quit') frBattle(won); wsBattle(won); } catch (e) { console.error(e); }
   if (cut) try { const er = B?.err; window.pkErrRep?.('battle: ' + (er ? er.message || er : '고를 것이 없어 멈춤'), er?.stack || '', { foe: B?.foeNm || '', blog: S.gym?.blog?.[0] }); } catch (e) {}   /* 오류 창이 뜬 배틀은 서버로 보고 → 자동으로 고침 (경완 2026-11-04) */
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
@@ -1638,7 +1641,7 @@ function egFxR(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.quer
 async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P || (S.gym?.gmax | 0) < 1) return;   /* v21.70 경완 '번뜩이는 것도 훈련장 열리고부터': 동네 체육관(훈련장 열림) 전엔 번뜩임 없음 */ const D = B.egDone || (B.egDone = new Set()); if (D.has(pid)) return;
-  { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && Math.random() < ((P.fr || 0) >= 255 ? EG_RFP5 : EG_RFP)) {   /* v22.07 경완 '레어는 친밀도 만점일 때 번뜩임 비율 높게': 만점 4%, 아니면 1.5% */ D.add(pid); const tr = egTier(P), bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(tr); se('KIRAKIRA2', { gain: [0, 1.1, 1.5, 1.8][tr] }); if (tr > 1) setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); if (tr > 2) setTimeout(() => B && GA.haptic?.(1), 1300); await wait([0, 1100, 1500, 1700][tr]); if (!B) return;
+  { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && (m.ws | 0) >= EG_WS && Math.random() < ((P.fr || 0) >= 255 ? EG_RFP5 : EG_RFP)) {   /* v22.07 경완 '레어는 친밀도 만점일 때 번뜩임 비율 높게': 만점 4%, 아니면 1.5% */ D.add(pid); const tr = egTier(P), bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(tr); se('KIRAKIRA2', { gain: [0, 1.1, 1.5, 1.8][tr] }); if (tr > 1) setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); if (tr > 2) setTimeout(() => B && GA.haptic?.(1), 1300); await wait([0, 1100, 1500, 1700][tr]); if (!B) return;
     bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_TA[tr], 1); await msgTap(x ? `${X.nm}의 잠들어 있던 힘이 깨어났다…!` : X.nm + EG_TT.r[tr]); bm.classList.remove('er'); if (!B) return;
     await frFx('p'); if (!B) return; await msgTap(egFrT(X.nm, P)); if (!B) return;
     if (x) { bm.classList.add('er'); await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; } (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id, tr }); GA.save?.(); return; } }   /* v22.07 경완: 레어 게이지는 레어 번뜩임으로만, 번뜩임 상중하(친밀도 높을수록 상), 번뜩인 뒤 친밀도 꿀렁 + 대사 */
