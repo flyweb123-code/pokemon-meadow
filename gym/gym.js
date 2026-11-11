@@ -1883,30 +1883,28 @@ function mecLay(stg) {
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
-  const fit = r => r > 18 / 17;   // 1.8m 넘으면 뒷줄   // 뒷줄
-  let L0 = Math.min(84, (H - FB - 8) / Math.max(1, ...A.filter(a => !fit(a.r)).map(a => a.r)));   // 앞줄에서 가장 큰 포켓몬이 무대 높이 안
-  const place = (L, bot, mode, LH, boost) => { const LW = trF[0] * LH; let le = cx, re = cx, prevL = null, prevR = null;
-    L.forEach(a => { a.b = bot; a.h = Math.max(18, Math.min(LH * a.r, H - bot - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
-    if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx + (L.length % 2 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */ prevL = prevR = a; a.z = 1; return; }
-      const side = i % 2 ? -1 : 1, pv = side < 0 ? prevL : prevR, ov = Math.min(.5 + boost * .6, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
-      if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 1 + i; });
-    else { let tl = cx - 4, tr = cx + 4; le = cx - LW / 2 + 6; re = cx + LW / 2 - 6;
-      L.forEach((a, i) => { if (a.h < LH * .5) { const side = tr - cx <= cx - tl ? 1 : -1; a.b = 1; a.z = 30 + i;   // 아주 작으면 관장 발 앞
-          if (side > 0) { a.x = tr + a.w / 2 - Math.min(10, a.w * .3); tr = a.x + a.w / 2; re = Math.max(re, tr - a.w * .5); } else { a.x = tl - a.w / 2 + Math.min(10, a.w * .3); tl = a.x - a.w / 2; le = Math.min(le, tl + a.w * .5); } return; }
-        const side = re - cx <= cx - le ? 1 : -1, pv = side < 0 ? prevL : prevR, ov = pv ? Math.min(.45 + boost * .6, .2 + boost) * Math.min(a.w, pv.w) : 0;
-        if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 20 - i; }); }
-    if (!L.length) return true; const lo = Math.min(...L.map(a => a.x - a.w / 2)), hi = Math.max(...L.map(a => a.x + a.w / 2));
-    if (hi - lo > W - M * 2) return false; const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; L.forEach(a => a.x += d); return true; };
-  let up = 0, k = 1, LH = L0;
-  for (let n = 0; n < 40; n++) {
-    LH = L0 * k; const fr = A.filter(a => !fit(a.r)).sort((x, y) => x.r - y.r), mv = fr.splice(Math.max(0, fr.length - up), up), back = A.filter(a => fit(a.r)).concat(mv).sort((x, y) => y.r - x.r);
-    let ok = false; for (let bo = 0; bo <= .5 + 1e-9 && !ok; bo += .05) ok = place(back, BB, 'b', LH, bo) & place(fr, FB, 'f', LH, bo);
-    if (ok) break; if (fr.length > 2 && up < 2) up++; else k *= .97; }   // 경완 '폭이 넘칠 때는 줄이기보단 겹치게': 겹침을 최대 80%까지 늘려 보고, 그래도 안 되면 그때만 아주 조금씩 줄임
+  // 경완 11-11 '관장 주변을 원형으로 감싸듯이': 관장 발밑 타원(Rx·Ry) 둘레에 세움. 큰 포켓몬은 뒤쪽 호(위로·관장 뒤), 작은 포켓몬은 앞쪽 호(아래로·관장 다리 앞)
+  const LB = 14, RY = 20, n = A.length, S = [...A].sort((x, y) => y.r - x.r);
+  const L0 = Math.min(84, (H - LB - RY - M) / Math.max(1, ...A.filter(a => a.r <= 18 / 17).map(a => a.r)));   // 1.8m 까지는 무대 높이 안에 다 들어가게, 더 큰 건 무대 높이로 자름
+  const ctr = n % 2 ? S.shift() : null, Ls = [], Rs = []; S.forEach((a, i) => (i % 2 ? Ls : Rs).push(a));
+  const ang = (m, j) => m < 2 ? 25 : 64 - j * 116 / (m - 1);   // 뒤 64° → 앞 -52°
+  if (ctr) { ctr.th = 90; ctr.sd = n % 4 === 1 ? -1 : 1; } [[Ls, -1], [Rs, 1]].forEach(([L, sd]) => L.forEach((a, j) => { a.th = ang(L.length, j); a.sd = sd; }));
+  let LH = L0;
+  for (let k = 1, it = 0; it < 30; it++, k *= .96) { LH = L0 * k; const LW = trF[0] * LH;
+    A.forEach(a => { const t = a.th * Math.PI / 180; a.c = Math.cos(t); a.b = Math.max(1, LB + RY * Math.sin(t)); a.h = Math.max(18, Math.min(LH * a.r, H - a.b - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
+    if (A.some(a => a.w > W - M * 2)) continue;
+    const sides = A.filter(a => a !== ctr), mw = sides.length ? sides.reduce((p, a) => p + a.w, 0) / sides.length : 0;
+    let Rx = LW / 2 + mw * .55 + 6 * Math.ceil(sides.length / 2);   // 빈틈 많지 않게: 몸 폭 평균만큼만 벌림
+    sides.forEach(a => { if (a.c > .05) Rx = Math.min(Rx, (W / 2 - M - a.w / 2) / a.c); });
+    if (Rx < LW / 2 && sides.length) continue;
+    A.forEach(a => { a.x = a === ctr ? cx + a.sd * Math.min(26, 6 + a.w * .14) : cx + a.sd * Rx * a.c; /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
+      a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); });
+    break; }
   const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = LH / trF[1] + 'px';   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
-  const top = Math.max(LH + 14 + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+  const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
