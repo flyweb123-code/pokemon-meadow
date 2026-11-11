@@ -2070,15 +2070,19 @@ function mtfOn(win, ty, g) {
     if (ty !== 'ghost') side(W, (a, o) => [L + W - a, L + H - o], 2);
     x.restore(); };
   /* 11-11 경완 '드래곤 타입 알처럼 테두리를 휘감으면서 올라가게': 카드 둘레를 도는 나선 띠 하나(알 .egg.lt16 의 보랏빛 띠), 앞을 지날 땐 카드 위로, 뒤로 갈 땐 카드 밖에서만 보임. 위로 계속 올라감 */
-  const spiralRun = (front, pass) => { const R0 = W / 2 + 4 + g, cx = L + W / 2, pitch = H / 1.6, t = fr * (.012 + g * .0015), w0 = 2.2 + g * .75, al = .5 + g * .07, yb = L + H + 30;
-    x.lineCap = x.lineJoin = 'round'; for (let lay = 0; lay < (front ? 3 : 1); lay++) { x.beginPath(); let on = false;
-      for (let y = yb; y >= L - 30; y -= 3) { const th = (yb - y) / pitch * TAU + t * TAU, dz = Math.cos(th), X = cx + Math.sin(th) * R0;
-        if ((dz > 0) === front) { on ? x.lineTo(X, y) : x.moveTo(X, y); on = true; } else on = false; }
-      if (front) { x.strokeStyle = lay === 0 ? rgba(C[1], al * .28) : lay === 1 ? rgba(mix(C[1], [255, 255, 255], .3), al * .8) : rgba(mix(C[3], [255, 255, 255], .4), al * .55); x.lineWidth = lay === 0 ? w0 * 3 : lay === 1 ? w0 : w0 * .3; }
-      else { x.strokeStyle = rgba(C[2], al * .5); x.lineWidth = w0 * .7; }
-      x.stroke(); } };
-  const spiral = () => { if (ty === 'dragon' && g >= 1) { x.save(); spiralRun(false); x.restore(); } };
-  const spiralF = () => { if (ty === 'dragon' && g >= 1) { x.save(); spiralRun(true); x.restore(); } };
+  /* 11-12 경완 '전체 카드를 감싸는 느낌이 아니고 테두리만 밑에서부터 드러나면서 감싸면서 올라가는 느낌, 올라가면서 밑에 있던 줄기는 사라지고 — 드래곤 알처럼':
+     아래 가운데에서 두 줄기가 테두리를 따라 왼쪽·오른쪽으로 올라가 위 가운데에서 만남. 테두리 선을 안팎으로 넘나들며 감기고(안쪽으로 들어갈 땐 카드 뒤로 숨음), 알처럼 한 토막만 보이고 꼬리는 사라짐 */
+  const spiralRun = () => { const cx = L + W / 2, HL = W + H, seg = HL * (.38 + g * .02), per = 120 - g * 7, ph = (fr % per) / per, dh = ph * (HL + seg) - 0, A = 6 + g * 1.2, lam = 46, w0 = 2.4 + g * .65, al = .6 + g * .06;
+    const at = (d, sd) => { let X, Y, nx, ny; if (d < W / 2) { X = cx + sd * d; Y = L + H; nx = 0; ny = 1; } else if (d < W / 2 + H) { X = cx + sd * W / 2; Y = L + H - (d - W / 2); nx = sd; ny = 0; } else { X = cx + sd * (W / 2 - (d - W / 2 - H)); Y = L; nx = 0; ny = -1; }
+      const o = Math.sin(d / lam * TAU) * A + 2; return [X + nx * o, Y + ny * o, o]; };
+    x.lineCap = 'round';
+    for (const sd of [-1, 1]) for (let lay = 0; lay < 3; lay++) { let p0 = null;
+      for (let d = Math.max(0, dh - seg); d <= Math.min(HL, dh); d += 3) { const p = at(d, sd); if (p0) { const f = 1 - (dh - d) / seg, e = f * f, fr2 = p[2] + p0[2] > 0;
+          x.strokeStyle = lay === 0 ? rgba(C[1], al * .3 * e) : lay === 1 ? rgba(fr2 ? mix(C[1], [255, 255, 255], .25) : C[2], al * (fr2 ? .95 : .55) * e) : rgba(mix(C[3], [255, 255, 255], .5), fr2 ? al * .75 * e : 0);
+          x.lineWidth = (lay === 0 ? w0 * 3.2 : lay === 1 ? w0 : w0 * .35) * (.55 + .45 * f); x.beginPath(); x.moveTo(p0[0], p0[1]); x.lineTo(p[0], p[1]); x.stroke(); } p0 = p; } }
+    if (dh < HL) for (const sd of [-1, 1]) { const [X, Y] = at(dh, sd); blob(X, Y, 9 + g * 1.5, C[3], al * .55); disc(X, Y, 1.5 + g * .2, [255, 255, 255], al); } };
+  const spiral = () => { if (ty === 'dragon' && g >= 1) { x.save(); spiralRun(); x.restore(); } };
+  const spiralF = () => {};
   const step = () => { if (!run) return; requestAnimationFrame(step); if (!win.isConnected) return stop(); fr++;
     let r = MTF_RATE[g]; while (r > 0) { if (R() < r && P.length < MTF_CAP[g]) spawn(); r -= 1; }
     x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W + L * 2, H + L * 2); x.imageSmoothingEnabled = true; frame(); corners();
@@ -2129,7 +2133,7 @@ async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99),
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
   const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
     <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}" data-st="${mecSt(P.sp) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
-    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${(g.w || 0) + (g.l || 0)}</b>전 <b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
+    <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-gn"><em data-g="${G.i}">${G.n}</em><b>${esc(g.nm || '')}</b></p><p class="mec-wl"><b>${(g.w || 0) + (g.l || 0)}</b>전 <b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[(g.ty | 0) - 1], G.i); }
   p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
   const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); } }
