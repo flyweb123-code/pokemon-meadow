@@ -1866,11 +1866,20 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 키(SPECIES h, 0.1m) 그대로 비율: 관장 = 1.4m. 무대에 안 들어가는 거대한 포켓몬만 무대 높이까지. 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 관장 절반보다 작으면 관장 발 앞.
 // 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄).
 // 폭이 넘치면 ① 겹침을 늘리고 ② 앞줄에서 큰 걸 뒷줄로 올리고 ③ 그래도 넘치면 관장까지 다 같이 줄임 (키 비율은 안 깨짐).
+function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비율 [왼쪽, 오른쪽] (아직 못 읽으면 0, 다른 곳 그림은 CORS 로 한 번 더 받아 읽고 again())
+  if (im.tagName !== 'IMG' || !im.naturalWidth) return [0, 0]; if (im._trim) return im._trim;
+  const rd = src => { const w = src.naturalWidth, h = src.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(src, 0, 0);
+    const d = x.getImageData(0, 0, w, h).data; let l = w, r = -1; for (let y = 0; y < h; y++) for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 20) { if (i < l) l = i; if (i > r) r = i; }
+    return r < 0 ? [0, 0] : [l / w, (w - 1 - r) / w]; };
+  try { return im._trim = rd(im); } catch (e) {}
+  if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0]; } }; c.onerror = () => { im._trim = [0, 0]; }; c.src = im.src; }
+  return [0, 0]; }
 function mecLay(stg) {
   const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
-    return { e, bw: sp.offsetWidth * sh, bh: sp.offsetHeight * sh, r: Math.max(.1, (+e.dataset.h || 10) / 14) }; });
+    const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움
+    return { e, bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh, r: Math.max(.1, (+e.dataset.h || 10) / 14) }; });
   if (!A.length || A.some(a => !a)) return;
   const fit = r => r > 1.3;   // 뒷줄
   let L0 = Math.min(84, (H - FB - 8) / Math.max(1, ...A.filter(a => !fit(a.r)).map(a => a.r)));   // 앞줄에서 가장 큰 포켓몬이 무대 높이 안
@@ -1893,7 +1902,7 @@ function mecLay(stg) {
     if (ok) break; if (fr.length > 2 && up < 2) up++; else k *= .97; }   // 경완 '폭이 넘칠 때는 줄이기보단 겹치게': 겹침을 최대 80%까지 늘려 보고, 그래도 안 되면 그때만 아주 조금씩 줄임
   const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = 80 * LH / 53 + 'px';
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
-  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
+  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
   const top = Math.max(LH * 1.25 + 14, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
 }
