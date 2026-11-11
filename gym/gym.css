@@ -3889,8 +3889,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec-wrap .win[data-ty] .mtf-bp{position:absolute;left:50%;top:-8px;width:64px;height:64px;margin-left:-32px;z-index:8;pointer-events:none;display:block}
 #gym .mec-wrap .win[data-ty] .mtf-bp img{display:block;width:100%;height:100%;image-rendering:pixelated;max-width:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
 #gym .mec-wrap .win[data-ty][data-g="5"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 6px var(--t2))}#gym .mec-wrap .win[data-ty][data-g="6"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 8px var(--t4)) drop-shadow(0 0 14px var(--t2))}
-/* 경완 11-11: 배틀 정보 칸 이름 옆 이로치 아이콘 (beta .shico 그림을 작게) */
-.bt-hb .shico{position:absolute;top:17px;width:9px;height:9px;margin:0;background-size:contain;image-rendering:pixelated}.bt-hb.p .shico{top:16px}
 
 /* v21.88 경완 '관장 카드에 체육관 등급이랑 이름도 표시' */
 #gym .mec-gn{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 1px;font-size:13px}#gym .mec-gn b{color:#2a2a3a}#gym .mec-gn em{font-style:normal;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff;background:var(--k3,#5a6a9a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
@@ -4101,7 +4099,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li.pk-tip.on .pk-tc small,#gym .gy-perk>li.pk-tip.on .pk-tc p{color:var(--dim)}
 #gym .gy-perk .pk-kg{margin:0 5px}   /* 등급 카드 배지 칸(42px)과 글자 줄 맞춤 */
 
-/* v22.33 등급 창 등급·비기 탭 (고용 관리 탭과 같은 모양) */
+/* v22.35 등급 창 등급·비기 탭 (고용 관리 탭과 같은 모양) */
 #gym .gy-pop .pk-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin:0 0 8px;border:3px solid var(--frame);background:var(--frame);box-shadow:0 3px 0 rgba(0,0,0,.18)}
 #gym .gy-pop .pk-tabs button{padding:8px 4px;font-size:14px;background:var(--win);box-shadow:none;border:0}
 #gym .gy-pop .pk-tabs button[aria-selected="true"]{background:var(--frame);color:var(--win)}
