@@ -9,6 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip install pillow && python3 tools/ev-map.py tools/ev-map-sample.json --force && for f in config/ev-map/*.png; do base64 -w3000 $f | sed "s|^|B64 $(basename $f) |"; done
+      - run: pip install pillow && python3 tools/ev-map.py --geo 포천아트밸리 고척스카이돔 백범광장 "남산공원 백범광장"
       - uses: actions/upload-artifact@v4
         with: { name: evmap, path: config/ev-map }

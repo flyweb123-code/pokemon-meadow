@@ -91,6 +91,10 @@ def tile_map(e, force=False):   # v22.19 경완 '도트 느낌 말고 그냥 지
     dla = half / 111320; dlo = dla * PW / PH / math.cos(math.radians(la))
     json.dump({'la0': la - dla, 'lo0': lo - dlo, 'la1': la + dla, 'lo1': lo + dlo, 'w': PW, 'h': PH, 'src': '© OpenStreetMap contributors'}, open(f"{OUT}/{e['id']}.json", 'w'))
     print('ok tile', e['id'], z)
+def geo(name):   # 이름으로 자리 찾기 (루틴이 좌표 확인용): python3 tools/ev-map.py --geo 포천아트밸리
+    d = overpass(f'[out:json][timeout:60];area["ISO3166-1"="KR"]->.k;(nwr["name"="{name}"](area.k););out center 5;')
+    for el in d.get('elements', []): c = el.get('center') or el; print(name, el['type'], c.get('lat'), c.get('lon'), el.get('tags', {}).get('name'))
 if __name__ == '__main__':
+    if '--geo' in sys.argv: [geo(n) for n in sys.argv[sys.argv.index('--geo') + 1:]]; sys.exit()
     a = [x for x in sys.argv[1:] if not x.startswith('--')]; f = a[0] if a else 'config/spawn-ev.json'
     for e in json.load(open(f))['ev']: (tile_map(e, '--force' in sys.argv) if '--tile' in sys.argv else draw(e, '--force' in sys.argv, smooth='--dot' not in sys.argv)); time.sleep(2)
