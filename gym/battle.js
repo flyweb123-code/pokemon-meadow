@@ -249,7 +249,7 @@ const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(i
 const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
 const egOpen = P => { const m = gm(P); return egList(P).filter(r => !egKn(m, r.id)); };
 function egFocus(P) { const m = gm(P), O = egOpen(P); if (!O.length) return -1; const N = O.filter(r => r.i !== 3); if (!N.length) return -1; return N.some(r => r.i === m.egF) ? m.egF : N[0].i; }   // v21.07 경완: 레어(4번째)는 집중·게이지 없음
-function egAdd(P, i, amt, rf) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || (i === 3) !== !!rf || egKn(m, r.id)) return null;   // 레어(4번째)는 레어 번뜩임(rf)으로만 const G = m.egP || (m.egP = [0, 0, 0, 0]);
+function egAdd(P, i, amt, rf) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || (i === 3) !== !!rf || egKn(m, r.id)) return null; const G = m.egP || (m.egP = [0, 0, 0, 0]);   // 레어(4번째)는 레어 번뜩임(rf)으로만 (v22.21: 주석 뒤에 붙어 G 가 안 만들어지던 것)
   G[i] = Math.min(100, (G[i] || 0) + amt); if (G[i] < 100) return null; teach(m, r.x[0], null, false); return r.x; }
 function teach(m, id, out, auto = true) {
   if (m.mv.includes(id)) return;

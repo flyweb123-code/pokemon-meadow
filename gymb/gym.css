@@ -4097,3 +4097,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .eg-tw.t3{background:linear-gradient(90deg,#ff4a4a,#ff9a2a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 3px rgba(255,120,60,.55))}
 .bt-egz.er{z-index:5}
 .bt .bt-mw.p.egzr{z-index:6}
+/* 경완 2026-11-12 강박사 메가진화 튜토리얼: 메가링 받은 창 */
+#gym .gy-pop .mr-get{padding:16px 0 10px}#gym .gy-pop .mr-get img{width:150px;height:116px;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(190,140,255,.7));animation:mrGlow 2.4s ease-in-out infinite}
+@keyframes mrGlow{50%{filter:drop-shadow(0 0 16px rgba(255,200,255,.95))}}
+#gym .gy-pop .mr-d{text-align:center;font-size:13px;line-height:1.55}
