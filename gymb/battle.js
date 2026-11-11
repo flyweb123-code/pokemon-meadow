@@ -202,6 +202,10 @@ function gm(P) {
   // v14.41 경완: 진화했는데 본가 진화 레벨보다 낮으면 그 레벨로 올린다 (그 사이 레벨에서 배우는 기술도). 이미 넘었으면 그대로
   const ev = EVO_LV[P.sp];
   if (ev && m.lv < ev) { const L = D.sp[P.sp]?.lv || []; for (let l = m.lv + 1; l <= ev; l++) for (let i = 0; i < L.length; i += 2) if (L[i] === l) teach(m, D.mv[L[i + 1]][0], null, true); m.lv = ev; m.xp = Math.max(m.xp, xpAt(growth(P.sp), ev)); }
+  // v21.67 경완 '진화 전에만 배우는 기술도 진화하면 익힌 기술 목록에': 종이 바뀌면(처음 볼 때 포함) 진화 전 종들이 지금 레벨까지 레벨업으로 배우는 기술을 '아는 기술'(kn)에 넣는다
+  if (m.sp !== P.sp && D.sp[P.sp]) { const seen = new Set([P.sp]); m.kn = m.kn || [];
+    for (let s = SPECIES[P.sp]?.fr; s != null && !seen.has(s); s = SPECIES[s]?.fr) { seen.add(s); lvMoves(s, m.lv).forEach(([, i]) => { const id = D.mv[i]?.[0]; if (id && !m.mv.includes(id) && !m.kn.includes(id)) m.kn.push(id); }); }
+    m.sp = P.sp; }
   return m;
 }
 // 본가 진화 레벨 (쇼다운 pokedex evoLevel, 기본 폼만): 도감 번호 → 레벨
