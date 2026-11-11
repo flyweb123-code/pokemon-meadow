@@ -4119,3 +4119,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li.pk-tip.on .pk-tc{border-style:solid;border-color:#e0a820;background:#fff8dc}
 #gym .gy-perk>li.pk-tip.on .pk-kg{filter:none;opacity:1}
 #gym .gy-perk>li.pk-tip.on .pk-tc b{color:#8a5a10;letter-spacing:0}
+
+/* 관장 카드: 무대 줄 세우기가 끝날 때까지 가려 둠 */
+#gym .gy-pop .win.mec-wait{visibility:hidden}
