@@ -120,17 +120,18 @@ final class WeakHandler: NSObject, WKScriptMessageHandler {
     }
 }
 
-// 알 두드리기 진동: 게임이 haptic 메시지로 0(약하게)·1(보통)·2(세게)를 보낸다
 // 게임이 입력 칸을 쓰는 동안만 글자 다루기(커서·한글 조합)를 켠다 (2026-11-11)
 final class TextIxHandler: NSObject, WKScriptMessageHandler {
     private let prefs: WKPreferences
     init(_ prefs: WKPreferences) { self.prefs = prefs }
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
-        let on = (message.body as? Bool) ?? ((message.body as? Int) ?? 1) != 0
+        let on: Bool
+        if let b = message.body as? Bool { on = b } else if let n = message.body as? Int { on = n != 0 } else { on = true }
         if prefs.isTextInteractionEnabled != on { prefs.isTextInteractionEnabled = on }
     }
 }
 
+// 알 두드리기 진동: 게임이 haptic 메시지로 0(약하게)·1(보통)·2(세게)를 보낸다
 final class HapticHandler: NSObject, WKScriptMessageHandler {
     private let gens: [UIImpactFeedbackGenerator] = [.init(style: .light), .init(style: .medium), .init(style: .heavy)]
     func userContentController(_ c: WKUserContentController, didReceive message: WKScriptMessage) {
