@@ -653,6 +653,8 @@ function chalSay(c, g) {
 }
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 30, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·주급 값은 작업실 밸런스 (게임 10.78)
+// v22.14 경완 '친밀도 높을수록 덜 오름 + 난이도별' 합침: 이긴 도전자 배틀에 나간 포켓몬 친밀도 [0~99, 100~199, 200~] — 쉬움·보통·어려움·승급 심사
+const FR_W = [[2, 1, 1], [3, 2, 1], [4, 3, 2], [5, 4, 3]];
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 // 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
 // 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
@@ -1155,7 +1157,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ my, foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ my, frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4 class="gy-lock">배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
@@ -1165,7 +1167,7 @@ async function challenge(picked) {
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); res.used.forEach(id => GA.addFr(id, R.fr)); }
+    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
     else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0;

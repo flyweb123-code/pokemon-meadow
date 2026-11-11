@@ -230,10 +230,10 @@ function gainXp(P, n, ask = false) {
   out.lv = m.lv; return out;
 }
 // v22.07 경완 '본가 기준 배틀 친밀도': 배틀에서 레벨업 +5/+3/+2 (친밀도 0~99 / 100~199 / 200~), 이긴 배틀에 나간 포켓몬 +3/+2/+1 (본가 관장 배틀), 쓰러지면 −1, 30레벨 이상 높은 상대에게 쓰러지면 −5 (200 이상은 −10). 연습 배틀은 없음
-const frAdd = (P, a) => { if (P) P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
+const frAdd = (P, a) => { if (!P) return; if (a > 0 && GA.addFr) GA.addFr(P.id, a); else P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }   /* 오를 땐 게임 addFr (만점 축하 frMaxHit 그대로) */, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
 function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
   (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
-    if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, [3, 2, 1])); }); }
+    if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, B.frw || [3, 2, 1]))   /* v22.14 체육관 도전자 배틀은 gym.js FR_W (난이도별) */; }); }
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
@@ -987,7 +987,7 @@ async function run(opts) {
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM);   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
