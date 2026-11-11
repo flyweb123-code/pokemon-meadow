@@ -64,12 +64,12 @@ def tile_map(e, force=False):   # v22.19 경완 '도트 느낌 말고 그냥 지
     import io
     os.makedirs(OUT, exist_ok=True); p = f"{OUT}/{e['id']}.jpg"
     if os.path.exists(p) and not force: return
-    la, lo, r = e['la'], e['lo'], e['r']; PW, PH = 576, 432
-    half = r * 1.45; mpp = half * 2 / PH   # 한 픽셀 몇 m
-    z = max(10, min(17, int(math.log2(156543.03 * math.cos(math.radians(la)) / mpp))))
-    n = 2 ** z; fx = (lo + 180) / 360 * n; fy = (1 - math.asinh(math.tan(math.radians(la))) / math.pi) / 2 * n
-    scale = 156543.03 * math.cos(math.radians(la)) / n * 256 / 256 / mpp   # 타일 픽셀 → 그림 픽셀
-    tw = 256 * scale; x0 = fx * tw - PW / 2; y0 = fy * tw - PH / 2
+    la, lo, r = e['la'], e['lo'], e['r']
+    half = r * 1.45; c = math.cos(math.radians(la))   # 그림 세로 = 반경 × 2.9 (원이 세로 69%), 가로:세로 = 4:3
+    z = max(10, min(17, math.ceil(math.log2(156543.03 * c * 380 / (half * 2)))))   # 세로가 타일 픽셀로 380 쯤 되는 줌 (늘리지 않고 원래 글자 크기)
+    mpp = 156543.03 * c / 2 ** z; PH = round(half * 2 / mpp); PW = round(PH * 4 / 3)
+    n = 2 ** z; tw = 256; fx = (lo + 180) / 360 * n; fy = (1 - math.asinh(math.tan(math.radians(la))) / math.pi) / 2 * n
+    x0 = fx * tw - PW / 2; y0 = fy * tw - PH / 2
     im = Image.new('RGB', (PW, PH), (240, 236, 228))
     for tx in range(int(x0 // tw), int((x0 + PW) // tw) + 1):
         for ty in range(int(y0 // tw), int((y0 + PH) // tw) + 1):
@@ -78,7 +78,7 @@ def tile_map(e, force=False):   # v22.19 경완 '도트 느낌 말고 그냥 지
                 try: t = Image.open(io.BytesIO(urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'pokemon-meadow-evmap/1 (github.com/flyweb123-code/pokemon-meadow)'}), timeout=30).read())).convert('RGB'); break
                 except Exception as x: print('tile', url, x); time.sleep(2)
             else: continue
-            t = t.resize((math.ceil(tw), math.ceil(tw)), Image.LANCZOS); im.paste(t, (round(tx * tw - x0), round(ty * tw - y0))); time.sleep(.3)
+            im.paste(t, (round(tx * tw - x0), round(ty * tw - y0))); time.sleep(.3)
     im.save(p, quality=82, optimize=True)
     dla = half / 111320; dlo = dla * PW / PH / math.cos(math.radians(la))
     json.dump({'la0': la - dla, 'lo0': lo - dlo, 'la1': la + dla, 'lo1': lo + dlo, 'w': PW, 'h': PH, 'src': '© OpenStreetMap contributors'}, open(f"{OUT}/{e['id']}.json", 'w'))
