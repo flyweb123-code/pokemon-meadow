@@ -1665,7 +1665,7 @@ function forgetPanel(L, nw) {
 }
 async function shareWin(SH) {
   const w = $b('.bt-shw'); if (!w) return;
-  msg('다른 포켓몬들도 학습장치로 경험치를 얻었다!', 0); w.innerHTML = `<p>학습장치</p>${SH.map(({ i, P, r }) => `<div class="sh-r"><span class="sh-ic"><img alt="" data-th="${P.id}"></span><b>${esc(B.my[i].nm)}</b><span class="lv">Lv<em>${r.lv0}</em></span><i class="xp"><i></i></i><span class="up">+${r.n.toLocaleString()}</span></div>`).join('')}<b class="cur">▼</b>`;
+  msg('다른 포켓몬들도 학습장치로 경험치를 얻었다!', 0); w.innerHTML = `<p><img class="sh-esi" alt="" src="${IMG}item/expshare.png">학습장치</p>${SH.map(({ i, P, r }) => `<div class="sh-r"><span class="sh-ic"><img alt="" data-th="${P.id}"></span><b>${esc(B.my[i].nm)}</b><span class="lv">Lv<em>${r.lv0}</em></span><i class="xp"><i></i></i><span class="up">+${r.n.toLocaleString()}</span></div>`).join('')}<b class="cur">▼</b>`;
   fillTh(w); w.hidden = false; const R = [...w.querySelectorAll('.sh-r')];
   R.forEach((row, k) => { row.querySelector('.xp>i').style.width = clampN(SH[k].g0, 0, 1) * 100 + '%'; });
   await wait(250); se('EXP', { dur: .9 });

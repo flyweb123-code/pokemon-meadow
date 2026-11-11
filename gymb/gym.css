@@ -1886,7 +1886,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .bt .bt-shw{position:absolute;left:6px;right:6px;top:6px;padding:6px 10px 10px;background:#fff;color:#484848;text-shadow:1px 1px 0 #d0d0c8;font-size:10px;line-height:12px;z-index:6;
   box-shadow:inset 0 0 0 3px #94785c,inset 0 0 0 4px #b8a898,inset 0 0 0 5px #e0d8d0,0 0 0 2px #283028;border-radius:2px;animation:lvwIn .15s steps(3) both}
 .bt .bt-shw[hidden]{display:none}
-.bt .bt-shw p{margin:0 0 3px;font-size:10px}
+.bt .bt-shw p{margin:0 0 3px;font-size:10px;display:flex;align-items:center;gap:2px}.bt .bt-shw .sh-esi{width:15px;height:15px;margin:-3px 0 -3px -3px;image-rendering:pixelated;flex:none}   /* v22.12 경완 '학습장치 글자 왼쪽에 학습장치 아이콘' */
 .bt .bt-shw .sh-r{display:grid;grid-template-columns:20px 1fr 34px 64px;align-items:center;column-gap:5px;height:20px;position:relative}
 .bt .bt-shw .sh-ic{width:20px;height:20px;overflow:hidden;display:grid;place-items:center}.bt .bt-shw .sh-ic img{width:20px;height:20px;object-fit:contain;image-rendering:pixelated}
 .bt .bt-shw .sh-r b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
