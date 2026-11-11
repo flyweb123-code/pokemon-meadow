@@ -404,6 +404,7 @@ function bwUrl(sp, b, sh, f) { const L = BWA.l?.[sp] || 0, R = BWA.r?.[sp], loc 
     if (sh) { if (L & 4) return loc('bs'); if (has(4)) return rem('back/shiny/'); }
     return L & 1 ? loc('b') : has(1) ? rem('back/') : null; }
   if (L & 32) return loc(f && !sh && L & 8 ? 'f' : sh && L & 2 ? 's' : '');
+  if (sh && L & 2) return loc('s');   // PokeAPI 에 이로치만 없는 종 (오거래곤·대여르)
   return R == null ? null : rem(f && !sh && R & 8 ? 'female/' : sh && R & 2 ? 'shiny/' : ''); }
 // 배틀 중 바뀐 폼 (tools/gym/mkforms.py): 1~649 는 블랙·화이트 gif 폼 이름, 650~ 은 gym/img/pk/fm/<쇼다운 id>.png
 const FM_G = { castformrainy: 'castform-orainy', castformsunny: 'castform-osunny', castformsnowy: 'castform-osnowy', cherrimsunshine: 'cherrim-osunshine', darmanitanzen: 'darmanitan-ozen', meloettapirouette: 'meloetta-opirouette',
@@ -458,10 +459,10 @@ function showMon(side, A, on = true) {
   else if (A) {
     m._gif = null; m.classList.remove('gf'); const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
-    const fa = side === 'e' && !fm && !A.shiny && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
+    const fa = side === 'e' && !fm && (!A.shiny || (BWA.fs || []).includes(+A.sp)) && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
     m._fa = fa ? (Array.isArray(fa) ? { n: fa[0], w: fa[1] } : { n: fa, w: 80 }) : null; m.classList.toggle('fa', !!fa);
     if (clip) clip.style.width = clip.style.height = fa && m._fa.w !== 80 ? m._fa.w + 'px' : '';
-    if (fa) { img.onerror = () => { img.onerror = null; m._fa = null; m.classList.remove('fa'); img.style.width = img.style.height = ''; setSrc(img, pkSrc(A.sp, {})); }; setSrc(img, `${IMG}pk/fa/${A.sp}.png?v=${VER}`); img.style.width = m._fa.n * m._fa.w + 'px'; img.style.height = m._fa.w + 'px'; m.classList.add('pl2'); }
+    if (fa) { img.onerror = () => { img.onerror = null; m._fa = null; m.classList.remove('fa'); img.style.width = img.style.height = ''; setSrc(img, pkSrc(A.sp, {})); }; setSrc(img, `${IMG}pk/fa/${A.sp}${A.shiny ? 's' : ''}.png?v=${VER}`);   /* v21.76 경완: 이로치 = 색만 입힌 그림 */ img.style.width = m._fa.n * m._fa.w + 'px'; img.style.height = m._fa.w + 'px'; m.classList.add('pl2'); }
     else if (sheet) img.style.width = img.style.height = '';
     if (sheet || fa) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
