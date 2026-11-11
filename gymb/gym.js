@@ -1879,27 +1879,27 @@ function mecLay(stg) {
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.max(.1, (+e.dataset.h || 10) / 17)   /* 경완 11-11 '관장 키를 1.7m 기준으로' */ }; });
+    return { e, bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
   // 경완 11-11 '관장 주변을 원형으로 감싸듯이' + '발판 뒤로 넘어가지 않게, 겹침은 아까 정도': 발판 타원 안에서 큰 포켓몬은 뒤쪽 호(가운데일수록 뒤), 작은 포켓몬은 앞쪽 호(관장 다리 앞).
   // 옆으로는 예전처럼 몸 폭의 20% 정도만 겹치며 바깥으로 줄 세움 (넘치면 겹침을 늘리고, 그래도 안 되면 그때만 조금씩 줄임)
   const n = A.length, S = [...A].sort((x, y) => y.r - x.r);
-  const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= 18 / 17).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
+  const L0 = Math.min(84, (H - 30 - M) / Math.max(1, ...A.filter(a => a.r <= Math.pow(18 / 17, .6)).map(a => a.r)));   // 1.8m 까지는 무대 높이 안, 더 큰 건 무대 높이로 자름
   let LH = L0, LB = 14, ok = false, gk = 1;
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
     A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
     for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Hb = a => Math.max(1, C + RY), Ht = 1;
       // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜)
       let le = cx, re = cx, pL = null, pR = null;
-      big.forEach((a, i) => { a.h = Math.max(18, Math.min(a.h0, (H - C - RY - M) * gk)); a.s = a.h / a.bh; a.w = a.bw * a.s;
+      big.forEach((a, i) => { a.h = Math.min(a.bh * k, Math.max(24, Math.min(a.h0, (H - C - RY - M) * k))); a.s = a.h / a.bh;   /* 경완 '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기(원본 1.5배)까지만 */ a.w = a.bw * a.s;
         if (!i && big.length % 2) { a.x = cx + (n % 4 === 1 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
         const sd = re - cx <= cx - le ? 1 : -1, pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
         if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
       // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
       let tl = cx - LW * .15, tr = cx + LW * .15;
-      tiny.forEach(a => { a.h = Math.max(18, a.h0); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
+      tiny.forEach(a => { a.h = Math.min(a.bh * k, Math.max(24, a.h0)); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
         if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
       const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) continue;
       const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; A.forEach(a => a.x += d); ok = true;
