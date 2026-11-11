@@ -3948,3 +3948,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec-id .mec-gn{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:0;font-size:14px;line-height:1.2}
 #gym .mec-id .mec-gn b{color:#2a2a3a}
 #gym .mec-id .mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2}
+/* v21.89 경완 '등급딱지랑 이름은 두 줄로 좌상단에 박혀야': 무대 그림 왼쪽 위에 두 줄 */
+#gym .mec-stg .mec-gn{position:absolute;top:7px;left:8px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin:0;max-width:60%;pointer-events:none;text-align:left}
+#gym .mec-stg .mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2}
+#gym .mec-stg .mec-gn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:#fff;text-shadow:1px 0 0 #20202c,-1px 0 0 #20202c,0 1px 0 #20202c,0 -1px 0 #20202c,1px 1px 0 #20202c,0 2px 0 #20202c}
+#gym .mec-id{gap:4px;margin:10px 0 10px}
+#gym .mec-id .mec-wl{margin:0;line-height:1.2}
+/* v21.89 경완 '무대 그림 말고 전체 박스 테두리 안쪽 좌상단': 등급 딱지·체육관 이름 두 줄 (오른쪽 위 옷걸이와 짝) */
+#gym .gy-pop.mec-wrap .win>.mec-gn{position:absolute;top:12px;left:12px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:0;max-width:calc(50% - 62px);pointer-events:none;text-align:left}
+#gym .gy-pop.mec-wrap .win>.mec-gn .gr-tag{padding:2px 8px 3px!important;border-width:2px!important;border-radius:8px!important;font-size:11px;font-style:normal;line-height:1.2;white-space:nowrap}
+#gym .gy-pop.mec-wrap .win>.mec-gn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2;color:#2a2a3a;padding-left:2px}
+#gym .mec .bd-pic.mec-stg{margin-top:46px}
