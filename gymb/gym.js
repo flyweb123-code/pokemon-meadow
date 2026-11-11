@@ -3181,6 +3181,8 @@ function enter() {
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
+  if (Array.isArray(S.box) && S.box.some(p => p.mgT)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
+  { const k = window.gymSimOn ? window.gymMegaTest : null; window.gymMegaTest = null; if (k != null) setTimeout(() => megaTest(k), 900); }   // 운영자 메가진화 시험 (경완 2026-11-12)
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
   if (tutW) setTimeout(() => { if (open) tutTest(tutW); }, 1600);
@@ -3379,6 +3381,23 @@ async function visit(F, code) {
   await wait(200); gymLoad.hide();
 }
 
+/* 경완 2026-11-12 '메가진화 연출 핸드폰에서도 확인할 수 있게 운영자 모드에': 운영자 › 메가진화 시험 → 체육관 시뮬레이터(나가면 체육관·골드 되돌림) 안에서
+   고른 메가 포켓몬 + 한 마리로 관장 강석과 연습 배틀 (보상·기록 없음). 시험 포켓몬은 mgT 표시로 상자에 잠깐만 넣고 끝나면 뺌 */
+const MEGA_T = [[6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], 'blaze'], [6, 'charizarditey', ['flamethrower', 'airslash', 'solarbeam', 'focusblast'], 'blaze'], [448, 'lucarionite', ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], 'innerfocus'], [94, 'gengarite', ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'], [130, 'gyaradosite', ['waterfall', 'crunch', 'icefang', 'dragondance'], 'intimidate'], [445, 'garchompite', ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], 'roughskin'], [150, 'mewtwonitey', ['psychic', 'aurasphere', 'icebeam', 'calmmind'], 'pressure'], [257, 'blazikenite', ['flareblitz', 'closecombat', 'thunderpunch', 'swordsdance'], 'speedboost']];
+async function megaTest(k) {
+  const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  S.box = S.box || []; const g = st(); g.mon = g.mon || {}; const made = [];
+  const mk = (id, sp, mv, it, ab) => { const P = { id, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, mgT: 1 }; S.box.push(P); made.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 52, it: it || '', ab }); return P; };
+  const my = [mk(990001, M[0], M[2], M[1], M[3]), M[0] === 448 ? mk(990002, 6, ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], '', 'blaze') : mk(990002, 448, ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], '', 'innerfocus')];
+  const fe = (sp, nm, lv, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'adamant', iv: [24, 24, 24, 24, 24, 24], g: 'M' });
+  const team = [fe(95, '롱스톤', 44, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), fe(408, '두개도스', 45, ['headsmash', 'zenheadbutt', 'crunch', 'firepunch'], 'moldbreaker'), fe(409, '램펄드', 47, ['headsmash', 'earthquake', 'firepunch', 'icebeam'], 'moldbreaker')];
+  document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  try { await GB().run({ my, foe: { tr: 'leader_roark', cls: '관장', nm: '강석', team, hold: 2, say: { win: '대단한 메가진화였어!', lose: '바위처럼 단단하게 버텼지!' } }, practice: true, diff: 2, bg: 'in2', music: 'gymBattle', gmk: { mega: 1 }, meBackUrl: await fitSrc('trb') }); }
+  catch (e) { console.error(e); }
+  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); dropMgT(); made.forEach(P => { delete g.mon[P.id]; }); save(); bgmPlay('gym'); }
+}
+function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (S.box[i]?.mgT) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
@@ -3388,3 +3407,4 @@ window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) =>
 // v14.71 경완 '도전자 왔다가 가 버려도 빨간 점': 기다리다 돌아간 도전자(exp 지남)·도착하고 2시간 지난 예약은 빼고 센다
 window.gymDot = () => { const g = S.gym, now = Date.now(), live = t => t && t <= now && now < t + qWait(t); return !!(g && g.d && ((g.q && g.q.some(c => c.id > (g.qSeen | 0) && (c.exp || Infinity) > now)) || (g.sch || []).some(live) || live(g.pull))); };
 })();
+

@@ -370,7 +370,7 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } const k = String(A.tsp || A.sp); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = (SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join(''); } }   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
+  { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
   if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
@@ -978,6 +978,7 @@ function blogSave(opts, my, foeT, won, out) {
   S.gym.blog = [rec, ...(S.gym.blog || [])].slice(0, BLOG_N);
   try { GA.save(); } catch (e) {}
 }
+function nihil(pk) { const M = PSim.Dex.moves.get('nihillight'); if (!M?.exists) return; for (const L of [pk.moveSlots, pk.baseMoveSlots]) (L || []).forEach((m, i) => { if (m.id === 'coreenforcer') L[i] = { ...m, move: M.name, id: M.id, target: M.target }; }); }
 async function run(opts) {
   await Promise.all([loadData(), loadSim()]);
   try { evMig(); } catch (e) {}
@@ -985,6 +986,7 @@ async function run(opts) {
   const my = opts.my.map(myEntry), foeT = opts.foe.team;
   if (opts.foe.hold != null) try { foeItems(foeT, opts.foe.hold); } catch (e) {}   // 도전자 지닌 도구 (v16.89)
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
+  { const A0 = btl.actions.runMegaEvo.bind(btl.actions); btl.actions.runMegaEvo = pk => { const r = A0(pk); if (r && pk.species.id === 'zygardemega') { nihil(pk); for (const q of btl.queue.list) if (q.pokemon === pk && q.move?.id === 'coreenforcer') q.move = btl.dex.moves.get('nihillight'); } return r; }; }   /* 이번 턴에 고른 코어퍼니셔도 니힐레이저로 */   /* 경완 2026-11-12: 레전드 Z-A 처럼 메가지가르데가 되면 코어퍼니셔 → 니힐레이저 (메가진화한 동안 = 그 배틀 끝까지) */
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
@@ -1453,7 +1455,7 @@ function mfxAdd() { for (const [k, L] of Object.entries(MFX_ADD)) { const v = MF
   (Array.isArray(v[0]) ? v : [v]).forEach(A => { if (A.added) return; A.added = 1; A[1].push(...L); A[0] = Math.max(A[0], ...L.map(e => e[1] + (e[0] === 'k' ? (e[5] + 1) * e[6] * 2 : e[0] === 'e' || e[0] === 'y' ? e[3] : e[0] === 'z' ? e[5] : e[0] === 'f' ? e[5] : e[5] || 4))); }); } }
 // 본가 연출이 어색한 기술은 다른 기술 연출로 (경완 2026-10-30 '세차게 휘두르기 모션 물기라서 어색해' → 몸을 휘둘러 치는 힘껏치기)
 const MV_SUB = { thrash: 'slam' };
-const MV_LIKE = { falsesurrender: 'feintattack', honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch', brutalswing: 'thrash' };   /* v14.91 경완 '세차게휘두르기가 물기 모션': 몸을 휘두르는 난동부리기 연출로 */   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
+const MV_LIKE = { falsesurrender: 'feintattack', honeclaws: 'sharpen', poweruppunch: 'megapunch', jetpunch: 'machpunch', ragefist: 'shadowpunch', plasmafists: 'thunderpunch', brutalswing: 'thrash', nihillight: 'dragonpulse' };   /* v14.91 경완 '세차게휘두르기가 물기 모션': 몸을 휘두르는 난동부리기 연출로 */   /* v14.08 경완 '손톱갈기 모션 어색': 악 타입 변화 대표(나쁜음모 검은 기운) 대신 같은 '갈아서 날 세우기' 기술인 각지기 연출 */
 // v13.17 경완 '울음소리 기술은 포켓몬 울음소리': 본가 플래티넘 연출(PlayPokemonCry)처럼 쓰는 포켓몬의 울음소리
 const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'nobleroar', 'snarl', 'partingshot', 'echoedvoice', 'round', 'boomburst', 'disarmingvoice', 'relicsong', 'sparklingaria', 'overdrive', 'clangingscales', 'torchsong', 'alluringvoice', 'psychicnoise']);   // v14.81 경완 '에코보이스 효과음 없음': 하이퍼보이스 연출을 빌리는 5세대 이후 소리 기술도 울음소리
 // 2턴 기술 모으는 턴 연출 (mvfx.json 의 기술id_c). 플래티넘에 없는 기술은 비슷한 기술 것으로
