@@ -1874,6 +1874,7 @@ function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비�
   try { return im._trim = rd(im); } catch (e) {}
   if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0, 0, 0]; } }; c.onerror = () => { im._trim = [0, 0, 0, 0]; }; c.src = im.src; }
   return [0, 0, 0, 0]; }
+const mecSt = sp => { const o = SPECIES[sp]; return !!o && !!(o.leg || o.my || (o.bs || []).reduce((x, y) => x + y, 0) >= 580); };   // 전설·환상·종족값 580 이상 = 센 포켓몬 (왼쪽 자리)
 let MEC_FACE = null, mecFq = null;
 function mecFace(again) { if (MEC_FACE) return MEC_FACE; if (!mecFq) mecFq = fetch('gym/img/pk/face.json').then(r => r.json()).then(d => { MEC_FACE = d; }).catch(() => { MEC_FACE = {}; }); mecFq.then(() => again?.()); return null; }
 function mecLay(stg) {
@@ -1881,7 +1882,7 @@ function mecLay(stg) {
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
+    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
@@ -1897,8 +1898,11 @@ function mecLay(stg) {
       // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜)
       let le = cx, re = cx, pL = null, pR = null;
       big.forEach((a, i) => { a.h = Math.min(a.bh * k, Math.max(HMIN, Math.min(a.h0, (H - C - RY - M) * k))); a.s = a.h / a.bh;   /* 경완 '큰 애들도 도트가 깨질 정도로 커지지는 않게': 게임 기본 크기(원본 1.5배)까지만 */ a.w = a.bw * a.s;
-        if (!i && big.length % 2) { a.x = cx + (n % 4 === 1 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
-        const sd = re - cx <= cx - le ? 1 : -1, pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
+        if (!i && big.length % 2) { a.x = cx + (a.st || n % 4 === 1 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; pL = pR = a; return; }   /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */
+        let sd = re - cx <= cx - le ? 1 : -1; const dL = (cx - le) - (re - cx), stL = big.slice(i + 1).some(x => x.st);
+        /* 경완 11-11 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리(왼쪽)에': 센 포켓몬은 왼쪽이 많이 길지 않으면 왼쪽, 아닌 포켓몬은 뒤에 센 포켓몬이 남았으면 오른쪽 */
+        if (a.st && sd > 0 && dL < a.w * 1.2) sd = -1; else if (!a.st && stL && sd < 0 && -dL < a.w * 1.2) sd = 1;
+        const pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
         if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
       // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
       let tl = cx - LW * .15, tr = cx + LW * .15;
@@ -1910,7 +1914,7 @@ function mecLay(stg) {
       const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로 잡아 가운데→바깥으로 갈수록 차례로 앞으로 (모두 다른 깊이) */
       big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });   // 가운데일수록 발판 뒤쪽 (발판 안)
       tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
-      A.forEach(a => { a.z = Math.max(1, Math.round(25 + (LB - a.b) * 2 + (a.b < LB ? 1 : -1))); }); }
+      [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; }); }   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~): 예전엔 뒤쪽이 모두 1 로 같아져 그리는 순서로 가려졌음 (경완 '한카리아스가 더 앞인데 뒤로') */
     if (!ok) k *= .96; }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
   const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = LH / trF[1] + 'px'; tr.style.bottom = LB + 'px'; }   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
@@ -1943,7 +1947,7 @@ function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.f
 async function meCard() { const g = st(), G = gradeOf(g.rep || 0, g.gmax ?? 99), src = await fitSrc('tr');   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6);   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
   const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = bdLv(g, t); return `<div class="${L ? 'on' : ''}${g.ty === t ? ' cur' : ''}">${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;
   const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}">
-    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
+    <div class="bd-pic mec-stg mecT${g.ty | 0}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk" data-sp="${P.sp}" data-h="${SPECIES[P.sp]?.h || 10}" data-st="${mecSt(P.sp) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
     <h4 class="mec-h"><span class="mec-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span>관장 ${esc(trName() || '나')}</h4><p class="mec-wl"><b>${g.w || 0}</b>승 <b>${g.l || 0}</b>패</p>${bd}</div><button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button><div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) w.dataset.g = G.i;
   p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P.sp, sh: P.shiny ? 1 : 0, sx: P.sex }); } catch (x) {} });
