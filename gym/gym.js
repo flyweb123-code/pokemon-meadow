@@ -1881,9 +1881,11 @@ function mecLay(stg) {
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
     return { e, bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.max(.1, (+e.dataset.h || 10) / 14) }; });
   if (!A.length || A.some(a => !a)) return;
+  const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
+  const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
   const fit = r => r > 1.3;   // 뒷줄
   let L0 = Math.min(84, (H - FB - 8) / Math.max(1, ...A.filter(a => !fit(a.r)).map(a => a.r)));   // 앞줄에서 가장 큰 포켓몬이 무대 높이 안
-  const place = (L, bot, mode, LH, boost) => { const LW = 36 * LH / 53; let le = cx, re = cx, prevL = null, prevR = null;
+  const place = (L, bot, mode, LH, boost) => { const LW = trF[0] * LH; let le = cx, re = cx, prevL = null, prevR = null;
     L.forEach(a => { a.b = bot; a.h = Math.max(18, Math.min(LH * a.r, H - bot - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
     if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx + (L.length % 2 ? -1 : 1) * Math.min(26, 6 + a.w * .14); le = a.x - a.w / 2; re = a.x + a.w / 2; /* 경완 '관장 뒤 포켓몬은 관장이랑 위치 살짝 틀어지게' */ prevL = prevR = a; a.z = 1; return; }
       const side = i % 2 ? -1 : 1, pv = side < 0 ? prevL : prevR, ov = Math.min(.5 + boost * .6, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
@@ -1900,11 +1902,11 @@ function mecLay(stg) {
     LH = L0 * k; const fr = A.filter(a => !fit(a.r)).sort((x, y) => x.r - y.r), mv = fr.splice(Math.max(0, fr.length - up), up), back = A.filter(a => fit(a.r)).concat(mv).sort((x, y) => y.r - x.r);
     let ok = false; for (let bo = 0; bo <= .5 + 1e-9 && !ok; bo += .05) ok = place(back, BB, 'b', LH, bo) & place(fr, FB, 'f', LH, bo);
     if (ok) break; if (fr.length > 2 && up < 2) up++; else k *= .97; }   // 경완 '폭이 넘칠 때는 줄이기보단 겹치게': 겹침을 최대 80%까지 늘려 보고, 그래도 안 되면 그때만 아주 조금씩 줄임
-  const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = 80 * LH / 53 + 'px';
+  const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = LH / trF[1] + 'px';   /* 경완 '전룡이 관장보다 작아?': 관장 그림의 보이는 키(옷마다 잼)가 LH = 1.4m */
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
-  const top = Math.max(LH * 1.25 + 14, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
+  const top = Math.max(LH + 14 + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
