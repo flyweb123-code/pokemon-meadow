@@ -66,7 +66,15 @@ function stats(L) {
     spDays: pct(Gd.filter(r => spOf(r.d) > 0).length, Gd.length), useRate: pct(sum(Gd.map(r => spOf(r.d))), sum(Gd.map(r => r.d.ern | 0))), bal: { p50: q(Gd.map(r => r.d.b1 | 0), .5), p90: q(Gd.map(r => r.d.b1 | 0), .9), max: q(Gd.map(r => r.d.b1 | 0), 1) },
     cats: [...catM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), items: [...itM].sort((a, b) => b[1] - a[1]).slice(0, 12) };
   const vers = [...group(L, r => r.ver || '?')].map(([k, A]) => [k, A.length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  return { gym, sf, mg, ed, tw, gold, vers };
+  // v22.18 경완 '지역 부화 매주 살펴보기': 알 1개 = 한 줄 {c 시·군, u 광역시 구(서울 송파구 …), r 도 키, aw 낯선 곳, s 어디서(ev:id·m·lm·ct·rg·lg·''), sp, g}. 좌표 없음
+  const E = L.filter(r => r.kind === 'egg'), src = s => /^ev/.test(s || '') ? 'ev' : s || '-', SN = { ev: '이벤트', m: '직접 놓은 곳', lm: '명소', ct: '시·군 토박이', rg: '도 토박이', lg: '전설 자리', '-': '보통 알' };
+  const eRow = (k, A) => { const aw = A.filter(r => r.d.aw), hm = A.filter(r => !r.d.aw), nat = B => pct(B.filter(r => ['ct', 'rg'].includes(r.d.s)).length, B.length); return { k, n: A.length, people: people(A), aw: pct(aw.length, A.length), natAw: nat(aw), natHm: nat(hm), lm: pct(A.filter(r => r.d.s === 'lm').length, A.length), ev: pct(A.filter(r => /^ev/.test(r.d.s || '')).length, A.length) }; };
+  const egg = { n: E.length, people: people(E), src: [...group(E, r => src(r.d.s))].map(([k, A]) => [SN[k] || k, A.length, pct(A.length, E.length)]).sort((a, b) => b[1] - a[1]),
+    // 저장소가 공개라 이슈도 공개: 한두 명만 있는 도·시·군은 이름을 안 적고 '그 밖'으로 묶음 (누가 어디 갔는지 드러나지 않게)
+    reg: (() => { const G = [...group(E, r => r.d.r || '?')], few = G.filter(([, A]) => people(A) < 2).flatMap(([, A]) => A); return [...G.filter(([, A]) => people(A) >= 2).map(([k, A]) => eRow(k, A)).sort((a, b) => b.n - a.n), ...(few.length ? [eRow('그 밖 (한 명뿐인 도)', few)] : [])]; })(),
+    city: [...group(E.filter(r => r.d.u || r.d.c), r => r.d.u || r.d.c)].filter(([, A]) => people(A) >= 3).map(([k, A]) => eRow(k, A)).sort((a, b) => b.people - a.people || b.n - a.n).slice(0, 25),
+    evs: [...group(E.filter(r => /^ev:/.test(r.d.s || '')), r => r.d.s.slice(3))].map(([k, A]) => [k, A.length, people(A)]) };
+  return { gym, sf, mg, ed, tw, gold, egg, vers };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -119,6 +127,13 @@ const body = [
   `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
   tbl(['쓴 곳', '골드', '명'], S.gold.cats.map(c => [({ item: '진화 도구·아이템', field: '필드 소품', fit: '의상', bgm: '배경 음악', gym: '체육관 상점', wage: '트레이너 월급·수당' })[c.k] || c.k, c.g, c.people])), '',
   `많이 산 것: ${S.gold.items.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
+  '## 지역 알 (주운 곳 — 시·군 이름만, 좌표 없음)',
+  `${v(S.egg.n)}개 · ${S.egg.people}명 · 어디서: ${S.egg.src.map(([k, n, p]) => `${k} ${v(n)}(${p}%)`).join(' · ') || '-'}`,
+  '토박이 % = 그 알 가운데 시·군·도 토박이로 나온 비율 (목표: 낯선 곳 약 30%, 평소 약 5%).', '',
+  tbl(['도', '알', '명', '낯선 곳 %', '토박이 % (낯선 곳)', '토박이 % (평소)', '명소 %', '이벤트 %'], S.egg.reg.map(r => [r.k, r.n, r.people, r.aw, r.natAw, r.natHm, r.lm, r.ev])), '',
+  '사람 많은 시·군·구 (광역시는 구 단위, 3명 이상만, 이번 주 이벤트 찾을 곳):', '',
+  tbl(['시·군', '명', '알', '낯선 곳 %', '토박이 % (낯선 곳)', '토박이 % (평소)', '이벤트 %'], S.egg.city.map(r => [r.k, r.people, r.n, r.aw, r.natAw, r.natHm, r.ev])), '',
+  `이벤트별 알: ${S.egg.evs.map(([k, n, p]) => `${k} ${n}개·${p}명`).join(' · ') || '-'}`, '',
   `버전: ${S.vers.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '<details><summary>숫자 (JSON)</summary>', '', '```json', JSON.stringify({ cur: S, prev: P, flags }, null, 1).slice(0, 50000), '```', '</details>',
 ].join('\n');
