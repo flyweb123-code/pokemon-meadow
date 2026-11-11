@@ -239,7 +239,7 @@ function build() {
     <div class="gy-main">
       <div class="gy-stage"><div class="gy-map"><img alt=""><div class="gy-ents"></div></div></div>
       <div class="gy-top">
-        <button class="gy-plate" type="button" aria-label="체육관 정보"><span class="gy-wing l"><span class="gy-nm"></span></span><span class="gy-bd"></span><span class="gy-wing r"><span class="gy-grade"></span><i class="gy-bigt" aria-hidden="true">넓히기!</i></span><span class="gy-rpa"><i class="gy-bar"><i></i></i><b><em>평판</em><span class="gy-repn"></span></b><i class="gy-stk" hidden></i></span></button>
+        <div class="gy-plw"><button class="gy-plate" type="button" aria-label="체육관 정보"><span class="gy-wing l"><span class="gy-nm"></span></span><span class="gy-bd"></span><span class="gy-wing r"><span class="gy-grade"></span><i class="gy-bigt" aria-hidden="true">넓히기!</i></span></button><span class="gy-rpa" role="button" aria-label="평판 등급 혜택"><i class="gy-bar"><i></i></i><b><em>평판</em><span class="gy-repn"></span></b><i class="gy-stk" hidden></i></span></div>
       </div>
       <!-- 필드와 같은 자리 (경완 2026-10-28): 꾸미기 = 맵 편집 자리(왼쪽 위), 창고 = 가방 자리(오른쪽) -->
       <button class="gy-deco" type="button" aria-label="꾸미기"><svg viewBox="0 0 17 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M1 0h3v1H1zM13 0h3v1H13zM0 1h17v1H0zM0 2h3v1H0zM14 2h3v1H14zM1 3h2v1H1zM14 3h2v1H14zM2 4h1v1H2zM14 4h1v1H14zM2 5h1v1H2zM6 5h1v1H6zM10 5h1v1H10zM14 5h1v1H14zM2 6h1v1H2zM8 6h1v1H8zM14 6h1v1H14zM2 7h1v1H2zM7 7h1v1H7zM9 7h1v1H9zM14 7h1v1H14zM3 8h1v1H3zM13 8h1v1H13zM2 9h1v1H2zM14 9h1v1H14zM2 10h1v1H2zM14 10h1v1H14zM2 11h1v1H2zM14 11h1v1H14zM2 12h1v1H2zM14 12h1v1H14zM3 13h1v1H3zM13 13h1v1H13zM4 14h1v1H4zM7 14h3v1H7zM12 14h1v1H12zM5 15h2v1H5zM10 15h2v1H10z"/><path fill="#ffd520" d="M3 2h1v1H3zM13 2h1v1H13zM3 3h2v1H3zM6 3h5v1H6zM12 3h2v1H12zM4 4h9v1H4zM4 5h2v1H4zM7 5h3v1H7zM11 5h2v1H11zM6 6h2v1H6zM9 6h2v1H9zM8 7h1v1H8zM5 8h1v1H5zM11 8h1v1H11zM4 9h2v1H4zM11 9h2v1H11z"/><path fill="#6a3908" d="M4 2h9v1H4zM5 3h1v1H5zM11 3h1v1H11zM3 4h1v1H3zM13 4h1v1H13zM3 5h1v1H3zM13 5h1v1H13zM3 6h1v1H3zM13 6h1v1H13zM3 7h1v1H3zM13 7h1v1H13zM4 8h1v1H4zM12 8h1v1H12zM3 9h1v1H3zM6 9h1v1H6zM10 9h1v1H10zM13 9h1v1H13zM3 10h1v1H3zM5 10h2v1H5zM10 10h2v1H10zM13 10h1v1H13zM3 11h1v1H3zM13 11h1v1H13zM3 12h1v1H3zM5 12h2v1H5zM10 12h2v1H10zM13 12h1v1H13zM4 13h1v1H4zM7 13h3v1H7zM12 13h1v1H12zM5 14h2v1H5zM10 14h2v1H10z"/><path fill="#e65262" d="M4 6h2v1H4zM11 6h2v1H11zM4 7h2v1H4zM11 7h2v1H11z"/><path fill="#de9c10" d="M6 7h1v1H6zM10 7h1v1H10zM6 8h5v1H6zM7 9h3v1H7zM4 10h1v1H4zM7 10h3v1H7zM12 10h1v1H12zM4 11h9v1H4zM4 12h1v1H4zM7 12h3v1H7zM12 12h1v1H12zM5 13h2v1H5zM10 13h2v1H10z"/></svg></button>
@@ -257,9 +257,9 @@ function build() {
     <div class="gy-dbar"><div class="db-head"><b>창고</b><span>골라서 체육관에 놓아요</span></div><div class="db-list"></div>
       <div class="db-keys"><button type="button" data-a="cancel">취소</button><button type="button" class="ok" data-a="save">저장</button></div></div>`;
   document.body.appendChild(root);
-  $g('.gy-plate').onclick = e => { sfx('tap'); if (e.target.closest('.gy-rpa')) return perkPop(); infoPop(); };   // v20.81 경완 '홈 평판 게이지 누르면 체육관 등급별 혜택 카드'
+  $g('.gy-plate').onclick = () => { sfx('tap'); infoPop(); }; $g('.gy-rpa').onclick = () => { sfx('tap'); perkPop(); };   // v21.68 경완 '여전히 평판 게이지 누를 때 리본·배지 같이 눌림': 게이지를 타이틀 버튼 밖(.gy-plw 안 형제)으로 빼서 따로 눌림   // v20.81 경완 '홈 평판 게이지 누르면 체육관 등급별 혜택 카드'
   { const pl = $g('.gy-plate'), off = () => pl.classList.remove('prs');   // v21.65 경완 '평판 게이지만 눌러도 리본·배지가 눌림 → 리본 누르는 범위 딱 그 모양으로': 눌림 모션은 리본·배지를 눌렀을 때만 (CSS 가 리본 모양·배지 동그라미만 눌리게)
-    pl.addEventListener('pointerdown', e => { if (!e.target.closest('.gy-rpa')) pl.classList.add('prs'); }); ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => pl.addEventListener(k, off)); }
+    pl.addEventListener('pointerdown', () => pl.classList.add('prs')); ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => pl.addEventListener(k, off)); }
   $g('.gy-store').onclick = () => { sfx('tap'); if (ded) ded.end?.(); storePop(); };
   $g('.gy-jnl').onclick = () => { sfx('tap'); if (ded) ded.end?.(); jnlPop(); };
   $g('.gy-deco').onclick = () => { sfx('tap'); root.querySelectorAll('.gy-infos').forEach(x => x.remove()); if (!ded) decoEdit(); };
@@ -1706,7 +1706,7 @@ function renderTop() {
   $g('.gy-grade').textContent = GRADES[gi][1];
   { const b = $g('.gy-bd'), k = `${g.ty}.${gi}`; if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = gEmb(gi); } }   // 등급 배지를 타이틀 박스 가운데에 (경완 2026-10-29)
   $g('.gy-bar>i').style.width = (G.hi > G.lo ? clampN(((g.rep || 0) - G.lo) / (G.hi - G.lo), 0, 1) : 1) * 100 + '%';
-  $g('.gy-plate').classList.toggle('full', bsReady(g));   /* v15.42 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
+  $g('.gy-plate').classList.toggle('full', bsReady(g)); $g('.gy-plw').classList.toggle('full', bsReady(g));   /* v15.42 경완: 평판이 꽉 차면 게이지 테두리가 은은하게 빛남 */
   { const sk = $g('.gy-stk'), n = g.stk | 0; if (sk) { sk.hidden = n < 2; sk.textContent = `${n}연승 중!`; } }   /* 홈 평판 아래 연승 딱지 (경완 2026-11-04 시안 A) */
   $g('.gy-repn').textContent = `${g.rep || 0}${G.hi > G.lo && G.hi < REP_MAX + 1 ? `/${G.hi}` : ''}`; $g('.gy-grade').dataset.g = gi; $g('.gy-plate').dataset.g = gi;   /* v19.24 경완 '승급 전 리본이 승급 후 리본이랑 같음': 승급 연출 전엔 리본 색도 예전 등급 */ $g('.gy-plate').classList.toggle('canup', canBig(g));
   renderGoldG(); menuDot();
@@ -2196,7 +2196,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
     if (k === 'd') {
       const DL = dzList(), D = dzBase(dr.d), di = DL.indexOf(D);
       body = `<h3>${re ? '새 체육관 디자인' : '체육관 디자인'}</h3><p class="gy-lead">${re ? '새로 세울 체육관 모양을 골라요.' : '등급이 오를 때마다 체육관이 점점 넓어져요.'}</p>
-        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
+        <div class="gy-dz"><div class="gy-dz-view"><img data-ms="${D.id}" data-gi="${first || re ? 0 : ''}" alt=""><button class="gy-dz-arw l" type="button" data-m="-1" aria-label="이전">◀</button><button class="gy-dz-arw r" type="button" data-m="1" aria-label="다음">▶</button></div>
         <div class="gy-dz-nm">${D.n}</div><div class="gy-dots">${DL.map((_, j) => `<i class="${j === di ? 'on' : ''}"></i>`).join('')}</div></div>`;
     } else if (k === 'ty') {
       body = `<h3>체육관 타입</h3><p class="gy-lead">배틀에는 이 타입 포켓몬만 낼 수 있어요. 등급이 오를 때마다 이 타입의 등급 배지를 받아요.</p>
@@ -2207,7 +2207,7 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
       if (!dr.nm) dr.nm = defName(dr.ty);
       body = `<h3>체육관 이름</h3><p class="gy-lead">도전자들이 보는 이름이에요.</p>
         <div class="gy-name"><label class="gy-nmf"><input type="text" maxlength="8" value="${esc(dr.nm)}" aria-label="체육관 이름"><svg class="gy-pen" viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#e8a020" d="M10 2h2v1h1v1h1v2h-1v1h-1v1h-1v1h-1v1H9v1H8v1H7v1H6v-1H5v-1H4v-1H3v-1h1V9h1V8h1V7h1V6h1V5h1V4h1z"/><path fill="#f0a0a0" d="M12 2h1v1h1v1h1v1h-1V4h-1V3h-1z"/><path fill="#f6d8a8" d="M3 11h1v1h1v1h1v1H3z"/><path fill="#40404c" d="M2 13h2v1h1v1H2zM10 1h2v1h-2zM14 5h1v2h-1z"/></svg></label><span class="gy-cnt"></span></div>
-        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIc0(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
+        ${first || re ? `<div class="gy-sum"><div class="sm-map"><img data-ms="${dr.d}" data-gi="${first || re ? 0 : ''}" data-me alt=""></div><div class="sm-row"><b>${dzBase(dr.d).n}</b><span class="sm-ty" style="--tc:${GA.TYPE_C?.[dr.ty] || '#888'}">${tyIc0(dr.ty)}${TYPE_KO[dr.ty]} 타입</span></div></div>` : ''}`;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div>${k === 'ty' ? '<div class="gy-btm"><button type="button" class="gy-key gy-pvb" data-pv>포켓몬 박스 확인</button>' : ''}<button class="gy-key main gy-next" type="button" ${k === 'ty' && !dr.ty ? 'disabled' : ''}>${btn}</button>${k === 'ty' ? '</div>' : ''}`;
     fillMs(el); pvFill(); const inp = el.querySelector('input');
@@ -2315,7 +2315,7 @@ async function refound(dr, mode, setupEl) {   // mode 'new': 지금 체육관은
   gSwap({ v: 1, d: dr.d, ty: dr.ty, nm: dr.nm, rep: 0, t0: Date.now() }, mode === 'close'); glog('in', mode === 'close' ? `<b>${esc(oldNm)}</b>을 닫고 <b>${esc(dr.nm)}</b>을 새로 세웠다.` : `<b>${esc(dr.nm)}</b>을 새로 세웠다.`); save();
   renderHome(); renderTop();
   fx.classList.add('build'); for (let k = 0; k < 6; k++) setTimeout(() => { try { window.GymBGM?.se('DP_KON', { gain: 1 }); } catch (e) {} }, 300 + k * 420); await wait(2900);
-  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty)} ${TYPE_KO[dr.ty]} 타입</small>`;
+  fx.querySelector('.re-sign').innerHTML = `<b>새 단 장</b><span>${esc(dr.nm)}</span><small>${tyIcon(dr.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[dr.ty]} 타입</small>`;
   fx.classList.remove('build'); sfx('tap'); await wait(1300);
   fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
   // 새 체육관은 언제나 튜토리얼 때처럼 GRAND OPEN 연출 → 바로 첫 도전자 (경완 2026-10-29)
