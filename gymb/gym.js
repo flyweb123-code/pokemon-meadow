@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1149,7 +1146,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
