@@ -3968,3 +3968,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rk-row.me,#gym .gy-rkw .rk-row.me{outline:0;animation:none}
 #gym .rk-row.me::after{content:'';position:absolute;inset:-3px;border:3px solid #ffc830;border-radius:inherit;box-shadow:inset 0 0 0 1px #fff6c0,inset 0 0 12px rgba(255,200,48,.65),0 0 10px rgba(255,200,48,.55);pointer-events:none;animation:rkMe2 2.4s ease-in-out infinite}
 @keyframes rkMe2{50%{opacity:.35}}
+/* v21.96 경완 'B 좋다': 랭킹 배경 붉은 배틀 타워 */
+#gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
