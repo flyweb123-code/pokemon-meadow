@@ -3961,3 +3961,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-rkw :is(.rk-tip,.rk-msg){color:#b8bcd8}#gym .gy-rkw .rk-mine h5{color:#d8dcf0}
 /* 닉네임 뒤 작은 '관장' */
 #gym .rk-tx>b .rk-ld{display:inline;margin-left:4px;font-size:11px;font-weight:700;color:#6a6a80}
+/* v21.95 경완 '내 테두리 은은하게 활성화되는 게 슬롯 박스 테두리에 가려서 하단만 보임': 바깥 outline 대신 줄 안쪽에 덮는 빛 테두리 */
+#gym .gy-rkw .gy-body{flex:1 1 auto}
+#gym .gy-rkw .rk-tip{margin-top:auto;padding-top:14px}
+#gym .rk-row{position:relative}
+#gym .rk-row.me,#gym .gy-rkw .rk-row.me{outline:0;animation:none}
+#gym .rk-row.me::after{content:'';position:absolute;inset:-3px;border:3px solid #ffc830;border-radius:inherit;box-shadow:inset 0 0 0 1px #fff6c0,inset 0 0 12px rgba(255,200,48,.65),0 0 10px rgba(255,200,48,.55);pointer-events:none;animation:rkMe2 2.4s ease-in-out infinite}
+@keyframes rkMe2{50%{opacity:.35}}

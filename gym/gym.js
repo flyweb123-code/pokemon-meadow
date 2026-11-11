@@ -2355,10 +2355,10 @@ function rkPop() {
       const G = D => gradeOf(D.rep, D.gm);   /* v21.92 경완 '단상 지우고 슬롯으로만, 꾸미기 랭킹처럼 메달·박스, 평판 글자 숫자 위, 타입 아이콘 앞에 프로필 박스, 체육관 이름·관장 이름 자리 바꿈, 평판 순위 박스 없애고 내 위치는 테두리로 은은하게' */
       const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
       const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
-      body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p>`;
+      body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}`;
       el._L = L;
     }
-    el.innerHTML = `${head}<div class="gy-body">${body}</div>`;
+    el.innerHTML = `${head}<div class="gy-body">${body}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
   };
   draw();
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
