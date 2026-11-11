@@ -229,6 +229,11 @@ function gainXp(P, n, ask = false) {
   while (m.lv < LV_MAX && m.xp >= xpAt(g, m.lv + 1)) { m.lv++; const L = D.sp[P.sp]?.lv || []; for (let i = 0; i < L.length; i += 2) if (L[i] === m.lv) teach(m, D.mv[L[i + 1]][0], out, ask === 'keep' ? 'keep' : !ask); }
   out.lv = m.lv; return out;
 }
+// v22.07 경완 '본가 기준 배틀 친밀도': 배틀에서 레벨업 +5/+3/+2 (친밀도 0~99 / 100~199 / 200~), 이긴 배틀에 나간 포켓몬 +3/+2/+1 (본가 관장 배틀), 쓰러지면 −1, 30레벨 이상 높은 상대에게 쓰러지면 −5 (200 이상은 −10). 연습 배틀은 없음
+const frAdd = (P, a) => { if (P) P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
+function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
+  (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
+    if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, [3, 2, 1])); }); }
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
@@ -1010,6 +1015,7 @@ async function run(opts) {
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
   try { if (!cut) erEnd(); } catch (e) {}
+  try { if (B && !B.practice && !cut && out !== 'quit') frBattle(won); } catch (e) { console.error(e); }
   if (cut) try { const er = B?.err; window.pkErrRep?.('battle: ' + (er ? er.message || er : '고를 것이 없어 멈춤'), er?.stack || '', { foe: B?.foeNm || '', blog: S.gym?.blog?.[0] }); } catch (e) {}   /* 오류 창이 뜬 배틀은 서버로 보고 → 자동으로 고침 (경완 2026-11-04) */
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
@@ -1588,7 +1594,7 @@ async function expGain(X) {
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
   for (const pid of [...B.vs, ...B.my.map(o => o.pid).filter(p => !B.vs.has(p))]) {
     const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
-    const share = !B.vs.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1), true); if (!r.n) continue;
+    const share = !B.vs.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1), true); if (!r.n) continue; for (let l = r.lv0; l < r.lv; l++) frAdd(P, frStep(P, [5, 3, 2]));   // v22.07 레벨업 친밀도
     if (share) { const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
       if (r.lv > r.lv0) { const L = lvWin(P, r.lv0, r.lv); lvApply(pk, null, r.lv, L.a, L.b); B.my[i].lv = r.lv; }
       SH.push({ i, P, r, g0 }); continue; }
