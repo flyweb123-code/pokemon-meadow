@@ -4014,3 +4014,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes rkMe2{50%{opacity:.35}}
 /* v21.96 경완 'B 좋다': 랭킹 배경 붉은 배틀 타워 */
 #gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
+/* 경완 2026-11-12: 기믹 버튼 켜면 아래 화면 바탕색, 메가진화한 포켓몬이 나와 있는 동안 계속 */
+.bt.mob .bt-bot{transition:background-color .35s}
+.bt.mob:is(.gkbg-mega,.gkbg-zmove,.gkbg-dynamax,.gkbg-terastallize) .bt-bot{background-blend-mode:multiply}.bt.mob.gkbg-mega .bt-bot{background-color:#e6d9ff}.bt.mob.gkbg-zmove .bt-bot{background-color:#fff1c8}.bt.mob.gkbg-dynamax .bt-bot{background-color:#ffd9e4}.bt.mob.gkbg-terastallize .bt-bot{background-color:#d6f3ff}

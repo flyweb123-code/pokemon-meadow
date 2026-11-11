@@ -612,7 +612,10 @@ async function faint(side, A) {
 async function flash(n = 1) { const f = $b('.bt-flash'); for (let i = 0; i < n; i++) { f.classList.add('on'); await wait(70); f.classList.remove('on'); await wait(70); } }
 
 // ---------- 아래 화면 ----------
-function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; return p; }
+function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; gkBg(); return p; }
+// 경완 2026-11-12: 메가진화(기믹) 버튼을 켜면 아래 화면 바탕색이 그 색으로, 메가진화한 포켓몬이 나와 있는 동안 계속, 다른 포켓몬으로 바꾸면 원래 색
+function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || '');
+  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg)); }
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
   el.classList.add('idle');   // 고르는 동안 내 포켓몬·체력 상자가 위아래로 살짝 (본가)

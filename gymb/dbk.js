@@ -140,8 +140,8 @@
   async function megaFull(c) {
     const P = c.path; await preload({ ...c, extra: [P + 'particle.png', P + 'Mega/icon.png', P + 'burst.png'] });
     const bt = c.bt, top = c.top, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q }), R = { left: 0, top: 0 }, tR = rel(top.getBoundingClientRect()), mR = rel((c.monEl.querySelector('img') || c.monEl).getBoundingClientRect());   // 바깥에서 줄여 보여도(시연 틀) 배틀 안쪽 좌표로
-    const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.6, Math.min(k0 * 3.2, Hd * .3 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
-    const tx = Wd / 2 - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   // 그 포켓몬이 화면 한가운데 오게 위 화면을 키움 (남는 곳은 뒤 배경판)
+    const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.5, Math.min(k0 * 2.6, Hd * .25 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
+    const tx = (mR.left + mR.width / 2) - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   // 그 포켓몬 가로 자리는 그대로 두고 키우며 수직으로만 내림 (경완 2026-11-12 '대각으로 말고 수직으로, 중앙까진 안 맞춰도 됨'), 남는 곳은 뒤 배경판
     const T0 = getComputedStyle(top).transform, tAnim = [], timers = [], A = (el, kf, o) => el.animate(kf, { fill: 'forwards', easing: 'ease-out', ...o });   // 'both' 면 뒤에 시작할 애니메이션 첫 칸이 미리 덮어씀
     const hide = [...bt.querySelectorAll('.bt-hb,.bt-pty,.bt-bot,.bt-mid,.bt-msg')];
     const root = document.createElement('div'); root.className = 'dx-scene mgf'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;pointer-events:auto;contain:strict;transform:scale(1.08)';   // 흔들 때 가장자리 빈틈 안 보이게 늘 조금 크게
