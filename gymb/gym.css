@@ -4144,3 +4144,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk button.pk-tc:active{translate:0 2px;box-shadow:none}
 #gym .gy-perk .pk-tc>div{flex:1}
 #gym .gy-perk .pk-re{flex:none;align-self:center;font-style:normal;font-size:11px;font-weight:700;color:#8a5a10;white-space:nowrap}
+/* v22.36 경완: 비기 탭으로 바꿔도 창 크기 그대로(두 목록 같은 높이), 탭 좌우 = 아래 카드 좌우 (목록 안쪽 여백 4px 만큼) */
+#gym .gy-pop .gy-perk.pk-gl,#gym .gy-pop .gy-perk.pk-sl{height:58vh;max-height:58vh;box-sizing:border-box}
+#gym .gy-pop .pk-tabs{margin:0 4px 8px}
+#gym .gy-perk.pk-sl{justify-content:flex-start}
