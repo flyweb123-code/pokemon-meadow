@@ -237,14 +237,14 @@ function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv 
 const mvPow = id => { const d = mvOf(id); return !d ? 0 : d[3] === 2 ? -1 : (d[4] || 40); };
 // v20.85 경완 '기술 배우는 맛' (게이지+집중+실전 번뜩임): 특별한 기술(알 기술 4칸)마다 깨달음 게이지 m.egP[칸] 0~100, 다 차면 익힘.
 // m.egF = 집중 칸 (훈련장에서 빨리 참). 레어(4번째) 칸은 EG_RARE 배 오래. 체육관 배틀에서 상대를 쓰러뜨리면 가끔 번뜩임(집중 칸 +EG_FL)
-const EG_RARE = 2, EG_FL = 25, EG_FLP = .05, EG_RFP = .008;   // v22.07 레어 번뜩임: 기술 쓴 턴마다 0.8% (배틀당 포켓몬마다 번뜩임은 한 번)
+const EG_RARE = 2, EG_FL = 25, EG_FLP = .05, EG_RFP = .015, EG_RFL = 25;   // v22.07 레어 번뜩임: 기술 쓴 턴마다 1.5%, 레어 게이지 +25% (네 번이면 익힘). 배틀당 포켓몬마다 번뜩임은 한 번
    // v20.85 번뜩임: 내 포켓몬이 기술을 쓴 턴이 끝날 때 5%, 한 배틀에 포켓몬마다 한 번 +25% (경완 '적당히 밸런스')
 const egList = P => (EGG?.[P.sp] || []).map((id, i) => ({ id, i, x: id && mvOf(id) })).filter(r => r.x);
 const egKn = (m, id) => m.mv.includes(id) || (m.kn || []).includes(id);
 const egOpen = P => { const m = gm(P); return egList(P).filter(r => !egKn(m, r.id)); };
 function egFocus(P) { const m = gm(P), O = egOpen(P); if (!O.length) return -1; const N = O.filter(r => r.i !== 3); if (!N.length) return -1; return N.some(r => r.i === m.egF) ? m.egF : N[0].i; }   // v21.07 경완: 레어(4번째)는 집중·게이지 없음
-function egAdd(P, i, amt) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || i === 3 || egKn(m, r.id)) return null; const G = m.egP || (m.egP = [0, 0, 0, 0]);
-  G[i] = Math.min(100, (G[i] || 0) + amt / (i === 3 ? EG_RARE : 1)); if (G[i] < 100) return null; teach(m, r.x[0], null, false); return r.x; }
+function egAdd(P, i, amt, rf) { const m = gm(P), r = egList(P).find(r => r.i === i); if (!r || (i === 3) !== !!rf || egKn(m, r.id)) return null;   // 레어(4번째)는 레어 번뜩임(rf)으로만 const G = m.egP || (m.egP = [0, 0, 0, 0]);
+  G[i] = Math.min(100, (G[i] || 0) + amt); if (G[i] < 100) return null; teach(m, r.x[0], null, false); return r.x; }
 function teach(m, id, out, auto = true) {
   if (m.mv.includes(id)) return;
   if (m.mv.length < 4) { m.mv.push(id); out?.learned.push([id, '']); return; }
@@ -1635,8 +1635,8 @@ async function egFlash() {
   const pid = B.egMv; B.egMv = null; const X = B.act.p; if (!pid || B.practice || !X || X.fnt || X.pid !== pid) return;
   const P = boxOf(pid); if (!P || (S.gym?.gmax | 0) < 1) return;   /* v21.70 경완 '번뜩이는 것도 훈련장 열리고부터': 동네 체육관(훈련장 열림) 전엔 번뜩임 없음 */ const D = B.egDone || (B.egDone = new Set()); if (D.has(pid)) return;
   { const m = gm(P), r3 = egList(P).find(r => r.i === 3); if (r3 && !egKn(m, r3.id) && Math.random() < EG_RFP) { D.add(pid); const bm = $b('.bt-msg'); bm.querySelector('.t').textContent = ''; egFxR(); se('KIRAKIRA2', { gain: 1.6 }); setTimeout(() => B && se('EXPMAX2'), 750); GA.haptic?.(1); setTimeout(() => B && GA.haptic?.(1), 1300); await wait(1600); if (!B) return;
-    bm.classList.add('er'); await msgTap(`${X.nm}의 잠들어 있던 힘이 깨어났다…!`); if (!B) return; const G = m.egP || (m.egP = [0, 0, 0, 0]); G[3] = 100; teach(m, r3.x[0], null, false);
-    await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; (B.egUp || (B.egUp = [])).push({ pid, i: 3, a: 0, b: 100, got: true, rare: 1, mv: r3.id }); GA.save?.(); return; } }   /* v22.07 경완: 레어 기술은 배틀 중 아주 낮은 확률로만, 깨달으면 그 자리에서 익힘 */
+    bm.classList.add('er'); const a = m.egP?.[3] || 0, x = egAdd(P, 3, EG_RFL, 1); await msgTap(x ? `${X.nm}의 잠들어 있던 힘이 깨어났다…!` : `${X.nm}의 잠들어 있던 힘이 꿈틀거렸다…!`); if (!B) return;
+    if (x) await msgTap(`${eun(X.nm)} 레어 기술 ${eul(r3.x[1])} 깨달았다!`); bm.classList.remove('er'); if (!B) return; (B.egUp || (B.egUp = [])).push({ pid, i: 3, a, b: x ? 100 : m.egP[3], got: !!x, rare: 1, mv: r3.id }); GA.save?.(); return; } }   /* v22.07 경완: 레어 기술은 배틀 중 아주 낮은 확률로만, 깨달으면 그 자리에서 익힘 */
   const f = egFocus(P); if (f < 0 || Math.random() >= EG_FLP) return; D.add(pid);
   $b('.bt-msg .t').textContent = ''; egFx(); se('KIRAKIRA2', { gain: 1.4 });   /* v21.70 경완 '번뜩이는 거 효과음도': 예전엔 'DP_' 가 두 번 붙어 소리가 안 났음 */ GA.haptic?.(1); await wait(900); if (!B) return; await msgTap(`${X.nm}의 머릿속에 무언가 번뜩였다!`); if (!B) return;
   const a = gm(P).egP?.[f] || 0, x = egAdd(P, f, EG_FL); (B.egUp || (B.egUp = [])).push({ pid, i: f, a, b: x ? 100 : gm(P).egP[f], got: !!x });   // v20.85 경완: 게이지는 배틀 끝 기록창 뒤 특별한 기술 카드에서 오르는 걸 보여 줌
