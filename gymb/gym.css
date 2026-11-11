@@ -4032,7 +4032,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* 경완 2026-11-12 '위아래 검정 여백 다 채워줘': 아래 화면은 홈 막대 자리까지(버튼판만 --pb 위로), 위 상태 막대 자리는 배틀 배경 윗줄을 거울처럼 이어 붙임 */
 .bt.mob .bt-panel{bottom:var(--pb,0px)}
-.bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
+.bt.mob::before{background:var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
 .bt.mob::after{display:none}
 .bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
 /* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
@@ -4117,3 +4117,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li.pk-tip.on .pk-tc{border-style:solid;border-color:#e0a820;background:#fff8dc}
 #gym .gy-perk>li.pk-tip.on .pk-kg{filter:none;opacity:1}
 #gym .gy-perk>li.pk-tip.on .pk-tc b{color:#8a5a10;letter-spacing:0}
+/* 창고 도구 탭 '중요한 물건' 칸 (경완 2026-11-12) */
+#gym .gy-storew .st-sec{margin:10px 2px 6px;font-size:13px;color:#5a6070;font-weight:700}
+#gym .gy-storew .st-sec:first-of-type{margin-top:4px}
+#gym .gy-storew .sp-key{border-color:#e0b040}
+#gym .gy-pop .key-note{font-size:12px;color:#8a6a20;margin-top:-4px}
