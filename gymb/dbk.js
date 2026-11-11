@@ -138,7 +138,7 @@
   // c.bt = 배틀 전체(.bt), c.top = 위 화면(.bt-top), c.monEl = 메가진화하는 포켓몬 칸. 위 화면을 그 포켓몬 쪽으로 화면 가득 당긴 뒤
   // 트레이너 컷인(키스톤) ↔ 메가스톤 빛줄기 → 포켓몬 하얗게·빛 모임·떨림 → 번쩍 → 가운데 메가 모습 크게 + 빛살·충격파 → 원래 화면으로
   async function megaFull(c) {
-    const P = c.path; await preload({ ...c, extra: [P + 'particle.png', P + 'Mega/icon.png', P + 'burst.png'] });
+    const P = c.path; await preload({ ...c, extra: [P + 'particle.png', P + 'Mega/mark.png', P + 'burst.png'] });
     const bt = c.bt, top = c.top, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q }), R = { left: 0, top: 0 }, tR = rel(top.getBoundingClientRect()), mR = rel((c.monEl.querySelector('img') || c.monEl).getBoundingClientRect());   // 바깥에서 줄여 보여도(시연 틀) 배틀 안쪽 좌표로
     const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.5, Math.min(k0 * 2.6, Hd * .25 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
     const tx = (mR.left + mR.width / 2) - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   // 그 포켓몬 가로 자리는 그대로 두고 키우며 수직으로만 내림 (경완 2026-11-12 '대각으로 말고 수직으로, 중앙까진 안 맞춰도 됨'), 남는 곳은 뒤 배경판
@@ -158,7 +158,7 @@
     const WH = `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .03}px #fff) drop-shadow(0 0 ${Wd * .05}px #c89bff)`, NORM = `brightness(1) invert(0) drop-shadow(0 0 ${Wd * .02}px rgba(255,255,255,.7)) drop-shadow(0 0 0 rgba(0,0,0,0))`;
     const sprite = (u, w, h) => { const b = mk(`left:${(Wd - w) / 2}px;top:${FY - h}px;width:${w}px;height:${h}px;opacity:0;transform-origin:50% 100%`), i = document.createElement('img'); i.src = u; i.alt = ''; i.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}`; b.appendChild(i); return [b, i]; };
     const [org, orgI] = sprite(c.mon.url, OW, OH), [meg, megI] = sprite(c.to.url, MW, MH); megI.style.filter = WH;
-    const icon = mk(`left:50%;top:${FY - MH - 54 * mz * .45 - 8}px;width:${30 * mz * .45}px;height:${54 * mz * .45}px;margin-left:${-15 * mz * .45}px;background:url(${P}Mega/icon.png) center/100% 100%;image-rendering:pixelated;opacity:0;filter:drop-shadow(0 0 6px #fff)`);
+    const icon = mk(`left:50%;top:${FY - MH - 54 * mz * .45 - 8}px;width:${44 * mz * .45}px;height:${54 * mz * .45}px;margin-left:${-22 * mz * .45}px;background:url(${P}Mega/mark.png) center/contain no-repeat;opacity:0;filter:drop-shadow(0 0 6px #fff)`);
     // 트레이너 컷인 띠
     const bandH = Hd * .3, band = mk(`left:-10%;right:-10%;top:${Hd * .66}px;height:${bandH}px;background:linear-gradient(${opp ? 'to left' : 'to right'},rgba(255,255,255,.95),rgba(220,190,255,.9) 45%,rgba(120,70,220,.0));transform:skewY(-8deg) translateX(${side * 110}%);opacity:0;box-shadow:0 0 30px rgba(180,120,255,.8)`);
     const tw = c.tr.w / 2, th = c.tr.h / 2, tz = bandH * 1.25 / th, TW = tw * tz, TH = th * tz, trX = opp ? Wd - TW - Wd * .02 : Wd * .02;
@@ -213,13 +213,25 @@
     parts.forEach((p, i) => { const a = i / parts.length * Math.PI * 2 + Math.random() * .3, r = Math.hypot(Wd, Hd) * (.55 + Math.random() * .25), cx = Wd / 2 - Wd * .03, cy = Hd * .52 - Wd * .03;
       A(p, [{ opacity: 0, transform: `translate(${cx + Math.cos(a) * r}px,${cy + Math.sin(a) * r}px) scale(1.6)` }, { opacity: 1, offset: .2 }, { opacity: 1, transform: `translate(${cx}px,${cy}px) scale(.3)` }], { duration: 800, delay: 4400 + (i % 13) * 110, easing: 'cubic-bezier(.6,0,1,.6)' }); });
     shake(4600, 400, 2); shake(5100, 400, 4); at(4700, () => vib(1)); at(5200, () => { vib(2); c.se('Psych Up'); });
-    // 6) 진화하는 모습: 하얀 원래 모습 ↔ 하얀 메가 모습이 점점 빨리 번갈아 (5000~6300)
-    at(5000, () => { [org, meg].forEach(e => e.getAnimations().forEach(a => a.cancel())); org.style.opacity = 1; meg.style.opacity = 0;   /* 들어오는 애니메이션이 opacity 를 붙잡고 있어 원래 모습 흰 실루엣이 안 사라지던 것 */ let t = 0; /* 깜빡임은 번쩍(6480) 전에 끝나야 함: 마지막 칸이 6625 에 원래 모습을 다시 켜서 흰 실루엣이 남던 것 (경완 2026-11-12) */ const gaps = [300, 260, 220, 180, 150, 120, 100, 80, 65, 55, 50, 45]; gaps.forEach((g, i) => { t += g; if (5000 + t >= 6460) return; at(t, () => { const m = i % 2 === 0; meg.style.opacity = m ? 1 : 0; org.style.opacity = m ? 0 : 1; meg.style.transform = org.style.transform = `scale(${1 + i * .012})`; if (i % 3 === 0) c.se('Ice5'); }); }); });
+    // 6) 진화하는 모습: 하얀 원래 모습이 서서히 더 밝아지며 둘레 게이지가 차오름 → 다 차면 팍 터짐 (경완 2026-11-12 '깜빡이기보다 서서히 빛나면서 게이지 모이는 느낌, 팍 터지면서 진화')
+    at(5000, () => { [org, meg].forEach(e => e.getAnimations().forEach(a => a.cancel())); org.style.opacity = 1; meg.style.opacity = 0; c.se('Charge');
+      const D = 1350, R0 = Math.min(Math.max(OW, OH) * .62, Wd * .4), cx = Wd / 2, cy = FY - OH * .5, gz = R0 * 2 + 40, cir = 2 * Math.PI * R0;
+      const gw = document.createElement('div'); gw.style.cssText = `position:absolute;pointer-events:none;left:${cx - gz / 2}px;top:${cy - gz / 2}px;width:${gz}px;height:${gz}px;filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 10px #ff8ad8) drop-shadow(0 0 18px #8ab8ff)`;
+      gw.innerHTML = `<svg width="${gz}" height="${gz}" viewBox="0 0 ${gz} ${gz}"><circle cx="${gz / 2}" cy="${gz / 2}" r="${R0}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="${Wd * .018}"/><circle class="gv" cx="${gz / 2}" cy="${gz / 2}" r="${R0}" fill="none" stroke="#fff6ff" stroke-width="${Wd * .024}" stroke-linecap="round" stroke-dasharray="${cir}" stroke-dashoffset="${cir}" transform="rotate(-90 ${gz / 2} ${gz / 2})"/></svg>`;
+      root.insertBefore(gw, flash); const gv = gw.querySelector('.gv');
+      gw.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+      gv.animate([{ strokeDashoffset: cir }, { strokeDashoffset: 0 }], { duration: D, fill: 'forwards', easing: 'cubic-bezier(.5,0,.85,.6)' });   /* 처음엔 천천히, 끝으로 갈수록 빨리 차오름 */
+      gw.animate([{ transform: 'rotate(0)' }, { transform: 'rotate(200deg)' }], { duration: D, fill: 'forwards', easing: 'ease-in', composite: 'add' });
+      org.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)', offset: .5 }, { transform: 'scale(1.1)' }], { duration: D, fill: 'forwards', easing: 'ease-in' });
+      orgI.animate([{ filter: WH }, { filter: `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .06}px #fff) drop-shadow(0 0 ${Wd * .12}px #e2c8ff)` }], { duration: D, fill: 'forwards', easing: 'ease-in' });
+      A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.45)' }], { duration: D, easing: 'ease-in' });
+      [300, 650, 950, 1180].forEach((t, j) => at(t, () => { c.se('Ice5'); vib(1 + (j > 1)); }));   /* 차오르는 반짝 소리, 점점 촘촘히 */
+      at(D, () => { c.se('Saint7'); gw.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(2.4)' }], { duration: 300, fill: 'forwards', easing: 'ease-out' }); }); });
     shake(5700, 600, 8); at(5900, () => vib(2));
     // 7) 번쩍 + 메가 모습 (6300~)
-    A(glow, [{ opacity: .9, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 250, delay: 6250, easing: 'ease-in' });
+    A(glow, [{ opacity: 1, transform: 'scale(1.45)' }, { opacity: 1, transform: 'scale(.35)' }], { duration: 120, delay: 6360, easing: 'ease-in' });
     A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .5 }, { opacity: 0 }], { duration: 900, delay: 6450, easing: 'linear' });
-    at(6480, () => { c.se('Explosion3'); c.se('fog2'); vib(3); org.style.opacity = 0; meg.style.opacity = 0; if (mon) mon.style.visibility = 'hidden'; });
+    at(6480, () => { c.se('Explosion3'); c.se('Burst'); c.se('fog2'); vib(3); org.style.opacity = 0; meg.style.opacity = 0; if (mon) mon.style.visibility = 'hidden'; });
     at(6550, () => { A(dim, [{ opacity: .88 }, { opacity: 1 }], { duration: 400 }); A(glow, [{ opacity: .9, transform: 'scale(1.2)' }, { opacity: .3, transform: 'scale(1.6)' }], { duration: 800 }); });
     at(6650, () => A(meg, [{ opacity: 0, transform: 'scale(1.4)' }, { opacity: 1, transform: 'scale(.93)', offset: .55 }, { opacity: 1, transform: 'scale(1)' }], { duration: 650, easing: 'cubic-bezier(.2,1.4,.4,1)' }));   /* 5000 에서 meg 애니메이션을 지우므로 그 뒤에 만듦 (안 그러면 하얀 실루엣만 남음) */
     at(6750, () => megI.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }));

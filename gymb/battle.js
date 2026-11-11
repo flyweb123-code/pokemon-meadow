@@ -326,7 +326,7 @@ function buildUI() {
     </div>
     <div class="bt-hinge"></div>
     <div class="bt-mid"></div>
-    <div class="bt-bot"><div class="bt-panel"></div></div>
+    <div class="bt-bot"><i class="gk-mark"></i><div class="bt-panel"></div></div>
   </div>`;
   document.getElementById('gym').appendChild(el);
   el.addEventListener('pointerup', () => { if (B?.tapWake) { const w = B.tapWake; B.tapWake = null; se('SELECT'); w(); }   /* 경완 2026-10-28: 글 넘길 때 본가(Pt 글상자 A 버튼)와 같은 SEQ_SE_DP_SELECT */ else if (B) B.fast = true; });
@@ -411,7 +411,7 @@ const dbkLoad = () => window.GymDBK ? Promise.resolve(true) : (dbkP = dbkP || Pr
 const dxImg = u => new Promise(r => { if (!u) return r(null); const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => r({ w: i.naturalWidth, h: i.naturalHeight }); i.onerror = () => r(null); i.src = u; });
 const frontOf = (X, fm) => gifUrl(X.sp, false, X.shiny, X.g === 'F', fm) || pkSrc(X.sp, { s: X.shiny });
 async function dxMon(u) { const z = await dxImg(u); if (!z) return null; const g = await gifTop(u); return { url: u, w: z.w * 2, h: z.h * 2, top: (g?.t || 0) * 2 }; }   // 블랙·화이트 크기 그림 = Essentials 의 절반 → 2배
-const DX_SE = { 'Psych Up': 'SUIKOMU', fog2: 'BOWA2', Earth1: 'KOUKA_H', Sword2: 'KOUKA_L', Ice5: 'KIRAKIRA2', Saint7: 'KIRAN', 'Battle recall': 'BOWA2', 'Battle throw': 'NAGERU', Explosion3: 'KOUKA_H' };
+const DX_SE = { 'Psych Up': 'SUIKOMU', fog2: 'BOWA2', Earth1: 'KOUKA_H', Sword2: 'KOUKA_L', Ice5: 'KIRAKIRA2', Saint7: 'KIRAN', 'Battle recall': 'BOWA2', 'Battle throw': 'NAGERU', Explosion3: 'KOUKA_H', Charge: 'W076', Burst: 'W153' };   /* 메가 게이지 차오름 = 솔라빔 모으는 소리, 터짐 = 대폭발 (본가 플래티넘) */
 const DX_MP3 = { 'DX Action': 'dxaction', 'Z-Move Title': 'ztitle' };
 function dxSe(n, pan) { if (DX_MP3[n]) { try { const a = new Audio(`${IMG}dbk/se/${DX_MP3[n]}.mp3`); a.volume = .8; a.play().catch(() => {}); } catch (e) {} return; } if (DX_SE[n]) se(DX_SE[n], { pan }); }
 async function dxCtx(s, X, from, to, item) {
