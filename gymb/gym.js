@@ -1862,39 +1862,40 @@ function bodyCard(src, h, sub = '', btn = '', onClick, more = '') {
 // 타입별 등급 배지는 체육관 정보에서 빼고 내 프로필 카드에 (경완 2026-10-29 '배지랑 타입 이름 정도만')
 /* v16.52 경완 '내 캐릭터 상세카드: 입은 옷 표시·점선 빼고, 체육관 등급에 따라 카드 디자인': 등급 색(테두리·머리띠·무대)과 등급 배지, 위로 갈수록 장식이 늘고 전설은 무지개 */
 // 관장 카드 우상단 옷장 (경완 2026-11-08 '관장 카드에도 옷장 아이콘 넣어서 옷 갈아입을 수 있게'): 가진 옷 고르기 → 입고 카드 다시
-// v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨'
-// 키(SPECIES h, 0.1m) → 그림 높이: 관장(1.4m, 66px) 기준 (키/1.4)^0.75 (거대한 포켓몬은 무대 높이까지). 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 아주 작은 건 관장 발 앞.
-// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄). 폭이 넘치면 겹침을 늘리고, 그래도 넘치면 그 줄만 줄임.
+// v21.70 경완 '관장카드 포켓몬 실제 크기 비율로, 작은 포켓몬은 관장 다리 앞·옆, 겹쳐도 되지만 프레임에 안 잘리게, 얼굴 안 가리게, 좌우 반전 써도 됨' + '스라크가 관장보다 작아?'
+// 키(SPECIES h, 0.1m) 그대로 비율: 관장 = 1.4m. 무대에 안 들어가는 거대한 포켓몬만 무대 높이까지. 관장 1.3배 넘으면 뒷줄(가장 큰 게 가운데, 바깥으로 갈수록 작고 앞), 나머지는 앞줄 땅(관장 옆에서 바깥으로 갈수록 큼), 관장 절반보다 작으면 관장 발 앞.
+// 앞에 오는 쪽이 뒤 포켓몬 키의 6할 넘게 크면 조금만 겹침(얼굴은 위쪽이라 안 가림). 오른쪽 포켓몬은 좌우 반전해 바깥을 봄(5세대 앞모습은 왼쪽을 봄).
+// 폭이 넘치면 ① 겹침을 늘리고 ② 앞줄에서 큰 걸 뒷줄로 올리고 ③ 그래도 넘치면 관장까지 다 같이 줄임 (키 비율은 안 깨짐).
 function mecLay(stg) {
   const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
-    return { e, bw: sp.offsetWidth * sh, bh: sp.offsetHeight * sh, r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 14), .75) }; });
+    return { e, bw: sp.offsetWidth * sh, bh: sp.offsetHeight * sh, r: Math.max(.1, (+e.dataset.h || 10) / 14) }; });
   if (!A.length || A.some(a => !a)) return;
-  // 무대를 채우게 관장 크기(LH)부터 정함: 가장 큰 포켓몬이 무대 높이 거의 끝까지 (관장 60~104px), 키 비율은 그대로
-  const rm = Math.max(1, ...A.map(a => a.r)), LH = Math.max(60, Math.min(84, (H - (rm > 1.3 ? BB : FB) - 8) / rm)), LW = 36 * LH / 53;
-  A.forEach(a => { a.th = LH * a.r; });
-  const tr = stg.querySelector('.mec-tr'); if (tr) { tr.style.width = tr.style.height = 80 * LH / 53 + 'px'; }
+  const fit = r => r > 1.3;   // 뒷줄
+  let L0 = Math.min(84, (H - FB - 8) / Math.max(1, ...A.filter(a => !fit(a.r)).map(a => a.r)));   // 앞줄에서 가장 큰 포켓몬이 무대 높이 안
+  const place = (L, bot, mode, LH, boost) => { const LW = 36 * LH / 53; let le = cx, re = cx, prevL = null, prevR = null;
+    L.forEach(a => { a.b = bot; a.h = Math.max(18, Math.min(LH * a.r, H - bot - M)); a.s = a.h / a.bh; a.w = a.bw * a.s; });
+    if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx; le = cx - a.w / 2; re = cx + a.w / 2; prevL = prevR = a; a.z = 1; return; }
+      const side = i % 2 ? -1 : 1, pv = side < 0 ? prevL : prevR, ov = Math.min(.5 + boost * .6, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
+      if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 1 + i; });
+    else { let tl = cx - 4, tr = cx + 4; le = cx - LW / 2 + 6; re = cx + LW / 2 - 6;
+      L.forEach((a, i) => { if (a.h < LH * .5) { const side = tr - cx <= cx - tl ? 1 : -1; a.b = 1; a.z = 30 + i;   // 아주 작으면 관장 발 앞
+          if (side > 0) { a.x = tr + a.w / 2 - Math.min(10, a.w * .3); tr = a.x + a.w / 2; re = Math.max(re, tr - a.w * .5); } else { a.x = tl - a.w / 2 + Math.min(10, a.w * .3); tl = a.x - a.w / 2; le = Math.min(le, tl + a.w * .5); } return; }
+        const side = re - cx <= cx - le ? 1 : -1, pv = side < 0 ? prevL : prevR, ov = pv ? Math.min(.45 + boost * .6, .2 + boost) * Math.min(a.w, pv.w) : 0;
+        if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 20 - i; }); }
+    if (!L.length) return true; const lo = Math.min(...L.map(a => a.x - a.w / 2)), hi = Math.max(...L.map(a => a.x + a.w / 2));
+    if (hi - lo > W - M * 2) return false; const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; L.forEach(a => a.x += d); return true; };
+  let up = 0, k = 1, LH = L0;
+  for (let n = 0; n < 40; n++) {
+    LH = L0 * k; const fr = A.filter(a => !fit(a.r)).sort((x, y) => x.r - y.r), mv = fr.splice(Math.max(0, fr.length - up), up), back = A.filter(a => fit(a.r)).concat(mv).sort((x, y) => y.r - x.r);
+    let ok = false; for (let bo = 0; bo <= .5 + 1e-9 && !ok; bo += .05) ok = place(back, BB, 'b', LH, bo) & place(fr, FB, 'f', LH, bo);
+    if (ok) break; if (fr.length > 2 && up < 2) up++; else k *= .97; }   // 경완 '폭이 넘칠 때는 줄이기보단 겹치게': 겹침을 최대 80%까지 늘려 보고, 그래도 안 되면 그때만 아주 조금씩 줄임
+  const tr = stg.querySelector('.mec-tr'); if (tr) tr.style.width = tr.style.height = 80 * LH / 53 + 'px';
   const pf = stg.querySelector('.mec-pf'); if (pf) { pf.style.width = 136 * LH / 66 + 'px'; pf.style.height = 33 * LH / 66 + 'px'; }
-  const back = A.filter(a => a.th > LH * 1.3).sort((x, y) => y.th - x.th), front = A.filter(a => a.th <= LH * 1.3).sort((x, y) => x.th - y.th);
-  const row = (L, bot, mode) => { if (!L.length) return; for (let k = 1, boost = 0; ; ) {
-      L.forEach(a => { a.h = Math.min(a.th, H - bot - M) * k; a.s = a.h / a.bh; a.w = a.bw * a.s; a.b = bot; });
-      let le = cx, re = cx, prevL = null, prevR = null, side = 1;
-      if (mode === 'b') L.forEach((a, i) => { if (!i) { a.x = cx; le = cx - a.w / 2; re = cx + a.w / 2; prevL = prevR = a; a.z = 1; return; }
-        side = i % 2 ? -1 : 1; const pv = side < 0 ? prevL : prevR, ov = Math.min(.48, (a.h <= pv.h * .62 ? .38 : .14) + boost) * Math.min(a.w, pv.w);
-        if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 1 + i; });
-      else { let tl = cx - 4, tr = cx + 4; le = cx - LW / 2 + 6; re = cx + LW / 2 - 6;
-        L.forEach((a, i) => { if (a.h < LH * .5) { side = tr - cx <= cx - tl ? 1 : -1; a.b = 1; a.z = 30 + i;   // 아주 작으면 관장 발 앞
-            if (side > 0) { a.x = tr + a.w / 2 - Math.min(10, a.w * .3); tr = a.x + a.w / 2; re = Math.max(re, tr - a.w * .5); } else { a.x = tl - a.w / 2 + Math.min(10, a.w * .3); tl = a.x - a.w / 2; le = Math.min(le, tl + a.w * .5); } return; }
-          side = re - cx <= cx - le ? 1 : -1; const pv = side < 0 ? prevL : prevR, ov = pv ? Math.min(.45, .2 + boost) * Math.min(a.w, pv.w) : 0;
-          if (side < 0) { a.x = le - a.w / 2 + ov; le = a.x - a.w / 2; prevL = a; } else { a.x = re + a.w / 2 - ov; re = a.x + a.w / 2; prevR = a; } a.z = 20 - i; }); }
-      const lo = Math.min(...L.map(a => a.x - a.w / 2)), hi = Math.max(...L.map(a => a.x + a.w / 2));
-      if (hi - lo <= W - M * 2 || k < .45) { const d = lo < M ? M - lo : hi > W - M ? W - M - hi : 0; L.forEach(a => a.x += d); return; }
-      if (boost < .3) boost += .1; else k *= .92; } };
-  row(back, BB, 'b'); row(front, FB, 'f');
-  // v21.70 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
+  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
+  // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
   const top = Math.max(LH * 1.25 + 14, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(150, Math.min(H, Math.ceil(top + 8))) + 'px';
-  A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* v21.70 경완 '관장을 중심으로 바깥쪽을 보게': 5세대 앞모습은 왼쪽을 봄 → 오른쪽 포켓몬만 반전 */ Object.assign(a.e.style, { left: a.x + 'px', bottom: a.b + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
 function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
