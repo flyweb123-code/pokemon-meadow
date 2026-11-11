@@ -4016,3 +4016,29 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
 /* v22.09 등급표 제목 '[아이콘] 불 타입 체육관 등급' */
 #gym .gy-pop h4.pk-h{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}#gym h4.pk-h .pk-ty{display:inline-flex;align-items:center;gap:4px}#gym h4.pk-h .pk-ty :is(img,svg,i){width:20px;height:20px}
+/* 경완 2026-11-12: 기믹 버튼 켜면 아래 화면 바탕색, 메가진화한 포켓몬이 나와 있는 동안 계속 */
+.bt.mob .bt-bot{transition:background-color .35s}
+.bt.mob:is(.gkbg-mega,.gkbg-zmove,.gkbg-dynamax,.gkbg-terastallize) .bt-bot{background-blend-mode:multiply}.bt.mob.gkbg-mega .bt-bot{background-color:#e6d9ff}.bt.mob.gkbg-zmove .bt-bot{background-color:#fff1c8}.bt.mob.gkbg-dynamax .bt-bot{background-color:#ffd9e4}.bt.mob.gkbg-terastallize .bt-bot{background-color:#d6f3ff}
+/* 경완 2026-11-12 '메가진화 버튼 배경 퀄 높여': 메가 켜면 아래 화면 = 연보라 바탕 + 천천히 도는 빛살 + 가운데 무지개 고리 + 메가 마크 + 떠오르는 반짝이 (몬스터볼 자리) */
+.bt.mob .bt-bot::before,.bt.mob .bt-bot::after{content:'';position:absolute;pointer-events:none;opacity:0;transition:opacity .45s;z-index:0}
+.bt.mob .bt-panel{z-index:1}
+.bt.mob .bt-bot::before{inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),linear-gradient(160deg,#e6d6ff,#ffd6ec 40%,#d8e6ff 75%,#e6d6ff);animation:gkHue 20s linear infinite}   /* 경완 '빛줄기 없애고 은은하게 계속 바뀌게': 파스텔 띠가 천천히 흘러감 */
+.bt.mob .bt-bot::after{inset:0;background:radial-gradient(1.6px 1.6px at 18% 30%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 72% 22%,#fff 60%,transparent),radial-gradient(2px 2px at 84% 64%,#fff 60%,transparent),radial-gradient(1.4px 1.4px at 30% 78%,#fff 60%,transparent),radial-gradient(1.8px 1.8px at 56% 88%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 8% 60%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 94% 40%,#fff 60%,transparent);
+  background-size:100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px;filter:drop-shadow(0 0 6px rgba(190,140,255,.9));animation:gkSpark 5s linear infinite}
+.bt.mob.gkbg-mega .bt-bot{background-image:linear-gradient(#f4edff,#dccbff 55%,#efe6ff);background-blend-mode:normal}
+.bt.mob.gkbg-mega .bt-bot::before{opacity:1}.bt.mob.gkbg-mega .bt-bot::after{opacity:.55}
+@keyframes gkHue{to{filter:hue-rotate(360deg)}}
+@keyframes gkSpark{to{background-position:0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px}}
+
+/* 경완 2026-11-12 '위아래 검정 여백 다 채워줘': 아래 화면은 홈 막대 자리까지(버튼판만 --pb 위로), 위 상태 막대 자리는 배틀 배경 윗줄을 거울처럼 이어 붙임 */
+.bt.mob .bt-panel{bottom:var(--pb,0px)}
+.bt.mob::before{background:linear-gradient(rgba(12,13,18,.12),rgba(12,13,18,.5)),var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
+.bt.mob::after{display:none}
+.bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
+/* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
+.bt .gk-mark{display:none}
+.bt.mob .gk-mark{display:block;position:absolute;left:50%;top:calc((100% - var(--pb,0px)) / 2);width:74px;height:90px;margin:-45px 0 0 -37px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;opacity:0;transition:opacity .45s;pointer-events:none;z-index:0;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(190,140,255,.6))}
+.bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s linear infinite}
+@keyframes gkMark{0%,55%{transform:perspective(320px) rotateY(0) scale(1)}61%{transform:perspective(320px) rotateY(-28deg) scale(.94);animation-timing-function:cubic-bezier(.3,0,.2,1)}86%{transform:perspective(320px) rotateY(735deg) scale(1.08);animation-timing-function:ease-in-out}93%{transform:perspective(320px) rotateY(712deg) scale(.98)}100%{transform:perspective(320px) rotateY(720deg) scale(1)}}   /* 경완 '뒤집는 느낌 말고 찰지게': 살짝 뒤로 감았다가 두 바퀴 휙 → 조금 넘쳤다 되돌아와 멈춤 */
+.bt-hb .gkm-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkm .nm{max-width:74px}
