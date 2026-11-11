@@ -2135,9 +2135,9 @@ function mtfOn(win, ty, g) {
 const rkBest = () => gList().reduce((a, x) => !a || (x.rep | 0) > (a.rep | 0) ? x : a, null);   // 관리 중인 체육관 중 평판이 가장 높은 곳
 function rkCard(g0) { const me = st(), g = g0 || rkBest(); if (!me || !g) return null;
   const lu = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '', GA.rankOf?.(P) || '']);
-  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: me.w | 0, l: me.l | 0, lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
+  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: me.w | 0, l: me.l | 0, lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
 const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.sx === 'f' ? 'f' : 'm';
-  return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0),
+  return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0),
     lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
 const meCard = () => meCardOf(rkCard(st()), true);
 async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.gm), src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = D.lu;   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
@@ -2146,7 +2146,7 @@ async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.
     <div class="bd-pic mec-stg mecT${D.ty}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk${P[3] === 'S' || P[3] === 'A' ? ' rk' + P[3] : ''}" data-sp="${P[0]}" data-h="${SPECIES[P[0]]?.h || 10}" data-st="${mecSt(P[0]) ? 1 : 0}"><span></span>${P[1] ? `<span class="tcv-tw sm">${[[30, 22, .4], [70, 34, 1.5], [62, 74, 2.3], [26, 62, 1.1]].map(([x, y, d]) => `<b style="--x:${x}%;--y:${y}%;--dl:${d}s"></b>`).join('')}</span>` : ''}</span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
     <div class="mec-id"><span class="mec-ty">${tyIcon(D.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[D.ty] || ''} 타입 관장</span><h4 class="mec-h">${esc(D.n || (mine ? '나' : '트레이너'))}</h4><p class="mec-wl"><b>${D.w + D.l}</b>전 <b>${D.w}</b>승 <b>${D.l}</b>패</p></div>${bd}</div><p class="mec-gn"><em class="gr-tag" data-g="${G.i}">${G.n}</em>${D.bn ? `<b>${esc(D.bn)}</b>` : ''}</p>${mine ? `<button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button>` : ''}<div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
   p.classList.add('mec-wrap'); const w = p.querySelector('.win'); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
-  p.querySelectorAll('.mec-pk>span').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
+  p.querySelectorAll('.mec-pk>span:first-child').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
   const stg = p.querySelector('.mec-stg'); if (stg) { let q = 0; const go = () => { if (!q) q = requestAnimationFrame(() => { q = 0; if (stg.isConnected) mecLay(stg); }); }; new MutationObserver(go).observe(stg, { childList: true, subtree: true }); go(); }
   return p; }
 function sfCard(s) { loadJs('gym/battle.js', 'GymBattle').then(() => loadJs('gym/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
@@ -2342,13 +2342,11 @@ function rkPush(force) {   // 바뀐 게 있을 때만 올림. 운영자 시험�
   if (rkBusy) return rkBusy;
   return rkBusy = Promise.resolve(GA.frMe?.()).then(() => GA.frAsk({ op: 'score', game: RK_G, best: D.rep, card: c })).then(() => { S.gymRkUp = c; rkAt = 0; save(); }).catch(() => {}).finally(() => { rkBusy = null; });
 }
-const RK_MED = ['#f2c641', '#c8d0e0', '#d88a48'];
 function rkPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-rkw'; $g('.gy-main').appendChild(el);
   let me = '', rows = null, err = '';
   const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b></div>`;
-  const trSrcOf = D => D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;
   const draw = () => {
     const mine = rkCard(), mineC = mine && rkClean(mine);
     let body;
@@ -2357,12 +2355,10 @@ function rkPop() {
     else {
       const L = rows.map(r => ({ code: r.code, D: r.code === me && mineC ? mineC : rkClean(r.c), mine: r.code === me })); L.forEach(x => { if (!x.D.n) x.D.n = x.mine ? '나' : '트레이너'; }); if (mineC && !mineC.n) mineC.n = '나';
       const myI = L.findIndex(x => x.mine);
-      const G = D => gradeOf(D.rep, D.gm);
-      const pod = L.slice(0, 3), order = [1, 0, 2].filter(i => pod[i]);
-      const podium = pod.length ? `<div class="rk-pod">${order.map(i => { const x = pod[i], g = G(x.D); return `<button type="button" class="rk-pd p${i + 1}${x.mine ? ' me' : ''}" data-i="${i}" style="--tc:${GA.TYPE_C?.[x.D.ty] || '#5a6a9a'}"><span class="rk-pt"><img alt="" src="${trSrcOf(x.D)}" loading="lazy"></span><span class="rk-pb"><i class="rk-pn">${i + 1}</i>${bdHtml(x.D.ty, g.i + 1, 'rk-pbd')}<b>${esc(x.D.bn || '이름 없는 체육관')}</b><small>${esc(x.D.n)}</small><em>평판 ${x.D.rep.toLocaleString()}</em></span></button>`; }).join('')}</div>` : '';
-      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i < 3 ? ' top' : ''}" data-i="${i}" style="--tc:${GA.TYPE_C?.[x.D.ty] || '#5a6a9a'}${i < 3 ? ';--md:' + RK_MED[i] : ''}"><span class="rk-no">${i < 0 ? '-' : i + 1}</span><span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.bn || '이름 없는 체육관')}</b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>관장 ${esc(x.D.n)}</span></small></span><span class="rk-rep"><b>${x.D.rep.toLocaleString()}</b><small>평판</small></span></button></li>`; };
-      const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1).replace('data-i="-1"', 'data-me="1"')}</ol></div>` : '';
-      body = `<div class="rk-hero"><b>평판 순위</b><span>${myI >= 0 ? `내 순위 <i>${myI + 1}위</i> · ` : ''}${L.length}명의 관장</span></div>${podium}${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요. 줄을 누르면 관장 카드를 볼 수 있어요.</p>`;
+      const G = D => gradeOf(D.rep, D.gm);   /* v21.92 경완 '단상 지우고 슬롯으로만, 꾸미기 랭킹처럼 메달·박스, 평판 글자 숫자 위, 타입 아이콘 앞에 프로필 박스, 체육관 이름·관장 이름 자리 바꿈, 평판 순위 박스 없애고 내 위치는 테두리로 은은하게' */
+      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}</b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
+      const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
+      body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p>`;
       el._L = L;
     }
     el.innerHTML = `${head}<div class="gy-body">${body}</div>`;
