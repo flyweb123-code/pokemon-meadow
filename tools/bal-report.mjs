@@ -61,10 +61,10 @@ function stats(L) {
   const ed = { n: D.length, people: people(D), score: { p50: q(D.map(r => r.d.sc | 0), .5), p90: q(D.map(r => r.d.sc | 0), .9) }, sec: avg(D.map(r => r.d.t | 0)), goldPlay: avg(D.map(r => r.d.gd | 0)), ab: avg(D.map(r => r.d.ab | 0)) };
   const tw = { n: K.length, people: people(K), score: { p50: q(K.map(r => r.d.sc | 0), .5), p90: q(K.map(r => r.d.sc | 0), .9) }, sec: avg(K.map(r => r.d.t | 0)), goldPlay: avg(K.map(r => r.d.gd | 0)), ab: avg(K.map(r => r.d.ab | 0)) };
   const Gd = L.filter(r => r.kind === 'gold'), spOf = d => Object.values(d.sp || {}).reduce((a, b) => a + (+b || 0), 0), sum = A => A.reduce((a, b) => a + b, 0);   // v18.73: 하루 한 줄 골드 기록 (잔액·번 돈·쓴 돈)
-  const catM = new Map(), itM = new Map(); for (const r of Gd) { for (const [k, n] of Object.entries(r.d.sp || {})) { const c = catM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); catM.set(k, c); } for (const [k, n] of Object.entries(r.d.it || {})) itM.set(k, (itM.get(k) || 0) + (+n || 0)); }
+  const catM = new Map(), itM = new Map(), esM = new Map(); for (const r of Gd) { for (const [k, n] of Object.entries(r.d.es || {})) { const c = esM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); esM.set(k, c); }   /* v22.83 번 곳별 (es 없는 옛 기록은 빠짐) */ for (const [k, n] of Object.entries(r.d.sp || {})) { const c = catM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); catM.set(k, c); } for (const [k, n] of Object.entries(r.d.it || {})) itM.set(k, (itM.get(k) || 0) + (+n || 0)); }
   const gold = { n: Gd.length, people: people(Gd), ern: { p50: q(Gd.map(r => r.d.ern | 0), .5), p90: q(Gd.map(r => r.d.ern | 0), .9) }, sp: { p50: q(Gd.map(r => spOf(r.d)), .5), p90: q(Gd.map(r => spOf(r.d)), .9) },
     spDays: pct(Gd.filter(r => spOf(r.d) > 0).length, Gd.length), useRate: pct(sum(Gd.map(r => spOf(r.d))), sum(Gd.map(r => r.d.ern | 0))), bal: { p50: q(Gd.map(r => r.d.b1 | 0), .5), p90: q(Gd.map(r => r.d.b1 | 0), .9), max: q(Gd.map(r => r.d.b1 | 0), 1) },
-    cats: [...catM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), items: [...itM].sort((a, b) => b[1] - a[1]).slice(0, 12) };
+    cats: [...catM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), src: [...esM].map(([k, c]) => ({ k, g: c.g, people: c.who.size })).sort((a, b) => b.g - a.g), srcN: Gd.filter(r => r.d.es).length, items: [...itM].sort((a, b) => b[1] - a[1]).slice(0, 12) };
   const vers = [...group(L, r => r.ver || '?')].map(([k, A]) => [k, A.length]).sort((a, b) => b[1] - a[1]).slice(0, 5);
   // v22.18 경완 '지역 부화 매주 살펴보기': 알 1개 = 한 줄 {c 시·군, u 광역시 구(서울 송파구 …), r 도 키, aw 낯선 곳, s 어디서(ev:id·m·lm·ct·rg·lg·''), sp, g}. 좌표 없음
   const E = L.filter(r => r.kind === 'egg'), src = s => /^ev/.test(s || '') ? 'ev' : s || '-', SN = { ev: '이벤트', m: '직접 놓은 곳', lm: '명소', ct: '시·군 토박이', rg: '도 토박이', lg: '전설 자리', '-': '보통 알' };
@@ -125,6 +125,7 @@ const body = [
   '## 골드 (한 사람 하루, 다음 날 올라옴)',
   `${v(S.gold.n)}일치 · ${S.gold.people}명 · 번 골드 중앙 ${v(S.gold.ern.p50)}G (상위 10% ${v(S.gold.ern.p90)}G) · 쓴 골드 중앙 ${v(S.gold.sp.p50)}G (상위 10% ${v(S.gold.sp.p90)}G)`,
   `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
+  ...(S.gold.src?.length ? [`번 곳 (번 곳 기록이 있는 ${v(S.gold.srcN)}일치 합)`, '', tbl(['번 곳', '골드', '%', '명'], (T => S.gold.src.map(c => [({ mg: '장애물 넘기', drop: '진화구슬 키우기', stack: '탑 쌓기', mission: '미니게임 미션', gym: '체육관 도전자 배틀', sf: '체육관 트레이너', promo: '체육관 승급 보상', event: '체육관 이벤트', egg: '알 부화', dex: '도감 새 포켓몬', move: '움직인 거리', etc: '그 밖' })[c.k] || c.k, c.g, T ? Math.round(c.g / T * 1000) / 10 : '-', c.people]))(S.gold.src.reduce((a, c) => a + c.g, 0))), ''] : []),
   tbl(['쓴 곳', '골드', '명'], S.gold.cats.map(c => [({ item: '진화 도구·아이템', field: '필드 소품', fit: '의상', bgm: '배경 음악', gym: '체육관 상점', wage: '트레이너 월급·수당' })[c.k] || c.k, c.g, c.people])), '',
   `많이 산 것: ${S.gold.items.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '## 지역 알 (주운 곳 — 시·군 이름만, 좌표 없음)',
