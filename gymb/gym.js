@@ -2191,7 +2191,7 @@ function infoPop() {
 }
 // ---------- 여러 체육관 관리 (경완 2026-10-29 '폐업하고 새로 세우기 > 체육관 관리') ----------
 // S.gym = 지금 운영 중인 체육관, S.gym.shelf = 휴업 중인 체육관들. 타입마다 하나씩. 관장 몫(포켓몬 레벨·옷·꾸미기·기술머신·배지·전적)은 운영 중인 체육관이 들고 다닌다
-const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'evTD', 'sfTut', 'vit', 'fb1', 'shelf', 'evd', 'mint', 'newIt', 'mgRing'];   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
+const G_SHARED = ['mon', 'fit', 'fits', 'own', 'tms', 'itm', 'bdg', 'bdl', 'bk', 'tyLog', 'w', 'l', 'blk', 'nt', 'rv', 'pal', 'luTut', 'luGd', 'trTut', 'evTB', 'evTC', 'evTD', 'sfTut', 'vit', 'fb1', 'shelf', 'evd', 'mint', 'newIt', 'mgRing', 'egT', 'mgTut'];   /* 경완 2026-11-13: 배운 비기(egT·mgTut)도 관장 몫 — 폐업해도 비기 탭에 남고 튜토리얼 다시 안 나옴 */   /* evd = 본 이벤트: 계정당 한 번이라 체육관을 바꾸거나 폐업해도 따라감 (경완 2026-11-09) */   // v14.75 경완: 튜토리얼 안내(라인업·훈련장·첫 배틀)도 관장 몫 — 새로 세운 체육관에서 다시 안 나옴
 const gList = () => { const g = st(); return g ? [g, ...(g.shelf || [])] : []; };
 const gUsedTy = () => new Set(gList().map(x => x.ty));
 // 휴업 중이던 시간은 없던 셈 (도전자·주급·면접·훈련 시계를 그만큼 민다)
