@@ -33,7 +33,7 @@ object NotiCenter {
             val o = items.optJSONObject(i) ?: continue
             val id = o.optString("id"); val km = o.optDouble("km", 0.0)
             if (id.isEmpty() || !(km > 0)) continue
-            keep.put(JSONObject().put("id", id).put("km", km).put("title", o.optString("title", "포켓몬 키우기"))
+            keep.put(JSONObject().put("id", id).put("km", km).put("title", o.optString("title", "포켓에그"))
                 .put("body", o.optString("body", "")).put("n", o.optInt("n", 1)))
             ids.add(id)
         }

@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">포켓몬 키우기</string>
+    <string name="app_name">포켓에그</string>
     <string name="noti_channel">알·부화·진화</string>
 </resources>

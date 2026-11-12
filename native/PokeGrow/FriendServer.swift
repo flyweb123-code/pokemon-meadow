@@ -126,7 +126,7 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                     guard at > seen, best != 0 else { continue }
                     top = max(top, at)
                     guard seen > 0 else { continue }
-                    if best > 0 { post("frq-\(Int(at))", "친구 요청이 왔어요!", "포켓몬 키우기를 열어 친구 요청을 확인해 보세요.") }
+                    if best > 0 { post("frq-\(Int(at))", "친구 요청이 왔어요!", "포켓에그를 열어 친구 요청을 확인해 보세요.") }
                     else { post("fra-\(Int(at))", "친구가 되었어요!", "친구 요청이 수락됐어요. 이제 알을 선물할 수 있어요.") }
                 }
                 d.set(seen == 0 ? max(top, Date().timeIntervalSince1970 * 1000) : top, forKey: "frSeenAt")
@@ -138,7 +138,7 @@ final class FriendServer: NSObject, WKScriptMessageHandlerWithReply {
                     for (i, r) in rows.enumerated() {
                         let n = (r["n"] as? NSNumber)?.intValue ?? 0
                         top = max(top, n)
-                        if seen >= 0, i == 0 { post("nw-\(n)", r["title"] as? String ?? "포켓몬 키우기", r["body"] as? String ?? "") }
+                        if seen >= 0, i == 0 { post("nw-\(n)", r["title"] as? String ?? "포켓에그", r["body"] as? String ?? "") }
                     }
                     d.set(top, forKey: "nwSeen")
                 }

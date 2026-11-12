@@ -23,7 +23,7 @@ targets:
     info:
       path: PokeGrow/Info.plist
       properties:
-        CFBundleDisplayName: 포켓몬 키우기
+        CFBundleDisplayName: 포켓에그
         CFBundleDevelopmentRegion: ko
         CFBundleLocalizations: [ko]
         UILaunchScreen: {}
@@ -66,7 +66,7 @@ targets:
     info:
       path: PokeGrowWatch/Info.plist
       properties:
-        CFBundleDisplayName: 포켓몬 키우기
+        CFBundleDisplayName: 포켓에그
         CFBundleDevelopmentRegion: ko
         CFBundleLocalizations: [ko]
         WKApplication: true
