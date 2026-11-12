@@ -957,7 +957,7 @@ function shopIt(body) {
   // 분류별로 (경완 2026-10-31 '기존 도구들도 민트처럼 항목 분류', 열매 추가). 분류 안에서는 가격순, 타입 강화는 체육관 타입 먼저
   const row = id => { const own = GB().itHave(id); return GB().itRow(id).replace('class="sp-tm sp-it"', `class="sp-tm sp-it${own ? ' own' : ''}"${own ? ' disabled' : ''}`).replace('</button>', `<em>${own ? '보유 중' : gold(H[id][1])}</em></button>`); };
   const sec = ([k, nm, ids]) => { const L = ids.filter(id => H[id]).sort((a, b) => (k === 'type' && ((H[b][3] === ty) - (H[a][3] === ty))) || (H[a][1] - H[b][1]) * shopPr);
-    return `<p class="sp-sub">${nm}${k === 'berry' ? ' · 배틀에서 먹어도 도구는 남아요' : ''}</p>${k === 'mega' && !L.length ? '<p class="sf-none">체육관 포켓몬 중에 메가진화할 수 있는 포켓몬이 없어요.</p>' : `<div class="sp-list">${L.map(row).join('')}</div>`}`; };   /* 경완 2026-11-13: 메가스톤 칸이 비면 문구 */
+    return `<p class="sp-sub">${nm}${k === 'berry' ? ' · 배틀에서 먹어도 도구는 남아요' : ''}</p>${k === 'mega' && !L.length ? '<p class="sf-none">보유한 포켓몬 중에 메가진화할 수 있는 포켓몬이 없어요.</p>' : `<div class="sp-list">${L.map(row).join('')}</div>`}`; };   /* 경완 2026-11-13: 메가스톤 칸이 비면 문구 */
   const RP = recMon();
   if (RP) {   // 추천받기: 그 포켓몬에게 맞는 도구(추천 순) + 추천 민트
     const nk = GB().recNat(RP), nOk = nk && nk !== GB().gm(RP).nat;
