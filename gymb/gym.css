@@ -3902,7 +3902,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bb.gkb.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 2.5px #fff,0 0 12px 3px var(--c1),0 3px 0 rgba(0,0,0,.18);animation:gkOn 1.2s ease-in-out infinite}
 @keyframes gkOn{50%{filter:brightness(1.18)}}
 .bt.mob .bp-moves.gk:has(.gkb.on) .mvb:not(:disabled){box-shadow:0 0 0 2px #fff,0 0 10px 2px rgba(255,255,255,.6)}
-.bt-mon.gm-mega .clip,.bt-mon.gm-primal .clip{animation:gmMega .9s ease-in forwards}
+.bt-mon.gm-mega .clip>*,.bt-mon.gm-primal .clip>*{animation:gmMega .9s ease-in forwards}   /* 칸(.clip) 말고 그림에만 빛: 아이폰에서 칸 네모 경계가 보이던 것 (경완 2026-11-12) */
 @keyframes gmMega{0%{filter:drop-shadow(0 0 0 #fff)}25%{filter:drop-shadow(0 0 4px #ff6aa8) drop-shadow(0 0 8px #ffd040)}50%{filter:drop-shadow(0 0 5px #6ae0ff) drop-shadow(0 0 10px #b070ff) brightness(1.4)}100%{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff) brightness(3) saturate(0)}}
 .bt-mon.gm-primal .clip{animation-name:gmPrimal}@keyframes gmPrimal{50%{filter:drop-shadow(0 0 6px #ff5020) brightness(1.4)}100%{filter:drop-shadow(0 0 10px #fff) brightness(3) saturate(0)}}
 .bt-mon.gm-z .clip{animation:gmZ 1s ease-in-out}
@@ -4149,5 +4149,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .pk-tabs{margin:0 4px 8px}
 #gym .gy-perk.pk-sl{justify-content:flex-start}
 /* 상대 메가진화 간단 연출: 메가 마크가 포켓몬 위에서 한 바퀴 돌고 사라짐 (경완 2026-11-12) */
-.bt-mon .gm-mark{position:absolute;left:50%;top:-30px;width:22px;height:27px;margin-left:-11px;background:center/contain no-repeat;image-rendering:pixelated;pointer-events:none;z-index:5;animation:gmMark 1.6s ease-out forwards}
+.bt-top .gm-mark{position:absolute;width:22px;height:27px;margin-left:-11px;background:center/contain no-repeat;image-rendering:pixelated;pointer-events:none;z-index:5;animation:gmMark 1.6s ease-out forwards}
 @keyframes gmMark{0%{opacity:0;transform:translateY(8px) scale(.4) rotateY(0)}18%{opacity:1;transform:translateY(0) scale(1.15) rotateY(0)}60%{opacity:1;transform:translateY(-2px) scale(1) rotateY(360deg)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px) scale(1) rotateY(360deg)}}
+/* 상대 메가진화 때 트레이너가 포켓몬 뒤로 잠깐 들어옴 (경완 2026-11-12) */
+.bt-tr.e.mgin{transform:translateX(34px)!important;opacity:1!important;transition:transform .45s cubic-bezier(.2,.7,.3,1),opacity .3s}
