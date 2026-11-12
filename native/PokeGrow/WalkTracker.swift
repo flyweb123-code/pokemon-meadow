@@ -157,6 +157,23 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
     }
     func locationManagerDidPauseLocationUpdates(_ m: CLLocationManager) { setTracking(false) }
 
+    // v22.58 경완: 이벤트 자리 감시 — 반경에 들어가면 iOS 가 앱을 깨워 준다 (걷지 않아도). 이름 앞에 zone- (최대 10곳, iOS 한도 20)
+    func watchZones(_ zs: [(String, CLLocationCoordinate2D, Double)]) {
+        guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else { return }
+        let want = Dictionary(zs.prefix(10).map { ("zone-" + $0.0, $0) }, uniquingKeysWith: { a, _ in a })
+        for r in manager.monitoredRegions where r.identifier.hasPrefix("zone-") && want[r.identifier] == nil { manager.stopMonitoring(for: r) }
+        let have = Set(manager.monitoredRegions.map(\.identifier))
+        for (id, z) in want where !have.contains(id) {
+            let r = CLCircularRegion(center: z.1, radius: min(max(z.2, 100), manager.maximumRegionMonitoringDistance), identifier: id)
+            r.notifyOnEntry = true; r.notifyOnExit = false
+            manager.startMonitoring(for: r)
+        }
+    }
+    func locationManager(_ m: CLLocationManager, didEnterRegion region: CLRegion) {
+        guard region.identifier.hasPrefix("zone-"), let c = region as? CLCircularRegion else { return }
+        if let l = m.location, -l.timestamp.timeIntervalSinceNow < 120 { ZoneAlert.shared.check(l.coordinate) } else { ZoneAlert.shared.check(c.center) }   // 오래된 위치면 반경 가운데로
+    }
+
     func locationManagerDidChangeAuthorization(_ m: CLLocationManager) {
         if m.authorizationStatus == .authorizedAlways || m.authorizationStatus == .authorizedWhenInUse { begin() }
         let st = locState()
@@ -182,6 +199,7 @@ final class WalkTracker: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ m: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let loc = locations.last else { return }
+        ZoneAlert.shared.check(loc.coordinate)   // v22.58: 지역·이벤트 알림 (앱이 꺼져 있을 때만 보냄)
         if probeWaiting { probeWaiting = false; runProbe(loc) }
         if !tracking { checkMoving() }
         if tracking, let at = lookAt, loc.distance(from: at) < WalkTracker.lookStep { return }   // 정밀 위치는 250m마다 한 번만 이름을 찾는다
