@@ -38,7 +38,9 @@ struct ContentView: View {
         }
         .onAppear { model.refresh(); model.startLive() }
         .onChange(of: scenePhase) { _, p in
-            if p == .active { model.refresh(); model.startLive() } else if p == .background { model.stopLive() }
+            // 2026-11-12: 손목을 내려 화면이 꺼지면(inactive) 바로 멈춘다. 걷는 중엔 팔을 흔들어 자주 꺼졌다 켜지는데, 꺼진 동안에도
+            // 만보기·타이머·걷는 그림이 돌면 워치가 앱을 강제로 닫는다
+            if p == .active { model.refresh(); model.startLive() } else { model.stopLive() }
         }
     }
 }
@@ -97,11 +99,17 @@ struct BuddyRow: View {
 // 첫 화면: 게임 프로필의 '이동 거리' + 캐릭터 칸을 한 화면 가득. 걷는 중이면 테두리·숫자가 초록, 점이 깜빡이고 캐릭터가 걷는다
 struct WalkCard: View {
     @EnvironmentObject var model: WatchModel
-    @State private var now = Date()
-    private let tick = Timer.publish(every: 0.6, on: .main, in: .common).autoconnect()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        let walking = now.timeIntervalSince(model.walkAt) < WatchModel.walkLive
+        // 2026-11-12: 화면이 켜져 있을 때만 0.6초마다 깜빡이고, 꺼지면(inactive) 멈춘다 (예전 Timer.publish 는 화면을 다시 그릴 때마다 새로 생겼다)
+        TimelineView(.periodic(from: .now, by: scenePhase == .active ? 0.6 : 3600)) { ctx in
+            card(now: ctx.date, live: scenePhase == .active)
+        }
+    }
+
+    @ViewBuilder private func card(now: Date, live: Bool) -> some View {
+        let walking = live && now.timeIntervalSince(model.walkAt) < WatchModel.walkLive
         let blink = Int(now.timeIntervalSinceReferenceDate / 0.6) % 2 == 0
         ZStack(alignment: .top) {
             // 캐릭터 (아래쪽 가운데, 발밑 그림자)
@@ -149,7 +157,6 @@ struct WalkCard: View {
                 .fill(LinearGradient(colors: [Color.white.opacity(0.06), grass.opacity(0.28)], startPoint: .top, endPoint: .bottom))
                 .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(walkGreen, lineWidth: 2).opacity(walking ? 1 : 0))
         )
-        .onReceive(tick) { now = $0 }
     }
 }
 
