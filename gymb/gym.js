@@ -2295,7 +2295,7 @@ function tipPop(i) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) ret
     const BW = 288, BH = 210, sc = Math.min(1, BW / S.w, Math.max(BH / S.hh, .62)), ox = (BW - S.w * sc) / 2, H2 = S.hh * sc, cy = S.rg ? (S.rg[1] + S.rg[3] / 2) * sc : H2 / 2, oy = H2 <= BH ? (BH - H2) / 2 : Math.max(BH - H2, Math.min(0, BH / 2 - cy));   /* 긴 화면은 줄이지 않고 비출 곳 둘레만 잘라 보여 줌 */
     const ring = S.rg ? `<i class="tp-ring" style="left:${ox + S.rg[0] * sc - 3}px;top:${oy + S.rg[1] * sc - 3}px;width:${S.rg[2] * sc + 6}px;height:${S.rg[3] * sc + 6}px"></i>` : '';
     return `<div class="tp-shot"><div class="tp-in ${S.cls}" data-sc="${sc}" style="left:${ox}px;top:${oy}px;width:${S.w}px;height:${S.hh}px;transform:scale(${sc})">${S.h}</div>${ring}</div>`; };
-  const p = pop(`<h4 class="pp-t tp-t"><small>강박사의 ${PK_NTH[i]} 비기!</small>${T.t}</h4><div class="tp-body"></div><div class="tp-dots">${P.length > 1 ? P.map(() => '<i></i>').join('') : ''}</div><div class="gy-btns tp-btns"><button data-a="prev">이전</button><button class="main" data-a="next">다음</button></div>`, (a, close) => {
+  const p = pop(`<h4 class="pp-t tp-t"><small>강박사의 ${PK_NTH[i]} 비기!</small><span class="tp-tt"><i class="tp-st"></i>${T.t}<i class="tp-st s2"></i></span></h4><div class="tp-body"></div><div class="tp-dots">${P.length > 1 ? P.map(() => '<i></i>').join('') : ''}</div><div class="gy-btns tp-btns"><button data-a="prev">이전</button><button class="main" data-a="next">다음</button></div>`, (a, close) => {
     if (a === 'prev') return turn(-1); if (a === 'next') { if (at < last) return turn(1); close(); ok(); } });
   p.classList.add('tp-pop'); const body = p.querySelector('.tp-body'), pv = p.querySelector('[data-a=prev]'), nx = p.querySelector('[data-a=next]');
   const draw = d => { const pg = P[at]; body.innerHTML = `<div class="tp-pg"><b class="tp-pt">${pg.t}</b>${shot(pg)}<p class="tp-p">${pg.p}</p>${pg.sm ? `<p class="tp-sm">${pg.sm}</p>` : ''}</div>`;
@@ -2863,8 +2863,8 @@ const GT_TR = () => { const g = st(), n0 = g.tr?.length || 0; return [
   { c: '훈련장 칸', t: gtAll('.ts-win .tsc-lock'), s: '잠긴 칸들이 보이지?\n체육관 등급이 오를 때마다\n훈련장 자리가 하나씩\n늘어난단다.' },
   { c: '훈련 보내기', when: () => gtEl('.ts-win .tsc-new'), t: '.ts-win .tsc-new', tap: '.ts-win .tsc-new', until: () => gtEl('.bw-grid'), after: 900, s: '지금은 한 자리가 비었구나.\n+ 칸을 눌러 보렴!' },
   { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.bw-grid', s: () => `${trName() || NK()}의 포켓몬 박스란다.` },
-  { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.bw-grid', tap: '.bw-grid .pk', until: () => gtEl('.gy-pop [data-a=ok]') || (g.tr?.length || 0) > n0, after: 600, s: '키우고 싶은 포켓몬을\n하나 눌러 보렴!' },
-  { c: '훈련 보내기', when: () => gtEl('.gy-pop [data-a=ok]'), t: '.gy-pop [data-a=ok]', tap: '.gy-pop [data-a=ok]', quiet: 1, until: () => (g.tr?.length || 0) > n0, after: 1000 },   // 경완 2026-11-12 '보내기는 유저가 직접 누르게, 대사 없이 눌러야 하는 버튼 테두리만 은은하게'
+  /* 경완 2026-11-13 '훈련장에 보낼까요? 창에서 취소도 누를 수 있게': 고르기와 보내기를 한 단계로 — 취소하면 다시 고르고, 빛 테두리는 보내기 버튼 */
+  { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: () => gtEl('.gy-pop [data-a=ok]') || gtEl('.bw-grid'), tap: () => gtEl('.gy-pop .gy-btns') || gtEl('.bw-grid'), until: () => (g.tr?.length || 0) > n0, after: 1000, s: '키우고 싶은 포켓몬을\n하나 눌러 보렴!' },
   { c: '훈련 보내기', when: () => gtEl('.bw-grid'), t: '.gy-boxw .bw-x', tap: '.gy-boxw .bw-x', until: () => !gtEl('.bw-grid'), after: 800, s: '잘했다! ‹ 를 눌러\n돌아가자.' },
   ...GT_TRB()]; };
 // 트레이너 메뉴 처음 들어올 때
@@ -3524,8 +3524,8 @@ function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force |
   for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; if (!force) o.lv = Math.max(2, (o.lv | 0) - 2); return true; } } return false; }   // 메가진화하는 포켓몬은 그만큼 세지니 레벨 2 낮춤
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';
 // 내 포켓몬 중 메가진화할 수 있는 종 (체육관 타입 먼저, 같은 종은 한 번). 레쿠쟈는 화룡점정으로
-function mgCan() { const B = GB(), ty = st()?.ty, seen = new Set(), L = [];
-  for (const P of S.box || []) { if (P.mgT || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
+function mgCan(luOnly) { const B = GB(), ty = st()?.ty, seen = new Set(), L = [], lu = new Set((st()?.lu || []).flat());   /* 경완 2026-11-13 luOnly: 이 체육관 라인업에 있는 포켓몬만 */
+  for (const P of S.box || []) { if (luOnly && !lu.has(P.id)) continue; if (P.mgT || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
   return L.sort((a, b) => ((SPECIES[b.sp]?.t || []).includes(ty) - (SPECIES[a.sp]?.t || []).includes(ty))); }
 function ringPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>메가링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/mega-bracelet.png"></div><p class="gy-msg mr-d">메가진화에 쓰는 팔찌.<br>포켓몬에게 메가스톤을 지니게 하면<br>배틀 중에 메가진화할 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
@@ -3725,18 +3725,19 @@ async function megaTut(test) {
       await say(`${sp}${pN(sp)} 이제 돌려받으마.\n${sn}${pN(sn)} 연습용이라\n같이 가져가겠네.`);
     }
     if (!open) return;
-    const L = mgCan(), N = L.slice(0, 4).map(P => SPECIES[P.sp]?.n || ''), tyN = L.filter(P => (SPECIES[P.sp]?.t || []).includes(T0)).length;
+    const L = mgCan(1), N = L.slice(0, 4).map(P => SPECIES[P.sp]?.n || ''), tyN = L.filter(P => (SPECIES[P.sp]?.t || []).includes(T0)).length;
     if (L.length) {
       const w = N.join(', ') + (L.length > 4 ? ' 등' : ''), last = N[N.length - 1];
-      await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
+      await say(`그럼 ${NK()}의 체육관\n라인업을 한번 볼까…`);
       const mgX = mgCanShow(L);
-      await say(`오호! ${w}${L.length > 4 ? '' : pI(last)}\n메가진화할 수 있을 것\n같구나!`);
+      await say(`오호! 지금 라인업에서는\n${w}${L.length > 4 ? '' : pI(last)}\n메가진화할 수 있을 것 같구나!`);
       if (L.some(P => P.sp === 384)) await say('레쿠쟈는 메가스톤 대신\n\'화룡점정\'을 배우고 있으면\n메가진화할 수 있단다.');
-      await say(tyN ? '맞는 메가스톤은 체육관\n상점에서 살 수 있지.\n꼭 한번 지니게 해 보렴!' : '다만 체육관 타입과 다른\n포켓몬은 체육관 배틀엔 못 나가니\n그 점은 기억해 두렴.'); mgX();
+      await say('맞는 메가스톤은 체육관\n상점에서 살 수 있지.\n꼭 한번 지니게 해 보렴!'); mgX();
     } else {
-      await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
-      await say('흠, 아직은 메가진화할 수 있는\n포켓몬이 없는 것 같구나.');
-      await say('새로운 포켓몬을 만나면\n메가진화할 수 있는지\n꼭 살펴보렴!');
+      await say(`그럼 ${NK()}의 체육관\n라인업을 한번 볼까…`);
+      await say('흠, 지금 라인업에는\n메가진화할 수 있는\n포켓몬이 없구나.');
+      await say('박스에 있는 포켓몬이나\n새로 만나는 포켓몬 중에\n메가진화할 수 있는 녀석이 있는지');
+      await say('꼭 살펴보렴!\n라인업에 넣어 주면\n든든한 힘이 될 거란다.');
     }
     await say('메가스톤이 아무리 좋아도\n포켓몬을 믿고 키워 준\n트레이너가 없으면 소용없단다.');
     await say(`그런 점에서 ${NK()}${jong(NK()) ? '은' : '는'}\n이미 합격이지!\n허허!`);
