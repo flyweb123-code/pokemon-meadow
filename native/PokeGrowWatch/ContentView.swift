@@ -110,7 +110,9 @@ struct WalkCard: View {
 
     @ViewBuilder private func card(now: Date, live: Bool) -> some View {
         let walking = live && now.timeIntervalSince(model.walkAt) < WatchModel.walkLive
-        let blink = Int(now.timeIntervalSinceReferenceDate / 0.6) % 2 == 0
+        // 2026-11-12 충돌 기록: 워치 SE 1세대(arm64_32)는 Int 가 32비트라 '초 ÷ 0.225' 같은 큰 수를 Int 로 바꾸면 넘쳐서 앱이 죽는다.
+        // 그래서 나머지는 Double 로 먼저 구한 뒤 작은 수만 Int 로 바꾼다
+        let blink = now.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1.2) < 0.6
         ZStack(alignment: .top) {
             // 캐릭터 (아래쪽 가운데, 발밑 그림자)
             GeometryReader { g in
@@ -169,7 +171,8 @@ struct TrainerSprite: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: walking ? 0.225 : 60)) { ctx in
-            let i = walking ? Int(ctx.date.timeIntervalSinceReferenceDate / 0.225) % 4 : 0
+            // 걷는 그림 칸 번호: 0.9초(0.225×4) 나머지로 0~3 (예전 Int(초/0.225) 는 32비트 워치에서 넘쳐 '걷는 중에 켜면 꺼짐' 원인)
+            let i = walking ? min(3, Int(ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 0.9) / 0.225)) : 0
             Image(decorative: i % 2 == 1 ? frames.step : frames.stand, scale: 1)
                 .interpolation(.none)
                 .resizable()
