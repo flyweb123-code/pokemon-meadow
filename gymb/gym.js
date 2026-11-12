@@ -1647,7 +1647,8 @@ function teraPop(t) { return new Promise(ok => { try { window.GymBGM?.fan ? wind
 // 심사 진행 (test = 운영자 시험: 가상 체육관, 저장·알·골드 안 건드림)
 async function legExam(gi, test) {
   const g = st(); if (!g?.d || busy) return;
-  await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); if (!test) await loadNamed();
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); try { await GB().loadSim?.(); } catch (e) {}   // 팀 뽑기(kangPick)가 상성 표를 읽으려면 배틀 엔진이 먼저 실려 있어야 함
+  if (!test) await loadNamed();
   const c = mkKang(gi), N = Object.keys(g.legE || {}).length + ((g.legE || {})[g.ty] ? 0 : 1), newEgg = test || !(g.legE || {})[g.ty];
   let done = null;
   const battle = async () => {
