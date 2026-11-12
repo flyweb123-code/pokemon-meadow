@@ -2189,7 +2189,7 @@ const MEGA_PR = {"abomasite":7000,"absolite":7000,"absolitez":7000,"aerodactylit
 function mgStAdd() { for (const [id, [n, x]] of Object.entries(MEGA_ST)) { const k = SPECIES[n]?.n; if (!k || HOLD[id]) continue; HOLD[id] = [`${k}나이트${x}`, MEGA_PR[id] || MEGA_P, `${k}에게 지니게 하면 배틀 중 메가진화할 수 있다. 트레이너에게 메가링이 있어야 한다.`, 0]; } }
 const mgOn = () => !!(S.gym?.mgRing || (S.gym?.shelf || []).some(x => x?.mgRing) || window.gymMgOn);   // 메가링은 관장 것 (어느 체육관에서 받았든)   // 메가링을 받은 관장만 상점에 메가스톤
 const mgSt = sp => Object.keys(MEGA_ST).filter(id => MEGA_ST[id][0] === sp);   // 이 종이 쓸 수 있는 메가스톤
-const mgBoxSp = () => { const ty = S.gym?.ty; return new Set((S.box || []).filter(P => !ty || (SPECIES[P.sp]?.t || []).includes(ty)).map(P => P.sp)); };   /* 경완 2026-11-13: 상점 메가스톤은 체육관 포켓몬(박스의 체육관 타입) 것만 */
+const mgBoxSp = () => new Set((S.box || []).map(P => P.sp));   /* 경완 2026-11-13: 상점 메가스톤은 내 포켓몬 박스 전체 중 메가진화할 수 있는 포켓몬 것만 (튜토리얼 시험 포켓몬도 박스에 있어 그 스톤 보임) */
 const itCatL = () => mgOn() ? [...IT_CAT, ['mega', '메가스톤', (B => Object.keys(MEGA_ST).filter(id => HOLD[id] && B.has(MEGA_ST[id][0])))(mgBoxSp()).sort((a, b) => MEGA_ST[a][0] - MEGA_ST[b][0] || a.localeCompare(b))]] : IT_CAT;
 const itImg = id => MEGA_ST[id] ? `${IMG}dbk/it/${id}.png` : `${IMG}item/${id}.png`;
 const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="button" class="sp-tm sp-it" data-it="${id}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${esc(x[2])}</small>${note ? `<em class="it-note">${note}</em>` : ''}</span></button>`; };
