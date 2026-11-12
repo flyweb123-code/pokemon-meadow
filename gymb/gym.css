@@ -161,8 +161,8 @@ body.gymMode{overflow:hidden}
 .bt-bg{position:absolute;inset:0;background:0 0/512px 192px no-repeat;transition:background-position 1s ease-out}
 .bt.intro .bt-bg{background-position:-256px 0}
 .bt-pl,.bt-tr,.bt-mon{position:absolute;transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s}
-.bt-pl.e{left:112px;top:56px;width:128px;height:64px;background:url(../gym/img/bt/pl_e.png)}
-.bt-pl.p{left:-48px;top:120px;width:256px;height:32px;background:url(../gym/img/bt/pl_p.png)}
+.bt-pl.e{left:112px;top:56px;width:128px;height:64px;background:var(--ple,url(../gym/img/bt/pl_e.png))}
+.bt-pl.p{left:-48px;top:120px;width:256px;height:32px;background:var(--plp,url(../gym/img/bt/pl_p.png))}
 .bt-tr.e{left:136px;top:8px;width:80px;height:80px;background:0 0/80px 80px no-repeat}
 .bt-tr.p{left:32px;top:64px;width:80px;height:80px;background:0 0/80px 80px no-repeat}
 .bt.intro .bt-pl.e,.bt.intro .bt-tr.e{transform:translateX(-256px)}
