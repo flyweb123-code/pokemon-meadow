@@ -610,7 +610,7 @@ function pickTrain(after) {
         // 보내기 전에 한 번 더 묻기, 필드에 나가 있으면 빠진다고 안내 (경완 2026-10-29)
         if (!w.ok) { const n = esc(nmOf(P)); GB().gymPop(`<h4>${n}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a === 'ok') { w.ok = 1; try { this_pick(P, w); } finally { w.ok = 0; } } }); return; }
         const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
-        const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보냈다.`); setTimeout(() => K.tutEv?.('B'), 300);
+        const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; /* v22.53 경완 '뺐다 다시 넣으면 0일부터, 훈련 현황·일지 표시만 초기화' (얻은 수치·기술은 그대로) */ g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에 보냈다.`); setTimeout(() => K.tutEv?.('B'), 300);
         if (g.tr.length >= trMax()) { K.save(); w.close(); redraw(); return after?.(); } }
       K.save(); w.redraw(); } });
 }
@@ -621,7 +621,7 @@ function trSend(P, done) {
   if (g.tr.length >= trMax()) return say(trFull());
   GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
     const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
-    const now = Date.now(); g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); slotRf?.(); done?.(); setTimeout(() => K.tutEv?.('B'), 300); });
+    const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; /* v22.53 경완 '뺐다 다시 넣으면 0일부터, 훈련 현황·일지 표시만 초기화' (얻은 수치·기술은 그대로) */ g.tr.push({ id: P.id, t: now, d: K.dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); K.glog('tr', `${n}${j} 훈련장에 보냈다.`); K.save(); redraw(); slotRf?.(); done?.(); setTimeout(() => K.tutEv?.('B'), 300); });
 }
 // 훈련 현황 (경완 2026-10-29): 나와 있던 시간, 얻은 경험치, 오른 레벨, 배운 기술
 const hm = ms => { const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60); return d ? `${d}일 ${h}시간` : h ? `${h}시간 ${m % 60}분` : `${m}분`; };
@@ -640,7 +640,7 @@ function statPop() {
       const [e, P] = r, m = GB().gm(P), up = Object.values(trLog(P.id)).reduce((a, d) => a + (d.lv | 0), 0), B = GB(), ek = e.evk ?? -1, eOn = !!B.evOn?.(),   /* v20.78 경완 '가비루사 일지 레벨업 수랑 슬롯 레벨업 수가 달라': ▲ = 훈련 일지 합 (훈련 현황과 같은 값, 배틀·사탕으로 오른 레벨은 안 셈) */ gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), nmv = Object.values(trLog(P.id)).reduce((a, d) => a + (d.mv?.length | 0), 0);
       return `<button type="button" class="ts-slot tsc" data-id="${P.id}"><span class="tsc-th">${GB().thumb(P)}</span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(nmOf(P))}</b><span class="tsc-lv">Lv.${m.lv}</span>${up > 0 ? `<em class="tsc-up">▲${up}</em>` : ''}</span>
         <span class="tsc-g"><i>경험치</i><span class="mini"><i style="width:${(f * 100).toFixed(0)}%"></i></span><small>${mx ? '최고' : `${Math.floor(f * 100)}%`}</small></span>
-        <span class="tsc-tags">${eOn ? ek >= 0 ? `<em class="tsc-ev" style="--sc:${EV_SC[ek]}"><img alt="" src="${B.itImg(B.EV_PW[ek])}">${B.EV_N[ek]} 훈련<b>+${e.evg | 0}</b></em>` : '<em class="tsc-ev off">능력치 훈련 안 함</em>' : '<em class="tsc-ev off">훈련 중</em>'}${nmv ? `<em class="tsc-mv">새 기술 ${nmv}</em>` : ''}</span></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span></button>`; }).join('')}</div>
+        <span class="tsc-tags">${eOn ? ek >= 0 ? `<em class="tsc-ev" style="--sc:${EV_SC[ek]}"><img alt="" src="${B.itImg(B.EV_PW[ek])}">${B.EV_N[ek]} 훈련<b>+${e.evg | 0}</b></em>` : '<em class="tsc-ev off">노력치 훈련 안 함</em>' : '<em class="tsc-ev off">훈련 중</em>'}${nmv ? `<em class="tsc-mv">새 기술 ${nmv}</em>` : ''}</span></span><span class="ts-x tsc-out" data-out="${P.id}" role="button" aria-label="훈련장에서 데려오기">✕</span></button>`; }).join('')}</div>
     </div>`;   // 아래 안내 문구는 뺐다 (경완 2026-10-29)
   GB().fillTh(w);
   slotRf = () => { if (w.isConnected) statPop(); };
@@ -678,7 +678,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
       if (a === 'evq') return evTrHint(P, () => trPop(id, p));
-      if (a.startsWith('evk')) { const e2 = st().tr.find(x => x.id === P.id); if (!e2) return; tickTrain(Date.now()); const k = +a.slice(3); e2.evk = e2.evk === k ? -1 : k; K.save(); trPop(id, p); return; }   // 노력치 훈련: 같은 칸 다시 누르면 끔
+      if (a.startsWith('evk')) { const e2 = st().tr.find(x => x.id === P.id); if (!e2) return; tickTrain(Date.now()); const k = +a.slice(3); e2.evk = e2.evk === k ? -1 : k; K.save(); trPop(id, p); slotRf?.(); return; }   // 노력치 훈련: 같은 칸 다시 누르면 끔
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
