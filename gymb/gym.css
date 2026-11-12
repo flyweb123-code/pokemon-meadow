@@ -4158,3 +4158,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes gmMark{0%{opacity:0;transform:translateY(8px) scale(.4) rotateY(0)}18%{opacity:1;transform:translateY(0) scale(1.15) rotateY(0)}60%{opacity:1;transform:translateY(-2px) scale(1) rotateY(360deg)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px) scale(1) rotateY(360deg)}}
 /* 상대 메가진화 때 트레이너가 포켓몬 뒤로 잠깐 들어옴 (경완 2026-11-12) */
 .bt-tr.e.mgin{transform:translateX(34px)!important;opacity:1!important;transition:transform .45s cubic-bezier(.2,.7,.3,1),opacity .3s}
+
+.bt-essb,.bt-essf{position:absolute;left:0;top:0;width:256px;height:192px;pointer-events:none}.bt.essp .bt-mw{overflow:visible}   /* 5세대 이후 기술 연출 캔버스 (gymb/essfx.js, 경완 2026-11-12) */

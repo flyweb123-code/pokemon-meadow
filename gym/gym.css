@@ -4113,3 +4113,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .gy-perk.pk-gl,#gym .gy-pop .gy-perk.pk-sl{height:58vh;max-height:58vh;box-sizing:border-box}
 #gym .gy-pop .pk-tabs{margin:0 4px 8px}
 #gym .gy-perk.pk-sl{justify-content:flex-start}
+
+.bt-essb,.bt-essf{position:absolute;left:0;top:0;width:256px;height:192px;pointer-events:none}.bt.essp .bt-mw{overflow:visible}   /* 5세대 이후 기술 연출 캔버스 (gym/essfx.js, 경완 2026-11-12) */
