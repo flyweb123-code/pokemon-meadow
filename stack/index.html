@@ -2734,6 +2734,7 @@ function landCheck() {
     if (p.weld && p.touch && now0 - p.touch > (p.sticky ? 30 : 70)) { b.setLinearVelocity(V(0, 0)); b.setAngularVelocity(0); p.landed = true; onLand(p); continue; }   /* 공중날기: 닿자마자 붙임 */
     if (p.touch && sp < .6 && now0 - p.touch > 260) { p.landed = true; onLand(p); } }
   // 떨어진 것: 땅(풀밭)에 닿거나 받침 아래로
+  for (const p of P) if (p.fitT && now0 >= p.fitT) { p.fitT = 0; if (!p.miss && !p.gone && p.landed && !dead) fitChk(p); else combo = 0; }
   for (const p of P) if (p.hardT && now0 >= p.hardT) { p.hardT = 0; if (!p.miss && !p.gone && p.landed && !dead) hardChk(p); }
   for (const p of P) { if (p.gone || p.miss || p.bub || p.burnT || p.hyd || p.fly || (drag && drag.p === p)) continue; const pos = p.b.getPosition(); if (p.landed && onGround(p.b) || p.landed && (pxv(pos.y) > GY - BASE_H + 8 && Math.abs(pxv(pos.x) - W / 2) > baseW / 2 - 2) || pxv(pos.y) > GY + 40) missPiece(p, 'g2'); }
 }
@@ -2742,19 +2743,28 @@ function onLand(p) {
   if (p.weld) { p.weld = 0; setTimeout(() => { if (!p.gone && !p.miss) solidify([p]); }, 0); }
   if (p.re) { p.re = 0; SFX.land(); if (mode === 'fall') mode = 'aim'; hud(); return; }
   const pos = p.b.getPosition(), x = pxv(pos.x), y = pxv(pos.y); let pts = 10 + Math.min(combo, 8) * 2, perfect = false;   /* v23.00: 이 값이 그대로 점수 (예전엔 ×4 = 40점) */
-  if (p.on && (p.on.pk || p.on.isBase)) { const ox = pxv(p.on.getPosition().x); if (Math.abs(ox - x) < 6) { perfect = true; combo++; nPerfect++; pts += 30 * combo; }   /* v23.00 딱 맞음 덤 절반 (예전 60×콤보) */ else combo = 0; }
+  p.fitT = now0 + 650;   /* v23.14 경완 '딱 맞아는 맞닿은 부분이 딱 맞을 때(맞물리는 정도)': 가운데 6px 맞추기 대신, 자리 잡은 뒤 fitChk 가 맞닿은 폭으로 잼 */
   /* 경완 '어려운 데 올렸을수록 점수 많이·효과로': 받친 폭이 좁을수록·밑 포켓몬 가운데서 벗어날수록·기울어 놓일수록 '아슬아슬' 덤 (높을수록 조금 더) */
   /* v22.28 경완 '아슬아슬은 탑이 무너질 뻔하거나 놓은 포켓몬이 떨어질 뻔하다 안 그랬을 때만' → 자리 잡은 모양(hardChk)으로 재던 것 그만, 놓은 뒤 흔들림(wobTick)으로 잼 */   /* 경완 '안쪽인데 초아슬아슬': 놓은 순간(아직 흔들릴 때) 말고 0.7초 뒤 자리 잡은 모양으로 아슬아슬을 잼 (hardChk) */
   /* 경완 '최고 높이 올라갈 때마다 추가 점수 + 놓을 때마다 최고 높이 올라가면 콤보': 놓은 뒤 탑 높이가 지금까지 최고보다 높으면 '최고 높이!' 덤, 연달아 최고 높이를 넘기면 '높이 콤보' 덤이 커짐. 최고 높이를 못 넘긴 판·떨어진 판은 콤보 끊김 */
   const hNow = Math.max(0, (GY - BASE_H - topY()) / 40), TU = window.__tune || {}; let hb = 0;
   if (hNow > maxH + .05) { hCmb++; if (hCmb > hCmbM) hCmbM = hCmb; hb = Math.round((TU.hm ?? HM_PT) * (hNow * hNow - maxH * maxH) * (1 + Math.min(hCmb - 1, TU.hcm ?? HC_MMAX) * (TU.hc ?? HC_MUL))); pts += hb; } else hCmb = 0;
   nPlaced++; sc += pts;   /* v23.00: ×4 없앰 (놓기 기본 40→10점) — 예전 v20.23 경완 '받는 점수가 작아' ×4 */ if (p.sticky) { gS('gooLand'); hap(0); p.sqz = { t: now0, A: .24, d: 420, w: 120 }; } else { SFX.land(); hap(0); dust(x, y + 20, 10, '#e8d7b0'); }   /* 경완: 녹기는 먼지 말고 끈적하게 철퍽 + 소리 */
-  if (perfect) { SFX.perfect(); hap(1); flt.push({ x, y: y - 40, s: combo > 1 ? `딱 맞아! ×${combo}` : '딱 맞아!', t: now0, c: '#ffe27a', big: 1 }); rings.push({ x, y, t: now0, c: '#fff6b0' }); }
   if (hb) { const yy = y - (perfect ? 64 : 40); flt.push({ x, y: yy, s: hCmb > 1 ? `높이 콤보 ×${hCmb}` : '최고 높이!', t: now0, c: '#8fe3ff', big: 1 }); hFlash = now0; if (hCmb > 1) setTimeout(() => SFX.hcmb(hCmb), perfect ? 140 : 0); else if (!perfect) SFX.hbest(); }
   flt.push({ x, y: y - 18, s: '+' + pts, t: now0, c: '#fff' });
   if (mode === 'fall') { mode = 'aim'; }
   if (hNow > maxH) maxH = hNow; hud();
 }
+const FIT_T = .62, FIT_PT = 50;   /* v23.14 시뮬: 놓은 것의 약 20%가 넘음 (가운데 맞추기 정확도와 거의 상관없음), 드물어진 만큼 덤 30→50×콤보. 맞닿은 폭 ÷ (놓은 것·받친 것 중 좁은 폭) 이 이만큼 넘으면 '딱 맞아' */
+function fitChk(p) { const TU = window.__tune || {}; if (p.b.getLinearVelocity().length() > .4 || Math.abs(p.b.getAngularVelocity()) > .4) { combo = 0; return; }   /* 아직 흔들리면 안 맞물린 것 */
+  const pw = Math.max(8, p.I.w * p.s * (p.qx || 1)), cy = pxv(p.b.getWorldCenter().y); let x0 = 1e9, x1 = -1e9, sw = 0;
+  for (let ce = p.b.getContactList(); ce; ce = ce.next) { const c2 = ce.contact; if (!c2.isTouching()) continue; const ob = ce.other; if (!ob || !(ob.pk || ob.isBase)) continue; const n2 = c2.getManifold().pointCount, wm = n2 && c2.getWorldManifold(null); if (!wm) continue; let below = 0;
+    for (let i = 0; i < n2; i++) { const py = pxv(wm.points[i].y); if (py < cy - 4) continue; below = 1; const px2 = pxv(wm.points[i].x); x0 = Math.min(x0, px2); x1 = Math.max(x1, px2); }   /* 놓은 포켓몬 아래쪽에 닿은 점만 */
+    if (below) sw = Math.max(sw, ob.isBase ? baseW : Math.max(8, ob.pk.I.w * ob.pk.s * (ob.pk.qx || 1))); }
+  const fit = x1 > x0 && sw ? (x1 - x0) / Math.min(pw, sw) : 0; try { (window.__fitL = window.__fitL || []).push(+fit.toFixed(2)); } catch (e) {}
+  if (fit < (TU.fit ?? FIT_T)) { combo = 0; return; }
+  combo++; nPerfect++; const bon = (TU.fb ?? FIT_PT) * combo, pos = p.b.getPosition(), x = pxv(pos.x), y = pxv(pos.y); sc += bon;
+  SFX.perfect(); hap(1); flt.push({ x, y: y - 40, s: combo > 1 ? `딱 맞아! ×${combo}` : '딱 맞아!', t: now0, c: '#ffe27a', big: 1 }); flt.push({ x, y: y - 62, s: '+' + bon, t: now0, c: '#ffe27a' }); rings.push({ x, y, t: now0, c: '#fff6b0' }); hud(); }
 function hardChk(p) { const pos = p.b.getPosition(), x = pxv(pos.x), y = pxv(pos.y); if (p.b.getLinearVelocity().length() > .4 || Math.abs(p.b.getAngularVelocity()) > .4) return; let pts = 0;
   /* 경완 '절대 안 무너질 때도 초아슬아슬': 받친 곳(닿은 점들 폭) 안에서 무게중심이 가장자리에 얼마나 가까운지로만 잼 — 넓게 받쳐 가운데 있으면 0 */
   let hard = 0; if (p.on && p.on.pk) { const pw = Math.max(8, p.I.w * p.s * (p.qx || 1)); let x0 = 1e9, x1 = -1e9, onPk = false, cy0 = 0, nc0 = 0; for (let ce = p.b.getContactList(); ce; ce = ce.next) { const c2 = ce.contact; if (!c2.isTouching()) continue; const ob = ce.other; if (!ob || !(ob.pk || ob.isBase)) continue; const wm = c2.getWorldManifold(null); if (!wm) continue; const n2 = c2.getManifold().pointCount; if (!n2) continue; if (ob.pk) onPk = true; for (let i = 0; i < n2; i++) { const px2 = pxv(wm.points[i].x); x0 = Math.min(x0, px2); x1 = Math.max(x1, px2); cy0 += pxv(wm.points[i].y); nc0++; } }
