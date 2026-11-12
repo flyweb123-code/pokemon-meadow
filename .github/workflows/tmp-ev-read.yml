@@ -1,4 +1,4 @@
-# 임시 (2026-11-13): D1 읽기 전용 — 경완 염무왕 노력치 확인. 확인 뒤 지움. (2)
+# 임시 (2026-11-13): D1 읽기 전용 — 경완 염무왕 노력치 확인. 확인 뒤 지움. (3)
 name: tmp ev read
 on:
   push:
@@ -37,9 +37,7 @@ jobs:
               const g=S.gym||{}; console.log("SV",process.env.A,process.env.C,new Date(S.savedAt).toISOString(),"gym",g.nm,g.ty,g.rep,g.gmax);
               for(const P of (S.box||[]).filter(p=>p.sp===727)){ const m=(g.mon||{})[P.id]; console.log("P",JSON.stringify(P)); console.log("M",JSON.stringify(m&&{lv:m.lv,xp:m.xp,ev:m.ev,evp:m.evp,evM:m.evM,nat:m.nat,ws:m.ws})); }
               const lu=g.lu; console.log("LU",JSON.stringify(lu),g.luI);
-              console.log("KEYS",Object.keys(S).join(","),"GKEYS",Object.keys(g).join(","));
-              console.log("BOX",(S.box||[]).map(p=>p.id+":"+p.sp).join(" "));
-              const mon=g.mon||{}; console.log("MON",Object.entries(mon).map(([k,m])=>k+":"+(m.sp||"")+":"+m.lv+":"+JSON.stringify(m.ev||null)+":"+(m.evM||0)).join(" | "));
-              const hits=[]; (function w(o,pth){ if(!o||typeof o!=="object"||hits.length>40)return; if(o.sp===727)hits.push(pth+" "+JSON.stringify(o).slice(0,400)); for(const k in o) w(o[k],pth+"."+k); })(S,"S"); console.log("HITS727",hits.join("\n"));
-              const bl=(g.blog||[]).map(b=>({t:new Date(b.t).toISOString(),foe:b.foe,won:b.won,pr:b.pr,my:(b.my||[]).map(x=>x[0]).join("/")})); console.log("BLOG",JSON.stringify(bl));'
+              for(const id of [3287,185,3283,465]){ const P=(S.box||[]).find(p=>p.id===id); console.log("P",id,JSON.stringify(P).slice(0,700)); const m=(g.mon||{})[id]; console.log("M",id,JSON.stringify(m).slice(0,900)); console.log("TL",id,JSON.stringify((g.tlog||{})[id]||null).slice(0,600)); }
+              console.log("GLOG",JSON.stringify((g.log||[]).filter(x=>/염무왕|500/.test(JSON.stringify(x))).slice(-15)).slice(0,2500)); console.log("SLOG",JSON.stringify((S.log||[]).filter(x=>/염무왕/.test(JSON.stringify(x))).slice(-15)).slice(0,2500)); console.log("DAYS",JSON.stringify(g.days||null).slice(0,1500));
+              const bl=(g.blog||[]).map(b=>({t:new Date(b.t).toISOString(),foe:b.foe,won:b.won,pr:b.pr,v:b.v,out:b.out,fo:(b.fo||[]).map(x=>x[0]).join('/'),ko:(b.log||[]).filter(s=>/\|faint\||\|switch\|p1a/.test(s)).join(' ; ').slice(0,600)})); console.log("BLOG",JSON.stringify(bl));'
           done
