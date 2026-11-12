@@ -921,13 +921,42 @@ function mkBoss(gi, t) {
   const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
   return c;
 }
-// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
+/* v23.30 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
+   본가 단계를 다 이긴 트레이너도 계속 온다. 마지막 단계 팀에서 에이스(마지막 칸)는 그대로, 나머지 몇 칸(첫 재방문 2칸, 그 뒤 3칸)을
+   같은 타입(팀 테마 타입, 테마가 없으면 바꾸는 포켓몬과 같은 타입) 포켓몬으로 바꾼다. 방문마다 팀이 정해져 있어 지고 다시 와도 같은 팀.
+   새 포켓몬 후보 = 보통 포켓몬(바꾸는 포켓몬 종족값 −40~+40) + 에픽·전설 알에서 나오는 포켓몬(재방문이 거듭될수록 자주, 팀에 본가 전설·환상은 1마리까지).
+   어느 쪽이든 종족값 합계는 체육관 등급 천장 STR_BS(명문 600·전설 680)를 넘지 않는다 (원래 포켓몬이 천장보다 세면 그 포켓몬까지) */
+let nvEgg = null;
+const nvEggG = sp => { if (!nvEgg) { nvEgg = {}; const f = GA.eggTop; if (f) for (const k of Object.keys(SPECIES)) if (+k <= 1025) nvEgg[k] = f(+k) | 0; } return nvEgg[sp] | 0; };
+const NV_KEEP = { red: [25, 3, 6, 9] };   // 에이스 말고도 꼭 데려오는 상징 포켓몬 (레드 = 피카츄·이상해꽃·리자몽·거북왕)
+let nvPre = null; const nvFin = sp => { if (!nvPre) { nvPre = new Set(); for (const o of Object.values(SPECIES)) if (o?.fr) nvPre.add(+o.fr); } return !nvPre.has(+sp); };   // 더 진화하지 않는 포켓몬
+const nvLeg = sp => !!(SPECIES[sp]?.leg || SPECIES[sp]?.my);
+const NV_SAY = ['지난번이랑 똑같은 팀일 줄 알았지? 이번엔 새 멤버도 데려왔어!', '그동안 나도 놀고만 있진 않았거든. 새로 키운 포켓몬들을 보여 줄게!', '같은 팀으로 두 번 지는 건 자존심이 허락 안 해서 말이야. 팀을 좀 바꿔 왔어!', '이번 팀은 비밀 특훈의 성과야. 놀라지 마!'];   // v23.30 재방문 팀 (nmVar) 첫 마디 뒤 한 줄
+function nmVar(n, k, gi) {
+  const B = n.st[n.st.length - 1].filter(m => !spOff(m[0])); if (B.length < 2) return null;
+  const r = seeded('nv' + n.id + ':' + k), rp = L => L[Math.floor(r() * L.length)], cap0 = STR_BS[clampN(gi, 0, STR_BS.length - 1)];
+  const T = B.map(m => [m[0], m[1], m[2]]), cnt = {};
+  B.forEach(m => (SPECIES[m[0]]?.t || []).forEach(x => cnt[x] = (cnt[x] | 0) + 1));
+  const th = Object.keys(cnt).map(Number).filter(x => cnt[x] >= B.length * .6);   // 팀 테마 타입 (관장·사천왕처럼 한 타입 팀)
+  const KP = NV_KEEP[n.id] || [], I = Array.from({ length: T.length - 1 }, (_, i) => i).filter(i => !KP.includes(T[i][0])); for (let i = I.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [I[i], I[j]] = [I[j], I[i]]; }
+  const ns = Math.min(I.length, k <= 1 ? 2 : 3), pr = Math.min(.55, .2 + .1 * k);   // 바꾸는 칸 수, 에픽·전설에서 고를 확률
+  for (const i of I.slice(0, ns)) {
+    const o = T[i][0], ob = bsOf(o), fin = nvFin(o), ty = th.length ? th : SPECIES[o]?.t || [], cap = Math.max(cap0, ob), used = new Set(T.map(m => m[0])), legN = T.filter(m => nvLeg(m[0])).length;
+    const C = Object.keys(SPECIES).map(Number).filter(x => { const d = SPECIES[x]; if (x > 1025 || !d?.bs || d.baby || used.has(x) || spOff(x) || (fin && !nvFin(x)) || !(d.t || []).some(z => ty.includes(z))) return false; const b = bsOf(x); return b <= cap && b >= ob - 40 && (!nvLeg(x) || !legN); });
+    const R = C.filter(x => nvEggG(x) >= 4), N = C.filter(x => nvEggG(x) < 4 && !nvLeg(x) && bsOf(x) <= ob + 40);
+    const L = R.length && (r() < pr || !N.length) ? R : N; if (!L.length) continue;
+    const x = rp(L), up = bsOf(x) - ob; T[i] = [x, clampN(T[i][1] - (up > 60 ? Math.round(up / 40) : 0), 5, 100)];   // 훨씬 센 포켓몬(+60 넘게)은 종족값 40 당 레벨 −1 (루카리오 → 루기아 = −4)
+  }
+  return T;
+}
+// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.30)
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0) || !n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
   if (!ok.length) return null;
-  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
-  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]) };
+  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0, v = s >= n.st.length ? s - n.st.length + 1 : 0;
+  const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
+  return { id: ++g.cid, t, named: n.id, s, nv: v || undefined, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
 // 하루 시간표 (v15.61 경완 '3시간에 2-3명씩은 와야'): 하루를 3시간 칸 8개로 나눠, 칸마다 2~3명씩 그 칸 안 아무 때나 (6~24시 6칸 = 하루 12~18명, 예전 9~11명).
 // 새벽 칸(0~3·3~6시)은 0~1명, 단 그 시간에 앱을 자주 쓰면(사용 기록 GA.useH 이 가장 많은 칸의 15% 이상) 똑같이 2~3명
@@ -1226,7 +1255,7 @@ async function challenge(picked) {
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
-    const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
+    const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
     for (const t of L.slice(0, -1)) await talk(who + esc(t));
     do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
@@ -2592,10 +2621,11 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
+    if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.30 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
     if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
@@ -3948,7 +3978,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
