@@ -1,4 +1,4 @@
-# 임시 (2026-11-13): D1 읽기 전용 — 경완 염무왕 노력치 확인. 확인 뒤 지움. (3)
+# 임시 (2026-11-13): D1 읽기 전용 — 경완 염무왕 노력치 확인. 확인 뒤 지움. (4)
 name: tmp ev read
 on:
   push:
@@ -26,18 +26,13 @@ jobs:
       - name: Read
         run: |
           q() { npx wrangler d1 execute pokegrow --remote --json --command "$1"; }
-          q "SELECT acct, code, saved FROM save WHERE acct='flyweb'" > sv.json
-          cat sv.json | jq -c '.[0].results'
-          for row in $(jq -r '.[0].results[] | "\(.acct)|\(.code)"' sv.json); do
-            a=${row%%|*}; c=${row##*|}
-            q "SELECT data FROM save_part WHERE acct='$a' AND code='$c' ORDER BY i" > p.json
-            A="$a" C="$c" node -e '
+          q "SELECT slot, code, saved, at, box FROM bak WHERE acct='flyweb' ORDER BY saved" > b.json
+          jq -c '.[0].results[]' b.json
+          for slot in $(jq -r '.[0].results[].slot' b.json); do
+            q "SELECT data FROM bak_part WHERE acct='flyweb' AND slot='$slot' ORDER BY i" > p.json
+            SL="$slot" node -e '
               const d=JSON.parse(require("fs").readFileSync("p.json"))[0].results.map(r=>r.data).join("");
-              let S;try{S=JSON.parse(d)}catch(e){console.log("SV",process.env.A,process.env.C,"parse fail");process.exit(0)}
-              const g=S.gym||{}; console.log("SV",process.env.A,process.env.C,new Date(S.savedAt).toISOString(),"gym",g.nm,g.ty,g.rep,g.gmax);
-              for(const P of (S.box||[]).filter(p=>p.sp===727)){ const m=(g.mon||{})[P.id]; console.log("P",JSON.stringify(P)); console.log("M",JSON.stringify(m&&{lv:m.lv,xp:m.xp,ev:m.ev,evp:m.evp,evM:m.evM,nat:m.nat,ws:m.ws})); }
-              const lu=g.lu; console.log("LU",JSON.stringify(lu),g.luI);
-              for(const id of [3287,185,3283,465]){ const P=(S.box||[]).find(p=>p.id===id); console.log("P",id,String(JSON.stringify(P)).slice(0,700)); const m=(g.mon||{})[id]; console.log("M",id,String(JSON.stringify(m)).slice(0,900)); console.log("TL",id,JSON.stringify((g.tlog||{})[id]||null).slice(0,600)); }
-              console.log("GLOG",JSON.stringify((g.log||[]).filter(x=>/염무왕|500/.test(JSON.stringify(x))).slice(-15)).slice(0,2500)); console.log("SLOG",JSON.stringify((S.log||[]).filter(x=>/염무왕/.test(JSON.stringify(x))).slice(-15)).slice(0,2500)); console.log("DAYS",JSON.stringify(g.days||null).slice(0,1500));
-              const bl=(g.blog||[]).map(b=>({t:new Date(b.t).toISOString(),foe:b.foe,won:b.won,pr:b.pr,v:b.v,out:b.out,fo:(b.fo||[]).map(x=>x[0]).join("/"),ko:(b.log||[]).filter(s=>/\|faint\||\|switch\|p1a/.test(s)).join(" ; ").slice(0,600)})); console.log("BLOG",JSON.stringify(bl));'
+              let S;try{S=JSON.parse(d)}catch(e){console.log("BK",process.env.SL,"parse fail");process.exit(0)}
+              const P=(S.box||[]).find(p=>p.id===185), C=(S.box||[]).find(p=>p.id===3287), O=(S.box||[]).find(p=>p.id===166);
+              console.log("BK",process.env.SL,new Date(S.savedAt).toISOString(),"n",(S.box||[]).length,"P185",JSON.stringify(P||null),"C3287",!!C,"P166",JSON.stringify(O||null).slice(0,300));'
           done
