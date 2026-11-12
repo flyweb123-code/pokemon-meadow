@@ -3724,7 +3724,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .tsc-lv{font-weight:700;color:#4a4a5a}
 #gym .tsc-g{grid-template-columns:40px 1fr 34px}
 #gym .tsc-g .mini{height:9px;background:#e4e4ec;box-shadow:inset 0 0 0 2px #383848;padding:2px}
-#gym .tsc-g .mini i{background:repeating-linear-gradient(90deg,#4a9ad8 0 5px,#62b0ea 5px 6px)!important}
+#gym .tsc-g .mini i{background:#4a9ad8!important}   /* v22.53 경완 '경험치 게이지 칸 경계선 없애줘' */
 #gym .tsc-tags{display:flex;flex-wrap:wrap;gap:4px;min-width:0}
 #gym .tsc-tags em{display:inline-flex;align-items:center;gap:3px;font-style:normal;font-size:10.5px;line-height:1;padding:3px 6px 3px 3px;white-space:nowrap}
 #gym .tsc-ev{color:#fff;background:var(--sc);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);font-weight:700}
@@ -3889,8 +3889,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec-wrap .win[data-ty] .mtf-bp{position:absolute;left:50%;top:-8px;width:64px;height:64px;margin-left:-32px;z-index:8;pointer-events:none;display:block}
 #gym .mec-wrap .win[data-ty] .mtf-bp img{display:block;width:100%;height:100%;image-rendering:pixelated;max-width:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
 #gym .mec-wrap .win[data-ty][data-g="5"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 6px var(--t2))}#gym .mec-wrap .win[data-ty][data-g="6"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 8px var(--t4)) drop-shadow(0 0 14px var(--t2))}
-/* 경완 11-11: 배틀 정보 칸 이름 옆 이로치 아이콘 (beta .shico 그림을 작게) */
-.bt-hb .shico{position:absolute;top:17px;width:9px;height:9px;margin:0;background-size:contain;image-rendering:pixelated}.bt-hb.p .shico{top:16px}
 
 /* v21.88 경완 '관장 카드에 체육관 등급이랑 이름도 표시' */
 #gym .mec-gn{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 1px;font-size:13px}#gym .mec-gn b{color:#2a2a3a}#gym .mec-gn em{font-style:normal;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff;background:var(--k3,#5a6a9a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
