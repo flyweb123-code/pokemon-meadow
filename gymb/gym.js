@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1155,7 +1152,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my);   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
@@ -2278,7 +2275,7 @@ function mgPop() {
 // 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
 const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련으로 깨닫는 숨은 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '키운 만큼 쌓이는 능력치' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' },
   /* 경완 2026-11-13 '앞으로 개발할 Z기술·테라·거다이맥스도 비기 4·5·6 으로 실루엣' — dev:1 = 아직 개발 중이라 등급을 달성해도 실루엣 그대로 (다 만들면 dev 지우기) */
-  4: { k: 'zTut', t: 'Z기술', d: 'Z링과 Z크리스탈로 배틀 중 한 번 쓰는 필살기', dev: 1 }, 5: { k: 'teraTut', t: '테라스탈', d: '테라스탈 오브로 포켓몬의 타입을 바꾸는 힘', dev: 1 }, 6: { k: 'dmaxTut', t: '거다이맥스', d: '다이맥스 밴드로 포켓몬을 거대하게', dev: 1 } };
+  4: { k: 'zTut', t: 'Z기술', d: 'Z링과 Z크리스탈로 배틀 중 한 번 쓰는 필살기', dev: 1 }, 5: { k: 'dmaxTut', t: '거다이맥스', d: '다이맥스 밴드로 포켓몬을 거대하게', dev: 1 }, 6: { k: 'teraTut', t: '테라스탈', d: '테라스탈 오브로 포켓몬의 타입을 바꾸는 힘', dev: 1 } };   /* v23.15 경완 '테라랑 거다이 순서 바꾸기': 거다이맥스는 명문, 전설 승급 심사에서 쓸 수 있게 */
 /* 비기 다시 보기: 그 튜토리얼의 강박사 설명만 차례로 (눌러 보기 단계·저장 바꾸는 건 빼고, 비출 곳이 화면에 없으면 그냥 말만) */
 const gtTalk = L => L.filter(x => !x.tap && !x.until && typeof x.t !== 'function').map(x => ({ c: x.c, t: typeof x.t === 'string' ? x.t : undefined, s: x.s }));
 PK_TIP[1].re = () => { const L = gtTalk(GT_EGD()); L.splice(1, 0, { c: '특별한 기술', s: '훈련장 포켓몬 카드의\n\'새 기술\'에서 볼 수 있지.' }); return L; };
