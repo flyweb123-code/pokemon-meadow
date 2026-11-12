@@ -42,13 +42,15 @@ final class NotiCenter: NSObject, UNUserNotificationCenterDelegate {
         let on = dict["on"] as? Bool ?? false
         let items: [Item] = (dict["items"] as? [[String: Any]] ?? []).compactMap { d in
             guard let id = d["id"] as? String, let km = (d["km"] as? NSNumber)?.doubleValue, km > 0 else { return nil }
-            return Item(id: id, km: km, title: d["title"] as? String ?? "포켓몬 키우기", body: d["body"] as? String ?? "", n: (d["n"] as? NSNumber)?.intValue ?? 1)
+            return Item(id: id, km: km, title: d["title"] as? String ?? "포켓에그", body: d["body"] as? String ?? "", n: (d["n"] as? NSNumber)?.intValue ?? 1)
         }
         plan = Plan(on: on, items: items, base: total - pendingKm)
         // 새 계획에 남아 있는 항목 중 이미 알린 것만 기억한다 (같은 일을 두 번 알리지 않게)
         let ids = Set(items.map(\.id))
         fired = fired.intersection(ids)
         if on { askPermission() }
+        // v22.58 경완: 지역·이벤트 알릴 곳 (게임이 zn 을 보낼 때만, 예전 게임은 안 보냄)
+        if dict.keys.contains("zn") { ZoneAlert.shared.update(dict["zn"] as? [String: Any]); if (dict["zn"] as? [String: Any])?["on"] as? Bool == true { askPermission() } }
         // v13.05: 친구 요청·수락 알림 (CloudKit 구독). 게임이 fr 을 보낼 때만 (친구 기능이 있는 판)
         if let fr = dict["fr"] as? Bool {
             if fr { askPermission() }

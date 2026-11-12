@@ -701,7 +701,7 @@ GymEv.def({
       await A.black(true, '모두를 데리고\n체육관으로 돌아왔다!', '', true);
       await F.close();
       // 체육관: 다 같이 문으로 들어와 제자리로
-      A.tint(false); I.root.querySelectorAll('.ev-r,.ev-tint').forEach(x => x.remove()); I.clearEnts(); I.renderHome(true); I.dropPeople();
+      A.tint(false); I.root.querySelectorAll('.evf-r,.ev-tint').forEach(x => x.remove()); I.clearEnts(); I.renderHome(true); I.dropPeople();
       const meE = A.npc(I.myOw(), D.door[0], D.door[1], 'u'); I.fitMe(meE);
       A.music('gym'); await A.black(false);
       A.se('DP_DOOR'); if (!await A.walkTo(meE, D.leader, 220)) { meE.x = D.leader[0]; meE.y = D.leader[1]; } A.turn(meE, 'd');

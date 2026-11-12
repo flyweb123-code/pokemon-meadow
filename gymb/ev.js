@@ -30,11 +30,11 @@ const CSS = `
 #gym .ev-ttl::before{content:'';position:absolute;left:0;right:0;top:-14px;bottom:-14px;z-index:-1;background:linear-gradient(90deg,transparent,rgba(120,0,16,.82) 18%,rgba(120,0,16,.82) 82%,transparent)}
 #gym .ev-ttl{animation:evTtl 3.2s ease both}
 @keyframes evTtl{0%{opacity:0;transform:scaleY(.2)}12%{opacity:1;transform:none}82%{opacity:1}100%{opacity:0}}
-#gym .ev-r{position:absolute;pointer-events:none;image-rendering:pixelated;background:linear-gradient(#b8b8c4,#9898a8);border:2px solid #303040;border-radius:2px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
-#gym .ev-r::after{content:'';position:absolute;inset:14%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/contain no-repeat;image-rendering:pixelated}   /* R 마크 = 해결 창과 같은 도트 로고 (경완 2026-11-07) */
-#gym .ev-r.flag{background:none;border:0;box-shadow:none}
-#gym .ev-r.flag::before{content:'';position:absolute;left:12%;top:4%;bottom:0;width:8%;background:#585868;border:1px solid #303040}
-#gym .ev-r.flag::after{inset:6% 4% auto 20%;height:46%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/auto 76% no-repeat,#1c1c24;border:2px solid #303040}
+#gym .evf-r{position:absolute;pointer-events:none;image-rendering:pixelated;background:linear-gradient(#b8b8c4,#9898a8);border:2px solid #303040;border-radius:2px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+#gym .evf-r::after{content:'';position:absolute;inset:14%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/contain no-repeat;image-rendering:pixelated}   /* R 마크 = 해결 창과 같은 도트 로고 (경완 2026-11-07) */
+#gym .evf-r.flag{background:none;border:0;box-shadow:none}
+#gym .evf-r.flag::before{content:'';position:absolute;left:12%;top:4%;bottom:0;width:8%;background:#585868;border:1px solid #303040}
+#gym .evf-r.flag::after{inset:6% 4% auto 20%;height:46%;background:url("gym/img/ev/rocket/r_emb.png?v=2") center/auto 76% no-repeat,#1c1c24;border:2px solid #303040}
 /* 필드 모험 (방향 패드) */
 #gym .ev-fld .tw-sp{z-index:2}
 #gym .ev-fld .tw-sp.gone{opacity:0;transition:opacity .35s}
@@ -52,8 +52,8 @@ const CSS = `
 #gym .ev-pad [data-d=u]{left:52px;top:0}#gym .ev-pad [data-d=d]{left:52px;bottom:0}#gym .ev-pad [data-d=l]{left:0;top:52px}#gym .ev-pad [data-d=r]{right:0;top:52px}
 #gym .ev-pad [data-d=d]::after{transform:rotate(180deg)}#gym .ev-pad [data-d=l]::after{transform:rotate(-90deg)}#gym .ev-pad [data-d=r]::after{transform:rotate(90deg)}
 #gym .ev-a{position:absolute;right:max(22px,env(safe-area-inset-right,0px));bottom:calc(58px + env(safe-area-inset-bottom,0px));z-index:960;width:70px;height:70px;border-radius:50%;border:0;background:#d8343c;color:#fff;font:900 24px/1 sans-serif;box-shadow:0 5px 0 #7a1018,inset 0 0 0 3px rgba(255,255,255,.3);touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity .25s,transform .05s,box-shadow .05s}
-#gym .ev-b{position:absolute;right:max(106px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(65px + env(safe-area-inset-bottom,0px));z-index:960;width:56px;height:56px;border-radius:50%;border:0;padding:0;background:#3c3c4c;color:#fff;font:800 12px/1 sans-serif;box-shadow:0 4px 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.22);touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:opacity .25s,transform .05s,box-shadow .05s}
-#gym .ev-b.on{transform:translateY(4px);box-shadow:0 0 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.45);background:#50506a}
+#gym .evf-b{position:absolute;right:max(106px,calc(env(safe-area-inset-right,0px) + 84px));bottom:calc(65px + env(safe-area-inset-bottom,0px));z-index:960;width:56px;height:56px;border-radius:50%;border:0;padding:0;background:#3c3c4c;color:#fff;font:800 12px/1 sans-serif;box-shadow:0 4px 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.22);touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:opacity .25s,transform .05s,box-shadow .05s}
+#gym .evf-b.on{transform:translateY(4px);box-shadow:0 0 0 #18181f,inset 0 0 0 3px rgba(255,255,255,.45);background:#50506a}
 #gym .ev-a:active,#gym .ev-a.on{transform:translateY(5px);box-shadow:0 0 0 #7a1018,inset 0 0 0 3px rgba(255,255,255,.45)}
 #gym .ev-quit{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s}
 #gym .ev-pk{position:absolute;right:12px;top:calc(52px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
@@ -88,7 +88,7 @@ const CSS = `
 @keyframes evIbB{0%,100%{translate:0 0}50%{translate:0 -4px}}
 #gym .ev-itb .ib-d{margin:0;font-size:13px;line-height:1.5;color:#505060;white-space:pre-line}#gym .ev-itb .ib-t{margin:0;font-size:11px;color:#a0a0b0}
 #gym .ev-quit:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
-#gym .ev-fld.lock :is(.ev-pad,.ev-a,.ev-b,.ev-quit,.ev-pk,.ev-bag){opacity:0;pointer-events:none}
+#gym .ev-fld.lock :is(.ev-pad,.ev-a,.evf-b,.ev-quit,.ev-pk,.ev-bag){opacity:0;pointer-events:none}
 #gym .ev-ask{position:absolute;inset:0;z-index:990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:0 24px}
 #gym .ev-ask .win{max-width:320px;width:100%;padding:18px 16px 14px;text-align:center;display:flex;flex-direction:column;gap:12px}
 #gym .ev-ask p{margin:0;font-size:15px;line-height:1.55;white-space:pre-line}#gym .ev-ask small{display:block;color:#707080;font-size:12px;margin-top:4px}
@@ -211,7 +211,7 @@ function tools(I, def) {
     bub: (e, t, ms = 900, blink) => { const b = document.createElement('b'); b.className = 'tw-bub' + (blink ? ' blink' : ''); b.textContent = t;
       Object.assign(b.style, { left: (e.x * 16 + 8) * I.sc() + 'px', top: (e.y * 16 - 17) * I.sc() + 'px' }); $g('.gy-ents').appendChild(b); if (ms) setTimeout(() => b.remove(), ms); return b; },
     // 바닥에 놓는 로켓단 소품 (R 상자·깃발)
-    rProp: (x, y, kind = 'box') => { const el = document.createElement('i'), s = I.sc(); el.className = 'ev-r' + (kind === 'flag' ? ' flag' : '');
+    rProp: (x, y, kind = 'box') => { const el = document.createElement('i'), s = I.sc(); el.className = 'evf-r' + (kind === 'flag' ? ' flag' : '');
       Object.assign(el.style, kind === 'flag' ? { left: x * 16 * s + 'px', top: (y * 16 - 14) * s + 'px', width: 16 * s + 'px', height: 30 * s + 'px', zIndex: y * 10 + 9 } : { left: (x * 16 + 1) * s + 'px', top: (y * 16 + 1) * s + 'px', width: 14 * s + 'px', height: 14 * s + 'px', zIndex: y * 10 + 8 });
       el.style.setProperty('--rf', 9 * s + 'px'); $g('.gy-ents').appendChild(el); rOcc.push([x, y, el]); return el; },   // R 상자·깃발 칸은 사람이 피해 감: 밟고 지나가며 R 글자 밑으로 걸어오던 것 (경완 2026-11-08)
     // 소품 그림 (gym/img/ev/<이벤트>/<k>.png): x,y = 왼쪽 아래 칸. 칸 폭만큼 사람이 못 지나감
@@ -323,7 +323,7 @@ function field(I, o) {
   const root = I.root, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(2, Math.round(W / (12 * 16) * 4) / 4);
   const el = document.createElement('div'); el.className = 'gy-town ev-fld lock';
   el.innerHTML = `<div class="tw-map"><i class="ev-ov"></i></div><b class="ev-loc">${I.esc(o.nm || '')}</b><i class="ev-fade"></i>
-    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="ev-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button><button type="button" class="ev-bag" aria-label="가방">가방</button>`;
+    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="evf-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button><button type="button" class="ev-bag" aria-label="가방">가방</button>`;
   try { const gm = root.querySelector('.gy-main')?.getBoundingClientRect(), rb = root.getBoundingClientRect(); if (gm && gm.height) root.style.setProperty('--evmb', Math.round(rb.bottom - gm.bottom + 8) + 'px'); } catch (e) {}
   root.appendChild(el); const map = el.firstElementChild, ov = map.firstElementChild, fade = el.querySelector('.ev-fade'), pad = el.querySelector('.ev-pad'), aB = el.querySelector('.ev-a');
   const F = { el, map, k, sps: [], obs: [], hid: [], pl: null, hold: null, aQ: false, quitQ: false, me: null, follow: true, warps: [], block: new Set(), cur: 'main', rooms: Object.assign({}, o.rooms || {}) };
@@ -555,7 +555,7 @@ function field(I, o) {
     if (best?.p.length) await s.go(best.p, ms); s.face(t); t.face?.(s); return !!best; };
   // 여러 사람을 자리들에 나눠 보낼 때: 사람마다 가장 가까운 빈 자리
   F.nearest = (s, spots) => { let best = null; for (const q of spots) { const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; } return best?.[0] || null; };
-  F.lock = on => { const was = el.classList.contains('lock'); el.classList.toggle('lock', on); if (on) { press(null); F.run = false; el.querySelector('.ev-b')?.classList.remove('on'); } else if (was) { F.unT = performance.now(); F.aQ = false; } };   // 풀린 직후 0.4초는 A 무시: 대화를 넘기던 탭이 A 로 또 눌려 대화가 다시 열리던 것 (경완 2026-11-07)
+  F.lock = on => { const was = el.classList.contains('lock'); el.classList.toggle('lock', on); if (on) { press(null); F.run = false; el.querySelector('.evf-b')?.classList.remove('on'); } else if (was) { F.unT = performance.now(); F.aQ = false; } };   // 풀린 직후 0.4초는 A 무시: 대화를 넘기던 탭이 A 로 또 눌려 대화가 다시 열리던 것 (경완 2026-11-07)
   F.show = () => new Promise(ok => { requestAnimationFrame(() => { el.classList.add('on'); setTimeout(ok, 650); }); });
   F.close = async () => { el.classList.add('out'); await wait(800); el.remove(); off(); };
   // 걷기: 누르고 있는 동안 계속 (손가락을 다른 화살표로 밀면 방향만 바뀜)
@@ -565,13 +565,13 @@ function field(I, o) {
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => pad.addEventListener(n, () => press(null)));
   pad.addEventListener('contextmenu', e => e.preventDefault());
   // 달리기 (본가 달리기 신발: 누른 채로 걸으면 한 칸 8프레임, 경완 2026-11-07 'A 버튼 위에 달리기 버튼')
-  const bB = el.querySelector('.ev-b'), runOn = on => { F.run = on; bB.classList.toggle('on', on); };
+  const bB = el.querySelector('.evf-b'), runOn = on => { F.run = on; bB.classList.toggle('on', on); };
   bB.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); try { bB.setPointerCapture(e.pointerId); } catch (x) {} I.haptic?.(0); runOn(true); });
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => bB.addEventListener(n, () => runOn(false))); bB.addEventListener('contextmenu', e => e.preventDefault());
   aB.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); if (performance.now() - (F.unT || 0) < 400) return; aB.classList.add('on'); I.haptic?.(0); F.aQ = true; });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => aB.addEventListener(n, () => aB.classList.remove('on')));
   // 아이폰 꾹 누르기 돋보기(글자 선택)가 뜨지 않게: 필드 위 터치는 기본 동작을 막고 버튼은 pointer 로만 (경완 2026-11-07)
-  el.addEventListener('touchstart', e => { if (e.target.closest('.ev-pad,.ev-a,.ev-b,.tw-map')) e.preventDefault(); }, { passive: false });
+  el.addEventListener('touchstart', e => { if (e.target.closest('.ev-pad,.ev-a,.evf-b,.tw-map')) e.preventDefault(); }, { passive: false });
   el.querySelector('.ev-pk').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.pkQ = true; };   // 같이 다니는 포켓몬 바꾸기·넣어 두기 (경완 2026-11-08)
   el.querySelector('.ev-bag').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.bgQ = true; };   // 가방: 주운 아이템 보기 (경완 2026-11-08)
   el.querySelector('.ev-quit').onclick = async e => { e.stopPropagation(); I.sfx?.('tap'); F.lock(true); const y = await F.ask('이벤트를 멈추고 체육관에서 나갈까요?', '다음에 들어오면 이 장 처음부터 이어서 해요.', '나가기', '계속하기'); if (y) F.quitQ = true; else F.lock(false); };

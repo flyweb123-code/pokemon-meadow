@@ -15,6 +15,7 @@ class WalkWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
         Walk.readOnce(applicationContext)?.let { Walk.account(it) }
         Walk.syncNow(applicationContext, 0.25)
         FriendServer.poll()
+        runCatching { ZoneAlert.checkNow(applicationContext) }   // v22.58: 지역·이벤트 알림
         return Result.success()
     }
 

@@ -61,6 +61,6 @@ class PushService : FirebaseMessagingService() {
     override fun onNewToken(token: String) = Push.setToken(token)
     override fun onMessageReceived(m: RemoteMessage) {
         val d = m.data
-        NotiCenter.post(d["id"] ?: "visit", d["title"] ?: "포켓몬 키우기", d["body"] ?: "", force = false)
+        NotiCenter.post(d["id"] ?: "visit", d["title"] ?: "포켓에그", d["body"] ?: "", force = false)
     }
 }

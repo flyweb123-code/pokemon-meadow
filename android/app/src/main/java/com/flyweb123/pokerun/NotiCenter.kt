@@ -33,7 +33,7 @@ object NotiCenter {
             val o = items.optJSONObject(i) ?: continue
             val id = o.optString("id"); val km = o.optDouble("km", 0.0)
             if (id.isEmpty() || !(km > 0)) continue
-            keep.put(JSONObject().put("id", id).put("km", km).put("title", o.optString("title", "포켓몬 키우기"))
+            keep.put(JSONObject().put("id", id).put("km", km).put("title", o.optString("title", "포켓에그"))
                 .put("body", o.optString("body", "")).put("n", o.optInt("n", 1)))
             ids.add(id)
         }
@@ -44,6 +44,8 @@ object NotiCenter {
         if (d.has("nw")) p.edit().putBoolean("pushNw", d.optBoolean("nw")).apply()
         // 친구가 내 필드에 놀러 오면 진짜 푸시 (Push.kt, 베타 게임만 fv 를 보냄)
         if (d.has("fv")) Push.setVisit(d.optBoolean("fv"))
+        // v22.58 경완: 지역·이벤트 알릴 곳 (게임이 zn 을 보낼 때만)
+        if (d.has("zn")) ZoneAlert.update(d.optJSONObject("zn"))
     }
 
     @Synchronized fun walked(km: Double) {

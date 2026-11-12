@@ -253,7 +253,9 @@
         top.style.webkitMaskImage = top.style.maskImage = '';   /* 돌아갈 때 가장자리 마스크 먼저 지움 (검은 테두리 안 보이게) */
         const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];   /* 아래 화면 등은 바로 보이게: 늦게 나오면 그 틈에 검은 바탕이 보임 (경완 2026-11-12) */
         tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
-      root.addEventListener('pointerdown', fin, { once: true }); setTimeout(fin, END - 500); });
+      /* 경완 2026-11-13 '메가진화 연출 막 누르면 스킵됨 → 연출 끝날 때까지 화면 잠금': 누르면 건너뛰기 없앰, 화면 전체를 덮는 투명 막으로 아래 버튼도 못 누르게 */
+      const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
+      setTimeout(() => { lk.remove(); fin(); }, END - 500); });
   }
 
   // ---------- Z기술 ([DBK] Z-Power [008] Z-Move Animation.rb) ----------

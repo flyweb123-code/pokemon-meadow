@@ -117,7 +117,7 @@ object FriendServer {
                 if (at <= seen || best == 0.0) continue
                 top = maxOf(top, at)
                 if (seen > 0) {
-                    if (best > 0) NotiCenter.post("frq-$at", "친구 요청이 왔어요!", "포켓몬 키우기를 열어 친구 요청을 확인해 보세요.", force = false)
+                    if (best > 0) NotiCenter.post("frq-$at", "친구 요청이 왔어요!", "포켓에그를 열어 친구 요청을 확인해 보세요.", force = false)
                     else NotiCenter.post("fra-$at", "친구가 되었어요!", "친구 요청이 수락됐어요. 이제 알을 선물할 수 있어요.", force = false)
                 }
             }

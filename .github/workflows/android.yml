@@ -41,7 +41,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view android-latest >/dev/null 2>&1 || gh release create android-latest --title "안드로이드 앱 (최신)" --notes "포켓몬 키우기 안드로이드 앱. 폰에서 pokegrow.apk 를 받아 설치하세요." --prerelease
+          gh release view android-latest >/dev/null 2>&1 || gh release create android-latest --title "안드로이드 앱 (최신)" --notes "포켓에그 안드로이드 앱. 폰에서 pokegrow.apk 를 받아 설치하세요." --prerelease
           # 앱이 켤 때 보는 최신 버전 번호 (AppUpdate.kt). versionCode = 이 워크플로 실행 번호
           echo "{\"code\": ${{ github.run_number }}, \"name\": \"1.0.${{ github.run_number }}\"}" > android-version.json
           gh release upload android-latest pokegrow.apk android-version.json --clobber
