@@ -1597,19 +1597,19 @@ const LEGK_ON = false;
 // 종족값이 높을수록 먼저 보고, 이미 뽑힌 포켓몬과 타입·약점이 겹치면 점수를 깎아서 한 가지 기술에 팀이 다 쓸리지 않게 함
 const KANG_GMAX = [3, 6, 9, 68, 94, 131, 143, 569, 812, 815, 818, 823, 826, 834, 839, 841, 842, 844, 849, 851, 858, 861, 869, 879, 884];
 const KANG_POOL = [3, 6, 9, 59, 65, 68, 94, 130, 131, 143, 149, 154, 157, 160, 181, 196, 197, 212, 214, 230, 248, 254, 257, 260, 282, 306, 330, 350, 373, 376, 389, 392, 395, 445, 448, 461, 462, 464, 466, 467, 468, 472, 473, 475, 477, 530, 553, 609, 612, 635, 637, 663, 700, 706, 715, 748, 778, 784, 823, 887];
-// 전설·환상 (등급 천장 STR_BS 안, 종족값 680 까지). 600 넘는 전설은 한 팀에 KANG_BIG 마리까지만
+// 전설·환상 후보. 실제로는 등급 천장(심사 때 등급 = 명문, STR_BS 600) 안의 종만 뽑힘. 천장을 올리면 600 넘는 전설은 한 팀에 KANG_BIG 마리까지만
 const KANG_LEG = [144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 480, 481, 482, 483, 484, 485, 487, 488, 490, 491, 492, 494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 716, 717, 718, 719, 720, 721, 785, 786, 787, 788, 791, 792, 800, 801, 802, 807, 888, 889, 893, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1007, 1008, 1025];
 const KANG_BIG = 2;
 const KANG_TEAM = [94, 143, 131, 3, 9, 6];   // 상성 표를 못 읽을 때
-function kangPick(ty) { const Dx = window.PSim?.Dex, nm = t => { const e = TERA_EN[t] || ''; return e[0] + e.slice(1).toLowerCase(); }; if (!Dx || !TERA_EN[ty]) return KANG_TEAM;
-  const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), r = seeded('kang' + ty + (st()?.lkTry | 0)), G = nm(ty), ALL = TERA_EN.slice(1).map((_, i) => nm(i + 1)), CAP = STR_BS[STR_BS.length - 1];
+function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = TERA_EN[t] || ''; return e[0] + e.slice(1).toLowerCase(); }; if (!Dx || !TERA_EN[ty]) return KANG_TEAM;
+  const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), r = seeded('kang' + ty + (st()?.lkTry | 0)), G = nm(ty), ALL = TERA_EN.slice(1).map((_, i) => nm(i + 1)), CAP = cap || STR_BS[STR_BS.length - 2];   // 심사 때는 아직 명문이라 명문 천장(600)
   const info = x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm), b = bsOf(x); return { x, T, b, W: ALL.filter(a => eff(a, T) > 1), s: Math.max(...T.map(a => eff(a, [G]))) - eff(G, T) + Math.max(0, b - 500) / 100 * .7 + r() * .5 }; };
   const ok = x => SPECIES[x] && !spOff(x) && bsOf(x) <= CAP, ace = KANG_GMAX.filter(ok).map(info).sort((a, b) => b.s - a.s)[0]; if (!ace) return KANG_TEAM;
   const got = [ace]; let L = [...new Set([...KANG_POOL, ...KANG_LEG])].filter(x => x !== ace.x && ok(x)).map(info);
   const cut = o => got.reduce((n, p) => n + o.T.filter(t => p.T.includes(t)).length * .6 + o.W.filter(w => p.W.includes(w)).length * .2, 0);
   while (got.length < 6 && L.length) { if (got.filter(o => o.b > 600).length >= KANG_BIG) L = L.filter(o => o.b <= 600); L.sort((a, b) => b.s - cut(b) - a.s + cut(a)); if (L.length) got.push(L.shift()); }
   return got.length === 6 ? [...got.slice(1).sort((a, b) => a.b - b.b).map(o => o.x), ace.x] : KANG_TEAM; }
-function mkKang(gi) { const g = st(), sp = kangPick(g.ty), lv = clampN(Math.max(myAvg() + BS_LV[gi - 1] + 2, Math.max(0, ...luNow().map(P => GB()?.gm?.(P)?.lv | 0)) - BS_GAP), 5, 100);
+function mkKang(gi) { const g = st(), sp = kangPick(g.ty, STR_BS[gi - 1]), lv = clampN(Math.max(myAvg() + BS_LV[gi - 1] + 2, Math.max(0, ...luNow().map(P => GB()?.gm?.(P)?.lv | 0)) - BS_GAP), 5, 100);
   return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
 // 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
 function legXLines(N, E, ty, retry) {
