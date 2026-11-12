@@ -2774,10 +2774,10 @@ async function gtu(T) {
   const track = () => { const e = cur && gtEl(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && !r.width) r = null;
     if (r && cur.tap && (r.width < 44 || r.height < 44)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
     if (r) { const p = 6; if (snap) hole.style.transition = 'none'; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (snap) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
-    else { hole.classList.add('none'); ov.classList.toggle('dim', !ov.classList.contains('tapon') || !!cur?.lit); }   /* 빛 활성화 단계는 누르는 동안에도 어둡게 두고 그것만 밝게 */
-    { const L = cur?.lit && gtEl(cur.lit); lit.hidden = !L; if (L) { const q = L.getBoundingClientRect(), cs = getComputedStyle(L), w = L.offsetWidth || 1, h = L.offsetHeight || 1, fl = new DOMMatrix(getComputedStyle(L.parentElement).transform === 'none' ? undefined : getComputedStyle(L.parentElement).transform).a < 0;
+    else { hole.classList.add('none'); ov.classList.toggle('dim', !ov.classList.contains('tapon') || (!!cur?.lit && !gtEl('.gy-pop'))); }   /* 빛 활성화 단계는 누르는 동안에도 어둡게 두고 그것만 밝게 */
+    { const L = cur?.lit && !gtEl('.gy-pop') && gtEl(cur.lit); lit.hidden = !L;   /* 경완 2026-11-13 '누른 뒤 포켓몬 그림이 상세카드 위로 잠깐 올라옴': 카드가 뜨면 빛 그림은 바로 숨김 */ if (L) { const q = L.getBoundingClientRect(), cs = getComputedStyle(L), w = L.offsetWidth || 1, h = L.offsetHeight || 1, fl = new DOMMatrix(getComputedStyle(L.parentElement).transform === 'none' ? undefined : getComputedStyle(L.parentElement).transform).a < 0;
       Object.assign(lit.style, { left: q.left + 'px', top: q.top + 'px', width: w + 'px', height: h + 'px', backgroundImage: cs.backgroundImage, backgroundSize: cs.backgroundSize, backgroundPosition: cs.backgroundPosition, backgroundRepeat: cs.backgroundRepeat, transform: fl ? `translateX(${q.width}px) scale(${-q.width / w}, ${q.height / h})` : `scale(${q.width / w}, ${q.height / h})` }); } }
-    { const L = cur?.lit && gtEl(cur.lit), tg = L?.closest?.('.ty-m')?.querySelector('.ty-tag'); litT.hidden = !tg; if (tg) { const q = tg.getBoundingClientRect(), w = tg.offsetWidth || 1, h = tg.offsetHeight || 1; if (litT._h !== tg.innerHTML) { litT._h = tg.innerHTML; litT.innerHTML = `<div class="ty-tag">${tg.innerHTML}</div>`; }
+    { const L = cur?.lit && !gtEl('.gy-pop') && gtEl(cur.lit), tg = L?.closest?.('.ty-m')?.querySelector('.ty-tag'); litT.hidden = !tg; if (tg) { const q = tg.getBoundingClientRect(), w = tg.offsetWidth || 1, h = tg.offsetHeight || 1; if (litT._h !== tg.innerHTML) { litT._h = tg.innerHTML; litT.innerHTML = `<div class="ty-tag">${tg.innerHTML}</div>`; }
       Object.assign(litT.style, { left: q.left + 'px', top: q.top + 'px', width: w + 'px', height: h + 'px', transform: `scale(${q.width / w}, ${q.height / h})` }); } }   /* 경완 2026-11-12 '빛 활성화 때 밑의 레벨·랭크 배지·경험치 게이지도 같이' */
     if (!ov.classList.contains('tapon')) placeBox(r, false); raf = requestAnimationFrame(track); };
   try {
@@ -3563,14 +3563,11 @@ async function promoVisit(gi) {
   const run = async L => { for (let i = 0; i < L.length; i++) { const [w, t] = L[i]; if (!open) return; const tk = gu && (w === 'g' || L[i - 1]?.[0] === 'g'); face(k, tk ? gu : meEnt); if (gu) face(gu, w === 'g' && /관장님/.test(t) ? meEnt : k); await T.say(t.replace(/\{N\}/g, NK()), w === 'g' ? { who: '안내원' } : {}); } face(k, meEnt); if (gu) face(gu, k); };
   try {
     // 경완 2026-11-12 '훈련장 튜토리얼 끝나고 체육관으로 돌아왔을 때 관장하고 강박사 다시 문 열고 들어오는 연출': 관장이 먼저 문으로 들어와 제자리로, 강박사가 뒤따라 관장 앞까지
-    const backIn = async () => { const dr = D.door, L = D.leader; k.el.style.visibility = 'hidden'; meEnt.el.style.visibility = 'hidden'; await wait(400); doorSe(); await wait(200);
-      Object.assign(meEnt, { x: dr[0], y: dr[1], f: 'u', st: 0 }); place(meEnt); meEnt.el.style.visibility = '';
-      const mp = route(D, dr, L, occOf([meEnt, k])) || route(D, dr, L, []) || [L], wm = walk(meEnt, mp, 300);
-      await wait(1000); Object.assign(k, { x: dr[0], y: dr[1], f: 'u', st: 0 }); place(k); k.el.style.visibility = '';
-      const CR2 = chalRoute(D, [k]); await Promise.all([wm, CR2?.path?.length ? walk(k, CR2.path, 300) : null]);
+    const backIn = async () => { const L = D.leader; k.el.style.visibility = ''; meEnt.el.style.visibility = '';   /* 처음부터 체육관에 있던 그대로 (관장이 자리를 떴으면 제자리로) */
+      if (Math.round(meEnt.x) !== L[0] || Math.round(meEnt.y) !== L[1]) await walk(meEnt, route(D, [Math.round(meEnt.x), Math.round(meEnt.y)], L, occOf([meEnt])) || [L], 300);
       meEnt.f = 'd'; place(meEnt); face(k, meEnt); if (gu) face(gu, k); await wait(350); };
     let CR; [k, CR] = await kangIn(D); T = storyTalk(); await run(P.in); if (!open) return;
-    T.hide(true); k.el.style.visibility = 'hidden'; if (meEnt) meEnt.el.style.visibility = 'hidden'; busy = false; root.classList.remove('busy');   /* 경완 2026-11-12 '훈련장 갔다 돌아왔을 때 관장 스프라이트 남아 있음': 관장도 같이 나간 것으로 (돌아올 때 backIn 이 문으로 다시 들임) */
+    T.hide(true); busy = false; root.classList.remove('busy');   /* 경완 2026-11-13 '같이 가 보자 하고 관장·강박사 사라지지 말고 계속 있게': 훈련장 다녀오는 동안도 체육관에 그대로 */
     // 경완 2026-11-12: 훈련장 메뉴 버튼을 직접 눌러 들어감 → '여기가 바로 훈련장' → (동네) 보내기 → 필드에 나온 모습 → 그 포켓몬 눌러 상세카드 → 훈련 현황·특별한 기술 (노력치는 떠오르는 체육관에서만)
     const eg = tutSeen('egT'); g.trTut = 1; g.egT = 1; if (gi === 2 || GB()?.evOn?.()) g.evTB = 1; save();
     const n0 = g.tr?.length || 0, newId = () => (g.tr?.length || 0) > n0 ? g.tr.at(-1).id : g.tr?.[0]?.id, ydM = () => { const m = gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'); return m ? gtBox([m.querySelector('.ty-sp') || m]) : null; }, ydS = () => (gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'))?.querySelector('.ty-sp') || null, mNm = () => { const P2 = S.box.find(p => p.id === newId()); return SPECIES[P2?.sp]?.n || '포켓몬'; };
@@ -3605,7 +3602,7 @@ async function promoVisit(gi) {
       g.sfTut = 1; save();
       await gtu([{ c: '트레이너', t: '.gy-menu [data-t=staff]', tap: '.gy-menu [data-t=staff]', until: () => gtEl('.sp-tabs [data-sft=sf]'), after: 1200, s: '아래 \'트레이너\' 메뉴를\n눌러 보렴!' }, ...GT_ST().slice(1), BACK('staff', '트레이너')]);
       if (!open) return; CLOSE(); busy = true; root.classList.add('busy'); k.el.style.visibility = ''; T.hide(false); await run(P.bye); }
-    await kangOut(D, k, T); T = null; k.el.style.visibility = 'hidden'; if (open) await tipPop(gi);   // 경완 2026-11-12 '비기 알림창은 튜토리얼 끝나고'
+    await kangOut(D, k, T); T = null; k.el.style.visibility = 'hidden'; await wait(1000); if (open) await tipPop(gi);   /* 경완 2026-11-13 '나가는 것까지 보고' */   // 경완 2026-11-12 '비기 알림창은 튜토리얼 끝나고'
   } finally { T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; meEnt.f = 'd'; place(meEnt); save(); }
 }
 // 승급창·보상창을 다 닫은 뒤: 그 등급 강박사 이야기 (force = 운영자 시험)
@@ -3737,7 +3734,7 @@ async function megaTut(test) {
     await say(`그럼 메가진화로 더 강해질\n체육관을 기대하마.\n건투를 빈다, ${NK()}!`);
     if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n오늘 즐거웠어요!', { who: '연구원 하람' }); hideT(true);   /* 경완 2026-11-13 '연구원이랑 강박사 나갈 때 겹치지 않게 차례로': 연구원이 먼저 문으로 나가고 나서 강박사 */
       await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); face(k, meEnt); }
-    await kangOut(D, k, T); T = null; k.el.style.visibility = 'hidden'; if (open) await tipPop(3);   // 경완 2026-11-12 '비기 알림창은 튜토리얼 끝나고'
+    await kangOut(D, k, T); T = null; k.el.style.visibility = 'hidden'; await wait(1000); if (open) await tipPop(3);   /* 경완 2026-11-13 '나가는 것까지 보고' */   // 경완 2026-11-12 '비기 알림창은 튜토리얼 끝나고'
   } finally {
     T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } if (rs) { rs.el.remove(); ents = ents.filter(x => x !== rs); }
     if (made) { try { g.lu = JSON.parse(lu0) || g.lu; } catch (e) {} (g.lu || []).forEach(l => { const j = l.indexOf(MG_TID); if (j >= 0) l.splice(j, 1); }); g.luI = luI0; }   // 빌린 포켓몬을 넣었던 라인업은 원래대로
