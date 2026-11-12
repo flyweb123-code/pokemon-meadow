@@ -1605,7 +1605,8 @@ function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = 
   const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), r = seeded('kang' + ty + (st()?.lkTry | 0)), G = nm(ty), ALL = TERA_EN.slice(1).map((_, i) => nm(i + 1)), CAP = cap || STR_BS[STR_BS.length - 2];   // 심사 때는 아직 명문이라 명문 천장(600)
   const info = x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm), b = bsOf(x); return { x, T, b, W: ALL.filter(a => eff(a, T) > 1), s: Math.max(...T.map(a => eff(a, [G]))) - eff(G, T) + Math.max(0, b - 500) / 100 * .7 + r() * .5 }; };
   const ok = x => SPECIES[x] && !spOff(x) && bsOf(x) <= CAP, ace = KANG_GMAX.filter(ok).map(info).sort((a, b) => b.s - a.s)[0]; if (!ace) return KANG_TEAM;
-  const got = [ace]; let L = [...new Set([...KANG_POOL, ...KANG_LEG])].filter(x => x !== ace.x && ok(x)).map(info);
+  const TB = GA.eggFinals?.([4, 5]) || [];   // 게임 안 분류는 본가 전설·환상이 아니라 작업실 티어표: 에픽·전설 알에서 나오는 포켓몬의 최종 진화
+  const got = [ace]; let L = (TB.length >= 12 ? TB : [...new Set([...KANG_POOL, ...KANG_LEG])]).filter(x => x !== ace.x && ok(x)).map(info);
   const cut = o => got.reduce((n, p) => n + o.T.filter(t => p.T.includes(t)).length * .6 + o.W.filter(w => p.W.includes(w)).length * .2, 0);
   while (got.length < 6 && L.length) { if (got.filter(o => o.b > 600).length >= KANG_BIG) L = L.filter(o => o.b <= 600); L.sort((a, b) => b.s - cut(b) - a.s + cut(a)); if (L.length) got.push(L.shift()); }
   return got.length === 6 ? [...got.slice(1).sort((a, b) => a.b - b.b).map(o => o.x), ace.x] : KANG_TEAM; }

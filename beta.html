@@ -15614,6 +15614,7 @@ function tyEggMk(t, g0, from) { const e = { id: S.eid++, t: Date.now(), isNew: t
 const tyEggG = (t, g0) => { for (let g = g0; g < 5; g++) if (eggBase().some(sp => (SPECIES[sp]?.t || []).includes(t) && !SP_OFF.has(sp) && spInEgg(g, sp) > 0)) return g; return 0; };   // 실제로 나올 타입 알 등급 (0 = 타입 알 없음)
 GA.tyEggs = (t, g, n, from) => { const es = []; for (let i = 0; i < n; i++) es.push(tyEggMk(t, g, from)); S.bag.push(...es); renderBag.sig = ''; save(); return es; };
 GA.eggIcoG = (g, t) => eggHtml(g, '', t); GA.tyEggG = tyEggG; GA.EGG_GN = g => GRADE[g]?.n || '';
+GA.eggFinals = gs => [...new Set(gs.flatMap(g => POOL[g].filter(sp => spInEgg(g, sp) > 0).flatMap(famOf)))].filter(x => !(CHILDREN[x] || []).length);   // 그 알 등급에서 나오는 포켓몬 가족의 최종 진화 (체육관 강박사 심사 후보)
 GA.legEgg = (t, from) => { const e = { id: S.eid++, g: 5, t: Date.now(), isNew: true, lt: t, sp: legEggSp(t), spot: 1, place: from || '체육관' }; S.bag.push(e); save(); return e; };
 const hatchEl = $('#hatch'), hatchStage = $('#hatchStage');
 // 부화시키기·가방으로 빼기: 누르는 동안 버튼이 쑥 들어간다 (iOS 는 touchstart 가 있어야 :active 가 먹는다)
