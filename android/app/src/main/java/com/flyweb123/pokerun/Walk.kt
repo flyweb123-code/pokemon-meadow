@@ -124,6 +124,7 @@ object Walk {
         if (km < min || km <= 0.0) return
         p.edit().putFloat("pendSteps", 0f).apply()
         val loc = Place.location(ctx)
+        if (loc != null) runCatching { ZoneAlert.check(loc.latitude, loc.longitude) }   // v22.58: 지역·이벤트 알림
         val (name, tags) = if (loc != null) Place.lookup(ctx, loc.latitude, loc.longitude) else Pair("", emptyList())
         GameLink.enqueueWalk(Math.round(km * 1000) / 1000.0, name, tags, loc?.latitude, loc?.longitude)
     }
