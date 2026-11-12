@@ -156,13 +156,13 @@ body.gymMode{overflow:hidden}
 .bt.open{opacity:1}.bt.off{opacity:0;pointer-events:none}
 .bt-ds{position:relative;width:256px;height:394px;flex:none;transform:scale(var(--k,1.5));transform-origin:50% 50%;image-rendering:pixelated;font-family:var(--px)}
 .bt-top,.bt-bot{position:absolute;left:0;width:256px;height:192px;overflow:hidden;background:#000}
-.bt-top{top:0}.bt-bot{top:202px;background:url(img/bt/sub_bg.png) 0 0/256px 192px}
+.bt-top{top:0}.bt-bot{top:202px;background:url(../gym/img/bt/sub_bg.png) 0 0/256px 192px}
 .bt-hinge{position:absolute;left:-6px;right:-6px;top:192px;height:10px;background:linear-gradient(#1a1b22,#2a2c38 40%,#14151b)}
 .bt-bg{position:absolute;inset:0;background:0 0/512px 192px no-repeat;transition:background-position 1s ease-out}
 .bt.intro .bt-bg{background-position:-256px 0}
 .bt-pl,.bt-tr,.bt-mon{position:absolute;transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s}
-.bt-pl.e{left:112px;top:56px;width:128px;height:64px;background:url(img/bt/pl_e.png)}
-.bt-pl.p{left:-48px;top:120px;width:256px;height:32px;background:url(img/bt/pl_p.png)}
+.bt-pl.e{left:112px;top:56px;width:128px;height:64px;background:url(../gym/img/bt/pl_e.png)}
+.bt-pl.p{left:-48px;top:120px;width:256px;height:32px;background:url(../gym/img/bt/pl_p.png)}
 .bt-tr.e{left:136px;top:8px;width:80px;height:80px;background:0 0/80px 80px no-repeat}
 .bt-tr.p{left:32px;top:64px;width:80px;height:80px;background:0 0/80px 80px no-repeat}
 .bt.intro .bt-pl.e,.bt.intro .bt-tr.e{transform:translateX(-256px)}
@@ -207,8 +207,8 @@ body.gymMode{overflow:hidden}
 @keyframes btDown{50%{filter:sepia(1) saturate(3) hue-rotate(180deg) brightness(.9)}}
 /* 체력 상자 */
 .bt-hb{position:absolute;width:128px;height:64px;opacity:0;transition:transform .35s ease-out,opacity .2s;color:#f8f8f8;text-shadow:1px 1px 0 #303830;font-size:10px;line-height:10px}
-.bt-hb.e{left:-6px;top:8px;background:url(img/bt/hb_enemy.png);transform:translateX(-140px)}
-.bt-hb.p{left:128px;top:84px;background:url(img/bt/hb_player.png);transform:translateX(140px)}
+.bt-hb.e{left:-6px;top:8px;background:url(../gym/img/bt/hb_enemy.png);transform:translateX(-140px)}
+.bt-hb.p{left:128px;top:84px;background:url(../gym/img/bt/hb_player.png);transform:translateX(140px)}
 .bt-hb.on{opacity:1;transform:none}
 .bt-hb .nm{position:absolute;top:15px;font-weight:400;white-space:nowrap;overflow:hidden;max-width:66px}
 .bt-hb.e .nm{left:10px}.bt-hb.p .nm{left:26px}
@@ -249,13 +249,13 @@ body.gymMode{overflow:hidden}
 @keyframes btIn{from{opacity:0;transform:translateY(6px)}}
 .bt .bb{position:absolute;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;text-shadow:1px 1px 0 rgba(0,0,0,.55);font-weight:700}
 .bt .bb:active,.bt .mvb:active,.bt .pty:active{filter:brightness(.82);transform:translateY(1px)}
-.bp-main{background:url(img/bt/sub_menu.png) 0 0/256px 256px no-repeat}
+.bp-main{background:url(../gym/img/bt/sub_menu.png) 0 0/256px 256px no-repeat}
 .bp-main .fight{left:20px;top:34px;width:216px;height:93px;font-size:18px}
 .bp-main .bag{left:1px;top:144px;width:78px;height:47px}
 .bp-main .run{left:89px;top:152px;width:78px;height:40px}
 .bp-main .mon{left:177px;top:144px;width:78px;height:47px}
 .bp-q,.bp-yn p{position:absolute;left:8px;right:8px;top:6px;margin:0;font-size:10px;line-height:20px;color:#fff;text-shadow:1px 1px 0 #304060;text-align:center}
-.bp-moves,.bp-party{background:url(img/bt/sub46.png) 0 0/256px 256px no-repeat}
+.bp-moves,.bp-party{background:url(../gym/img/bt/sub46.png) 0 0/256px 256px no-repeat}
 .bt .cancel{left:1px;top:152px;width:254px;height:40px}
 .bt .mvw,.bt .mvb.empty{position:absolute;width:124px;height:53px}
 .bt .mvw:nth-child(1),.bt .mvb.empty:nth-child(1){left:2px;top:24px}.bt .mvw:nth-child(2),.bt .mvb.empty:nth-child(2){left:130px;top:24px}.bt .mvw:nth-child(3),.bt .mvb.empty:nth-child(3){left:2px;top:88px}.bt .mvw:nth-child(4),.bt .mvb.empty:nth-child(4){left:130px;top:88px}
@@ -272,7 +272,7 @@ body.gymMode{overflow:hidden}
 .bt .mvb:disabled{filter:grayscale(1) brightness(.85)}
 .bt .mvi{position:absolute;right:4px;top:4px;width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.75);color:#404050;font-size:9px;font-weight:700;line-height:15px;text-align:center;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
 .bt .mvb.empty{opacity:.35;background:#7a8aa0;border-radius:6px}
-.bp-info{background:url(img/bt/sub46.png) 0 0/256px 256px no-repeat;color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,.45)}
+.bp-info{background:url(../gym/img/bt/sub46.png) 0 0/256px 256px no-repeat;color:#fff;text-shadow:1px 1px 0 rgba(0,0,0,.45)}
 .bp-info .mi-top{position:absolute;left:66px;top:6px;width:124px;height:30px;background:0 0/124px 53px no-repeat;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:4px}
 .bp-info .mi-top b{font-size:12px;color:#383838;text-shadow:1px 1px 0 rgba(255,255,255,.6)}
 .bp-info dl{position:absolute;left:12px;right:12px;top:38px;margin:0;display:grid;grid-template-columns:auto 1fr auto 1fr;gap:1px 6px;font-size:9px;line-height:12px;color:#283040;text-shadow:none;align-items:center}
@@ -290,7 +290,7 @@ body.gymMode{overflow:hidden}
 .bt .pty .hp{height:3px;background:#283028;border-radius:1px;margin-right:2px}.bt .pty .hp i{display:block;height:3px;background:#70f8a8}
 .bt .pty .hp i.y{background:#f8e038}.bt .pty .hp i.r{background:#f85838}
 .bt .pty .hpn{font-size:8px;text-align:right;padding-right:2px}
-.bp-yn{background:url(img/bt/sub45.png) 0 0/256px 256px no-repeat}
+.bp-yn{background:url(../gym/img/bt/sub45.png) 0 0/256px 256px no-repeat}
 .bp-yn .yes{left:4px;top:34px;width:248px;height:61px;font-size:15px}.bp-yn .no{left:4px;top:106px;width:248px;height:61px;font-size:15px}
 
 /* 배틀 탭: 라인업 */
@@ -682,7 +682,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt .mvb .eff{left:auto;right:7px;transform:none;padding:0 4px;font-size:8px}
 /* 휴대폰 아래 화면 새 차림 (경완 2026-10-27 '버튼 너무 크고 밤티, 몬스터볼 찌그러짐, 글자 정렬'): 늘리지 않고 높이만 키운 화면에
    몬스터볼은 원래 비율 그대로 가운데, 버튼은 그림 대신 둥근 버튼 */
-.bt.mob .bt-bot{background:url(img/bt/sub_ball.png) center/256px 152px no-repeat,linear-gradient(#c5c5c5 0 16px,#d5d5d5 16px 18px,#eee 18px 20px,#fff 20px calc(100% - 20px),#eee calc(100% - 20px) calc(100% - 18px),#d5d5d5 calc(100% - 18px) calc(100% - 16px),#c5c5c5 calc(100% - 16px))}
+.bt.mob .bt-bot{background:url(../gym/img/bt/sub_ball.png) center/256px 152px no-repeat,linear-gradient(#c5c5c5 0 16px,#d5d5d5 16px 18px,#eee 18px 20px,#fff 20px calc(100% - 20px),#eee calc(100% - 20px) calc(100% - 18px),#d5d5d5 calc(100% - 18px) calc(100% - 16px),#c5c5c5 calc(100% - 16px))}
 .bt.mob :is(.bp-main,.bp-moves,.bp-party,.bp-yn){background:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:26px 12px;align-content:center;box-sizing:border-box}
 .bt.mob :is(.bp-main,.bp-moves,.bp-party,.bp-yn) :is(.bb,.mvw,.mvb.empty,.bp-q,p){position:relative;left:auto;top:auto;right:auto;width:auto;height:auto;margin:0}
 .bt.mob .bb{border-radius:14px;--c1:#6f7c94;--c2:#4e5a70;background:linear-gradient(var(--c1),var(--c2));box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -3px 0 rgba(0,0,0,.16),0 0 0 1.5px rgba(0,0,0,.28),0 3px 0 rgba(0,0,0,.18)}
@@ -795,7 +795,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .gy-sum .sm-ty .tyi{width:20px;height:20px;vertical-align:0}
 /* 경완 2026-10-28: 세로 화면에선 뒷모습이 발판 선(144)에서 잘리지 않게 장면 끝(162)까지, 아래 화면 위아래 회색 띠 없앰 */
 .bt.mob.msgmid .bt-mw.p{height:144px}
-.bt.mob .bt-bot{background:url(img/bt/sub_ball.png) center/256px 152px no-repeat,#fff}
+.bt.mob .bt-bot{background:url(../gym/img/bt/sub_ball.png) center/256px 152px no-repeat,#fff}
 .bt.mob .bt-mid{background:#2a2a32}
 /* 상태창 글자 정렬 (경완 2026-10-28 '박스에 붙어 있거나 레벨이 삐져나옴'): 레벨은 오른쪽 안쪽 기준, 성별은 레벨 앞 */
 .bt-hb .nm{top:18px;max-width:62px}.bt-hb.e .nm{left:14px}.bt-hb.p .nm{left:30px;top:17px}
@@ -870,8 +870,8 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .cv-card{width:100%;padding:0 0 12px;gap:8px;overflow:hidden}
 .cv-card header{padding:8px 12px 6px;margin:0;background:#2a3a5c;border-bottom:3px solid var(--frame)}.cv-card header b{color:#fff}.cv-card header small{color:#c8d4f0}
 .cv-photo{align-self:stretch;width:auto;height:176px;margin:-8px 0 0;border:0;border-bottom:3px solid var(--frame);overflow:hidden;
-  background:url(img/bt/bg_in1.png) center top/auto 211px repeat-x,#e8c070}
-.cv-photo::after{content:'';position:absolute;left:50%;bottom:-34px;width:160px;height:80px;transform:translateX(-50%);background:url(img/bt/pl_e.png) 0 0/100% 100%;image-rendering:pixelated}
+  background:url(../gym/img/bt/bg_in1.png) center top/auto 211px repeat-x,#e8c070}
+.cv-photo::after{content:'';position:absolute;left:50%;bottom:-34px;width:160px;height:80px;transform:translateX(-50%);background:url(../gym/img/bt/pl_e.png) 0 0/100% 100%;image-rendering:pixelated}
 .cv-photo img{position:relative;z-index:1;width:160px;height:160px;margin-top:-6px}
 .cv-photo .cv-nm{position:absolute;left:8px;bottom:8px;z-index:2;align-items:flex-start;padding:3px 8px 4px;background:rgba(255,253,244,.94);border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2)}
 .cv-photo .cv-nm b{font-size:16px}.cv-photo .cv-nm small{font-size:11px}
@@ -996,7 +996,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .cv-deck .cv-photo{flex:1 0 176px;height:auto;min-height:176px}
 .gy-sheet:has(.cv-dots){padding-bottom:0}
 .cv-dots{flex:none;height:34px;margin:0 auto!important;align-items:center}
-.cv-deck .cv-photo{background:url(img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070}
+.cv-deck .cv-photo{background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070}
 .cv-deck .cv-photo img{align-self:end;margin:0 0 10px}
 .lu-slot{height:118px;min-height:0;box-sizing:border-box}   /* 경완 2026-10-28: 빈 칸·찬 칸 같은 크기 */
 .gy-btns>button:only-child{grid-column:1/-1;width:100%}
@@ -1097,7 +1097,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt-pty{height:12px;gap:2px;padding:2px 5px;background:#303040;border-radius:0!important;box-shadow:inset 0 1px 0 #585868,inset 0 -1px 0 #18181f}
 .bt-pty.e{padding-left:6px;clip-path:polygon(0 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%)}
 .bt-pty.p{padding-right:6px;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 calc(100% - 4px),0 4px)}
-:is(.bt-pty,.bp-pty) i{width:8px;height:8px;border-radius:0;box-shadow:none;flex:none;background:url(img/bt/pball8.png) 0 0/32px 8px no-repeat;image-rendering:pixelated}
+:is(.bt-pty,.bp-pty) i{width:8px;height:8px;border-radius:0;box-shadow:none;flex:none;background:url(../gym/img/bt/pball8.png) 0 0/32px 8px no-repeat;image-rendering:pixelated}
 :is(.bt-pty,.bp-pty) i.s{background-position:-8px 0}:is(.bt-pty,.bp-pty) i.f{background-position:-16px 0}:is(.bt-pty,.bp-pty) i.x{background-position:-24px 0}
 .bp-pty{position:absolute;left:8px;right:8px;top:6px;display:flex;justify-content:space-between;pointer-events:none}
 .bp-pty span{display:flex;gap:2px;padding:2px 4px;background:rgba(32,32,44,.82);box-shadow:inset 0 1px 0 #585868}
@@ -1108,7 +1108,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .bt.mob .bp-main .bp-pty{align-items:flex-start;align-self:start;height:auto}.bp-pty span{align-self:flex-start}
 /* 체력 상자 안 몬스터볼 (6px 도트, HP 띠 왼쪽) */
 .bt-hb .hbb{position:absolute;top:32px;display:flex;gap:-1px;height:7px}.bt-hb.e .hbb{left:9px}.bt-hb.p .hbb{left:14px;gap:1px}
-.bt-hb .hbb i{width:7px;height:7px;flex:none;background:url(img/bt/pball7.png) 0 0/28px 7px no-repeat;image-rendering:pixelated}.bt-hb.e .hbb i+i{margin-left:-1px}
+.bt-hb .hbb i{width:7px;height:7px;flex:none;background:url(../gym/img/bt/pball7.png) 0 0/28px 7px no-repeat;image-rendering:pixelated}.bt-hb.e .hbb i+i{margin-left:-1px}
 .bt-hb .hbb i.s{background-position:-7px 0}.bt-hb .hbb i.f{background-position:-14px 0}.bt-hb .hbb i.x{background-position:-21px 0}
 .bt-hb .st{top:4px!important;height:9px;line-height:9px;box-shadow:0 0 0 1px #303830}.bt-hb.e .st{left:14px!important}.bt-hb.p .st{left:30px!important}   /* 상태 이상은 상자 위 탭으로 (HP 띠 왼쪽은 몬스터볼 자리) */
 /* 한 장짜리 그림 포켓몬(650~ 뒷모습 등)도 숨 쉬듯 2장 움직임 (본가 블랙·화이트 느낌) */
@@ -1120,7 +1120,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .tm-fopts .fo-cat{width:32px;height:16px;image-rendering:pixelated}
 /* 성별 = 도트 아이콘, 레벨 글자 높이 가운데 (경완 2026-10-28 '성별 아이콘 레벨에 비해 너무 낮게') */
 .bt-hb .lv .sx{font-size:0!important;line-height:0!important;width:8px;height:9px;transform:none!important;align-self:center;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
-.bt-hb .lv .sx.M{background-image:url(img/bt/sx_m.png)}.bt-hb .lv .sx.F{width:6px;background-image:url(img/bt/sx_f.png)}
+.bt-hb .lv .sx.M{background-image:url(../gym/img/bt/sx_m.png)}.bt-hb .lv .sx.F{width:6px;background-image:url(../gym/img/bt/sx_f.png)}
 .bt-hb .lv .sx:not(.M):not(.F){display:none}
 .bt-hb .lv{align-items:center!important}.bt-hb .lv .lvn{line-height:10px}
 /* 몬스터볼 자리 (경완 2026-10-28): 상대 = 상자 왼쪽 아래, 나 = 상자 오른쪽 아래. 상자 그림에 한 줄(8px)을 더 넣은 hb_*2.png */
@@ -1154,7 +1154,7 @@ button.if-grade:active{transform:translateY(2px);box-shadow:0 1px 0 var(--frame)
 .cv-deck{overscroll-behavior:none}.gy-sheet:has(.cv-deck),.gy-pop:has(.cv-deck){overscroll-behavior:none;overflow-x:hidden}
 /* 혼란 병아리 (경완 2026-10-28) */
 .bt-conf{position:absolute;left:50%;top:22%;width:0;height:0;z-index:4;pointer-events:none}
-.bt-conf i{position:absolute;left:-8px;top:-8px;width:17px;height:15px;background:url(img/bt/st_duck.png) 0 0/17px 15px no-repeat;image-rendering:pixelated}
+.bt-conf i{position:absolute;left:-8px;top:-8px;width:17px;height:15px;background:url(../gym/img/bt/st_duck.png) 0 0/17px 15px no-repeat;image-rendering:pixelated}
 /* 기술 버튼: 효과 표시와 PP 가 같은 줄에 겹치지 않게 PP 는 맨 아랫줄 오른쪽 (경완 2026-10-28) */
 .bt.mob .mvb .pp{position:static!important;align-self:flex-end;margin-top:auto!important;padding-top:2px}
 .bt.mob .mvb .eff{margin-top:2px!important}.bt.mob .mvb>*{flex-shrink:0}
@@ -1645,7 +1645,7 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 .qw-row.wait{opacity:.6}.qw-row .qw-wait{flex:none;font-size:12px;color:var(--dim);padding:0 6px}   /* 맨 위 최신 도전자부터 차례로 (경완 2026-10-29) */
 /* 배틀 교체 (경완 2026-10-29): 버튼에 정사각형 프로필·성별·타입, 누르면 상세 카드 → 바꾸기. 아래 화면은 256 폭 기준으로 줄여 그림 */
 .bt .pty .sx,.bt .bp-card .sx{display:inline-block;flex:none;width:7px;height:8px;margin-left:3px;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
-.bt .pty .sx.M,.bt .bp-card .sx.M{background-image:url(img/bt/sx_m.png)}.bt .pty .sx.F,.bt .bp-card .sx.F{width:5px;background-image:url(img/bt/sx_f.png)}
+.bt .pty .sx.M,.bt .bp-card .sx.M{background-image:url(../gym/img/bt/sx_m.png)}.bt .pty .sx.F,.bt .bp-card .sx.F{width:5px;background-image:url(../gym/img/bt/sx_f.png)}
 .bt.mob .pty{grid-template-columns:34px 1fr!important;grid-template-rows:auto auto auto auto!important;row-gap:1px;align-content:center}
 .bt.mob .pty>.rk-fr{grid-row:1/5!important;align-self:center;width:32px!important;height:32px!important;aspect-ratio:1;padding:2px!important;box-sizing:border-box;position:relative}
 .bt.mob .pty>.rk-fr img[data-th]{position:absolute!important;left:2px;top:2px;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;object-fit:contain}
@@ -1803,8 +1803,8 @@ button.if-bdg{width:100%;text-align:left;font:inherit;color:inherit;cursor:point
 /* 색이 다른 포켓몬 반짝임 · 대타 인형 · 숨는 기술 (본가 연출, 경완 2026-10-29) */
 .bt-mon .bt-shn{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;pointer-events:none;background:radial-gradient(circle,#fff 0 30%,transparent 32%),linear-gradient(0deg,transparent 42%,#fff8c0 42% 58%,transparent 58%),linear-gradient(90deg,transparent 42%,#fff8c0 42% 58%,transparent 58%);animation:btShn .9s ease-out both;z-index:3}
 @keyframes btShn{0%{transform:rotate(var(--a)) translateY(-4px) scale(.2);opacity:0}25%{opacity:1}100%{transform:rotate(var(--a)) translateY(-34px) scale(1.1);opacity:0}}
-.bt-mon .bt-sub{display:none;position:absolute;left:50%;bottom:10px;width:30px;height:32px;transform:translateX(-50%);background:url(img/pk/fm/sub.png) no-repeat center bottom/contain;image-rendering:pixelated;pointer-events:none}
-.bt-mon.p .bt-sub{width:42px;height:48px;background-image:url(img/pk/fm/subb.png);bottom:6px}
+.bt-mon .bt-sub{display:none;position:absolute;left:50%;bottom:10px;width:30px;height:32px;transform:translateX(-50%);background:url(../gym/img/pk/fm/sub.png) no-repeat center bottom/contain;image-rendering:pixelated;pointer-events:none}
+.bt-mon.p .bt-sub{width:42px;height:48px;background-image:url(../gym/img/pk/fm/subb.png);bottom:6px}
 .bt-mon.sub .bt-sub{display:block}.bt-mon.sub img,.bt-mon.hid img{visibility:hidden!important}
 /* 디자인 이름 옆 어울리는 타입 (경완 2026-10-29) */
 .gy-dz-nm{display:flex;align-items:center;justify-content:center;gap:8px}
@@ -2707,7 +2707,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sfl2{display:flex;flex-direction:column;gap:12px;padding:0 2px 6px}
 #gym .sfc{position:relative;display:grid;grid-template-columns:76px 1fr 12px;grid-template-areas:"p m g" "t t t" "n n n";gap:0 10px;width:100%;padding:0;text-align:left;font:inherit;color:var(--win-ink);background:#fffdf4;border:3px solid var(--frame);box-shadow:4px 4px 0 rgba(0,0,0,.18);cursor:pointer;overflow:hidden}
 #gym .sfc:active{translate:2px 2px;box-shadow:2px 2px 0 rgba(0,0,0,.18)}
-#gym .sfc-pic{grid-area:p;position:relative;display:grid;place-items:end center;height:84px;background:url(img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-right:3px solid var(--frame);border-bottom:3px solid var(--frame)}
+#gym .sfc-pic{grid-area:p;position:relative;display:grid;place-items:end center;height:84px;background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-right:3px solid var(--frame);border-bottom:3px solid var(--frame)}
 #gym .sfc-pic img{position:relative;z-index:1;width:72px;height:72px;object-fit:contain;image-rendering:pixelated;margin-bottom:4px}
 #gym .sfc-base{position:absolute;left:8px;right:8px;bottom:4px;height:14px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#fff4d0,#d8b070 70%);box-shadow:0 2px 0 #9a7040}
 #gym .sfc-mid{grid-area:m;display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;padding:8px 0}
@@ -2728,8 +2728,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sfc.rest{background:#f1f0ec}#gym .sfc.rest .sfc-pic img{filter:grayscale(.7) brightness(.95)}
 /* 상세 창 */
 #gym .gy-pop .win:has(.sd2){padding:0 0 14px;overflow:hidden auto;max-height:calc(100% - 8px)}
-#gym .sd2-hero{position:relative;display:grid;place-items:end center;height:136px;background:url(img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-bottom:3px solid var(--frame)}
-#gym .sd2-hero::after{content:'';position:absolute;left:50%;bottom:-30px;width:150px;height:72px;transform:translateX(-50%);background:url(img/bt/pl_e.png) 0 0/100% 100%;image-rendering:pixelated}
+#gym .sd2-hero{position:relative;display:grid;place-items:end center;height:136px;background:url(../gym/img/bt/bg_in1c.png) center bottom/cover no-repeat,#e8c070;border-bottom:3px solid var(--frame)}
+#gym .sd2-hero::after{content:'';position:absolute;left:50%;bottom:-30px;width:150px;height:72px;transform:translateX(-50%);background:url(../gym/img/bt/pl_e.png) 0 0/100% 100%;image-rendering:pixelated}
 #gym .sd2-hero img{position:relative;z-index:1;width:128px;height:128px;object-fit:contain;image-rendering:pixelated;margin-bottom:8px}
 #gym .sd2-nm{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;flex-direction:column;padding:3px 9px 4px;background:rgba(255,253,244,.95);border:2px solid var(--frame);box-shadow:2px 2px 0 rgba(0,0,0,.2);line-height:1.2}
 #gym .sd2-nm small{font-size:11px;color:var(--dim)}#gym .sd2-nm b{font-size:17px}
@@ -3867,7 +3867,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec h4.mec-h{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
 #gym .mec-ty{display:inline-flex;align-items:center;gap:3px;font-size:inherit;color:color-mix(in srgb,var(--tc,#888) 60%,#000)}
 #gym .mec-ty img,#gym .mec-ty svg,#gym .mec-ty i{width:18px;height:18px}
-#gym .mecT1{--bgi:url(img/bt/mbg1.png);--pfi:url(img/bt/mpf1.png)}#gym .mecT2{--bgi:url(img/bt/mbg2.png);--pfi:url(img/bt/mpf2.png)}#gym .mecT3{--bgi:url(img/bt/mbg3.png);--pfi:url(img/bt/mpf3.png)}#gym .mecT4{--bgi:url(img/bt/mbg4.png);--pfi:url(img/bt/mpf4.png)}#gym .mecT5{--bgi:url(img/bt/mbg5.png);--pfi:url(img/bt/mpf5.png)}#gym .mecT6{--bgi:url(img/bt/mbg6.png);--pfi:url(img/bt/mpf6.png)}#gym .mecT7{--bgi:url(img/bt/mbg7.png);--pfi:url(img/bt/mpf7.png)}#gym .mecT8{--bgi:url(img/bt/mbg8.png);--pfi:url(img/bt/mpf8.png)}#gym .mecT9{--bgi:url(img/bt/mbg9.png);--pfi:url(img/bt/mpf9.png)}#gym .mecT10{--bgi:url(img/bt/mbg10.png);--pfi:url(img/bt/mpf10.png)}#gym .mecT11{--bgi:url(img/bt/mbg11.png);--pfi:url(img/bt/mpf11.png)}#gym .mecT12{--bgi:url(img/bt/mbg12.png);--pfi:url(img/bt/mpf12.png)}#gym .mecT13{--bgi:url(img/bt/mbg13.png);--pfi:url(img/bt/mpf13.png)}#gym .mecT14{--bgi:url(img/bt/mbg14.png);--pfi:url(img/bt/mpf14.png)}#gym .mecT15{--bgi:url(img/bt/mbg15.png);--pfi:url(img/bt/mpf15.png)}#gym .mecT16{--bgi:url(img/bt/mbg16.png);--pfi:url(img/bt/mpf16.png)}#gym .mecT17{--bgi:url(img/bt/mbg17.png);--pfi:url(img/bt/mpf17.png)}#gym .mecT18{--bgi:url(img/bt/mbg18.png);--pfi:url(img/bt/mpf18.png)}
+#gym .mecT1{--bgi:url(../gym/img/bt/mbg1.png);--pfi:url(../gym/img/bt/mpf1.png)}#gym .mecT2{--bgi:url(../gym/img/bt/mbg2.png);--pfi:url(../gym/img/bt/mpf2.png)}#gym .mecT3{--bgi:url(../gym/img/bt/mbg3.png);--pfi:url(../gym/img/bt/mpf3.png)}#gym .mecT4{--bgi:url(../gym/img/bt/mbg4.png);--pfi:url(../gym/img/bt/mpf4.png)}#gym .mecT5{--bgi:url(../gym/img/bt/mbg5.png);--pfi:url(../gym/img/bt/mpf5.png)}#gym .mecT6{--bgi:url(../gym/img/bt/mbg6.png);--pfi:url(../gym/img/bt/mpf6.png)}#gym .mecT7{--bgi:url(../gym/img/bt/mbg7.png);--pfi:url(../gym/img/bt/mpf7.png)}#gym .mecT8{--bgi:url(../gym/img/bt/mbg8.png);--pfi:url(../gym/img/bt/mpf8.png)}#gym .mecT9{--bgi:url(../gym/img/bt/mbg9.png);--pfi:url(../gym/img/bt/mpf9.png)}#gym .mecT10{--bgi:url(../gym/img/bt/mbg10.png);--pfi:url(../gym/img/bt/mpf10.png)}#gym .mecT11{--bgi:url(../gym/img/bt/mbg11.png);--pfi:url(../gym/img/bt/mpf11.png)}#gym .mecT12{--bgi:url(../gym/img/bt/mbg12.png);--pfi:url(../gym/img/bt/mpf12.png)}#gym .mecT13{--bgi:url(../gym/img/bt/mbg13.png);--pfi:url(../gym/img/bt/mpf13.png)}#gym .mecT14{--bgi:url(../gym/img/bt/mbg14.png);--pfi:url(../gym/img/bt/mpf14.png)}#gym .mecT15{--bgi:url(../gym/img/bt/mbg15.png);--pfi:url(../gym/img/bt/mpf15.png)}#gym .mecT16{--bgi:url(../gym/img/bt/mbg16.png);--pfi:url(../gym/img/bt/mpf16.png)}#gym .mecT17{--bgi:url(../gym/img/bt/mbg17.png);--pfi:url(../gym/img/bt/mpf17.png)}#gym .mecT18{--bgi:url(../gym/img/bt/mbg18.png);--pfi:url(../gym/img/bt/mpf18.png)}
 
 #gym .gy-setup.gy-bsw{padding-bottom:0!important}   /* v21.81 경완 '승급 심사 창에서 화면이랑 하단 메뉴 사이 여백 없게' (메뉴가 아래 안전 영역을 이미 맡음, 일지·명단과 같게) */
 /* v21.87 경완 '관장카드 배포해': 타입별 테두리·등급 효과·배지 (시안 mtf) */
@@ -3902,7 +3902,12 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bb.gkb.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 0 0 2.5px #fff,0 0 12px 3px var(--c1),0 3px 0 rgba(0,0,0,.18);animation:gkOn 1.2s ease-in-out infinite}
 @keyframes gkOn{50%{filter:brightness(1.18)}}
 .bt.mob .bp-moves.gk:has(.gkb.on) .mvb:not(:disabled){box-shadow:0 0 0 2px #fff,0 0 10px 2px rgba(255,255,255,.6)}
-.bt-mon.gm-mega .clip,.bt-mon.gm-primal .clip{animation:gmMega .9s ease-in forwards}
+.bt-mon .gm-wh,.bt-mon .gm-au{position:absolute;pointer-events:none;transform-origin:50% 100%}
+.bt-mon.gm-mega .clip,.bt-mon.gm-primal .clip{isolation:isolate}.bt-mon .gm-wh{image-rendering:pixelated;opacity:0;animation:gmWh .9s ease-in forwards}
+.bt-mon .gm-wh.pk{animation:none;opacity:1}.bt-mon .gm-wh.out{animation:gmOut .6s ease-out forwards}
+.bt-mon .gm-au{z-index:-1;margin:-30%;padding:30%;box-sizing:content-box;background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,140,210,.55) 45%,rgba(120,200,255,.25) 70%,rgba(255,255,255,0));opacity:0;animation:gmAu .9s ease-in forwards}
+.bt-mon .gm-au.out{animation:gmOut .6s ease-out forwards}
+@keyframes gmWh{0%{opacity:0}40%{opacity:.25}100%{opacity:.95}}@keyframes gmAu{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1.05)}}@keyframes gmOut{0%{opacity:1}100%{opacity:0}}   /* 칸(.clip) 말고 그림에만 빛: 아이폰에서 칸 네모 경계가 보이던 것 (경완 2026-11-12) */
 @keyframes gmMega{0%{filter:drop-shadow(0 0 0 #fff)}25%{filter:drop-shadow(0 0 4px #ff6aa8) drop-shadow(0 0 8px #ffd040)}50%{filter:drop-shadow(0 0 5px #6ae0ff) drop-shadow(0 0 10px #b070ff) brightness(1.4)}100%{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #fff) brightness(3) saturate(0)}}
 .bt-mon.gm-primal .clip{animation-name:gmPrimal}@keyframes gmPrimal{50%{filter:drop-shadow(0 0 6px #ff5020) brightness(1.4)}100%{filter:drop-shadow(0 0 10px #fff) brightness(3) saturate(0)}}
 .bt-mon.gm-z .clip{animation:gmZ 1s ease-in-out}
@@ -4016,6 +4021,32 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-setup.gy-rkw{background:radial-gradient(circle at 50% 58%,transparent 0 92px,rgba(255,220,200,.08) 92px 96px,transparent 96px),linear-gradient(transparent calc(58% - 2px),rgba(255,220,200,.08) calc(58% - 2px) calc(58% + 2px),transparent calc(58% + 2px)),radial-gradient(ellipse at 50% 0,#8a2a2a 0,transparent 70%),linear-gradient(180deg,#3a1418 0,#1c0a0e 100%)!important}
 /* v22.09 등급표 제목 '[아이콘] 불 타입 체육관 등급' */
 #gym .gy-pop h4.pk-h{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}#gym h4.pk-h .pk-ty{display:inline-flex;align-items:center;gap:4px}#gym h4.pk-h .pk-ty :is(img,svg,i){width:20px;height:20px}
+/* 경완 2026-11-12: 기믹 버튼 켜면 아래 화면 바탕색, 메가진화한 포켓몬이 나와 있는 동안 계속 */
+.bt.mob .bt-bot{transition:background-color .35s}
+.bt.mob:is(.gkbg-mega,.gkbg-zmove,.gkbg-dynamax,.gkbg-terastallize) .bt-bot{background-blend-mode:multiply}.bt.mob.gkbg-mega .bt-bot{background-color:#e6d9ff}.bt.mob.gkbg-zmove .bt-bot{background-color:#fff1c8}.bt.mob.gkbg-dynamax .bt-bot{background-color:#ffd9e4}.bt.mob.gkbg-terastallize .bt-bot{background-color:#d6f3ff}
+/* 경완 2026-11-12 '메가진화 버튼 배경 퀄 높여': 메가 켜면 아래 화면 = 연보라 바탕 + 천천히 도는 빛살 + 가운데 무지개 고리 + 메가 마크 + 떠오르는 반짝이 (몬스터볼 자리) */
+.bt.mob .bt-bot::before,.bt.mob .bt-bot::after{content:'';position:absolute;pointer-events:none;opacity:0;transition:opacity .45s;z-index:0}
+.bt.mob .bt-panel{z-index:1}
+.bt.mob .bt-bot::before{inset:0;background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),linear-gradient(160deg,#e6d6ff,#ffd6ec 40%,#d8e6ff 75%,#e6d6ff);animation:gkHue 20s linear infinite}   /* 경완 '빛줄기 없애고 은은하게 계속 바뀌게': 파스텔 띠가 천천히 흘러감 */
+.bt.mob .bt-bot::after{inset:0;background:radial-gradient(1.6px 1.6px at 18% 30%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 72% 22%,#fff 60%,transparent),radial-gradient(2px 2px at 84% 64%,#fff 60%,transparent),radial-gradient(1.4px 1.4px at 30% 78%,#fff 60%,transparent),radial-gradient(1.8px 1.8px at 56% 88%,#fff 60%,transparent),radial-gradient(1.2px 1.2px at 8% 60%,#fff 60%,transparent),radial-gradient(1.5px 1.5px at 94% 40%,#fff 60%,transparent);
+  background-size:100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px,100% 120px;filter:drop-shadow(0 0 6px rgba(190,140,255,.9));animation:gkSpark 5s linear infinite}
+.bt.mob.gkbg-mega .bt-bot{background-image:linear-gradient(#f4edff,#dccbff 55%,#efe6ff);background-blend-mode:normal}
+.bt.mob.gkbg-mega .bt-bot::before{opacity:1}.bt.mob.gkbg-mega .bt-bot::after{opacity:.55}
+@keyframes gkHue{to{filter:hue-rotate(360deg)}}
+@keyframes gkSpark{to{background-position:0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px,0 -120px}}
+
+/* 경완 2026-11-12 '위아래 검정 여백 다 채워줘': 아래 화면은 홈 막대 자리까지(버튼판만 --pb 위로), 위 상태 막대 자리는 배틀 배경 윗줄을 거울처럼 이어 붙임 */
+.bt.mob .bt-panel{bottom:var(--pb,0px)}
+.bt.mob::before{background:var(--bgi,none) 0 0/calc(512px * var(--k,1.5)) calc(192px * var(--k,1.5)) no-repeat,#0c0d12;transform:scaleY(-1);image-rendering:pixelated;height:var(--st,0px)}
+.bt.mob::after{display:none}
+.bt.mob .bt-bot::after{bottom:var(--pb,0px)}   /* 메가 마크는 홈 막대 자리 빼고 아래 화면 정가운데 */
+/* 경완 2026-11-12: 메가 마크 = 경완이 준 무지개 메가 그림(Mega/mark.png), 아래 화면 정가운데에서 가끔 한 바퀴씩 (입체처럼 세로 축 회전) */
+.bt .gk-mark{display:none}
+.bt.mob .gk-mark{display:block;position:absolute;left:50%;top:calc((100% - var(--pb,0px)) / 2);width:74px;height:90px;margin:-45px 0 0 -37px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;opacity:0;transition:opacity .45s;pointer-events:none;z-index:0;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(190,140,255,.6))}
+.bt.mob.gkbg-mega .gk-mark{opacity:.8;animation:gkMark 4.5s linear infinite}
+@keyframes gkMark{0%,55%{transform:perspective(320px) rotateY(0) scale(1)}61%{transform:perspective(320px) rotateY(-28deg) scale(.94);animation-timing-function:cubic-bezier(.3,0,.2,1)}86%{transform:perspective(320px) rotateY(735deg) scale(1.08);animation-timing-function:ease-in-out}93%{transform:perspective(320px) rotateY(712deg) scale(.98)}100%{transform:perspective(320px) rotateY(720deg) scale(1)}}   /* 경완 '뒤집는 느낌 말고 찰지게': 살짝 뒤로 감았다가 두 바퀴 휙 → 조금 넘쳤다 되돌아와 멈춤 */
+.bt-hb .gkm-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkm .nm{max-width:74px}
 
 /* v22.07 레어 번뜩임 (무지개 각성) — 보통 번뜩임(금빛)과 다른 색·효과 */
 .bt-top.ershk{animation:btErS .55s .2s steps(10) both}
@@ -4071,6 +4102,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .eg-tw.t3{background:linear-gradient(90deg,#ff4a4a,#ff9a2a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 3px rgba(255,120,60,.55))}
 .bt-egz.er{z-index:5}
 .bt .bt-mw.p.egzr{z-index:6}
+/* 경완 2026-11-12 강박사 메가진화 튜토리얼: 메가링 받은 창 */
+#gym .gy-pop .mr-get{padding:16px 0 10px}#gym .gy-pop .mr-get img{width:150px;height:116px;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(190,140,255,.7));animation:mrGlow 2.4s ease-in-out infinite}
+@keyframes mrGlow{50%{filter:drop-shadow(0 0 16px rgba(255,200,255,.95))}}
+#gym .gy-pop .mr-d{text-align:center;font-size:13px;line-height:1.55}
 
 /* 경완 2026-11-12: 지금 등급 빛 테두리가 목록 스크롤 칸에 좌우가 잘리던 것 → 목록 안쪽 여백 */
 #gym .gy-pop .gy-perk{padding:3px 4px}
@@ -4087,6 +4122,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk>li.pk-tip.on .pk-tc{border-style:solid;border-color:#e0a820;background:#fff8dc}
 #gym .gy-perk>li.pk-tip.on .pk-kg{filter:none;opacity:1}
 #gym .gy-perk>li.pk-tip.on .pk-tc b{color:#8a5a10;letter-spacing:0}
+/* 창고 도구 탭 '중요한 물건' 칸 (경완 2026-11-12) */
+#gym .gy-storew .st-sec{margin:10px 2px 6px;font-size:13px;color:#5a6070;font-weight:700}
+#gym .gy-storew .st-sec:first-of-type{margin-top:4px}
+#gym .gy-storew .sp-key{border-color:#e0b040}
+#gym .gy-pop .key-note{font-size:12px;color:#8a6a20;margin-top:-4px}
 
 /* 관장 카드: 무대 줄 세우기가 끝날 때까지 가려 둠 */
 #gym .gy-pop .win.mec-wait{visibility:hidden}
@@ -4113,8 +4153,36 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .gy-perk.pk-gl,#gym .gy-pop .gy-perk.pk-sl{height:58vh;max-height:58vh;box-sizing:border-box}
 #gym .gy-pop .pk-tabs{margin:0 4px 8px}
 #gym .gy-perk.pk-sl{justify-content:flex-start}
+/* 상대 메가진화 간단 연출: 메가 마크가 포켓몬 위에서 한 바퀴 돌고 사라짐 (경완 2026-11-12) */
+.bt-top .gm-mark{position:absolute;width:22px;height:27px;margin-left:-11px;background:center/contain no-repeat;image-rendering:pixelated;pointer-events:none;z-index:5;animation:gmMark 1.6s ease-out forwards}
+@keyframes gmMark{0%{opacity:0;transform:translateY(8px) scale(.4) rotateY(0)}18%{opacity:1;transform:translateY(0) scale(1.15) rotateY(0)}60%{opacity:1;transform:translateY(-2px) scale(1) rotateY(360deg)}85%{opacity:1}100%{opacity:0;transform:translateY(-6px) scale(1) rotateY(360deg)}}
+/* 상대 메가진화 때 트레이너가 포켓몬 뒤로 잠깐 들어옴 (경완 2026-11-12) */
+.bt-tr.e.mgin{transform:translateX(34px)!important;opacity:1!important;transition:transform .45s cubic-bezier(.2,.7,.3,1),opacity .3s}
 
 .bt-essb,.bt-essf{position:absolute;left:0;top:0;width:256px;height:192px;pointer-events:none}.bt.essp .bt-mw{overflow:visible}   /* 5세대 이후 기술 연출 캔버스 (gym/essfx.js, 경완 2026-11-12) */
+/* 경완 2026-11-12 강박사 비기 알림창: 튜토리얼 때 떠 둔 창을 줄여서 */
+#gym .gy-pop .tp-shot{position:relative;margin:10px auto 4px;overflow:hidden;border-radius:10px;border:2px solid #d8cfb4;background:#f6f1e2;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#gym .gy-pop .tp-in{position:absolute;left:0;top:0;transform-origin:0 0}#gym .gy-pop .tp-shot *{pointer-events:none!important}
+#gym .gy-pop .tp-in>.win{position:relative!important;inset:auto!important;left:0!important;top:0!important;margin:0!important;width:100%!important;height:100%!important;max-height:none!important;transform:none!important;animation:none!important;box-shadow:none!important}
+#gym .gy-pop .tp-d small{display:block;margin-top:6px;color:var(--dim);font-size:11px}
+#tut .gt-lit{position:fixed;transform-origin:0 0;pointer-events:none;image-rendering:pixelated}#tut .gt-lit[hidden]{display:none}   /* 경완 2026-11-12 튜토리얼에서 훈련장 포켓몬만 원래 색으로 밝게 */
+#gym .gy-pop .tp-d{text-align:center!important}   /* 경완 2026-11-12 비기 알림창 설명 가운데 정렬 */
+/* 경완 2026-11-12 비기 알림창 = 업데이트 알림창처럼 단계별 캡처 */
+#gym .gy-pop.tp-pop .win{width:min(340px,92vw)}
+#gym .gy-pop .tp-t small{display:block;font-size:11px;color:#c08a1e;letter-spacing:.5px;margin-bottom:2px}
+#gym .gy-pop .tp-body{overflow:hidden;touch-action:pan-y}
+#gym .gy-pop .tp-pg{display:flex;flex-direction:column;align-items:center;text-align:center;will-change:transform}
+#gym .gy-pop .tp-pt{display:block;font-size:14px;margin:2px 0 0;color:#3a3550}
+#gym .gy-pop .tp-shot{width:288px;height:210px;max-width:100%;flex:none}
+#gym .gy-pop .tp-in.gy-pop,#gym .gy-pop .tp-in{position:absolute!important;right:auto!important;bottom:auto!important;padding:0!important;margin:0!important;background:none!important;display:block!important;z-index:auto!important;animation:none!important}
+#gym .gy-pop .tp-shot.tp-im{display:grid;place-items:center}#gym .gy-pop .tp-shot.tp-im img{max-width:80%;max-height:80%;image-rendering:pixelated}
+#gym .gy-pop .tp-shot.tp-none{height:16px;border:0;background:none;box-shadow:none}
+#gym .gy-pop .tp-ring{position:absolute;border:3px solid #ffd24a;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.7),0 0 12px 3px rgba(255,200,40,.8);animation:tpRing 1.1s ease-in-out infinite;pointer-events:none}
+@keyframes tpRing{50%{box-shadow:0 0 0 2px rgba(255,255,255,.4),0 0 20px 6px rgba(255,200,40,.45)}}
+#gym .gy-pop .tp-p{margin:8px 4px 0;font-size:13px;line-height:1.5;text-align:center}#gym .gy-pop .tp-p em{font-style:normal;color:#e0662a;font-weight:700}
+#gym .gy-pop .tp-sm{margin:4px 4px 0;font-size:11px;color:var(--dim);text-align:center}
+#gym .gy-pop .tp-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 2px;min-height:6px}#gym .gy-pop .tp-dots i{width:6px;height:6px;border-radius:3px;background:#d6d0c0;transition:width .2s,background .2s}#gym .gy-pop .tp-dots i.on{width:16px;background:#f0a830}
+#gym .gy-pop .tp-body{min-height:300px;display:flex;align-items:center;justify-content:center}#gym .gy-pop .tp-pg{width:100%}
 
 /* 경완 2026-11-12 교체 카드 특성 설명은 한 줄 (길면 … 누르면 전체), 기술 칸 안 눌리게 */
 .bp-card button.bc-ab{width:100%;border:0;font:inherit;font-size:8px;color:inherit;text-align:left;cursor:pointer;flex:none}.bp-card button.bc-ab:active{transform:translate(1px,1px)}
@@ -4132,6 +4200,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-card .bc-mv .mvb .pp{grid-area:p;align-self:center;justify-self:end;padding:0!important;transform:none!important}
 .bt.mob .bp-card{gap:3px}.bt.mob .bp-card .bc-hd .th,.bt.mob .bp-card .bc-hd>img,.bt.mob .bp-card .bc-hd>.pkt{transform:scale(.9);transform-origin:left center}
 
+#tut .gt-litT{position:fixed;transform-origin:0 0;pointer-events:none}#tut .gt-litT[hidden]{display:none}#tut .gt-litT>.ty-tag{left:0;top:0}   /* 경완 2026-11-12 빛 활성화 포켓몬 밑 레벨·랭크·경험치 게이지도 밝게 */
+
 /* v22.52 경완: 휴업·다시 열기 간판은 폰 화면 정중앙, 이름 옆 타입 아이콘 / 체육관 관리 정렬 화살표 / 타입 필터 = 타입 아이콘 */
 #gym .gy-re .re-sign{position:fixed;top:50%;left:50%}
 #gym .gy-re .re-sign .re-nm{display:inline-flex;align-items:center;justify-content:center;gap:6px}
@@ -4147,4 +4217,26 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-re .re-sign.np span{padding:0 12px;font-size:17px;color:var(--win-ink,#20202c)}
 #gym .gy-re .re-sign.np span.re-nm,#gym .gy-re .re-sign.np .re-nm{padding:6px 14px;background:rgba(0,0,0,.05);box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
 #gym .gy-re .re-sign.np small{margin-top:-2px;font-size:12px;color:var(--dim)}#gym .gy-re .re-sign.np small:empty{display:none}
-.gy-town .tw-door{z-index:4990}   /* 경완 2026-11-13 문 = 문틀 아래, 들어가는 사람(4995) 아래 */
+.gy-town .tw-door{z-index:4990}   /* 경완 2026-11-13 문 = 사람 아래·문틀 아래 (들어가는 사람 4995 는 문 위, 덮는 층 5000 아래) */
+
+/* 경완 2026-11-13 메가진화 가능한 포켓몬 알림창 (PMD 그림) */
+#gym .mgc-pan{position:fixed;inset:0;margin:auto;height:fit-content;z-index:60;width:min(330px,92%);box-sizing:border-box;padding:10px 12px 12px;background:var(--win,#fff);border:4px solid var(--frame);border-radius:6px;box-shadow:inset 0 0 0 2px #fff,0 5px 0 var(--frame),0 10px 24px rgba(0,0,0,.35);animation:awNpop .32s steps(4,end);pointer-events:none}
+#gym .mgc-pan h4{margin:0;text-align:center;font-size:15px}
+#gym .mgc-pan .mgc-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 2px;justify-items:center}
+#gym .mgc-pan .mgc-c{display:flex;flex-direction:column;align-items:center;gap:4px}
+#gym .mgc-pan .mgc-b{width:80px;height:72px;display:grid;place-items:center;border-radius:10px;background:radial-gradient(ellipse 60% 18% at 50% 88%,rgba(60,40,90,.22),transparent 70%),linear-gradient(#f6f0ff,#e9e0fb);box-shadow:inset 0 0 0 2px #c9b4f0}
+#gym .mgc-pan .mgc-sp{display:block;width:64px;height:56px;image-rendering:pixelated}
+#gym .mgc-pan .mgc-c b{font-size:12px}
+#gym .mgc-pan .mgc-more{text-align:center;font-size:11px;color:var(--dim);margin:4px 0 0}
+#gym .gy-pop .tp-shot.tp-cap img{display:block;width:100%;height:100%}
+
+#gym .gy-kang.amn .gy-k-box{margin-bottom:2px}   /* 경완 2026-11-13 '인물 대사창이랑 하단 메뉴 사이 여백 없애줘' */
+#gym .gy-pop .tp-t .tp-tt{display:inline-flex;align-items:center;justify-content:center;gap:12px}#gym .gy-pop .tp-t .tp-st{flex:none;width:4px;height:4px;background:#ffd84a;box-shadow:0 -6px #ffd84a,0 6px #ffd84a,-6px 0 #ffd84a,6px 0 #ffd84a;animation:tpTw .5s steps(1,end) infinite}@keyframes tpTw{50%{opacity:0}}   /* 경완 2026-11-13 비기 알림창 제목 양쪽 반짝반짝 (업데이트 알림창과 같은 별) */
+/* 경완 2026-11-13: 교체 창 메가진화한 포켓몬 프로필 우하단 메가 구슬 (지닌 도구 자리) */
+.rk-fr i.th-mg{position:absolute;right:-1px;bottom:-1px;z-index:4;width:29%;height:29%;max-width:21px;max-height:21px;min-width:10px;min-height:10px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}
+/* 경완 2026-11-13 '교체 화면 프로필 칸 우하단 나이트는 장크로다일나이트 크기 수준': 메가스톤 그림은 상점 도구처럼 칸의 70% 로 맞춰 두고, 프로필 칸에선 조금 크게 */
+.bt .rk-fr img.th-it.mgs{width:50%!important;height:50%!important;max-width:34px;max-height:34px}
+/* 경완 2026-11-13 '기술 하나일 때 상세카드 무너짐': 기술 칸은 늘 2×2 크기 */
+.bt .bp-card .bc-mv{grid-template-rows:repeat(2,minmax(52px,1fr));grid-auto-rows:minmax(52px,1fr)}
+/* 경완 2026-11-13 '나이트들 반투명?': S·A 랭크 칸의 빛 덮개(::after, z 2)가 지닌 도구 위에 덮여 흐려 보였음 → 도구 그림을 덮개 위로 */
+.rk-fr img.th-it{z-index:4!important}

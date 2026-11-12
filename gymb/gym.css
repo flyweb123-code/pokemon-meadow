@@ -4232,3 +4232,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 #gym .gy-kang.amn .gy-k-box{margin-bottom:2px}   /* 경완 2026-11-13 '인물 대사창이랑 하단 메뉴 사이 여백 없애줘' */
 #gym .gy-pop .tp-t .tp-tt{display:inline-flex;align-items:center;justify-content:center;gap:12px}#gym .gy-pop .tp-t .tp-st{flex:none;width:4px;height:4px;background:#ffd84a;box-shadow:0 -6px #ffd84a,0 6px #ffd84a,-6px 0 #ffd84a,6px 0 #ffd84a;animation:tpTw .5s steps(1,end) infinite}@keyframes tpTw{50%{opacity:0}}   /* 경완 2026-11-13 비기 알림창 제목 양쪽 반짝반짝 (업데이트 알림창과 같은 별) */
+/* 경완 2026-11-13: 교체 창 메가진화한 포켓몬 프로필 우하단 메가 구슬 (지닌 도구 자리) */
+.rk-fr i.th-mg{position:absolute;right:-1px;bottom:-1px;z-index:4;width:29%;height:29%;max-width:21px;max-height:21px;min-width:10px;min-height:10px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}
+/* 경완 2026-11-13 '교체 화면 프로필 칸 우하단 나이트는 장크로다일나이트 크기 수준': 메가스톤 그림은 상점 도구처럼 칸의 70% 로 맞춰 두고, 프로필 칸에선 조금 크게 */
+.bt .rk-fr img.th-it.mgs{width:50%!important;height:50%!important;max-width:34px;max-height:34px}
+/* 경완 2026-11-13 '기술 하나일 때 상세카드 무너짐': 기술 칸은 늘 2×2 크기 */
+.bt .bp-card .bc-mv{grid-template-rows:repeat(2,minmax(52px,1fr));grid-auto-rows:minmax(52px,1fr)}
+/* 경완 2026-11-13 '나이트들 반투명?': S·A 랭크 칸의 빛 덮개(::after, z 2)가 지닌 도구 위에 덮여 흐려 보였음 → 도구 그림을 덮개 위로 */
+.rk-fr img.th-it{z-index:4!important}
