@@ -3518,7 +3518,7 @@ const MG_TID = 990011;
    이 체육관에서 처음 메가진화를 써서 싸운 배틀(g.mgUse)부터 관장이 직접 싸운 도전자 배틀 수(g.mgN)로 센다. MG_FOE.wait 판은 아무도 안 씀 → 그 뒤 MG_FOE.ramp 판 동안 확률이 0 에서 최대까지 오름. 최대는 도전자 세기별.
    쓸 수 있으면 팀에서 메가진화할 수 있는 포켓몬(뒤쪽 = 에이스 먼저) 하나에 메가스톤을 지니게 함 */
 // 경완 2026-11-12 '다른 체육관에서도 대략 이 시점부터 나오게, 페이즈처럼': 체육관마다 이름난 체육관(gmax 3)이 된 뒤 직접 싸운 판 수로 센다. 메가링은 관장 것이라 한 번 받으면 모든 체육관에서
-const MG_FOE = { wait: 10, ramp: 10, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
+const MG_FOE = { wait: 1, ramp: 10,   /* 경완 2026-11-13 '10판 기다리기 빼고 오르는 구간만': wait 1 = 내가 처음 메가진화 쓴 판(mgN 1) 다음 판부터 오르기 시작 */ max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
 function foeMgP(c) { const g = st(); if (!MEGA_ON || !tutSeen('mgRing') || !g?.mgUse || (g?.gmax | 0) < 3) return 0; const d = (g.mgN | 0) - MG_FOE.wait; if (d < 0) return 0;
   const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / MG_FOE.ramp); }
 // 경완 2026-11-12 '난이도 밸런스는 기본, 유저 라인업이 메가진화 안 나와도 되는 라인업이면 이 시점이 와도 안 나옴 — 이 시점은 최솟값': 라인업이 셀수록 1 에 가까움
