@@ -1,6 +1,1220 @@
 {
  "days": [
   {
+   "at": 1794523679850,
+   "theme": "숲속 꼬마 발명가의 실험실",
+   "note": "오늘은 숲속에 꼬마 발명가의 실험실을 차렸어요! 테슬라 코일·화산 모형·톱니바퀴처럼 포켓몬이 타입에 따라 전기를 충전하거나 불을 불어넣거나 힘으로 돌리는 소품 위주로 그렸어요. 말굽자석은 작은 포켓몬이 지나다니는 아치가 되고, 톱니바퀴와 진자는 그 부분만 돌고 흔들려요.",
+   "items": [
+    {
+     "id": "lab-tesla-coil",
+     "n": "테슬라 코일",
+     "k": "과학",
+     "glow": 1,
+     "d": "구리선을 촘촘히 감은 기둥 꼭대기에 은빛 도넛 공이 얹혀 있어요. 공 둘레에서 노란 불꽃이 찌직찌직 튀어요.",
+     "px": [
+      "..k...............k.",
+      ".kak..kkkkkkkk...kak",
+      "kabkkkcccccdddkkkak.",
+      ".kakccccddddddeekbak",
+      "..kcccddddddeeeefak.",
+      "..kddddddeeeeeeffk..",
+      "...kdddeeeeeffffk...",
+      "....kkfeeeffffkk....",
+      "......kkkghkkk......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kijjilmk......",
+      "......kliilnok......",
+      "......kpggphqk......",
+      "...kkkkpggphqkkkk...",
+      "..krrrrrrrrrrrrrrk..",
+      "..kssssssssssssstk..",
+      "..kssuvssssswwsstk..",
+      "..kssvvssssssssstk..",
+      "..kxxxxxxxxxxxxxxk..",
+      "...kkkkkkkkkkkkkk...",
+      "...................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ffe066",
+      "b": "#e8fbff",
+      "c": "#ffffff",
+      "d": "#d2d8e2",
+      "e": "#9aa4b4",
+      "f": "#68728a",
+      "g": "#b8c2d0",
+      "h": "#5e6a7e",
+      "i": "#dc8a50",
+      "j": "#f6b884",
+      "l": "#b06234",
+      "m": "#7e4024",
+      "n": "#8a4a28",
+      "o": "#5e3020",
+      "p": "#8894a6",
+      "q": "#424a5c",
+      "r": "#c99a64",
+      "s": "#a87444",
+      "t": "#7e5430",
+      "u": "#f49a7c",
+      "v": "#d65a44",
+      "w": "#e8c25a",
+      "x": "#5a3a22"
+     },
+     "fit": "실험 탁자 옆, 밤에 마당 가운데",
+     "acts": [
+      {
+       "w": "전기 타입",
+       "a": "꼭대기 은빛 공에 볼을 대고 전기를 충전해서 몸이 번쩍번쩍 빛나요",
+       "x": {
+        "at": "top",
+        "m": "skill",
+        "an": "Attack",
+        "fx": "glow"
+       },
+       "l": [
+        "테슬라 코일 꼭대기에 볼을 비비며 전기를 가득 충전했다.",
+        "테슬라 코일과 찌릿찌릿 번개를 주고받으며 번쩍인다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "튀는 불꽃을 구경하며 코일 둘레를 빙빙 돌아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "테슬라 코일 둘레를 빙빙 돌며 튀는 불꽃을 구경한다.",
+        "테슬라 코일 불꽃을 따라 빙글빙글 날아다닌다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "코일을 톡 건드렸다가 찌릿해서 털이 쭈뼛 서고 뒤로 물러나요",
+       "x": {
+        "m": "push avoid"
+       },
+       "l": [
+        "테슬라 코일을 건드렸다가 찌릿해서 털이 쭈뼛 섰다.",
+        "테슬라 코일에 코를 댔다가 깜짝 놀라 뒷걸음질 쳤다."
+       ]
+      },
+      {
+       "w": "땅 타입",
+       "a": "코일 바로 앞에 버티고 서서 튀는 전기를 몸으로 다 받아내요",
+       "x": {
+        "at": "front",
+        "m": "wobble"
+       },
+       "l": [
+        "테슬라 코일 앞에 떡 버티고 서서 전기를 다 받아냈다. 하나도 안 찌릿하다.",
+        "테슬라 코일 불꽃을 맞고도 태연하게 하품을 한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-volcano-model",
+     "n": "화산 모형",
+     "k": "과학",
+     "glow": 0,
+     "d": "찰흙으로 빚은 꼬마 화산이 나무판 위에 서 있어요. 분화구에서 주황 거품 용암이 보글보글 넘쳐 흘러요. 옆엔 \"실험 1호\" 이름표.",
+     "px": [
+      "...........kkkk...........",
+      ".........kkaaabkk.........",
+      "........kaacbbbbdk........",
+      "........kbbbbddddk........",
+      "........kbbddbdbek........",
+      "........kfbeebebk.........",
+      ".......kffdggehbik........",
+      ".......kffdggghdik........",
+      "......kfffeggghdiik.......",
+      ".....kffhfgghghdhiik......",
+      "....kffffggggghehhiik.....",
+      "...kfffffgggggghhhhiik....",
+      "..kffffffgggggghhhhiiik...",
+      ".kffhfffhggghgghhhhjjjjk..",
+      "kfffffffggggggghhhhjiijik.",
+      "fffffffgggggggghhhhlllliik",
+      "kmmmmmmmmmmmmmmmmmmmmmmmmk",
+      "knnnnnnnnnnnnnnnnnnnnnnnok",
+      "kppppppppppppppppppppppppk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#ffe27a",
+      "b": "#ffa040",
+      "c": "#fff6c8",
+      "d": "#e8582e",
+      "e": "#b03226",
+      "f": "#e0a870",
+      "g": "#c27c48",
+      "h": "#94582e",
+      "i": "#6a3c22",
+      "j": "#f4ead4",
+      "l": "#c8b898",
+      "m": "#c99a64",
+      "n": "#a87444",
+      "o": "#7e5430",
+      "p": "#5a3a22"
+     },
+     "fit": "실험 탁자 옆 잔디",
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "분화구에 불꽃을 훅 불어넣어 거품 용암을 펑 터뜨려요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "화산 모형에 불꽃을 불어넣었더니 거품 용암이 펑 넘쳤다. 대성공!",
+        "화산 모형을 진짜 화산으로 만들려고 불꽃을 훅훅 분다."
+       ]
+      },
+      {
+       "w": "땅·바위 타입",
+       "a": "화산 모형 옆에 붙어 앉아 흙을 덧붙여 더 높게 쌓아 줘요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "화산 모형에 흙을 덧붙여 조금 더 높은 산으로 만들었다.",
+        "화산 모형을 쓰다듬으며 동생 산 보듯 흐뭇해한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "거품이 보글 넘치자 깜짝 놀라 모형 뒤에 숨어 빼꼼 내다봐요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "화산 모형에서 거품이 넘치자 뒤로 쏙 숨어 빼꼼 내다본다.",
+        "화산 모형 뒤에 숨어 거품이 또 나오나 지켜본다."
+       ]
+      },
+      {
+       "w": "물·얼음 타입",
+       "a": "넘친 용암 거품에 물을 뿌려 식혀 주고 뿌듯해해요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "화산 모형에 물을 뿌려 용암 거품을 식혀 줬다. 마을을 지켰다!",
+        "화산 모형을 식히다가 흙탕물이 튀어 얼굴이 얼룩덜룩해졌다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-big-magnifier",
+     "n": "큰 돋보기",
+     "k": "과학",
+     "glow": 0,
+     "d": "놋쇠 테두리를 두른 커다란 돋보기가 세 발 나무 받침에 세워져 있어요. 렌즈 너머로 보면 모든 게 두 배로 커 보여요.",
+     "px": [
+      ".......kkkk.......",
+      ".....kkaaaakk.....",
+      "....kaaaaabbbk....",
+      "...kaaaaccbbbbk...",
+      "..kaaaccccddbbbk..",
+      ".kaaaeecdddddffgk.",
+      ".kaacecdddddhifgk.",
+      ".kaaccdddddhhhffk.",
+      ".kabcddddhhhhhffk.",
+      ".kbbddddhhhhhifgk.",
+      ".kbbdddhhhhiiiggk.",
+      ".kbbbdhhhheiigggk.",
+      "..kbbfihhiiigggk..",
+      "...kffffiiggggk...",
+      "....kgffgggggk....",
+      ".....kkggggkk.....",
+      ".......kjlk.......",
+      ".......kjlk.......",
+      ".......kjlk.......",
+      ".......kjlk.......",
+      ".......kjlk.......",
+      ".......kjlk.......",
+      "......kkjlkk......",
+      ".....klljlmmk.....",
+      "....kklkkkkkmk....",
+      "...kllk....kmmk...",
+      "..kllk......kmmk..",
+      "...kk........kk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#fff0a8",
+      "b": "#e8c25a",
+      "c": "#f2fbff",
+      "d": "#bfe2f4",
+      "e": "#ffffff",
+      "f": "#b8902e",
+      "g": "#86621e",
+      "h": "#8cbcd8",
+      "i": "#5f8db0",
+      "j": "#c99a64",
+      "l": "#7e5430",
+      "m": "#5a3a22"
+     },
+     "fit": "꽃밭 가장자리, 열매나무 아래",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "돋보기 뒤에 서서 렌즈에 얼굴을 대면 얼굴이 엄청 크게 보여요",
+       "x": {
+        "at": [
+         0.47,
+         0.32
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "큰 돋보기 뒤에서 얼굴을 내밀어 거인처럼 보이게 했다.",
+        "큰 돋보기 렌즈에 얼굴을 대고 눈을 끔뻑끔뻑한다."
+       ]
+      },
+      {
+       "w": "벌레·풀 타입",
+       "a": "돋보기 아래로 기어가 렌즈가 모아 준 따뜻한 햇빛 속에서 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "큰 돋보기가 모아 준 햇볕 아래에서 따끈따끈 낮잠을 잔다.",
+        "큰 돋보기 그늘 끝 햇살 동그라미 안에 쏙 들어가 존다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "렌즈를 들여다보다 확 커진 자기 눈과 마주쳐 깜짝 놀라 물러나요",
+       "x": {
+        "at": "front",
+        "m": "peek avoid"
+       },
+       "l": [
+        "큰 돋보기를 들여다보다 커다란 자기 눈과 마주쳐 화들짝 놀랐다.",
+        "큰 돋보기로 풀잎을 보고 털이 이렇게 많았냐며 신기해한다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "놋쇠 테두리 꼭대기로 날아와 앉아 렌즈 너머를 내려다봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "큰 돋보기 테두리 꼭대기에 앉아 렌즈 너머 세상을 내려다본다.",
+        "큰 돋보기 위에 앉았다가 미끄러워서 날개를 퍼덕였다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-flask-table",
+     "n": "플라스크 실험 탁자",
+     "k": "과학",
+     "glow": 0,
+     "d": "나무 탁자 위에 보라 물약이 든 둥근 플라스크, 분홍 물약 삼각 플라스크, 시험관 세 개가 놓여 있어요. 둥근 플라스크에선 보라 거품이 퐁퐁 올라와요.",
+     "px": [
+      ".....kakk.................",
+      "....kkkkak.kkkk...........",
+      "...kbbbbk.kbbbbk..........",
+      "....kcdk...kcdk..k.k.k....",
+      "....kddk...kddk.kdkdkdk...",
+      "....kddk...kdbbkkdkdkdk...",
+      "...kccddk.kddbbkkdkdkdk...",
+      "..kccdddbkdedbbbkfkgkhk...",
+      "..kiiijjjklllmmmnnnnnnnk..",
+      "..kiiijjjllllmmmoooooopk..",
+      ".kkkiijjlllllmmmqqqqqqqkk.",
+      "knnnnnnnnnnnnnnnnnnnnnnnnk",
+      "kqqqqqqqqqqqqqqqqqqqqqqqqk",
+      ".kopkkkkkkkkkkkkkkkkkkpqk.",
+      ".kopk................kpqk.",
+      ".kopk................kpqk.",
+      ".kopkkkkkkkkkkkkkkkkkkpqk.",
+      ".kopqqqqqqqqqqqqqqqqqqpqk.",
+      ".kopkkkkkkkkkkkkkkkkkkpqk.",
+      ".kopk................kpqk.",
+      ".kopk................kpqk.",
+      "..kk..................kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#d6b8f4",
+      "b": "#8cbcd8",
+      "c": "#f2fbff",
+      "d": "#bfe2f4",
+      "e": "#ffffff",
+      "f": "#ffd060",
+      "g": "#7ad0f0",
+      "h": "#ff8a70",
+      "i": "#b07ae0",
+      "j": "#8452c0",
+      "l": "#ff9ab8",
+      "m": "#e06a96",
+      "n": "#c99a64",
+      "o": "#a87444",
+      "p": "#7e5430",
+      "q": "#5a3a22"
+     },
+     "fit": "작은 집 앞, 테슬라 코일 옆",
+     "acts": [
+      {
+       "w": "독 타입",
+       "a": "플라스크에 독 한 방울을 똑 떨어뜨려 보라 거품을 퐁퐁 피워 올려요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "플라스크에 독을 한 방울 넣어 보라 거품을 퐁퐁 피웠다.",
+        "시험관을 섞다가 무지개색 연기가 나서 뿌듯해한다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "염동력으로 시험관을 둥실 띄워 이리저리 섞어 봐요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "an": "Rotate"
+       },
+       "l": [
+        "염동력으로 시험관 세 개를 띄워 빙글빙글 섞었다.",
+        "실험 탁자의 플라스크를 둥실 띄웠다가 살짝 내려놓는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "탁자 아래로 쏙 들어가 숨어서 위를 빼꼼 올려다봐요",
+       "x": {
+        "at": "under",
+        "m": "hide peek"
+       },
+       "l": [
+        "실험 탁자 밑에 쏙 숨어서 거품 소리를 엿듣는다.",
+        "실험 탁자 아래에서 웅크리고 앉아 실험이 끝나길 기다린다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "플라스크에 코를 대고 킁킁거리다 에취 재채기를 해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "플라스크 냄새를 킁킁 맡다가 에취! 재채기를 했다.",
+        "분홍 물약 냄새를 맡고 딸기 맛일까 고민한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-model-rocket",
+     "n": "모형 로켓 발사대",
+     "k": "과학",
+     "glow": 0,
+     "d": "빨간 꼬깔과 날개를 단 하얀 모형 로켓이 은빛 발사대에 세워져 있어요. 동그란 창문 안을 들여다보고 싶어져요.",
+     "px": [
+      "........kk........",
+      ".......kaak.......",
+      ".......kaak.......",
+      "......kbaack......",
+      "......kbaack......",
+      ".....kbbaacck..k..",
+      ".....kbbaacck.kdk.",
+      ".....keffeghk.kdk.",
+      ".....keffeghk.kdk.",
+      ".....keffighk.kdk.",
+      ".....kejilmhkkndk.",
+      ".....keflmghk.kdk.",
+      ".....keffeghk.kdk.",
+      ".....keffeghk.kdk.",
+      ".....kabbacok.kdk.",
+      ".....kabbacok.kdk.",
+      ".....keffeghk.kdk.",
+      ".....keffeghk.kdk.",
+      ".....keffeghk.kdk.",
+      "....kaeffeghckkdk.",
+      "....kaeffeghckndk.",
+      "...kaaeffeghcckdk.",
+      "...kaapeepghcckdk.",
+      "..kcaapeepghccodk.",
+      "..kcaakdqdrkccodk.",
+      "...kkkkdqdrkkkkdk.",
+      "..kkkkkkkkkkkkkdk.",
+      ".kqqqqqqqqqqqqqqk.",
+      ".krrrrrrrrrrrrrrk.",
+      "..krrkkkkkkkkrrk..",
+      "..krrk......krrk..",
+      "...kk........kk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#d65a44",
+      "b": "#f49a7c",
+      "c": "#a83c34",
+      "d": "#8894a6",
+      "e": "#e6eaf0",
+      "f": "#ffffff",
+      "g": "#b6bfcc",
+      "h": "#8892a4",
+      "i": "#bfe2f4",
+      "j": "#f2fbff",
+      "l": "#8cbcd8",
+      "m": "#5f8db0",
+      "n": "#5e6a7e",
+      "o": "#742a26",
+      "p": "#d0d6de",
+      "q": "#b8c2d0",
+      "r": "#424a5c"
+     },
+     "fit": "넓은 풀밭 가운데, 하늘이 잘 보이는 곳",
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "로켓 꼭대기까지 날아올라 빨간 꼬깔 위에 앉아 하늘을 올려다봐요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "모형 로켓 꼭대기에 날아가 앉아 우주를 꿈꾼다.",
+        "모형 로켓 꼬깔 위에 앉아 \"발사!\" 하고 크게 울었다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "로켓 꼬리 밑에 불꽃을 살짝 쏘아 발사 시늉을 하고 깜짝 놀라 물러나요",
+       "x": {
+        "m": "skill avoid",
+        "an": "Attack"
+       },
+       "l": [
+        "모형 로켓 꼬리에 불꽃을 쏘아 봤는데 로켓은 꿈쩍도 안 했다.",
+        "모형 로켓에 불을 붙이려다 들킬까 봐 슬금슬금 물러났다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "발사대 앞에서 셋, 둘, 하나 세듯 몸을 웅크렸다 깡충 뛰어올라요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "모형 로켓 앞에서 셋, 둘, 하나! 하고 혼자 깡충 발사됐다.",
+        "모형 로켓 앞에서 카운트다운 놀이를 한다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "발사대 옆에 등을 기대고 앉아 로켓을 지켜 주며 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "모형 로켓 발사대에 기대어 로켓을 지키다 꾸벅꾸벅 졸았다.",
+        "모형 로켓 옆에 기대 앉아 경비를 선다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-gear-machine",
+     "n": "큰 톱니바퀴 장치",
+     "k": "과학",
+     "glow": 0,
+     "d": "나무 기둥에 커다란 놋쇠 톱니바퀴가 걸려 있고, 옆엔 바늘이 빨간 압력계가 달려 있어요. 바람이 불면 톱니바퀴가 끼익끼익 돌아요.",
+     "px": [
+      "............................",
+      "............kkk.............",
+      "...........kaaak............",
+      ".......kk.kkaaakk.kk........",
+      "......kaakabbbbbbkbbk.......",
+      ".....kaaabbaaabbbcbbbk......",
+      ".....kaabaaaabbbbbcbbk......",
+      "......kbakkkbbbkkkbck.......",
+      ".....kabak.kbbbk.kbcck......",
+      "....kkbaakkkbbbkkkccckk.....",
+      "...kaababbbbdeebccccccfkk...",
+      "...kaabbbbbbegeccccccffkhkk.",
+      "...kabbbbbbbeeeccccccffhijik",
+      "....kkbbbkkkbcckkkffckhijllk",
+      ".....kbcbk.kccck.kfcfkiillmk",
+      "......kcbkkkccckkkfckkillmmk",
+      ".....kbbcccccccfffcffkkkmkk.",
+      ".....kbccccccfffccfffk.kek..",
+      "......kcckccccccfkffk..kek..",
+      ".......kk.kkfffkk.kk...kek..",
+      "...........kfffk.......kek..",
+      ".kkkkkkkkkkknnokkkkkkkkkekk.",
+      "kppppppppppppppppppppppppppk",
+      "knnnnnnnnnnnnnnnnnnnnnnnnnok",
+      "kqqqqqqqqqqqqqqqqqqqqqqqqqqk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#fff0a8",
+      "b": "#e8c25a",
+      "c": "#b8902e",
+      "d": "#b8c2d0",
+      "e": "#8894a6",
+      "f": "#86621e",
+      "g": "#424a5c",
+      "h": "#ffffff",
+      "i": "#e6eaf0",
+      "j": "#d04a3a",
+      "l": "#b6bfcc",
+      "m": "#8892a4",
+      "n": "#a87444",
+      "o": "#7e5430",
+      "p": "#c99a64",
+      "q": "#5a3a22"
+     },
+     "fit": "공방 마당, 바람 잘 드는 언덕",
+     "mv": {
+      "st": [
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "........................k...",
+       "........................hkk.",
+       ".......................hijik",
+       "......................hijllk",
+       "......................iillmk",
+       ".....................killmmk",
+       "......................kkmkk.",
+       ".......................kek..",
+       ".......................kek..",
+       ".......................kek..",
+       ".......................kek..",
+       ".kkkkkkkkkkknnokkkkkkkkkekk.",
+       "kppppppppppppppppppppppppppk",
+       "knnnnnnnnnnnnnnnnnnnnnnnnnok",
+       "kqqqqqqqqqqqqqqqqqqqqqqqqqqk",
+       ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+      ],
+      "mp": [
+       "............................",
+       "............kkk.............",
+       "...........kaaak............",
+       ".......kk.kkaaakk.kk........",
+       "......kaakabbbbbbkbbk.......",
+       ".....kaaabbaaabbbcbbbk......",
+       ".....kaabaaaabbbbbcbbk......",
+       "......kbakkkbbbkkkbck.......",
+       ".....kabak.kbbbk.kbcck......",
+       "....kkbaakkkbbbkkkccckk.....",
+       "...kaababbbbdeebccccccfk....",
+       "...kaabbbbbbegeccccccffk....",
+       "...kabbbbbbbeeeccccccff.....",
+       "....kkbbbkkkbcckkkffck......",
+       ".....kbcbk.kccck.kfcfk......",
+       "......kcbkkkccckkkfck.......",
+       ".....kbbcccccccfffcffk......",
+       ".....kbccccccfffccfffk......",
+       "......kcckccccccfkffk.......",
+       ".......kk.kkfffkk.kk........",
+       "...........kfffk............",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................"
+      ],
+      "o": [
+       13.5,
+       11.5
+      ],
+      "k": "spin"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "톱니바퀴 이를 두 손으로 밀어 힘껏 빙글빙글 돌려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "큰 톱니바퀴를 힘껏 밀어 끼익끼익 돌렸다.",
+        "큰 톱니바퀴를 돌리다 압력계 바늘이 끝까지 올라가 신났다."
+       ]
+      },
+      {
+       "w": "강철 타입",
+       "a": "톱니바퀴 옆에 붙어 서서 자기도 톱니처럼 몸을 빙글 돌려 봐요",
+       "x": {
+        "m": "skill",
+        "an": "Rotate",
+        "fx": "spin"
+       },
+       "l": [
+        "큰 톱니바퀴 옆에서 같이 빙글빙글 돌며 친구인 척한다.",
+        "큰 톱니바퀴에 기름 칠하듯 몸을 비비고 반짝반짝해졌다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "날갯짓 바람을 일으켜 톱니바퀴를 천천히 돌려요",
+       "x": {
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "날갯짓 바람으로 큰 톱니바퀴를 천천히 돌렸다.",
+        "큰 톱니바퀴 앞에서 퍼덕퍼덕 날갯짓해 바퀴를 돌린다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "톱니바퀴 구멍 뒤에서 얼굴을 쏙 내밀어 빼꼼 내다봐요",
+       "x": {
+        "at": [
+         0.6,
+         0.3
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "큰 톱니바퀴 구멍으로 얼굴을 쏙 내밀었다.",
+        "큰 톱니바퀴 구멍 뒤에 숨어 숨바꼭질을 한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-pendulum",
+     "n": "모래 그림 진자",
+     "k": "과학",
+     "glow": 0,
+     "d": "나무 틀 가운데에 놋쇠 추가 매달려 흔들려요. 추 아래 모래 쟁반에 흔들린 자국이 고운 물결무늬로 남아요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkk.",
+      "kaaaaaaaaaaaaaaaaaaaak",
+      "kbbbbbbbbbbbbbbbbbbbbk",
+      ".kackkkkkkddkkkkkkack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack....kedk....kack.",
+      ".kack...kfffgk...kack.",
+      ".kack..kfffgggk..kack.",
+      ".kack..kfgggghk..kack.",
+      ".kack.kfggghhhik.kack.",
+      ".kack..kgghhhik..kack.",
+      ".kack..kghhhiik..kack.",
+      ".kack.kkkidiikkk.kack.",
+      "kcccckjjlljjlljjkcccck",
+      "kbbbbkmmmmmmmmmmkbbbbk",
+      ".kkkk.kkkkkkkkkk.kkkk.",
+      "......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#c99a64",
+      "b": "#5a3a22",
+      "c": "#7e5430",
+      "d": "#5e6a7e",
+      "e": "#8894a6",
+      "f": "#fff0a8",
+      "g": "#e8c25a",
+      "h": "#b8902e",
+      "i": "#86621e",
+      "j": "#fbefc8",
+      "l": "#cfb67a",
+      "m": "#a8905a"
+     },
+     "fit": "공방 마당, 그늘진 나무 아래",
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkkkkkkkkk.",
+       "kaaaaaaaaaaaaaaaaaaaak",
+       "kbbbbbbbbbbbbbbbbbbbbk",
+       ".kackkkkk....kkkkkack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack............kack.",
+       ".kack.kk......kk.kack.",
+       "kcccckjjlljjlljjkcccck",
+       "kbbbbkmmmmmmmmmmkbbbbk",
+       ".kkkk.kkkkkkkkkk.kkkk.",
+       "......................"
+      ],
+      "mp": [
+       "......................",
+       "......................",
+       "......................",
+       ".........kddk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       ".........kedk.........",
+       "........kfffgk........",
+       ".......kfffgggk.......",
+       ".......kfgggghk.......",
+       "......kfggghhhik......",
+       ".......kgghhhik.......",
+       ".......kghhhiik.......",
+       "........kidiik........",
+       "......................",
+       "......................",
+       "......................",
+       "......................"
+      ],
+      "o": [
+       11,
+       3
+      ],
+      "k": "swing",
+      "amp": 1.8
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "흔들리는 놋쇠 추를 앞발로 톡 밀어 더 크게 흔들어요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "놋쇠 추를 톡 밀었더니 모래에 동그란 무늬가 그려졌다.",
+        "진자를 밀어 놓고 추가 돌아올 때 화들짝 피한다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "진자 앞에 앉아 추를 눈으로 따라가다 스르르 졸음에 빠져요",
+       "x": {
+        "at": "front",
+        "an": "Sleep",
+        "fx": "swing"
+       },
+       "l": [
+        "흔들리는 추를 눈으로 따라가다 스르르 잠들었다. 최면술에 걸렸다.",
+        "진자 앞에서 추를 보다가 꾸벅꾸벅 존다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "추에 매달려 시계추처럼 왔다 갔다 흔들려요",
+       "x": {
+        "at": [
+         0.48,
+         0.75
+        ],
+        "m": "bob",
+        "fx": "swing"
+       },
+       "l": [
+        "놋쇠 추에 매달려 시계추처럼 왔다 갔다 흔들렸다.",
+        "진자 추에 매달려 째깍째깍 소리를 흉내 낸다."
+       ]
+      },
+      {
+       "w": "땅 타입",
+       "a": "모래 쟁반 앞에 앉아 추가 그린 물결무늬를 앞발로 따라 그려요",
+       "x": {
+        "at": "front",
+        "m": "walk"
+       },
+       "l": [
+        "모래 쟁반의 물결무늬를 앞발로 따라 그렸다.",
+        "진자가 그린 모래 무늬를 몰래 지우고 새로 그린다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-magnet-arch",
+     "n": "말굽자석 아치",
+     "k": "과학",
+     "glow": 0,
+     "d": "포켓몬 키만 한 빨간 말굽자석이 은빛 두 다리로 서 있어 작은 아치가 됐어요. 안쪽엔 쇠못 하나가 착 붙어 떨어지지 않아요.",
+     "px": [
+      "......kkkaaaakkk......",
+      ".....kaaaaaaaabbk.....",
+      "....kaaaaaaaabbbbk....",
+      "...kaaaaaaaabbbbbbk...",
+      "..kaaaaaaabbbbbbbbbk..",
+      "..kaaaaaakkkkbbbbcck..",
+      ".kaaaaaak....kbbcccck.",
+      ".kaaaaak......kccccck.",
+      ".kaaabbk......kccccck.",
+      ".kaabbbk......kcccddk.",
+      ".kacccck......kccccdk.",
+      ".kacccck......kccccdk.",
+      ".kacccck.k....kccccdk.",
+      ".kacccckkek...kccccdk.",
+      ".kaccccfggk...kccccdk.",
+      ".kacccckkfk...kccccdk.",
+      ".khhhhhk.k....khhhhhk.",
+      ".kijjjjk......kllllmk.",
+      ".kijjjjk......kllllmk.",
+      ".kijjjjk......kllllmk.",
+      ".kijjjjk......kllllmk.",
+      "..kkkkk........kkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#f49a7c",
+      "b": "#d65a44",
+      "c": "#a83c34",
+      "d": "#742a26",
+      "e": "#b8c2d0",
+      "f": "#5e6a7e",
+      "g": "#8894a6",
+      "h": "#6a2222",
+      "i": "#ffffff",
+      "j": "#d2d8e2",
+      "l": "#9aa4b4",
+      "m": "#68728a"
+     },
+     "fit": "공방 마당 입구, 길목",
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "자석 아치 밑을 쪼르르 지나가요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "말굽자석 아치 밑을 쪼르르 지나갔다.",
+        "말굽자석 아치를 들락날락하며 문지기 놀이를 한다."
+       ]
+      },
+      {
+       "w": "강철 타입",
+       "a": "자석에 몸이 착 달라붙어 떨어지려고 버둥거려요",
+       "x": {
+        "at": "side",
+        "m": "wobble"
+       },
+       "l": [
+        "말굽자석에 몸이 착 달라붙어 한참 버둥거렸다.",
+        "말굽자석에서 겨우 떨어져 나와 휴 한숨을 쉰다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "자석 꼭대기에 올라가 전기를 흘려 털이 사방으로 쭈뼛 서요",
+       "x": {
+        "at": "top",
+        "m": "climb skill",
+        "an": "Attack"
+       },
+       "l": [
+        "말굽자석 꼭대기에서 전기를 흘렸더니 털이 사방으로 쭈뼛 섰다.",
+        "말굽자석 위에서 전기 놀이를 하다 머리가 폭탄 머리가 됐다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "자석 안쪽 쇠못을 빼 보려고 잡아당기다 엉덩방아를 찧어요",
+       "x": {
+        "at": "front",
+        "m": "push"
+       },
+       "l": [
+        "말굽자석에 붙은 쇠못을 빼려다 엉덩방아를 찧었다.",
+        "말굽자석의 쇠못을 영차영차 당겨 보지만 꿈쩍도 안 한다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-microscope",
+     "n": "큰 현미경",
+     "k": "과학",
+     "glow": 0,
+     "d": "하얀 통에 은빛 접안렌즈가 달린 커다란 현미경이에요. 받침 위 유리판엔 오늘 관찰할 이슬방울이 놓여 있어요.",
+     "px": [
+      "....kkkkkk..........",
+      "...kabbacdk.........",
+      "...kabbacdk.........",
+      "...kabbacdk.........",
+      "....kefegk..........",
+      "....kefegk..kkkk....",
+      "....kefegk.khhiik...",
+      "....kefegk.khiijk...",
+      "....kabadkkkiijjk...",
+      "....kefeghhhjjllk...",
+      "....kefegiiiihilk...",
+      "....kefegkkkihilk...",
+      "....kefegk.kihilk...",
+      "....kefegk.kihilk...",
+      "....kefegk.kimnnk...",
+      "....kefegk.kinnok...",
+      ".....kbck..kioopk...",
+      "..kkkkbckkkkihilk...",
+      ".khhqrrrrrhhhhilk...",
+      ".klllllllllllhilk...",
+      "..kkkkkkkkkkihilk...",
+      "...........kihilk...",
+      "...........kihilk...",
+      "...kkkkkkkkkihilk...",
+      "..khhhhhhhhhhhhhhk..",
+      "..kiiiiiiiiiiiiijk..",
+      "..kllllllllllllllk..",
+      "...kkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#8894a6",
+      "b": "#b8c2d0",
+      "c": "#5e6a7e",
+      "d": "#424a5c",
+      "e": "#e6eaf0",
+      "f": "#ffffff",
+      "g": "#8892a4",
+      "h": "#6a7488",
+      "i": "#4a5266",
+      "j": "#363c4e",
+      "l": "#262a38",
+      "m": "#fff0a8",
+      "n": "#e8c25a",
+      "o": "#b8902e",
+      "p": "#86621e",
+      "q": "#f2fbff",
+      "r": "#bfe2f4"
+     },
+     "fit": "실험 탁자 옆, 꽃밭 가까이",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "현미경 접안렌즈에 한쪽 눈을 대고 유리판을 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "큰 현미경으로 이슬방울을 들여다보고 우와 하고 감탄했다.",
+        "큰 현미경에 눈을 댔는데 반대쪽 눈을 감는 걸 잊었다."
+       ]
+      },
+      {
+       "w": "벌레 타입",
+       "a": "유리판 위로 기어 올라가 렌즈 아래에서 관찰 대상인 척 가만히 있어요",
+       "x": {
+        "at": [
+         0.3,
+         0.65
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "큰 현미경 유리판에 올라가 관찰받는 척 꼼짝 않고 있었다.",
+        "큰 현미경 렌즈 아래에서 멋진 포즈를 잡는다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "현미경 받침 뒤에 숨었다가 옆으로 빼꼼 얼굴을 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "큰 현미경 받침 뒤에 숨어 옆으로 빼꼼 내다본다.",
+        "큰 현미경 뒤에서 숨바꼭질 술래를 기다린다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "현미경 손잡이를 염동력으로 돌려 초점을 맞춰 줘요",
+       "x": {
+        "m": "skill",
+        "an": "Rotate"
+       },
+       "l": [
+        "염동력으로 큰 현미경 초점을 딱 맞춰 줬다.",
+        "큰 현미경 손잡이를 빙글 돌려 흐릿한 걸 또렷하게 만들었다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lab-solar-panel",
+     "n": "햇빛 판",
+     "k": "과학",
+     "glow": 0,
+     "d": "파란 칸이 바둑판처럼 나뉜 비스듬한 햇빛 판이에요. 옆의 노란 충전 상자에 번개 무늬가 그려져 있어 햇빛을 전기로 모아요.",
+     "px": [
+      "............................",
+      "........kkkkkkkkkkkkkkkkkkk.",
+      ".......kaaaaaaaaaaaaaaaaaabk",
+      "......kacccdccccdcceedcccbk.",
+      ".....kacccdccccdceecdcccbk..",
+      ".....kadddddddddddddddddbk..",
+      "....kacccdccccdecccdcccbk...",
+      "....kacccdcccedccccdcccbk...",
+      "...kacccdcceedccccdcccbk....",
+      "...kadddddddddddddddddbk....",
+      "..kacccdeeccdccccdcccbk.....",
+      "..kacccdecccdccccdcccbk.....",
+      ".kaccedccccdccccdcccbk......",
+      ".kbbbbbbbbbbbbbbbbbbbkkkkkk.",
+      "..kkkkkkkkkkkfgkkkkkkhhhhhhk",
+      "............kfgk...kkiiijilk",
+      "............kfgk..kggiijiilk",
+      "............kfgk...kkijjjilk",
+      ".........kkkkfgkkkk.kiijiilk",
+      "........kffffffffffkkmmmmmmk",
+      "........kbbbbbbbbbbk.kkkkkk.",
+      ".........kkkkkkkkkk........."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#9ab4e8",
+      "b": "#424a5c",
+      "c": "#3e62b0",
+      "d": "#1e3466",
+      "e": "#8eb0ec",
+      "f": "#b8c2d0",
+      "g": "#5e6a7e",
+      "h": "#ffe9a0",
+      "i": "#e8c25a",
+      "j": "#fff8d0",
+      "l": "#b8902e",
+      "m": "#86621e"
+     },
+     "fit": "해 잘 드는 풀밭, 실험 탁자 근처",
+     "acts": [
+      {
+       "w": "풀 타입",
+       "a": "햇빛 판 옆에 나란히 서서 같이 햇볕을 쬐며 광합성해요",
+       "x": {
+        "at": "side",
+        "an": "Sleep"
+       },
+       "l": [
+        "햇빛 판 옆에서 같이 햇볕을 쬐며 광합성을 한다. 누가 더 많이 모으나 시합 중.",
+        "햇빛 판 옆에 누워 따끈따끈 햇볕 충전을 했다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "노란 충전 상자에 꼬리를 대고 모인 전기를 쭉 빨아들여요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "an": "Attack",
+        "fx": "glow"
+       },
+       "l": [
+        "햇빛 판 충전 상자에서 전기를 쭉 빨아들이고 볼이 빵빵해졌다.",
+        "햇빛 판 상자에 꼬리를 대고 몰래 간식처럼 전기를 먹었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "비스듬한 햇빛 판 아래 그늘에 쏙 들어가 쉬어요",
+       "x": {
+        "at": "under",
+        "m": "hide"
+       },
+       "l": [
+        "햇빛 판 아래 시원한 그늘에 쏙 들어가 쉰다.",
+        "햇빛 판 그늘에 숨어 더위를 피했다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "햇빛 판 위로 날아와 앉았다가 미끄러져 퍼덕퍼덕 날아올라요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "햇빛 판 위에 앉았다가 주르륵 미끄러져 퍼덕였다.",
+        "햇빛 판 모서리에 앉아 반짝이는 자기 모습을 비춰 본다."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
    "at": 1794437310729,
    "theme": "숲속 꼬마 미술 교실",
    "note": "오늘은 숲속에 작은 미술 교실을 열었어요! 이젤·석고상·금빛 액자처럼 포켓몬이 들여다보고 흉내 내고 얼굴을 내밀 수 있는 소품 위주로 그렸고, 석고상엔 누가 베레모를 씌워 놓은 장난도 숨겨 뒀어요. 색상환 바람개비는 원판만 빙글빙글 돌아요.",

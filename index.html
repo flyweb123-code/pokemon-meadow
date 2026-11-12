@@ -67,7 +67,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .vc-none{margin:4px 0;font-size:12px;opacity:.7;line-height:1.5}
 #set .sheet-head #frGbIc[hidden]{display:none!important}#notiFv[hidden]{display:none!important}
 .vchat-b{position:fixed;z-index:6100;left:0;right:0;bottom:var(--kb,0px);transition:bottom .25s ease-out;background:rgba(32,32,44,.92);border-top:3px solid #f4ecd8;padding:8px 10px calc(10px + env(safe-area-inset-bottom))}.vchat-b .vc-log{max-height:120px}
-body.vOut.petting .vchat-b{display:none}   /* v16.09 경완: 필드에 나가 있을 때 포켓몬 상세카드를 열어도 아래 상태창·방향키 자리 그대로 */
+body.vOut.petting .vchat-b{display:none}body.visitMode.petting .vchat-b{display:block!important}   /* v16.09 경완: 필드에 나가 있을 때 포켓몬 상세카드를 열어도 아래 상태창·방향키 자리 그대로 */
 #set[data-pg=book],#set[data-pg=book] .win{background:#20202c;border-color:#20202c;box-shadow:none}
 #set[data-pg=book] .sheet-head{background:#20202c;margin-bottom:0;padding-top:12px;padding-bottom:10px;border-bottom:3px solid #f4ecd8}
 #set[data-pg=book] .sheet-head h3,#set[data-pg=book] #setBack{color:#ffd34a}
@@ -123,7 +123,7 @@ body.visitMode .berrybar{bottom:calc(var(--vpad-b, 170px) + 140px)!important;top
 body.visitMode #infBudGo,body.visitMode #infGame,body.visitMode #info .mvuse{display:none!important}
 body.visitMode #info .nm-edit{pointer-events:none}
 body.visitMode #info{align-self:start;margin-top:calc(env(safe-area-inset-top) + 74px)}   /* v15.05 경완: 손님 화면 포켓몬 상세카드는 위 '○○의 필드' 막대 밑으로 */
-body.visitMode.petting :is(.vpad,.vjump,.vchat-b){display:none}   /* v15.16 경완: 포켓몬 상세카드를 볼 땐 채팅창·방향키 그대로 */
+body.visitMode.petting :is(.vpad,.vjump){display:none}body.visitMode.petting #petBar{position:fixed;left:50%;bottom:var(--vpad-b,24px);top:auto;margin:0;transform:translateX(-50%);width:min(520px,calc(100% - 24px));z-index:6050}body.visitMode.petting #petBar.top{bottom:auto;top:calc(env(safe-area-inset-top) + 66px)}   /* v23.27 경완 '필드 놀러가서 씻기기나 쓰다듬을 때 아래 채팅창 사라지지 않게': 채팅창은 그대로, 쓰다듬기 안내 바는 채팅창 바로 위로 */   /* v15.16 경완: 포켓몬 상세카드를 볼 땐 채팅창·방향키 그대로 */
 .dlg .now .dface{float:left;width:40px;height:40px;margin:1px 9px 0 0;background-repeat:no-repeat;image-rendering:pixelated;border-radius:4px;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 0 3px rgba(0,0,0,.25)}.dlg .now.hasF{min-height:42px}
 /* v19.76 경완: 꾸미기 상점 상세카드 (체육관 상점 카드와 같은 틀). v19.79 경완: 직접 연 창이라 팝업 모션 없음, 설명·가방 개수·단추 모양도 체육관 카드 값 그대로 (gym.css .gy-pop) */
 #shop .stab>.shop-bar:not(#shopBar){display:none!important}   /* v20.19 경완: 음악 탭은 상세카드 전 아래 박스로 되돌림 */
@@ -2666,7 +2666,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
           <li><b>필드 포켓몬 그림·기술 효과</b>PMDCollab SpriteCollab 기여자 (CC BY-NC 4.0) · PMD Origins 효과음 (audinowho)</li>
           <li><b>배틀 포켓몬 그림</b>Smogon Sprite Project 기여자 · PokeAPI/sprites · EeveeExpo Animated Pokémon Sprites (Luka S.J., Smogon X/Y·Sun/Moon·Sword/Shield·Scarlet/Violet Sprite Project, Sprites Animados 기여자, Lucidious89, Golisopod User 외)</li>
           <li><b>배틀 연출</b>Lucidious89 — Deluxe Battle Kit, Animated Pokémon System, Animated Trainer Intros (+ Luka S.J.), Z-Power, Dynamax, Terastallization, Enhanced Battle UI, Improved Item AI, Wonder Launcher (Pokémon Essentials 플러그인)</li>
-          <li><b>5세대 이후 기술 연출·효과음</b>Gen 9 Move Animation Project (KRLW890, Nut0066, Toxillian, QuahogTheCreator, Lcorp, Shashu-Greninja 외, St. Cooler Gen 8 Project 이어받음) · 특성 소리 Elite Battle System (Luka S.J.)</li>
+          <li><b>5세대 이후 기술 연출·효과음</b>Gen 9 Move Animation Project (KRLW890, Nut0066, Toxillian, QuahogTheCreator, Lcorp, Shashu-Greninja 외, St. Cooler Gen 8 Project 이어받음) · 특성 소리·배틀 시작 VS 전환 그림 Elite Battle System (Luka S.J.)</li>
           <li><b>배틀 규칙</b>Pokémon Showdown (Guangcong Luo 외, MIT)</li>
           <li><b>맵·트레이너·걸음 그림·곡·효과음</b>pret (pokered, pokecrystal, pokeemerald, pokefirered, pokeplatinum, pokeheartgold) · rh-hideout pokeemerald-expansion</li>
           <li><b>울음소리</b>PokeAPI cries</li>
@@ -5094,7 +5094,7 @@ EXTRA_PAIRS.forEach(([A, B, kind, mo, p, txt, w = 25], i) => PAIR_RULES.push({
   w, make: (a, b) => ({ key: 'x' + i, kind, mo, p, text: () => txt(a, b) }) }));
 
 const TYPE_RULES = [
-  [(a, b) => has(a, WAT) && has(b, FIR), 7, (a, b) => ({ key: 'water-fire', kind: 'chat', ea: '♪', eb: '#',
+  [(a, b) => has(a, WAT) && has(b, FIR), 7, (a, b) => ({ key: 'water-fire', kind: 'chat', mo: 'spray', p: { cls: 'splash' }, ea: '♪', eb: '#',
     text: () => `${J(a,'이/가')} 물을 뿜어 ${N(b)}의 불꽃을 쉬익 꺼트렸다! ${J(b,'은/는')} 잔뜩 화가 났다.`, rel: [-9, -4],
     start: () => { for (let i = 0; i < 5; i++) particle(b.x + rnd(-14, 14), b.y - b.h * .6, 'splash', '', d => d.style.setProperty('--dx', rnd(-20, 20) + 'px')); } })],
   [(a, b) => has(a, FIR) && has(b, GRA) && !has(b, FIR), 7, (a, b) => ({ key: 'fire-grass', kind: 'scared',
@@ -5106,21 +5106,21 @@ const TYPE_RULES = [
     start: () => { burst(b, 'spark', '✦', 5); anim(b, 'hop'); } })],
   [(a, b) => has(a, ELE) && has(b, GRO), 7, (a, b) => ({ key: 'elec-ground', kind: 'chat', ea: '?', eb: '…',
     text: () => `${J(a,'이/가')} 장난삼아 전기를 쏘아 봤지만 ${J(b,'은/는')} 끄떡도 없다.`, start: () => burst(a, 'spark', '✦', 3) })],
-  [(a, b) => has(a, ELE) && has(b, ELE), 7, (a, b) => ({ key: 'elec-elec', kind: 'care', ea: '♥', eb: '♥',
+  [(a, b) => has(a, ELE) && has(b, ELE), 7, (a, b) => ({ key: 'elec-elec', kind: 'care', mo: 'hug', p: { t: ['✦', '♥'], cls: 'spark' }, ea: '♥', eb: '♥',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 볼을 맞대고 전기를 나눈다. 둘 다 기운이 났다.`,
     start: () => { burst(a, 'spark', '✦', 4); burst(b, 'spark', '✦', 4); } })],
-  [(a, b) => has(a, WAT) && has(b, WAT), 6, (a, b) => ({ key: 'water-water', kind: 'play',
+  [(a, b) => has(a, WAT) && has(b, WAT), 6, (a, b) => ({ key: 'water-water', kind: 'play', mo: 'romp', p: { fx: 'splash' },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 신나게 물장구를 친다.`, start: () => { splashAt(a); splashAt(b); } })],
-  [(a, b) => has(a, GRA) && has(b, GRA) && weather() !== 'rain' && !isNight(), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', ea: '☀', eb: '☀',
+  [(a, b) => has(a, GRA) && has(b, GRA) && weather() !== 'rain' && !isNight(), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', mo: 'bask', ea: '☀', eb: '☀',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 나란히 서서 잎을 펼치고 광합성을 한다.` })],
   [(a, b) => has(a, FIR) && has(b, FIR), 6, (a, b) => ({ key: 'fire-fire', kind: 'show',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 누구 불꽃이 더 큰지 겨룬다!`, start: () => { burst(a, 'flame', '✹', 4); burst(b, 'flame', '✹', 4); } })],
   [(a, b) => has(a, FLY) && has(b, BUG) && !has(b, FLY), 7, (a, b) => ({ key: 'bird-bug', kind: 'chase',
     text: () => `${J(a,'이/가')} 사냥 본능이 발동했다! ${J(b,'은/는')} 혼비백산 도망친다.`,
     end: () => `${J(a,'은/는')} ${J(b,'을/를')} 놓쳤다. ${J(b,'은/는')} 풀숲에 숨어 숨을 고른다.` })],
-  [(a, b) => has(a, BUG) && has(b, GRA), 6, (a, b) => ({ key: 'bug-grass', kind: 'chat', ea: '♪', eb: '#',
+  [(a, b) => has(a, BUG) && has(b, GRA), 6, (a, b) => ({ key: 'bug-grass', kind: 'chat', mo: 'snip', p: { t: ['❦', '사각'], after: '#', hurt: 1, y: .7 }, ea: '♪', eb: '#',
     text: () => `${J(a,'이/가')} ${N(b)}의 잎사귀를 몰래 갉아먹었다! ${J(b,'은/는')} 단단히 삐졌다.`, rel: [-10, -5], fin: () => { a.hunger = clamp(a.hunger - 20); } })],
-  [(a, b) => has(a, FLY) && has(b, FLY), 6, (a, b) => ({ key: 'fly-fly', kind: 'play',
+  [(a, b) => has(a, FLY) && has(b, FLY), 6, (a, b) => ({ key: 'fly-fly', kind: 'play', mo: 'circle', p: { fly: 1, t: ['♪', '~'], cls: 'note' },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 나란히 하늘을 빙글빙글 돈다.` })],
   [(a, b) => has(a, GHO) && has(b, NOR) && !has(b, GHO), 7, (a, b) => ({ key: 'ghost-normal', kind: 'chat', ea: '?', eb: '?',
     text: () => `${J(a,'이/가')} ${N(b)}에게 장난을 치려다 몸을 그냥 통과해 버렸다. 서로 어리둥절하다.` })],
@@ -5130,9 +5130,9 @@ const TYPE_RULES = [
     text: () => `${J(b,'이/가')} ${J(a,'을/를')} 보자마자 등골이 오싹해져 물러난다.` })],
   [(a, b) => has(a, DAR) && has(b, PSY), 7, (a, b) => ({ key: 'dark-psy', kind: 'chase',
     text: () => `${J(a,'이/가')} 명상 중인 ${N(b)}의 집중을 깨뜨리며 놀려댄다!`, end: () => `${J(b,'은/는')} 결국 자리를 옮겼다. ${J(a,'은/는')} 킥킥거린다.` })],
-  [(a, b) => has(a, FIG) && (has(b, ROC) || has(b, STE)), 7, (a, b) => ({ key: 'fight-rock', kind: 'show',
+  [(a, b) => has(a, FIG) && (has(b, ROC) || has(b, STE)), 7, (a, b) => ({ key: 'fight-rock', kind: 'show', mo: 'snip', p: { t: ['얍!', '팍!'], cls: 'hit', y: .5, gap: .8, n: 1, still: 1, after: '…' }, win: () => [b, a],
     text: () => `${J(a,'이/가')} 단단한 ${J(b,'을/를')} 상대로 수련을 시작했다!`, end: (x, y, w) => `${J(a,'은/는')} 주먹이 얼얼한지 손을 털었다. ${J(b,'은/는')} 꿈쩍도 하지 않았다.` })],
-  [(a, b) => has(a, FIG) && has(b, NOR), 6, (a, b) => ({ key: 'fight-normal', kind: 'show',
+  [(a, b) => has(a, FIG) && has(b, NOR), 6, (a, b) => ({ key: 'fight-normal', kind: 'show', mo: 'push', p: { t: ['끙!', '으랏!'] },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 팔씨름 한판 승부!` })],
   [(a, b) => has(a, PSY) && has(b, FIG), 7, (a, b) => ({ key: 'psy-fight', kind: 'chat', mo: 'float', p: { aura: 1, h: 45 }, ea: '♪', eb: '!!',
     text: () => `${J(a,'이/가')} 염력으로 ${J(b,'을/를')} 둥실 띄워 올렸다! ${J(b,'은/는')} 허공에서 둥둥 떠 있다.`, rel: [-3, 2] })],
@@ -5140,19 +5140,19 @@ const TYPE_RULES = [
     text: () => `드래곤인 ${J(b,'이/가')} ${J(a,'을/를')} 보고 움찔 물러선다. 페어리는 상대하기 껄끄러운가 보다.` })],
   [(a, b) => has(a, POI) && has(b, FAI), 7, (a, b) => ({ key: 'poison-fairy', kind: 'scared',
     text: () => `${J(b,'이/가')} ${N(a)}의 독기에 코를 막고 질색한다.` })],
-  [(a, b) => has(a, FAI) && !has(b, POI) && !has(b, STE), 4, (a, b) => ({ key: 'fairy-gift', kind: 'care', ea: '♥', eb: '♥',
+  [(a, b) => has(a, FAI) && !has(b, POI) && !has(b, STE), 4, (a, b) => ({ key: 'fairy-gift', kind: 'care', mo: 'feed', p: { t: '✿', cls: 'heart', keep: 1 }, ea: '♥', eb: '♥',
     text: () => `${J(a,'이/가')} ${N(b)}에게 반짝이는 꽃 한 송이를 건넸다.` })],
-  [(a, b) => has(a, ICE) && has(b, WAT), 6, (a, b) => ({ key: 'ice-water', kind: 'play',
+  [(a, b) => has(a, ICE) && has(b, WAT) && walker(a) && walker(b), 6, (a, b) => ({ key: 'ice-water', kind: 'play',
     text: () => `${J(a,'이/가')} 연못가를 얼려 미끄럼틀을 만들었다. ${J(b,'과/와')} 함께 쭉쭉 미끄러진다.` })],
-  [(a, b) => has(a, WAT) && (has(b, ROC) || (has(b, GRO) && !has(b, WAT))), 6, (a, b) => ({ key: 'water-rock', kind: 'chat', ea: '♪', eb: '#',
+  [(a, b) => has(a, WAT) && (has(b, ROC) || (has(b, GRO) && !has(b, WAT))), 6, (a, b) => ({ key: 'water-rock', kind: 'chat', mo: 'spray', p: { cls: 'splash' }, ea: '♪', eb: '#',
     text: () => `${J(a,'이/가')} ${N(b)}에게 물을 끼얹었다. ${J(b,'은/는')} 젖는 게 질색이다.`, rel: [-6, -3], start: () => splashAt(b) })],
-  [(a, b) => has(a, GRO) && has(b, WAT) && !has(b, FLY), 5, (a, b) => ({ key: 'ground-water', kind: 'play',
+  [(a, b) => has(a, GRO) && has(b, WAT) && !has(b, FLY), 5, (a, b) => ({ key: 'ground-water', kind: 'play', mo: 'romp', p: { fx: 'mud' },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 연못가에서 진흙놀이를 한다. 둘 다 흙투성이가 됐다.`, start: () => { dustAt(a); dustAt(b); } })],
-  [(a, b) => (has(a, STE) || has(a, ROC)) && (has(b, STE) || has(b, ROC)), 6, (a, b) => ({ key: 'hard-hard', kind: 'show',
+  [(a, b) => (has(a, STE) || has(a, ROC)) && (has(b, STE) || has(b, ROC)), 6, (a, b) => ({ key: 'hard-hard', kind: 'show', mo: 'bonk', p: { t: ['쿵!', '깡!'] },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 박치기로 누가 더 단단한지 겨룬다! 쿵! 쿵!` })],
   [(a, b) => has(a, DRA) && has(b, DRA), 7, (a, b) => ({ key: 'dragon-dragon', kind: 'fight',
     text: () => `${J(a,'과/와')} ${N(b)}, 용의 자존심이 걸린 대결이 시작됐다!` })],
-  [(a, b) => has(a, NOR) && has(b, NOR), 4, (a, b) => ({ key: 'normal-normal', kind: 'care',
+  [(a, b) => has(a, NOR) && has(b, NOR), 4, (a, b) => ({ key: 'normal-normal', kind: 'care', mo: 'snip', p: { t: ['✧', '♪'], cls: 'note', y: .6, gap: .9, n: 1, after: '♥' },
     text: () => `${J(a,'이/가')} ${N(b)}의 털을 정성껏 골라 준다.` })],
   [(a, b) => has(a, PSY) && has(b, PSY), 6, (a, b) => ({ key: 'psy-psy', kind: 'chat', ea: '…', eb: '…',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 눈을 감고 마주 앉았다. 텔레파시로 대화하는 것 같다.` })],
@@ -5160,7 +5160,7 @@ const TYPE_RULES = [
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 서로의 독 냄새를 맡더니 마음에 들어 한다.` })],
   [(a, b) => has(a, ROC) && has(b, ROC), 5, (a, b) => ({ key: 'rock-rock', kind: 'chat', ea: '…', eb: '…',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 꼼짝 않고 나란히 서 있다. 대화 중인 걸까?`, dur: 10 })],
-  [(a, b) => has(a, ICE) && has(b, ICE), 6, (a, b) => ({ key: 'ice-ice', kind: 'play',
+  [(a, b) => has(a, ICE) && has(b, ICE), 6, (a, b) => ({ key: 'ice-ice', kind: 'play', mo: 'volley', p: { cls: 'note', t: ['❄', '❅'] },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 눈뭉치를 던지며 눈싸움을 한다.` })],
   [(a, b) => has(a, BUG) && has(b, BUG), 5, (a, b) => ({ key: 'bug-bug', kind: 'chat',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 더듬이를 맞대고 인사한다.` })],
@@ -5204,7 +5204,7 @@ const PROC = [
     (a, b) => `${J(a,'이/가')} ${N(b)}의 꼬리를 살짝 잡아당겼다. ${J(b,'이/가')} 홱 돌아본다.`], rel: [-5, -2] },
   { w: 3, when: (a, b) => [8].includes(SPm(a).sh) && SPm(b).sh === 8, kind: 'chat', mo: 'sniff', p: {}, lines: [
     (a, b) => `네 발 달린 ${J(a,'과/와')} ${J(b,'이/가')} 서로 빙글빙글 돌며 냄새로 인사한다.`] },
-  { w: 3, when: (a, b) => SPm(a).sh === 12 && [8, 6].includes(SPm(b).sh) && kg(b) < kg(a) * 2, kind: 'care', mo: 'hug', p: { t: ['♥', '쓰담'] }, lines: [
+  { w: 3, when: (a, b) => SPm(a).sh === 12 && [8, 6].includes(SPm(b).sh) && kg(b) < kg(a) * 2, kind: 'care', mo: 'pat', p: {}, lines: [
     (a, b) => `${J(a,'이/가')} ${N(b)}의 머리를 쓰다듬어 준다. ${J(b,'은/는')} 눈을 가늘게 뜨고 좋아한다.`] },
   { w: 3, when: (a, b) => SPm(a).sh === 10, kind: 'play', mo: 'wrap', p: { t: ['ㅋㅋ', '!'], cls: 'note', soft: 1, spd: 2 }, lines: [
     (a, b) => `${J(a,'이/가')} ${has(a, GRA) ? '덩굴' : '촉수'}로 ${J(b,'을/를')} 간질간질 간지럽힌다. ${J(b,'은/는')} 웃음을 참지 못한다.`] },
@@ -5212,7 +5212,7 @@ const PROC = [
     (a, b) => `길쭉한 ${J(a,'이/가')} ${N(b)} 주위를 스르륵 감아 돈다.`] },
   { w: 2, when: (a, b) => SPm(b).sh === 11, kind: 'chat', mo: 'stare', p: { t: ['?', '??'] }, lines: [
     (a, b) => `${J(a,'이/가')} ${N(b)} 앞에서 머뭇거린다. 어느 머리에게 인사해야 할지 모르겠다.`] },
-  { w: 3, when: (a, b) => SPm(a).sh === 1, kind: 'play', mo: 'circle', p: { t: ['데굴', '♪'], cls: 'note' }, lines: [
+  { w: 3, when: (a, b) => SPm(a).sh === 1, kind: 'play', mo: 'sniff', p: { t: ['데굴', '♪'], spd: 2.2 }, lines: [
     (a, b) => `동글동글한 ${J(a,'이/가')} 데굴데굴 굴러 ${N(b)} 주위를 맴돈다.`] },
   { w: 2, when: (a, b) => kg(a) > 200 && kg(b) > 200, kind: 'show', mo: 'bonk', p: { t: ['쿵!', '으라차!'] }, lines: [
     (a, b) => `${kg(a) | 0}kg ${J(a,'과/와')} ${kg(b) | 0}kg ${N(b)}, 육중한 몸끼리 스모를 시작했다!`] },
@@ -5242,7 +5242,7 @@ const PROC = [
     (a, b) => `${J(a,'이/가')} 찌릿찌릿 정전기를 날렸다. 젖어 있던 ${J(b,'이/가')} 털이 쭈뼛 섰다!`], rel: [-6, -2] },
   { w: 3, when: (a, b) => has(a, ICE) && !has(b, FIR), kind: 'play', mo: 'spray', p: { cls: 'note', t: ['❄', '❅'], soft: 1 }, lines: [
     (a, b) => `${J(a,'이/가')} ${N(b)} 머리 위에 눈송이를 소복소복 뿌려 준다.`] },
-  { w: 3, when: (a, b) => has(a, FIR) && has(b, ICE), kind: 'chat', mo: 'spray', p: { cls: 'flame', t: '✹' }, lines: [
+  { w: 3, when: (a, b) => has(a, FIR) && has(b, ICE), kind: 'chat', mo: 'spray', p: { cls: 'flame', t: '✹', flee: 1 }, lines: [
     (a, b) => `${J(a,'이/가')} 다가가자 ${N(b)}의 몸이 녹아내리기 시작했다! ${J(b,'은/는')} 허겁지겁 물러난다.`], rel: [-6, -2] },
   { w: 2, when: (a, b) => has(a, GRO) && walker(b), kind: 'play', mo: 'spray', p: { cls: 'dust', t: '', soft: 1 }, lines: [
     (a, b) => `${J(a,'이/가')} 앞발로 흙을 파헤쳐 ${N(b)}에게 흙먼지를 뒤집어씌웠다.`] },
@@ -5260,7 +5260,7 @@ const PROC = [
     (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 공중에서 서로를 쫓으며 빙글빙글 춤을 춘다.`] },
   { w: 2, when: (a, b) => T(a).mv === 'swim' && T(b).mv === 'swim', kind: 'play', mo: 'circle', p: { t: '~', cls: 'splash' }, lines: [
     (a, b) => `${J(a,'과/와')} ${J(b,'이/가')} 연못 속을 빙글빙글 돌며 헤엄친다.`] },
-  { w: 2, when: (a, b) => (has(a, ROC) || has(a, STE)) && kg(a) > 50, kind: 'chat', mo: 'stare', p: { t: ['…', '쿵'] }, lines: [
+  { w: 2, when: (a, b) => (has(a, ROC) || has(a, STE)) && kg(a) > 50, kind: 'chat', mo: 'snip', p: { rev: 1, still: 1, t: ['톡톡', '?'], cls: 'note', y: .5, gap: 1, n: 1, after: '!?' }, lines: [
     (a, b) => `${J(a,'이/가')} 꼼짝도 하지 않자 ${J(b,'이/가')} 바위인 줄 알고 톡톡 두드려 본다.`] },
   // background
   { w: 3, when: (a, b) => shareEgg(a, b), kind: 'care', mo: 'hug', p: {}, lines: [
@@ -5300,7 +5300,7 @@ function sceneCandidates(a, b) {
     for (const [cond, w, make] of TYPE_RULES) if (cond(x, y)) add(w, Object.assign(make(x, y), { roles: [x, y] }));
   }
   // same species
-  if (a.sp === b.sp) add(10, { key: 'same', kind: pick(['play', 'care']), text: () => `같은 ${SPD(a.sp).n}끼리 반가워하며 서로 냄새를 맡는다.` });
+  if (a.sp === b.sp) add(10, { key: 'same', kind: pick(['play', 'care']), mo: 'sniff', p: { t: ['킁킁', '♪'] }, roles: [a, b], text: () => `같은 ${SPD(a.sp).n}끼리 반가워하며 서로 냄새를 맡는다.` });
   // evolution family
   if (sameFamily(a, b)) {
     const [old, young] = evoStage(a.sp) >= evoStage(b.sp) ? [a, b] : [b, a];
@@ -5309,7 +5309,7 @@ function sceneCandidates(a, b) {
     if (up) add(8, { key: 'family-pat', kind: 'care', mo: 'pat', p: {}, roles: [old, young], text: () => pick([`${J(old,'이/가')} ${J(young,'을/를')} 귀여운 듯 쓰다듬어 준다.`, `${J(old,'이/가')} ${N(young)}의 머리를 살살 쓰다듬는다. ${J(young,'은/는')} 기분이 좋아 보인다.`, `${J(young,'이/가')} ${N(old)}에게 폭 안기자 ${J(old,'이/가')} 귀여워 어쩔 줄 모른다.`]) });
     if (up && wk(old) && wk(young) && !noRide(young) && (old.w || 40) * (old.h || 40) >= (young.w || 40) * (young.h || 40) * 1.3) add(7, { key: 'family-carry', kind: 'care', mo: 'perch', p: { at: 'back', t: ['♥', '♪'], cls: 'heart' }, roles: [old, young], text: () => pick([`${J(old,'이/가')} ${J(young,'을/를')} 등에 업고 필드를 산책한다.`, `${J(young,'이/가')} ${N(old)} 등에 업혔다. ${J(old,'은/는')} 든든한 형님 같다.`]) });
     if (up && wk(old) && wk(young)) add(5, { key: 'family-side', kind: 'chat', mo: 'side', p: { fam: 1 }, roles: [old, young], text: () => `${J(young,'이/가')} ${N(old)} 옆에 꼭 붙어 앉는다. 둘이 꼭 닮았다.` });
-    add(5, { key: 'family-show', kind: 'show', text: () => `${J(young,'이/가')} ${N(old)}에게 덤벼 보지만, 아직은 상대가 안 된다.`, end: () => `${J(old,'은/는')} 웃으며 ${J(young,'을/를')} 토닥여 주었다.` });
+    add(5, { key: 'family-show', kind: 'show', mo: 'snip', p: { t: ['얍!', '!'], cls: 'hit', y: .5, gap: .8, n: 1, still: 1, after: '♪' }, roles: [young, old], win: () => [old, young], fin: () => setTimeout(() => { if (!S.mons.includes(young) || !S.mons.includes(old)) return; faceTo(old, young.x); anim(young, 'nod'); for (let i = 0; i < 3; i++) particle(young.x + rnd(-8, 8), young.y - young.h * .95, 'heart', pick(['♥', '♡'])); }, 400), text: () => `${J(young,'이/가')} ${N(old)}에게 덤벼 보지만, 아직은 상대가 안 된다.`, end: () => `${J(old,'은/는')} 웃으며 ${J(young,'을/를')} 토닥여 주었다.` });
   }
   // legendaries
   for (const [x, y] of [R(a, b), R(b, a)]) {
@@ -5322,12 +5322,12 @@ function sceneCandidates(a, b) {
   // size
   for (const [x, y] of [R(a, b), R(b, a)]) {
     if (isBig(x) && isSmall(y)) {
-      add(5, { key: 'ride', kind: 'care', text: () => `${J(y,'이/가')} ${N(x)}의 등에 올라탔다. ${J(x,'은/는')} 개의치 않는다.` });
-      add(2, { key: 'squish', kind: 'scared', roles: [x, y], text: () => `${J(x,'이/가')} 털썩 주저앉는 바람에 ${J(y,'이/가')} 깔릴 뻔했다!` });
+      if (walker(x) && walker(y) && !noRide(y)) add(5, { key: 'ride', kind: 'care', mo: 'perch', p: { h: .6, at: 'back' }, roles: [x, y], text: () => `${J(y,'이/가')} ${N(x)}의 등에 올라탔다. ${J(x,'은/는')} 개의치 않는다.` });
+      add(2, { key: 'squish', kind: 'scared', roles: [x, y], start: () => { anim(x, 'shake'); dustAt(x); ring(x.x, x.y - 6); }, text: () => `${J(x,'이/가')} 털썩 주저앉는 바람에 ${J(y,'이/가')} 깔릴 뻔했다!` });
     }
-    if (isBaby(y) && !isBaby(x)) add(5, { key: 'babysit', kind: 'care', text: () => `${J(x,'이/가')} 아기 ${J(y,'을/를')} 돌봐 준다. ${J(y,'은/는')} 졸졸 따라다닌다.` });
+    if (isBaby(y) && !isBaby(x) && walker(x) && walker(y)) add(5, { key: 'babysit', kind: 'care', mo: 'follow', roles: [x, y], text: () => `${J(x,'이/가')} 아기 ${J(y,'을/를')} 돌봐 준다. ${J(y,'은/는')} 졸졸 따라다닌다.` });
   }
-  if (isBig(a) && isBig(b)) add(4, { key: 'big-big', kind: 'show', text: () => `${J(a,'과/와')} ${J(b,'이/가')} 몸집 겨루기를 한다. 쿵쿵 땅이 울린다!` });
+  if (isBig(a) && isBig(b)) add(4, { key: 'big-big', kind: 'show', mo: 'bonk', p: { t: ['쿵!', '쿵쿵!'] }, roles: [a, b], text: () => `${J(a,'과/와')} ${J(b,'이/가')} 몸집 겨루기를 한다. 쿵쿵 땅이 울린다!` });
   // scenes assembled from both Pokémon's traits
   for (const [x, y] of [R(a, b), R(b, a)]) procScenes(x, y, add);
   // generic fallbacks
@@ -5385,6 +5385,53 @@ const every = (sc, k, gap) => { sc[k] = (sc[k] ?? 0) - sc.dt; if (sc[k] <= 0) { 
 const once = (sc, k, at) => { if (!sc[k] && sc.mt >= at) { sc[k] = 1; return true; } return false; };
 const orbit = (m, c, ang, rx, ry) => { const x = c.x + Math.cos(ang) * rx, y = c.y + Math.sin(ang) * ry; faceTo(m, x); place(m, x, y); };
 const MOT = {
+  /* v23.29 경완 '숨바꼭질처럼 일지랑 모션 안 맞는 것': 고스트 숨바꼭질 · 몸 통과 · 얼음 미끄럼틀 · 꼬리 툭 */
+  'ghost-ghost': { dur: 10,
+    init(sc, a, b) { sc.c = sceneCenter(a, b, 80); sc.s = 0; },
+    tick(sc, a, b) {
+      const k = Math.floor(sc.mt / 2.4), ph = sc.mt - k * 2.4, h = k % 2 ? b : a, s = k % 2 ? a : b;
+      if (k !== sc.k) { sc.k = k; anim(h, 'vanish'); particle(h.x, h.y - h.h * .5, 'smoke', ''); emote(s, pick(['?', '어디?']), '', 1.2); }
+      if (ph > 1.2 && sc.ap !== k) { sc.ap = k; place(h, sc.c.x + rnd(-80, 80), sc.c.y + rnd(-24, 24)); h.act.classList.remove('vanish'); anim(h, 'appear'); particle(h.x, h.y - h.h, 'note', pick(['까꿍!', '♪'])); setTimeout(() => S.mons.includes(s) && s.partner === h && (faceTo(s, h.x), anim(s, 'hop')), 300); }
+      faceTo(s, h.x);
+    } },
+  'ghost-normal': { dur: 7,
+    init(sc, a, b) { sc.sd = a.x < b.x ? -1 : 1; sc.D = Math.max(34, (a.w + b.w) * .5); sc.y = b.y; },
+    tick(sc, a, b) {
+      const x0 = b.x + sc.sd * sc.D, x1 = b.x - sc.sd * sc.D;
+      if (sc.mt < 1) { place(a, a.x + (x0 - a.x) * Math.min(1, sc.dt * 4), a.y + (sc.y - a.y) * Math.min(1, sc.dt * 4)); faceTo(a, b.x); faceTo(b, a.x); }
+      else if (sc.mt < 2.6) { if (!sc.go) { sc.go = 1; strike(a); a.act.style.opacity = '.45'; setTimeout(() => { a.act.style.opacity = ''; }, 1800); } const u = (sc.mt - 1) / 1.6; place(a, x0 + (x1 - x0) * u, sc.y + 1); a.face = sc.sd > 0 ? 1 : -1; a.zAdd = 3; }
+      else { if (!sc.q) { sc.q = 1; a.act.style.opacity = ''; a.zAdd = 0; faceTo(a, b.x); faceTo(b, a.x); emote(a, '?', '', 1.6, 'sp-curious'); emote(b, '?', '', 1.6, 'sp-curious'); anim(b, 'hop'); } if (every(sc, 'e', 1.6)) anim(Math.random() < .5 ? a : b, 'nod'); }
+    },
+    end(sc, a, b) { a.act.style.opacity = ''; a.zAdd = 0; } },
+  'ice-water': { dur: 9,
+    init(sc, a, b) { const P = nearPond(a.x, a.y), ok = q => q.x > XL + 50 && q.x < XR - 50 && q.y > MIN_Y + 10 && q.y < MAX_Y - 8 && pondVal(q.x, q.y) > 1.15, on = t => ({ x: P.x + Math.cos(t) * P.rx * 1.3, y: P.y + Math.sin(t) * P.ry * 1.3 });
+      let t0 = Math.atan2((a.y - P.y) / P.ry, (a.x - P.x) / P.rx), S0 = null, S1 = null;
+      for (let i = 0; i < 24 && !S1; i++) { const t = t0 + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * Math.PI / 12; if (ok(on(t)) && ok(on(t + .45))) { S0 = on(t); S1 = on(t + .45); } }
+      if (!S1) { S0 = { x: clamp(a.x - 70, XL + 50, XR - 50), y: a.y }; S1 = { x: clamp(a.x + 70, XL + 50, XR - 50), y: a.y }; }
+      sc.S0 = S0; sc.S1 = S1; },
+    tick(sc, a, b) {
+      const now = performance.now(), go = (m, q, v) => { const dx = q.x - m.x, dy = q.y - m.y, d = Math.hypot(dx, dy); if (d < 2) return; const k = Math.min(1, v * sc.dt / d); faceTo(m, q.x); place(m, m.x + dx * k, m.y + dy * k); m.anOv = 'Walk'; m.anOvT = now + 250; };
+      const S0 = sc.S0, S1 = sc.S1, D = Math.max(26, (a.w + b.w) * .35), off = (q, k) => ({ x: q.x - (S1.x - S0.x) / Math.hypot(S1.x - S0.x, S1.y - S0.y || 1) * D * k, y: q.y + 3 * k });
+      if (sc.mt < 2) { go(a, S0, 70); go(b, off(S0, 1), 70); }
+      else if (sc.mt < 3) { faceTo(a, S1.x); if (every(sc, 'i', .08)) { const u = Math.random(); particle(S0.x + (S1.x - S0.x) * u + rnd(-6, 6), S0.y + (S1.y - S0.y) * u + rnd(-4, 4), 'note', pick(['❄', '❅'])); } if (once(sc, 'sh', 2)) { if (!playOnce(a, 'Shoot')) strike(a); } }
+      else { const seg = sc.mt < 5.5 ? 0 : 1, u0 = seg ? (sc.mt - 5.5) / 1.6 : (sc.mt - 3) / 1.6, u = Math.min(1, 1 - (1 - Math.min(1, u0)) ** 2), [P0, P1] = seg ? [S1, S0] : [S0, S1];
+        if (u0 <= 1) { const lead = { x: P0.x + (P1.x - P0.x) * u, y: P0.y + (P1.y - P0.y) * u }, back = { x: lead.x - (P1.x - P0.x) / (Math.hypot(P1.x - P0.x, P1.y - P0.y) || 1) * D, y: lead.y + 3 };
+          for (const [m, q] of [[a, lead], [b, back]]) { place(m, q.x, q.y); faceTo(m, P1.x); m.anOv = 'Idle'; m.anOvT = now + 250; }
+          if (every(sc, 't', .1)) particle(b.x + rnd(-6, 6), b.y - 2, 'note', '❅'); }
+        else if (once(sc, 'hp' + seg, sc.mt)) { anim(a, 'hop'); anim(b, 'hop'); particle((a.x + b.x) / 2, Math.min(a.y - a.h, b.y - b.h) - 6, 'note', '♪'); } }
+    },
+    end(sc, a, b) { a.anOv = b.anOv = null; } },
+  'dark-prank': { dur: 6,
+    init(sc, a, b) { b.face = a.x > b.x ? 1 : -1; sc.D = Math.max(20, (a.w + b.w) * .3); },
+    tick(sc, a, b) {
+      const now = performance.now();
+      if (sc.mt < 2.2) { b.face = a.x > b.x ? 1 : -1; const tx = b.x + b.face * sc.D, dx = tx - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy); if (d > 2) { const k = Math.min(1, 34 * sc.dt / d); place(a, a.x + dx * k, a.y + dy * k); } faceTo(a, b.x); a.anOv = 'Walk'; a.anOvT = now + 250; }
+      if (once(sc, 'tap', 2.2)) { strike(a); particle(b.x + b.face * b.w * .3, b.y - b.h * .4, 'hit', '툭'); }
+      if (once(sc, 'turn', 2.6)) { faceTo(b, a.x); anim(b, 'hop'); emote(b, '!?', 'anger', 1.6, 'sp-startle'); sc.back = 1; }
+      if (sc.back && sc.mt < 3.4) { place(a, a.x + (a.x < b.x ? -1 : 1) * 60 * sc.dt, a.y); }
+      if (once(sc, 'whis', 3.4)) { a.face = a.x < b.x ? 1 : -1; particle(a.x, a.y - a.h, 'note', '♪'); emote(a, '♪', 'note', 1.6); }
+    },
+    end(sc, a, b) { a.anOv = null; } },
   'kyogre-groudon': { dur: 7,
     init(sc, a, b) { sc.c = sceneCenter(a, b, 90); },
     tick(sc, a, b) {
@@ -5521,12 +5568,13 @@ function zapBolt(a, b, thin) { const ns = 'http://www.w3.org/2000/svg', sv = doc
 const TPL = {
   // a works on b's head: trims leaves, pinches, licks, paints, dusts…
   snip: { dur: 7,
-    init(sc, a, b) { sc.tx = beside(a, b, .3); },
+    init(sc, a, b) { if (sc.p.rev) [a, b] = [b, a]; sc.tx = beside(a, b, .3); },   /* v23.29 경완 일지·동작 맞추기: rev = 뒤쪽 포켓몬이 하는 쪽, still = 맞는 쪽 꿈쩍 안 함 */
     tick(sc, a, b) {
+      if (sc.p.rev) [a, b] = [b, a];
       place(a, a.x + clamp(sc.tx - a.x, -40 * sc.dt, 40 * sc.dt), a.y + clamp(b.y - a.y, -30 * sc.dt, 30 * sc.dt)); faceTo(a, b.x); faceTo(b, a.x);
       if (every(sc, 'k', sc.p.gap || .75)) { strike(a); for (let i = 0; i < (sc.p.n || 2); i++) particle(b.x + rnd(-b.w * .3, b.w * .3), b.y - b.h * (sc.p.y || .9) + rnd(-6, 6), sc.p.cls || 'leaf', pick([].concat(sc.p.t || '❦'))); }
-      if (every(sc, 'r', 1.6)) { if (sc.p.hurt) hurt(b); else anim(b, 'nod'); }
-      if (once(sc, 'end', 6.2)) { anim(b, 'hop'); emote(b, sc.p.after || '♪', 'note', 1.6, 'sp-end'); }
+      if (every(sc, 'r', 1.6) && !sc.p.still) { if (sc.p.hurt) hurt(b); else anim(b, 'nod'); }
+      if (once(sc, 'end', 6.2)) { if (!sc.p.still) anim(b, 'hop'); emote(b, sc.p.after || '♪', 'note', 1.6, 'sp-end'); }
     } },
   // the partner (b) rides on the actor's (a) head or back while a strolls, or flies when p.fly; p.rev swaps who rides
   // v21.54 경완 '고래왕은 하도 커서 포켓몬들 여럿이 등에 올라타는 상호작용': 고래왕이 물가로 와서 작은 포켓몬들을 태우고 연못을 한 바퀴 돈 뒤 같은 물가에 내려 준다
@@ -5702,6 +5750,7 @@ const TPL = {
     tick(sc, a, b) {
       const g = sc.mt * 2;
       orbit(a, sc.c, g, 55, 20); orbit(b, sc.c, g + Math.PI, 55, 20);
+      if (sc.p.fly) { const up = Math.min(1, sc.mt / 1.2, Math.max(0, (6.6 - sc.mt) / .9)); for (const q of [a, b]) q.xl = (winged(q) || T(q).mv === 'hover') ? up * 46 : 0; }   /* v23.29: 비행끼리 하늘을 빙글빙글 = 떠서 돈다 */
       if (every(sc, 'h', .55)) { const m = Math.random() < .5 ? a : b; anim(m, 'hop'); particle(sc.c.x + rnd(-20, 20), sc.c.y - 50, sc.p.cls || 'heart', pick([].concat(sc.p.t || '♥'))); }
     } },
   // a sprays something at b: water, fire, sparks, powder, sand…
@@ -5711,7 +5760,8 @@ const TPL = {
       const on = (sc.mt % 2) < 1.3;
       if (on && every(sc, 'pp', .07)) lineFx(a, b, sc.p.cls || 'splash', pick([].concat(sc.p.t || '')));
       if (on && every(sc, 'k', .9)) { if (!playOnce(a, 'Shoot') && !playOnce(a, 'SpAttack')) strike(a); }   /* v17.44 경완: 물·불꽃·가루 뿜기는 쏘기 동작 */
-      if (every(sc, 'h', 1.3)) { if (sc.p.soft) anim(b, 'hop'); else hurt(b); }
+      if (every(sc, 'h', 1.3) && !(sc.p.flee && sc.mt > 2.2)) { if (sc.p.soft) anim(b, 'hop'); else hurt(b); }
+      if (sc.p.flee && sc.mt > 2.2 && sc.mt < 4) { const d = b.x < a.x ? -1 : 1; place(b, b.x + d * 85 * sc.dt, b.y); b.face = d > 0 ? -1 : 1; b.anOv = 'Walk'; b.anOvT = performance.now() + 250; }   /* v23.29: 녹아내리면 허겁지겁 물러난다 */
     } },
   // a hands b food or a gift that floats across, then b eats it
   feed: { dur: 7,
@@ -5719,7 +5769,7 @@ const TPL = {
     tick(sc, a, b) {
       place(a, a.x + clamp(sc.tx - a.x, -50 * sc.dt, 50 * sc.dt), a.y); faceTo(a, b.x); faceTo(b, a.x);
       if (once(sc, 'give', 1.6)) { anim(a, 'hop'); for (let i = 0; i < 5; i++) setTimeout(() => { if (!S.mons.includes(b)) return; const k = i / 4; particle(a.x + (b.x - a.x) * k, a.y - a.h * .6 - Math.sin(k * Math.PI) * 30, sc.p.cls || 'note', sc.p.t || '●'); }, i * 110); }
-      if (once(sc, 'eat', 2.4)) { if (!playOnce(b, 'Eat')) anim(b, 'hop'); b.hunger = clamp(b.hunger - 30); }
+      if (once(sc, 'eat', 2.4)) { if (sc.p.keep) { anim(b, 'hop'); emote(b, '♥', 'heart', 1.6, 'sp-love'); } else { if (!playOnce(b, 'Eat')) anim(b, 'hop'); b.hunger = clamp(b.hunger - 30); } }   /* v23.29: keep = 선물(꽃)은 먹지 않고 받아서 좋아함 */
       if (sc.mt > 2.6 && every(sc, 'h', .9)) particle(b.x + rnd(-10, 10), b.y - b.h, 'heart', '♥');
     } },
   // cuddle up close with hearts
@@ -5803,8 +5853,52 @@ const TPL = {
     init(sc, a, b) { sc.c = { x: b.x, y: b.y }; },
     tick(sc, a, b) {
       place(b, sc.c.x, sc.c.y);
-      orbit(a, { x: b.x, y: b.y + 2 }, sc.mt * 1.2, Math.max(38, (a.w + b.w) * .42), 14); faceTo(b, a.x);
+      orbit(a, { x: b.x, y: b.y + 2 }, sc.mt * (sc.p.spd || 1.2), Math.max(38, (a.w + b.w) * .42), 14); faceTo(b, a.x);
       if (every(sc, 'q', 1.4)) particle(a.x, a.y - a.h, 'note', pick([].concat(sc.p.t || ['?', '킁킁'])));
+    } },
+  /* v23.29 경완 '일지랑 상호작용 모션 안 맞는 것 고쳐줘': 문장만 있던 장면들의 실제 동작 */
+  // arm-wrestle: both lock in close at the middle and push back and forth
+  push: { dur: 7,
+    init(sc, a, b) { sc.c = sceneCenter(a, b, 40); sc.d = Math.max(22, (a.w + b.w) * .28); },
+    tick(sc, a, b) {
+      const off = Math.sin(sc.mt * 1.7) * 10 + Math.sin(sc.mt * 4.3) * 3;
+      place(a, sc.c.x - sc.d + off, sc.c.y); place(b, sc.c.x + sc.d + off, sc.c.y); a.face = -1; b.face = 1;
+      if (every(sc, 'k', .9)) { sc.s = !sc.s; strike(sc.s ? a : b); particle(sc.c.x + off + rnd(-6, 6), sc.c.y - Math.max(a.h, b.h) * .7, 'hit', pick([].concat(sc.p.t || '끙!'))); }
+    } },
+  // snowball fight: each throws in turn, the other gets hit and hops
+  volley: { dur: 8,
+    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); },
+    tick(sc, a, b) {
+      faceTo(a, b.x); faceTo(b, a.x);
+      if (every(sc, 'k', 1)) { sc.s = !sc.s; const [p, q] = sc.s ? [a, b] : [b, a]; if (!playOnce(p, 'Shoot')) strike(p); for (let i = 0; i < 5; i++) setTimeout(() => S.mons.includes(p) && S.mons.includes(q) && lineFx(p, q, sc.p.cls || 'note', pick([].concat(sc.p.t || '❄'))), i * 60); setTimeout(() => { if (!S.mons.includes(q)) return; anim(q, 'hop'); particle(q.x, q.y - q.h, sc.p.cls || 'note', pick([].concat(sc.p.t || '❄'))); }, 380); }
+    } },
+  // a strolls around the field and b (a baby) toddles right behind
+  follow: { dur: 12,
+    init(sc, a, b) { sc.tg = null; },
+    tick(sc, a, b) {
+      const now = performance.now();
+      if (!sc.tg || Math.hypot(sc.tg.x - a.x, sc.tg.y - a.y) < 6 || sc.mt > sc.tgT) { sc.tgT = sc.mt + 3.5; let c = { x: clamp(a.x + rnd(-150, 150), XL + 50, XR - 50), y: clamp(a.y + rnd(-70, 70), MIN_Y + 30, MAX_Y - 20) }; if (inHud({ w: a.w || 60, h: a.h || 60 }, c.x, c.y)) c = outOfHud({ w: a.w || 60, h: a.h || 60 }, c); sc.tg = c; }
+      const mv = (m, tx, ty, v) => { const dx = tx - m.x, dy = ty - m.y, d = Math.hypot(dx, dy); if (d < 2) return; const k = Math.min(1, v * sc.dt / d); faceTo(m, tx); place(m, m.x + dx * k, m.y + dy * k); m.anOv = 'Walk'; m.anOvT = now + 250; };
+      if (sc.mt > .5) mv(a, sc.tg.x, sc.tg.y, 30);
+      const D = Math.max(26, (a.w + b.w) * .4); mv(b, a.x + a.face * D, a.y + 4, 40);
+      if (every(sc, 'h', 1.6)) particle(a.x + rnd(-8, 8), a.y - a.h, 'heart', '♥');
+      if (every(sc, 'n', 2.2)) anim(b, 'hop');
+    },
+    end(sc, a, b) { a.anOv = b.anOv = null; } },
+  // splash or mud play: the two keep hopping and splashing the whole scene
+  romp: { dur: 8,
+    init(sc, a, b) { faceTo(a, b.x); faceTo(b, a.x); },
+    tick(sc, a, b) {
+      if (every(sc, 'k', .45)) { const q = Math.random() < .5 ? a : b; anim(q, 'hop'); if (sc.p.fx === 'mud') { dustAt(q); particle(q.x + rnd(-10, 10), q.y - 4, 'dust'); } else splashAt(q); }
+      if (every(sc, 'e', 2)) particle((a.x + b.x) / 2, Math.min(a.y - a.h, b.y - b.h) - 6, 'note', pick(['♪', '♫']));
+    } },
+  // stand side by side facing the sun and spread leaves
+  bask: { dur: 9,
+    init(sc, a, b) { sc.tx = beside(a, b, .34); sc.f = a.x < b.x ? -1 : 1; },
+    tick(sc, a, b) {
+      place(a, a.x + clamp(sc.tx - a.x, -40 * sc.dt, 40 * sc.dt), a.y + clamp(b.y - a.y, -20 * sc.dt, 20 * sc.dt)); a.face = b.face = sc.f;
+      if (every(sc, 's', .5)) { const q = Math.random() < .5 ? a : b; particle(q.x + rnd(-q.w * .3, q.w * .3), q.y - q.h - rnd(6, 26), 'sun', '✹'); }
+      if (every(sc, 'n', 2.4)) anim(Math.random() < .5 ? a : b, 'nod');
     } },
   // side by side, hopping and spinning in step
   dance: { dur: 8,
@@ -5928,7 +6022,7 @@ function finishInteract(a, b) {
   if (k === 'play' || k === 'chat' || k === 'care') { maybeLike(a, b); if (likes(a, b) && likes(b, a)) addRel(a, b, 3); }
   if (k === 'show') {
     const pa = rnd(50, 100) * (1 + (T(a).aggr || 0)) * (1 + SPD(a.sp).atk / 100), pb = rnd(50, 100) * (1 + (T(b).aggr || 0)) * (1 + SPD(b.sp).atk / 100);
-    const [w, l] = Math.random() < pa / (pa + pb) ? [a, b] : [b, a];
+    const [w, l] = sc?.win ? sc.win() : Math.random() < pa / (pa + pb) ? [a, b] : [b, a];   /* v23.29: 문장에 승패가 정해진 장면(수련·진화 가족)은 그대로 */
     addRel(a, b, relD ?? rnd(2, 6));
     emote(w, '♪', 'note', 2.2, 'fight-win'); emote(l, '…', '', 2.2, 'play-lose');
     log(sc && sc.end ? sc.end(a, b, w, l) : pick([`${J(w,'이/가')} 근소하게 이겼다. 둘은 서로를 인정한 눈치다.`, `승부는 ${N(w)}의 승리! ${J(l,'은/는')} 다음엔 지지 않겠다는 표정이다.`]), [w, l]);
@@ -8261,6 +8355,7 @@ document.addEventListener('click', e => { const t = e.target.closest?.('h3, h4, 
   const paintG = () => { de.classList.add('gym-on'); menuDots(); try { window.gymBdgRow?.(); } catch (e) {} };
   try { paintG(); } catch (e) {} setInterval(() => { if (de.classList.contains('gym-on') && !document.hidden) menuDots(); }, 30e3);
   const L = $('#gymLoad'), dots = L.querySelector('.gl-dots'); let dT = 0;
+  document.body.append(L);   /* v23.28 경완 '미니게임 선택 화면에서 랭킹 보고 친구 필드 놀러가면 로딩 화면보다 미니게임 화면이 앞': 로딩 화면이 #app(position:fixed = 따로 쌓이는 층) 안에 있어서 z-index 9800 이어도 body 바로 밑 창(#mg 6000·#rank 6050)보다 뒤였음 → body 바로 밑으로 옮겨 늘 맨 앞 */
   const FLD_IC = '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M5 0h6v1h2v2h1v2h1v5h-1v1h-2v1h-3v4h-2v-4h-3v-1h-2v-1h-1v-5h1v-2h1v-2h2z"/><path fill="#3f9a4a" d="M5 1h6v1h2v2h1v1h1v5h-1v-1h-1v1h-2v1h-6v-1h-2v-1h-1v-5h1v-1h1v-2h2z"/><path fill="#68c46a" d="M5 2h4v1h2v1h1v2h-2v-1h-2v-1h-3v1h-2v-1h1v-1h1z"/><path fill="#2c6e36" d="M2 9h1v1h2v1h6v-1h2v-1h1v1h-1v1h-2v1h-6v-1h-2v-1h-1z"/><path fill="#8a5a32" d="M7 12h2v3h-2z"/><path fill="#5ab04a" d="M0 15h16v1h-16z"/></svg>';
   // 로딩 화면: 트레이너가 체육관으로 걸어간다 (out: 퇴근 = 체육관에서 걸어 나온다)
   // v11.94 경완 '체육관 출근할 때랑 퇴근할 때 별도 bgm': 로딩 화면 동안만 따로 튼다 (필드 곡은 멈추고, 끝나면 서서히 줄임)
@@ -8407,7 +8502,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '23.24';   /* v23.23 경완: 탑 쌓기 불태우기·사이코키네시스·매혹은 고르기 전 버튼 다시 누르면 취소 */   /* v23.21 경완: 탑 쌓기 역대 최고 높이 분홍 점선 + 처음 넘을 때 한 번 돌파 효과 */   /* v23.20 경완: 예전 기준으로 받은 탑 쌓기 미션 중 지금 기록이 새 기준에 못 미치는 칸 되돌리고 골드 거둠 */   /* v23.02 지역 폼 떠 있기 = 원래 폼 값 */   /* v22.55 기술 놀람 = 효과음 순간 */   /* v22.43 배턴터치·용의춤·용의파동·파워트릭·사이코부스트·심판의뭉치·공간절단·중력 효과음(플래티넘 슬롯·클라이맥스 소리 묶음), 상대 메가진화 빛은 filter 없이 캔버스로 하얗게(아이폰 네모 경계선) */   /* v22.40 창고 민트·새 물건 점도 모든 체육관 공유 */   /* v22.23 동네 체육관 훈련장 튜토리얼이 '훈련 중인 포켓몬을 눌러 보렴'에서 멈추던 것 */   /* v22.12 학습장치 창 아이콘 */   /* v22.11 배틀 친밀도 본가 기준 (레벨업·이긴 배틀·쓰러짐) */   /* v22.06 경완: 아이폰에서 채팅창 끊김 없이 펼치기, 보내기 버튼 되돌리고 오른쪽 여백 없앰 */   /* v21.78 경완: 배틀 폼 체인지 움직이는 그림(마이티폼·들킨 모습·꼬르륵 등 25개), 느리던 EeveeExpo 모션 속도 맞춤 */   /* v21.77 경완: 음번·대여르 이로치 = 지금 움직이는 그림에 이로치 색 */   /* v21.74 경완: 밤에 빛나는 포켓몬 앞뒤 판정 뿌리부터 (밤 그늘 판을 땅 위로, 나머지는 각자 밤빛 필터) */   /* v21.62 경완: 트레이너 혼자 탄 고래왕에 근처 포켓몬도 가끔 같이 */   /* v21.60 경완: 고래왕 숨 쉴 때 탄 트레이너도 같이 오르내림 */   /* v21.59 경완: 고래왕 뒷모습 두 명 앞뒤로 */   /* v21.58 경완: 고래왕 옆모습 등 안쪽·앞모습 정중앙 */   /* v21.57 경완: 고래왕 탄 트레이너 앞에 그리고 방향별 등 자리 */   /* v21.56 경완: 열매나무에 앉는 자리를 잎 가운데로 */   /* v21.55 경완: 고래왕 등에 트레이너도 2명까지 */   /* v21.54 경완: 고래왕 등에 여럿이 올라타 연못 한 바퀴 */   /* v21.44 경완: 고래왕 같은 큰 물 포켓몬이 연못 아래쪽에서 육지로 삐져나가던 것 */   /* v21.40 경완: 느린 폰에서 알 주움(새 소식) 알림창 확인 버튼이 잘 안 눌리던 것 — 버튼 모양 없이 글자만 있던 확인을 꽉 찬 입체 버튼으로, 창 뜬 동안 뒤 필드 덜 그림, 저장은 닫은 다음 */   /* v21.38 경완: 친구 필드 놀러가기 끊김 — 주인 창이 덮여도 손님 있으면 평소 속도, 손님 화면 30fps */   /* v21.30 경완 '따라큐 탈·본가랑 다른 거 검토': 탈 0 데미지 깜빡임 없앰, 빠진 본가 문장(묶기 시작·트레이스·프레셔 등)·특성 이름 */   /* v21.29 트레이너 체육관에 배치 버튼 없앰, 고용하면 모두 체육관 기본 자리에 */   /* v21.27 경완: 필터 효과음, 도감 칸 그림 빨리(dexth.json), 타입·도감 버튼 아이콘 */   /* v21.26 경완: 도감·박스 필터 누르면 바로 */   /* v21.25 경완: 히스이 폼 딱지 색 = 히스이 도감 가죽색 */   /* v21.24 경완: 지역 도감마다 카드 기계 모양, 도감 카드 지역 폼 딱지·분류 안 잘리게 */   /* v21.23 경완: 지역 폼 도감 설명 */   /* v21.22 경완: 지역 도감마다 도감 카드 색, 지역 도감 설명 */   /* v21.21 경완: 지역 도감 (관동~팔데아) 고르기, 지역 도감에선 그 지역 폼 칸 */   /* v21.20 경완: 지역 폼 딱지를 분류와 친밀도 사이 가운데로 */   /* v21.19 경완: 상세카드 지역 폼 딱지 (종류 밑·친밀도 위) */   /* v21.18 지원서 코치 실력을 특성 밑으로 */   /* v21.16 경완: 체육관 타입 알·이미 가진 타입 알도 타입 부화거리 */   /* v21.15 경완: 부화기 자동 채우기 — 남은 거리 비슷하면 타입 알 먼저 */   /* v21.14 경완: 지역 폼 이름은 원래 이름(야돈), 상세카드 분류 칸에 '가라르 폼' */   /* v21.13 경완: 알 주움·부화 준비 알림창은 확인 버튼으로만 닫힘 */   /* v21.12 레어 기술 설명창 한 줄 가운데·글자색 */   /* v21.09 레어 기술 칸 누르면 설명창 */   /* v21.08 훈련장 처음 들어갈 때 노란 바탕이 잠깐 보이던 것 */   /* v21.06 트레이너 상세카드 스크롤 없게, 훈련장 코치 딱지 정리, 훈련장 코치 효과 박스, 기술 설명 창 아이콘 뺌 */   /* v21.00 훈련장 다른 메뉴 다녀오면 +·포켓몬 안 눌리던 것, 코치 종류 딱지 가독성, 깨달은 기술 알림창 바로 */ /* v20.96 기술 코치 효과 2배, 훈련장 깨달음 % 표시 */ /* v20.94 훈련장 코치 3명, 같은 종류 겹치면 100·60·30% */ /* v20.93 홈 평판 게이지만 눌림 */ /* v20.92 코치 종류 경험치·노력치·기술 */ /* v20.91 훈련장 다른 메뉴·+ 화면 동안도 움직임 계산(순간이동 없음), 노력치·친밀도 오름 표시, 효과 글자 한 줄 */ /* v20.90 훈련장 + 화면이 덮는 동안 훈련장 안 그림, 주급 숫자 쉼표 */ /* v20.89 훈련장 몸 풀기 동작 (빙글빙글·구르기·점프·춤 등) */ /* v20.88 코치 한마디에 쓴 기술 이름, 훈련장 상세카드 지닌 도구 */ /* v20.87 훈련장 밥 시간 7~10분마다 */ /* v20.86 훈련장 밥 주는 시간 (코치가 그릇 놓으면 포켓몬이 와서 냠냠) */ /* v20.85 훈련장 덤불 앞은 기술·훈련 자리 아님, 기술로 맞춘 과녁 흔들림, 코치 말 가운데 */ /* v20.84 경완: 훈련장 코치 말 훨씬 다양하게(훈련별·이름 부르기) */ /* v20.83 경완: 훈련장 기술 이름 외치기 뺌 */ /* v20.82 경완: 횃대 앉을 때 발이 가지 두께 가운데 */   /* v20.81 경완: 훈련장 포켓몬들이 아는 기술 동작·효과로 훈련, 평판 게이지 → 등급표, 영양제 고르기 노력치 딱지 뺌, 일지에 상점 지출 안 씀 */ /* v20.80 경완: 상점 도구 탭 항목 필터, 영양제 창고·도구 사용에서 먹이기, 훈련장 슬롯 나무 판자 */ /* v20.79 경완: 횃대에 앉으면 발이 가지 위에 얹히게 */   /* v20.78 경완: 체육관 넓어짐 알림창 새 디자인(마지막 단계 완성됐어요), 훈련장 슬롯 능력치 훈련 딱지·디자인, 슬롯 레벨업 수 = 훈련 일지, 상점 새 칸 빨간 점 */ /* v20.77 경완 '원래대로, 물 왔다갔다 하는지 몰랐음': v20.76 바다 포켓몬 9종 물에서만 되돌림 */   /* v20.76 경완: 수레기 등 바다 포켓몬 9종 물에서만 다님 */   /* v20.75 경완: 배틀 특성 문장 빠진 것들(게으름·클리어바디류·베일·타입 바뀜·타오르는불꽃·슬로스타트·고대활성/쿼크차지·일루전·점착/흡반 등) 보이게 */   /* v20.74 경완: 배틀에서 예지몽·싱크로처럼 '발동' 줄로 나오는 특성도 특성 창으로 보임 (예지몽은 알아챈 기술까지) */   /* v20.73 경완: 체육관 열려 있고 평판 50 이상·자주 들어가는 사람은 미니게임 기록별 선물에 체육관 상점 지닌 도구·민트도 나옴 */   /* v20.72 경완: 창고에서 기술 가르치면 배웠다 창 다음 그 포켓몬 기술 목록 카드로 */   /* v20.71 경완: 방명록 손님 행동 줄 닉네임 뒤 조사·띄어쓰기 */   /* v20.70 경완: 체육관 상품 카드 보유 수 아이콘 가방 → 창고, 기술머신·레코드 가르칠 때 박스 화면 위에서 바로 잊을 기술 창, 기술 줄 오른쪽 잘림, 포켓몬 메뉴 예전 효과음 없앰, 훈련 일지 이름 줄 연필 */   /* v20.69 경완: 상점에서 산 것 창고 빨간 점, 창고 수량 딱지 오른쪽, 퇴근하면 상점 필터 처음대로, 창고·추천 기술 상세카드 = 상점 카드(TR 딱지·설명·1회용 안내), 상세카드 제목 가운데, 훈련 추천 카드 문구 크게·? 정렬 */   /* v20.68 경완: 탑 쌓기 미션 기록 초기화, 베타판에선 미션 기록 안 함 */   // v20.67 경완: 훈련장·트레이너·노력치 튜토리얼을 오프닝처럼 (강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기)   /* v20.61 경완: 훈련장 카드 노력치 훈련 박스 ? — 지금 좋은 훈련 힌트·바로 훈련하기 */   /* v20.60 경완: 도구 사용 화면 추천 도구 버튼·가진 도구 추천 딱지, 기술머신 배울 수 있는 포켓몬 누르면 상세카드, 승급 직전 평판은 관장이 직접 */   /* v20.68 경완: 상세카드 크기 통일·도구 없으면 점선 + 칸, 노력치 설정 ? 가운데·추천이 넣은 노력치도 다시 배분·영양제 1당 노력치 +10, 기술 가르치기 딱지 안 잘림 */   /* v20.58 경완: 탑 쌓기 이상해꽃·고래왕이 너무 자주 나오던 것 → 꼭대기 좁을 때 고르는 넓적한 포켓몬 2 → 16마리 */   /* v20.57 경완: 칠색조·루기아 하늘 지나갈 때 울음소리 메아리 */   /* v20.56 경완: 다이빙 튀어나오는 자리 호수 안쪽만 */   /* v20.55 경완: 강박사 노력치 튜토리얼 — 노력치 박스를 직접 눌러 설정 창을 연 뒤에 설정 창 설명 */   /* v20.54 경완: 노력치는 새내기 체육관부터 쌓이고(채우기·배틀), 보이는 건 동네 체육관부터 */   /* v20.53 경완: 다이빙 들어갈 때 물에 떠 있을 때 잘리는 선 기준으로 사라짐, 튀어오를 때 기술 효과 */   /* v20.52 경완: 원래 있던 포켓몬 노력치 채우기 (배틀 경험치로 쓰러뜨린 수 어림, 최근 배틀 상대 종) */   /* v20.51 경완: 탑 쌓기(베타)는 기록별 선물을 주지 않음, 이미 받은 선물 거둬들이고 받은 칸 초기화 */   /* v20.50 경완: 도전자 포켓몬 노력치(체육관 등급별), 만렙 포켓몬도 훈련장에 */   /* v20.49 경완: 탑 쌓기 시작할 때 게임 선택 화면이 한 번 비치던 것 → 상세창을 시작 카드 뜰 때 닫음 */   /* v20.48 경완: 미니게임·메뉴 중 필드 구멍 파기·전설 등장 소리 안 남 */   /* v20.47 경완: 노력치 — 체육관 동네 등급부터, 상세카드 노력치 박스·설정 창·훈련장 노력치 훈련·영양제·파워 도구, 코치 실력 개체별·훈련장 특성, 튜토리얼 */   /* v20.46 경완: 다이빙 나올 때 공격 효과 없이 크게 튀어올라 착지 */   /* v20.45 경완: 탑 쌓기 맨 처음 실행할 때도 하늘 화면 먼저 안 보이게·게임 파일 미리 받기, 앱 다녀오면 소리 다시 만들기, 아슬아슬 덤 점수 표시, 큰 포켓몬 35% → 22% */   /* v20.44 경완: 운영자 모드 '튜토리얼 시험' — 강박사 훈련장(노력치 설명)·트레이너 메뉴 튜토리얼 시안을 체육관 시뮬에서 (나가면 되돌림) */   /* v20.43 경완: 탑 쌓기에 어써러셔 추가 */   /* v20.42 경완: 탑 쌓기 큰 포켓몬 더 자주(약 35%) + 아주 큰 포켓몬 13종 추가(갸라도스·고래왕·밀로틱 등) */   /* v20.41 경완: 다이빙 — 물에 닿은 부분부터 사라지고, 물 위로 점프해 나와 착지 */   /* v20.40 경완: 탑 쌓기 중 앱 나가면 일시정지·곡 멈춤, 돌아오면 소리 다시 */   /* v20.39 경완: 탑 쌓기 시작할 때 하늘 화면 먼저 안 보이고 바로 시작 카드 */   /* v20.37 경완: 랭킹 포켓몬 박스에서 키 큰 그림(가라르 또도가스)이 잘리던 것 */   /* v20.30 경완: 나옹 열기구 동전 한 칸 더 낮춤 */   /* v20.28 경완: 나옹 열기구 동전을 머리 쪽으로 낮춰 이음새 기둥 없앰 */   /* v20.27 경완: 나옹 열기구 동전을 사진처럼 머리 위에 얹힌 둥근 동전으로, 체육관 아이콘 R 딱지 상하좌우 여백 같게(12×12) */   /* v20.25 경완: 나옹 열기구 이마 동전이 떠 보이던 것 → 머리에 붙은 작은 혹, 바구니에 로켓단 셋(긴 머리·나옹·앞머리) 그림자 */   /* v20.24 경완: 로켓단 점거 중 필드 하늘에 나옹 열기구 실루엣 (한자리 둥실, 밤엔 검정 + R 불빛) */   /* v20.23 경완: 탑 쌓기 점수 10배 → 4배 (기준·예전 기록도 4배에 맞춤), 베타 탑 쌓기 기록은 랭킹 서버에 안 올림 */   /* v20.22 경완: 탑 쌓기 점수 10배 (골드·친밀도·선물·미션 기준도 10배, 예전 기록도 10배) */   /* v20.21 경완: 미니게임 기록별 선물 가운데 세 칸(알 뽑기권 포함) 싼 것부터 낮은 점수에 */   /* v20.20 경완: 의상 상세카드에 의상별 설명, 들어가는 곳 문구는 옅게 가운데 */   /* v20.19 경완: 상점 음악 탭 아래 박스로 되돌림, 상점 그림 미리 읽기, 의상 상세카드 = 상점 카드 틀, 박스·도감 타입 필터 = 알 뽑기 순서 */   /* v20.18 경완: 꾸미기 포켓몬 박스·도감 타입 고르기 창 색 네모 → 타입 아이콘 */   /* v20.15 경완: 탑 쌓기 무게 아래로·흔들림 줄이기 늘 켬, 꾹 눌러 돌리기는 양옆만, 가장자리에 걸쳐 놓을 때 처음 닿는 회전 흡수 */   /* v20.13 경완: 체육관 이벤트 1 로켓단 점거 배포 (평판 180, 다음 실행부터, 계정당 한 번) */   /* v20.12 경완: 이벤트 필드 박물관 등 문 칸에 선 사람 머리가 문틀 위로 튀어나오던 것 */   /* v20.11 경완: 탑 쌓기 베타 설정 버튼(운영자) — 시안 설정·물리 테스트 4개, 바꾼 판은 기록·보상 없음 */   /* v20.10 경완: 필드 시험 때 아이콘 누르는 순간 R 딱지가 떨어져 도전자 수가 보이던 것 → 체육관에서 나올 때 뗌 */   /* v20.09 경완: 운영자 모드 '필드에서부터 해 보기' — 필드 R 딱지·사이렌·아지트 곡부터, 아이콘 누르면 시험 이벤트 (본 계정 그대로) */   /* v20.08 경완 2번: 로켓단 점거 딱지 떠 있는 동안 필드 곡 = FR 로켓단 아지트(evMus), 해결되면 원래 필드 곡 */   /* v20.06 경완: 밤에 다른 포켓몬과 겹칠 때 몬스터볼 스프링 탄 포켓몬이 스프링 뒤로 가던 것 */   /* v20.03 경완: 주간 결산 트레이너 수익이 그 주에 잡히게 */ /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '23.33';   /* 승급 심사 레벨 보너스 모든 등급 +2 */   /* 이름 있는 트레이너 재방문 팀 (3번째부터 조금씩 바뀜, 에픽·전설 알 포켓몬, 등급 천장 안) */   /* 필드 상호작용 일지 문장에 맞는 동작 (숨바꼭질·팔씨름·눈싸움·미끄럼틀 등) */   /* v23.23 경완: 탑 쌓기 불태우기·사이코키네시스·매혹은 고르기 전 버튼 다시 누르면 취소 */   /* v23.21 경완: 탑 쌓기 역대 최고 높이 분홍 점선 + 처음 넘을 때 한 번 돌파 효과 */   /* v23.20 경완: 예전 기준으로 받은 탑 쌓기 미션 중 지금 기록이 새 기준에 못 미치는 칸 되돌리고 골드 거둠 */   /* v23.02 지역 폼 떠 있기 = 원래 폼 값 */   /* v22.55 기술 놀람 = 효과음 순간 */   /* v22.43 배턴터치·용의춤·용의파동·파워트릭·사이코부스트·심판의뭉치·공간절단·중력 효과음(플래티넘 슬롯·클라이맥스 소리 묶음), 상대 메가진화 빛은 filter 없이 캔버스로 하얗게(아이폰 네모 경계선) */   /* v22.40 창고 민트·새 물건 점도 모든 체육관 공유 */   /* v22.23 동네 체육관 훈련장 튜토리얼이 '훈련 중인 포켓몬을 눌러 보렴'에서 멈추던 것 */   /* v22.12 학습장치 창 아이콘 */   /* v22.11 배틀 친밀도 본가 기준 (레벨업·이긴 배틀·쓰러짐) */   /* v22.06 경완: 아이폰에서 채팅창 끊김 없이 펼치기, 보내기 버튼 되돌리고 오른쪽 여백 없앰 */   /* v21.78 경완: 배틀 폼 체인지 움직이는 그림(마이티폼·들킨 모습·꼬르륵 등 25개), 느리던 EeveeExpo 모션 속도 맞춤 */   /* v21.77 경완: 음번·대여르 이로치 = 지금 움직이는 그림에 이로치 색 */   /* v21.74 경완: 밤에 빛나는 포켓몬 앞뒤 판정 뿌리부터 (밤 그늘 판을 땅 위로, 나머지는 각자 밤빛 필터) */   /* v21.62 경완: 트레이너 혼자 탄 고래왕에 근처 포켓몬도 가끔 같이 */   /* v21.60 경완: 고래왕 숨 쉴 때 탄 트레이너도 같이 오르내림 */   /* v21.59 경완: 고래왕 뒷모습 두 명 앞뒤로 */   /* v21.58 경완: 고래왕 옆모습 등 안쪽·앞모습 정중앙 */   /* v21.57 경완: 고래왕 탄 트레이너 앞에 그리고 방향별 등 자리 */   /* v21.56 경완: 열매나무에 앉는 자리를 잎 가운데로 */   /* v21.55 경완: 고래왕 등에 트레이너도 2명까지 */   /* v21.54 경완: 고래왕 등에 여럿이 올라타 연못 한 바퀴 */   /* v21.44 경완: 고래왕 같은 큰 물 포켓몬이 연못 아래쪽에서 육지로 삐져나가던 것 */   /* v21.40 경완: 느린 폰에서 알 주움(새 소식) 알림창 확인 버튼이 잘 안 눌리던 것 — 버튼 모양 없이 글자만 있던 확인을 꽉 찬 입체 버튼으로, 창 뜬 동안 뒤 필드 덜 그림, 저장은 닫은 다음 */   /* v21.38 경완: 친구 필드 놀러가기 끊김 — 주인 창이 덮여도 손님 있으면 평소 속도, 손님 화면 30fps */   /* v21.30 경완 '따라큐 탈·본가랑 다른 거 검토': 탈 0 데미지 깜빡임 없앰, 빠진 본가 문장(묶기 시작·트레이스·프레셔 등)·특성 이름 */   /* v21.29 트레이너 체육관에 배치 버튼 없앰, 고용하면 모두 체육관 기본 자리에 */   /* v21.27 경완: 필터 효과음, 도감 칸 그림 빨리(dexth.json), 타입·도감 버튼 아이콘 */   /* v21.26 경완: 도감·박스 필터 누르면 바로 */   /* v21.25 경완: 히스이 폼 딱지 색 = 히스이 도감 가죽색 */   /* v21.24 경완: 지역 도감마다 카드 기계 모양, 도감 카드 지역 폼 딱지·분류 안 잘리게 */   /* v21.23 경완: 지역 폼 도감 설명 */   /* v21.22 경완: 지역 도감마다 도감 카드 색, 지역 도감 설명 */   /* v21.21 경완: 지역 도감 (관동~팔데아) 고르기, 지역 도감에선 그 지역 폼 칸 */   /* v21.20 경완: 지역 폼 딱지를 분류와 친밀도 사이 가운데로 */   /* v21.19 경완: 상세카드 지역 폼 딱지 (종류 밑·친밀도 위) */   /* v21.18 지원서 코치 실력을 특성 밑으로 */   /* v21.16 경완: 체육관 타입 알·이미 가진 타입 알도 타입 부화거리 */   /* v21.15 경완: 부화기 자동 채우기 — 남은 거리 비슷하면 타입 알 먼저 */   /* v21.14 경완: 지역 폼 이름은 원래 이름(야돈), 상세카드 분류 칸에 '가라르 폼' */   /* v21.13 경완: 알 주움·부화 준비 알림창은 확인 버튼으로만 닫힘 */   /* v21.12 레어 기술 설명창 한 줄 가운데·글자색 */   /* v21.09 레어 기술 칸 누르면 설명창 */   /* v21.08 훈련장 처음 들어갈 때 노란 바탕이 잠깐 보이던 것 */   /* v21.06 트레이너 상세카드 스크롤 없게, 훈련장 코치 딱지 정리, 훈련장 코치 효과 박스, 기술 설명 창 아이콘 뺌 */   /* v21.00 훈련장 다른 메뉴 다녀오면 +·포켓몬 안 눌리던 것, 코치 종류 딱지 가독성, 깨달은 기술 알림창 바로 */ /* v20.96 기술 코치 효과 2배, 훈련장 깨달음 % 표시 */ /* v20.94 훈련장 코치 3명, 같은 종류 겹치면 100·60·30% */ /* v20.93 홈 평판 게이지만 눌림 */ /* v20.92 코치 종류 경험치·노력치·기술 */ /* v20.91 훈련장 다른 메뉴·+ 화면 동안도 움직임 계산(순간이동 없음), 노력치·친밀도 오름 표시, 효과 글자 한 줄 */ /* v20.90 훈련장 + 화면이 덮는 동안 훈련장 안 그림, 주급 숫자 쉼표 */ /* v20.89 훈련장 몸 풀기 동작 (빙글빙글·구르기·점프·춤 등) */ /* v20.88 코치 한마디에 쓴 기술 이름, 훈련장 상세카드 지닌 도구 */ /* v20.87 훈련장 밥 시간 7~10분마다 */ /* v20.86 훈련장 밥 주는 시간 (코치가 그릇 놓으면 포켓몬이 와서 냠냠) */ /* v20.85 훈련장 덤불 앞은 기술·훈련 자리 아님, 기술로 맞춘 과녁 흔들림, 코치 말 가운데 */ /* v20.84 경완: 훈련장 코치 말 훨씬 다양하게(훈련별·이름 부르기) */ /* v20.83 경완: 훈련장 기술 이름 외치기 뺌 */ /* v20.82 경완: 횃대 앉을 때 발이 가지 두께 가운데 */   /* v20.81 경완: 훈련장 포켓몬들이 아는 기술 동작·효과로 훈련, 평판 게이지 → 등급표, 영양제 고르기 노력치 딱지 뺌, 일지에 상점 지출 안 씀 */ /* v20.80 경완: 상점 도구 탭 항목 필터, 영양제 창고·도구 사용에서 먹이기, 훈련장 슬롯 나무 판자 */ /* v20.79 경완: 횃대에 앉으면 발이 가지 위에 얹히게 */   /* v20.78 경완: 체육관 넓어짐 알림창 새 디자인(마지막 단계 완성됐어요), 훈련장 슬롯 능력치 훈련 딱지·디자인, 슬롯 레벨업 수 = 훈련 일지, 상점 새 칸 빨간 점 */ /* v20.77 경완 '원래대로, 물 왔다갔다 하는지 몰랐음': v20.76 바다 포켓몬 9종 물에서만 되돌림 */   /* v20.76 경완: 수레기 등 바다 포켓몬 9종 물에서만 다님 */   /* v20.75 경완: 배틀 특성 문장 빠진 것들(게으름·클리어바디류·베일·타입 바뀜·타오르는불꽃·슬로스타트·고대활성/쿼크차지·일루전·점착/흡반 등) 보이게 */   /* v20.74 경완: 배틀에서 예지몽·싱크로처럼 '발동' 줄로 나오는 특성도 특성 창으로 보임 (예지몽은 알아챈 기술까지) */   /* v20.73 경완: 체육관 열려 있고 평판 50 이상·자주 들어가는 사람은 미니게임 기록별 선물에 체육관 상점 지닌 도구·민트도 나옴 */   /* v20.72 경완: 창고에서 기술 가르치면 배웠다 창 다음 그 포켓몬 기술 목록 카드로 */   /* v20.71 경완: 방명록 손님 행동 줄 닉네임 뒤 조사·띄어쓰기 */   /* v20.70 경완: 체육관 상품 카드 보유 수 아이콘 가방 → 창고, 기술머신·레코드 가르칠 때 박스 화면 위에서 바로 잊을 기술 창, 기술 줄 오른쪽 잘림, 포켓몬 메뉴 예전 효과음 없앰, 훈련 일지 이름 줄 연필 */   /* v20.69 경완: 상점에서 산 것 창고 빨간 점, 창고 수량 딱지 오른쪽, 퇴근하면 상점 필터 처음대로, 창고·추천 기술 상세카드 = 상점 카드(TR 딱지·설명·1회용 안내), 상세카드 제목 가운데, 훈련 추천 카드 문구 크게·? 정렬 */   /* v20.68 경완: 탑 쌓기 미션 기록 초기화, 베타판에선 미션 기록 안 함 */   // v20.67 경완: 훈련장·트레이너·노력치 튜토리얼을 오프닝처럼 (강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기)   /* v20.61 경완: 훈련장 카드 노력치 훈련 박스 ? — 지금 좋은 훈련 힌트·바로 훈련하기 */   /* v20.60 경완: 도구 사용 화면 추천 도구 버튼·가진 도구 추천 딱지, 기술머신 배울 수 있는 포켓몬 누르면 상세카드, 승급 직전 평판은 관장이 직접 */   /* v20.68 경완: 상세카드 크기 통일·도구 없으면 점선 + 칸, 노력치 설정 ? 가운데·추천이 넣은 노력치도 다시 배분·영양제 1당 노력치 +10, 기술 가르치기 딱지 안 잘림 */   /* v20.58 경완: 탑 쌓기 이상해꽃·고래왕이 너무 자주 나오던 것 → 꼭대기 좁을 때 고르는 넓적한 포켓몬 2 → 16마리 */   /* v20.57 경완: 칠색조·루기아 하늘 지나갈 때 울음소리 메아리 */   /* v20.56 경완: 다이빙 튀어나오는 자리 호수 안쪽만 */   /* v20.55 경완: 강박사 노력치 튜토리얼 — 노력치 박스를 직접 눌러 설정 창을 연 뒤에 설정 창 설명 */   /* v20.54 경완: 노력치는 새내기 체육관부터 쌓이고(채우기·배틀), 보이는 건 동네 체육관부터 */   /* v20.53 경완: 다이빙 들어갈 때 물에 떠 있을 때 잘리는 선 기준으로 사라짐, 튀어오를 때 기술 효과 */   /* v20.52 경완: 원래 있던 포켓몬 노력치 채우기 (배틀 경험치로 쓰러뜨린 수 어림, 최근 배틀 상대 종) */   /* v20.51 경완: 탑 쌓기(베타)는 기록별 선물을 주지 않음, 이미 받은 선물 거둬들이고 받은 칸 초기화 */   /* v20.50 경완: 도전자 포켓몬 노력치(체육관 등급별), 만렙 포켓몬도 훈련장에 */   /* v20.49 경완: 탑 쌓기 시작할 때 게임 선택 화면이 한 번 비치던 것 → 상세창을 시작 카드 뜰 때 닫음 */   /* v20.48 경완: 미니게임·메뉴 중 필드 구멍 파기·전설 등장 소리 안 남 */   /* v20.47 경완: 노력치 — 체육관 동네 등급부터, 상세카드 노력치 박스·설정 창·훈련장 노력치 훈련·영양제·파워 도구, 코치 실력 개체별·훈련장 특성, 튜토리얼 */   /* v20.46 경완: 다이빙 나올 때 공격 효과 없이 크게 튀어올라 착지 */   /* v20.45 경완: 탑 쌓기 맨 처음 실행할 때도 하늘 화면 먼저 안 보이게·게임 파일 미리 받기, 앱 다녀오면 소리 다시 만들기, 아슬아슬 덤 점수 표시, 큰 포켓몬 35% → 22% */   /* v20.44 경완: 운영자 모드 '튜토리얼 시험' — 강박사 훈련장(노력치 설명)·트레이너 메뉴 튜토리얼 시안을 체육관 시뮬에서 (나가면 되돌림) */   /* v20.43 경완: 탑 쌓기에 어써러셔 추가 */   /* v20.42 경완: 탑 쌓기 큰 포켓몬 더 자주(약 35%) + 아주 큰 포켓몬 13종 추가(갸라도스·고래왕·밀로틱 등) */   /* v20.41 경완: 다이빙 — 물에 닿은 부분부터 사라지고, 물 위로 점프해 나와 착지 */   /* v20.40 경완: 탑 쌓기 중 앱 나가면 일시정지·곡 멈춤, 돌아오면 소리 다시 */   /* v20.39 경완: 탑 쌓기 시작할 때 하늘 화면 먼저 안 보이고 바로 시작 카드 */   /* v20.37 경완: 랭킹 포켓몬 박스에서 키 큰 그림(가라르 또도가스)이 잘리던 것 */   /* v20.30 경완: 나옹 열기구 동전 한 칸 더 낮춤 */   /* v20.28 경완: 나옹 열기구 동전을 머리 쪽으로 낮춰 이음새 기둥 없앰 */   /* v20.27 경완: 나옹 열기구 동전을 사진처럼 머리 위에 얹힌 둥근 동전으로, 체육관 아이콘 R 딱지 상하좌우 여백 같게(12×12) */   /* v20.25 경완: 나옹 열기구 이마 동전이 떠 보이던 것 → 머리에 붙은 작은 혹, 바구니에 로켓단 셋(긴 머리·나옹·앞머리) 그림자 */   /* v20.24 경완: 로켓단 점거 중 필드 하늘에 나옹 열기구 실루엣 (한자리 둥실, 밤엔 검정 + R 불빛) */   /* v20.23 경완: 탑 쌓기 점수 10배 → 4배 (기준·예전 기록도 4배에 맞춤), 베타 탑 쌓기 기록은 랭킹 서버에 안 올림 */   /* v20.22 경완: 탑 쌓기 점수 10배 (골드·친밀도·선물·미션 기준도 10배, 예전 기록도 10배) */   /* v20.21 경완: 미니게임 기록별 선물 가운데 세 칸(알 뽑기권 포함) 싼 것부터 낮은 점수에 */   /* v20.20 경완: 의상 상세카드에 의상별 설명, 들어가는 곳 문구는 옅게 가운데 */   /* v20.19 경완: 상점 음악 탭 아래 박스로 되돌림, 상점 그림 미리 읽기, 의상 상세카드 = 상점 카드 틀, 박스·도감 타입 필터 = 알 뽑기 순서 */   /* v20.18 경완: 꾸미기 포켓몬 박스·도감 타입 고르기 창 색 네모 → 타입 아이콘 */   /* v20.15 경완: 탑 쌓기 무게 아래로·흔들림 줄이기 늘 켬, 꾹 눌러 돌리기는 양옆만, 가장자리에 걸쳐 놓을 때 처음 닿는 회전 흡수 */   /* v20.13 경완: 체육관 이벤트 1 로켓단 점거 배포 (평판 180, 다음 실행부터, 계정당 한 번) */   /* v20.12 경완: 이벤트 필드 박물관 등 문 칸에 선 사람 머리가 문틀 위로 튀어나오던 것 */   /* v20.11 경완: 탑 쌓기 베타 설정 버튼(운영자) — 시안 설정·물리 테스트 4개, 바꾼 판은 기록·보상 없음 */   /* v20.10 경완: 필드 시험 때 아이콘 누르는 순간 R 딱지가 떨어져 도전자 수가 보이던 것 → 체육관에서 나올 때 뗌 */   /* v20.09 경완: 운영자 모드 '필드에서부터 해 보기' — 필드 R 딱지·사이렌·아지트 곡부터, 아이콘 누르면 시험 이벤트 (본 계정 그대로) */   /* v20.08 경완 2번: 로켓단 점거 딱지 떠 있는 동안 필드 곡 = FR 로켓단 아지트(evMus), 해결되면 원래 필드 곡 */   /* v20.06 경완: 밤에 다른 포켓몬과 겹칠 때 몬스터볼 스프링 탄 포켓몬이 스프링 뒤로 가던 것 */   /* v20.03 경완: 주간 결산 트레이너 수익이 그 주에 잡히게 */ /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8817,7 +8912,7 @@ const Visit = (() => {
     setState(m, 'idle', 3);
     const x1 = clampN(hx - dx, XL + 20, XR - 20); faceTo(m, x1);   // 뛰는 쪽을 바라보고 한 번만 폴짝 (전엔 출발·착지에 작은 깡충이 더 있었음)
     m.hj = { t0: performance.now() + 220, x0: clampN(hx + dx, XL + 20, XR - 20), x1, y0: clampN(hy + side * HD, MIN_Y, MAX_Y), y1: clampN(hy - side * HD, MIN_Y, MAX_Y), pk: clampN(40 - (m.h || 40) * .5, 10, 32), fc: m.face, tr }; HJ.add(m); }   // v16.22 경완 '높이 개념': 앞뒤로는 조금만(HD), 위로는 링 가운데까지 높이 뛰고 땅 그림자는 그대로   // 링 앞에서 뒤로(또는 뒤에서 앞으로), 링 가운데 높이로 폴짝
-  const HD = 14, HX = 12, HOOP_JOY = 6;
+  const HD = 14, HX = 12, HOOP_JOY = 50;   /* v23.27 경완 '필드 놀러가서 후프링 통과시키는 거 즐거움 50씩' (예전 6) */
   // v16.48 경완: 상세카드 후프 버튼 — 그 포켓몬만 와서 넘음 (링보다 크면 난감해함)
   V.hoopOne = m => { if (!me || !m) return; sfx('tap'); try { haptic(0); } catch (e) {} try { select(null); } catch (e) {}
     if ((m.h || 40) > 50) { if (m.state === 'sleep' || !awake(m)) wake(m, `${J(m, '이/가')} 후프링 소리에 눈을 떴다.`); m.bub.classList.remove('feed'); emote(m, '💦', '', 2.6, 'hoop-big'); monSay(m, `${J(m, '은/는')} 후프링 구멍이 너무 작아서 난감해하는 것 같다.`, true); return; }
@@ -9582,14 +9677,14 @@ const DEX_ALL = () => Object.keys(SPECIES).filter(k => !SPECIES[k].rb).length;
 const lbMg = k => k.startsWith('mg:') ? k.split(':')[1] : '';   // 미니게임 랭킹 kind = 'mg:' + 게임 id (+ ':w' 이번 주)
 const lbWk = k => k.endsWith(':w');
 const mgLive = G => !!(G.on || G.ed || G.st);   /* v22.92 경완: 탑 쌓기 본 게임 공개 — 모두 랭킹 */   /* v19.79 경완: 탑 쌓기도 랭킹 (베타·운영자만) */   /* v17.23 경완 '랭킹 미니게임에 진화구슬이 준비 중으로 나옴': 진화구슬(ed)도 열린 게임 — 랭킹 고르기·탭·기록 올리기에 */
-const mgSid = id => id === 'drop' ? 'drop2' : id === 'stack' ? 'stack2' : id;   /* v22.89 경완 '포켓몬 쌓기 기록도 다 지워줘': 탑 쌓기 랭킹도 새 이름 stack2 로 (예전 기록은 안 봄) */   /* v17.06: 랭킹 서버 이름 — 진화구슬은 기록을 지우며 새 이름으로 (예전 'drop' 랭킹은 안 봄) */
+const mgSid = id => id === 'drop' ? 'drop2' : id === 'stack' ? 'stack3' : id;   /* v23.25 경완 '기록 보상은 다 주고 기록은 초기화': 딱 맞음 기준 바뀌기 전(예전 앱) 기록이 섞인 stack2 랭킹은 안 봄 */   /* v22.89 경완 '포켓몬 쌓기 기록도 다 지워줘': 탑 쌓기 랭킹도 새 이름 stack2 로 (예전 기록은 안 봄) */   /* v17.06: 랭킹 서버 이름 — 진화구슬은 기록을 지우며 새 이름으로 (예전 'drop' 랭킹은 안 봄) */
 const mgWkId = (id, k = wkKey()) => mgSid(id) + 'W' + k.replace(/-/g, 'x');   // 이번 주 기록은 Score 의 game 을 'jumpW2026x10x26' 처럼 따로 (콘솔 작업 없이)
 const lbVal = (c, k, wk = wkKey()) => !c ? 0 : lbMg(k) ? +c.best || 0 : k === 'dex' ? +c.dex || 0 : c.hk === 'H' + wk ? +c.hn || 0 : 0;   // 지난주(또는 예전 걸음) 카드는 이번 주 0개
 const lbTxt = (v, k) => lbMg(k) ? [Math.round(v).toLocaleString(), '점'] : k === 'dex' ? [(v / DEX_ALL() * 100).toFixed(1), '%'] : [Math.round(v).toLocaleString(), '개'];
 // v11.80 경완 '미니게임 별로 전체 랭킹': 게임마다 내 최고 기록을 Score 레코드로 올린다. 카드 rp = 그 기록을 낸 포켓몬 (트레이너 옆에 서 있다)
 const mgRecOf = id => mgRecG(id);
 // v15.88 경완 '장애물 넘기와 똑같이 모든 미니게임에': 게임마다 기록·기록별 선물(월요일마다 새로)을 따로 둔다. 진화구슬은 예전 S.edBest 를 이어받음
-const mgRecG = id => { if (id === 'jump') return mgRec(); const M = mgS(); if (id === 'stack' && M.stack && !M.stack.r2) delete M.stack;   /* v22.89 경완 '포켓몬 쌓기 기록도 다 지워줘': 최고·이번 주 기록·기록별 선물 칸을 한 번만 비움 (r2) */ if (id === 'stack' && M.stack && !M.stack.x4) { const R = M.stack, f = R.x10 ? .4 : 4, mf = v => Math.round(v * f); R.x4 = 1; delete R.x10; R.best = mf(R.best | 0); if (R.w) R.w.best = mf(R.w.best | 0); R.ms = (R.ms || []).map(mf); if (R.gl?.L) for (const o of R.gl.L) o.m = mf(o.m); try { const q = mqS('stack'); q.sum = mf(q.sum || 0); q.best = mf(q.best || 0); if (q.d) q.d.best = mf(q.d.best || 0); for (const t in q.tb || {}) q.tb[t] = mf(q.tb[t]); } catch (e) {} }   /* v20.23 경완 '10배는 너무 많고 4배': 탑 쌓기 점수 4배 → 예전 기록도 4배로 한 번 (10배로 바꿨던 건 0.4배) */ else if (id === 'stack' && !M.stack) M.stack = { best: 0, n: 0, ms: [], x4: 1, r2: 1 }; if (id === 'drop' && !M.drop?.v2) { M.drop = { best: 0, n: 0, ms: [], v2: 1 }; S.edBest = 0; }   /* v17.06 경완 '진화구슬 키우기 기록 다 지워줘': 새 판(기술·보상 기준)부터 처음부터 — 한 번만 비움 (v2), 랭킹은 서버 이름 drop2 로 새로 (mgSid) */
+const mgRecG = id => { if (id === 'jump') return mgRec(); const M = mgS(); if (id === 'stack' && M.stack && !M.stack.r2) delete M.stack;   /* v22.89 경완 '포켓몬 쌓기 기록도 다 지워줘': 최고·이번 주 기록·기록별 선물 칸을 한 번만 비움 (r2) */ if (id === 'stack' && M.stack && !M.stack.x4) { const R = M.stack, f = R.x10 ? .4 : 4, mf = v => Math.round(v * f); R.x4 = 1; delete R.x10; R.best = mf(R.best | 0); if (R.w) R.w.best = mf(R.w.best | 0); R.ms = (R.ms || []).map(mf); if (R.gl?.L) for (const o of R.gl.L) o.m = mf(o.m); try { const q = mqS('stack'); q.sum = mf(q.sum || 0); q.best = mf(q.best || 0); if (q.d) q.d.best = mf(q.d.best || 0); for (const t in q.tb || {}) q.tb[t] = mf(q.tb[t]); } catch (e) {} }   /* v20.23 경완 '10배는 너무 많고 4배': 탑 쌓기 점수 4배 → 예전 기록도 4배로 한 번 (10배로 바꿨던 건 0.4배) */ else if (id === 'stack' && !M.stack) M.stack = { best: 0, n: 0, ms: [], x4: 1, r2: 1, r3: 1 }; if (id === 'stack' && M.stack && !M.stack.r3) { const R = M.stack; R.r3 = 1; if ((R.best | 0) > 0) M.stR3 = { b: R.best | 0, h: +R.hi || 0 }; R.best = 0; R.hi = 0; delete R.w; delete R.by; delete R.up; delete R.upW; }   /* v23.25 경완 '기록 보상은 다 주고 기록은 초기화': 최고 기록·최고 높이·이번 주 기록만 비움, 받은 기록별 선물(R.ms)은 그대로 → 알림창 stR3 */ if (id === 'drop' && !M.drop?.v2) { M.drop = { best: 0, n: 0, ms: [], v2: 1 }; S.edBest = 0; }   /* v17.06 경완 '진화구슬 키우기 기록 다 지워줘': 새 판(기술·보상 기준)부터 처음부터 — 한 번만 비움 (v2), 랭킹은 서버 이름 drop2 로 새로 (mgSid) */
   const R = M[id] || (M[id] = { best: 0, n: 0, ms: [] }); const wk = wkKey(); if (R.msK !== wk) { R.ms = []; R.msK = wk; } return R; };
 const mgWkRec = R => R.w?.k === wkKey() ? R.w : { k: wkKey(), best: 0 };   // 이번 주 최고 기록 (월요일에 새로)
 function mgMeCard(id, w) { const R = mgRecOf(id), B = w ? mgWkRec(R) : R; return { hi: id === 'stack' && B.hi ? B.hi : undefined,   /* v23.11: 탑 쌓기 랭킹 줄에 최고 높이 */ v: 1, n: S.tr?.n || '트레이너', sex: S.tr?.sex || 'm', fit: fitNow() || undefined, dex: S.unlocked?.size || 0, bd: bdgLvs() || undefined, rp: B.by && SPECIES[B.by.sp] ? B.by : frRep() || frRepOf(meCard()) || undefined, best: B.best || 0 }; }
@@ -11050,8 +11145,9 @@ setTimeout(() => { try { stHtmlGet().catch(() => {}); } catch (e) {} }, 4000);  
 const ST_NOGIFT = false;   /* v22.92 경완: 탑 쌓기 본 게임 공개 → 기록별 선물·미션 켬 (예전: 공개 전까진 안 줌) */
 function mqUndoS() { const M = mgS(), q = M.qs; if (!q || q.rv) return; q.rv = 1; let take = 0, n = 0;   /* v23.20 경완 '지금 기록 기준으로 바뀐 거에서 받을 수 없었던 건 뱉어내게': v23.17 전 예전 기준으로 받은 탑 쌓기 도전·타입별 미션 중 지금 기록이 새 기준에 못 미치는 칸은 안 받은 걸로 되돌리고 그 골드를 거둠 (한 번만) */
   for (const o of mqList('stack')) if (o.tab !== 'day' && o.all && o.v < o.need && q.cl[o.id]) { delete q.cl[o.id]; take += o.gold; n++; }
-  if (take) { const t = Math.min(take, Math.max(0, S.gold | 0)); S.gold -= t; renderGold(); window.pkGold?.('undo', t, 'mission'); save(); sayPop(`탑 쌓기 미션 기준이 바뀌어서 지금 기록으로는 아직 못 받는 미션 ${n}개를 안 받은 걸로 되돌렸어요.\n그때 받은 ${t.toLocaleString()}G를 돌려받았어요. 새 기준을 넘으면 다시 받을 수 있어요.`); } else save(); }
-function stGiftUndo() { const M = mgS(), R = M.stack; try { mqUndoS(); } catch (e) {} if (!M.qsR2) { M.qsR = M.qsR2 = 1; delete M.qs; save(); }   /* v22.91 경완 '미션 기록도 다 지워줘': 탑 쌓기 미션(진행·받은 칸·일일)도 한 번 더 비움 (qsR2) */   /* v20.68 경완 '탑 쌓기 미션 기록도 다 초기화' */ if (R && !R.rr) { R.rr = 1; R.best = 0; delete R.w; delete R.by; delete R.up; delete R.upW; save(); }   /* v20.51 경완 '랭킹 기록도 초기화 (포켓몬 쌓기)': 내 최고·이번 주 기록 지움 (서버 랭킹은 stack-reset 작업으로 지움) */
+  if (take) { const t = Math.min(take, Math.max(0, S.gold | 0)); S.gold -= t; renderGold(); window.pkGold?.('undo', t, 'mission'); save(); return sayPop(`탑 쌓기 미션 기준이 바뀌어서 지금 기록으로는 아직 못 받는 미션 ${n}개를 안 받은 걸로 되돌렸어요.\n그때 받은 ${t.toLocaleString()}G를 돌려받았어요. 새 기준을 넘으면 다시 받을 수 있어요.`); } else save(); }
+function stR3Pop() { const M = mgS(); try { mgRecG('stack'); } catch (e) {} const o = M.stR3; if (!o) return; delete M.stR3; save(); sayPop(`새 버전에서 탑 쌓기 점수 계산 기준이 바뀌어 기록을 초기화했어요.\n지난 기록: ${o.b.toLocaleString()}점${o.h ? ` · 최고 높이 ${o.h.toFixed(1)}m` : ''}\n이번 주에 받은 기록별 선물은 그대로예요.`); }   /* v23.25 */
+function stGiftUndo() { const M = mgS(), R = M.stack; { let p; try { p = mqUndoS(); } catch (e) {} Promise.resolve(p).then(() => { try { stR3Pop(); } catch (e) {} }); }   /* 미션 되돌림 창 닫은 뒤 기록 초기화 창 */ if (!M.qsR2) { M.qsR = M.qsR2 = 1; delete M.qs; save(); }   /* v22.91 경완 '미션 기록도 다 지워줘': 탑 쌓기 미션(진행·받은 칸·일일)도 한 번 더 비움 (qsR2) */   /* v20.68 경완 '탑 쌓기 미션 기록도 다 초기화' */ if (R && !R.rr) { R.rr = 1; R.best = 0; delete R.w; delete R.by; delete R.up; delete R.upW; save(); }   /* v20.51 경완 '랭킹 기록도 초기화 (포켓몬 쌓기)': 내 최고·이번 주 기록 지움 (서버 랭킹은 stack-reset 작업으로 지움) */
   if (!R || R.gu || true) return; R.gu = 1;   /* v23.04: 탑 쌓기 공개 뒤엔 선물을 거둬들이지 않음 — v22.89 기록 지우기로 R.gu 표시가 같이 지워져 다시 돌 수 있었음 */
   const nm = {}; for (const k in ITEM) if (ITEM[k]?.n) nm[ITEM[k].n] = k; for (const r of SHOP.field || []) { const f = fpInfo(r[0]); if (f?.n) nm[f.n] = 'fp:' + r[0]; } for (const k in FITS) nm[FITS[k][0]] = 'ft:' + k;
   const A = {}, B = {}, add = (O, k, n) => { if (k && k !== 'stone') O[k] = (O[k] || 0) + n; };
@@ -15598,6 +15694,7 @@ const legW = sp => { const t = TIER[sp], k = eggEffK()?.[2] ?? TIER_KT[2] ?? .69
 const LEG_FIX = { 4: { 890: .073 } }, legWs = (L, t) => { const W = L.map(legW), F = LEG_FIX[t] || {}, fx = L.map(sp => F[sp]), fs = fx.reduce((a, p) => a + (p || 0), 0);
   if (!fs || fs >= 1) return W; const rest = W.reduce((a, w, i) => a + (fx[i] ? 0 : w), 0); if (!(rest > 0)) return W; return W.map((w, i) => fx[i] ? rest * fx[i] / (1 - fs) : w); };
 const legEggL = t => { const has = sp => (SPECIES[sp].t || []).includes(t) && !SP_OFF.has(sp); let L = POOL[5].filter(sp => has(sp) && spInEgg(5, sp) > 0); if (!L.length) L = POOL[5].filter(has); if (!L.length) L = POOL[5]; return L; };
+GA.eggTop = sp => { const b = baseOf(sp); return spInEgg(5, b) > 0 ? 5 : spInEgg(4, b) > 0 ? 4 : 0; };   /* v23.31 이름 있는 트레이너 재방문 팀: 에픽·전설 알 포켓몬인지 */
 GA.legEggW = t => { const L = legEggL(t), W = legWs(L, t); return L.map((sp, i) => [sp, W[i], TIER[sp]]); };
 GA.LT_ADJ = LT_ADJ; GA.eggIco = lt => eggHtml(5, '', lt); GA.pkFront = pkFront;   /* v21.89 경완 '체육관 랭킹': 체육관이 친구 서버에 평판 올리고(score game gymrep) 목록(mgtop) 받기 */ GA.frOn = () => !!frH; GA.frAsk = o => frAsk(o); GA.frMe = () => frMeGet(); GA.lbMedal = i => LB_MEDAL[i] || ''; GA.lbTrBox = c => { const L = trLevel(+c?.dex || 0), tf = trFit(c), k = c?.sex === 'f' ? 'f' : 'm'; lbTrCen(k); if (tf) lbTrCen(tf, trImg(c)); return `<span class="lb-show"><span class="tr-card lb-trb r${L.i}"><i class="fr-tr ${k}" style="background-image:url(${trImg(c)})${tf ? `;translate:var(--lbtr-${tf},0 0)` : ''}"></i></span></span>`; };   /* v21.92 체육관 랭킹 줄: 꾸미기 랭킹 메달·프로필 박스 */   // v18.93 체육관 전당 등록 연출에서 앞모습 그림
 /* v18.17 경완 '체육관 등급 오를 때 체육관 타입 알': 그 등급(g)에서 그 타입 포켓몬이 나오는 알 (알 뽑기 타입 알과 같은 모양 e.ct). 그 등급에 그 타입이 없으면 한 등급 위, 에픽까지 없으면 그 등급 보통 알 */
