@@ -4283,3 +4283,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bt-enc .band.sm-elite b small{color:#c8d8ff}
 #gym .bt-enc .band .sm-vs{position:absolute;left:39%;top:50%;width:56px;height:50px;margin:-25px 0 0 -28px;z-index:1;background:url(../gym/img/sm/vs.png) 0 0/100% 100% no-repeat;animation:smVs .3s .6s cubic-bezier(.3,1.6,.5,1) both}
 @keyframes smVs{from{transform:scale(3);opacity:0}}
+#gym .bt-enc .band.sm-def{background:repeating-linear-gradient(-60deg,#a8400c 0 10px,#963608 10px 20px);box-shadow:0 -4px 0 #fff1b8,0 4px 0 #fff1b8,0 -7px 0 #f8a020,0 7px 0 #f8a020}
+#gym .bt-enc .band.sm-def b{text-shadow:2px 2px 0 #5a1c04}
+#gym .bt-enc .band.sm-def b small{color:#ffe27a}
