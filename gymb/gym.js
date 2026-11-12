@@ -2288,8 +2288,8 @@ const snapOf = (el, ring) => { if (!el) return null; const r = el.getBoundingCli
   c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); c.querySelectorAll('[data-a]').forEach(x => x.removeAttribute('data-a'));
   const box = el.closest('.gy-pop') || el.closest('.gy-sheet'), q = ring !== el && ring?.getBoundingClientRect?.(), st0 = el.scrollTop || 0, rg = q && q.width ? [q.left - r.left, q.top - r.top + st0, q.width, q.height] : null;   /* 스크롤된 목록은 처음부터 다 그려지니 비출 곳도 스크롤만큼 아래 */
   return { h: c.outerHTML, cls: box && box !== el ? [...box.classList].filter(x => x !== 'gy-np').join(' ') : '', w: r.width, hh: st0 ? el.scrollHeight : r.height, rg }; };
-function tipPop(i) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) return ok();
-  try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} GA.haptic?.(1);
+function tipPop(i, re) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) return ok();
+  if (re) gse('DP_WIN_OPEN'); else { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} GA.haptic?.(1); }   /* re = 비기 탭에서 다시 보기 (팡파르 없이) */
   const P = T.pg || [{ t: T.t, p: T.d }], last = P.length - 1; let at = 0, bz = 0;
   const shot = pg => { const S = gtSnap[pg.k]; if (!S) return `<div class="tp-shot tp-cap"><img alt="" src="${IMG}tip/${pg.k}.png?v=${VER}" onerror="this.parentNode.remove()"></div>`;   /* 튜토리얼을 건너뛰었으면(메가 '네' 등) 미리 찍어 둔 화면 */
     const BW = 288, BH = 210, sc = Math.min(1, BW / S.w, Math.max(BH / S.hh, .62)), ox = (BW - S.w * sc) / 2, H2 = S.hh * sc, cy = S.rg ? (S.rg[1] + S.rg[3] / 2) * sc : H2 / 2, oy = H2 <= BH ? (BH - H2) / 2 : Math.max(BH - H2, Math.min(0, BH / 2 - cy));   /* 긴 화면은 줄이지 않고 비출 곳 둘레만 잘라 보여 줌 */
@@ -2297,7 +2297,7 @@ function tipPop(i) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) ret
     return `<div class="tp-shot"><div class="tp-in ${S.cls}" data-sc="${sc}" style="left:${ox}px;top:${oy}px;width:${S.w}px;height:${S.hh}px;transform:scale(${sc})">${S.h}</div>${ring}</div>`; };
   const p = pop(`<h4 class="pp-t tp-t"><small>강박사의 ${PK_NTH[i]} 비기!</small><span class="tp-tt"><i class="tp-st"></i>${T.t}<i class="tp-st s2"></i></span></h4><div class="tp-body"></div><div class="tp-dots">${P.length > 1 ? P.map(() => '<i></i>').join('') : ''}</div><div class="gy-btns tp-btns"><button data-a="prev">이전</button><button class="main" data-a="next">다음</button></div>`, (a, close) => {
     if (a === 'prev') return turn(-1); if (a === 'next') { if (at < last) return turn(1); close(); ok(); } });
-  p.classList.add('tp-pop'); const body = p.querySelector('.tp-body'), pv = p.querySelector('[data-a=prev]'), nx = p.querySelector('[data-a=next]');
+  p.classList.add('tp-pop'); if (re) p.classList.remove('gy-np');   /* 직접 연 창: 팝업 모션 없이, 바깥 눌러도 닫힘 */ const body = p.querySelector('.tp-body'), pv = p.querySelector('[data-a=prev]'), nx = p.querySelector('[data-a=next]');
   const draw = d => { const pg = P[at]; body.innerHTML = `<div class="tp-pg"><b class="tp-pt">${pg.t}</b>${shot(pg)}<p class="tp-p">${pg.p}</p>${pg.sm ? `<p class="tp-sm">${pg.sm}</p>` : ''}</div>`;
     p.querySelectorAll('.tp-dots i').forEach((x, j) => x.classList.toggle('on', j === at)); pv.hidden = !at; nx.textContent = at < last ? '다음' : '알겠어요!'; p.querySelector('.tp-btns').classList.toggle('one', !at);
     const fixR = () => { const ti = body.querySelector('.tp-in'), m = ti?.querySelector('[data-tpr]'), rg = body.querySelector('.tp-ring');   /* 경완 2026-11-13 '캡처 테두리 안 맞음': 옮겨 그린 화면은 원래와 몇 px 씩 달라질 수 있어 테두리·자르는 자리를 그려진 칸 기준으로 다시 잼 */
@@ -2322,11 +2322,11 @@ function perkPop() {
      계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
   /* 경완 2026-11-12 '비기는 항상 살려 놓고 등급 탭·비기 탭 나눠서': 비기는 계정 어느 체육관에서든 배웠으면 열림(tutSeen), 아니면 실루엣 */
   const tip = i => { const T = PK_TIP[i], on = (i !== 3 || (typeof MEGA_ON !== 'undefined' && MEGA_ON)) && [].concat(T.k).some(tutSeen);   /* 경완 11-12: 메가진화는 배포(MEGA_ON) 전까진 등급이 돼도 실루엣 그대로 */   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
-    const tg = on && T.re ? 'button' : 'div';   // 경완 '비기 누르면 튜토리얼 다시 볼 수 있게'
+    const tg = on && (T.pg || T.re) ? 'button' : 'div';   // 경완 '비기 누르면 튜토리얼 다시 볼 수 있게'
     return `<li class="pk-tip${on ? ' on' : ''}"><${tg} class="pk-tc"${tg === 'button' ? ` type="button" data-a="sk${i}"` : ''}><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div>${tg === 'button' ? '<em class="pk-re">다시 보기 ›</em>' : ''}</${tg}></li>`; };
   const p = pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><div class="sp-tabs pk-tabs" role="tablist"><button role="tab" data-a="tg" aria-selected="true">등급</button><button role="tab" data-a="ts" aria-selected="false">비기</button></div><ol class="gy-perk pk-gl">${GRADES.map(row).join('')}</ol><ol class="gy-perk pk-sl" hidden>${Object.keys(PK_TIP).map(i => tip(+i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     if (a === 'tg' || a === 'ts') { const s = a === 'ts'; p.querySelector('.pk-gl').hidden = s; p.querySelector('.pk-sl').hidden = !s; p.querySelectorAll('.pk-tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String((b.dataset.a === 'ts') === s))); return; }
-    const sk = /^sk(\d)$/.exec(a || ''); if (sk) { close(); const T = PK_TIP[sk[1]]; setTimeout(() => gtu(T.re()), 250); return; }
+    const sk = /^sk(\d)$/.exec(a || ''); if (sk) { close(); setTimeout(() => tipPop(+sk[1], 1), 250); return; }   /* 경완 2026-11-13 '다시 보기는 스토리 전체 말고' → 비기 알림창(캡처 장면)만 다시 */
     close(); });
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
@@ -3410,6 +3410,7 @@ async function later() {
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
+  if (open && MEGA_ON && !window.gymSimOn && (st()?.gmax | 0) >= 3 && !tutSeen('mgTut') && !gtOn) await promoTut(3);   /* 경완 2026-11-13: 메가를 켤 때 이미 이름난 이상인 체육관은 승급 순간이 지났으니, 들어올 때 한 번 강박사가 찾아옴 */
 }
 let leaving = false;
 async function exit(tx = '퇴근하는 중') {
