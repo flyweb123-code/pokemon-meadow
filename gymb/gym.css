@@ -4260,3 +4260,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .ro-st span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;background:#f0f0f4;box-shadow:inset 0 0 0 2px var(--inner)}
 #gym .ro-st small{font-size:10.5px;color:var(--dim)}#gym .ro-st b{font-size:15px;color:var(--win-ink)}
 #gym .gy-pop.ro-wrap .gy-btns{padding:14px 16px 16px;margin:0}
+#gym .gy-pop p.ev-toast{color:#fff!important;font-size:13px;font-weight:700;padding:8px 14px;background:rgba(40,38,58,.94);box-shadow:0 3px 0 rgba(0,0,0,.25)}   /* v23.09 경완 '노력치 저장 알림 글자 거의 안 보임': .gy-pop p 글자색이 덮었음 */
