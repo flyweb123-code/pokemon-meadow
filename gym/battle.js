@@ -38,6 +38,24 @@ function loadData() {
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
 let splP = null;   // 기술 파티클 엔진 (gym/spl.js)
+let essP = null;   // 5세대 이후 기술 연출 재생기 (gym/essfx.js)
+const loadEss = () => window.GymEss ? Promise.resolve() : essP || (essP = new Promise(ok => { const s = document.createElement('script'); s.src = `gym/essfx.js?v=${VER}`; s.onload = ok; s.onerror = () => { essP = null; ok(); }; document.head.appendChild(s); }));
+// 경완 2026-11-12 '응 다 반영해줘': 플래티넘 원본 연출이 없는 5세대 이후 기술은 Gen 9 Move Animation Project(Essentials) 연출·효과음으로. 상대가 쓸 땐 상대용 연출이 있으면 그것(아래 포켓몬을 '쓰는 쪽' 자리로 그려 둠), 없으면 같은 연출을 방향만 뒤집음 (원본 pbAnimation 그대로)
+async function essFx(s, id) {
+  await Promise.race([loadEss(), wait(1500)]); const E = window.GymEss; if (!E || !B) return false;
+  const k = await Promise.race([E.has(id), wait(1500).then(() => 0)]); if (!k) return false;
+  const J = await Promise.race([E.get(id), wait(2500).then(() => null)]); if (!J || !B) return false;
+  const o = other(s), opp = s === 'e', useO = opp && J.o, A = useO ? J.o : J.m; if (!A) return false;
+  const top = $b('.bt-top'); let bk = $b('.bt-essb'), fr = $b('.bt-essf');
+  if (!bk) { bk = document.createElement('canvas'); bk.className = 'bt-essb'; bk.width = 512; bk.height = 384; top.insertBefore(bk, $b('.bt-mw.e')); }
+  if (!fr) { fr = document.createElement('canvas'); fr.className = 'bt-essf'; fr.width = 512; fr.height = 384; $b('.bt-mw.p').after(fr); }
+  const side = sd => { const m = monEl(sd), c = m?.querySelector('.clip'); return { el: c || m, img: c?.querySelector('img'), pan: panOf(sd) }; };
+  const U = side(useO ? o : s), T = side(useO ? s : o), X = B.act[s];
+  el.classList.add('essp');
+  try { await E.play({ top, back: bk, front: fr, user: U, target: T, A, speed: B.fast ? 1 / .6 : 1, alive: () => !!B, cry: () => { try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } }); }
+  catch (e) { console.error(e); }
+  el.classList.remove('essp'); return true;
+}
 const loadSpl = () => window.GymSPL ? Promise.resolve() : splP || (splP = new Promise(ok => { const s = document.createElement('script'); s.src = `gym/spl.js?v=${VER}`; s.onload = ok; s.onerror = () => { splP = null; ok(); }; document.head.appendChild(s); }));
 const mvOf = id => D.mv[MVI.get(id)];   // [id, 이름, 타입, 분류(0 물리 1 특수 2 변화), 위력, 명중, PP, 우선도, 설명]
 // v21.89 배틀 기믹 ([DBK] Z-Power·Dynamax): Z기술·다이맥스 기술 한국어 이름
@@ -1467,6 +1485,7 @@ async function moveFx(s, id, miss, fx) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  if (!A && !fx && await essFx(s, id)) return;
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
@@ -1542,7 +1561,7 @@ async function abPop(id, ab) {
   if (!id || !ab || !B) return; const s = sideOf(id), key = s + ab; if (B.abLast === key) return; B.abLast = key;
   const w = document.createElement('div'); w.className = `bt-abp ${s}`; w.innerHTML = `<small>${esc(who(id))}의</small><b>${esc(abKo(ab))}</b>`;
   $b('.bt-top')?.appendChild(w) || el.appendChild(w);
-  await wait(30); w.classList.add('on'); await wait(B.fast ? 250 : 450);
+  await wait(30); w.classList.add('on'); loadEss().then(() => window.GymEss?.snd('abil', 100, 100)).catch(() => {});   /* 경완 2026-11-12: 특성 창 뜰 때 블랙·화이트 특성 소리 (EBS Gen 5 팩 BW_ability) */ await wait(B.fast ? 250 : 450);
   // v21.31 경완 '따라큐랑 싸웠을 때 탈 특성 안 나왔음': 본가처럼 특성 창은 뒤따르는 대사가 넘어갈 때까지 떠 있는다 (전엔 1.1초 뒤 사라져서 대사를 읽을 땐 이미 없었음)
   // 뒤따르는 대사가 없으면 조금 뒤 저절로 들어간다
   const t0 = Date.now(); (B.abHold = B.abHold || []).forEach(h => h.s === s && abOut(h)); B.abHold.push({ w, s, t0 });
