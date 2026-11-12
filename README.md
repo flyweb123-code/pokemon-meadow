@@ -5,3 +5,4 @@
 - 플레이: https://flyweb123-code.github.io/pokemon-meadow/
 - 스프라이트: [PMDCollab](https://sprites.pmdcollab.org/) (CC BY-NC 4.0)
 - 포켓몬 © Nintendo · Creatures · GAME FREAK. 비상업 팬 프로젝트예요.
+- 코드 라이선스: 무단 사용·재배포·AI 학습 금지 ([LICENSE](LICENSE)). 볼 수 있게 공개된 것이지 사용을 허락한 것이 아니에요.
