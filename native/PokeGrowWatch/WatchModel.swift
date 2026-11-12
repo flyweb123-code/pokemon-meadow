@@ -19,10 +19,9 @@ struct BuddyInfo: Codable {
     var ready: Bool
     let img: String       // data:image/png;base64,... (작은 도트 그림)
 
-    var image: UIImage? {
-        guard let comma = img.firstIndex(of: ","), let data = Data(base64Encoded: String(img[img.index(after: comma)...])) else { return nil }
-        return UIImage(data: data)
-    }
+    // 2026-11-12 경완 '걷는 중에 켜면 꺼짐': 화면을 다시 그릴 때마다 그림을 새로 풀지 않게 한 번 푼 그림은 기억한다
+    var image: UIImage? { BuddyInfo.imgCache.image(for: img) }
+    static let imgCache = ImgCache()
 }
 
 struct GameState: Codable {
@@ -42,6 +41,19 @@ struct GameState: Codable {
         guard let a = cg.cropping(to: CGRect(x: 0, y: 0, width: w, height: w)),
               let b = cg.cropping(to: CGRect(x: 0, y: w * 3, width: w, height: w)) else { return nil }
         return (a, b)
+    }
+}
+
+final class ImgCache {
+    private var map: [String: UIImage] = [:]
+    func image(for src: String) -> UIImage? {
+        if src.isEmpty { return nil }
+        if let i = map[src] { return i }
+        guard let comma = src.firstIndex(of: ","), let data = Data(base64Encoded: String(src[src.index(after: comma)...])),
+              let i = UIImage(data: data) else { return nil }
+        if map.count > 24 { map.removeAll() }
+        map[src] = i
+        return i
     }
 }
 
@@ -95,7 +107,8 @@ final class WatchModel: NSObject, ObservableObject {
     }
     private func gotWatch(km: Double, day: Date) {
         guard day == liveDay, km > watchToday + 1e-4 else { return }
-        if watchToday > 0 { walkAt = Date() }   // 손목의 워치가 더 걸었다 = 지금 걷는 중
+        // 손목의 워치가 더 걸었다 = 지금 걷는 중. 걷는 동안 몇 초마다 오는 알림마다 화면 전체를 다시 그리지 않게 5초에 한 번만 바꾼다
+        if watchToday > 0, Date().timeIntervalSince(walkAt) > 5 { walkAt = Date() }
         watchToday = km
         recompute()
     }
@@ -110,7 +123,7 @@ final class WatchModel: NSObject, ObservableObject {
     private func recompute() {
         let today = Calendar.current.startOfDay(for: Date())
         let v = max(liveDay == today ? watchToday : 0, phoneDay == today ? phoneToday : 0)
-        if v != todayKm { todayKm = v }
+        if abs(v - todayKm) >= 0.005 || v < todayKm { todayKm = v }
     }
 
     private let health = HKHealthStore()
@@ -130,8 +143,18 @@ final class WatchModel: NSObject, ObservableObject {
     // MARK: 알 현황
 
     // fresh: 아이폰이 방금 보낸 것 (at = 아이폰이 보낸 시각). 그때부터 워치가 걸은 거리를 '미리 보기'로 더한다.
+    // 2026-11-12: 걷는 동안 아이폰은 오늘 거리가 바뀔 때마다(몇 미터마다) 같은 알 현황을 다시 보낸다.
+    // 그때마다 큰 현황(그림 포함)을 다시 풀고 저장하고 화면을 통째로 다시 그리던 게 걷는 중 꺼짐의 원인으로 보여 같은 현황이면 건너뛴다.
+    private var lastData: Data?, lastAt: Double?
+    private let decodeLock = NSLock()
     private func decode(_ data: Data, fresh: Bool = false, at: Double? = nil) {
-        guard !data.isEmpty, let s = try? JSONDecoder().decode(GameState.self, from: data) else { return }
+        guard !data.isEmpty else { return }
+        decodeLock.lock()
+        let same = data == lastData && (!fresh || at == lastAt)
+        if !same { lastData = data; if fresh { lastAt = at } }
+        decodeLock.unlock()
+        if same { return }
+        guard let s = try? JSONDecoder().decode(GameState.self, from: data) else { return }
         UserDefaults.standard.set(data, forKey: stateKey)
         DispatchQueue.main.async {
             self.state = s
