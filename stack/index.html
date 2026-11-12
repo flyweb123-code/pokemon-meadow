@@ -2862,13 +2862,14 @@ const solidify = ps => { let n = 0; for (const p of ps) { if (!p || p.gone || p.
 const touching = b => { const s = []; for (let ce = b.getContactList(); ce; ce = ce.next) if (ce.contact.isTouching() && ce.other && ce.other.pk) s.push(ce.other.pk); return s; };
 const killProp = o => { if (!o.dead && o.kind === 'rock') { const ps = touching(o.b); solidify(ps); } if (o.dead) return; o.dead = 1; try { world.destroyBody(o.b); } catch (e) {} for (let i = 0; i < 14; i++) dust(o.x + (Math.random() - .5) * o.w, o.y + (Math.random() - .5) * o.h, 1, o.kind === 'rock' ? '#a89070' : '#c8a060'); };
 function useSkill() {
+  if (!dead && ((selK && !(drag && drag.p)) || (charm && !charm.pick))) { skCancel(); return; }   /* v23.23 경완 '불태우기처럼 포켓몬 고르는 기술은 고르기 전이면 버튼 다시 누르면 취소': 불태우기·사이코키네시스·매혹(바꿀 포켓몬 고르기) — 횟수·콤보 되돌림 */
   if (dead || used >= uses || hv || selK || charm || (drag && drag.p)) return; const sk = SK[ty]; if (sk.k === 'arm' && armed) { return; }
   if ([2, 3, 10, 14, 17, 18].includes(ty) && mode !== 'aim') { msk('포켓몬이 자리 잡은 뒤에 써요'); return; }
   if ([2, 10, 14, 17].includes(ty) && !live().length) { msk('쌓인 포켓몬이 없어요'); return; }
   if (ty === 11 && !lastPut()) { msk('되돌릴 포켓몬이 없어요'); return; }
   if (ty === 3) { flyPlan = planFly(); if (!flyPlan) { msk('놓을 자리가 없어요'); return; } }
   const B = $('ab'); B.classList.add('on'); setTimeout(() => { B.classList.remove('on'); B.classList.add('pop'); setTimeout(() => B.classList.remove('pop'), 300); }, 160);
-  used++; abDraw(); SFX.skill(); hap(1); combo = 0;
+  used++; abDraw(); SFX.skill(); hap(1); skCmb = combo; combo = 0;
   const tb = towerBox(), sp = spTgt(), tgt = sp ? sp : sk.k === 'arm' ? [aimX(), dropY()] : ty === 5 ? [W / 2, GY - BASE_H] : ty === 16 ? (() => { const t = sortY(live())[0]; if (!t) return [W / 2, tb.top]; const tx = pxv(t.b.getPosition().x), r = Math.max(t.I.w, t.I.h) * t.I.k * .6 + 46, sd = tx > W / 2 ? -1 : 1; dragonSd = sd; return [tx + sd * r, pxv(t.b.getPosition().y) - 10, tx]; })() : [ (tb.x0 + tb.x1) / 2 + (comX() < W / 2 ? 50 : -50), Math.max(tb.top, GY - 340) + 40 ];
   if (ty === 10) { doSkill(); bannerShow(sk.n); return; }   /* 경완: 불태우기는 고르기 전엔 내 포켓몬 안 나옴 */
   if (ty === 11) { doSkill(); gS('surf'); }
@@ -2876,6 +2877,8 @@ function useSkill() {
   helper(tgt[0], tgt[1], ty === 11 || ty === 8 ? () => {} : () => doSkill(), tgt[2] != null ? tgt[2] : sk.k === 'arm' ? aimX() : tgt[0], HOLD[ty]);
   bannerShow(sk.n);
 }
+let skCmb = 0;
+function skCancel() { selK = null; charm = null; used = Math.max(0, used - 1); combo = skCmb; clearTimeout(msg.t); $('hint').classList.remove('on'); hap(0); const B = $('ab'); B.classList.add('pop'); setTimeout(() => B.classList.remove('pop'), 300); abDraw(); }
 function doSkill() {
   const L = live(), C = TYPE_C[ty];
   switch (ty) {
