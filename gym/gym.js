@@ -2212,10 +2212,13 @@ function shutSe(dn) { const G = window.GymBGM; if (!G) return; const n = dn ? 14
     if (dn) setTimeout(() => { try { G.se('DP_GASHIN', { gain: 1.8 }); } catch (e) {} }, n * gap); } catch (e) {} }
 async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold: 첫 간판을 더 오래, under: 셔터가 내려간 채로 밑에 깔 화면 (기존 체육관이 비치지 않게)
   openTab(null); preMs(); const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
-  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>${t1}</b><span>${s1}</span><small></small></div>`;
-  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); }); await wait(2200 + hold);
-  await mid?.(); fx.querySelector('.re-sign').innerHTML = `<b>${t2}</b><span>${s2}</span><small></small>`;
-  sfx('tap'); await wait(1100 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
+  /* v22.54 경완 '휴업·다시 열 때 알림창처럼 뜨게, 디자인도, bgm 잠시 꺼졌다가 열 때 다시': 간판 = 머리띠 있는 알림창, 팝업 모션 + 딩동, 셔터 내려간 동안 곡 소리 0 */
+  const M = window.GymBGM, sg = (t, s, c) => `<div class="re-sign np ${c}"><b>${t}</b><span>${s}</span><small>${t === '휴 업' ? '잠시 문을 닫아요' : t === '폐 업' ? '그동안 찾아 주셔서 고맙습니다' : t === '다시 열어요' ? '곧 셔터가 올라가요' : ''}</small></div>`;
+  const pp = () => { const el = fx.querySelector('.re-sign'); if (!el) return; el.classList.remove('pp'); void el.offsetWidth; el.classList.add('pp'); try { M?.se('DP_PINPON'); } catch (e) {} };
+  fx.innerHTML = `<div class="re-shut"><i></i></div>${sg(t1, s1, 'sh')}`;
+  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); try { M?.duck(0, 1.2); } catch (e) {} }); await wait(1450); pp(); await wait(750 + hold);
+  await mid?.(); fx.querySelector('.re-sign').outerHTML = sg(t2, s2, 'ok'); pp();
+  await wait(1300 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); try { M?.duck(1, 1); } catch (e) {} await wait(900); fx.remove();
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0, x.gmax ?? 99), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
