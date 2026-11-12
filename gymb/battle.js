@@ -38,6 +38,24 @@ function loadData() {
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
 let splP = null;   // 기술 파티클 엔진 (gymb/spl.js)
+let essP = null;   // 5세대 이후 기술 연출 재생기 (gymb/essfx.js)
+const loadEss = () => window.GymEss ? Promise.resolve() : essP || (essP = new Promise(ok => { const s = document.createElement('script'); s.src = `gymb/essfx.js?v=${VER}`; s.onload = ok; s.onerror = () => { essP = null; ok(); }; document.head.appendChild(s); }));
+// 경완 2026-11-12 '응 다 반영해줘': 플래티넘 원본 연출이 없는 5세대 이후 기술은 Gen 9 Move Animation Project(Essentials) 연출·효과음으로. 상대가 쓸 땐 상대용 연출이 있으면 그것(아래 포켓몬을 '쓰는 쪽' 자리로 그려 둠), 없으면 같은 연출을 방향만 뒤집음 (원본 pbAnimation 그대로)
+async function essFx(s, id) {
+  await Promise.race([loadEss(), wait(1500)]); const E = window.GymEss; if (!E || !B) return false;
+  const k = await Promise.race([E.has(id), wait(1500).then(() => 0)]); if (!k) return false;
+  const J = await Promise.race([E.get(id), wait(2500).then(() => null)]); if (!J || !B) return false;
+  const o = other(s), opp = s === 'e', useO = opp && J.o, A = useO ? J.o : J.m; if (!A) return false;
+  const top = $b('.bt-top'); let bk = $b('.bt-essb'), fr = $b('.bt-essf');
+  if (!bk) { bk = document.createElement('canvas'); bk.className = 'bt-essb'; bk.width = 512; bk.height = 384; top.insertBefore(bk, $b('.bt-mw.e')); }
+  if (!fr) { fr = document.createElement('canvas'); fr.className = 'bt-essf'; fr.width = 512; fr.height = 384; $b('.bt-mw.p').after(fr); }
+  const side = sd => { const m = monEl(sd), c = m?.querySelector('.clip'); return { el: c || m, img: c?.querySelector('img'), pan: panOf(sd) }; };
+  const U = side(useO ? o : s), T = side(useO ? s : o), X = B.act[s];
+  el.classList.add('essp');
+  try { await E.play({ top, back: bk, front: fr, user: U, target: T, A, speed: B.fast ? 1 / .6 : 1, alive: () => !!B, cry: () => { try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } }); }
+  catch (e) { console.error(e); }
+  el.classList.remove('essp'); return true;
+}
 const loadSpl = () => window.GymSPL ? Promise.resolve() : splP || (splP = new Promise(ok => { const s = document.createElement('script'); s.src = `gymb/spl.js?v=${VER}`; s.onload = ok; s.onerror = () => { splP = null; ok(); }; document.head.appendChild(s); }));
 const mvOf = id => D.mv[MVI.get(id)];   // [id, 이름, 타입, 분류(0 물리 1 특수 2 변화), 위력, 명중, PP, 우선도, 설명]
 // v21.89 배틀 기믹 ([DBK] Z-Power·Dynamax): Z기술·다이맥스 기술 한국어 이름
@@ -456,7 +474,20 @@ async function gmFx(s, X, kind, ty) {
         await GymDBK.dynamax(c); swap(); dmaxOn(s, X); return; }
     } catch (e) { console.error(e); }
   }
-  if (kind === 'mega' || kind === 'primal') { se('KOUKA_M', { pan }); m.classList.add('gm-' + kind); await wait(B.fast ? 400 : 900); m.classList.add('fmc'); await wait(260); if (X?.gmPend) { X.gmPend = 0; swap(); } await wait(420); m.classList.remove('fmc', 'gm-' + kind); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
+  // 경완 2026-11-12 '도전자 메가진화 간단 연출에도 효과음, 메가 마크가 한 번 돌면서 상대 포켓몬 위에': 기운 모음(SUIKOMU) → 바뀔 때 반짝·쾅 → 위에 메가 마크
+  const mgMark = () => { if (kind !== 'mega') return; const k = document.createElement('i'); k.className = 'gm-mark'; k.style.backgroundImage = `url(${IMG}dbk/Mega/mark.png)`; const top = $b('.bt-top'), r = m.querySelector('img')?.getBoundingClientRect() || m.getBoundingClientRect(), t0 = top.getBoundingClientRect(), z = t0.width / (top.offsetWidth || t0.width); k.style.left = (r.left + r.width / 2 - t0.left) / z + 'px'; k.style.top = Math.max(2, (r.top - t0.top) / z - 4) + 'px'; top.appendChild(k); setTimeout(() => k.remove(), 1700); };   // 포켓몬 칸 밖(위 화면)에 붙임: 그림이 바뀌며 칸을 다시 그려도 안 지워지게
+  // 경완 2026-11-12 '빛나기 전에 도전자 포켓몬 뒤로 트레이너가 잠깐 들어왔다가 진화시키고 나감'
+  const trE = s === 'e' && kind === 'mega' ? $b('.bt-tr.e') : null, trWas = trE?.className;
+  if (trE) { trE.classList.remove('away'); trE.classList.add('mgin'); await wait(B.fast ? 250 : 600); }
+  if (kind === 'mega' || kind === 'primal') { se(kind === 'mega' ? 'SUIKOMU' : 'KOUKA_M', { pan });
+    // 경완 2026-11-12 '여전히 빛 효과로 스프라이트 주변 박스 경계선 보임': 아이폰은 그림에 filter 를 걸면 네모 칸이 비침 → filter 없이 하얀 판(그림 모양 mask)·둥근 빛(그라데이션)만 씀
+    const cl = m.querySelector('.clip'), img = cl?.querySelector('img'), wh = document.createElement('canvas'), au = document.createElement('i'), wx = wh.getContext('2d');
+    wh.className = 'gm-wh'; au.className = 'gm-au';
+    const fit = () => { if (!img) return; wh.style.left = au.style.left = img.offsetLeft + 'px'; wh.style.top = au.style.top = img.offsetTop + 'px'; wh.style.width = au.style.width = img.offsetWidth + 'px'; wh.style.height = au.style.height = img.offsetHeight + 'px'; wh.style.transform = au.style.transform = img.style.transform || ''; wh.width = img.naturalWidth || img.offsetWidth; wh.height = img.naturalHeight || img.offsetHeight; };
+    let live = 1; const draw = () => { if (!live) return; try { if (img?.complete && img.naturalWidth) { if (wh.width !== img.naturalWidth) fit(); wx.globalCompositeOperation = 'source-over'; wx.clearRect(0, 0, wh.width, wh.height); wx.drawImage(img, 0, 0, wh.width, wh.height); wx.globalCompositeOperation = 'source-in'; wx.fillStyle = '#fff'; wx.fillRect(0, 0, wh.width, wh.height); } } catch (e) {} requestAnimationFrame(draw); };   // 움직이는 그림의 지금 칸을 매 프레임 하얗게
+    if (cl && img) { fit(); img.addEventListener('load', fit); cl.prepend(au); cl.appendChild(wh); draw(); }
+    m.classList.add('gm-' + kind); await wait(B.fast ? 400 : 900); wh.classList.add('pk'); await wait(260); if (X?.gmPend) { X.gmPend = 0; swap(); fit(); }
+    wh.classList.add('out'); au.classList.add('out'); setTimeout(() => { live = 0; img?.removeEventListener('load', fit); wh.remove(); au.remove(); }, 700); if (kind === 'mega') { se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); mgMark(); } await wait(kind === 'mega' ? 1100 : 420); m.classList.remove('gm-' + kind); if (trE) { trE.classList.remove('mgin'); trE.className = trWas; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
   if (kind === 'dmax') { se('KOUKA_M', { pan }); m.classList.add('fmc'); await wait(260); swap(); m.classList.remove('fmc'); dmaxOn(s, X); await wait(B.fast ? 400 : 900); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
@@ -516,12 +547,21 @@ function gifLoad(u) {
   if (!gifOk.has(u)) gifOk.set(u, new Promise(r => { const i = new Image(); i.onload = () => r(true); i.onerror = () => r(false); i.src = u; }));
   return gifOk.get(u);
 }
+/* 경완 2026-11-12 '리자몽 얼굴이 체력 박스랑 가까움, 다른 포켓몬도 체력 박스에 너무 가깝거나 가려지는지': 그림이 체력 박스(내 쪽 x≥128·y 95~137, 상대 쪽 x≤122·y 20~53)와 겹치면 그 줄들만큼 옆으로 비킴 (반대쪽 화면 끝은 넘지 않게) */
+function hbAvoid(m, g, k, so, side, dy) { if (!g?.L) return; const p = side === 'p', cx = p ? 80 : 176, bot = (p ? 144 : 92) + (so?.[1] || 0) * k + dy, top = bot - g.h * k, x0 = cx - g.w * k / 2 - (so?.[0] || 0) * k, gap = 4;
+  let need = 0, room = 1e9;
+  for (let y = 0; y < g.h; y++) { if (g.L[y] < 0) continue; const sy = top + (y + .5) * k, l = x0 + g.L[y] * k, r = x0 + (g.R[y] + 1) * k;
+    room = Math.min(room, p ? l - 2 : 254 - r);
+    if (p ? sy >= 95 && sy <= 137 : sy >= 20 && sy <= 53) need = Math.max(need, p ? r - (128 - gap) : (122 + gap) - l); }
+  const sh = Math.round(Math.max(0, Math.min(need, room))); m.style.left = sh ? (p ? 32 - sh : 128 + sh) + 'px' : ''; }
 // v14.30 경완 '머리가 상대 정보 박스에 가려지지 않게': 뒷모습 gif 의 위쪽 빈 줄 수를 재서, 그림 윗끝이 박스 아래(GIF_TOP)보다 위면 그만큼 내림 (아래는 대사창 뒤로 잘려도 됨)
 const GIF_TOP = 56, gifTopC = new Map();
 function gifTop(u) {
   if (!gifTopC.has(u)) gifTopC.set(u, new Promise(r => { const i = new Image(); i.crossOrigin = 'anonymous';
     i.onload = () => { try { const w = i.naturalWidth, h = i.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(i, 0, 0); const d = x.getImageData(0, 0, w, h).data; let t = 0;
-      out: for (; t < h; t++) for (let j = 0; j < w; j++) if (d[(t * w + j) * 4 + 3] > 20) break out; r({ h, t }); } catch (e) { r(null); } };
+      out: for (; t < h; t++) for (let j = 0; j < w; j++) if (d[(t * w + j) * 4 + 3] > 20) break out;
+      const L = new Int16Array(h).fill(-1), Rr = new Int16Array(h).fill(-1); for (let y = 0; y < h; y++) for (let j = 0; j < w; j++) if (d[(y * w + j) * 4 + 3] > 20) { if (L[y] < 0) L[y] = j; Rr[y] = j; }
+      r({ h, w, t, L, R: Rr }); } catch (e) { r(null); } };
     i.onerror = () => r(null); i.src = u; }));
   return gifTopC.get(u);
 }
@@ -545,7 +585,8 @@ function showMon(side, A, on = true) {
     const k = (side === 'p' ? 1.4 : 1) * (so?.[2] || 1), fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
-    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; if (y < GIF_TOP) m.style.top = (48 + Math.round(GIF_TOP - y)) + 'px'; }); }
+    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; let dy = 0; if (y < GIF_TOP) { dy = Math.round(GIF_TOP - y); m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
+    else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
     m._gif = A.gif; }
   else if (A) {
     m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
@@ -744,6 +785,9 @@ function battlerInfo() {
       <button class="bb cancel" data-x><span>돌아가기</span></button></div>`).onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.dataset.d) { i = (i + +b.dataset.d + L.length) % L.length; draw(); } else res(); }; };
     draw(); });
 }
+function abInfo(k) {   /* 경완 2026-11-12 '특성 2줄 되면 버튼 레이아웃 깨짐': 카드엔 한 줄만, 눌러서 전체 설명 */
+  return new Promise(res => { const p = panel(`<div class="bp-info"><div class="mi-top ab-top"><b>${esc(abKo(k))}</b></div><p>${esc(AB_D[k] || '효과 설명이 아직 없어요.')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); }; }); }
 function moveInfo(m) {
   return new Promise(res => {
     const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
@@ -770,10 +814,10 @@ function partyPanel(req, forced) {
     const card = i => { const m = L[i], A = B.my[myIx(i)], P = boxOf(A.pid), [hp, mhp, r, fnt] = hpOfM(m), can = !m.active && !fnt;
       const sl = B.btl.p1.pokemon[i]?.moveSlots || [], mv = (m.moves || A.mv || []).map(id => { const d = mvOf(toID(id)); if (!d) return null; const s0 = sl.find(x => x.id === toID(id)); return { d, id: toID(id), move: d[1], pp: s0?.pp ?? d[6], maxpp: s0?.maxpp ?? d[6] }; }).filter(Boolean);   // 기술마다 위력·명중·PP, 누르면 기술 설명 (v12.20 경완)
       const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
-        <p class="bc-ab"><small>특성</small><b>${esc(abKo(A.ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[A.ab] ? `<span class="bc-abd">${esc(AB_D[A.ab])}</span>` : ''}</p>
+        <button type="button" class="bc-ab" data-ab><small>특성</small><b>${esc(abKo(A.ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[A.ab] ? `<span class="bc-abd">${esc(AB_D[A.ab])}</span>` : ''}</button>
         <div class="bc-mv">${mv.map((x, k) => mvBox(k, x.d, x.pp, x.maxpp, false)).join('')}</div>
         <div class="bc-btns"><button class="bb cancel" data-x><span>뒤로</span></button><button class="bb go" data-go ${can ? '' : 'disabled'}><span>${m.active ? '나와 있음' : fnt ? '기절' : '바꾸기'}</span></button></div></div>`); fillTh(p);
-      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.i != null || b.dataset.info) return moveInfo(mv[+(b.dataset.info ?? b.dataset.i)]).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
+      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.i != null || b.dataset.info) return moveInfo(mv[+(b.dataset.info ?? b.dataset.i)]).then(() => card(i)); if (b.hasAttribute('data-ab')) return abInfo(A.ab).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
     list();
   });
 }
@@ -1479,6 +1523,7 @@ async function moveFx(s, id, miss, fx) {
   const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  if (!A && !fx && await essFx(s, id)) return;
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
   if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
@@ -1554,7 +1599,7 @@ async function abPop(id, ab) {
   if (!id || !ab || !B) return; const s = sideOf(id), key = s + ab; if (B.abLast === key) return; B.abLast = key;
   const w = document.createElement('div'); w.className = `bt-abp ${s}`; w.innerHTML = `<small>${esc(who(id))}의</small><b>${esc(abKo(ab))}</b>`;
   $b('.bt-top')?.appendChild(w) || el.appendChild(w);
-  await wait(30); w.classList.add('on'); await wait(B.fast ? 250 : 450);
+  await wait(30); w.classList.add('on'); loadEss().then(() => window.GymEss?.snd('abil', 100, 100)).catch(() => {});   /* 경완 2026-11-12: 특성 창 뜰 때 블랙·화이트 특성 소리 (EBS Gen 5 팩 BW_ability) */ await wait(B.fast ? 250 : 450);
   // v21.31 경완 '따라큐랑 싸웠을 때 탈 특성 안 나왔음': 본가처럼 특성 창은 뒤따르는 대사가 넘어갈 때까지 떠 있는다 (전엔 1.1초 뒤 사라져서 대사를 읽을 땐 이미 없었음)
   // 뒤따르는 대사가 없으면 조금 뒤 저절로 들어간다
   const t0 = Date.now(); (B.abHold = B.abHold || []).forEach(h => h.s === s && abOut(h)); B.abHold.push({ w, s, t0 });
@@ -2136,7 +2181,7 @@ const IT_CAT = [['heal', '회복', ['leftovers', 'blacksludge', 'shellbell']], [
 /* 경완 2026-11-12 메가스톤 (이름난 체육관 강박사 튜토리얼에서 메가링을 받으면 상점 도구 탭 '메가스톤'): MEGA_ST {도구: [종 번호, X·Y·Z]}, 그림 gym/img/dbk/it */
 const MEGA_ST = {"abomasite":[460,""],"absolite":[359,""],"absolitez":[359,"Z"],"aerodactylite":[142,""],"aggronite":[306,""],"alakazite":[65,""],"altarianite":[334,""],"ampharosite":[181,""],"audinite":[531,""],"banettite":[354,""],"barbaracite":[689,""],"baxcalibrite":[998,""],"beedrillite":[15,""],"blastoisinite":[9,""],"blazikenite":[257,""],"cameruptite":[323,""],"chandelurite":[609,""],"charizarditex":[6,"X"],"charizarditey":[6,"Y"],"chesnaughtite":[652,""],"chimechite":[358,""],"clefablite":[36,""],"crabominite":[740,""],"darkranite":[491,""],"delphoxite":[655,""],"diancite":[719,""],"dragalgite":[691,""],"dragoninite":[149,""],"drampanite":[780,""],"eelektrossite":[604,""],"emboarite":[500,""],"excadrite":[530,""],"falinksite":[870,""],"feraligite":[160,""],"floettite":[670,""],"froslassite":[478,""],"galladite":[475,""],"garchompite":[445,""],"garchompitez":[445,"Z"],"gardevoirite":[282,""],"gengarite":[94,""],"glalitite":[362,""],"glimmoranite":[970,""],"golisopite":[768,""],"golurkite":[623,""],"greninjite":[658,""],"gyaradosite":[130,""],"hawluchanite":[701,""],"heatranite":[485,""],"heracronite":[214,""],"houndoominite":[229,""],"kangaskhanite":[115,""],"latiasite":[380,""],"latiosite":[381,""],"lopunnite":[428,""],"lucarionite":[448,""],"lucarionitez":[448,"Z"],"magearnite":[801,""],"malamarite":[687,""],"manectite":[310,""],"mawilite":[303,""],"medichamite":[308,""],"meganiumite":[154,""],"meowsticite":[678,""],"metagrossite":[376,""],"mewtwonitex":[150,"X"],"mewtwonitey":[150,"Y"],"pidgeotite":[18,""],"pinsirite":[127,""],"pyroarite":[668,""],"raichunitex":[26,"X"],"raichunitey":[26,"Y"],"sablenite":[302,""],"salamencite":[373,""],"sceptilite":[254,""],"scizorite":[212,""],"scolipite":[545,""],"scovillainite":[952,""],"scraftinite":[560,""],"sharpedonite":[319,""],"skarmorite":[227,""],"slowbronite":[80,""],"staraptite":[398,""],"starminite":[121,""],"steelixite":[208,""],"swampertite":[260,""],"tatsugirinite":[978,""],"tyranitarite":[248,""],"venusaurite":[3,""],"victreebelite":[71,""],"zeraorite":[807,""],"zygardite":[718,""]}, MEGA_P = 8000;
 function mgStAdd() { for (const [id, [n, x]] of Object.entries(MEGA_ST)) { const k = SPECIES[n]?.n; if (!k || HOLD[id]) continue; HOLD[id] = [`${k}나이트${x}`, MEGA_P, `${k}에게 지니게 하면 배틀 중 메가진화할 수 있다. 트레이너에게 메가링이 있어야 한다.`, 0]; } }
-const mgOn = () => !!(S.gym?.mgRing || window.gymMgOn);   // 메가링을 받은 관장만 상점에 메가스톤
+const mgOn = () => !!(S.gym?.mgRing || (S.gym?.shelf || []).some(x => x?.mgRing) || window.gymMgOn);   // 메가링은 관장 것 (어느 체육관에서 받았든)   // 메가링을 받은 관장만 상점에 메가스톤
 const mgSt = sp => Object.keys(MEGA_ST).filter(id => MEGA_ST[id][0] === sp);   // 이 종이 쓸 수 있는 메가스톤
 const itCatL = () => mgOn() ? [...IT_CAT, ['mega', '메가스톤', Object.keys(MEGA_ST).filter(id => HOLD[id]).sort((a, b) => MEGA_ST[a][0] - MEGA_ST[b][0] || a.localeCompare(b))]] : IT_CAT;
 const itImg = id => MEGA_ST[id] ? `${IMG}dbk/it/${id}.png` : `${IMG}item/${id}.png`;
