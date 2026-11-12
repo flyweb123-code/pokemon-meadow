@@ -1,0 +1,12 @@
+# 임시 (포천 아트밸리 좌표 찾기, 끝나면 지움)
+name: evmap tmp2
+on:
+  push:
+    branches: [claude/project-thread-kyjv32]
+    paths: ['.github/workflows/evmap-tmp.yml']
+jobs:
+  geo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow && python3 tools/ev-map.py --geo 포천아트밸리 천주호 "포천 아트밸리"
