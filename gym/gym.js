@@ -9,7 +9,7 @@ const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
 // 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
-const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('hg_rocket_m hg_rocket_f hg_ariana hg_archer hg_petrel hg_proton aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
+const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster snow_trainer_m snow_trainer_f aroma_lady belle_pa breeder_m breeder_f cameraman reporter interviewers clown idol cowgirl rancher ranger_m ranger_f cyclist_f double_team veteran lady socialite rich_boy maid waiter waitress parasol_lady pokefan_m pokefan_f pi policeman roughneck school_kid_m school_kid_f skier_m swimmer_m tuber_m tuber_f sis_bro twins young_couple worker'.split(' ')), PT_OW = new Set('hg_rocket_m hg_rocket_f hg_ariana hg_archer hg_petrel hg_proton aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster ace_trainer_f ace_trainer_m ace_trainer_snow_f ace_trainer_snow_m cameraman clown cowgirl cyclist_f expert_m idol lady looker maid parasol_lady pokefan_f pokefan_m pokemon_breeder_f pokemon_breeder_m policeman rancher reporter rich_boy roughneck school_kid_f school_kid_m skier_m socialite tuber_f tuber_m twin waiter waitress worker'.split(' '));
 const trSrc = k => `${IMG}${PT_TR.has(k) || /^hg_/.test(k || '') ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png?v=3`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;   // v18.65 경완: 비키니 아가씨 필드 그림을 파이어레드 땅 위 전신(1.25배)으로 바꿔 캐시 v3
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
@@ -574,6 +574,47 @@ const CLS = {
   poke_kid: { ow: 'poke_kid', f: 1, t: [1, 13, 18], e: 1 }, jogger: { ow: 'jogger', f: 0, t: [1, 2, 3], e: 1 }, cyclist_m: { ow: 'cyclist_m', f: 0, t: [13, 3, 1], e: 1 },
   battle_girl: { ow: 'battle_girl', f: 1, t: [2] }, ninja_boy: { ow: 'ninja_boy', f: 0, t: [4, 7, 17] }, ruin_maniac: { ow: 'ruin_maniac', f: 0, t: [5, 6, 9] },
   dragon_tamer: { ow: 'dragon_tamer', f: 0, t: [16] }, skier_f: { ow: 'skier_f', f: 1, t: [15] }, artist: { ow: 'artist', f: 0, t: [18, 14, 1] },
+  /* v23.24 경완 '싹 다 우리 게임에 넣어줘': 플래티넘 일반 트레이너 40종 더 (tools/gym/mkpttr.py) */
+  snow_trainer_m: { ow: 'ace_trainer_snow_m', f: 0, t: [15, 6, 11] },
+  snow_trainer_f: { ow: 'ace_trainer_snow_f', f: 1, t: [15, 11, 5] },
+  aroma_lady: { ow: 'beauty', f: 1, t: [12, 18], e: 1 },
+  belle_pa: { ow: 'cowgirl', f: 1, t: [1, 5, 10] },
+  breeder_m: { ow: 'pokemon_breeder_m', f: 0, t: [1, 12, 13], e: 1 },
+  breeder_f: { ow: 'pokemon_breeder_f', f: 1, t: [1, 18, 11], e: 1 },
+  cameraman: { ow: 'cameraman', f: 0, t: [13, 1] },
+  reporter: { ow: 'reporter', f: 1, t: [1, 18, 13], e: 1 },
+  interviewers: { ow: 'reporter', f: 1, t: [13, 1, 18] },
+  clown: { ow: 'clown', f: 0, t: [14, 18, 1] },
+  idol: { ow: 'idol', f: 1, t: [18, 1, 13], e: 1 },
+  cowgirl: { ow: 'cowgirl', f: 1, t: [1, 10, 5], e: 1 },
+  rancher: { ow: 'rancher', f: 0, t: [1, 5, 2] },
+  ranger_m: { ow: 'ace_trainer_m', f: 0, t: [12, 7, 3, 11] },
+  ranger_f: { ow: 'ace_trainer_f', f: 1, t: [12, 7, 3, 11] },
+  cyclist_f: { ow: 'cyclist_f', f: 1, t: [13, 3, 1], e: 1 },
+  double_team: { ow: 'ace_trainer_m', f: 0, t: [] },
+  veteran: { ow: 'expert_m', f: 0, t: [] },
+  lady: { ow: 'lady', f: 1, t: [1, 18, 12], e: 1 },
+  socialite: { ow: 'socialite', f: 1, t: [18, 14, 1] },
+  rich_boy: { ow: 'rich_boy', f: 0, t: [1, 18, 14], e: 1 },
+  maid: { ow: 'maid', f: 1, t: [1, 18, 14] },
+  waiter: { ow: 'waiter', f: 0, t: [1, 10, 11] },
+  waitress: { ow: 'waitress', f: 1, t: [1, 10, 11], e: 1 },
+  parasol_lady: { ow: 'parasol_lady', f: 1, t: [11, 12, 18] },
+  pokefan_m: { ow: 'pokefan_m', f: 0, t: [1, 18, 13], e: 1 },
+  pokefan_f: { ow: 'pokefan_f', f: 1, t: [1, 18, 13], e: 1 },
+  pi: { ow: 'looker', f: 0, t: [17, 1, 14] },
+  policeman: { ow: 'policeman', f: 0, t: [10, 17, 2] },
+  roughneck: { ow: 'roughneck', f: 0, t: [17, 4, 2] },
+  school_kid_m: { ow: 'school_kid_m', f: 0, t: [12, 13, 1], e: 1 },
+  school_kid_f: { ow: 'school_kid_f', f: 1, t: [12, 13, 1], e: 1 },
+  skier_m: { ow: 'skier_m', f: 0, t: [15] },
+  swimmer_m: { ow: 'swimmer_m_land', f: 0, t: [11], e: 1 },
+  tuber_m: { ow: 'tuber_m', f: 0, t: [11], e: 1 },
+  tuber_f: { ow: 'tuber_f', f: 1, t: [11], e: 1 },
+  sis_bro: { ow: 'swimmer_f_land', f: 1, t: [11, 15] },
+  twins: { ow: 'twin', f: 1, t: [1, 7, 18], e: 1 },
+  young_couple: { ow: 'lady', f: 1, t: [1, 18, 12] },
+  worker: { ow: 'worker', f: 0, t: [9, 6, 5, 2] },
 };
 const N3 = new Set();   // v17.47 경완 '마티스가 걷는 모션이 없네': 3칸뿐이던 관장·사천왕 21명 그림에 걸음 6칸을 만들어 9칸으로 (tools/gym/owwalk.py, 다리 4줄 들기·보폭). 이제 3칸 그림 없음
 const CHAL_LINES = [
@@ -614,6 +655,46 @@ const SAY_CLS = {
   dragon_tamer: { i: ['드래곤의 분노를 감당할 수 있겠어?', '내 드래곤은 아무나 다룰 수 없지!', '용의 피가 끓는다…!'], w: ['드래곤이… 졌다고?', '더 강한 드래곤을 키워 오겠다!'], l: ['드래곤은 최강이다!', '용의 힘을 봤나!'] },
   skier_f: { i: ['설산에서 내려오자마자 왔어요!', '얼음처럼 차갑게 이겨 드릴게요!', '눈보라 속에서 단련했어요!'], w: ['꽁꽁 얼어붙은 기분이에요…', '다시 설산에서 수련할게요.'], l: ['슝! 활강하듯 이겼어요!', '얼음의 승리예요!'] },
   artist: { i: ['오늘 배틀을 그림으로 남기고 싶네요.', '영감을 얻으러 왔어요. 멋진 배틀 부탁해요!', '제 포켓몬은 움직이는 예술이에요.'], w: ['패배도 예술이죠… 아마도.', '좋은 그림 소재를 얻었어요.'], l: ['걸작이 탄생했네요!', '이 승리를 캔버스에 담아야겠어요!'] },
+  snow_trainer_m: { i: ['눈보라 속에서 단련한 엘리트입니다. 추위엔 강하죠!', '설산 정상에서 바로 내려왔어요. 손이 아직 꽁꽁이지만요.', '얼음처럼 냉정하게 가겠습니다.'], w: ['녹아내리는 기분이군요…', '다시 설산으로 돌아가겠습니다.'], l: ['눈보라는 제 편이었군요!', '역시 설산 훈련은 배신하지 않아요.'] },
+  snow_trainer_f: { i: ['눈밭에서 단련한 실력, 보여 드릴게요!', '털모자 쓰고 왔어요. 실내라 좀 덥네요…', '차가운 승부, 시작할까요?'], w: ['꽁꽁 언 건 제 쪽이었네요.', '설산으로 수련하러 갈게요!'], l: ['눈사람도 축하해 주겠죠!', '설원의 엘리트, 승리!'] },
+  aroma_lady: { i: ['꽃향기로 마음을 차분하게… 그리고 이길 거예요.', '오늘 향은 라벤더예요. 관장님도 느껴지세요?', '꽃처럼 피어나는 배틀을 보여 드릴게요.'], w: ['향기가 다 날아가 버렸어요…', '다음엔 더 진한 향으로 올게요.'], l: ['꽃향기의 승리예요!', '향기롭게 이겼네요.'] },
+  belle_pa: { i: ['아빠! 오늘은 둘이 힘 합쳐서 이겨요!', '(아빠) 우리 딸 앞에서 질 순 없지!', '목장에서 온 부녀 팀이에요!'], w: ['(아빠) 허허… 딸 앞에서 체면이 말이 아니구먼.', '아빠, 집에 가서 소 젖이나 짜요…'], l: ['아빠 최고!', '(아빠) 우리 딸 봤나! 하하!'] },
+  breeder_m: { i: ['정성껏 키운 아이들이에요. 털 윤기 좀 보세요!', '아침마다 포켓몬 밥을 직접 만들어요!', '키우는 게 제일 자신 있어요. 배틀도요!'], w: ['더 정성껏 키워 올게요.', '사료를 바꿔 봐야겠어요…'], l: ['키운 보람이 있네요!', '사랑으로 키운 아이들의 승리!'] },
+  breeder_f: { i: ['제 아이들 정말 예쁘게 컸죠?', '양동이 가득 포켓몬 간식 챙겨 왔어요!', '키우는 법이라면 누구에게도 안 져요!'], w: ['간식이 부족했나 봐요…', '돌아가서 더 잘 돌봐 줄게요.'], l: ['역시 정성이 최고예요!', '아이들아, 잘했어!'] },
+  cameraman: { i: ['지금 촬영 중입니다! 멋지게 부탁드려요!', '이 배틀, 뉴스에 나갑니다!', '카메라 돌아갑니다. 큐!'], w: ['컷! 다시 찍을게요…', '이 장면은 편집해야겠네요.'], l: ['완벽한 그림이 나왔네요!', '시청률 대박 예감!'] },
+  reporter: { i: ['관장님, 인터뷰 한마디만요! 아, 배틀부터요?', '오늘의 특종은 바로 여기입니다!', '현장에서 직접 배틀하는 리포터예요!'], w: ['특종은 관장님 쪽이었네요.', '이상, 현장에서 졌습니다…'], l: ['특종! 리포터가 관장을 이겼다!', '오늘 뉴스 헤드라인 확정!'] },
+  interviewers: { i: ['저희 둘이 취재 겸 도전하러 왔어요!', '(카메라맨) 각도 좋습니다! 시작하세요!', '시청자 여러분, 배틀 생중계입니다!'], w: ['생방송 사고네요…', '(카메라맨) 이건 내보내지 말자…'], l: ['생방송 승리 인증!', '(카메라맨) 이 장면 그대로 나간다!'] },
+  clown: { i: ['자, 보세요! 몬스터볼이 하나, 둘, 셋!', '웃음과 배틀, 둘 다 드릴게요!', '빨간 코는 진짜예요. 아마도요.'], w: ['어릿광대가 울면 슬프잖아요…', '공연은 망했지만 박수는 쳐 주세요!'], l: ['짜잔! 마술처럼 이겼죠?', '앵콜 부탁드려요!'] },
+  idol: { i: ['팬 여러분, 오늘도 반짝반짝!', '노래보다 배틀이 더 자신 있어요!', '사인은 배틀 끝나고 해 드릴게요!'], w: ['무대에서 넘어진 기분이에요…', '팬들한텐 비밀로 해 주세요!'], l: ['반짝반짝 승리!', '오늘 무대는 대성공이에요!'] },
+  cowgirl: { i: ['이랴! 목장에서 달려왔어요!', '밧줄 던지기만큼 배틀도 자신 있어요!', '우리 목장 우유 마시고 힘냈어요!'], w: ['말에서 떨어진 기분이에요…', '목장 일 하면서 다시 단련할게요!'], l: ['이랴! 우리가 이겼다!', '오늘 저녁은 우유 파티!'] },
+  rancher: { i: ['목장 일 하다 잠깐 나왔소!', '쇠스랑 대신 몬스터볼이오!', '우리 목장 포켓몬은 튼튼하다네!'], w: ['허허, 소들이 웃겠구먼.', '목장으로 돌아가 풀이나 베야겠소.'], l: ['하하! 목장의 힘이다!', '오늘은 풍년이로구먼!'] },
+  ranger_m: { i: ['자연을 지키는 레인저입니다. 승부도 지키죠!', '숲에서 포켓몬과 함께 단련했어요!', '레인저의 사명, 배틀에서도!'], w: ['오늘은 제가 구조받아야겠네요.', '숲으로 돌아가 다시 수련할게요.'], l: ['미션 완료!', '자연의 힘이에요!'] },
+  ranger_f: { i: ['포켓몬 레인저, 출동!', '산과 숲을 누비던 실력이에요!', '포켓몬을 지키는 마음으로 싸울게요!'], w: ['미션 실패네요…', '다음 순찰 때 또 올게요!'], l: ['미션 성공!', '레인저의 승리예요!'] },
+  cyclist_f: { i: ['자전거로 날아왔어요! 숨도 안 찼어요!', '바람 가르듯 시원하게 갈게요!', '페달처럼 쉬지 않고 밀어붙일 거예요!'], w: ['바퀴에 바람이 빠졌나 봐요…', '한 바퀴 더 돌고 올게요!'], l: ['씽씽! 결승선 통과!', '오늘 최고 기록이에요!'] },
+  double_team: { i: ['저희 둘의 호흡, 깨 보시죠!', '(둘이 동시에) 준비 완료!', '둘이라서 두 배로 강해요!'], w: ['호흡이 어긋났어…', '둘이서 다시 연습할게요.'], l: ['완벽한 콤비네이션!', '역시 우리 둘이 최고야!'] },
+  veteran: { i: ['오랜 세월 배틀만 해 왔소. 실망시키지 않겠네.', '젊은 관장의 실력, 이 늙은이가 확인해 보지.', '경험은 배신하지 않는 법이지.'], w: ['허허… 세월이 무색하구먼.', '훌륭하오. 아직 배울 게 많군.'], l: ['경험의 승리로다.', '아직 녹슬지 않았군.'] },
+  lady: { i: ['어머, 여기가 체육관이군요. 우아하게 할게요.', '배틀도 품격이 있어야죠.', '드레스가 더러워지기 전에 끝낼게요.'], w: ['어머나… 드레스에 먼지가…', '오늘은 품격 있게 물러날게요.'], l: ['호호, 우아한 승리네요.', '품격이 다르죠?'] },
+  socialite: { i: ['파티 가기 전에 잠깐 들렀어요.', '보석보다 빛나는 제 포켓몬, 보세요.', '사교계에서도 배틀이 유행이랍니다.'], w: ['파티에 늦겠네요… 흑.', '오늘 일은 비밀로 해 주세요.'], l: ['파티에서 자랑해야겠어요!', '보석처럼 빛나는 승리예요.'] },
+  rich_boy: { i: ['우리 집 포켓몬은 다 최고급이에요!', '아빠가 사 준 포켓몬이라고 얕보지 마세요!', '집사가 응원하러 왔어요!'], w: ['아빠한테 이르지 마세요…', '돈으로도 안 되는 게 있구나…'], l: ['역시 최고급!', '집사! 축하 파티 준비해!'] },
+  maid: { i: ['주인님 대신 도전하러 왔어요!', '청소하듯 깔끔하게 끝낼게요.', '차 끓여 놓고 왔어요. 식기 전에 갈게요.'], w: ['차가 다 식었겠네요…', '주인님께 혼나겠어요…'], l: ['깔끔하게 정리 끝!', '주인님께 자랑해야지!'] },
+  waiter: { i: ['주문하신 배틀, 나왔습니다!', '오늘의 추천 메뉴는 승리입니다.', '쟁반 위에 몬스터볼을 올려 왔습니다.'], w: ['주문이 잘못 들어갔군요…', '계산은 제가 하겠습니다…'], l: ['맛있게 드셨나요? 승리 한 접시!', '서비스 만점이었죠?'] },
+  waitress: { i: ['어서 오세요! 아, 제가 도전자죠?', '주문받듯 빠르게 끝낼게요!', '오늘의 특선 배틀이에요!'], w: ['쟁반을 엎은 기분이에요…', '다음엔 더 맛있게 준비해 올게요!'], l: ['서빙 완료!', '팁은 승리로 받을게요!'] },
+  parasol_lady: { i: ['양산 아래에서 우아하게 겨뤄 볼까요?', '햇볕도 배틀도 양산 하나면 충분해요.', '피부도 실력도 지킬 거예요.'], w: ['양산이 뒤집혔네요…', '오늘은 그늘에서 쉴게요.'], l: ['양산 아래 우아한 승리!', '햇살이 눈부시네요.'] },
+  pokefan_m: { i: ['포켓몬이 너무 좋아서 왔어요! 관장님 포켓몬도 좋아요!', '제 아이들 귀엽죠? 강하기도 해요!', '포켓몬 사랑이라면 누구에게도 안 져요!'], w: ['져도 포켓몬은 귀엽네요!', '관장님 포켓몬 구경한 걸로 만족!'], l: ['귀여움이 이겼다!', '우리 아이들 최고야!'] },
+  pokefan_f: { i: ['포켓몬은 다 귀여워요! 관장님 포켓몬도요!', '제 아이들한테 리본 달아 주고 왔어요!', '사랑으로 키운 아이들이에요!'], w: ['그래도 다들 귀여웠어요!', '돌아가서 꼭 안아 줄게요.'], l: ['꺄아! 이겼다!', '사랑의 승리예요!'] },
+  pi: { i: ['당신의 약점은 이미 조사가 끝났소.', '단서는 모두 이 배틀 안에 있지.', '사건 수사 중 잠깐 들렀소.'], w: ['내 추리가 빗나갔군…', '사건은 미궁 속으로…'], l: ['사건 해결!', '추리대로였소.'] },
+  policeman: { i: ['순찰 중 이상 없음! 아, 배틀은 이상 있음!', '정의의 이름으로 승부합니다!', '삐익! 체육관 앞 배틀 단속 나왔습니다!'], w: ['오늘은 제가 체포당했네요…', '순찰로 돌아가겠습니다!'], l: ['정의는 승리한다!', '상황 종료!'] },
+  roughneck: { i: ['어이, 관장! 한판 붙자고!', '이 동네 최강은 나라고!', '겉모습만 보고 판단하지 마라!'], w: ['쳇… 인정한다.', '다음엔 안 봐준다!'], l: ['봤냐! 이게 내 실력이다!', '하하! 오늘은 내가 짱이다!'] },
+  school_kid_m: { i: ['학원 끝나고 바로 왔어요! 숙제는 나중에!', '책에서 배운 걸 실전에서 써 볼게요!', '상성표는 다 외웠어요!'], w: ['시험 망친 기분이에요…', '다시 공부해 올게요!'], l: ['백 점 만점!', '공부한 보람이 있다!'] },
+  school_kid_f: { i: ['오늘 배운 거 바로 써 볼게요!', '선생님이 관장님한테 배우고 오래요!', '노트 필기 다 해 왔어요!'], w: ['복습이 필요하겠어요…', '내일 학원에서 다시 공부할게요!'], l: ['만점이에요!', '공부도 배틀도 최고!'] },
+  skier_m: { i: ['슬로프에서 바로 내려왔어요!', '얼음 위의 스피드, 따라올 수 있어요?', '스키 부츠 신은 채로 왔어요. 걷기 힘드네요.'], w: ['꽈당! 넘어졌네요…', '다시 리프트 타고 올라갈게요.'], l: ['활강 성공!', '설원의 왕자, 승리!'] },
+  swimmer_m: { i: ['물에서 막 나왔어요! 몸은 다 풀렸죠!', '수영팬티 하나로도 충분해요!', '파도를 가르듯 시원하게!'], w: ['물 밖은 역시 힘드네요…', '바다에서 다시 수련할게요!'], l: ['시원하게 이겼다!', '수영도 배틀도 일등!'] },
+  tuber_m: { i: ['튜브 타고 둥둥 떠서 왔어요!', '수영은 못해도 배틀은 잘해요!', '튜브에 바람 넣고 왔어요!'], w: ['튜브에 구멍 났어요… 으앙!', '엄마한테 혼나기 전에 갈게요!'], l: ['둥둥! 이겼다!', '튜브 최고!'] },
+  tuber_f: { i: ['튜브 들고 놀러 왔어요!', '해변에서 연습 많이 했어요!', '튜브는 못 놓지만 배틀은 자신 있어요!'], w: ['튜브랑 같이 둥둥 떠내려갈래요…', '다음엔 더 잘할게요!'], l: ['와아! 이겼다!', '해변 친구들한테 자랑해야지!'] },
+  sis_bro: { i: ['누나랑 같이 왔어요! / 동생 잘 따라와!', '남매의 팀워크를 보여 드릴게요!', '(동생) 누나가 다 해 준대요!'], w: ['(누나) 동생 탓이야! (동생) 아니거든!', '집에 가서 같이 연습하자…'], l: ['남매 최고!', '(동생) 누나 덕분이야!'] },
+  twins: { i: ['저희 둘은 똑같아요! 실력도 똑같이 세요!', '누가 언니게요? 맞혀 보세요!', '둘이서 하나! 하나라서 둘!'], w: ['둘 다 졌어요…', '둘이 같이 더 연습할게요!'], l: ['둘이라서 이겼어요!', '쌍둥이 파워!'] },
+  young_couple: { i: ['저희 데이트 중이에요! 금방 끝낼게요!', '둘의 사랑으로 이겨 볼게요!', '(남편) 여보, 내가 지켜 줄게!'], w: ['데이트 망쳤네요…', '(아내) 괜찮아, 다음에 또 오자.'], l: ['사랑의 승리!', '오늘 데이트 대성공!'] },
+  worker: { i: ['공사장에서 쉬는 시간에 왔소!', '안전모 꽉 쓰고! 승부다!', '단단하게 다진 팀이오!'], w: ['공사 다시 해야겠군…', '현장으로 돌아가겠소!'], l: ['공사 완료!', '튼튼하게 지었지!'] },
 };
 const SAY_GEN = {
   i: [
@@ -3587,7 +3668,8 @@ const CBG_CLS = { youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 
   fisherman: 'in2', swimmer_m: 'in2', swimmer_f: 'in2', sailor: 'in2', skier_f: 'hall',
   cool_trainer_m: 'tower', cool_trainer_f: 'tower', tamer: 'tower', dragon_tamer: 'tower', bird_keeper: 'cynthia',
   beauty: 'castle', gentleman: 'castle', psychic_m: 'lucian', psychic_f: 'lucian', channeler: 'lucian',
-  super_nerd: 'factory', engineer: 'factory', poke_maniac: 'factory', pokemaniac: 'factory', rocker: 'flint', juggler: 'arcade', ninja_boy: 'arcade' };
+  super_nerd: 'factory', engineer: 'factory', poke_maniac: 'factory', pokemaniac: 'factory', rocker: 'flint', juggler: 'arcade', ninja_boy: 'arcade',
+  snow_trainer_m: 'hall', snow_trainer_f: 'hall', belle_pa: 'aaron', breeder_m: 'in3', breeder_f: 'in3', cameraman: 'arcade', reporter: 'arcade', interviewers: 'arcade', clown: 'arcade', idol: 'arcade', cowgirl: 'aaron', rancher: 'aaron', ranger_m: 'aaron', ranger_f: 'aaron', cyclist_f: 'in3', double_team: 'tower', veteran: 'tower', lady: 'castle', socialite: 'castle', rich_boy: 'castle', maid: 'castle', waiter: 'castle', waitress: 'castle', parasol_lady: 'castle', pokefan_m: 'castle', pokefan_f: 'castle', pi: 'lucian', policeman: 'tower', roughneck: 'flint', skier_m: 'hall', tuber_m: 'in2', tuber_f: 'in2', sis_bro: 'in2', twins: 'in1', young_couple: 'in3', worker: 'bertha' };
 const CBG_TR = { elite_four_aaron: 'aaron', elite_four_bertha: 'bertha', elite_four_flint: 'flint', elite_four_lucian: 'lucian', champion_cynthia: 'cynthia' };
 const CBG_PL = { aaron: 'league_aaron', bertha: 'league_bertha', flint: 'league_flint', lucian: 'league_lucian', cynthia: 'league_cynthia', tower: 'battle_tower', hall: 'battle_hall', factory: 'battle_factory', arcade: 'battle_arcade', castle: 'battle_castle' };
 function chalEnv(c, team) { const of = bg => ({ bg, pl: CBG_PL[bg] || '' });
