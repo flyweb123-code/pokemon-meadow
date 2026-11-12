@@ -1592,13 +1592,18 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
    이기면 그 자리에서 전당 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
    거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
 const LEGK_ON = false;
-// 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼'): 거다이맥스 모습이 있는 종 전체(전설·환상, 약한 종 빼고)에서 체육관 타입에 유리한 순으로 여섯. 가장 유리한 종이 에이스(마지막, 거다이맥스)
-const KANG_POOL = [3, 6, 9, 68, 94, 131, 143, 569, 812, 815, 818, 823, 826, 834, 839, 841, 842, 844, 849, 851, 858, 861, 869, 879, 884];
+// 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼', '거다이맥스 한 번밖에 안 하는데 6마리 전부 거다이맥스 가능한 포켓몬일 필요 없다'):
+// 에이스(마지막, 거다이맥스)만 거다이맥스 모습이 있는 종에서 체육관 타입에 가장 유리한 종, 나머지 다섯은 연구소 포켓몬(전설·환상 아닌 최종 진화) 가운데 유리한 둘 + 불리하지 않은 셋
+const KANG_GMAX = [3, 6, 9, 68, 94, 131, 143, 569, 812, 815, 818, 823, 826, 834, 839, 841, 842, 844, 849, 851, 858, 861, 869, 879, 884];
+const KANG_POOL = [3, 6, 9, 59, 65, 68, 94, 130, 131, 143, 149, 154, 157, 160, 181, 196, 197, 212, 214, 230, 248, 254, 257, 260, 282, 306, 330, 350, 373, 376, 389, 392, 395, 445, 448, 461, 462, 464, 466, 467, 468, 472, 473, 475, 477, 530, 553, 609, 612, 635, 637, 663, 700, 706, 715, 748, 778, 784, 823, 887];
 const KANG_TEAM = [94, 143, 131, 3, 9, 6];   // 상성 표를 못 읽을 때
 function kangPick(ty) { const Dx = window.PSim?.Dex, nm = t => { const e = TERA_EN[t] || ''; return e[0] + e.slice(1).toLowerCase(); }; if (!Dx || !TERA_EN[ty]) return KANG_TEAM;
   const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), r = seeded('kang' + ty + (st()?.lkTry | 0));
-  const L = KANG_POOL.filter(x => SPECIES[x] && !spOff(x)).map(x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm); return { x, s: Math.max(...T.map(a => eff(a, [nm(ty)]))) - eff(nm(ty), T) + r() * .6 }; }).sort((a, b) => b.s - a.s).slice(0, 6);
-  return L.length < 6 ? KANG_TEAM : L.map(o => o.x).reverse(); }
+  const sc = P => P.filter(x => SPECIES[x] && !spOff(x)).map(x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm); return { x, s: Math.max(...T.map(a => eff(a, [nm(ty)]))) - eff(nm(ty), T), n: r() }; });
+  const ace = sc(KANG_GMAX).sort((a, b) => b.s + b.n * .6 - a.s - a.n * .6)[0]?.x, L = sc(KANG_POOL.filter(x => x !== ace));
+  // 너무 어렵지 않게: 체육관 타입에 유리한 둘 + 불리하지 않은 종에서 무작위 셋 (여섯 다 천적이면 챔피언 심사보다 훨씬 어려움)
+  const hard = L.slice().sort((a, b) => b.s + b.n - a.s - a.n).slice(0, 2), soft = L.filter(o => !hard.includes(o) && o.s >= 0 && o.s < 1.5).sort((a, b) => a.n - b.n).slice(0, 3), rest = [...soft, ...hard].map(o => o.x);
+  return ace && rest.length === 5 ? [...rest, ace] : KANG_TEAM; }
 function mkKang(gi) { const g = st(), sp = kangPick(g.ty), lv = clampN(Math.max(myAvg() + BS_LV[gi - 1] + 2, Math.max(0, ...luNow().map(P => GB()?.gm?.(P)?.lv | 0)) - BS_GAP), 5, 100);
   return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
 // 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
