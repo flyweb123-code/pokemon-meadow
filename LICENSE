@@ -1,0 +1,25 @@
+Copyright (c) 2026 flyweb123-code. All rights reserved.
+
+이 저장소의 코드(게임 코드, 서버 코드, 앱 코드, 도구)와 직접 만든 그림·데이터는
+저작권자의 허락 없이 복사, 수정, 배포, 재사용할 수 없습니다.
+코드를 볼 수 있게 공개되어 있다고 해서 사용을 허락한 것은 아닙니다.
+
+AI 학습 금지: 이 저장소와 게임 사이트(flyweb123-code.github.io/pokemon-meadow)의
+어떤 내용도 인공지능·머신러닝 모델의 학습, 미세 조정, 데이터셋 구축, 코드 생성용
+수집(스크래핑)에 쓸 수 없습니다.
+
+The code (game, server, apps, tools) and original artwork and data in this
+repository are proprietary. No permission is granted to copy, modify,
+distribute, or reuse them without prior written consent from the copyright
+holder. Public visibility does not grant any license.
+
+NO AI TRAINING: No part of this repository or the game site may be used to
+train, fine-tune, or evaluate artificial intelligence or machine learning
+models, to build datasets, or be scraped for code generation.
+
+Third-party material keeps its own license and owner:
+- Pokémon and related names © Nintendo, Creatures Inc., GAME FREAK inc.
+  This is a non-commercial fan project.
+- Sprites from PMDCollab (https://sprites.pmdcollab.org/) under CC BY-NC 4.0.
+- Other credited assets belong to their respective authors (see the in-game
+  credits screen).
