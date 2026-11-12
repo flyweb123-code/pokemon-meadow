@@ -38,8 +38,8 @@ jobs:
               for(const P of (S.box||[]).filter(p=>p.sp===727)){ const m=(g.mon||{})[P.id]; console.log("P",JSON.stringify(P)); console.log("M",JSON.stringify(m&&{lv:m.lv,xp:m.xp,ev:m.ev,evp:m.evp,evM:m.evM,nat:m.nat,ws:m.ws})); }
               const lu=g.lu; console.log("LU",JSON.stringify(lu),g.luI);
               console.log("KEYS",Object.keys(S).join(","),"GKEYS",Object.keys(g).join(","));
-    console.log("BOX",(S.box||[]).map(p=>p.id+":"+p.sp).join(" "));
-    const mon=g.mon||{}; console.log("MON",Object.entries(mon).map(([k,m])=>k+":"+(m.sp||"")+":"+m.lv+":"+JSON.stringify(m.ev||null)+":"+(m.evM||0)).join(" | "));
-    const hits=[]; (function w(o,pth){ if(!o||typeof o!=="object"||hits.length>40)return; if(o.sp===727)hits.push(pth+" "+JSON.stringify(o).slice(0,400)); for(const k in o) w(o[k],pth+"."+k); })(S,"S"); console.log("HITS727",hits.join("\n"));
-    const bl=(g.blog||[]).map(b=>({t:new Date(b.t).toISOString(),foe:b.foe,won:b.won,pr:b.pr,my:(b.my||[]).map(x=>x[0]).join("/")})); console.log("BLOG",JSON.stringify(bl));'
+              console.log("BOX",(S.box||[]).map(p=>p.id+":"+p.sp).join(" "));
+              const mon=g.mon||{}; console.log("MON",Object.entries(mon).map(([k,m])=>k+":"+(m.sp||"")+":"+m.lv+":"+JSON.stringify(m.ev||null)+":"+(m.evM||0)).join(" | "));
+              const hits=[]; (function w(o,pth){ if(!o||typeof o!=="object"||hits.length>40)return; if(o.sp===727)hits.push(pth+" "+JSON.stringify(o).slice(0,400)); for(const k in o) w(o[k],pth+"."+k); })(S,"S"); console.log("HITS727",hits.join("\n"));
+              const bl=(g.blog||[]).map(b=>({t:new Date(b.t).toISOString(),foe:b.foe,won:b.won,pr:b.pr,my:(b.my||[]).map(x=>x[0]).join("/")})); console.log("BLOG",JSON.stringify(bl));'
           done
