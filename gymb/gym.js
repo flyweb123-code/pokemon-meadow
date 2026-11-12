@@ -2906,6 +2906,7 @@ const GT_EV = () => [
   { c: '노력치', t: '.gy-pop .ev-box2', tap: '.gy-pop .ev-box2', until: () => gtEl('.ev-pop'), after: 1000, s: '노력치 박스를 눌러 보렴!\n노력치를 직접 옮길 수\n있단다.' },
   ...GT_EVD()];
 async function tutEv(w) {
+  if (PROMO_ON) return;   /* 경완 2026-11-13 '옛 훈련장·트레이너·노력치 튜토리얼은 없애도 됨': 승급 튜토리얼을 켜면 옛 것은 안 띄움 (승급 순간이 지난 사람은 later() 가 승급 튜토리얼로 따라잡음) */
   const g = st(); if (!g?.d || window.gymSimOn || lockedT(w === 'S' ? 'staff' : 'train')) return;
   const go = async T => { for (let i = 0; (busy || gtOn) && i < 80; i++) await wait(100); await wait(350); if (!open || gtOn) return; await gtu(T); };
   // v20.67 경완: 오프닝처럼 강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기 (gtu)
@@ -3412,6 +3413,8 @@ async function later() {
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
+  /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
+  if (open && PROMO_ON && !window.gymSimOn && !gtOn) { const gm = st()?.gmax | 0; if (gm >= 1 && !tutSeen('trTut')) return promoTut(1); if (gm >= 2 && !tutSeen('evTB') && GB()?.evOn?.()) return promoTut(2); }
   if (open && MEGA_ON && !window.gymSimOn && (st()?.gmax | 0) >= 3 && !tutSeen('mgTut') && !gtOn) await promoTut(3);   /* 경완 2026-11-13: 메가를 켤 때 이미 이름난 이상인 체육관은 승급 순간이 지났으니, 들어올 때 한 번 강박사가 찾아옴 */
 }
 let leaving = false;
@@ -3568,7 +3571,8 @@ async function promoVisit(gi) {
   const D = dzOf(g.d); busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   let k = null, T = null; const gu = guyEnt;
   // 경완 2026-11-12 '강박사가 관장을 안 봄' + '안내원이랑 티키타카 할 때 강박사가 안내원 쪽': 안내원이 말한 줄과 그 바로 뒤 강박사 대답만 서로 마주 보고, 나머지는 강박사가 관장을 봄
-  const run = async L => { for (let i = 0; i < L.length; i++) { const [w, t] = L[i]; if (!open) return; const tk = gu && (w === 'g' || L[i - 1]?.[0] === 'g'); face(k, tk ? gu : meEnt); if (gu) face(gu, w === 'g' && /관장님/.test(t) ? meEnt : k); await T.say(t.replace(/\{N\}/g, NK()), w === 'g' ? { who: '안내원' } : {}); } face(k, meEnt); if (gu) face(gu, k); };
+  const gm = g.gmax | 0, late = t => gm > gi && !/아니잖니/.test(t) ? t.replace(GRADES[gi][1], GRADES[gm][1]) : t;   /* 경완 2026-11-13: 승급 순간이 지나 늦게 찾아온 거면 지금 등급 이름으로 */
+  const run = async L => { for (let i = 0; i < L.length; i++) { const [w, t] = L[i]; if (!open) return; const tk = gu && (w === 'g' || L[i - 1]?.[0] === 'g'); face(k, tk ? gu : meEnt); if (gu) face(gu, w === 'g' && /관장님/.test(t) ? meEnt : k); await T.say(late(t).replace(/\{N\}/g, NK()), w === 'g' ? { who: '안내원' } : {}); } face(k, meEnt); if (gu) face(gu, k); };
   try {
     // 경완 2026-11-12 '훈련장 튜토리얼 끝나고 체육관으로 돌아왔을 때 관장하고 강박사 다시 문 열고 들어오는 연출': 관장이 먼저 문으로 들어와 제자리로, 강박사가 뒤따라 관장 앞까지
     const backIn = async () => { const dr = D.door, L = D.leader; k.el.style.visibility = 'hidden'; meEnt.el.style.visibility = 'hidden'; await wait(400); doorSe(); await wait(200);
