@@ -1295,8 +1295,7 @@ const into = (x, t) => { if (!x || !t) return; const rg = document.createRange()
 // 동네 체육관이 되어 훈련장·트레이너가 처음 열릴 때 한 번 (경완 2026-10-29)
 function unlockChk() { const g = st(); if (!g || g.unl || gradeOf(g.rep || 0).i < 1) return; g.unl = 1; save(); menuDot();
   if (g.tr?.length || g.sf?.length) return;   // 이미 쓰던 체육관은 조용히
-  // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장
-  try { GA.sfx('newdex'); } catch (e) {}
+  // 안내창 디자인 (경완 2026-10-31): 두 메뉴 카드 + 그림, 열림 도장. 소리는 pop() 의 저절로 뜨는 창 소리 하나만 (경완 2026-11-12 '효과음 두 개 겹쳐 들림')
   return new Promise(ok => { const p = pop(`<h4 class="ul-t"><small>체육관 등급 혜택</small>새 메뉴가 열렸어요!</h4><div class="ul-cards">
       <div class="ul-c"><i class="ul-pic"><img alt="" src="${IMG}deco/tr_sandbag.png"></i><b>훈련장</b><span>포켓몬을 맡겨 두면<br>경험치가 쌓여요</span><em>OPEN</em></div>
       <div class="ul-c"><i class="ul-pic tr"><img alt="" src="${IMG}tr/cool_trainer_f.png"></i><b>트레이너</b><span>고용하면 도전자를<br>먼저 막아 줘요</span><em>OPEN</em></div></div>
