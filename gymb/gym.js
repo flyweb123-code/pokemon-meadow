@@ -1159,7 +1159,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { gmk: { mega: 1 } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { gmk: { mega: 1 } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res && !res.cut && g.mgUse && (g.gmax | 0) >= 3) g.mgN = (g.mgN | 0) + 1;   // 이 체육관이 이름난 체육관이 된 뒤(메가링도 있음) 직접 싸운 판 수 (도전자 메가진화 MG_FOE, 체육관마다 따로)
@@ -3576,6 +3576,17 @@ async function trSupply(R, o, ids) {
   else if (Math.random() < .5) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .3); }); await o.msgTap('강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'); }
   else await o.msgTap('상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"');
 }
+/* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
+   보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
+   노말·비행 = 배틀타워, 물·얼음·드래곤 = 배틀스테이지). 사천왕·챔피언 본인은 자기 방, 승급 심사는 챔피언 난천 방 */
+const CBG_TY = { 7: 'aaron', 12: 'aaron', 4: 'aaron', 5: 'bertha', 6: 'bertha', 9: 'bertha', 2: 'bertha', 10: 'flint', 13: 'flint', 14: 'lucian', 8: 'lucian', 17: 'lucian', 18: 'lucian', 1: 'tower', 3: 'tower', 11: 'hall', 15: 'hall', 16: 'hall' };
+const CBG_TR = { elite_four_aaron: 'aaron', elite_four_bertha: 'bertha', elite_four_flint: 'flint', elite_four_lucian: 'lucian', champion_cynthia: 'cynthia' };
+const CBG_PL = { aaron: 'league_aaron', bertha: 'league_bertha', flint: 'league_flint', lucian: 'league_lucian', cynthia: 'league_cynthia', tower: 'battle_tower', hall: 'battle_hall' };
+function chalEnv(c, team) { const of = bg => ({ bg, pl: CBG_PL[bg] || '' });
+  if (c.boss) return of('cynthia'); if (CBG_TR[c.tr]) return of(CBG_TR[c.tr]);
+  if (!c.named && !(c.diff | 0)) return of(pick(['in1', 'in2', 'in3']));
+  const n = {}; team.forEach(o => (SPECIES[o.sp]?.t || []).forEach((t, i) => { n[t] = (n[t] || 0) + (i ? 1 : 2); }));
+  const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; return of(CBG_TY[top] || pick(['in1', 'in2', 'in3'])); }
 async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
