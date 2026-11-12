@@ -4199,3 +4199,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-card .bc-mv .mvb .pw{grid-area:w;transform:none!important}
 .bt.mob .bp-card .bc-mv .mvb .pp{grid-area:p;align-self:center;justify-self:end;padding:0!important;transform:none!important}
 .bt.mob .bp-card{gap:3px}.bt.mob .bp-card .bc-hd .th,.bt.mob .bp-card .bc-hd>img,.bt.mob .bp-card .bc-hd>.pkt{transform:scale(.9);transform-origin:left center}
+
+#tut .gt-litT{position:fixed;transform-origin:0 0;pointer-events:none}#tut .gt-litT[hidden]{display:none}#tut .gt-litT>.ty-tag{left:0;top:0}   /* 경완 2026-11-12 빛 활성화 포켓몬 밑 레벨·랭크·경험치 게이지도 밝게 */
