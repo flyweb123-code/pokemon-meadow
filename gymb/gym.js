@@ -3011,7 +3011,7 @@ function storyTalk() {
   const k = document.createElement('div'); k.className = 'gy-kang lit tw-talk nop';
   k.innerHTML = `<div class="win gy-k-box" aria-live="polite"><span class="gy-k-nm">강박사</span><span class="gy-k-t"></span><b class="gy-k-cur" hidden>▼</b></div>`;
   root.appendChild(k); requestAnimationFrame(() => k.classList.add('in'));
-  { const mn = $g('.gy-menu'), fit = () => { const r = mn?.getBoundingClientRect(), R = root.getBoundingClientRect(); k.style.paddingBottom = r && r.height && mn.offsetParent && getComputedStyle(mn).visibility !== 'hidden' && !$g('.gy-town') ? Math.max(0, R.bottom - r.top) + 'px' : ''; }; fit(); requestAnimationFrame(fit); }   /* 경완 2026-11-13 '인물 대사창도 하단 메뉴 가리지 않게': 메뉴가 보이면 그 위에 */
+  { const mn = $g('.gy-menu'), fit = () => { const r = mn?.getBoundingClientRect(), R = root.getBoundingClientRect(); const on = !!(r && r.height && mn.offsetParent && getComputedStyle(mn).visibility !== 'hidden' && !$g('.gy-town')); k.classList.toggle('amn', on); k.style.paddingBottom = on ? Math.max(0, R.bottom - r.top) + 'px' : ''; }; fit(); requestAnimationFrame(fit); }   /* 경완 2026-11-13 '인물 대사창도 하단 메뉴 가리지 않게': 메뉴가 보이면 그 위에 */
   const box = k.querySelector('.gy-k-box'), nmEl = k.querySelector('.gy-k-nm'), typer = GA.inTyper(k, k.querySelector('.gy-k-t'), k.querySelector('.gy-k-cur'));
   const T = {
     el: k,
