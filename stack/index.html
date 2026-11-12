@@ -2779,7 +2779,7 @@ function wobTick() { const w = wob; if (!w) return; const p = w.p, TU = window._
   if (w.lt && now0 - w.lt >= WOB.hold && w.st && now0 - w.st >= 400) wobEnd(); else if (now0 - w.t > 6000) wob = null; }
 function wobEnd() { const w = wob; wob = null; if (!w) return; const p = w.p; if (!w.st || now0 - w.st < 400) return; if (p.miss || p.gone || p.bub || !p.landed || hitDrop === w.n || dead || p.weld || p.sticky) return;
   const d = Math.max(w.td, w.pd); try { (window.__hdL = window.__hdL || []).push(+d.toFixed(2)); (window.__hdW = window.__hdW || []).push([+w.td.toFixed(2), +w.pd.toFixed(2), Math.round(w.lean)]); } catch (e) {} if (d < .5) return;
-  const hard = Math.min(1, d), pos = p.b.getPosition(), x = pxv(pos.x), y = pxv(pos.y), hh = Math.max(0, (GY - BASE_H - topY()) / 40), bon = Math.round((6 + hard * 34) * (1 + Math.min(hh, 20) / 20)) * 4; sc += bon;
+  const hard = Math.min(1, d), pos = p.b.getPosition(), x = pxv(pos.x), y = pxv(pos.y), hh = Math.max(0, (GY - BASE_H - topY()) / 40), bon = Math.round((20 + hard * 100) * (1 + Math.min(hh, 20) / 20)) * 4; /* v22.76 경완 '드물게 나오는 만큼 점수 높여': 약 3배 — 낮은 탑 280~480점, 높을수록 최대 2배 */ sc += bon;
   const big = hard >= .85, c3 = big ? '#ff7a4a' : '#ffb84a'; flt.push({ x, y: y - 40, s: big ? '초아슬아슬!' : '아슬아슬!', t: now0, c: c3, big: 1 }); flt.push({ x, y: y - 62, s: '+' + bon, t: now0, c: c3 }); rings.push({ x, y, t: now0, c: big ? '#ffb07a' : '#ffe0a0', big: big ? 1 : 0 }); spark(x, y - 6, c3); spark(x, y - 6, '#fff3b0'); if (big) { spark(x, y, c3); shake = Math.max(shake, .18); } try { SFX.perfect(); } catch (e) {} hap(big ? 2 : 1); nHard = (nHard || 0) + 1; hud(); }
 function missPiece(p, why) {
   if (p.miss || p.gone || p.burnT || p.hyd) return; (window.__miss = window.__miss || []).push([p.n, why, Math.round(pxv(p.b.getPosition().x)), Math.round(pxv(p.b.getPosition().y)), p.landed]);
@@ -2981,7 +2981,7 @@ function helperFly() { const F = hv.fly, e = now0 - hv.t, T1 = 520, T2 = T1 + 13
   if (e < T1 && IMG[F.n]) { const I = IMG[F.n]; pieceDraw({ n: F.n, s: I.k, H: I.H }, F.ax, F.ay + Math.sin(now0 / 260) * 3, 0, 1); }   /* 경완: 도우미가 잡으러 오는 동안에도 놓을 포켓몬이 보임 */
   if (car && !hv.fired && IMG[F.n]) { const I = IMG[F.n]; pieceDraw({ n: F.n, s: I.k, H: I.H }, x, y + hy, ang, 1); }
   const an = car ? 'Walk' : 'Walk', fl = e < T1 ? F.ax >= hv.sx : e < T3 ? F.tx >= F.ax : hv.sx >= F.tx; pmdDraw(g, n, an, e / 1000, x, y + B[2] * s / 2 - (B[2] - B[5]) * s, s, fl); }
-function bannerShow(t) { banner = { t: now0, s: t, c: TYPE_C[ty] }; }
+function bannerShow(t) { }   /* v22.76 경완 '기술 쓸 때 기술박스 카드 안 나오게': 기술 이름 띠 카드 안 띄움 */
 
 // ---------- 효과 ----------
 const dust = (x, y, n, c) => { for (let i = 0; i < n; i++) { const a = Math.PI + Math.random() * Math.PI, sp = 40 + Math.random() * 90; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * .5, r: 2 + Math.random() * 3, c, t: now0, life: 500 + Math.random() * 300, g: 120 }); } };
