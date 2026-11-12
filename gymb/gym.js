@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1155,7 +1152,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.diff ? 1 : 0); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my);   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
@@ -2218,10 +2215,13 @@ function shutSe(dn) { const G = window.GymBGM; if (!G) return; const n = dn ? 14
     if (dn) setTimeout(() => { try { G.se('DP_GASHIN', { gain: 1.8 }); } catch (e) {} }, n * gap); } catch (e) {} }
 async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold: 첫 간판을 더 오래, under: 셔터가 내려간 채로 밑에 깔 화면 (기존 체육관이 비치지 않게)
   openTab(null); preMs(); const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
-  fx.innerHTML = `<div class="re-shut"><i></i></div><div class="re-sign"><b>${t1}</b><span>${s1}</span><small></small></div>`;
-  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); }); await wait(2200 + hold);
-  await mid?.(); fx.querySelector('.re-sign').innerHTML = `<b>${t2}</b><span>${s2}</span><small></small>`;
-  sfx('tap'); await wait(1100 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); await wait(900); fx.remove();
+  /* v22.54 경완 '휴업·다시 열 때 알림창처럼 뜨게, 디자인도, bgm 잠시 꺼졌다가 열 때 다시': 간판 = 머리띠 있는 알림창, 팝업 모션 + 딩동, 셔터 내려간 동안 곡 소리 0 */
+  const M = window.GymBGM, sg = (t, s, c) => `<div class="re-sign np ${c}"><b>${t}</b><span>${s}</span><small>${t === '휴 업' ? '잠시 문을 닫아요' : t === '폐 업' ? '그동안 찾아 주셔서 고맙습니다' : t === '다시 열어요' ? '곧 셔터가 올라가요' : ''}</small></div>`;
+  const pp = () => { const el = fx.querySelector('.re-sign'); if (!el) return; el.classList.remove('pp'); void el.offsetWidth; el.classList.add('pp'); try { M?.se('DP_PINPON'); } catch (e) {} };
+  fx.innerHTML = `<div class="re-shut"><i></i></div>${sg(t1, s1, 'sh')}`;
+  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); try { M?.duck(0, 1.2); } catch (e) {} }); await wait(1450); pp(); await wait(750 + hold);
+  await mid?.(); fx.querySelector('.re-sign').outerHTML = sg(t2, s2, 'ok'); pp();
+  await wait(1300 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); try { M?.duck(1, 1); } catch (e) {} await wait(900); fx.remove();
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0, x.gmax ?? 99), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
