@@ -921,7 +921,7 @@ function mkBoss(gi, t) {
   const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
   return c;
 }
-/* v23.30 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
+/* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
    본가 단계를 다 이긴 트레이너도 계속 온다. 마지막 단계 팀에서 에이스(마지막 칸)는 그대로, 나머지 몇 칸(첫 재방문 2칸, 그 뒤 3칸)을
    같은 타입(팀 테마 타입, 테마가 없으면 바꾸는 포켓몬과 같은 타입) 포켓몬으로 바꾼다. 방문마다 팀이 정해져 있어 지고 다시 와도 같은 팀.
    새 포켓몬 후보 = 보통 포켓몬(바꾸는 포켓몬 종족값 −40~+40) + 에픽·전설 알에서 나오는 포켓몬(재방문이 거듭될수록 자주, 팀에 본가 전설·환상은 1마리까지).
@@ -931,7 +931,7 @@ const nvEggG = sp => { if (!nvEgg) { nvEgg = {}; const f = GA.eggTop; if (f) for
 const NV_KEEP = { red: [25, 3, 6, 9] };   // 에이스 말고도 꼭 데려오는 상징 포켓몬 (레드 = 피카츄·이상해꽃·리자몽·거북왕)
 let nvPre = null; const nvFin = sp => { if (!nvPre) { nvPre = new Set(); for (const o of Object.values(SPECIES)) if (o?.fr) nvPre.add(+o.fr); } return !nvPre.has(+sp); };   // 더 진화하지 않는 포켓몬
 const nvLeg = sp => !!(SPECIES[sp]?.leg || SPECIES[sp]?.my);
-const NV_SAY = ['지난번이랑 똑같은 팀일 줄 알았지? 이번엔 새 멤버도 데려왔어!', '그동안 나도 놀고만 있진 않았거든. 새로 키운 포켓몬들을 보여 줄게!', '같은 팀으로 두 번 지는 건 자존심이 허락 안 해서 말이야. 팀을 좀 바꿔 왔어!', '이번 팀은 비밀 특훈의 성과야. 놀라지 마!'];   // v23.30 재방문 팀 (nmVar) 첫 마디 뒤 한 줄
+const NV_SAY = ['지난번이랑 똑같은 팀일 줄 알았지? 이번엔 새 멤버도 데려왔어!', '그동안 나도 놀고만 있진 않았거든. 새로 키운 포켓몬들을 보여 줄게!', '같은 팀으로 두 번 지는 건 자존심이 허락 안 해서 말이야. 팀을 좀 바꿔 왔어!', '이번 팀은 비밀 특훈의 성과야. 놀라지 마!'];   // v23.31 재방문 팀 (nmVar) 첫 마디 뒤 한 줄
 function nmVar(n, k, gi) {
   const B = n.st[n.st.length - 1].filter(m => !spOff(m[0])); if (B.length < 2) return null;
   const r = seeded('nv' + n.id + ':' + k), rp = L => L[Math.floor(r() * L.length)], cap0 = STR_BS[clampN(gi, 0, STR_BS.length - 1)];
@@ -949,7 +949,7 @@ function nmVar(n, k, gi) {
   }
   return T;
 }
-// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.30)
+// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.31)
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
   const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
@@ -2625,7 +2625,7 @@ function simPop() {
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
-    if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.30 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
+    if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.31 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
     if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
