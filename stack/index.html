@@ -3187,7 +3187,7 @@ function draw() {
   // 최고 높이 선
   if (pbH > .5) { const e = now0 - pbT, yy = sy(GY - BASE_H - pbH * 40), on = !pbBroke, fa = on ? 1 : Math.max(0, 1 - e / 700);   /* 역대 최고 높이 점선 (분홍): 늘 보임, 화면 위로 벗어나면 위쪽에 딱지만 */
     if (fa > 0 && yy < VH) { g.save(); g.globalAlpha = fa; const pin = yy < 66, py = pin ? 66 : yy, lb = `역대 최고 ${pbH.toFixed(1)}m`; g.font = '11px Galmuri11'; const tw = g.measureText(lb).width + (pin ? 16 : 8);
-      if (!pin) { g.strokeStyle = on ? 'rgba(255,111,174,.95)' : '#ffffff'; g.setLineDash([10, 6]); g.lineDashOffset = on ? -now0 / 60 : 0; g.lineWidth = on ? 2 : 2 + (1 - fa) * 6; g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); g.setLineDash([]); }
+      if (!pin) { g.strokeStyle = on ? 'rgba(255,111,174,.95)' : '#ffffff'; g.setLineDash([10, 6]); g.lineWidth = on ? 2 : 2 + (1 - fa) * 6; g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); g.setLineDash([]); }
       g.fillStyle = '#20202c'; g.fillRect(W - 4 - tw, py - 16, tw, 15); g.fillStyle = '#ff8fc0'; g.fillText((pin ? '▲ ' : '') + lb, W - tw, py - 5); g.restore(); } }
   if (maxH > .5) { const yy = sy(GY - BASE_H - maxH * 40); if (yy > 60 && yy < VH) { g.save(); const fe = now0 - hFlash, fl = fe < 500 ? 1 - fe / 500 : 0; g.strokeStyle = fl ? `rgba(143,227,255,${.9})` : 'rgba(255,226,122,.9)'; g.setLineDash([8, 6]); g.lineWidth = 2 + fl * 2; g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); g.setLineDash([]); g.font = '11px Galmuri11'; g.fillStyle = '#20202c'; g.fillRect(4, yy - 16, 62, 15); g.fillStyle = '#ffe27a'; g.fillText(`최고 ${maxH.toFixed(1)}m`, 8, yy - 5); g.restore(); } }
   // 입자·고리·글자
