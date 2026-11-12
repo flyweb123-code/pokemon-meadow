@@ -2229,31 +2229,32 @@ function fPop(title, O, cur, pick) {
   fp.onclick = e => { const o = e.target.closest('[data-v]'); if (o) { sfx('tap'); pick(+o.dataset.v); } if (o || e.target === fp) fp.remove(); };
   document.body.appendChild(fp); return fp;
 }
-let mgTy = 0, mgSort = 'rep';   // 체육관 관리: 타입 고르기 + 평판순/날짜순 (경완 2026-10-30)
+let mgTy = 0, mgSort = 'rep', mgDir = { rep: -1, date: -1 };   // v22.39 경완: 누른 정렬을 한 번 더 누르면 오름·내림 (화살표)
+const tyI0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, ''), nmTy = x => `<span class="re-nm">${tyI0(x.ty)}${esc(x.nm)}</span>`;   // 휴업·다시 열기 간판: 체육관 이름 옆 타입 아이콘   // 체육관 관리: 타입 고르기 + 평판순/날짜순 (경완 2026-10-30)
 function mgPop() {
   $g('.gy-mgs')?.remove(); const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-mgs'; $g('.gy-main').appendChild(el);
   const draw = () => { const L = gList(), used = gUsedTy(), T = [...used].sort((a, b) => a - b); if (mgTy && !used.has(mgTy)) mgTy = 0;
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 관리</b><span class="mg-n">${L.length} / 18곳</span></div>
-      <div class="gy-body"><div class="mg-tyf"><button type="button" class="fsel mg-fsel${mgTy ? ' on' : ''}" data-tfp aria-haspopup="listbox">${mgTy ? TYPE_KO[mgTy] : '모든 타입'}</button><span class="mg-sort">${[['rep', '평판순'], ['date', '날짜순']].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${mgSort === k}">${n}</button>`).join('')}</span></div>
-      <div class="mg-list">${L.map((x, i) => [x, i]).filter(([x]) => !mgTy || x.ty === mgTy).sort(([a], [b]) => mgSort === 'date' ? (b.t0 || 0) - (a.t0 || 0) : (b.rep || 0) - (a.rep || 0)).map(([x, i]) => gCard(x, i)).join('')}</div>
+      <div class="gy-body"><div class="mg-tyf"><button type="button" class="fsel mg-fsel${mgTy ? ' on' : ''}" data-tfp aria-haspopup="listbox">${mgTy ? TYPE_KO[mgTy] : '모든 타입'}</button><span class="mg-sort">${[['rep', '평판순'], ['date', '날짜순']].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${mgSort === k}">${n}${mgSort === k ? `<i class="mg-ar">${mgDir[k] < 0 ? '▼' : '▲'}</i>` : ''}</button>`).join('')}</span></div>
+      <div class="mg-list">${L.map((x, i) => [x, i]).filter(([x]) => !mgTy || x.ty === mgTy).sort(([a], [b]) => mgDir[mgSort] * (mgSort === 'date' ? (a.t0 || 0) - (b.t0 || 0) : (a.rep || 0) - (b.rep || 0))).map(([x, i]) => gCard(x, i)).join('')}</div>
       <button type="button" class="mg-new" data-new ${used.size >= 18 ? 'disabled' : ''}><span>+</span><b>새 체육관 세우기</b></button></div>`;
     fillMs(el); };
   const ask = (html, yes, ok) => pop(`<h4>${html}</h4><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="ok">${yes}</button></div>`, (k, close) => { close(); if (k === 'ok') ok(); });
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const L = gList(), g = st();
     if (b.dataset.a === 'x') return el.remove();
-    if (b.dataset.sort) { mgSort = b.dataset.sort; return draw(); }
-    if (b.hasAttribute('data-tfp')) return fPop('타입', [[0, '모든 타입'], ...[...gUsedTy()].sort((a, b) => a - b).map(t => [t, TYPE_KO[t], t])], mgTy, v => { mgTy = v; draw(); });
+    if (b.dataset.sort) { const k = b.dataset.sort; if (mgSort === k) mgDir[k] = -mgDir[k]; else mgSort = k; return draw(); }
+    if (b.hasAttribute('data-tfp')) return fPop('타입', [[0, '모든 타입'], ...[...gUsedTy()].sort((a, b) => a - b).map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], mgTy, v => { mgTy = v; draw(); });
     if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
       return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
-        shutFx('휴 업', esc(g.nm), '다시 열어요', esc(x.nm), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
+        shutFx('휴 업', nmTy(g), '다시 열어요', nmTy(x), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
     if (b.hasAttribute('data-new')) return ask('지금 체육관을 휴업하고<br>새로운 체육관을 관리하시겠습니까?', '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
       bgmPlay('lab');   // 새 체육관을 정하는 동안은 연구소 곡 (경완 2026-10-29)
-      shutFx('휴 업', esc(g.nm), '새 체육관', '어떤 체육관으로 열지 골라 주세요', null, { hold: 1400, under: () => { if (open) setup(['ty', 'd', 'nm'], 'new'); } }); });
+      shutFx('휴 업', nmTy(g), '새 체육관', '어떤 체육관으로 열지 골라 주세요', null, { hold: 1400, under: () => { if (open) setup(['ty', 'd', 'nm'], 'new'); } }); });
     if (b.dataset.del != null) { const x = L[+b.dataset.del], cur = x === g;
       return ask(`<b>${esc(x.nm)}</b>을 정말 폐업하시겠습니까?<br><small>평판·트레이너·꾸미기 자리가 모두 사라져요.${cur ? (g.shelf?.length ? ' 휴업 중인 다른 체육관을 다시 열어요.' : ' 새 체육관을 세워요.') : ''}</small>`, '폐업하기', () => {
         if (!cur) { g.shelf = g.shelf.filter(y => y !== x); glog('in', `휴업 중이던 <b>${esc(x.nm)}</b>을 폐업했다.`); save(); return draw(); }
         el.remove(); root.querySelector('.gy-infos')?.remove(); const nx = g.shelf?.[g.shelf.length - 1];
-        if (nx) return shutFx('폐 업', esc(g.nm), '다시 열어요', esc(nx.nm), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`));
+        if (nx) return shutFx('폐 업', nmTy(g), '다시 열어요', nmTy(nx), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`));
         bgmPlay('lab'); closeFx(() => { if (open) setup(['ty', 'd', 'nm'], 'close'); }); }); }
   };
   draw();

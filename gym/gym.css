@@ -4133,3 +4133,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-card .bc-mv .mvb .pw{grid-area:w;transform:none!important}
 .bt.mob .bp-card .bc-mv .mvb .pp{grid-area:p;align-self:center;justify-self:end;padding:0!important;transform:none!important}
 .bt.mob .bp-card{gap:3px}.bt.mob .bp-card .bc-hd .th,.bt.mob .bp-card .bc-hd>img,.bt.mob .bp-card .bc-hd>.pkt{transform:scale(.9);transform-origin:left center}
+
+/* v22.39 경완: 휴업·다시 열기 간판은 폰 화면 정중앙, 이름 옆 타입 아이콘 / 체육관 관리 정렬 화살표 / 타입 필터 = 타입 아이콘 */
+#gym .gy-re .re-sign{position:fixed;top:50%;left:50%}
+#gym .gy-re .re-sign .re-nm{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#gym .gy-re .re-sign .re-nm :is(img,svg,i){width:20px;height:20px;flex:none}
+#gym .mg-sort .mg-ar{font-style:normal;font-size:9px;margin-left:3px;vertical-align:1px}
+.gy-fpop .fp-ty{display:inline-flex;vertical-align:middle;margin-right:6px}.gy-fpop .fp-ty :is(img,svg,i){width:18px;height:18px}
