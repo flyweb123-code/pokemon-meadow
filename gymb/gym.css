@@ -4165,3 +4165,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .tp-in{position:absolute;left:0;top:0;transform-origin:0 0}#gym .gy-pop .tp-shot *{pointer-events:none!important}
 #gym .gy-pop .tp-in>.win{position:relative!important;inset:auto!important;left:0!important;top:0!important;margin:0!important;width:100%!important;height:100%!important;max-height:none!important;transform:none!important;animation:none!important;box-shadow:none!important}
 #gym .gy-pop .tp-d small{display:block;margin-top:6px;color:var(--dim);font-size:11px}
+#tut .gt-lit{position:fixed;transform-origin:0 0;pointer-events:none;image-rendering:pixelated}#tut .gt-lit[hidden]{display:none}   /* 경완 2026-11-12 튜토리얼에서 훈련장 포켓몬만 원래 색으로 밝게 */
+#gym .gy-pop .tp-d{text-align:center!important}   /* 경완 2026-11-12 비기 알림창 설명 가운데 정렬 */
