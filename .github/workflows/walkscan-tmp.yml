@@ -1,0 +1,30 @@
+# 임시: 오래 안 켠 유저 걸음·알 줍기 확인 (읽기만). 확인 끝나면 지움.
+name: walkscan tmp
+on:
+  push:
+    branches: [claude/project-thread-hci0wt]
+    paths: ['.github/workflows/walkscan-tmp.yml', 'tools/tmp/walkscan.mjs']
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Read
+        run: |
+          npx wrangler d1 execute pokegrow --remote --json --command "SELECT acct, code, i, data FROM save_part" > /tmp/parts.json
+          npx wrangler d1 execute pokegrow --remote --json --command "SELECT acct, code, at FROM save" > /tmp/meta.json
+          node ../tools/tmp/walkscan.mjs /tmp/parts.json /tmp/meta.json
