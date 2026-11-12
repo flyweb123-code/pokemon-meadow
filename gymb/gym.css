@@ -4273,3 +4273,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-tools{position:absolute;right:6px;top:calc(var(--st,0px) + 30px);z-index:41;display:flex;gap:5px;white-space:nowrap}
 .bt .bt-tools button{padding:3px 8px;white-space:nowrap;border:1px solid rgba(255,255,255,.5);border-radius:12px;background:rgba(20,22,34,.45);color:#fff;font:inherit;font-size:11px;font-weight:700;opacity:.8;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
 .bt .bt-tools button:active{transform:translateY(2px);box-shadow:none;opacity:1}
+/* 전설 심사 (강박사): 테라피스 받는 창 — 타입 색 보석 */
+.gy-pop .tp-get{padding:26px 0 18px}.gy-pop .tp-gem{position:relative;display:block;width:56px;height:68px;background:linear-gradient(135deg,#fff 0 18%,var(--tc) 18% 52%,color-mix(in srgb,var(--tc) 62%,#000) 52%);clip-path:polygon(50% 0,100% 30%,82% 100%,18% 100%,0 30%);animation:tpGem 2.4s ease-in-out infinite;filter:drop-shadow(0 0 10px var(--tc))}
+.gy-pop .tp-gem::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%);background-size:300% 100%;animation:tpShine 2.4s linear infinite}
+@keyframes tpGem{50%{translate:0 -5px}}@keyframes tpShine{from{background-position:120% 0}to{background-position:-60% 0}}
