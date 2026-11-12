@@ -2283,10 +2283,10 @@ PK_TIP[3].pg = [{ k: '3a', t: '메가스톤 사기', p: '체육관 상점 도구
   { k: '3b', t: '메가스톤 지니게 하기', p: '메가진화할 포켓몬에게<br><em>메가스톤</em>을 지니게 해요.', sm: '포켓몬 메뉴 › 상세카드 › 지닌 도구' },
   { k: '3c', t: '배틀에서 메가진화', p: '싸운다 › <em>메가진화 버튼</em>을 켜고<br>기술을 고르면 메가진화!', sm: '한 배틀에 한 마리만 할 수 있어요.' }];
 const gtSnap = {};
-const snapOf = (el, ring) => { if (!el) return null; const r = el.getBoundingClientRect(); if (!r.width || !r.height) return null; const c = el.cloneNode(true), cv0 = [...el.querySelectorAll('canvas')];
+const snapOf = (el, ring) => { if (!el) return null; const r = el.getBoundingClientRect(); if (!r.width || !r.height) return null; const mk = ring && ring !== el && el.contains(ring); if (mk) ring.setAttribute('data-tpr', ''); const c = el.cloneNode(true); if (mk) ring.removeAttribute('data-tpr'); const cv0 = [...el.querySelectorAll('canvas')];
   c.querySelectorAll('canvas').forEach((x, j) => { try { const im = new Image(); im.src = cv0[j].toDataURL(); im.className = x.className; im.style.cssText = x.style.cssText; const q = cv0[j].getBoundingClientRect(); if (!im.style.width) { im.style.width = q.width + 'px'; im.style.height = q.height + 'px'; } x.replaceWith(im); } catch (e) {} });
   c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); c.querySelectorAll('[data-a]').forEach(x => x.removeAttribute('data-a'));
-  const box = el.closest('.gy-pop'), q = ring !== el && ring?.getBoundingClientRect?.(), st0 = el.scrollTop || 0, rg = q && q.width ? [q.left - r.left, q.top - r.top + st0, q.width, q.height] : null;   /* 스크롤된 목록은 처음부터 다 그려지니 비출 곳도 스크롤만큼 아래 */
+  const box = el.closest('.gy-pop') || el.closest('.gy-sheet'), q = ring !== el && ring?.getBoundingClientRect?.(), st0 = el.scrollTop || 0, rg = q && q.width ? [q.left - r.left, q.top - r.top + st0, q.width, q.height] : null;   /* 스크롤된 목록은 처음부터 다 그려지니 비출 곳도 스크롤만큼 아래 */
   return { h: c.outerHTML, cls: box && box !== el ? [...box.classList].filter(x => x !== 'gy-np').join(' ') : '', w: r.width, hh: st0 ? el.scrollHeight : r.height, rg }; };
 function tipPop(i) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) return ok();
   try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA5') : window.GymBGM?.se?.('ME_FANFA5'); } catch (e) {} GA.haptic?.(1);
@@ -2294,12 +2294,15 @@ function tipPop(i) { return new Promise(ok => { const T = PK_TIP[i]; if (!T) ret
   const shot = pg => { const S = gtSnap[pg.k]; if (!S) return `<div class="tp-shot tp-cap"><img alt="" src="${IMG}tip/${pg.k}.png?v=${VER}" onerror="this.parentNode.remove()"></div>`;   /* 튜토리얼을 건너뛰었으면(메가 '네' 등) 미리 찍어 둔 화면 */
     const BW = 288, BH = 210, sc = Math.min(1, BW / S.w, Math.max(BH / S.hh, .62)), ox = (BW - S.w * sc) / 2, H2 = S.hh * sc, cy = S.rg ? (S.rg[1] + S.rg[3] / 2) * sc : H2 / 2, oy = H2 <= BH ? (BH - H2) / 2 : Math.max(BH - H2, Math.min(0, BH / 2 - cy));   /* 긴 화면은 줄이지 않고 비출 곳 둘레만 잘라 보여 줌 */
     const ring = S.rg ? `<i class="tp-ring" style="left:${ox + S.rg[0] * sc - 3}px;top:${oy + S.rg[1] * sc - 3}px;width:${S.rg[2] * sc + 6}px;height:${S.rg[3] * sc + 6}px"></i>` : '';
-    return `<div class="tp-shot"><div class="tp-in ${S.cls}" style="left:${ox}px;top:${oy}px;width:${S.w}px;height:${S.hh}px;transform:scale(${sc})">${S.h}</div>${ring}</div>`; };
+    return `<div class="tp-shot"><div class="tp-in ${S.cls}" data-sc="${sc}" style="left:${ox}px;top:${oy}px;width:${S.w}px;height:${S.hh}px;transform:scale(${sc})">${S.h}</div>${ring}</div>`; };
   const p = pop(`<h4 class="pp-t tp-t"><small>강박사의 ${PK_NTH[i]} 비기!</small>${T.t}</h4><div class="tp-body"></div><div class="tp-dots">${P.length > 1 ? P.map(() => '<i></i>').join('') : ''}</div><div class="gy-btns tp-btns"><button data-a="prev">이전</button><button class="main" data-a="next">다음</button></div>`, (a, close) => {
     if (a === 'prev') return turn(-1); if (a === 'next') { if (at < last) return turn(1); close(); ok(); } });
   p.classList.add('tp-pop'); const body = p.querySelector('.tp-body'), pv = p.querySelector('[data-a=prev]'), nx = p.querySelector('[data-a=next]');
   const draw = d => { const pg = P[at]; body.innerHTML = `<div class="tp-pg"><b class="tp-pt">${pg.t}</b>${shot(pg)}<p class="tp-p">${pg.p}</p>${pg.sm ? `<p class="tp-sm">${pg.sm}</p>` : ''}</div>`;
     p.querySelectorAll('.tp-dots i').forEach((x, j) => x.classList.toggle('on', j === at)); pv.hidden = !at; nx.textContent = at < last ? '다음' : '알겠어요!'; p.querySelector('.tp-btns').classList.toggle('one', !at);
+    { const ti = body.querySelector('.tp-in'), m = ti?.querySelector('[data-tpr]'), rg = body.querySelector('.tp-ring');   /* 경완 2026-11-13 '캡처 테두리 안 맞음': 옮겨 그린 화면은 원래와 몇 px 씩 달라질 수 있어 테두리·자르는 자리를 그려진 칸 기준으로 다시 잼 */
+      if (m && rg) { const a = ti.getBoundingClientRect(), q = m.getBoundingClientRect(), k = a.width / (ti.offsetWidth || 1), sc = +ti.dataset.sc || 1, BH = 210, x = (q.left - a.left) / k, y = (q.top - a.top) / k, w = q.width / k, h = q.height / k, H2 = ti.offsetHeight * sc, ox = parseFloat(ti.style.left) || 0, oy = H2 <= BH ? (BH - H2) / 2 : Math.max(BH - H2, Math.min(0, BH / 2 - (y + h / 2) * sc));
+        if (w > 0 && h > 0) { ti.style.top = oy + 'px'; Object.assign(rg.style, { left: ox + x * sc - 3 + 'px', top: oy + y * sc - 3 + 'px', width: w * sc + 6 + 'px', height: h * sc + 6 + 'px' }); } } }
     const g0 = body.firstChild; if (d) { g0.style.transform = `translateX(${d * 100}%)`; g0.style.opacity = '.3'; requestAnimationFrame(() => requestAnimationFrame(() => { g0.style.transition = 'transform .22s cubic-bezier(.2,.8,.3,1),opacity .22s'; g0.style.transform = ''; g0.style.opacity = ''; })); } };
   const turn = d => { if (bz || at + d < 0 || at + d > last) return; bz = 1; const g0 = body.firstChild; g0.style.transition = 'transform .16s ease-in,opacity .16s'; g0.style.transform = `translateX(${-d * 100}%)`; g0.style.opacity = '.3'; setTimeout(() => { at += d; draw(d); bz = 0; }, 150); };
   let sx = null, sy = 0; body.onpointerdown = e => { sx = e.clientX; sy = e.clientY; }; body.onpointerup = e => { if (sx == null) return; const dx = e.clientX - sx, dy = e.clientY - sy; sx = null; if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.3) { sfx('tap'); turn(dx < 0 ? 1 : -1); } };
@@ -3612,16 +3615,16 @@ async function promoTut(gi, force) {
   if (gi === 1 && (force || !tutSeen('trTut'))) return promoVisit(1);
   if (gi === 2 && (force || (!tutSeen('evTB') && tutSeen('trTut') && GB()?.evOn?.()))) return promoVisit(2);
 }
-// 경완 2026-11-13 '메가진화 가능한 포켓몬 얘기할 때 가운데 알림창으로 PMD 그림': 서 있는(Idle) PMD 그림이 칸 안에서 움직임
-function pmdCell(P, box) { const sp = document.createElement('i'); sp.className = 'mgc-sp'; box.appendChild(sp);
-  GA.pmd(P.sp, P.sex).then(M => { if (!sp.isConnected) return; if (P.shiny) sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`;
-    if (!M.P) { sp.classList.add('one'); sp.style.backgroundImage = `url("${M.img}")`; return; }
-    const A = M.P.a, a = A.Idle || Object.values(A)[0], s = Math.min(2, 56 / Math.max(a[1], a[2])) * M.s, durs = a[6], tot = durs.reduce((x, d) => x + d, 0) / 60;
-    Object.assign(sp.style, { backgroundImage: `url("${M.P.i}")`, backgroundSize: `${M.wh[0] * s}px ${M.wh[1] * s}px`, width: a[1] * s + 'px', height: a[2] * s + 'px' }); GA.shBg?.(sp, P, M.P.i);
-    let f0 = -1; const t0 = performance.now(); const tick = now => { if (!sp.isConnected) return; let t = ((now - t0) / 1000) % tot, f = durs.length - 1; for (let i = 0, c = 0; i < durs.length; i++) { c += durs[i] / 60; if (t < c) { f = i; break; } }
-      if (f !== f0) { f0 = f; sp.style.backgroundPosition = `${-f * (a[1] + (M.P.G || 0)) * s}px ${-a[0] * s}px`; } requestAnimationFrame(tick); }; requestAnimationFrame(tick); }).catch(() => {}); }
-function mgCanPop(L) { return new Promise(ok => { const p = pop(`<h4 class="pp-t mgc-t">메가진화할 수 있는 포켓몬</h4><div class="mgc-g">${L.slice(0, 6).map(P => `<div class="mgc-c"><div class="mgc-b"></div><b>${SPECIES[P.sp]?.n || ''}</b></div>`).join('')}</div>${L.length > 6 ? `<p class="mgc-more">외 ${L.length - 6}마리</p>` : ''}<div class="gy-btns one"><button class="main" data-a="x">좋아요!</button></div>`, (a, close) => { if (a === 'x') { close(); ok(); } });
-  p.classList.add('mgc-pop'); p.querySelectorAll('.mgc-b').forEach((b, i) => pmdCell(L[i], b)); }); }
+// 경완 2026-11-13 '메가진화 가능한 포켓몬': 가운데 판에 그림(멈춘 PMD 첫 장, 칸 안에 다 들어가게) 띄운 채로 강박사가 설명 → 설명 끝나면 걷음
+function pmdCell(P, box) { const cv = document.createElement('canvas'); cv.className = 'mgc-sp'; cv.width = 64; cv.height = 56; box.appendChild(cv); const x = cv.getContext('2d'); x.imageSmoothingEnabled = false;
+  GA.pmd(P.sp, P.sex).then(M => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok([M, im]); im.onerror = no; im.src = M.P ? M.P.i : M.img; })).then(([M, im]) => { if (!cv.isConnected) return;
+    let sx = 0, sy = 0, sw = im.width, sh = im.height; if (M.P) { const A = M.P.a, a = A.Idle || Object.values(A)[0], k = im.width / M.wh[0]; sx = 0; sy = a[0] * k; sw = a[1] * k; sh = a[2] * k; }
+    const t = document.createElement('canvas'); t.width = sw; t.height = sh; const tx = t.getContext('2d'); tx.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
+    let x0 = sw, y0 = sh, x1 = -1, y1 = -1; try { const d = tx.getImageData(0, 0, sw, sh).data; for (let yy = 0; yy < sh; yy++) for (let xx = 0; xx < sw; xx++) if (d[(yy * sw + xx) * 4 + 3] > 20) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; } } catch (e) { x0 = 0; y0 = 0; x1 = sw - 1; y1 = sh - 1; }
+    if (x1 < 0) return; const bw = x1 - x0 + 1, bh = y1 - y0 + 1, sc = Math.min(64 / bw, 56 / bh, 3), dw = bw * sc, dh = bh * sc;
+    if (P.shiny) cv.style.filter = `hue-rotate(${GA.shinyHue?.(P.sp) || 0}deg)`; x.drawImage(t, x0, y0, bw, bh, (64 - dw) / 2, 56 - dh, dw, dh); }).catch(() => {}); }
+function mgCanShow(L) { const p = document.createElement('div'); p.className = 'mgc-pan'; p.innerHTML = `<h4>메가진화할 수 있는 포켓몬</h4><div class="mgc-g">${L.slice(0, 6).map(P => `<div class="mgc-c"><div class="mgc-b"></div><b>${SPECIES[P.sp]?.n || ''}</b></div>`).join('')}</div>${L.length > 6 ? `<p class="mgc-more">외 ${L.length - 6}마리</p>` : ''}`;
+  root.appendChild(p); p.querySelectorAll('.mgc-b').forEach((b, i) => pmdCell(L[i], b)); gse('DP_WIN_OPEN'); return () => p.remove(); }
 async function megaTut(test) {
   const g = st(); if (!g?.d || !meEnt) return; for (let i = 0; (busy || gtOn || $g('.gy-pop')) && i < 600; i++) await wait(100); if (!open) return;
   const D = dzOf(g.d), nm = trName() || '관장', T0 = g.ty, M = MG_TUT[T0] || MG_TUT[10];
@@ -3720,10 +3723,10 @@ async function megaTut(test) {
     if (L.length) {
       const w = N.join(', ') + (L.length > 4 ? ' 등' : ''), last = N[N.length - 1];
       await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
-      hideT(true); await mgCanPop(L); hideT(false);
+      const mgX = mgCanShow(L);
       await say(`오호! ${w}${L.length > 4 ? '' : pI(last)}\n메가진화할 수 있을 것\n같구나!`);
       if (L.some(P => P.sp === 384)) await say('레쿠쟈는 메가스톤 대신\n\'화룡점정\'을 배우고 있으면\n메가진화할 수 있단다.');
-      await say(tyN ? '맞는 메가스톤은 체육관\n상점에서 살 수 있지.\n꼭 한번 지니게 해 보렴!' : '다만 체육관 타입과 다른\n포켓몬은 체육관 배틀엔 못 나가니\n그 점은 기억해 두렴.');
+      await say(tyN ? '맞는 메가스톤은 체육관\n상점에서 살 수 있지.\n꼭 한번 지니게 해 보렴!' : '다만 체육관 타입과 다른\n포켓몬은 체육관 배틀엔 못 나가니\n그 점은 기억해 두렴.'); mgX();
     } else {
       await say(`그럼 ${NK()}의 포켓몬들을\n한번 볼까…`);
       await say('흠, 아직은 메가진화할 수 있는\n포켓몬이 없는 것 같구나.');
