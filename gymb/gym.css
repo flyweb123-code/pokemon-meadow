@@ -4229,3 +4229,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mgc-pan .mgc-c b{font-size:12px}
 #gym .mgc-pan .mgc-more{text-align:center;font-size:11px;color:var(--dim);margin:4px 0 0}
 #gym .gy-pop .tp-shot.tp-cap img{display:block;width:100%;height:100%}
+
+#gym .gy-kang.amn .gy-k-box{margin-bottom:2px}   /* 경완 2026-11-13 '인물 대사창이랑 하단 메뉴 사이 여백 없애줘' */
