@@ -2420,7 +2420,7 @@ async function practice() {
 
 // ---------- 노력치 (v20.45 경완 2026-11-09~10, 시안 https://claude.ai/artifact/DdyuhYTmJgYGN6mMttb7dr) ----------
 // m.ev = 능력치별 노력치 [HP 공격 방어 특공 특방 스피드], m.evp = 남은 노력치 (− 로 뺀 것). 합계(넣은 + 남은) 510, 한 능력치 252
-// 배틀에서 쓰러뜨린 종의 노력치(gym/evy.json, PokeAPI)는 능력치에 바로, 훈련장 토글도 고른 능력치에 바로. + 는 남은 노력치에서 1당 EV_PP 골드
+// 배틀에서 쓰러뜨린 종의 노력치(gym/evy.json, PokeAPI) 합은 남은 노력치로(v23.13), 훈련장 토글도 고른 능력치에 바로. + 는 남은 노력치에서 1당 EV_PP 골드
 // 동네 체육관(등급 1)이 돼서 훈련장이 열릴 때부터 쌓이고 상세카드에 노력치 박스가 생긴다
 const EV_N = ['HP', '공격', '방어', '특공', '특방', '스피드'], EV_MAX = 510, EV_ONE = 252, EV_PP = 10, EV_VP = 300;
 const EV_VIT = [['hpup', '맥스업'], ['protein', '타우린'], ['iron', '사포닌'], ['calcium', '리보플라빈'], ['zinc', '키토산'], ['carbos', '알칼로이드']];
@@ -2433,7 +2433,7 @@ const evSumOf = m => evArr(m).reduce((a, b) => a + (b | 0), 0);
 // 쌓기: 능력치 i 에 n 만큼 (252·510 넘는 몫은 버림). 넣은 양을 돌려줌
 function evAdd(m, i, n) { const e = evArr(m), room = Math.max(0, Math.min(EV_ONE - (e[i] | 0), EV_MAX - evSumOf(m) - (m.evp | 0))), k = Math.max(0, Math.min(room, Math.floor(n))); e[i] = (e[i] | 0) + k; return k; }
 // 배틀: 쓰러뜨린 종의 노력치를 싸운 포켓몬(학습장치로 받은 포켓몬 빼고)에게 (본가처럼 같이 나와 싸운 포켓몬은 다 받음)
-function evBattle(P, sp) { if (!EVY) return;   /* v20.54 경완: 노력치는 처음부터 쌓이고, 보이는 건 동네 체육관부터 */ const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P); for (let i = 0; i < 6; i++) if (+y[i]) evAdd(m, i, +y[i]); }
+function evBattle(P, sp) { if (!EVY) return;   /* v20.54 경완: 노력치는 처음부터 쌓이고, 보이는 건 동네 체육관부터 */ const y = EVY[sp] || EVY[SPECIES[sp]?.b] || ''; if (!y) return; const m = gm(P), n = [...y].reduce((a, c) => a + (+c || 0), 0), room = Math.max(0, EV_MAX - evSumOf(m) - (m.evp | 0)); m.evp = (m.evp | 0) + Math.min(n, room); }   /* v23.13 경완 '쓰러뜨리면 능력치에 바로 말고 남은 노력치로 포인트처럼': 종 노력치 합을 남은 노력치(m.evp)로 */
 // v20.52 경완 '원래 있는 포켓몬도 레벨이랑 배틀에서 쓰러뜨린 포켓몬 반영해서': 포켓몬별 쓰러뜨린 기록은 없어서 어림한다.
 // 처음 레벨부터 얻은 경험치 − 훈련장 경험치 = 배틀 경험치(학습장치 몫 어림해 ×0.8) → 같은 레벨 상대를 쓰러뜨린 것으로 한 마리씩 셈,
 // 상대 종은 최근 배틀 기록(blog) 상대들(없으면 체육관 타입 포켓몬) → 그 종 노력치. 이미 쌓인 칸은 모자란 만큼만. 포켓몬마다 한 번 (m.evM)

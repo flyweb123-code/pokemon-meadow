@@ -1679,7 +1679,7 @@ const BT_HELP = () => { const W = hpTy('물'), F = hpTy('불꽃'), G = hpTy('풀
     { im: HPI('nat'), tx: `<p><em>성격</em>에 따라 능력치 하나는 잘 오르고<br>하나는 덜 올라요.</p><p class="on-sm">▲는 10% 높게, ▼는 10% 낮게.<br>변화가 없는 성격도 있어요.</p>` },
     { im: HPI('iv'), tx: `<p>육각형은 HP·공격·방어·특공·특방·스피드<br><em>능력치</em>예요.</p><p class="on-sm">랭크가 높을수록 타고난 능력(개체값)이 좋아요.<br>육각형을 누르면 막대로 볼 수 있어요.</p>` }] },
   { k: 'ev', t: '노력치가 뭐야?', c: '#8a5ad8', P: [
-    { im: `<div class="hp-box hp-rows"><div><b class="hp-big">쓰러뜨리면</b><span class="hp-x">상대 포켓몬이 잘하는 능력치 쪽으로 노력치가 쌓여요</span></div><div><b class="hp-big" style="color:#8a5ad8">빠른 상대</b><span class="hp-x">스피드 노력치 ▲</span></div><div><b class="hp-big" style="color:#8a5ad8">힘센 상대</b><span class="hp-x">공격 노력치 ▲</span></div></div>`, tx: `<p>배틀에서 상대를 쓰러뜨리면<br><em>노력치</em>가 쌓여요.</p><p class="on-sm">노력치가 쌓이면 그 능력치가 조금씩 올라요.<br>레벨이 높을수록 더 많이 올라요.</p>` },
+    { im: `<div class="hp-box hp-rows"><div><b class="hp-big">쓰러뜨리면</b><span class="hp-x">남은 노력치가 쌓여요</span></div><div><b class="hp-big" style="color:#8a5ad8">센 상대</b><span class="hp-x">남은 노력치 더 많이 ▲</span></div><div><b class="hp-big" style="color:#8a5ad8">상세카드</b><span class="hp-x">원하는 능력치에 + 로 넣기</span></div></div>`, tx: `<p>배틀에서 상대를 쓰러뜨리면<br><em>남은 노력치</em>가 쌓여요.</p><p class="on-sm">상세카드에서 원하는 능력치에 넣으면 그 능력치가 올라요.<br>레벨이 높을수록 더 많이 올라요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big" style="color:#8a5ad8">510</b><span class="hp-x">한 마리가 쌓을 수 있는 노력치 모두</span></div><div><b class="hp-big" style="color:#8a5ad8">252</b><span class="hp-x">능력치 하나에 쌓을 수 있는 최대</span></div></div>`, tx: `<p>한 마리에 <em>모두 510</em>,<br>능력치 하나에 <em>252</em>까지예요.</p><p class="on-sm">다 키울 수는 없으니, 두 가지를 252씩<br>몰아 주는 게 보통이에요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big">−</b><span class="hp-x">빼기는 공짜 · 남은 노력치로 모여요</span></div><div><b class="hp-big">+</b><span class="hp-x">남은 노력치를 넣어요 · 1당 10G</span></div><div><b class="hp-big">영양제</b><span class="hp-x">한 번에 +10</span></div></div>`, tx: `<p>상세 카드의 <em>노력치 박스</em>를 누르면<br>노력치를 옮길 수 있어요.</p><p class="on-sm">?를 누르면 그 포켓몬을 주로 어떻게 찍는지,<br>추천을 누르면 알아서 찍어 줘요.</p>` },
     { im: `<div class="hp-box hp-rows"><div><b class="hp-big">훈련장</b><span class="hp-x">고른 능력치로 노력치가 쌓여요</span></div><div><b class="hp-big">코치</b><span class="hp-x">노력치 코치가 있으면 더 빨리 쌓여요</span></div></div>`, tx: `<p><em>훈련장</em>에서 키울 노력치를 골라 두면<br>훈련하는 동안 쌓여요.</p><p class="on-sm">노력치는 체육관이 <em>동네 체육관</em>이 되면 열려요.</p>` }] },
@@ -2286,7 +2286,7 @@ PK_TIP[1].pg = [{ k: '1a', t: '훈련장 카드의 새 기술', p: '훈련장 �
   { k: '1b', t: '깨달음 게이지', p: '훈련할수록 <em>깨달음 게이지</em>가 차고<br>가득 차면 그 기술을 익혀요.', sm: '기술 이름은 비밀, 타입과 형태는 미리 보여요.' },
   { k: '1c', t: '집중하기', p: '갖고 싶은 기술은 <em>집중하기</em>!<br>그 기술이 훨씬 빨리 차올라요.', sm: '배틀 중 번뜩임으로 크게 오르기도 해요.' },
   { k: '1d', t: '레어 기술', p: '금빛 리본은 <em>레어 기술</em>이에요.<br>훈련으로는 깨달을 수 없어요.', sm: '포켓몬에게 정성을 다하면…?' }];
-PK_TIP[2].pg = [{ k: '2a', t: '노력치란?', p: '키운 만큼 쌓이는 <em>노력치</em>로<br>같은 포켓몬도 더 강해져요.', sm: '배틀에서 상대를 쓰러뜨리면 쌓여요.' },
+PK_TIP[2].pg = [{ k: '2a', t: '노력치란?', p: '키운 만큼 쌓이는 <em>노력치</em>로<br>같은 포켓몬도 더 강해져요.', sm: '배틀에서 상대를 쓰러뜨리면 남은 노력치로 쌓여요.' },
   { k: '2b', t: '노력치 훈련', p: '훈련장 카드에서 <em>능력치</em>를 고르면<br>그 노력치가 꾸준히 쌓여요.', sm: '? 를 누르면 추천 훈련을 알려 줘요.' },
   { k: '2c', t: '노력치 박스', p: '상세카드의 <em>노력치 박스</em>에서<br>쌓인 노력치를 볼 수 있어요.', sm: '한 마리 510, 능력치 하나에 252까지.' },
   { k: '2d', t: '노력치 옮기기', p: '박스를 누르면 노력치를<br><em>직접 옮길 수</em> 있어요.', sm: '빼기는 공짜, 넣기는 1당 10G · 저장해야 남아요.' }];
@@ -2837,7 +2837,7 @@ const GT_EVT = (g, P) => [
   { c: '노력치', t: '.gy-pop .ev-tr', s: '같은 포켓몬이라도\n어떤 녀석은 더 세고\n어떤 녀석은 더 빠르지.' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '그 차이를 만드는 건 셋이란다.\n타고난 개체값, 성격,\n그리고 노력치!' },
   { c: '노력치', t: '.gy-pop .ev-tr', s: '개체값과 성격은 태어날 때\n정해지지만, 노력치는\n키운 만큼 쌓인단다.' },
-  { c: '노력치', t: '.gy-pop .ev-tr', s: '배틀에서 상대를 쓰러뜨리면\n그 포켓몬이 잘하는 쪽으로\n노력치가 쌓이지.' },
+  { c: '노력치', t: '.gy-pop .ev-tr', s: '배틀에서 상대를 쓰러뜨리면\n남은 노력치가 쌓이지.\n원하는 능력치에 넣으면 된단다.' },
   { c: '노력치 훈련', t: '.gy-pop .ev-trg', s: '훈련장에선 키울 능력치를\n직접 고를 수 있단다.\n고른 능력치에 노력치가\n꾸준히 쌓이지.' },
   ...(P ? [{ c: '노력치 훈련', t: '.gy-pop .ev-trg', s: () => evRecS(P) }] : []),   // 경완 2026-11-12 '지금 포켓몬 설명해 주면서 박사가 키울 노력치 추천'
   { c: '노력치 훈련', t: '.gy-pop .ev-trg', tap: '.gy-pop .ev-tk', until: () => g.tr?.some(e => e.evk >= 0), after: 900, s: '키우고 싶은 능력치를\n하나 눌러 보렴!' },
