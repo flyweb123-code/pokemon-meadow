@@ -876,7 +876,7 @@ function dayFill(g) { const old = g.days || {}; g.days = {}; g.daysV = 2; const 
     else if (k === 'out') d.o++;
     else if (k === 'pay') d.p += num(h, /(\d+)G/); }
   for (const [k, o] of Object.entries(old)) { if (!o.p && !o.s) continue; const d = g.days[k] || (g.days[k] = dayNew()); d.p = Math.max(d.p, o.p || 0); d.s = o.s || 0; } }
-function addG(n) { const v = GA.addGold(n) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
+function addG(n, src = 'gym') { const v = GA.addGold(n, src) || 0; if (st().wk) st().wk.g += v; renderGoldG(); return v; }
 // 막은 도전자 (내가 이기거나 트레이너가 막음). 승급 심사 보스를 이기면 등급이 오르고 그 등급 배지를 받는다
 function blocked(c, sf) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
@@ -885,7 +885,7 @@ function blocked(c, sf) {
   const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
-  if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; g.grwN = gi; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
+  if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; g.grwN = gi; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n, 'promo'); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
   if (gi === GRADES.length - 1 && !(g.legE || {})[ty]) { const e = GA.legEgg?.(ty, g.nm); if (e) { (g.legE = g.legE || {})[ty] = e.id; g.legN = ty; } }   // 전설의 체육관 = 타입 전설 알 한 번 (경완 2026-10-29)
 }
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
@@ -928,7 +928,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1))); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
@@ -3307,7 +3307,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   haptic: n => GA.haptic?.(n), fitMe: e => { if (st()?.fit) fitSrc('ow').then(u => { if (!u) return; e.src = u; if (e.el.isConnected) e.el.style.backgroundImage = `url(${u})`; }); },   // e.src: 필드 맵에서 방향 바꿀 때 기본 옷으로 돌아가던 것 (경완 2026-11-07)
   addProp: (src, x, y, w, h) => { const e = { prop: 1, x, y, w, h, el: document.createElement('i') }; e.el.className = 'gy-prop'; e.el.style.backgroundImage = `url(${src})`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; },
   dropPeople: () => { cancelAnimationFrame(palRaf); ents = ents.filter(e => { const keep = e.prop && !e.pal; if (!keep) e.el.remove(); return keep; }); },
-  owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
+  owSrc, owW, trSrc, fitSrc, GUY_OW, sfName, addG: n => window.gymEvTest ? n : addG(n, 'event'), addRep: n => { if (!window.gymEvTest) addRep(n); }, renderTop, confetti, glog,
   giveFit: k => { if (window.gymEvTest || !OUTFITS[k]) return; const g = st(); g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); save(); },
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
@@ -3341,7 +3341,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     const team = o.team.map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
     try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', noRun: true, meBackUrl: await fitSrc('trb') }); }   // 이벤트 배틀은 기권 못 함 (경완 2026-11-08)
     finally { document.body.classList.remove('gymBattle'); }
-    if (res?.won && o.g && !window.gymEvTest) addG(o.g);
+    if (res?.won && o.g && !window.gymEvTest) addG(o.g, 'event');
     return res || {}; } };
 /* 실제 발동 (경완 2026-11-07 '유저별로 반복 X, 특정 층마다'): 이벤트마다 정해진 체육관 등급(g.gmax)에 처음 닿은 뒤 들어올 때 한 번.
    승급 축하·배지 창이 남아 있으면 그게 먼저 (다음 입장 때 시작). 점거 중(g.ev.cur)엔 도전자·주급·면접·훈련장 시계가 멈추고, 끝나면 그만큼 민다 */
