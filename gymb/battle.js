@@ -1019,19 +1019,17 @@ async function smEnc(w, opts, kind) {
   const cover = im => { if (!im) return; const s = Math.max(W / im.width, H / im.height); x.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); };
   const rays = Array.from({ length: 26 }, () => ({ a: Math.random() * 6.28, d: 60 + Math.random() * 300, v: 300 + Math.random() * 400, big: Math.random() < .3 }));
   const flash = (t, a, b) => { if (t > a && t < b) { x.fillStyle = `rgba(255,255,255,${1 - (t - a) / (b - a)})`; x.fillRect(0, 0, W, H); } };
-  const T0 = { evil: 1.9, elite: 1.5, def: .45 }[kind], END = { evil: 3.6, elite: 3.3, def: 2.5 }[kind]; let snd = {};
+  const T0 = { evil: 1.7, elite: 1.4, def: .35 }[kind], END = { evil: 3.7, elite: 3.4, def: 2.4 }[kind]; let snd = {};
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
-  const trainer = t => { if (t < T0 || !I.tr) return; once('tr', () => se('SLIDEIN')); const p = ease((t - T0) / .35), px = W + 120 - p * (W * .5);
-    x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(0, C.y + 70, W, 96); x.imageSmoothingEnabled = false; x.drawImage(I.tr, px - 150, C.y - 130, 300, 300); x.imageSmoothingEnabled = true;
-    if (t > T0 + .45 && I.vs) { once('vs', () => se('KON')); const q = ease((t - T0 - .45) / .25); rot(I.vs, C.x - 30, C.y + 10, 0, .65 + (1 - q) * 1.4, q); }
-    if (t > T0 + .6) { x.globalAlpha = Math.min(1, (t - T0 - .6) * 4); x.fillStyle = '#fff'; x.font = '20px sans-serif'; x.fillText(opts.foe.cls || '', 26, C.y + 106); x.font = 'bold 32px sans-serif'; x.fillText(opts.foe.nm || '', 26, C.y + 146); x.globalAlpha = 1; } };
+  // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><i class="sm-vs"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
   const D = {
     evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
       for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
       rays.forEach(r => { r.d -= r.v * .016; if (r.d < 20) { r.d = 340; r.a = Math.random() * 6.28; } rot(I[r.big ? 'ray1' : 'ray0'], C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
-      let lx = C.x, ls = 1.3; if (t > 1.6) { const q = ease((t - 1.6) / .4); lx = C.x - q * 150; ls = 1.3 - q * .6; }
-      if (t > .3 && t < .8) { const q = ease((t - .3) / .5); rot(I.logo1, lx, C.y, 0, 5 - q * 3.7, q); }
-      if (t >= .8) { once('logo', () => se('KON')); const sh = t < 1.05 ? (Math.random() - .5) * 10 : 0; rot(I.ring1, lx, C.y, -t, ls, .7); rot(I.logo0, lx + sh, C.y + sh, 0, ls); }
+      let lx = C.x, ly = C.y, ls = 1.3; if (t > 1.6) { const q = ease((t - 1.6) / .4); ly = C.y - q * Math.min(H * .3, 190); ls = 1.3 - q * .5; }
+      if (t > .3 && t < .8) { const q = ease((t - .3) / .5); rot(I.logo1, lx, ly, 0, 5 - q * 3.7, q); }
+      if (t >= .8) { once('logo', () => se('KON')); const sh = t < 1.05 ? (Math.random() - .5) * 10 : 0; rot(I.ring1, lx, ly, -t, ls, .7); rot(I.logo0, lx + sh, ly + sh, 0, ls); }
       flash(t, .8, 1.15); trainer(t); },
     elite(t) { rot(I.background, C.x, C.y, t * .4, Math.max(W, H) / 560);
       for (let k = 0; k < 3; k++) { const q = (t * .9 + k / 3) % 1; rot(I.vacuum, C.x, C.y, 0, 1.8 - q * 1.7, q); }
