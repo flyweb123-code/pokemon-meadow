@@ -4167,3 +4167,35 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .tp-d small{display:block;margin-top:6px;color:var(--dim);font-size:11px}
 #tut .gt-lit{position:fixed;transform-origin:0 0;pointer-events:none;image-rendering:pixelated}#tut .gt-lit[hidden]{display:none}   /* 경완 2026-11-12 튜토리얼에서 훈련장 포켓몬만 원래 색으로 밝게 */
 #gym .gy-pop .tp-d{text-align:center!important}   /* 경완 2026-11-12 비기 알림창 설명 가운데 정렬 */
+/* 경완 2026-11-12 비기 알림창 = 업데이트 알림창처럼 단계별 캡처 */
+#gym .gy-pop.tp-pop .win{width:min(340px,92vw)}
+#gym .gy-pop .tp-t small{display:block;font-size:11px;color:#c08a1e;letter-spacing:.5px;margin-bottom:2px}
+#gym .gy-pop .tp-body{overflow:hidden;touch-action:pan-y}
+#gym .gy-pop .tp-pg{display:flex;flex-direction:column;align-items:center;text-align:center;will-change:transform}
+#gym .gy-pop .tp-pt{display:block;font-size:14px;margin:2px 0 0;color:#3a3550}
+#gym .gy-pop .tp-shot{width:288px;height:210px;max-width:100%;flex:none}
+#gym .gy-pop .tp-in.gy-pop,#gym .gy-pop .tp-in{position:absolute!important;right:auto!important;bottom:auto!important;padding:0!important;margin:0!important;background:none!important;display:block!important;z-index:auto!important;animation:none!important}
+#gym .gy-pop .tp-shot.tp-im{display:grid;place-items:center}#gym .gy-pop .tp-shot.tp-im img{max-width:80%;max-height:80%;image-rendering:pixelated}
+#gym .gy-pop .tp-shot.tp-none{height:16px;border:0;background:none;box-shadow:none}
+#gym .gy-pop .tp-ring{position:absolute;border:3px solid #ffd24a;border-radius:9px;box-shadow:0 0 0 2px rgba(255,255,255,.7),0 0 12px 3px rgba(255,200,40,.8);animation:tpRing 1.1s ease-in-out infinite;pointer-events:none}
+@keyframes tpRing{50%{box-shadow:0 0 0 2px rgba(255,255,255,.4),0 0 20px 6px rgba(255,200,40,.45)}}
+#gym .gy-pop .tp-p{margin:8px 4px 0;font-size:13px;line-height:1.5;text-align:center}#gym .gy-pop .tp-p em{font-style:normal;color:#e0662a;font-weight:700}
+#gym .gy-pop .tp-sm{margin:4px 4px 0;font-size:11px;color:var(--dim);text-align:center}
+#gym .gy-pop .tp-dots{display:flex;justify-content:center;gap:6px;margin:10px 0 2px;min-height:6px}#gym .gy-pop .tp-dots i{width:6px;height:6px;border-radius:3px;background:#d6d0c0;transition:width .2s,background .2s}#gym .gy-pop .tp-dots i.on{width:16px;background:#f0a830}
+#gym .gy-pop .tp-body{min-height:300px;display:flex;align-items:center;justify-content:center}#gym .gy-pop .tp-pg{width:100%}
+
+/* 경완 2026-11-12 교체 카드 특성 설명은 한 줄 (길면 … 누르면 전체), 기술 칸 안 눌리게 */
+.bp-card button.bc-ab{width:100%;border:0;font:inherit;font-size:8px;color:inherit;text-align:left;cursor:pointer;flex:none}.bp-card button.bc-ab:active{transform:translate(1px,1px)}
+.bp-card button.bc-ab{flex-wrap:nowrap;min-height:0}.bp-card .bc-ab>*{flex:none}.bp-card .bc-abd{display:block!important;flex:1 1 0!important;flex-basis:0!important;-webkit-line-clamp:unset!important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;min-width:0;margin-left:3px}
+.bt.mob .bp-card{padding-top:8px}
+.bt .bp-info .mi-top.ab-top{background:#6f7c94!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -3px 0 rgba(0,0,0,.2),0 2px 0 rgba(0,0,0,.2)!important}.bt .bp-info .mi-top.ab-top b{color:#fff!important;text-shadow:0 1px 0 rgba(0,0,0,.35)!important}
+
+/* 경완 2026-11-12 '특성 2줄 되면 버튼 레이아웃 깨짐': 교체 카드 기술 칸은 낮아서 겹침 → 칸 안을 네 줄로 쌓음 (타입 / 이름 / 위력·명중 / 효과 딱지·PP) + 머리 칸 조금 줄임 */
+.bt.mob .bp-card .bc-mv .mvb{display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'t t' 'n n' 'w w' 'e p';align-content:center;row-gap:0;column-gap:4px;padding:3px 7px!important}
+.bt.mob .bp-card .bc-mv .mvb>*,.bt.mob .bp-card .bc-mv .mvb .eff{position:static!important;inset:auto!important;margin:0!important}
+.bt.mob .bp-card .bc-mv .mvb .tg{grid-area:t;display:flex;align-items:center;gap:3px;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .eff{grid-area:e;justify-self:start;align-self:center;transform:scale(.86)!important;transform-origin:left center}
+.bt.mob .bp-card .bc-mv .mvb b{grid-area:n;min-width:0;padding-right:0;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .pw{grid-area:w;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .pp{grid-area:p;align-self:center;justify-self:end;padding:0!important;transform:none!important}
+.bt.mob .bp-card{gap:3px}.bt.mob .bp-card .bc-hd .th,.bt.mob .bp-card .bc-hd>img,.bt.mob .bp-card .bc-hd>.pkt{transform:scale(.9);transform-origin:left center}

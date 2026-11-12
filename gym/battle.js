@@ -530,12 +530,21 @@ function gifLoad(u) {
   if (!gifOk.has(u)) gifOk.set(u, new Promise(r => { const i = new Image(); i.onload = () => r(true); i.onerror = () => r(false); i.src = u; }));
   return gifOk.get(u);
 }
+/* 경완 2026-11-12 '리자몽 얼굴이 체력 박스랑 가까움, 다른 포켓몬도 체력 박스에 너무 가깝거나 가려지는지': 그림이 체력 박스(내 쪽 x≥128·y 95~137, 상대 쪽 x≤122·y 20~53)와 겹치면 그 줄들만큼 옆으로 비킴 (반대쪽 화면 끝은 넘지 않게) */
+function hbAvoid(m, g, k, so, side, dy) { if (!g?.L) return; const p = side === 'p', cx = p ? 80 : 176, bot = (p ? 144 : 92) + (so?.[1] || 0) * k + dy, top = bot - g.h * k, x0 = cx - g.w * k / 2 - (so?.[0] || 0) * k, gap = 4;
+  let need = 0, room = 1e9;
+  for (let y = 0; y < g.h; y++) { if (g.L[y] < 0) continue; const sy = top + (y + .5) * k, l = x0 + g.L[y] * k, r = x0 + (g.R[y] + 1) * k;
+    room = Math.min(room, p ? l - 2 : 254 - r);
+    if (p ? sy >= 95 && sy <= 137 : sy >= 20 && sy <= 53) need = Math.max(need, p ? r - (128 - gap) : (122 + gap) - l); }
+  const sh = Math.round(Math.max(0, Math.min(need, room))); m.style.left = sh ? (p ? 32 - sh : 128 + sh) + 'px' : ''; }
 // v14.30 경완 '머리가 상대 정보 박스에 가려지지 않게': 뒷모습 gif 의 위쪽 빈 줄 수를 재서, 그림 윗끝이 박스 아래(GIF_TOP)보다 위면 그만큼 내림 (아래는 대사창 뒤로 잘려도 됨)
 const GIF_TOP = 56, gifTopC = new Map();
 function gifTop(u) {
   if (!gifTopC.has(u)) gifTopC.set(u, new Promise(r => { const i = new Image(); i.crossOrigin = 'anonymous';
     i.onload = () => { try { const w = i.naturalWidth, h = i.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(i, 0, 0); const d = x.getImageData(0, 0, w, h).data; let t = 0;
-      out: for (; t < h; t++) for (let j = 0; j < w; j++) if (d[(t * w + j) * 4 + 3] > 20) break out; r({ h, t }); } catch (e) { r(null); } };
+      out: for (; t < h; t++) for (let j = 0; j < w; j++) if (d[(t * w + j) * 4 + 3] > 20) break out;
+      const L = new Int16Array(h).fill(-1), Rr = new Int16Array(h).fill(-1); for (let y = 0; y < h; y++) for (let j = 0; j < w; j++) if (d[(y * w + j) * 4 + 3] > 20) { if (L[y] < 0) L[y] = j; Rr[y] = j; }
+      r({ h, w, t, L, R: Rr }); } catch (e) { r(null); } };
     i.onerror = () => r(null); i.src = u; }));
   return gifTopC.get(u);
 }
@@ -559,7 +568,8 @@ function showMon(side, A, on = true) {
     const k = (side === 'p' ? 1.4 : 1) * (so?.[2] || 1), fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
-    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; if (y < GIF_TOP) m.style.top = (48 + Math.round(GIF_TOP - y)) + 'px'; }); }
+    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; let dy = 0; if (y < GIF_TOP) { dy = Math.round(GIF_TOP - y); m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
+    else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
     m._gif = A.gif; }
   else if (A) {
     m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
@@ -753,6 +763,9 @@ function battlerInfo() {
       <button class="bb cancel" data-x><span>돌아가기</span></button></div>`).onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.dataset.d) { i = (i + +b.dataset.d + L.length) % L.length; draw(); } else res(); }; };
     draw(); });
 }
+function abInfo(k) {   /* 경완 2026-11-12 '특성 2줄 되면 버튼 레이아웃 깨짐': 카드엔 한 줄만, 눌러서 전체 설명 */
+  return new Promise(res => { const p = panel(`<div class="bp-info"><div class="mi-top ab-top"><b>${esc(abKo(k))}</b></div><p>${esc(AB_D[k] || '효과 설명이 아직 없어요.')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); }; }); }
 function moveInfo(m) {
   return new Promise(res => {
     const d = mvOf(m.id) || ['', m.move, 1, 0, 0, 0, m.maxpp, 0, '']; const ty = d[2] || 1;
@@ -779,10 +792,10 @@ function partyPanel(req, forced) {
     const card = i => { const m = L[i], A = B.my[myIx(i)], P = boxOf(A.pid), [hp, mhp, r, fnt] = hpOfM(m), can = !m.active && !fnt;
       const sl = B.btl.p1.pokemon[i]?.moveSlots || [], mv = (m.moves || A.mv || []).map(id => { const d = mvOf(toID(id)); if (!d) return null; const s0 = sl.find(x => x.id === toID(id)); return { d, id: toID(id), move: d[1], pp: s0?.pp ?? d[6], maxpp: s0?.maxpp ?? d[6] }; }).filter(Boolean);   // 기술마다 위력·명중·PP, 누르면 기술 설명 (v12.20 경완)
       const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
-        <p class="bc-ab"><small>특성</small><b>${esc(abKo(A.ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[A.ab] ? `<span class="bc-abd">${esc(AB_D[A.ab])}</span>` : ''}</p>
+        <button type="button" class="bc-ab" data-ab><small>특성</small><b>${esc(abKo(A.ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[A.ab] ? `<span class="bc-abd">${esc(AB_D[A.ab])}</span>` : ''}</button>
         <div class="bc-mv">${mv.map((x, k) => mvBox(k, x.d, x.pp, x.maxpp, false)).join('')}</div>
         <div class="bc-btns"><button class="bb cancel" data-x><span>뒤로</span></button><button class="bb go" data-go ${can ? '' : 'disabled'}><span>${m.active ? '나와 있음' : fnt ? '기절' : '바꾸기'}</span></button></div></div>`); fillTh(p);
-      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.i != null || b.dataset.info) return moveInfo(mv[+(b.dataset.info ?? b.dataset.i)]).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
+      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.i != null || b.dataset.info) return moveInfo(mv[+(b.dataset.info ?? b.dataset.i)]).then(() => card(i)); if (b.hasAttribute('data-ab')) return abInfo(A.ab).then(() => card(i)); if (b.hasAttribute('data-x')) return list(); if (b.hasAttribute('data-go')) { panel(''); res(i); } }; };   // 바꾸기를 누르면 아래 화면 포켓몬 정보는 닫는다 (v12.24 경완)
     list();
   });
 }
