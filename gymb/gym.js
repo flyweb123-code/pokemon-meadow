@@ -2228,9 +2228,9 @@ async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold
   const M = window.GymBGM, sg = (t, s, c) => `<div class="re-sign np ${c}"><b>${t}</b><span>${s}</span><small>${t === '휴 업' ? '잠시 문을 닫아요' : t === '폐 업' ? '그동안 찾아 주셔서 고맙습니다' : t === '다시 열어요' ? '곧 셔터가 올라가요' : ''}</small></div>`;
   const pp = () => { const el = fx.querySelector('.re-sign'); if (!el) return; el.classList.remove('pp'); void el.offsetWidth; el.classList.add('pp'); try { M?.se('DP_PINPON'); } catch (e) {} };
   fx.innerHTML = `<div class="re-shut"><i></i></div>${sg(t1, s1, 'sh')}`;
-  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); try { M?.duck(0, 1.2); } catch (e) {} }); await wait(1450); pp(); await wait(750 + hold);
+  requestAnimationFrame(() => { fx.classList.add('down'); shutSe(1); try { M?.duck(0, 1.2); } catch (e) {} }); await wait(1450); pp(); await wait(1600 + hold);   /* v22.98 경완 '떠 있는 시간이 너무 짧아': 휴업 0.75→1.6초, 다시 열어요 1.3→2.2초 */
   await mid?.(); fx.querySelector('.re-sign').outerHTML = sg(t2, s2, 'ok'); pp();
-  await wait(1300 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); try { M?.duck(1, 1); } catch (e) {} await wait(900); fx.remove();
+  await wait(2200 + hold / 2); under?.(); await wait(60); fx.classList.remove('down'); fx.classList.add('up'); shutSe(0); try { M?.duck(1, 1); } catch (e) {} await wait(900); fx.remove();
 }
 const gCard = (x, i) => { const G = gradeOf(x.rep || 0, x.gmax ?? 99), cur = x === st(), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
   return `<div class="mg-card${cur ? ' cur' : ''}" data-ty="${x.ty}"><button type="button" class="mg-go" data-i="${i}"><span class="mg-th"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><em class="mg-st">${cur ? '운영 중' : '휴업 중'}</em></span><span class="mg-tx"><b>${esc(x.nm)}</b><span class="mg-ty">${tI}${TYPE_KO[x.ty]} · ${G.n}</span><span class="mg-ch"><i>평판 <b>${x.rep || 0}</b></i><i>트레이너 <b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></i></span></span></button><button type="button" class="mg-del" data-del="${i}">폐업</button></div>`; };
