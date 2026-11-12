@@ -3292,11 +3292,11 @@ function enter() {
   requestAnimationFrame(() => root.classList.add('on'));
   if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
-  if (Array.isArray(S.box) && S.box.some(p => p.mgT)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
+  if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
     try { await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/manage.js', 'GymManage'); } catch (e) {}
-    if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !P.mgT), P = L.find(P => (SPECIES[P.sp]?.t || []).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
+    if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !isTstP(P)), P = L.find(P => (SPECIES[P.sp]?.t || []).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
     save(); renderTop(); renderHome(); promoTut(k, 1); }, 900); }
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
@@ -3507,7 +3507,7 @@ async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
   await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/bgm.js', 'GymBGM');
   S.box = S.box || []; const g = st(); g.mon = g.mon || {}; const made = [];
-  const mk = (id, sp, mv, it, ab) => { const P = { id, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, mgT: 1 }; S.box.push(P); made.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 52, it: it || '', ab }); return P; };
+  const mk = (id, sp, mv, it, ab) => { const P = { id, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(P); made.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 52, it: it || '', ab }); return P; };
   const my = foe ? [mk(990001, 445, ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], '', 'roughskin'), mk(990002, 248, ['stoneedge', 'crunch', 'earthquake', 'dragondance'], '', 'sandstream')] : [mk(990001, M[0], M[2], M[1], M[3]), M[0] === 448 ? mk(990002, 6, ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], '', 'blaze') : mk(990002, 448, ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], '', 'innerfocus')];
   const fe = (sp, nm, lv, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'adamant', iv: [24, 24, 24, 24, 24, 24], g: 'M' });
   const team = foe ? [{ ...fe(M[0], SPECIES[M[0]]?.n || '', 50, M[2], M[3]), it: M[1] }, fe(95, '롱스톤', 46, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy')] :   /* 경완: 첫 포켓몬이 바로 메가진화 */ [fe(95, '롱스톤', 44, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), fe(408, '두개도스', 45, ['headsmash', 'zenheadbutt', 'crunch', 'firepunch'], 'moldbreaker'), fe(409, '램펄드', 47, ['headsmash', 'earthquake', 'firepunch', 'icebeam'], 'moldbreaker')];
@@ -3541,7 +3541,7 @@ function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force |
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';
 // 내 포켓몬 중 메가진화할 수 있는 종 (체육관 타입 먼저, 같은 종은 한 번). 레쿠쟈는 화룡점정으로
 function mgCan(luOnly) { const B = GB(), ty = st()?.ty, seen = new Set(), L = [], lu = new Set((st()?.lu || []).flat());   /* 경완 2026-11-13 luOnly: 이 체육관 라인업에 있는 포켓몬만 */
-  for (const P of S.box || []) { if (luOnly && !lu.has(P.id)) continue; if (P.mgT || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
+  for (const P of S.box || []) { if (luOnly && !lu.has(P.id)) continue; if (isTstP(P) || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
   return L.sort((a, b) => ((SPECIES[b.sp]?.t || []).includes(ty) - (SPECIES[a.sp]?.t || []).includes(ty))); }
 function ringPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>메가링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/mega-bracelet.png"></div><p class="gy-msg mr-d">메가진화에 쓰는 팔찌.<br>포켓몬에게 메가스톤을 지니게 하면<br>배틀 중에 메가진화할 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
@@ -3675,7 +3675,7 @@ async function megaTut(test) {
       const sp = SPECIES[M[0]]?.n || '포켓몬', sn = stNm();
       await say('허허, 그럼 직접 해 보는 게\n제일이지!');
       await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`);
-      S.box = S.box || []; g.mon = g.mon || {}; made = { id: MG_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, mgT: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[2], lv: 50, it: '', ab: M[3] }); save();
+      S.box = S.box || []; g.mon = g.mon || {}; made = { id: MG_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[2], lv: 50, it: '', ab: M[3] }); save();
       gse('DP_DECIDE'); await say(M[0] === 6 ? `${sp}${pI(sp)} 메가진화하려면\n리자몽나이트X나 Y가\n필요한데, 오늘은 X로\n해 보자꾸나!` : `${sp}${pI(sp)} 메가진화하려면\n${sn}${pE(sn)} 지녀야 한단다.`);   /* 경완 2026-11-13 */
       await say('메가스톤은 체육관 상점에서\n살 수 있지. 같이 가 보자!');
       hideT(true);   // 경완 2026-11-12 '체육관 돌아갔을 때 강박사 없어져 있다가 등장 → 처음부터 있게'
@@ -3770,7 +3770,8 @@ async function megaTut(test) {
     document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; meEnt.f = 'd'; place(meEnt); save(); renderTop?.();
   }
 }
-function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (S.box[i]?.mgT) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
+const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.05 체육관 시험 포켓몬 표시 = gTst. 예전엔 mgT 였는데 본 게임 미니게임 '다른 타입 기술' 표시(P.mgT)와 이름이 겹쳐, 미니게임에서 두 번째 타입을 고른 포켓몬이 체육관 들어올 때 상자에서 지워졌음 (경완 폭거북스 사고 2026-11-13) */
+function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
   k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
