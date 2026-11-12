@@ -4232,3 +4232,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 #gym .gy-kang.amn .gy-k-box{margin-bottom:2px}   /* 경완 2026-11-13 '인물 대사창이랑 하단 메뉴 사이 여백 없애줘' */
 #gym .gy-pop .tp-t .tp-tt{display:inline-flex;align-items:center;justify-content:center;gap:12px}#gym .gy-pop .tp-t .tp-st{flex:none;width:4px;height:4px;background:#ffd84a;box-shadow:0 -6px #ffd84a,0 6px #ffd84a,-6px 0 #ffd84a,6px 0 #ffd84a;animation:tpTw .5s steps(1,end) infinite}@keyframes tpTw{50%{opacity:0}}   /* 경완 2026-11-13 비기 알림창 제목 양쪽 반짝반짝 (업데이트 알림창과 같은 별) */
+/* 경완 2026-11-13: 교체 창 메가진화한 포켓몬 프로필 우하단 메가 구슬 (지닌 도구 자리) */
+.rk-fr i.th-mg{position:absolute;right:-5px;bottom:-5px;z-index:4;width:45%;height:45%;max-width:22px;max-height:22px;min-width:13px;min-height:13px;background:url(../gym/img/dbk/icon_mega.png) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 2px rgba(255,255,255,.9))}

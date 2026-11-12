@@ -33,7 +33,7 @@ function loadData() {
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
     getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gymb/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json'), getJ(`${IMG}pk/bwa.json`), getJ(`${IMG}pk/off.json`), getJ(`${IMG}pk/gm/gm.json?`)
     , evyLoad()
-  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off, gmj]) => { BWA = bw || {}; GMJ = gmj && !gmj.then ? gmj : {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = { ...AB_D2, ...(ds?.ab || {}) }; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); mgStAdd(); }).catch(e => { dataP = null; throw e; }));
+  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off, gmj]) => { BWA = bw || {}; GMJ = gmj && !gmj.then ? gmj : {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = { ...AB_D2, ...(ds?.ab || {}) }; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); mgStAdd(); mgthLoad(); }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -299,8 +299,10 @@ const curLu = () => S.gym ? lus()[S.gym.luI | 0] : [];
 // 라인업·고르기 그림은 포켓몬 상자와 같은 그림 (경완 2026-10-27)
 // 랭크는 꾸미기 모드처럼 그림 테두리 색으로 (경완 2026-10-27)
 // 랭크 배지도 본 게임 포켓몬 박스처럼 왼쪽 위에 (경완 2026-10-27 '체육관 모드에도 랭크 테두리 + 랭크 배지')
-const thumb = P => { const rk = GA.rankOf(P), it = S.gym?.mon?.[P.id]?.it; return `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-th="${P.id}"${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}>${it && HOLD[it] ? `<img class="th-it" alt="${HOLD[it][0]}" src="${itImg(it)}">` : ''}</span>`; };   // 지닌 도구는 그림 오른쪽 아래 (경완 2026-10-29)
-function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.th); if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); });
+/* 경완 2026-11-13 '메가 폼 PMD 스프라이트 있는 애들은 그 그림, 없으면 원래 그림 + 프로필 우하단 메가 구슬': mg = 메가 쇼다운 id, gymb/mgth.json 은 SpriteCollab 메가 대기 첫 장 41개 */
+let MGTH = null; const mgthLoad = () => MGTH || (MGTH = getJ('gymb/mgth.json').then(j => (MGTH = j || {})));
+const thumb = (P, mg) => { const rk = GA.rankOf(P), it = S.gym?.mon?.[P.id]?.it; return `<span class="rk-fr" data-rk="${rk}"><span class="rk ${rk}">${rk}</span><img alt="" data-th="${P.id}"${mg ? ` data-mg="${mg}"` : ''}${P.shiny ? ` class="shiny" style="--shue:${GA.shinyHue(P.sp)}deg"` : ''}>${mg ? '<i class="th-mg"></i>' : it && HOLD[it] ? `<img class="th-it" alt="${HOLD[it][0]}" src="${itImg(it)}">` : ''}</span>`; };   // 지닌 도구는 그림 오른쪽 아래 (경완 2026-10-29)
+function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { const P = S.box.find(p => String(p.id) === im.dataset.th), mg = im.dataset.mg; if (mg) { Promise.resolve(mgthLoad()).then(T => { const u = (T || {})[mg]; if (u) im.src = u; else if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); }); return; } if (P) GA.thumb(P).then(u => { if (u) im.src = u; }).catch(() => {}); });
   // 트레이너 포켓몬(종만 앎)도 포켓몬 상자와 같은 그림 (경완 2026-10-27)
   root.querySelectorAll('img[data-sp]').forEach(im => { if (im.dataset.ok) return; im.dataset.ok = 1; GA.thumb({ sp: +im.dataset.sp }).then(u => { if (u) im.src = u; }).catch(() => {}); }); }
 const rfKey = sp => GA.SPECIES?.[sp]?.rb ? D?.sp?.[sp]?.id : '', fmDir = fm => RFA[fm] ? 'rf' : 'fm';
@@ -805,17 +807,17 @@ function partyPanel(req, forced) {
   return new Promise(res => {
     const L = req.side.pokemon, sx = g => g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : '';
     const hpOfM = m => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); return [hp, mhp, mhp ? hp / mhp : 0, /fnt/.test(m.condition)]; };
-    const pkOf = i => B.btl.p1.pokemon[i], fmd = pk => !!pk?.set && toID(pk.set.species) !== pk.species.id;   /* 경완 2026-11-13: 메가진화(폼 체인지)한 포켓몬은 교체 창에도 바뀐 타입·특성 */
+    const pkOf = i => B.btl.p1.pokemon[i], mgOf = pk => /mega/i.test(pk?.species?.forme || '') ? pk.species.id : '', fmd = pk => !!pk?.set && toID(pk.set.species) !== pk.species.id;   /* 경완 2026-11-13: 메가진화(폼 체인지)한 포켓몬은 교체 창에도 바뀐 타입·특성 */
     const tys = (A, pk) => (fmd(pk) ? pk.species.types.map(t => TY_EN.indexOf(t)) : SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join('');
     // 포켓몬 버튼: 정사각형 프로필 + 이름·성별 + 타입 (경완 2026-10-29)
     const list = () => { const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
-      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid)) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
+      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid), mgOf(pkOf(i))) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
       p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); card(+b.dataset.i); }; };
     // 누르면 바로 바뀌지 않고 상세 카드 → '바꾸기' (경완 2026-10-29)
     const card = i => { const m = L[i], A = B.my[myIx(i)], pk = pkOf(i), ab = fmd(pk) ? toID(pk.ability) : A.ab, P = boxOf(A.pid), [hp, mhp, r, fnt] = hpOfM(m), can = !m.active && !fnt;
       const sl = B.btl.p1.pokemon[i]?.moveSlots || [], mv = (m.moves || A.mv || []).map(id => { const d = mvOf(toID(id)); if (!d) return null; const s0 = sl.find(x => x.id === toID(id)); return { d, id: toID(id), move: d[1], pp: s0?.pp ?? d[6], maxpp: s0?.maxpp ?? d[6] }; }).filter(Boolean);   // 기술마다 위력·명중·PP, 누르면 기술 설명 (v12.20 경완)
-      const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A, pk)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
+      const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P, mgOf(pk)) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A, pk)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
         <button type="button" class="bc-ab" data-ab><small>특성</small><b>${esc(abKo(ab))}</b>${A.it && HOLD[A.it] ? `<small>도구</small><img class="bc-it" alt="" src="${itImg(A.it)}">${esc(HOLD[A.it][0])}` : ''}${AB_D[ab] ? `<span class="bc-abd">${esc(AB_D[ab])}</span>` : ''}</button>
         <div class="bc-mv">${mv.map((x, k) => mvBox(k, x.d, x.pp, x.maxpp, false)).join('')}</div>
         <div class="bc-btns"><button class="bb cancel" data-x><span>뒤로</span></button><button class="bb go" data-go ${can ? '' : 'disabled'}><span>${m.active ? '나와 있음' : fnt ? '기절' : '바꾸기'}</span></button></div></div>`); fillTh(p);
