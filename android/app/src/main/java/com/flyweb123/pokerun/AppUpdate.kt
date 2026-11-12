@@ -34,7 +34,7 @@ object AppUpdate {
                 if (a.isFinishing || a.isDestroyed) return@runOnUiThread
                 AlertDialog.Builder(a)
                     .setTitle("새 버전이 있어요")
-                    .setMessage("포켓몬 키우기 앱 새 버전${if (name.isNotEmpty()) " ($name)" else ""}이 나왔어요. 받아서 설치하면 기록은 그대로 남아요.")
+                    .setMessage("포켓에그 앱 새 버전${if (name.isNotEmpty()) " ($name)" else ""}이 나왔어요. 받아서 설치하면 기록은 그대로 남아요.")
                     .setPositiveButton("받기") { _, _ -> runCatching { a.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(BASE + "pokegrow.apk"))) } }
                     .setNegativeButton("나중에") { _, _ -> p.edit().putInt("updLater", code).putLong("updLaterAt", System.currentTimeMillis()).apply() }
                     .show()
