@@ -2264,12 +2264,14 @@ function mgPop() {
 }
 // 체육관 등급 (경완 2026-10-28, 이름은 2026-10-29 '등급별 혜택 > 체육관 등급')
 // 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
-const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련으로 깨닫는 숨은 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '키운 만큼 쌓이는 능력치' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' } };
+const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련으로 깨닫는 숨은 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '키운 만큼 쌓이는 능력치' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' },
+  /* 경완 2026-11-13 '앞으로 개발할 Z기술·테라·거다이맥스도 비기 4·5·6 으로 실루엣' — dev:1 = 아직 개발 중이라 등급을 달성해도 실루엣 그대로 (다 만들면 dev 지우기) */
+  4: { k: 'zTut', t: 'Z기술', d: 'Z링과 Z크리스탈로 배틀 중 한 번 쓰는 필살기', dev: 1 }, 5: { k: 'teraTut', t: '테라스탈', d: '테라스탈 오브로 포켓몬의 타입을 바꾸는 힘', dev: 1 }, 6: { k: 'dmaxTut', t: '거다이맥스', d: '다이맥스 밴드로 포켓몬을 거대하게', dev: 1 } };
 /* 비기 다시 보기: 그 튜토리얼의 강박사 설명만 차례로 (눌러 보기 단계·저장 바꾸는 건 빼고, 비출 곳이 화면에 없으면 그냥 말만) */
 const gtTalk = L => L.filter(x => !x.tap && !x.until && typeof x.t !== 'function').map(x => ({ c: x.c, t: typeof x.t === 'string' ? x.t : undefined, s: x.s }));
 PK_TIP[1].re = () => { const L = gtTalk(GT_EGD()); L.splice(1, 0, { c: '특별한 기술', s: '훈련장 포켓몬 카드의\n\'새 기술\'에서 볼 수 있지.' }); return L; };
 PK_TIP[2].re = () => { const L = gtTalk([...GT_EVT(st()), ...GT_EV(), ...GT_EVD()]); if (L[0]) L[0].s = '포켓몬을 강하게 키우는\n아주 중요한 것!\n바로 \'노력치\'란다.'; return L; };
-const PK_NTH = ['', '첫 번째', '두 번째', '세 번째'];
+const PK_NTH = ['', '첫 번째', '두 번째', '세 번째', '네 번째', '다섯 번째', '여섯 번째'];
 /* 경완 2026-11-12 '비기 알림창 디자인 다시, 업데이트 알림창처럼 게임 화면 캡쳐해서 단계별로': 장마다 튜토리얼 중 떠 둔 화면(gtSnap, 단계의 snap: [키, 뜰 창, 빛낼 곳])과 설명. 이전·다음·옆으로 밀기 */
 PK_TIP[1].pg = [{ k: '1a', t: '훈련장 카드의 새 기술', p: '훈련장 포켓몬 카드에서<br><em>새 기술</em>을 누르면 열려요.', sm: '포켓몬마다 특별한 기술이 4가지 숨어 있어요.' },
   { k: '1b', t: '깨달음 게이지', p: '훈련할수록 <em>깨달음 게이지</em>가 차고<br>가득 차면 그 기술을 익혀요.', sm: '기술 이름은 비밀, 타입과 형태는 미리 보여요.' },
@@ -2321,7 +2323,7 @@ function perkPop() {
   /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
      계정 어느 체육관에서든 이미 배운 것(tutSeen)은 새로 연 체육관엔 안 보임 — 아직 안 배웠으면 새 체육관에도 실루엣으로 보임 */
   /* 경완 2026-11-12 '비기는 항상 살려 놓고 등급 탭·비기 탭 나눠서': 비기는 계정 어느 체육관에서든 배웠으면 열림(tutSeen), 아니면 실루엣 */
-  const tip = i => { const T = PK_TIP[i], on = (i !== 3 || (typeof MEGA_ON !== 'undefined' && MEGA_ON)) && [].concat(T.k).some(tutSeen);   /* 경완 11-12: 메가진화는 배포(MEGA_ON) 전까진 등급이 돼도 실루엣 그대로 */   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
+  const tip = i => { const T = PK_TIP[i], on = !T.dev && (i !== 3 || (typeof MEGA_ON !== 'undefined' && MEGA_ON)) && [].concat(T.k).some(tutSeen);   /* 경완 11-12: 메가진화는 배포(MEGA_ON) 전까진 등급이 돼도 실루엣 그대로 */   // 노력치는 훈련장 설명(evTB)·노력치 화면 설명(evTC) 하나만 봤어도
     const tg = on && (T.pg || T.re) ? 'button' : 'div';   // 경완 '비기 누르면 튜토리얼 다시 볼 수 있게'
     return `<li class="pk-tip${on ? ' on' : ''}"><${tg} class="pk-tc"${tg === 'button' ? ` type="button" data-a="sk${i}"` : ''}><span class="pk-kg" style="background-image:url('${KANG_OW}')"></span><div><small>강박사의 ${PK_NTH[i]} 비기</small><b>${on ? T.t : '???'}</b><p>${on ? T.d : `${GRADES[i][1]}이 되면 강박사가 알려 줘요`}</p></div>${tg === 'button' ? '<em class="pk-re">다시 보기 ›</em>' : ''}</${tg}></li>`; };
   const p = pop(`<h4 class="pk-h"><span class="pk-ty">${tyIcon(g.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[g.ty] || ''} 타입</span> 체육관 등급</h4><div class="sp-tabs pk-tabs" role="tablist"><button role="tab" data-a="tg" aria-selected="true">등급</button><button role="tab" data-a="ts" aria-selected="false">비기</button></div><ol class="gy-perk pk-gl">${GRADES.map(row).join('')}</ol><ol class="gy-perk pk-sl" hidden>${Object.keys(PK_TIP).map(i => tip(+i)).join('')}</ol><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
