@@ -2754,7 +2754,7 @@ async function gtu(T) {
   const ov = document.createElement('div'); ov.id = 'tut'; ov.className = 'gtu hide';
   ov.innerHTML = `<i class="tu-hole none"></i><div class="tu-box"><img alt="강박사" src="${GA.KANG}"><div class="win"><span class="tu-n"></span><span class="tu-t"></span><b class="cur" hidden>▼</b></div></div>`;
   document.body.append(ov);
-  const lit = document.createElement('i'); lit.className = 'gt-lit'; lit.hidden = true; ov.querySelector('.tu-hole').after(lit);   // 경완 2026-11-12 '포켓몬 빛 활성화 = 테두리 박스 말고 포켓몬 자체를 원래 색으로 밝게': 어둠 위에 그 포켓몬 그림만 다시 그림
+  const lit = document.createElement('i'); lit.className = 'gt-lit'; lit.hidden = true; ov.querySelector('.tu-hole').after(lit); const litT = document.createElement('div'); litT.className = 'gt-litT'; litT.hidden = true; lit.after(litT);   // 경완 2026-11-12 '포켓몬 빛 활성화 = 테두리 박스 말고 포켓몬 자체를 원래 색으로 밝게': 어둠 위에 그 포켓몬 그림만 다시 그림
   const hole = ov.querySelector('.tu-hole'), bx = ov.querySelector('.tu-box'), say = GA.inTyper(ov, ov.querySelector('.tu-t'), ov.querySelector('.cur'));
   let lock = true, allow = null, tapped = false, cur = null, raf = 0, snap = true, bxY = null, stT = 0;
   const hit = (e, s) => !!s && !!e.target.closest && (typeof s === 'function' ? (x => !!x && x.contains(e.target))(s()) : !!e.target.closest(s));
@@ -2770,9 +2770,11 @@ async function gtu(T) {
   const track = () => { const e = cur && gtEl(cur.t); let r = e ? e.getBoundingClientRect() : null; if (r && !r.width) r = null;
     if (r && cur.tap && (r.width < 44 || r.height < 44)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2, w = Math.max(44, r.width), h = Math.max(44, r.height); r = { left: cx - w / 2, top: cy - h / 2, width: w, height: h, right: cx + w / 2, bottom: cy + h / 2 }; }
     if (r) { const p = 6; if (snap) hole.style.transition = 'none'; Object.assign(hole.style, { left: r.left - p + 'px', top: r.top - p + 'px', width: r.width + p * 2 + 'px', height: r.height + p * 2 + 'px' }); hole.classList.remove('none'); ov.classList.remove('dim'); if (snap) { void hole.offsetWidth; hole.style.transition = ''; snap = false; } }
-    else { hole.classList.add('none'); ov.classList.toggle('dim', !ov.classList.contains('tapon')); }
+    else { hole.classList.add('none'); ov.classList.toggle('dim', !ov.classList.contains('tapon') || !!cur?.lit); }   /* 빛 활성화 단계는 누르는 동안에도 어둡게 두고 그것만 밝게 */
     { const L = cur?.lit && gtEl(cur.lit); lit.hidden = !L; if (L) { const q = L.getBoundingClientRect(), cs = getComputedStyle(L), w = L.offsetWidth || 1, h = L.offsetHeight || 1, fl = new DOMMatrix(getComputedStyle(L.parentElement).transform === 'none' ? undefined : getComputedStyle(L.parentElement).transform).a < 0;
       Object.assign(lit.style, { left: q.left + 'px', top: q.top + 'px', width: w + 'px', height: h + 'px', backgroundImage: cs.backgroundImage, backgroundSize: cs.backgroundSize, backgroundPosition: cs.backgroundPosition, backgroundRepeat: cs.backgroundRepeat, transform: fl ? `translateX(${q.width}px) scale(${-q.width / w}, ${q.height / h})` : `scale(${q.width / w}, ${q.height / h})` }); } }
+    { const L = cur?.lit && gtEl(cur.lit), tg = L?.closest?.('.ty-m')?.querySelector('.ty-tag'); litT.hidden = !tg; if (tg) { const q = tg.getBoundingClientRect(), w = tg.offsetWidth || 1, h = tg.offsetHeight || 1; if (litT._h !== tg.innerHTML) { litT._h = tg.innerHTML; litT.innerHTML = `<div class="ty-tag">${tg.innerHTML}</div>`; }
+      Object.assign(litT.style, { left: q.left + 'px', top: q.top + 'px', width: w + 'px', height: h + 'px', transform: `scale(${q.width / w}, ${q.height / h})` }); } }   /* 경완 2026-11-12 '빛 활성화 때 밑의 레벨·랭크 배지·경험치 게이지도 같이' */
     if (!ov.classList.contains('tapon')) placeBox(r, false); raf = requestAnimationFrame(track); };
   try {
     for (const st of T) {
@@ -3526,7 +3528,7 @@ const evRecS = P => { const B = GB(), pl = B?.evPlan?.(P.sp), nm = SPECIES[P.sp]
   return `${nm}${jong(nm) ? '은' : '는'} ${pl.nm || ''}이니까\n${w} 노력치를\n키우는 게 좋겠구나!`; };
 const PROMO_ON = false;
 const PROMO = {
-  1: { in: [['k', '{N}! 동네 체육관이 됐다면서?\n정말 축하한다!'], ['k', '처음 여기 왔을 땐\n먼지만 쌓이고 불도 꺼진\n문 닫기 직전 체육관이었지.'], ['k', '그런데 {N}, 네가\n도전자를 하나하나 막아 내더니\n결국 동네 체육관까지 올려놨구나!'], ['k', '은퇴한 관장도 이 소식을 들으면\n분명 기뻐할 거란다.\n…사실 나도 오는 길에 좀 울었단다.'], ['g', '(박사님 눈이 아직 빨개요…)'], ['g', '강박사님! 저도 방금\n전단지 붙이고 왔어요!'], ['k', '전단지?'], ['g', '네! \'우리 동네 최강 체육관\'이라고요.\n…옆 동네에도 붙였어요.'], ['k', '…그럼 동네 체육관이 아니잖니.'], ['k', '에헴. 아무튼 약속한 대로\n오늘 알려 줄 비기를\n들고 왔단다.'], ['k', '오늘부터 체육관에\n훈련장이 열렸거든!\n포켓몬을 맡겨 두면 알아서\n강해지는 곳이지.'], ['k', '자, 같이 가 보자!']],
+  1: { in: [['k', '{N}! 동네 체육관이 됐다면서?\n정말 축하한다!'], ['k', '처음 여기 왔을 땐\n먼지만 쌓이고 불도 꺼진\n문 닫기 직전 체육관이었지.'], ['k', '그런데 {N}, 네가\n도전자를 하나하나 막아 내더니\n결국 동네 체육관까지 올려놨구나!'], ['g', '강박사님! 저도 방금\n전단지 붙이고 왔어요!'], ['k', '전단지?'], ['g', '네! \'우리 동네 최강 체육관\'이라고요.\n…옆 동네에도 붙였어요.'], ['k', '…그럼 동네 체육관이 아니잖니.'], ['k', '에헴. 아무튼 약속한 대로\n오늘 알려 줄 비기를\n들고 왔단다.'], ['k', '오늘부터 체육관에\n훈련장이 열렸거든!\n포켓몬을 맡겨 두면 알아서\n강해지는 곳이지.'], ['k', '자, 같이 가 보자!']],
     out: [['k', '어떠냐, 훈련장 좋지?'], ['k', '나도 어릴 땐 샌드백을\n열심히 쳤었지.\n…샌드백한테 졌지만.'], ['g', '(샌드백한테…?)'], ['k', '에헴! 그럼 난 이만\n연구소로 돌아가 보마.']],
     st: [['k', '…아차차! 깜빡한 게 있었구나!'], ['g', '강박사님, 또요?\n지난번엔 지팡이도 두고 가셨잖아요.'], ['k', '그건 일부러 두고 간 거란다!\n…아마도.'], ['k', '{N}, 동네 체육관이 되면\n트레이너도 고용할 수 있단다.\n같이 보자!']],
     bye: [['k', '이번엔 정말 다 말했단다.'], ['k', '{N}, 문 닫을 뻔한 체육관을\n여기까지 살려 낸 건\n바로 너란다.'], ['k', '포켓몬들도 그걸 잘 알고\n너를 믿고 따라오는 거지.\n앞으로도 지금처럼만 하렴!'], ['g', '관장님, 저도 믿고 따라갈게요!\n…전단지 붙이면서요!'], ['k', '허허! 그럼 다음 등급이 되면\n또 새로운 비기를 들고 오마.\n힘내라, {N}!'], ['g', '(…또 뭘 두고 가시는 건 아니겠지?)']] },
@@ -3564,7 +3566,7 @@ async function promoVisit(gi) {
       const CR2 = chalRoute(D, [k]); await Promise.all([wm, CR2?.path?.length ? walk(k, CR2.path, 300) : null]);
       meEnt.f = 'd'; place(meEnt); face(k, meEnt); if (gu) face(gu, k); await wait(350); };
     let CR; [k, CR] = await kangIn(D); T = storyTalk(); await run(P.in); if (!open) return;
-    T.hide(true); k.el.style.visibility = 'hidden'; busy = false; root.classList.remove('busy');
+    T.hide(true); k.el.style.visibility = 'hidden'; if (meEnt) meEnt.el.style.visibility = 'hidden'; busy = false; root.classList.remove('busy');   /* 경완 2026-11-12 '훈련장 갔다 돌아왔을 때 관장 스프라이트 남아 있음': 관장도 같이 나간 것으로 (돌아올 때 backIn 이 문으로 다시 들임) */
     // 경완 2026-11-12: 훈련장 메뉴 버튼을 직접 눌러 들어감 → '여기가 바로 훈련장' → (동네) 보내기 → 필드에 나온 모습 → 그 포켓몬 눌러 상세카드 → 훈련 현황·특별한 기술 (노력치는 떠오르는 체육관에서만)
     const eg = tutSeen('egT'); g.trTut = 1; g.egT = 1; if (gi === 2 || GB()?.evOn?.()) g.evTB = 1; save();
     const n0 = g.tr?.length || 0, newId = () => (g.tr?.length || 0) > n0 ? g.tr.at(-1).id : g.tr?.[0]?.id, ydM = () => { const m = gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'); return m ? gtBox([m.querySelector('.ty-sp') || m]) : null; }, ydS = () => (gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'))?.querySelector('.ty-sp') || null, mNm = () => { const P2 = S.box.find(p => p.id === newId()); return SPECIES[P2?.sp]?.n || '포켓몬'; };
@@ -3574,7 +3576,7 @@ async function promoVisit(gi) {
     const SHUT = { c: '체육관', when: () => gtEl('.gy-pop [data-a=x]'), t: '.gy-pop [data-a=x]', tap: '.gy-pop [data-a=x]', until: () => !gtEl('.gy-pop'), after: 500, s: '이제 \'닫기\'를 눌러 보렴.' };
     const BACK = (t, n) => ({ c: '체육관', t: `.gy-menu [data-t=${t}]`, tap: `.gy-menu [data-t=${t}]`, until: () => $g('.gy-sheet')?.hidden, after: 700, s: `'${n}' 메뉴를 한 번 더 누르면\n체육관으로 돌아간단다.` });
     const CARD = [{ c: '훈련장', when: () => gtEl('.ts-win .bw-x'), t: '.ts-win .bw-x', tap: '.ts-win .bw-x', until: () => !gtEl('.ts-win'), after: 900, s: '이제 ‹ 를 눌러\n훈련장 마당으로 가 보자.' }, { c: '훈련장', when: ydM, lit: ydS, pos: 'dn', s: () => `보렴, ${mNm()}${jong(mNm()) ? '이' : '가'}\n훈련을 시작했구나!` }, { c: '훈련장', when: ydM, lit: ydS, pos: 'dn', s: '여기서 열심히 훈련하면서\n쑥쑥 강해질 거란다.' },
-      { c: '훈련 카드', when: ydM, t: ydM, tap: ydM, until: () => gtEl('.gy-pop .tp2-today'), after: 900, s: () => `이제 ${mNm()}${jong(mNm()) ? '을' : '를'}\n눌러 보렴!` }];
+      { c: '훈련 카드', when: ydM, lit: ydS, pos: 'dn', tap: ydM, until: () => gtEl('.gy-pop .tp2-today'), after: 900, s: () => `이제 ${mNm()}${jong(mNm()) ? '을' : '를'}\n눌러 보렴!` }];
     if (gi === 1) { const TB = GT_TRB(); await gtu([GO, HERE, ...GT_TR().slice(1, 11), ...CARD, TB[2], TB[3], { c: '첫 번째 비기', t: '.gy-pop .tp2-mvc', s: () => `자, 지금부터 잘 듣고\n집중하렴, ${NK()}!` }, { c: '첫 번째 비기', t: '.gy-pop .tp2-mvc', s: '이게 바로 강박사의\n첫 번째 비기,\n\'특별한 기술\'이란다!' }, ...GT_EGO(), SHUT, BACK('train', '훈련장')]); }
     else { const P0 = S.box.find(p => p.id === newId()), TAP = { ...CARD[3], s: () => `훈련 중인 ${mNm()}${jong(mNm()) ? '을' : '를'}\n눌러 보렴!` };
       /* 경완 2026-11-12 '훈련장 카드에 노력치 박스를 만들지 말고, 훈련장 노력치 훈련 설명 → 포켓몬 상세카드로 넘어가서 노력치 박스 설명' */
@@ -3594,7 +3596,7 @@ async function promoVisit(gi) {
     busy = true; root.classList.add('busy'); await backIn(); if (!open) return; T.hide(false); await run(P.out);
     if (gi === 1 && P.st) {   // 나가려다 '아차! 깜빡한 게 있었네' → 트레이너 메뉴
       const st0 = [Math.round(k.x), Math.round(k.y)], o = outRoute(D, k); if (o?.length) await walk(k, o.slice(0, Math.min(2, o.length - 1)), 200);
-      await wait(300); face(k, meEnt); await run(P.st); T.hide(true); busy = false;   // 경완 2026-11-12 '트레이너 메뉴에서 돌아왔을 때 강박사 계속 있게' root.classList.remove('busy');
+      await wait(300); face(k, meEnt); await run(P.st); T.hide(true); busy = false; root.classList.remove('busy');   /* 경완 2026-11-12 '트레이너 메뉴에서 돌아왔을 때 강박사 계속 있게' (v22.47 때 주석에 묻혀 busy 가 안 풀려 하단 메뉴가 잠겼음) */
       g.sfTut = 1; save();
       await gtu([{ c: '트레이너', t: '.gy-menu [data-t=staff]', tap: '.gy-menu [data-t=staff]', until: () => gtEl('.sp-tabs [data-sft=sf]'), after: 1200, s: '아래 \'트레이너\' 메뉴를\n눌러 보렴!' }, ...GT_ST().slice(1), BACK('staff', '트레이너')]);
       if (!open) return; CLOSE(); busy = true; root.classList.add('busy'); k.el.style.visibility = ''; T.hide(false); await run(P.bye); }
