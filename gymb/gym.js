@@ -1627,8 +1627,9 @@ function legXLines(N, E, ty, retry) {
     back: [['k', `${E}, ${nth} 번째 전설이라니 대단하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 이번에도 잘 품어 주렴!`], ['k', `그리고 약속한 대로<br><b>${ty} 테라피스</b>도 받아 가게!`], ['tera'], ['k', `이제 어느 체육관에서든<br>${ty} 테라스탈을 쓸 수 있단다.<br>테라피스가 벌써 ${nth} 개째구먼!`]] };
 }
 // 테라피스 받는 알림창 (저절로 뜨는 창: 버튼으로만 닫힘). 테라스탈을 만들 때 여기서 실제로 창고에 넣는다 (지금은 연출만)
+const TERA_EN = ['', 'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL', 'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK', 'FAIRY'];   // 테라피스 그림 = DBK 팩 (gym/img/dbk/it/<타입>TERASHARD.png, 경완 2026-11-13 '압축 파일 안에 있는 걸로')
 function teraPop(t) { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
-    const p = pop(`<h4>${TYPE_KO[t]} 테라피스를 받았다!</h4><div class="le-get tp-get"><i class="tp-gem" style="--tc:${GA.TYPE_C?.[t] || '#8cf'}"></i></div><p class="gy-msg" style="text-align:center">포켓몬의 테라 타입을<br><b>${TYPE_KO[t]} 타입</b>으로 바꿀 수 있어요.<br><small>몇 번이든 쓸 수 있고, 다른 체육관에서도 쓸 수 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); confetti(); }); }
+    const p = pop(`<h4>${TYPE_KO[t]} 테라피스를 받았다!</h4><div class="le-get tp-get" style="--tc:${GA.TYPE_C?.[t] || '#8cf'}"><img class="tp-shard" alt="" src="${IMG}dbk/it/${TERA_EN[t]}TERASHARD.png"></div><p class="gy-msg" style="text-align:center">포켓몬의 테라 타입을<br><b>${TYPE_KO[t]} 타입</b>으로 바꿀 수 있어요.<br><small>몇 번이든 쓸 수 있고, 다른 체육관에서도 쓸 수 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); confetti(); }); }
 // 심사 진행 (test = 운영자 시험: 가상 체육관, 저장·알·골드 안 건드림)
 async function legExam(gi, test) {
   const g = st(); if (!g?.d || busy) return;
