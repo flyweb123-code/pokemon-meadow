@@ -602,7 +602,7 @@ function pickTrain(after) {
   const g = st(), ty = g.ty, inTr = id => g.tr.some(e => e.id === id);
   GB().boxWin(false, null, () => { redraw(); after?.(); }, {
     title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입 포켓몬만 보여요`,
-    list: () => S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(ty) || inTr(P.id)),   /* v22.98 경완 '훈련장엔 체육관 타입 포켓몬만' (이미 훈련 중인 다른 타입은 데려올 수 있게 남김) */   /* v20.50 경완: 만렙도 훈련장에 (노력치·친밀도·기술) */ ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
+    list: () => S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(ty)),   /* v22.98 경완 '훈련장엔 체육관 타입 포켓몬만' (체육관을 바꾸면 훈련장이 비니 다른 타입이 남을 일 없음) */   /* v20.50 경완: 만렙도 훈련장에 (노력치·친밀도·기술) */ ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
     tag: P => inTr(P.id) ? '훈련장' : onField(P.id) ? '필드' : '',
     pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
