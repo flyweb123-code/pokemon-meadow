@@ -3580,11 +3580,19 @@ async function trSupply(R, o, ids) {
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
    노말·비행 = 배틀타워, 물·얼음·드래곤 = 배틀스테이지). 사천왕·챔피언 본인은 자기 방, 승급 심사는 챔피언 난천 방 */
 const CBG_TY = { 7: 'aaron', 12: 'aaron', 4: 'aaron', 5: 'bertha', 6: 'bertha', 9: 'bertha', 2: 'bertha', 10: 'flint', 13: 'flint', 14: 'lucian', 8: 'lucian', 17: 'lucian', 18: 'lucian', 1: 'tower', 3: 'tower', 11: 'hall', 15: 'hall', 16: 'hall' };
+/* v23.22 경완 '난이도로 차이 주는 건 이름 있는 트레이너만, 일반 도전자는 도전자 종류로': 트레이너 종류 → 방 */
+const CBG_CLS = { youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
+  camper: 'aaron', picnicker: 'aaron', bug_catcher: 'aaron', aroma_lady: 'aaron', artist: 'aaron',
+  hiker: 'bertha', ruin_maniac: 'bertha', black_belt: 'bertha', battle_girl: 'bertha',
+  fisherman: 'in2', swimmer_m: 'in2', swimmer_f: 'in2', sailor: 'in2', skier_f: 'hall',
+  cool_trainer_m: 'tower', cool_trainer_f: 'tower', tamer: 'tower', dragon_tamer: 'tower', bird_keeper: 'cynthia',
+  beauty: 'castle', gentleman: 'castle', psychic_m: 'lucian', psychic_f: 'lucian', channeler: 'lucian',
+  super_nerd: 'factory', engineer: 'factory', poke_maniac: 'factory', pokemaniac: 'factory', rocker: 'flint', juggler: 'arcade', ninja_boy: 'arcade' };
 const CBG_TR = { elite_four_aaron: 'aaron', elite_four_bertha: 'bertha', elite_four_flint: 'flint', elite_four_lucian: 'lucian', champion_cynthia: 'cynthia' };
-const CBG_PL = { aaron: 'league_aaron', bertha: 'league_bertha', flint: 'league_flint', lucian: 'league_lucian', cynthia: 'league_cynthia', tower: 'battle_tower', hall: 'battle_hall' };
+const CBG_PL = { aaron: 'league_aaron', bertha: 'league_bertha', flint: 'league_flint', lucian: 'league_lucian', cynthia: 'league_cynthia', tower: 'battle_tower', hall: 'battle_hall', factory: 'battle_factory', arcade: 'battle_arcade', castle: 'battle_castle' };
 function chalEnv(c, team) { const of = bg => ({ bg, pl: CBG_PL[bg] || '' });
   if (c.boss) return of('cynthia'); if (CBG_TR[c.tr]) return of(CBG_TR[c.tr]);
-  if (!c.named && !(c.diff | 0)) return of(pick(['in1', 'in2', 'in3']));
+  if (!c.named) return of(CBG_CLS[c.tr] || pick(['in1', 'in2', 'in3']));   // 일반 도전자 = 트레이너 종류
   const n = {}; team.forEach(o => (SPECIES[o.sp]?.t || []).forEach((t, i) => { n[t] = (n[t] || 0) + (i ? 1 : 2); }));
   const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; return of(CBG_TY[top] || pick(['in1', 'in2', 'in3'])); }
 async function megaTest(k, foe) {
