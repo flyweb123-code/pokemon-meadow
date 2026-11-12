@@ -2416,8 +2416,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padd
   <div class="iph-sb"><span>9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.3C13.3 1.4 10.8.4 8 .4S2.7 1.4.8 3.3L2 4.6c1.6-1.5 3.7-2.4 6-2.4zm0 3.6c1.3 0 2.6.5 3.5 1.4l1.2-1.3C11.5 4.7 9.8 4 8 4s-3.5.7-4.7 1.9l1.2 1.3c.9-.9 2.2-1.4 3.5-1.4zM8 9.4l2.2-2.3C9.6 6.6 8.8 6.3 8 6.3s-1.6.3-2.2.8z"/></svg><svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" opacity=".45"/></svg></span></div><div class="iph-di"></div><div class="iph-hi"></div>
   <div class="st-frame" id="fr">
     <canvas class="st-cv" id="cv"></canvas>
-    <div class="ed-hud"><div class="ed-sbox"><b class="ed-tag">점수</b><b class="ed-sc" id="sc">0점</b><span class="ed-best" id="best"></span><span class="ed-hg" id="hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div><button type="button" class="ed-x st-setb" id="stSetB" hidden>설정</button><button type="button" class="ed-x" id="quit">그만하기</button></div>
-    <div class="st-setp" id="stSetP" hidden><div class="st-setw" id="stSetW"><div class="st-seth"><b>설정 (베타 테스트)</b><button type="button" class="dm-btn" id="stSetX">닫기</button></div></div></div>
+    <div class="ed-hud"><div class="ed-sbox"><b class="ed-tag">점수</b><b class="ed-sc" id="sc">0점</b><span class="ed-best" id="best"></span><span class="ed-hg" id="hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div><button type="button" class="ed-x" id="quit">그만하기</button></div>
     <div class="st-ht" id="ht"></div>
     <div class="st-hint" id="hint"></div>
     <button type="button" class="ed-ab" id="ab"><span class="ed-abp"><canvas id="abc" width="84" height="84"></canvas></span><span class="ed-abx"><b id="abn"></b><span class="ed-abd" id="abd"></span></span></button>
@@ -2511,7 +2510,7 @@ const hull = P => { P.sort((a, b) => a[0] - b[0] || a[1] - b[1]); const cr = (o,
 const simp = (H, n) => { H = H.slice(); while (H.length > n) { let bi = 0, ba = 1e9; for (let i = 0; i < H.length; i++) { const a = H[(i + H.length - 1) % H.length], b = H[i], c = H[(i + 1) % H.length]; const ar = Math.abs((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])); if (ar < ba) { ba = ar; bi = i; } } H.splice(bi, 1); } return H; };
 const TU = Object.assign({ minW: 0, deep: 0, deepLD: 2, deepAD: 8 }, window.__tune || {});
 /* 베타 설정(운영자) 물리 테스트 — 본 게임 배포 때 지울 것 */
-const TS = { flat: 0, glue: 0 }; try { const o = JSON.parse(localStorage.getItem('st-phys') || '{}'); TS.flat = o.flat ? 1 : 0; TS.glue = o.glue ? 1 : 0; } catch (e) {}   /* v20.12 경완 '무게 아래로·흔들림 줄이기 좋아' → 그 둘은 늘 켬 */
+const TS = { flat: 0, glue: 0 };   /* v22.85 경완 '테스트용 설정 기능 없애줘': 게임 안 설정 버튼·창 지움, 예전에 켜 둔 물리 테스트(localStorage st-phys)도 안 읽음 (켜져 있으면 판이 시험 판이 돼 기록·보상이 없었음) */   /* v20.12 경완 '무게 아래로·흔들림 줄이기 좋아' → 그 둘은 늘 켬 */
 let tstRun = 0, tstCfg = 0;
 const lowCom = p => { const b = p.b, I = p.I || IMG[p.n]; let by = 0; for (const f of I.F) by = Math.max(by, f.r ? f.r : f.y + f.hy); const md = { mass: 0, center: V(0, 0), I: 0 }; b.getMassData(md); const c = md.center, Ic = md.I - md.mass * (c.x * c.x + c.y * c.y), ny = c.y + (m(by * p.s) - c.y) * .45; b.setMassData({ mass: md.mass, center: V(c.x, ny), I: Ic + md.mass * (c.x * c.x + ny * ny) }); };   /* 오뚝이처럼 무게 중심을 바닥 쪽으로 45% */
 /* 카드·기술 버튼·도우미 = 실제 게임처럼 필드(PMD) 그림 (s*.json 아틀라스: 동작 [y, w, h, 칸 수, 발 x, 발 y, 칸 시간]) */
@@ -3312,15 +3311,12 @@ const setRk = r => { rk = r; const nxe = $('nx'); if (nxe) { nxe.classList.toggl
 dmTy.addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (b) { SFX.pop(); setTy(+b.dataset.t); } });
 dmRk.addEventListener('click', e => { const b = e.target.closest('[data-r]'); if (b) { SFX.pop(); setRk(b.dataset.r); } });
 $('dmRe').addEventListener('click', () => { SFX.pop(); setP(0); reset(); });
-/* 베타 설정 버튼 (운영자만, 부모가 cfg.tst 를 줄 때) — 시안 설정 + 물리 테스트. 본 게임 배포 때 지울 것 */
+/* 시안(단독 페이지) 설정 — 게임 안에선 안 보임 */
 const dmPh = $('dmPh'), phDraw = () => [...dmPh.children].forEach(b => b.classList.toggle('on', !!TS[b.dataset.k]));
 dmPh.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; SFX.pop(); TS[b.dataset.k] = TS[b.dataset.k] ? 0 : 1; try { localStorage.setItem('st-phys', JSON.stringify(TS)); } catch (er) {} phDraw(); reset(); });
 phDraw();
 for (const el of [dmTy, dmRk, dmFh]) el.addEventListener('click', e => { if (e.target.closest('button')) { tstCfg = 1; tstRun = 1; } });
 let pz0 = false; const setP = on => { const el = $('stSetP'); if (!el || el.hidden === !on) return; el.hidden = !on; if (on) { pz0 = paused; paused = true; } else paused = pz0; };
-$('stSetB').addEventListener('click', e => { e.stopPropagation(); SFX.pop(); setP(1); });
-$('stSetX').addEventListener('click', () => { SFX.pop(); setP(0); });
-$('stSetP').addEventListener('pointerdown', e => e.stopPropagation());
 $('dmMus').addEventListener('click', () => { au(); BGM.en = !BGM.en; $('dmMus').textContent = BGM.en ? '음악 끄기' : '음악 켜기'; if (BGM.en) BGM.start(); else BGM.stop(.3); });
 /* 시안 전용: 기술을 바로 써 볼 수 있게 탑을 7층쯤 미리 쌓음 (화면 밖에서 빠르게 돌린 뒤 실제 시간으로 돌아옴) */
 $('dmBuild').addEventListener('click', () => { SFX.pop(); setP(0); reset(); tstRun = 1; intro = null; $('mgCard').hidden = true; simOn = true; simT = performance.now() + tOff;
@@ -3331,7 +3327,7 @@ $('dmBuild').addEventListener('click', () => { SFX.pop(); setP(0); reset(); tstR
 function embInit() { document.documentElement.classList.add('emb'); return new Promise(ok => { const on = async e => { const d = e.data; if (!d || d.t !== 'stInit') return; removeEventListener('message', on); const c = d.cfg;
     document.documentElement.style.setProperty('--sat', (c.sat || 0) + 'px'); document.documentElement.style.setProperty('--sab', (c.sab || 0) + 'px'); window.__GPP = c.gpp || 9; best = c.best | 0; try { if (parent.__stAC) { ac = parent.__stAC; if (ac.state === 'suspended') ac.resume(); } } catch (er) {}   /* 경완 'BGM 클릭해야 시작': 미니게임 창에서 시작하기를 누를 때 열어 둔 소리를 그대로 써서 바로 곡이 나옴 */
     if (c.spU && c.spK) try { const j = await (await fetch(c.spU)).json(), o = j[c.spK]; if (o && o.i && o.a) { const im = await loadImg(o.i); if (im) { PM.me = { im, a: typeof o.a === 'string' ? JSON.parse(o.a) : o.a }; A.H[c.ty - 1] = 'me'; A.nm.me = c.nm || ''; delete PBB.me; } } } catch (er) {}
-    setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); if (c.tst) { $('stSetW').appendChild($('dmSet')); $('stSetB').hidden = false; } ok(); };
+    setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); ok(); };
   addEventListener('message', on); parent.postMessage({ t: 'stReady' }, '*'); });
 }
 /* v20.40 경완 '하다가 앱 나오면 BGM 이 뚝뚝 끊기며 계속 나오고, 다시 들어가면 소리 안 남': 나가면 일시정지 창 + 곡 멈춤 + 소리 끄기, 돌아오면 소리 다시 열기 */
