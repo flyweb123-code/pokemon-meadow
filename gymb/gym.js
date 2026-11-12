@@ -1592,10 +1592,14 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
    이기면 그 자리에서 전당 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
    거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
 const LEGK_ON = false;
-// 강박사 팀: 연구소에서 30년을 함께한 '논문 공저자'들 — 모두 거다이맥스할 수 있는 종. 에이스(마지막)는 체육관 타입에 강한 관동 스타팅
-const KANG_TEAM = [94, 143, 131, 3, 6, 9];   // 팬텀·잠만보·라프라스·이상해꽃·리자몽·거북왕
-const kangAce = ty => [10, 5, 6].includes(ty) ? 9 : [11, 13, 18].includes(ty) ? 3 : 6;
-function mkKang(gi) { const g = st(), ace = kangAce(g.ty), sp = [...KANG_TEAM.filter(x => x !== ace), ace].filter(x => !spOff(x)), lv = clampN(Math.max(myAvg() + BS_LV[gi - 1] + 2, Math.max(0, ...luNow().map(P => GB()?.gm?.(P)?.lv | 0)) - BS_GAP), 5, 100);
+// 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼'): 거다이맥스 모습이 있는 종 전체(전설·환상, 약한 종 빼고)에서 체육관 타입에 유리한 순으로 여섯. 가장 유리한 종이 에이스(마지막, 거다이맥스)
+const KANG_POOL = [3, 6, 9, 68, 94, 131, 143, 569, 812, 815, 818, 823, 826, 834, 839, 841, 842, 844, 849, 851, 858, 861, 869, 879, 884];
+const KANG_TEAM = [94, 143, 131, 3, 9, 6];   // 상성 표를 못 읽을 때
+function kangPick(ty) { const Dx = window.PSim?.Dex, nm = t => { const e = TERA_EN[t] || ''; return e[0] + e.slice(1).toLowerCase(); }; if (!Dx || !TERA_EN[ty]) return KANG_TEAM;
+  const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), r = seeded('kang' + ty + (st()?.lkTry | 0));
+  const L = KANG_POOL.filter(x => SPECIES[x] && !spOff(x)).map(x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm); return { x, s: Math.max(...T.map(a => eff(a, [nm(ty)]))) - eff(nm(ty), T) + r() * .6 }; }).sort((a, b) => b.s - a.s).slice(0, 6);
+  return L.length < 6 ? KANG_TEAM : L.map(o => o.x).reverse(); }
+function mkKang(gi) { const g = st(), sp = kangPick(g.ty), lv = clampN(Math.max(myAvg() + BS_LV[gi - 1] + 2, Math.max(0, ...luNow().map(P => GB()?.gm?.(P)?.lv | 0)) - BS_GAP), 5, 100);
   return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
 // 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
 function legXLines(N, E, ty, retry) {
