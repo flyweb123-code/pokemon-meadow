@@ -3364,7 +3364,7 @@ async function evGo(id0) {
   try { await loadJs('gym/ev.js', 'GymEv'); r = await window.GymEv?.run(EV_API, id, test ? (window.gymEvCh | 0) : null); if (!open) return;
     if (r === 'wip') await kang(['이 이벤트의 다음 장은 아직 만드는 중이에요.\n(운영자 시험이라 체육관은 그대로예요)'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false });
   } catch (e) { console.error(e); }
-  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; try { S.gym = JSON.parse(snap); } catch (e) { const g = st(); if (g) delete g.ev; } try { const B = JSON.parse(boxSnap); S.box.splice(0, S.box.length, ...B); } catch (e) {} save(); }
+  finally { if (test) { window.gymEvTest = null; window.gymEvCh = 0; try { S.gym = JSON.parse(snap); } catch (e) { const g = st(); if (g) delete g.ev; } try { const B = JSON.parse(boxSnap), k = new Set(B.map(p => p.id)); S.box.forEach(p => { if (!k.has(p.id)) GA.boxOut?.(p.id); }); S.box.splice(0, S.box.length, ...B); } catch (e) {} save(); }
     root.querySelectorAll('.evf-r,.ev-tint,.ev-black,.ev-ttl,.ev-fld,.ev-ask,.ev-rw,.gy-kang.tw-talk,.tw-bub').forEach(x => x.remove()); root.classList.remove('pre'); busy = false;
     if (open && r === 'quit') exit(); else if (open) { bgmPlay('gym'); renderHome(); later(); } }
 }
