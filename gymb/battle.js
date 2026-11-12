@@ -1000,6 +1000,48 @@ function aiChoice(btl, diff) {
   return 'move ' + (sc[0].o.i + 1);
 }
 
+// ---------- 썬문식 VS 전환 (시안, 2026-11-12 경완 '이름 있는 트레이너·로켓단 배틀 때') ----------
+// 그림: Elite Battle System 4 (Luka S.J.) Graphics/Transitions/SunMoon → gym/img/sm. 움직임은 EBS 스크립트 대신 캔버스로 비슷하게.
+// 종류: evil = 로켓단(로고·소용돌이·빛줄기), elite = 사천왕·챔피언(회전 무대·빨려드는 빛), def = 이름 있는 관장·라이벌(가로 빛띠)
+const SM_ON = true;
+function smKind(o) { if (!SM_ON || o.exam || o.wild) return null; const m = o.music || '', t = o.foe?.tr || '';
+  if (/Roc/i.test(m) || /rocket|ariana|archer|giovanni|proton|petrel/.test(t)) return 'evil';
+  if (/champ|tenno|Tenno|Champ/.test(m)) return 'elite';
+  if (['gymBattle', 'rival', 'hgGymJ', 'hgGymK', 'hgRival', 'emGym', 'emRival'].includes(m)) return 'def'; return null; }
+const SM_F = { evil: ['EvilTeam/background', 'EvilTeam/swirl', 'EvilTeam/ring0', 'EvilTeam/ring1', 'EvilTeam/ray0', 'EvilTeam/ray1', 'EvilTeam/logo0', 'EvilTeam/logo1'], elite: ['Elite/background', 'Elite/vacuum', 'Elite/particle', 'Elite/shine'], def: ['Default/background', 'Default/layer', 'Default/final'] };
+const smImg = u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u; });
+async function smEnc(w, opts, kind) {
+  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1]] = await smImg(`${IMG}sm/${f}.png`)), smImg(`${IMG}sm/vs.png`).then(i => I.vs = i), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
+  const cv = document.createElement('canvas'), W = 512, H = Math.round(512 * Math.max(.6, w.clientHeight / Math.max(1, w.clientWidth)));
+  cv.width = W; cv.height = H; cv.className = 'bt-sm'; w.append(cv); const x = cv.getContext('2d'), C = { x: W / 2, y: H / 2 };
+  const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+  const rot = (im, px, py, a, s = 1, al = 1) => { if (!im) return; x.save(); x.globalAlpha = al; x.translate(px, py); x.rotate(a); x.scale(s, s); x.drawImage(im, -im.width / 2, -im.height / 2); x.restore(); };
+  const cover = im => { if (!im) return; const s = Math.max(W / im.width, H / im.height); x.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); };
+  const rays = Array.from({ length: 26 }, () => ({ a: Math.random() * 6.28, d: 60 + Math.random() * 300, v: 300 + Math.random() * 400, big: Math.random() < .3 }));
+  const flash = (t, a, b) => { if (t > a && t < b) { x.fillStyle = `rgba(255,255,255,${1 - (t - a) / (b - a)})`; x.fillRect(0, 0, W, H); } };
+  const T0 = { evil: 1.9, elite: 1.5, def: .45 }[kind], END = { evil: 3.6, elite: 3.3, def: 2.5 }[kind]; let snd = {};
+  const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
+  const trainer = t => { if (t < T0 || !I.tr) return; once('tr', () => se('SLIDEIN')); const p = ease((t - T0) / .35), px = W + 120 - p * (W * .5);
+    x.fillStyle = 'rgba(0,0,0,.4)'; x.fillRect(0, C.y + 70, W, 96); x.imageSmoothingEnabled = false; x.drawImage(I.tr, px - 150, C.y - 130, 300, 300); x.imageSmoothingEnabled = true;
+    if (t > T0 + .45 && I.vs) { once('vs', () => se('KON')); const q = ease((t - T0 - .45) / .25); rot(I.vs, C.x - 30, C.y + 10, 0, .65 + (1 - q) * 1.4, q); }
+    if (t > T0 + .6) { x.globalAlpha = Math.min(1, (t - T0 - .6) * 4); x.fillStyle = '#fff'; x.font = '20px sans-serif'; x.fillText(opts.foe.cls || '', 26, C.y + 106); x.font = 'bold 32px sans-serif'; x.fillText(opts.foe.nm || '', 26, C.y + 146); x.globalAlpha = 1; } };
+  const D = {
+    evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
+      for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
+      rays.forEach(r => { r.d -= r.v * .016; if (r.d < 20) { r.d = 340; r.a = Math.random() * 6.28; } rot(I[r.big ? 'ray1' : 'ray0'], C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
+      let lx = C.x, ls = 1.3; if (t > 1.6) { const q = ease((t - 1.6) / .4); lx = C.x - q * 150; ls = 1.3 - q * .6; }
+      if (t > .3 && t < .8) { const q = ease((t - .3) / .5); rot(I.logo1, lx, C.y, 0, 5 - q * 3.7, q); }
+      if (t >= .8) { once('logo', () => se('KON')); const sh = t < 1.05 ? (Math.random() - .5) * 10 : 0; rot(I.ring1, lx, C.y, -t, ls, .7); rot(I.logo0, lx + sh, C.y + sh, 0, ls); }
+      flash(t, .8, 1.15); trainer(t); },
+    elite(t) { rot(I.background, C.x, C.y, t * .4, Math.max(W, H) / 560);
+      for (let k = 0; k < 3; k++) { const q = (t * .9 + k / 3) % 1; rot(I.vacuum, C.x, C.y, 0, 1.8 - q * 1.7, q); }
+      rays.forEach(r => { r.d -= r.v * .02; if (r.d < 10) { r.d = 340; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
+      if (t > 1.2) once('sh', () => se('KIRAKIRA2')); rot(I.shine, C.x, C.y, t, t < 1.2 ? .3 + t * .4 : .8 + Math.sin(t * 8) * .05, .9); flash(t, 1.2, 1.6); trainer(t); },
+    def(t) { cover(I.background); [[I.layer, 900], [I.final, 1500]].forEach(([im, sp]) => { if (!im) return; const o = -(t * sp) % W; x.drawImage(im, o, 0, W, H); x.drawImage(im, o + W, 0, W, H); }); trainer(t); },
+  };
+  await new Promise(ok => { const t0 = performance.now(); const tick = () => { const t = (performance.now() - t0) / 1000; x.clearRect(0, 0, W, H); D[kind](t); if (t < END) requestAnimationFrame(tick); else ok(); }; tick(); });
+}
+
 // ---------- 배틀 들어가는 화면 전환 (DP·Pt 본가처럼) ----------
 // 화면이 두 번 하얗게 번쩍 → 일반 트레이너는 가로 띠가 양옆에서 번갈아 밀려 들어와 화면을 덮고,
 // 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
@@ -1008,7 +1050,9 @@ async function encounter(opts) {
   const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno', 'hgGymJ', 'hgGymK', 'hgRival', 'hgChamp', 'emGym', 'emTenno', 'emChamp', 'emRival'].includes(opts.music);
   w.className = 'bt-enc'; host.append(w);
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
-  if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
+  const smk = smKind(opts);
+  if (smk) { w.insertAdjacentHTML('beforeend', '<i class="bk"></i>'); await smEnc(w, opts, smk); }
+  else if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
     w.classList.add('ex');
     // 줄무늬·빛줄기 없이 (경완 2026-10-31 '구려'): 암전 → 금빛 실선이 가로로 그어지고 → 위아래로 열리는 어두운 무대 → 배지가 떠오름 → '승급 심사' → 심사관 띠
     w.insertAdjacentHTML('beforeend', `<i class="bk"></i><i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
