@@ -3510,7 +3510,7 @@ async function megaTest(k, foe) {
 /* 경완 2026-11-12 '이름난 체육관 승급되고 알림창 다 닫으면 강박사의 메가진화 안내 튜토리얼': 축하 → 강해지는 법으로 메가진화 설명 → 메가링 지급 →
    '메가진화 하는 방법 알고 있니?' 아니요면 시험 포켓몬(체육관 타입, mgT)을 빌려주고 상점에서 메가스톤 사기(공짜)·지니게 하기·연습 배틀에서 메가진화까지 직접 →
    내 포켓몬 중 메가진화할 수 있어 보이는 포켓몬 → 건투를 빈다. 메가진화는 아직 배포 전이라 MEGA_ON 이 꺼져 있는 동안은 운영자 '메가진화 튜토리얼'(시뮬 안)로만 */
-const MEGA_ON = false;
+const MEGA_ON = true;
 const MG_TUT = { 1: [115, 'kangaskhanite', ['doubleedge', 'suckerpunch', 'earthquake', 'poweruppunch'], 'scrappy'], 2: [448, 'lucarionite', ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], 'innerfocus'], 3: [18, 'pidgeotite', ['hurricane', 'heatwave', 'uturn', 'roost'], 'keeneye'], 4: [15, 'beedrillite', ['poisonjab', 'uturn', 'drillrun', 'swordsdance'], 'swarm'], 5: [445, 'garchompite', ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], 'roughskin'], 6: [142, 'aerodactylite', ['stoneedge', 'earthquake', 'aerialace', 'crunch'], 'pressure'], 7: [212, 'scizorite', ['bulletpunch', 'xscissor', 'swordsdance', 'roost'], 'technician'], 8: [94, 'gengarite', ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'], 9: [306, 'aggronite', ['ironhead', 'earthquake', 'stoneedge', 'rockpolish'], 'sturdy'], 10: [6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], 'blaze'], 11: [130, 'gyaradosite', ['waterfall', 'crunch', 'icefang', 'dragondance'], 'intimidate'], 12: [3, 'venusaurite', ['gigadrain', 'sludgebomb', 'earthquake', 'sleeppowder'], 'overgrow'], 13: [181, 'ampharosite', ['thunderbolt', 'dragonpulse', 'focusblast', 'thunderwave'], 'static'], 14: [65, 'alakazite', ['psychic', 'shadowball', 'focusblast', 'calmmind'], 'synchronize'], 15: [460, 'abomasite', ['blizzard', 'woodhammer', 'earthquake', 'iceshard'], 'snowwarning'], 16: [373, 'salamencite', ['dragonclaw', 'earthquake', 'fly', 'dragondance'], 'intimidate'], 17: [229, 'houndoominite', ['darkpulse', 'flamethrower', 'sludgebomb', 'nastyplot'], 'flashfire'], 18: [282, 'gardevoirite', ['moonblast', 'psychic', 'shadowball', 'calmmind'], 'trace'] };
 const MG_TID = 990011;
 /* 경완 2026-11-12 '메가진화 해금되면 도전자들도 쓰는데 한동안은 안 쓰게 (메가진화로 쭉쭉 미는 맛), 강박사의 비기는 다 이런 식' (다음 거다이맥스도 같은 틀) + '일수 말고 판수로':
@@ -3541,7 +3541,7 @@ function ringPop() { return new Promise(ok => { try { window.GymBGM?.fan ? windo
 const evRecS = P => { const B = GB(), pl = B?.evPlan?.(P.sp), nm = SPECIES[P.sp]?.n || '이 포켓몬'; if (!pl) return '어떤 능력치를 키울지는\n포켓몬마다 다르단다.';
   const L = pl.k.filter((k, j) => pl.v[j] >= 252).map(k => B.EV_N[k]), w = L.length > 1 ? `${L[0]}${jong(L[0]) ? '과' : '와'} ${L[1]}` : L[0] || B.EV_N[pl.k[0]];
   return `${nm}${jong(nm) ? '은' : '는'} ${pl.nm || ''}이니까\n${w} 노력치를\n키우는 게 좋겠구나!`; };
-const PROMO_ON = false;
+const PROMO_ON = true;
 const PROMO = {
   1: { in: [['k', '{N}! 동네 체육관이 됐다면서?\n정말 축하한다!'], ['k', '처음 여기 왔을 땐\n먼지만 쌓이고 불도 꺼진\n문 닫기 직전 체육관이었지.'], ['k', '그런데 {N}, 네가\n도전자를 하나하나 막아 내더니\n결국 동네 체육관까지 올려놨구나!'], ['g', '강박사님! 저도 방금\n전단지 붙이고 왔어요!'], ['k', '전단지?'], ['g', '네! \'우리 동네 최강 체육관\'이라고요.\n…옆 동네에도 붙였어요.'], ['k', '…그럼 동네 체육관이 아니잖니.'], ['k', '에헴. 아무튼 약속한 대로\n오늘 알려 줄 비기를\n들고 왔단다.'], ['k', '오늘부터 체육관에\n훈련장이 열렸거든!\n포켓몬을 맡겨 두면 알아서\n강해지는 곳이지.'], ['k', '자, 같이 가 보자!']],
     out: [['k', '어떠냐, 훈련장 좋지?'], ['k', '나도 어릴 땐 샌드백을\n열심히 쳤었지.\n…샌드백한테 졌지만.'], ['g', '(샌드백한테…?)'], ['k', '에헴! 그럼 난 이만\n연구소로 돌아가 보마.']],
