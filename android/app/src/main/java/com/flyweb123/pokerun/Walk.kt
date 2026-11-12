@@ -83,7 +83,7 @@ object Walk {
         val sm = ctx.getSystemService(SensorManager::class.java)
         val s = sm?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         if (s == null) { GameLink.sendPedErr("이 기기는 만보기(걸음 수 센서)를 지원하지 않아요"); return }
-        if (!hasPerm(ctx)) { GameLink.sendPedErr("신체 활동 권한이 꺼져 있어요 (설정 › 애플리케이션 › 포켓몬 키우기 › 권한)"); return }
+        if (!hasPerm(ctx)) { GameLink.sendPedErr("신체 활동 권한이 꺼져 있어요 (설정 › 애플리케이션 › 포켓에그 › 권한)"); return }
         if (live != null) return
         val l = object : SensorEventListener {
             override fun onSensorChanged(e: SensorEvent) { account(e.values[0]); gotToday(ctx) }
