@@ -4115,3 +4115,19 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-perk.pk-sl{justify-content:flex-start}
 
 .bt-essb,.bt-essf{position:absolute;left:0;top:0;width:256px;height:192px;pointer-events:none}.bt.essp .bt-mw{overflow:visible}   /* 5세대 이후 기술 연출 캔버스 (gym/essfx.js, 경완 2026-11-12) */
+
+/* 경완 2026-11-12 교체 카드 특성 설명은 한 줄 (길면 … 누르면 전체), 기술 칸 안 눌리게 */
+.bp-card button.bc-ab{width:100%;border:0;font:inherit;font-size:8px;color:inherit;text-align:left;cursor:pointer;flex:none}.bp-card button.bc-ab:active{transform:translate(1px,1px)}
+.bp-card button.bc-ab{flex-wrap:nowrap;min-height:0}.bp-card .bc-ab>*{flex:none}.bp-card .bc-abd{display:block!important;flex:1 1 0!important;flex-basis:0!important;-webkit-line-clamp:unset!important;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;min-width:0;margin-left:3px}
+.bt.mob .bp-card{padding-top:8px}
+.bt .bp-info .mi-top.ab-top{background:#6f7c94!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -3px 0 rgba(0,0,0,.2),0 2px 0 rgba(0,0,0,.2)!important}.bt .bp-info .mi-top.ab-top b{color:#fff!important;text-shadow:0 1px 0 rgba(0,0,0,.35)!important}
+
+/* 경완 2026-11-12 '특성 2줄 되면 버튼 레이아웃 깨짐': 교체 카드 기술 칸은 낮아서 겹침 → 칸 안을 네 줄로 쌓음 (타입 / 이름 / 위력·명중 / 효과 딱지·PP) + 머리 칸 조금 줄임 */
+.bt.mob .bp-card .bc-mv .mvb{display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'t t' 'n n' 'w w' 'e p';align-content:center;row-gap:0;column-gap:4px;padding:3px 7px!important}
+.bt.mob .bp-card .bc-mv .mvb>*,.bt.mob .bp-card .bc-mv .mvb .eff{position:static!important;inset:auto!important;margin:0!important}
+.bt.mob .bp-card .bc-mv .mvb .tg{grid-area:t;display:flex;align-items:center;gap:3px;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .eff{grid-area:e;justify-self:start;align-self:center;transform:scale(.86)!important;transform-origin:left center}
+.bt.mob .bp-card .bc-mv .mvb b{grid-area:n;min-width:0;padding-right:0;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .pw{grid-area:w;transform:none!important}
+.bt.mob .bp-card .bc-mv .mvb .pp{grid-area:p;align-self:center;justify-self:end;padding:0!important;transform:none!important}
+.bt.mob .bp-card{gap:3px}.bt.mob .bp-card .bc-hd .th,.bt.mob .bp-card .bc-hd>img,.bt.mob .bp-card .bc-hd>.pkt{transform:scale(.9);transform-origin:left center}
