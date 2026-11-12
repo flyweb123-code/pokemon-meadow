@@ -4160,3 +4160,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-tr.e.mgin{transform:translateX(34px)!important;opacity:1!important;transition:transform .45s cubic-bezier(.2,.7,.3,1),opacity .3s}
 
 .bt-essb,.bt-essf{position:absolute;left:0;top:0;width:256px;height:192px;pointer-events:none}.bt.essp .bt-mw{overflow:visible}   /* 5세대 이후 기술 연출 캔버스 (gymb/essfx.js, 경완 2026-11-12) */
+/* 경완 2026-11-12 강박사 비기 알림창: 튜토리얼 때 떠 둔 창을 줄여서 */
+#gym .gy-pop .tp-shot{position:relative;margin:10px auto 4px;overflow:hidden;border-radius:10px;border:2px solid #d8cfb4;background:#f6f1e2;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+#gym .gy-pop .tp-in{position:absolute;left:0;top:0;transform-origin:0 0}#gym .gy-pop .tp-shot *{pointer-events:none!important}
+#gym .gy-pop .tp-in>.win{position:relative!important;inset:auto!important;left:0!important;top:0!important;margin:0!important;width:100%!important;height:100%!important;max-height:none!important;transform:none!important;animation:none!important;box-shadow:none!important}
+#gym .gy-pop .tp-d small{display:block;margin-top:6px;color:var(--dim);font-size:11px}
