@@ -3567,11 +3567,16 @@ async function promoVisit(gi) {
   const run = async L => { for (let i = 0; i < L.length; i++) { const [w, t] = L[i]; if (!open) return; const tk = gu && (w === 'g' || L[i - 1]?.[0] === 'g'); face(k, tk ? gu : meEnt); if (gu) face(gu, w === 'g' && /관장님/.test(t) ? meEnt : k); await T.say(t.replace(/\{N\}/g, NK()), w === 'g' ? { who: '안내원' } : {}); } face(k, meEnt); if (gu) face(gu, k); };
   try {
     // 경완 2026-11-12 '훈련장 튜토리얼 끝나고 체육관으로 돌아왔을 때 관장하고 강박사 다시 문 열고 들어오는 연출': 관장이 먼저 문으로 들어와 제자리로, 강박사가 뒤따라 관장 앞까지
-    const backIn = async () => { const L = D.leader; k.el.style.visibility = ''; meEnt.el.style.visibility = '';   /* 처음부터 체육관에 있던 그대로 (관장이 자리를 떴으면 제자리로) */
-      if (Math.round(meEnt.x) !== L[0] || Math.round(meEnt.y) !== L[1]) await walk(meEnt, route(D, [Math.round(meEnt.x), Math.round(meEnt.y)], L, occOf([meEnt])) || [L], 300);
+    const backIn = async () => { const dr = D.door, L = D.leader; k.el.style.visibility = 'hidden'; meEnt.el.style.visibility = 'hidden'; await wait(400); doorSe(); await wait(200);
+      Object.assign(meEnt, { x: dr[0], y: dr[1], f: 'u', st: 0 }); place(meEnt); meEnt.el.style.visibility = '';
+      const mp = route(D, dr, L, occOf([meEnt, k])) || route(D, dr, L, []) || [L], wm = walk(meEnt, mp, 300);
+      await wait(1000); Object.assign(k, { x: dr[0], y: dr[1], f: 'u', st: 0 }); place(k); k.el.style.visibility = '';
+      const CR2 = chalRoute(D, [k]); await Promise.all([wm, CR2?.path?.length ? walk(k, CR2.path, 300) : null]);
       meEnt.f = 'd'; place(meEnt); face(k, meEnt); if (gu) face(gu, k); await wait(350); };
     let CR; [k, CR] = await kangIn(D); T = storyTalk(); await run(P.in); if (!open) return;
-    T.hide(true); busy = false; root.classList.remove('busy');   /* 경완 2026-11-13 '같이 가 보자 하고 관장·강박사 사라지지 말고 계속 있게': 훈련장 다녀오는 동안도 체육관에 그대로 */
+    T.hide(true);   /* 경완 2026-11-13 '같이 가 보자 하고 사라지지 말고 계속 있게' + '돌아올 때 입구에서 들어오는 연출': 체육관 화면에선 그대로 있다가, 훈련장 화면이 덮은 뒤에 숨김 → 돌아오면 backIn 이 문으로 들임 */
+    (async () => { for (let i = 0; i < 3000 && open && !gtEl('.ty-yd'); i++) await wait(100); if (gtEl('.ty-yd')) { k.el.style.visibility = 'hidden'; meEnt.el.style.visibility = 'hidden'; } })();
+    busy = false; root.classList.remove('busy');
     // 경완 2026-11-12: 훈련장 메뉴 버튼을 직접 눌러 들어감 → '여기가 바로 훈련장' → (동네) 보내기 → 필드에 나온 모습 → 그 포켓몬 눌러 상세카드 → 훈련 현황·특별한 기술 (노력치는 떠오르는 체육관에서만)
     const eg = tutSeen('egT'); g.trTut = 1; g.egT = 1; if (gi === 2 || GB()?.evOn?.()) g.evTB = 1; save();
     const n0 = g.tr?.length || 0, newId = () => (g.tr?.length || 0) > n0 ? g.tr.at(-1).id : g.tr?.[0]?.id, ydM = () => { const m = gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'); return m ? gtBox([m.querySelector('.ty-sp') || m]) : null; }, ydS = () => (gtEl(`.ty-m[data-p="${newId()}"]`) || gtEl('.ty-m'))?.querySelector('.ty-sp') || null, mNm = () => { const P2 = S.box.find(p => p.id === newId()); return SPECIES[P2?.sp]?.n || '포켓몬'; };
