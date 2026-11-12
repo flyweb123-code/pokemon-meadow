@@ -1862,7 +1862,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop';
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
@@ -2214,6 +2214,14 @@ function gSwap(n, drop) {
 function shutSe(dn) { const G = window.GymBGM; if (!G) return; const n = dn ? 14 : 8, gap = 100;
   try { if (!dn) G.se('DP_DOOR_OPEN', { gain: 1.6 }); for (let i = 0; i < n; i++) setTimeout(() => { try { G.se('DP_KON', { gain: i % 2 ? .5 : .8 }); } catch (e) {} }, i * gap);
     if (dn) setTimeout(() => { try { G.se('DP_GASHIN', { gain: 1.8 }); } catch (e) {} }, n * gap); } catch (e) {} }
+/* v22.57 경완 '셔터 올라간 뒤 나오는 알림창 디자인': 다시 문 연 체육관 알림창 — 줄무늬 머리띠, 맵 그림 + 타입 딱지, 이름·타입·등급, 평판·트레이너 (저절로 뜨는 창 = gy-lock 팝업 모션·소리·버튼으로만) */
+function reopenPop() { const x = st(); if (!x) return; const G = gradeOf(x.rep || 0, x.gmax ?? 99), sm = SF_MAX[G.i], tI = tyIcon(x.ty).replace(/ data-tip="[^"]*"/, '');
+  const p = pop(`<div class="ro-pop"><div class="ro-hd"><small>OPEN</small><b>다시 문을 열었어요!</b></div>
+    <div class="ro-pic"><img alt="" data-ms="${x.d}" data-gi="${bigOf(x)}"><span class="ro-ty">${tI}${TYPE_KO[x.ty]}</span></div>
+    <div class="ro-tx"><b>${esc(x.nm)}</b><span>${TYPE_KO[x.ty]} 타입 · ${G.n}</span></div>
+    <div class="ro-st"><span><small>평판</small><b>${(x.rep || 0).toLocaleString()}</b></span><span><small>트레이너</small><b>${sm ? `${(x.sf || []).length}/${sm}` : '잠김'}</b></span></div></div>
+    <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { if (a === 'x') close(); });
+  if (p) { p.classList.add('ro-wrap'); fillMs(p); const oc = p.onclick; p.onclick = e => { if (e.target !== p) oc(e); }; } }
 async function shutFx(t1, s1, t2, s2, mid, { hold = 0, under } = {}) {   // hold: 첫 간판을 더 오래, under: 셔터가 내려간 채로 밑에 깔 화면 (기존 체육관이 비치지 않게)
   openTab(null); preMs(); const fx = document.createElement('div'); fx.className = 'gy-re'; root.appendChild(fx);
   /* v22.54 경완 '휴업·다시 열 때 알림창처럼 뜨게, 디자인도, bgm 잠시 꺼졌다가 열 때 다시': 간판 = 머리띠 있는 알림창, 팝업 모션 + 딩동, 셔터 내려간 동안 곡 소리 0 */
@@ -2250,7 +2258,7 @@ function mgPop() {
     if (b.hasAttribute('data-tfp')) return fPop('타입', [[0, '모든 타입'], ...[...gUsedTy()].sort((a, b) => a - b).map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], mgTy, v => { mgTy = v; draw(); });
     if (b.dataset.i != null) { const x = L[+b.dataset.i]; if (x === g) return;
       return ask(`지금 체육관을 휴업하고<br><b>${esc(x.nm)}</b>을 관리하시겠습니까?`, '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
-        shutFx('휴 업', nmTy(g), '다시 열어요', nmTy(x), async () => { gSwap(x); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`, `${TYPE_KO[st().ty]} 타입 체육관`)); }); }
+        shutFx('휴 업', nmTy(g), '다시 열어요', nmTy(x), async () => { gSwap(x); renderHome(); renderTop(); }).then(reopenPop); }); }
     if (b.hasAttribute('data-new')) return ask('지금 체육관을 휴업하고<br>새로운 체육관을 관리하시겠습니까?', '예', () => { el.remove(); root.querySelector('.gy-infos')?.remove();
       bgmPlay('lab');   // 새 체육관을 정하는 동안은 연구소 곡 (경완 2026-10-29)
       shutFx('휴 업', nmTy(g), '새 체육관', '어떤 체육관으로 열지 골라 주세요', null, { hold: 1400, under: () => { if (open) setup(['ty', 'd', 'nm'], 'new'); } }); });
@@ -2258,7 +2266,7 @@ function mgPop() {
       return ask(`<b>${esc(x.nm)}</b>을 정말 폐업하시겠습니까?<br><small>평판·트레이너·꾸미기 자리가 모두 사라져요.${cur ? (g.shelf?.length ? ' 휴업 중인 다른 체육관을 다시 열어요.' : ' 새 체육관을 세워요.') : ''}</small>`, '폐업하기', () => {
         if (!cur) { g.shelf = g.shelf.filter(y => y !== x); glog('in', `휴업 중이던 <b>${esc(x.nm)}</b>을 폐업했다.`); save(); return draw(); }
         el.remove(); root.querySelector('.gy-infos')?.remove(); const nx = g.shelf?.[g.shelf.length - 1];
-        if (nx) return shutFx('폐 업', nmTy(g), '다시 열어요', nmTy(nx), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(() => say(`<b>${esc(st().nm)}</b>의 문을 다시 열었다!`));
+        if (nx) return shutFx('폐 업', nmTy(g), '다시 열어요', nmTy(nx), async () => { gSwap(nx, true); glog('in', `<b>${esc(x.nm)}</b>을 폐업했다.`); renderHome(); renderTop(); }).then(reopenPop);
         bgmPlay('lab'); closeFx(() => { if (open) setup(['ty', 'd', 'nm'], 'close'); }); }); }
   };
   draw();

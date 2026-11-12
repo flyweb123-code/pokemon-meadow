@@ -4210,10 +4210,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .gy-fpop .fp-ty{display:inline-flex;vertical-align:middle;margin-right:6px}.gy-fpop .fp-ty :is(img,svg,i){width:18px;height:18px}
 /* v22.54 경완 '휴업·다시 열 때 알림창처럼, 디자인도': 셔터 간판 = 알림창 (머리띠 + 팝업 모션) */
 #gym .gy-re .re-sign.np{width:min(300px,82vw);padding:0 0 14px;gap:8px;overflow:hidden;opacity:0;transition:none;background:var(--win,#fff);border:4px solid var(--frame);box-shadow:inset 0 0 0 2px #fff,0 5px 0 var(--frame),0 10px 24px rgba(0,0,0,.35)}
-#gym .gy-re .re-sign.np.pp{opacity:1;animation:awNpop .32s steps(4,end)}
+#gym .gy-re .re-sign.np.pp{opacity:1;transition:opacity .25s}   /* v22.57 경완 '튀어나오는 모션만 빼 줘' */
 #gym .gy-re.up .re-sign.np{opacity:0;transition:opacity .2s}
-#gym .gy-re .re-sign.np b{align-self:stretch;margin:0 0 4px;padding:11px 8px 10px;font-size:24px;letter-spacing:6px;color:#fff;text-shadow:2px 2px 0 #5a1a14;background:repeating-linear-gradient(135deg,#b8443a 0 10px,#c8503f 10px 20px);border-bottom:3px solid #5a1a14}
-#gym .gy-re .re-sign.np.ok b{text-shadow:2px 2px 0 #163a28;background:repeating-linear-gradient(135deg,#2a6a4a 0 10px,#317a56 10px 20px);border-bottom-color:#163a28;letter-spacing:3px}
+#gym .gy-re .re-sign.np b{align-self:stretch;margin:0 0 4px;padding:11px 8px 10px;font-size:24px;letter-spacing:6px;color:#fff;text-shadow:2px 2px 0 #5a1a14;background:linear-gradient(135deg,#b8443a 25%,#c8503f 25% 50%,#b8443a 50% 75%,#c8503f 75%) 0 0/28px 28px;border-bottom:3px solid #5a1a14;animation:roStr .9s linear infinite}
+#gym .gy-re .re-sign.np.ok b{text-shadow:2px 2px 0 #163a28;background:linear-gradient(135deg,#2a6a4a 25%,#317a56 25% 50%,#2a6a4a 50% 75%,#317a56 75%) 0 0/28px 28px;border-bottom-color:#163a28;letter-spacing:3px}
 #gym .gy-re .re-sign.np span{padding:0 12px;font-size:17px;color:var(--win-ink,#20202c)}
 #gym .gy-re .re-sign.np span.re-nm,#gym .gy-re .re-sign.np .re-nm{padding:6px 14px;background:rgba(0,0,0,.05);box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
 #gym .gy-re .re-sign.np small{margin-top:-2px;font-size:12px;color:var(--dim)}#gym .gy-re .re-sign.np small:empty{display:none}
@@ -4240,3 +4240,23 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bp-card .bc-mv{grid-template-rows:repeat(2,minmax(52px,1fr));grid-auto-rows:minmax(52px,1fr)}
 /* 경완 2026-11-13 '나이트들 반투명?': S·A 랭크 칸의 빛 덮개(::after, z 2)가 지닌 도구 위에 덮여 흐려 보였음 → 도구 그림을 덮개 위로 */
 .rk-fr img.th-it{z-index:4!important}
+/* v22.57 경완 '공사 중 게이지 지나가는 느낌': 간판·다시 연 알림창 머리띠 줄무늬가 흘러감 */
+@keyframes roStr{to{background-position:28px 0}}
+#gym .gy-re .re-sign.np.ok b{animation:roStr .9s linear infinite}
+/* v22.57 다시 문 연 체육관 알림창 */
+#gym .gy-pop.ro-wrap .win{padding:0;overflow:hidden;width:min(320px,100%)}
+#gym .ro-pop{display:flex;flex-direction:column;align-items:stretch}
+#gym .ro-hd{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px 9px;color:#fff;background:linear-gradient(135deg,#2a6a4a 25%,#317a56 25% 50%,#2a6a4a 50% 75%,#317a56 75%) 0 0/28px 28px;border-bottom:3px solid #163a28;animation:roStr .9s linear infinite}
+#gym .ro-hd small{font-size:10px;letter-spacing:4px;color:#c0f0d4}
+#gym .ro-hd b{font-size:18px;text-shadow:2px 2px 0 #163a28}
+#gym .ro-pic{position:relative;margin:14px 16px 0;height:118px;background:#20222e;box-shadow:inset 0 0 0 3px var(--frame),0 3px 0 rgba(0,0,0,.18);overflow:hidden}
+#gym .ro-pic img{width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block}
+#gym .ro-ty{position:absolute;left:6px;bottom:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 7px 3px 4px;font-size:11px;font-weight:700;color:var(--win-ink);background:rgba(255,255,255,.94);box-shadow:inset 0 0 0 2px var(--frame)}
+#gym .ro-ty :is(svg,img){width:16px;height:16px;flex:none}
+#gym .ro-tx{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 12px 0;text-align:center}
+#gym .ro-tx b{font-size:19px;color:var(--win-ink)}
+#gym .ro-tx span{font-size:12px;color:var(--dim)}
+#gym .ro-st{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 16px 0}
+#gym .ro-st span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;background:#f0f0f4;box-shadow:inset 0 0 0 2px var(--inner)}
+#gym .ro-st small{font-size:10.5px;color:var(--dim)}#gym .ro-st b{font-size:15px;color:var(--win-ink)}
+#gym .gy-pop.ro-wrap .gy-btns{padding:14px 16px 16px;margin:0}
