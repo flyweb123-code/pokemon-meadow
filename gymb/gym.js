@@ -3296,6 +3296,7 @@ function enter() {
   if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
+  { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }   // v23.10 운영자 훈련하기 시연 (시뮬 안)
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
     try { await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); } catch (e) {}
@@ -3506,6 +3507,74 @@ async function visit(F, code) {
    고른 메가 포켓몬 + 한 마리로 관장 강석과 연습 배틀 (보상·기록 없음). 시험 포켓몬은 mgT 표시로 상자에 잠깐만 넣고 끝나면 뺌 */
 const MEGA_T = [[6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 'dragondance'], 'blaze'], [6, 'charizarditey', ['flamethrower', 'airslash', 'solarbeam', 'focusblast'], 'blaze'], [448, 'lucarionite', ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], 'innerfocus'], [94, 'gengarite', ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'], [130, 'gyaradosite', ['waterfall', 'crunch', 'icefang', 'dragondance'], 'intimidate'], [445, 'garchompite', ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], 'roughskin'], [150, 'mewtwonitey', ['psychic', 'aurasphere', 'icebeam', 'calmmind'], 'pressure'], [257, 'blazikenite', ['flareblitz', 'closecombat', 'thunderpunch', 'swordsdance'], 'speedboost']];
 // foe: 경완 2026-11-12 '도전자들 메가진화 하면 어떻게 보이는지도 운영자 모드에' — 상대 에이스가 메가스톤을 지니고 메가진화, 내 쪽은 메가스톤 없음
+/* v23.10 경완 '훈련하기 시연도 우리 게임 배틀 효과·BGM·효과음 다 반영': 운영자 › 훈련하기 시연 = 체육관 시뮬(나가면 되돌림) 안에서 실제 배틀 엔진으로 훈련하기.
+   지금 라인업으로 1층부터. 배틀 화면을 닫지 않고 야생 포켓몬이 계속 나옴(포켓로그처럼), 10층마다 우두머리(레벨 +3·체력 ×1.8, 50층마다 큰 우두머리 +5·×2.5).
+   이기면 체력 20% 회복, 5층마다 보급 고르기, 우두머리를 쓰러뜨리면 모두 회복. 경험치 ×0.3·학습장치 없음, 1층 = 라인업 최저 레벨, 4층마다 +1.
+   친밀도·진화·포켓몬 상자는 안 건드리고, 레벨·기술(S.gym)은 시뮬에서 나가면 되돌아감. 그만두기 = 그 층부터 이어 하기(앱 켜 있는 동안) */
+const TR = { xp: .3, heal: .2, lvDiv: 4, top: 200 };
+const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
+  [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
+  [40, [398, 405, 407, 424, 429, 430, 450, 452, 454, 457, 460, 461, 462, 464, 466, 467, 469, 470, 471, 473, 475, 477, 478, 3, 6, 9, 59, 62, 65, 68, 76, 94, 112, 121, 130, 131, 134, 135, 136, 142, 143, 196, 197, 212, 229, 232, 248, 282, 306, 330, 334, 350, 365, 373, 376]]];
+const TR_BOSS = [445, 448, 248, 149, 373, 376, 466, 467, 473, 409, 411, 442, 130, 143, 212, 229, 306, 330, 350, 365, 464, 468, 475, 477, 479], TR_BIG = [483, 484, 487, 485, 486, 480, 481, 482];
+let trSave = null;
+// 시험용 랜덤 라인업 (경완 '6마리 기준 랜덤'): 뉴비 1~3마리(Lv5~15) + 키운 포켓몬(Lv38~52). 시험 포켓몬(gTst)이라 끝나면 상자에서 지움
+const TR_NEWB = [7, 1, 4, 25, 133, 152, 155, 158, 252, 255, 258, 387, 390, 393, 447, 374, 246, 147, 443, 280], TR_VET = [130, 131, 350, 6, 9, 3, 445, 448, 149, 248, 373, 376, 94, 65, 68, 59, 197, 196, 212, 409];
+let trTid = 991000;
+function trRollLu() { const g = st(); g.mon = g.mon || {}; const has = sp => GB().D.sp[sp], sh = L => L.filter(has).sort(() => Math.random() - .5), n = 1 + Math.floor(Math.random() * 3);
+  return [...sh(TR_NEWB).slice(0, n).map(sp => [sp, 5 + Math.floor(Math.random() * 11)]), ...sh(TR_VET).slice(0, 6 - n).map(sp => [sp, 38 + Math.floor(Math.random() * 15)])].map(([sp, lv]) => {
+    const P = { id: ++trTid, sp, iv: Array.from({ length: 6 }, () => 10 + Math.floor(Math.random() * 22)), fr: 70, gTst: 1 }; S.box.push(P); GB().gm(P); const e = GB().foeEntry(sp, lv);
+    Object.assign(g.mon[P.id], { lv, xp: GB().xpAt(GB().growth(sp), lv), mv: e.mv, ab: e.ab, nat: e.nat }); return P.id; }); }
+const trNew = ids => ({ ids, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0] });
+function trPickSp(lv, boss, big) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? TR_BOSS : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; const ok = L.filter(has); return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
+async function trainTest() {
+  if (!open || !st()?.d) return;
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  const ids = GB().curLu().slice(); if (!ids.length) return say('라인업에 포켓몬을 먼저 넣어 주세요.');
+  let R = trSave && trSave.key === ids.join(',') ? trSave : null;
+  const go = await new Promise(ok => pop(`<h4>훈련하기</h4><p class="gy-msg">야생 포켓몬이 쉬지 않고 나오는<br>200층 훈련 코스예요. 지금 라인업으로 들어가요.${R ? `<br><b>${R.floor}층</b>부터 이어 할 수 있어요.` : ''}</p><p class="gy-msg" style="font-size:11px;opacity:.75">운영자 시험: 시뮬레이터 안이라 나가면 레벨이 원래대로 돌아가요.</p><div class="gy-btns">${R ? '<button data-a="new">처음부터</button><button class="main" data-a="go">이어 하기</button>' : '<button data-a="x">취소</button><button class="main" data-a="new">훈련 시작</button>'}</div>`, (a, close) => { close(); ok(a); }));
+  if (go !== 'go' && go !== 'new') return;
+  if (go === 'new' || !R) R = trNew(ids);
+  trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
+  try {
+    for (;;) {
+      if (R.roll) R = trNew(trRollLu());   /* 시험: 랜덤 라인업은 다음 층부터 1층으로 */
+      const ids = R.ids, f = R.floor, boss = f % 10 === 0, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
+      const my = [R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)).map(GB().boxOf);
+      const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : 1.8;
+      const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : '' };
+      const res = await GB().run({ my, foe, wild: true, chain: !first, train: { xp: TR.xp }, hp: R.hp, diff: boss ? 2 : 1, bg: 'in1', music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
+        badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : ''}`, post: o => trPost(R, o, boss, ids),
+        tools: [['🎲 랜덤', () => { R.roll = 1; GA.toast?.('이 배틀이 끝나면 랜덤 라인업으로 1층부터 (시험 포켓몬)'); }], ['⏩ 우두머리', () => { R.skip = 1; GA.toast?.('이 배틀이 끝나면 다음 우두머리 바로 앞으로'); }]] });
+      first = false; if (!res?.keep) break;
+    }
+  } catch (err) { console.error(err); GA.toast?.('훈련을 이어 가지 못했어요'); }
+  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); { const g = st(); S.box.filter(P => P.gTst && P.id > 991000).forEach(P => { if (g?.mon) delete g.mon[P.id]; }); } dropMgT(); if (trSave?.ids?.some(id => !GB().boxOf(id))) trSave = null; save(); bgmPlay('gym'); }
+}
+async function trPost(R, o, boss, ids) {
+  Object.assign(R.hp, o.hp);
+  if (o.quit) { trSave = R; await o.msgTap(`${R.floor}층에서 훈련을 멈췄다!\n다음엔 여기서부터 이어 할 수 있다.`); return false; }
+  if (!o.won) { trSave = null; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 훈련 기록: ${R.floor}층!`); return false; }
+  if (o.act) R.lead = o.act;
+  if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap('우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
+  else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
+  if (R.floor >= TR.top) { trSave = null; await o.msgTap('200층 훈련 코스를 완주했다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); return false; }
+  if (R.floor % 5 === 0) await trSupply(R, o, ids);
+  if (R.roll) return true;
+  if (R.skip) { R.skip = 0; const nb = Math.ceil((R.floor + 1) / 10) * 10; if (nb - 1 > R.floor) { R.floor = nb - 1; await o.msg(`${nb}층 우두머리 바로 앞으로!`, 500); return true; } }   /* 시험: 다음 우두머리 앞으로 */
+  R.floor++; return true;
+}
+// 보급 고르기 (5층마다): 쉬어 가기 · 이상한사탕 · (쓰러진 포켓몬이 있으면) 기력의조각, 없으면 강박사 야식
+async function trSupply(R, o, ids) {
+  const down = ids.filter(id => (R.hp[id] ?? 1) <= 0), lead = GB().boxOf(R.lead), nmOf = P => P?.nm || SPECIES[P?.sp]?.n || '';
+  const L = [['쉬어 가기', '모두 HP 50% 회복', '#5cc27a,#2f9a52'], ['이상한사탕', `${nmOf(lead)} 레벨 +1`, '#62aef0,#2f7cd0'], down.length ? ['기력의조각', `${nmOf(GB().boxOf(down[0]))} HP 절반으로 부활`, '#f0b040,#c88418'] : ['강박사 야식', '뭐가 들었을까?', '#e07ab0,#b84c88']];
+  await o.msg('보급 상자를 찾았다!\n하나만 가져가자.', 400); const i = await o.choose('보급 상자에서 하나를 골라요', L);
+  if (i === 0) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .5); }); await o.msgTap('모두 푹 쉬었다!\nHP가 회복됐다!'); }
+  else if (i === 1 && lead) { const m = GB().gm(lead), g = GB().growth(lead.sp), r = GB().gainXp(lead, GB().xpAt(g, m.lv + 1) - m.xp); await o.msgTap(r.lv > r.lv0 ? `${eun(nmOf(lead))} 이상한사탕을 먹었다!\n레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!` : `${eun(nmOf(lead))} 이상한사탕을 먹었지만\n더 오를 레벨이 없었다…`); }
+  else if (down.length) { R.hp[down[0]] = .5; await o.msgTap(`${eun(nmOf(GB().boxOf(down[0])))} 기운을 차렸다!`); }
+  else if (Math.random() < .5) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .3); }); await o.msgTap('강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'); }
+  else await o.msgTap('상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"');
+}
 async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
