@@ -88,8 +88,8 @@ function tickTrain(now) {
       const step = Math.min(1, left), tot = perHour(P) * TR_K * step + (e.fx || 0), n = Math.floor(tot); e.fx = tot - n;
       e.fa = (e.fa || 0) + step * TR_K * trFr(P) * (1 + coachN('kind')); while (e.fa >= 1) { e.fa -= 1; if ((P.fr || 0) < 255) { P.fr = Math.min(255, (P.fr || 0) + 1); R.f += 1; } }   /* 필드처럼 쌓이다 1이 차면 +1 */
       if (n > 0) { e.x = (e.x || 0) + n; R.x += n; GB().gainXp(P, n, 'keep').learned.forEach(([id]) => { got.push(GB().mvKo(id)); (e.mv = e.mv || []).push(id); R.mv.push(id); }); }
-      if (e.evk >= 0 && GB().evOn?.()) { e.efx = (e.efx || 0) + step * EV_DAY / TR_H * coachX('ev') * (1 + .5 * coachN('effort', 'ev')); const n = Math.floor(e.efx); if (n > 0) { e.efx -= n; e.evg = (e.evg || 0) + GB().evAdd(GB().gm(P), e.evk, n); } }   // v20.45 노력치 훈련
-      { const f = GB().egFocus(P); if (f >= 0) { const sp = step * 100 / EG_H * (1 + coachN('teach', 'mv')) * coachX('mv'); for (const r of GB().egOpen(P)) { const x = GB().egAdd(P, r.i, r.i === f ? sp : sp * EG_SIDE); if (!x) continue;   /* v20.85 깨달음 게이지 */
+      if (e.evk >= 0 && GB().evOn?.()) { e.efx = (e.efx || 0) + step * EV_DAY / TR_H * coachX('ev') * (1 + .5 * coachN('effort', 'ev')); const n = Math.floor(e.efx); if (n > 0) { e.efx -= n; const k = GB().evAdd(GB().gm(P), e.evk, n); e.evg = (e.evg || 0) + k; if (k) { const V = R.ev || (R.ev = [0, 0, 0, 0, 0, 0]); V[e.evk] += k; } } }   /* v24.07 경완: 일지에 오른 노력치 */   // v20.45 노력치 훈련
+      { const f = GB().egFocus(P); if (f >= 0) { const sp = step * 100 / EG_H * (1 + coachN('teach', 'mv')) * coachX('mv'); for (const r of GB().egOpen(P)) { const a0 = GB().gm(P).egP?.[r.i] || 0, x = GB().egAdd(P, r.i, r.i === f ? sp : sp * EG_SIDE), Q = R.eg || (R.eg = {}); Q[r.id] = (Q[r.id] || 0) + (x ? 100 : GB().gm(P).egP[r.i]) - a0; if (!x) continue;   /* v24.07 일지에 오른 깨달음 게이지 */   /* v20.85 깨달음 게이지 */
         (e.mv = e.mv || []).push(x[0]); R.mv.push(x[0]); if (st().sf.some(s => s.yard && !s.rest)) (R.cm = R.cm || []).push(x[0]); else (R.sm = R.sm || []).push(x[0]);
         K.awMv?.(P.id, x[0], x[1], x[2]); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '이' : '가'} 훈련장에서 특별한 기술 <b>${esc(x[1])}</b>${K.jong(x[1]) ? '을' : '를'} 익혔다! <small>기술 바꾸기에서 쓸 수 있어요</small>`, now); } } }
     }
@@ -783,10 +783,13 @@ function trLogPop(P, from) {
   const L = trLog(P.id), ks = Object.keys(L).map(Number).sort((a, b) => b - a), WD = '일월화수목금토', today = K.dayStart(Date.now()), m = GB().gm(P), e = st().tr.find(x => x.id === P.id), lf = e ? Math.max(0, Math.ceil(leftOf(e))) : 0;
   const tot = ks.reduce((a, k) => { const d = L[k]; a.x += d.x; a.lv += d.lv; a.f += d.f; a.mv += d.mv.length; return a; }, { x: 0, lv: 0, f: 0, mv: 0 });
   /* v16.68 경완 '경험치가 얼마 올랐다! 새로운 기술 무엇을 배웠다! 이런 식으로 문장으로': 하루 = 날짜 줄 + 문장 줄들 */
+  const egKnown = id => GB().egKn(m, id);
   const row = k => { const d = L[k], t = new Date(k), up = d.lv > 0, mv = d.mv.length > 0, nm = esc(nmOf(P)), j = K.jong(nmOf(P));
     const ln = [`<li class="tl-s x">경험치가 <b>${d.x.toLocaleString()}</b> 올랐다!</li>`];
     if (up) ln.push(`<li class="tl-s up">레벨이 올랐다! ${d.to ? `Lv.${d.to - d.lv} → <b>Lv.${d.to}</b>` : `<b>▲${d.lv}</b>`}</li>`);
     if (d.f) ln.push(`<li class="tl-s fr">친밀도가 <b>${d.f}</b> 올랐다!</li>`);
+    (d.ev || []).forEach((v, s) => { if (v > 0) ln.push(`<li class="tl-s ev">노력치 <b>${GB().EV_N[s]} +${v}</b> 올랐다!</li>`); });   /* v24.07 경완 '노력치 오른 것도 기록' */
+    Object.entries(d.eg || {}).forEach(([id, v]) => { const x = GB().mvOf(id), pc = Math.floor(v); if (!x || pc < 1 || egKnown(id)) return; ln.push(`<li class="tl-s eg">${GB().tyTag(x[2], x[3])}<b class="eg-q">???</b> 깨달음 <b>+${pc}%</b></li>`); });   /* 기술 게이지 — 깨닫기 전엔 이름 가리고 타입·분류 딱지만 */
     d.mv.forEach(id => { const j = K.jong(GB().mvKo(id)) ? '을' : '를'; ln.push((d.cm || []).includes(id) ? `<li class="tl-s mv cm">코치가 새로운 기술 ${mvChips([id])}${j} 가르쳤다!</li>` : (d.sm || []).includes(id) ? `<li class="tl-s mv">훈련장에서 특별한 기술 ${mvChips([id])}${j} 익혔다!</li>` : `<li class="tl-s mv">새로운 기술 ${mvChips([id])}${j} 배웠다!</li>`); });
     return `<li class="${up ? 'lvup' : ''}${mv ? ' newmv' : ''}"><ul class="tl-ss">${ln.join('')}</ul></li>`; };
   /* v16.71 경완 '훈련 일지는 날짜별로 좌우 화살표로 넘겨서': 하루 한 장, ◀ 전날 · ▶ 다음날, 옆으로 밀어도 넘어감 */
