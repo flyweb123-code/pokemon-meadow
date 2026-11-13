@@ -1619,7 +1619,7 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
       if (YS) { F = A.field({ nm: '훈련장', img: YS.url, w: TW, h: TH, col: Array.from({ length: TH }, (_, y) => (y < 4 ? '#' : '.').repeat(TW)), door: {} });
         me = F.me = F.npc(myOw(), 5, 4, 'd'); EV_API.fitMe(me); kg = F.npc(KANG_OW, 6, 4, 'd', { fw: 32 });
         F.follow = false; F.cam(5.5, cr); await A.black(false); await F.show();
-        await Promise.all([kg.go([[6, cr], [TW - 2, cr]], WS), wait(WS).then(() => me.go([[5, cr], [1, cr]], WS))]);
+        await Promise.all([kg.go([[7, 4], [7, cr], [TW - 2, cr]], WS), wait(WS).then(() => me.go([[4, 4], [4, cr], [1, cr]], WS))]);   /* v23.43 경완 '가운데 체육관 소품 피해서': 가운데 트램펄린(5~6번 칸)을 한 칸씩 비켜 내려감 */
         kg.turn('l'); me.turn('r'); await wait(500); }
       for (const h of XL.court) await S.say(h); S.hide(true); await wait(200);
       const won = await X.battle(); lost = !won; if (won) bgmPlay('rgPallet'); else M?.stop?.(.6); await wait(600);
