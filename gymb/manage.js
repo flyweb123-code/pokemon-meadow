@@ -249,7 +249,7 @@ async function drawTrain() {
     if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
   if (Y) { Y.mons.forEach(m => { Y.pos[m.id] = [m.x, m.y]; }); cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); }
   sh.classList.add('ty-on'); sh.scrollTop = 0;
-  sh.innerHTML = `<div class="ty-yd ty-wait"><canvas class="ty-bg"></canvas><div class="ty-l"></div><button class="ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기"><b>+</b><small>${g.tr.length}/${trMax()}</small></button></div>`;
+  sh.innerHTML = `<div class="ty-yd ty-wait"><canvas class="ty-bg"></canvas><div class="ty-l"></div>${yBtns()}</div>`;
   const el = sh.querySelector('.ty-yd');   /* v21.07 경완 '훈련장 처음 들어갈 때 노랗게 보였다가': 바닥 그림·조명이 다 그려질 때까지 가려 둠 (.ty-wait) */ await loadYA(); if (!el.isConnected) return;
   const W = Math.max(280, el.clientWidth || 360), H = Math.max(520, el.clientHeight || 640);
   Y = { el, W, H, L: el.querySelector('.ty-l'), pr: {}, mons: [], pos: Y?.pos || {}, last: 0,
@@ -282,8 +282,40 @@ async function drawTrain() {
   { const cs = coachSum(); if (cs) el.insertAdjacentHTML('beforeend', `<div class="ty-info ty-ck">${cs}</div>`); }   // v20.92 종류별 · v21.06 경완 '고용 관리 박스 코치 딱지처럼'
   Y.yk = yk; Y.raf = requestAnimationFrame(yardLoop);
 }
+/* v23.36 경완 '훈련장 코치 슬롯 창과 버튼, 오른쪽 아래 두 칸(위 코치 · 아래 포켓몬), 가로로 긴 버튼, 몬스터볼 / 맡긴 코치 걸음 그림, 슬롯 수는 네모 점(포켓몬은 전체 칸, 잠긴 칸 회색)' */
+const yDots = (n, open, all) => `<span class="ty-dd">${Array.from({ length: all }, (_, i) => `<i class="${i < n ? 'on' : i < open ? '' : 'lk'}"></i>`).join('')}</span>`;
+const yCoaches = () => (st().sf || []).filter(x => x.yard).slice(0, YARD_SF);
+function yBtns() {
+  const g = st(), C = yCoaches(), f = C[0] || (g.sf || [])[0], w = f ? K.owW(f.ow) : 0;
+  const face = f ? `<i class="ty-bic ty-cof${C.length ? '' : ' none'}" style="width:${Math.round(w * 36 / 32)}px;background-image:url(${K.owSrc(f.ow)})"></i>` : '<i class="ty-bic ty-cof empty"></i>';
+  return `<div class="ty-btns"><button type="button" class="ty-bt ty-cob" data-cob="1" aria-label="훈련장 코치 ${C.length}/${YARD_SF}">${face}<span><b>코치</b>${yDots(C.length, YARD_SF, YARD_SF)}</span></button>`
+    + `<button type="button" class="ty-bt ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기 ${g.tr.length}/${trMax()}"><img class="ty-bic ty-ball" alt="" src="${IMG}item/pokeball.png"><span><b>포켓몬</b>${yDots(g.tr.length, trMax(), TR_ALL)}</span></button></div>`;
+}
+// 훈련장 코치 창: 포켓몬 슬롯 창(statPop)과 같은 틀. 코치 칸 누르면 트레이너 상세카드, ✕ 는 코치에서 빼기(고용은 그대로), 빈 칸은 고용한 트레이너 중에서 고르기
+function coWin() {
+  const g = st(); let w = document.querySelector('#gym .gy-boxw.co-win');
+  if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win co-win'; document.querySelector('#gym .gy-main').appendChild(w); }
+  const C = yCoaches(), free = (g.sf || []).filter(x => !x.yard);
+  const slot = s => `<button type="button" class="ts-slot tsc co-slot" data-s="${g.sf.indexOf(s)}"><span class="tsc-th co-th"><img alt="" src="${K.trSrc(s.tr)}"></span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(s.nm)}</b><span class="tsc-lv">${esc(s.cls)}</span>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>
+      <span class="co-row">${ckBox(s)}${trtBox(s, false, true)}</span><small class="co-d">${CK_D[coachK(s)]} ${coachP(s)}% 더 빨리</small></span><span class="ts-x tsc-out" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
+  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4>${coachSum() ? `<span class="tsc-co">${coachSum()}</span>` : ''}</div>
+    <div class="ts-grid tsc-grid">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="ts-slot empty tsc-new" data-cnew="1"><span>+</span><b>코치 맡기기</b></button>`).join('')}</div>
+    <p class="co-note">${(g.sf || []).length ? `고용한 트레이너 중에서 ${YARD_SF}명까지 맡길 수 있어요 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
+  const re = () => { if (w.isConnected) coWin(); };
+  const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? 1 : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
+  w.onclick = e => {
+    if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); return; }
+    const o = e.target.closest('[data-cout]'); if (o) { sfx('tap'); const s = g.sf[+o.dataset.cout]; if (s) setYd(s, 0); return; }
+    const b = e.target.closest('.ts-slot'); if (!b) return; sfx('tap');
+    if (b.dataset.cnew) { if (!free.length) return say((g.sf || []).length ? '고용한 트레이너가 모두 코치를 맡고 있어요.' : '고용한 트레이너가 없어요. 트레이너 메뉴에서 고용해 보세요.');
+      return pop(`<h4>코치로 맡길 트레이너</h4><div class="co-pick">${free.map(s => `<button type="button" class="co-pk" data-a="p${g.sf.indexOf(s)}"><img alt="" src="${K.trSrc(s.tr)}"><span><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small><span class="co-row">${ckBox(s)}${trtBox(s, false, true)}</span></span>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
+        (a, c) => { if (!a) return; c(); if (a[0] === 'p') { const s = g.sf[+a.slice(1)]; if (s && yCoaches().length < YARD_SF) setYd(s, 1); } }).classList.add('co-pkp'); }
+    const s = g.sf[+b.dataset.s]; if (s) sfDetail(s);
+  };
+}
 // v20.99 경완 '+ 눌러도 화면 안 뜸·포켓몬 눌러도 상세카드 안 뜸': 다른 메뉴가 sh.onclick 을 바꿔 두므로 훈련장을 다시 붙일 때도 꼭 다시 단다
 function yardTap(ev) {
+    if (ev.target.closest('[data-cob]')) { sfx('tap'); return coWin(); }   // v23.36 코치 버튼 → 훈련장 코치 창
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
     if (t.dataset.add) return statPop();   // + = 훈련 현황 겸 슬롯 (경완 2026-10-29)

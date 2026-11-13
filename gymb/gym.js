@@ -2992,7 +2992,7 @@ const KANG_HI = () => [
 const KANG_TR = () => [
   '오, 훈련장이 열렸구나!',
   '여기에 포켓몬을 보내 두면\n시간이 지나면서 경험치가\n조금씩 쌓인단다.',
-  '오른쪽 아래 + 버튼을 눌러\n훈련할 포켓몬을 보내 보렴.',
+  '오른쪽 아래 포켓몬 버튼을 눌러\n훈련할 포켓몬을 보내 보렴.',
   '처음엔 한 마리뿐이지만\n체육관 등급이 오를 때마다\n자리가 하나씩 늘어난단다.',
   '훈련하다가 가끔 새 기술을\n배우기도 하지.\n열심히 키워 보렴!',
 ];
@@ -3095,13 +3095,13 @@ const GT_TREV = (eg = 1) => { const g = st(); return [
   { c: '떠오르는 체육관', s: '하지만 이름이 알려질수록\n더 강한 도전자들이\n찾아올 거란다.' },
   { c: '떠오르는 체육관', s: '그러니 포켓몬들도\n한 단계 더 강해져야겠지?' },
   { c: '노력치', s: '마침 딱 좋은 방법이 있지.\n지금부터 알려 주마!' },
-  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '포켓몬 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
   { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr') || gtEl('.gy-pop .tp2-today'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
   ...(eg ? [] : GT_EGO()),
   ...GT_EVT(g),
   { c: '노력치', s: '노력치를 잘 쌓아서\n어떤 도전자도 막아 내는\n체육관을 만들어 보렴!' }]; };
 const GT_TRB = () => { const g = st(); return [
-  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '포켓몬 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
   { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr') || gtEl('.gy-pop .tp2-today'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
   { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '여기가 훈련 현황이란다.\n얻은 경험치, 오른 레벨과\n친밀도, 새로 배운 기술을\n확인할 수 있지.' },
   { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '앱을 꺼 두어도 훈련은\n계속된단다.' },
@@ -3114,7 +3114,7 @@ const GT_TR = () => { const g = st(), n0 = g.tr?.length || 0; return [
   { c: '훈련장', s: () => `오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, ${NK()}!` },
   { c: '훈련장', t: '.ty-yd', s: '여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.' },
   { c: '훈련장', t: '.ty-yd', s: '훈련하면 경험치가 쌓여\n레벨이 오르고, 특별한\n기술도 조금씩 깨우치지.' },
-  { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 + 버튼을\n눌러 보렴!' },
+  { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 포켓몬 버튼을\n눌러 보렴!' },
   { c: '훈련장', when: () => gtEl('.ts-win'), t: '.ts-win .tsc-grid', s: '자, 여기서 훈련에 내보낼\n포켓몬을 고를 수 있단다.' },   // 경완 2026-11-12 '+ 를 눌러 보렴 하고 들어가면' 바로
   { c: '훈련장 칸', t: gtAll('.ts-win .tsc-lock'), s: '잠긴 칸들이 보이지?\n체육관 등급이 오를 때마다\n훈련장 자리가 하나씩\n늘어난단다.' },
   { c: '훈련 보내기', when: () => gtEl('.ts-win .tsc-new'), t: '.ts-win .tsc-new', tap: '.ts-win .tsc-new', until: () => gtEl('.bw-grid'), after: 900, s: '지금은 한 자리가 비었구나.\n+ 칸을 눌러 보렴!' },

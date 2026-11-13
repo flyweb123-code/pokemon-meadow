@@ -4291,3 +4291,25 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bt-enc .band.sm-def b small{color:#ffe27a}
 /* v23.36 훈련장 카드 노력치 훈련 박스 = 노력치 배분 창 버튼 (› 화살표, 눌림 모션) */
 #gym .ev-tr[role=button]{cursor:pointer;transition:translate .06s,box-shadow .06s}#gym .ev-tr[role=button]:active:not(:has(button:active)){translate:0 2px;box-shadow:0 1px 0 rgba(0,0,0,.12)}#gym .ev-trh small{display:inline-flex;align-items:baseline;gap:0}#gym .ev-tra{font-style:normal;font-size:15px;font-weight:700;color:#7a54d0;margin-left:5px;line-height:1}
+/* v23.36 훈련장 오른쪽 아래 두 버튼 (위 코치 · 아래 포켓몬): 가로로 긴 입체 버튼 + 네모 점(찬 칸 색 · 빈 칸 흰색 · 잠긴 칸 회색) */
+#gym .ty-btns{position:absolute;right:calc(var(--si-right,env(safe-area-inset-right)) + 12px);bottom:14px;z-index:5000;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#gym .ty-btns .ty-bt{position:relative;inset:auto;width:112px;height:46px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:6px;padding:0 10px 0 8px;font:inherit;text-align:left;color:#20202c;border:3px solid #20202c;border-radius:10px;background:var(--bg);box-shadow:inset 0 -4px 0 var(--sd),0 3px 0 rgba(0,0,0,.35);cursor:pointer;transition:translate .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}
+#gym .ty-btns .ty-bt:active{translate:0 3px;box-shadow:inset 0 -2px 0 var(--sd),0 0 0 rgba(0,0,0,.35)}
+#gym .ty-btns .ty-add{--bg:#fff;--sd:#c8c8d0;--on:#e8403a}#gym .ty-btns .ty-cob{--bg:#fff3dc;--sd:#e6c690;--on:#d0701a}
+#gym .ty-btns .ty-bt>span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}#gym .ty-btns .ty-bt b{font-size:13px;white-space:nowrap;color:#20202c}
+#gym .ty-bic{flex:none;display:block;image-rendering:pixelated}
+#gym .ty-ball{width:30px;height:30px}
+#gym .ty-cof{height:36px;margin:-6px -3px 0 -3px;background-repeat:no-repeat;background-size:auto 36px;background-position:0 0}#gym .ty-cof.none{filter:grayscale(1);opacity:.45}
+#gym .ty-cof.empty{width:24px;height:24px;margin:0 3px;border:2px dashed #b8a070;border-radius:5px}
+#gym .ty-dd{display:flex;flex-wrap:nowrap;gap:3px;margin-top:3px}#gym .ty-dd i{display:block;flex:none;width:6px;height:6px;border:1.5px solid #20202c;background:#fff}#gym .ty-dd i.on{background:var(--on)}#gym .ty-dd i.lk{background:#a8a8b4;border-color:#7a7a88}
+#gym .ty-btns .ty-add.pulse{animation:tyPulse 1.4s ease-in-out infinite}
+/* 훈련장 코치 창 */
+#gym .co-th{display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:#f3ead6}#gym .co-th img{width:56px;height:56px;image-rendering:pixelated;margin-bottom:-4px}
+#gym .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:3px}#gym .co-row .trt{margin:0}
+#gym .co-d{display:block;font-size:11px;color:#7a7a8a;margin-top:3px}
+#gym .co-rest{font-style:normal;font-size:10px;color:#fff;background:#8a8a9a;border-radius:4px;padding:1px 5px;margin-left:4px}
+#gym .co-note{font-size:11px;color:#7a7a8a;text-align:center;margin:12px 6px 4px;line-height:1.5;word-break:keep-all}
+#gym .co-pick{display:flex;flex-direction:column;gap:8px;max-height:56vh;overflow:auto;margin:8px 0 4px}
+#gym .co-pk{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 8px;font:inherit;text-align:left;color:#20202c;background:#fffaf0;border:3px solid #20202c;border-radius:8px;box-shadow:inset 0 -3px 0 #e0d4b8,0 2px 0 rgba(0,0,0,.25);cursor:pointer;transition:translate .06s,box-shadow .06s}
+#gym .co-pk:active{translate:0 2px;box-shadow:inset 0 -1px 0 #e0d4b8,0 0 0 rgba(0,0,0,.25)}
+#gym .co-pk img{width:48px;height:48px;flex:none;image-rendering:pixelated;background:#f3ead6;border-radius:6px}#gym .co-pk>span{display:flex;flex-direction:column;min-width:0}#gym .co-pk b{font-size:14px}#gym .co-pk small{font-size:11px;color:#7a7a8a}
