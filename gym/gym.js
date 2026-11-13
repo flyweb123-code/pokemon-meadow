@@ -3831,7 +3831,7 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-/* v23.73 경완 '포켓몬 메뉴는 냅두고, 수련탑 오르기를 누르면 새로운 화면에서 오를 포켓몬 선택': 체육관 라인업을 안 건드리는 수련탑 전용 고르기 화면.
+/* v23.76 경완 '포켓몬 메뉴는 냅두고, 수련탑 오르기를 누르면 새로운 화면에서 오를 포켓몬 선택': 체육관 라인업을 안 건드리는 수련탑 전용 고르기 화면.
    내 포켓몬 상자 전체(타입 상관없이)에서 최대 6마리, 코스트 TR_CAP 안. 🎲 랜덤은 시험 포켓몬(gTst·P.rnd) */
 const trLineup = () => new Promise(ok => { let sel = [], rnd = [];
   const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
