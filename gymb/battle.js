@@ -471,7 +471,7 @@ async function gmFx(s, X, kind, ty) {
           await GymDBK.megaFull(c); M('stop', .5); if (bm && B) setTimeout(() => { if (B && window.GymBGM?.name == null) M('play', bm); }, 550); } else await GymDBK.mega(c); if (X.gmPend) { X.gmPend = 0; swap(); } return; }   // 경완 2026-11-12: 전체 화면 메가진화
       if (kind === 'z') { const zid = ty?.id || '', zt = zid && (ZT_ID[zid] || zid.toUpperCase()), c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/ZRING.png`), cr = toID(ty?.item || '');
         if (cr) { const z = await dxImg(`${IMG}dbk/it/${cr.toUpperCase()}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${cr.toUpperCase()}.png`, w: z.w, h: z.h }; }
-        c.type = ty?.type || 'Normal'; if (zt && PSim.Dex.moves.get(zid).isZ && PSim.Dex.moves.get(zid).category !== 'Status') { const T = await dxImg(`${IMG}dbk/Z-Power/Z-Titles/${zt}.png`); if (T) { c.title = `${IMG}dbk/Z-Power/Z-Titles/${zt}.png`; c.titleW = T.w; c.titleH = T.h; c.upper = /^(catastropika|10000000voltthunderbolt|letssnuggleforever)$/.test(zid); } }
+        c.type = ty?.type || 'Normal'; el.dataset.zt = TY_EN.indexOf(c.type) > 0 ? TY_EN.indexOf(c.type) : 1; if (zt && PSim.Dex.moves.get(zid).isZ && PSim.Dex.moves.get(zid).category !== 'Status') { const T = await dxImg(`${IMG}dbk/Z-Power/Z-Titles/${zt}.png`); if (T) { c.title = `${IMG}dbk/Z-Power/Z-Titles/${zt}.png`; c.titleW = T.w; c.titleH = T.h; c.upper = /^(catastropika|10000000voltthunderbolt|letssnuggleforever)$/.test(zid); } }
         if (GymDBK.zFull) { await Promise.race([loadEss(), wait(1500)]); c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.zName = mvKo(zid) || 'Z기술'; await GymDBK.zFull(c); return; }   /* 경완 2026-11-13: Z기술 전체 화면 연출 (본가·애니 고증) */
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
@@ -516,7 +516,9 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 const E_Y = 8, P_Y = 64;
 function monEl(side) { return $b(`.bt-mon.${side}`); }
 /* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
-function zAura(side, on) { const m = monEl(side); if (!m) return; m.querySelector('.zaur')?.remove(); m.classList.toggle('zon', !!on); if (!on) return;
+function zAura(side, on, fade) { const m = monEl(side); if (!m) return; const z0 = m.querySelector('.zaur');
+  if (!on && fade && z0 && m.classList.contains('zon')) { m.classList.remove('zon'); m.classList.add('zoff'); z0.classList.add('out'); setTimeout(() => { z0.remove(); m.classList.remove('zoff'); }, 750); return; }   /* 경완 2026-11-14: Z기술 끝나면 기운이 디졸브로 사라짐 */
+  z0?.remove(); m.classList.remove('zoff'); m.classList.toggle('zon', !!on); if (!on) return;
   const z = document.createElement('i'); z.className = 'zaur'; z.innerHTML = '<b></b><b></b><b></b><b></b><b></b>' + Array.from({ length: 8 }, (_, k) => `<s style="--x:${8 + k * 12}%;--d:${(k * .41 % 1) * 1.4}s"></s>`).join(''); m.prepend(z); }
 // 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
@@ -680,7 +682,9 @@ async function flash(n = 1) { const f = $b('.bt-flash'); for (let i = 0; i < n; 
 function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; gkBg(); return p; }
 // 경완 2026-11-12: 메가진화(기믹) 버튼을 켜면 아래 화면 바탕색이 그 색으로, 메가진화한 포켓몬이 나와 있는 동안 계속, 다른 포켓몬으로 바꾸면 원래 색
 function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || B.gkUsed || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || '');
-  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg)); }
+  const zw = el.classList.contains('gkbg-zmove');
+  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg));
+  if (zw && !el.classList.contains('gkbg-zmove')) { el.classList.add('gkz-out'); clearTimeout(gkBg.t); gkBg.t = setTimeout(() => el?.classList.remove('gkz-out'), 900); } else if (el.classList.contains('gkbg-zmove')) el.classList.remove('gkz-out'); }   /* Z 바탕이 꺼질 땐 Z 그림 그대로 흐려지며 사라지게 */
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
   el.classList.add('idle');   // 고르는 동안 내 포켓몬·체력 상자가 위아래로 살짝 (본가)
@@ -738,6 +742,7 @@ function movePanel(req) {
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
       const h = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); return gk === 'zmove' && R.canZMove?.[i] ? h.replace('class="mvw"', `class="mvw zon zty${d[2] || 1}"`).replace('</b>', '</b>' + zPtH()) : h; }).join('')}
       ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}">${k === 'terastallize' && tera && TERA_I[R.canTerastallize] ? `<i class="gk-ti" style="background-image:url(${IMG}dbk/Tera/ty/${TERA_I[R.canTerastallize]}.png)"></i>` : ''}<span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
+    if (gk === 'zmove') zTySet(R, mv);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
       if (b.hasAttribute('data-x')) { B.gkSel = null; return res(null); }
@@ -752,8 +757,10 @@ function movePanel(req) {
 }
 /* 경완 2026-11-13: Z 버튼 → Z기술로 바뀌는 칸만 번쩍 빛나며 바뀌고(효과음), 켜져 있는 동안 타입별 기운(불이면 불꽃이 일렁임)이 칸에 계속 */
 const ZPT_N = 9, zPtH = () => '<i class="zpt">' + Array.from({ length: ZPT_N }, (_, k) => `<i style="--x:${(k + .5) / ZPT_N * 100}%;--d:${(k * .37 % 1) * 1.6}s;--s:${.7 + (k * .53 % 1) * .6}"></i>`).join('') + '</i>';
+/* 경완 2026-11-14: 아래 화면 Z 마크·바탕색 = Z기술로 바뀌는 기술 타입의 Z크리스탈 */
+function zTySet(R, mv) { const i = [0, 1, 2, 3].find(i => R.canZMove?.[i] && mv[i]); if (i == null) return; const m = mv[i], d0 = mvOf(m.id) || ['', m.move, 1, 0]; el.dataset.zt = gkMove(R, i, m, d0, 'zmove')[0][2] || 1; }
 function zSwap(p, R, mv) {
-  const on = B.gkSel === 'zmove', ws = p.querySelectorAll('.bp-moves > .mvw, .bp-moves > .mvb.empty'); let n = 0;
+  const on = B.gkSel === 'zmove', ws = p.querySelectorAll('.bp-moves > .mvw, .bp-moves > .mvb.empty'); let n = 0; if (on) zTySet(R, mv);
   [0, 1, 2, 3].forEach(i => { const m = mv[i], w = ws[i]; if (!m || !w || !w.classList.contains('mvw')) return;
     const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, on ? 'zmove' : null), chg = !!R.canZMove?.[i];
     if (!chg) { w.querySelector('.mvb').disabled = !!(m.disabled || m.pp <= 0 || zx); return; }
@@ -1402,7 +1409,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); if (dm.isZ) zAura(s, false); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); if (dm.isZ) { zAura(s, false, true); if (s === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;

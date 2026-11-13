@@ -4452,11 +4452,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v23.69 테라스탈 버튼 타입 아이콘 (쇼다운 테라 타입 아이콘) */
 .bt.mob .bb.gkb.terastallize:has(.gk-ti){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-ti{position:absolute;left:8px;top:50%;width:40px;height:40px;margin-top:-20px;background:center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 /* 경완 2026-11-13 Z기술: 아래 화면 = 금빛 바탕 + 천천히 도는 빛살 + 가운데 Z 마크가 메가처럼 가끔 휙 돎 */
-.bt.mob.gkbg-zmove .bt-bot{background-image:linear-gradient(#fff6d6,#ffe08a 55%,#fff0c0);background-blend-mode:normal}
-.bt.mob.gkbg-zmove .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,200,40,.28) 0 10deg,rgba(255,255,255,0) 10deg 20deg);animation:gkZRay 18s linear infinite}
+.bt.mob .bt-bot::before{transition:opacity .8s ease}.bt.mob .gk-mark{transition:opacity .8s ease}.bt.mob .bt-bot{transition:background-color .8s ease}   /* 경완 2026-11-14: Z기술 끝나면 아래 화면 디졸브로 원래대로 */
+.bt.mob.gkbg-zmove .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff6d6,#ffe08a 55%,#fff0c0);animation:none}   /* 경완: 빛줄기 뺌 */
 .bt.mob.gkbg-zmove .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(255,190,40,.95))}
-@keyframes gkZRay{to{transform:rotate(360deg)}}
-.bt.mob.gkbg-zmove .bt-bot{overflow:hidden}.bt.mob.gkbg-zmove .bt-bot::before{inset:-60%}
 .bt.mob.gkbg-zmove .gk-mark{opacity:.9;background-image:url(../gym/img/dbk/Z-Power/zmark.svg);width:84px;height:84px;margin:-42px 0 0 -42px;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(255,170,30,.7));animation:gkMark 4.5s linear infinite}
 /* Z파워 두른 포켓몬: 발밑부터 금빛 불꽃 기운 + 올라가는 반짝이 (Z기술을 쓸 때까지) */
 .bt-mon .zaur{position:absolute;left:-18%;right:-18%;bottom:-6%;height:115%;pointer-events:none;z-index:0}
@@ -4468,3 +4466,19 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes zAurF{from{transform:scale(.9,.85) translateX(-1px);opacity:.75}to{transform:scale(1.08,1.12) translateX(1px);opacity:1}}
 .bt-mon .zaur s{position:absolute;left:var(--x);bottom:6%;width:4px;height:4px;border-radius:50%;background:#fff6c0;box-shadow:0 0 4px 1px #ffc830;opacity:0;animation:zAurS 1.4s ease-out var(--d) infinite}
 @keyframes zAurS{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-70px)}}
+.bt-mon .zaur{transition:opacity .7s ease}.bt-mon .zaur.out{opacity:0}
+.bt-mon.zoff .clip{animation:zOffGlow .7s ease-out forwards}
+@keyframes zOffGlow{from{filter:drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 11px #ffc830) drop-shadow(0 0 4px #ff9a00)}to{filter:drop-shadow(0 0 0 rgba(255,251,224,0)) drop-shadow(0 0 0 rgba(255,200,48,0)) drop-shadow(0 0 0 rgba(255,154,0,0))}}
+.bt.mob.gkz-out:not(.gkbg-mega) .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff6d6,#ffe08a 55%,#fff0c0);animation:none}
+.bt.mob.gkz-out:not(.gkbg-mega) .gk-mark{background-image:url(../gym/img/dbk/Z-Power/zmark.svg);width:84px;height:84px;margin:-42px 0 0 -42px;animation:none}
+/* 경완 2026-11-14: Z 마크 = Z크리스탈 마름모, 타입별 바탕색·무늬 (tools/gym/mkzc.py) */
+.bt[data-zt="1"]{--zl:#fafaf9;--zm:#f4f4f2;--zg:#e9e9e4;--zi:url(../gym/img/dbk/Z-Power/zc/1.svg)}.bt[data-zt="2"]{--zl:#fbe2d1;--zm:#f6bc96;--zg:#ee7a2e;--zi:url(../gym/img/dbk/Z-Power/zc/2.svg)}.bt[data-zt="3"]{--zl:#d4e7fa;--zm:#9ec9f2;--zg:#3d93e6;--zi:url(../gym/img/dbk/Z-Power/zc/3.svg)}.bt[data-zt="4"]{--zl:#e6d9ef;--zm:#c7a8dc;--zg:#8f52b8;--zi:url(../gym/img/dbk/Z-Power/zc/4.svg)}.bt[data-zt="5"]{--zl:#f0ded1;--zm:#deb496;--zg:#bd6a2e;--zi:url(../gym/img/dbk/Z-Power/zc/5.svg)}.bt[data-zt="6"]{--zl:#eeebe6;--zm:#d8d2c6;--zg:#b2a48c;--zi:url(../gym/img/dbk/Z-Power/zc/6.svg)}.bt[data-zt="7"]{--zl:#e7f3d5;--zm:#c9e49e;--zg:#93c83e;--zi:url(../gym/img/dbk/Z-Power/zc/7.svg)}.bt[data-zt="8"]{--zl:#ece4f0;--zm:#d4c0de;--zg:#a982bd;--zi:url(../gym/img/dbk/Z-Power/zc/8.svg)}.bt[data-zt="9"]{--zl:#e6eaf3;--zm:#c7cfe4;--zg:#8f9fc8;--zi:url(../gym/img/dbk/Z-Power/zc/9.svg)}.bt[data-zt="10"]{--zl:#f8d4d4;--zm:#f09c9c;--zg:#e03a3a;--zi:url(../gym/img/dbk/Z-Power/zc/10.svg)}.bt[data-zt="11"]{--zl:#d3ebf9;--zm:#9cd2f0;--zg:#38a6e2;--zi:url(../gym/img/dbk/Z-Power/zc/11.svg)}.bt[data-zt="12"]{--zl:#d4ead5;--zm:#9cd0a0;--zg:#3aa040;--zi:url(../gym/img/dbk/Z-Power/zc/12.svg)}.bt[data-zt="13"]{--zl:#fdf7ce;--zm:#faee8e;--zg:#f6dc1e;--zi:url(../gym/img/dbk/Z-Power/zc/13.svg)}.bt[data-zt="14"]{--zl:#fadbe9;--zm:#f4aece;--zg:#ea5c9c;--zi:url(../gym/img/dbk/Z-Power/zc/14.svg)}.bt[data-zt="15"]{--zl:#e3f6fb;--zm:#bfeaf6;--zg:#7fd6ec;--zi:url(../gym/img/dbk/Z-Power/zc/15.svg)}.bt[data-zt="16"]{--zl:#d1e8ea;--zm:#96ccd0;--zg:#2c98a0;--zi:url(../gym/img/dbk/Z-Power/zc/16.svg)}.bt[data-zt="17"]{--zl:#d7d6d6;--zm:#a4a2a2;--zg:#4a4446;--zi:url(../gym/img/dbk/Z-Power/zc/17.svg)}.bt[data-zt="18"]{--zl:#fce7ee;--zm:#f8cada;--zg:#f294b4;--zi:url(../gym/img/dbk/Z-Power/zc/18.svg)}
+.bt.mob[data-zt].gkbg-zmove .bt-bot,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .bt-bot{background-color:var(--zl)}
+.bt.mob[data-zt].gkbg-zmove .bt-bot::before,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(var(--zl),var(--zm) 55%,var(--zl))}
+.bt.mob[data-zt].gkbg-zmove .gk-mark,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .gk-mark{background-image:var(--zi);width:112px;height:68px;margin:-34px 0 0 -56px}
+.bt.mob[data-zt].gkbg-zmove .gk-mark{filter:drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 16px var(--zg))}
+.bt.mob[data-zt].gkbg-zmove .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
+/* 경완 2026-11-14: 위 상태 막대 자리 = 위 화면 맨 위를 거울처럼 비춤 → 배경 들어오는 방향·어두워짐·번쩍·날씨·기술 연출·메가 장면이 같이 바뀜 */
+.bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
+@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above}}
+.bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
