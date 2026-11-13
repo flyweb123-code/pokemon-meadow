@@ -296,19 +296,20 @@ function coWin() {
   const g = st(); let w = document.querySelector('#gym .gy-boxw.co-win');
   if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win co-win'; document.querySelector('#gym .gy-main').appendChild(w); }
   const C = yCoaches(), free = (g.sf || []).filter(x => !x.yard);
-  const slot = s => `<button type="button" class="ts-slot tsc co-slot" data-s="${g.sf.indexOf(s)}"><span class="tsc-th co-th"><img alt="" src="${K.trSrc(s.tr)}"></span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(s.nm)}</b><span class="tsc-lv">${esc(s.cls)}</span>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>
-      <span class="co-row">${ckBox(s)}${trtBox(s, false, true)}</span><small class="co-d">${CK_D[coachK(s)]} ${coachP(s)}% 더 빨리</small></span><span class="ts-x tsc-out" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
-  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4>${coachSum() ? `<span class="tsc-co">${coachSum()}</span>` : ''}</div>
-    <div class="ts-grid tsc-grid">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="ts-slot empty tsc-new" data-cnew="1"><span>+</span><b>코치 맡기기</b></button>`).join('')}</div>
-    <p class="co-note">${(g.sf || []).length ? `고용한 트레이너 중에서 ${YARD_SF}명까지 맡길 수 있어요 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
+  /* v23.36 경완 '코치 슬롯 화면은 포켓몬 슬롯이랑 다르게, 우상단 효과 딱지 없이, 특성 딱지 위 · 코치 딱지 아래 두 줄': 코치 종류 색 명찰 카드 */
+  const tags = s => `<span class="co-tags">${trtBox(s) || ''}${ckBox(s)}</span>`;
+  const slot = s => `<button type="button" class="co-card" data-s="${g.sf.indexOf(s)}" style="--cb:${CK_BG[coachK(s)]};--cc:${CK[coachK(s)][1]}"><span class="co-av"><img alt="" src="${K.trSrc(s.tr)}"></span><span class="co-in"><span class="co-nm"><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>${tags(s)}</span><span class="co-x" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
+  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4></div>
+    <div class="co-list">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="co-card co-new" data-cnew="1"><span class="co-av"><i></i></span><span class="co-in"><b>+ 코치 맡기기</b><small>고용한 트레이너 중에서 골라요</small></span></button>`).join('')}</div>
+    <p class="co-note">${(g.sf || []).length ? `코치는 ${YARD_SF}명까지 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
   const re = () => { if (w.isConnected) coWin(); };
   const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? 1 : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
   w.onclick = e => {
     if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); return; }
     const o = e.target.closest('[data-cout]'); if (o) { sfx('tap'); const s = g.sf[+o.dataset.cout]; if (s) setYd(s, 0); return; }
-    const b = e.target.closest('.ts-slot'); if (!b) return; sfx('tap');
+    const b = e.target.closest('.co-card'); if (!b) return; sfx('tap');
     if (b.dataset.cnew) { if (!free.length) return say((g.sf || []).length ? '고용한 트레이너가 모두 코치를 맡고 있어요.' : '고용한 트레이너가 없어요. 트레이너 메뉴에서 고용해 보세요.');
-      return pop(`<h4>코치로 맡길 트레이너</h4><div class="co-pick">${free.map(s => `<button type="button" class="co-pk" data-a="p${g.sf.indexOf(s)}"><img alt="" src="${K.trSrc(s.tr)}"><span><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small><span class="co-row">${ckBox(s)}${trtBox(s, false, true)}</span></span>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
+      return pop(`<h4>코치로 맡길 트레이너</h4><div class="co-pick">${free.map(s => `<button type="button" class="co-pk" data-a="p${g.sf.indexOf(s)}"><img alt="" src="${K.trSrc(s.tr)}"><span><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small><span class="co-tags">${trtBox(s) || ''}${ckBox(s)}</span></span>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`,
         (a, c) => { if (!a) return; c(); if (a[0] === 'p') { const s = g.sf[+a.slice(1)]; if (s && yCoaches().length < YARD_SF) setYd(s, 1); } }).classList.add('co-pkp'); }
     const s = g.sf[+b.dataset.s]; if (s) sfDetail(s);
   };
@@ -668,7 +669,7 @@ function statPop() {
   const cx = coachX(), now = Date.now();
   /* v16.36 경완 '훈련장에 나간 포켓몬 보는 화면이랑 슬롯 디자인': 가로 카드(그림 · 이름 · 막대 둘 · 데려오기), 빈 칸은 '포켓몬 보내기'
      v19.63 경완: 찬 칸·빈 칸·잠긴 칸 크기 같게(1fr), 데려오기 → ✕ */
-  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4>${coachSum() ? `<span class="tsc-co">${coachSum()}</span>` : ''}</div>
+  w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 <small>${L.length}/${trMax()}</small></h4></div>
     <div class="ts-grid tsc-grid">${Array.from({ length: Math.max(TR_ALL, L.length) }, (_, i) => { const r = L[i]; if (!r && i >= trMax()) return `<div class="ts-slot lock tsc-lock">${LOCK_SVG}<span><b>${K.GRADES[i + 1]?.[1] || ''}</b>이 되면 열려요</span></div>`; if (!r) return `<button type="button" class="ts-slot empty tsc-new" data-new="1"><span>+</span><b>포켓몬 보내기</b></button>`;
       const [e, P] = r, m = GB().gm(P), up = Object.values(trLog(P.id)).reduce((a, d) => a + (d.lv | 0), 0), B = GB(), ek = e.evk ?? -1, eOn = !!B.evOn?.(),   /* v20.78 경완 '가비루사 일지 레벨업 수랑 슬롯 레벨업 수가 달라': ▲ = 훈련 일지 합 (훈련 현황과 같은 값, 배틀·사탕으로 오른 레벨은 안 셈) */ gr = GB().growth(P.sp), a0 = GB().xpAt(gr, m.lv), a1 = GB().xpAt(gr, m.lv + 1), mx = m.lv >= GB().LV_MAX, f = mx ? 1 : clampN(((m.xp ?? a0) - a0) / Math.max(1, a1 - a0), 0, 1), nmv = Object.values(trLog(P.id)).reduce((a, d) => a + (d.mv?.length | 0), 0);
       return `<button type="button" class="ts-slot tsc" data-id="${P.id}"><span class="tsc-th">${GB().thumb(P)}</span><span class="tsc-mid"><span class="tsc-nm"><b>${esc(nmOf(P))}</b><span class="tsc-lv">Lv.${m.lv}</span>${up > 0 ? `<em class="tsc-up">▲${up}</em>` : ''}</span>

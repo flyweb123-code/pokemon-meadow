@@ -4313,3 +4313,21 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .co-pk{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 8px;font:inherit;text-align:left;color:#20202c;background:#fffaf0;border:3px solid #20202c;border-radius:8px;box-shadow:inset 0 -3px 0 #e0d4b8,0 2px 0 rgba(0,0,0,.25);cursor:pointer;transition:translate .06s,box-shadow .06s}
 #gym .co-pk:active{translate:0 2px;box-shadow:inset 0 -1px 0 #e0d4b8,0 0 0 rgba(0,0,0,.25)}
 #gym .co-pk img{width:48px;height:48px;flex:none;image-rendering:pixelated;background:#f3ead6;border-radius:6px}#gym .co-pk>span{display:flex;flex-direction:column;min-width:0}#gym .co-pk b{font-size:14px}#gym .co-pk small{font-size:11px;color:#7a7a8a}
+/* v23.36 훈련장 코치 창 = 코치 종류 색 명찰 카드 (포켓몬 슬롯 나무 판자와 다르게) */
+#gym .co-win .win{background:#f6f1e4}
+#gym .co-list{display:flex;flex-direction:column;gap:12px;margin:12px 0 0}
+#gym .co-card{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:104px;padding:10px 34px 12px 10px;font:inherit;text-align:left;color:#20202c;background:var(--cb,#fff);border:3px solid #20202c;border-radius:12px;box-shadow:inset 0 0 0 3px #fff,inset 0 -5px 0 rgba(0,0,0,.08),0 3px 0 rgba(0,0,0,.3);cursor:pointer;transition:translate .06s,box-shadow .06s}
+#gym .co-card:active{translate:0 3px;box-shadow:inset 0 0 0 3px #fff,inset 0 -3px 0 rgba(0,0,0,.08),0 0 0 rgba(0,0,0,.3)}
+#gym .co-av{flex:none;position:relative;width:76px;height:80px;display:flex;align-items:flex-end;justify-content:center;border-radius:10px;background:radial-gradient(ellipse 34px 9px at 50% 88%,rgba(0,0,0,.16) 98%,transparent),#fffaf0;border:2px solid var(--cc,#b8a070);overflow:hidden}
+#gym .co-av img{width:72px;height:72px;image-rendering:pixelated;margin-bottom:-2px}
+#gym .co-in{display:flex;flex-direction:column;gap:6px;min-width:0}
+#gym .co-nm{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px}#gym .co-nm b{font-size:16px}#gym .co-nm small{font-size:11px;color:#6a6a7a}
+#gym .co-tags{display:flex;flex-direction:column;align-items:flex-start;gap:4px}#gym .co-tags .trt{margin:0}
+#gym .co-x{position:absolute;top:6px;right:8px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#6a6a7a;border-radius:6px}
+#gym .co-x:active{background:rgba(0,0,0,.08)}
+#gym .co-new{--cb:#fbf8f0;border-style:dashed;border-color:#b8a070;box-shadow:none}
+#gym .co-new:active{box-shadow:none}
+#gym .co-new .co-av{border-style:dashed;border-color:#c8b88a;background:#fbf8f0;align-items:center}
+#gym .co-new .co-av i{width:30px;height:30px;border-radius:50%;background:#e8dcc0;position:relative}#gym .co-new .co-av i::after{content:'';position:absolute;left:-8px;right:-8px;top:34px;height:16px;border-radius:16px 16px 4px 4px;background:#e8dcc0}
+#gym .co-new .co-in b{font-size:15px;color:#7a5a2a}#gym .co-new .co-in small{font-size:11px;color:#8a8a9a}
+#gym .co-pk .co-tags{margin-top:4px}
