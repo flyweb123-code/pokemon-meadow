@@ -452,6 +452,7 @@ function blit(F, x, y, o = {}) {
   g.restore();
 }
 function drawMon(e) {
+  if (e.ball) return drawBall(e);
   const g = R.g, T = R.T, F = frameOf(e, T); if (!F) return;
   const lift = (GA.lift?.(e.sp) || 0) * (e.mine ? 1 : .6), z = e.z || 0, dead = e.hp <= 0 && e.dead != null && !e.mine;
   // 그림자: 높이 뜰수록 작고 옅게
@@ -460,7 +461,7 @@ function drawMon(e) {
   if (e.mine && e.hp > 0 && (e.buff > 0 || e.crit > 0)) { const c = e.crit > 0 ? '255,216,74' : '160,240,130', p = (R.RT * 1.6) % 1; g.strokeStyle = `rgba(${c},${.75 * (1 - p)})`; g.lineWidth = 3; g.beginPath(); g.ellipse(e.x, e.y, 12 + p * 16, (12 + p * 16) * .4, 0, 0, 7); g.stroke(); g.strokeStyle = `rgba(${c},.55)`; g.lineWidth = 2; g.beginPath(); g.ellipse(e.x, e.y, 15, 6, 0, 0, 7); g.stroke(); }
   let ox = 0, oy = 0, wh = e.flash > 0 ? Math.min(1, e.flash * 9) : 0, al = 1;
   if (e.warn > 0 && !e.shoot) { const p = 1 - e.warn / (e.warn0 || .5); ox = -Math.cos(e.wa || 0) * 7 * p + Math.sin(R.RT * 70) * 1.2 * p; oy = -Math.sin(e.wa || 0) * 5 * p; if (e.warn < .1) wh = Math.max(wh, .8); }
-  if (e.enter > 0 && !e.drop) al = Math.max(.15, 1 - e.enter / .35);
+  if (e.enter > 0 && !e.drop) { al = 1; wh = Math.max(wh, Math.min(1, e.enter / BALL_OUT * 1.4)); }
   if (e.inv > 0 && e.mine && e.hp > 0 && !e.roll && !e.hide && !e.dash && Math.floor(R.RT * 20) % 2) al = .45;
   if (e.fade != null) al = Math.max(0, e.fade);
   const sq = Math.max(-.45, Math.min(.45, e.sq || 0)), ms = e.mine ? (e.shrink > 0 ? .5 : e.buff > 0 ? 1.2 : 1) : 1;
@@ -542,8 +543,23 @@ function spawn(sp, boss, ox = 0) {
   const b = SP[sp]?.bs || [60, 60, 60, 60, 60, 60]; e.ranged = b[3] > b[1] + 10; e.spd = 34 + b[5] * .55;
   e.mhp = e.hp = e.hpLag = Math.round(e.st[0] * (boss === 2 ? 6 : boss ? 3.4 : 2.4));
   keepIn(e); G.mobs.push(e);
-  if (boss) e.z = 420; else { fxOnce('Wood_Hammer_Smoke', 2, 0, e.x, e.y - 10, 1, { s: .8 }); squash(e, -.35); dust(e.x, e.y, 4, 60); }
+  if (boss) e.z = 420; else ballIn(e, side);
 }
+/* 경완 2026-11-14 '상대 포켓몬이 나올 때 몬스터볼이 날아와서 터지면서 나오는 느낌': 잡몹은 화면 밖에서 몬스터볼이 포물선으로 날아와 땅에 닿으면 하얗게 터지고 그 자리에서 흰 실루엣으로 커지며 나온다.
+   볼 그림 = 본가 도구 그림(gym/img/item/pokeball.png), 터지는 빛·조각은 코드로 그림, 소리 = 배틀에 쓰는 던지기(NAGERU)·볼 열림(BOWA2). 대장은 그대로 하늘에서 떨어진다. */
+const BALL_FLY = .46, BALL_OUT = .26; let BALL_IM = null, BALL_SE = [-9, -9];
+function ballSe(i, nm) { if (R.RT - BALL_SE[i] < .09) return; BALL_SE[i] = R.RT; try { window.GymBGM?.se('DP_' + nm); } catch (e) {} }
+function ballIn(e, side) { const W = R.W, A = R.A; if (!BALL_IM) { BALL_IM = new Image(); BALL_IM.src = 'gym/img/item/pokeball.png'; }
+  const fx = side === 0 ? -30 : side === 1 ? W + 30 : e.x + (e.x < W / 2 ? -1 : 1) * (90 + Math.random() * 70), fy = side === 2 ? A.y0 - 70 : e.y - 60 - Math.random() * 40;
+  e.ball = { x0: fx, y0: fy, t: 0, h: 70 + Math.random() * 30, rot: (fx < e.x ? 1 : -1) * (14 + Math.random() * 6) }; e.enter = BALL_FLY + BALL_OUT; ballSe(0, 'NAGERU'); }
+function ballPop(e) { const x = e.x, y = e.y - 12; e.ball = null; e.pop = R.T; squash(e, -.5); ballSe(1, 'BOWA2'); buzz(0); shake(.12);
+  ring(x, y, '#fff', 6, 52, .3, 6, .8); ring(x, e.y, '#ff6a5a', 4, 40, .34, 4, .45, .04); stars(x, y, 6, '#fff', 210); dust(e.x, e.y, 5, 80);
+  for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28 + Math.random() * .4, v = 150 + Math.random() * 90; part({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .75 - 40, ay: 380, dr: 3, life: .32 + Math.random() * .16, col: i % 2 ? '#ff5a4a' : '#fff', sz: 3 }); }
+  fxAdd(0, .22, t => { const g = R.g, p = t / .22; g.save(); g.translate(x, y); g.globalAlpha = (1 - p) * .9; g.fillStyle = '#fff'; g.beginPath(); g.arc(0, 0, 10 + p * 26, 0, 7); g.fill(); g.rotate(.4); for (let i = 0; i < 6; i++) { g.rotate(Math.PI / 3); g.beginPath(); g.moveTo(-3 * (1 - p), 8); g.lineTo(0, 30 + p * 34); g.lineTo(3 * (1 - p), 8); g.closePath(); g.fill(); } g.restore(); g.globalAlpha = 1; }); }
+function drawBall(e) { const g = R.g, b = e.ball, p = Math.min(1, b.t / BALL_FLY), x = b.x0 + (e.x - b.x0) * p, gy = b.y0 + (e.y - b.y0) * p, y = gy - Math.sin(p * Math.PI) * b.h - 9 * (1 - p) - 9;
+  g.fillStyle = `rgba(20,40,10,${.12 + .14 * p})`; g.beginPath(); g.ellipse(x, e.y + (gy - e.y) * .4, 5 + 4 * p, 2 + 1.5 * p, 0, 0, 7); g.fill();
+  for (let i = 1; i <= 3; i++) { const q = Math.max(0, p - i * .05), tx = b.x0 + (e.x - b.x0) * q, ty = b.y0 + (e.y - b.y0) * q - Math.sin(q * Math.PI) * b.h - 9 * (1 - q) - 9; g.fillStyle = `rgba(255,255,255,${.3 - i * .08})`; g.beginPath(); g.arc(tx, ty, 7 - i, 0, 7); g.fill(); }
+  g.save(); g.translate(Math.round(x), Math.round(y)); g.rotate(b.t * b.rot); if (BALL_IM?.complete && BALL_IM.naturalWidth) g.drawImage(BALL_IM, -15, -15, 30, 30); else { g.fillStyle = '#e04848'; g.beginPath(); g.arc(0, 0, 8, 0, 7); g.fill(); } g.restore(); }
 function bossLand(o) {   // 대장 착지: 쿵 — 화면이 크게 흔들리고 먼지·충격파
   o.z = 0; o.drop = false; squash(o, .42); stop(.07); shake(.85); zoom(.05); rumble(3, 60); snd('DUN_Stomp', .09); snd('DUN_Rock_Smash', .05, .05);
   ring(o.x, o.y, '#fff', 14, 120, .45, 7); ring(o.x, o.y, '#e9dcc0', 8, 80, .35, 5, .5, .06); dust(o.x, o.y, 16, 190); stars(o.x, o.y - 10, 6, '#fff');
@@ -916,7 +932,7 @@ function step(dt) {
       const t = T - o.dead; o.x += o.dvx * dt; o.y += o.dvy * dt; const k = Math.pow(.04, dt); o.dvx *= k; o.dvy *= k; o.x = Math.max(8, Math.min(R.W - 8, o.x)); o.y = Math.max(R.A.y0 - 20, Math.min(R.H - 8, o.y));
       o.zv -= 1100 * dt; o.z += o.zv * dt; if (o.z < 0) { o.z = 0; if (o.zv < -120) { o.zv = -o.zv * .45; dust(o.x, o.y, 3, 70); squash(o, .3); if (o.boss) shake(.3); } else o.zv = 0; }
       o.rot += o.spin * dt; o.fade = t > .34 ? Math.max(0, 1 - (t - .34) / .1) : 1; continue; }
-    if (o.enter > 0) { o.enter -= dt; if (o.drop) { o.z = 420 * Math.pow(Math.max(0, o.enter) / .7, 1.6); if (o.enter <= 0) bossLand(o); } continue; }
+    if (o.enter > 0) { o.enter -= dt; if (o.ball) { o.ball.t += dt; if (o.ball.t >= BALL_FLY) ballPop(o); } if (o.drop) { o.z = 420 * Math.pow(Math.max(0, o.enter) / .7, 1.6); if (o.enter <= 0) bossLand(o); } continue; }
     if (o.kx || o.ky) { o.x += o.kx * dt; o.y += o.ky * dt; const k = Math.pow(.0015, dt); o.kx *= k; o.ky *= k; if (Math.abs(o.kx) + Math.abs(o.ky) < 4) o.kx = o.ky = 0; keepIn(o); }
     if (!live) { if (!o.slam && !o.lunge) setAnim(o, 'Idle'); o.warn = 0; continue; }
     if (o.stun > 0) { o.stun -= dt; continue; }
