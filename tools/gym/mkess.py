@@ -18,7 +18,7 @@ def cel(c):
 an = {}
 for a in arr:
     if not a: continue
-    n = nm(a.iv['@name']); m = re.match(r'(Opp)?Move:([A-Z0-9]+)$', n)
+    n = nm(a.iv['@name']); n = 'Move:ZPOWER' if n == 'Common:ZPower' else n; m = re.match(r'(Opp)?Move:([A-Z0-9]+)$', n)   # Z파워 두르기 공통 연출 = 'zpower'
     if not m: continue
     k = ('O:' if m.group(1) else '') + m.group(2).lower()
     if k in an: continue
@@ -35,6 +35,9 @@ for a in arr:
     an[k] = {'g': nm(a.iv['@graphic']), 'f': fr, 't': tm}
 fx = json.load(open(R + '/gym/mvfx.json')); data = json.load(open(R + '/gym/data.json'))
 want = [x[0] for x in data['mv'] if x[0] not in fx and x[0] in an]
+# 2026-11-13 Z기술 연출 (경완): 위 목록 뒤에 붙여야 앞 기술들의 그림·소리 번호가 그대로
+ZM = sorted(os.path.splitext(f)[0].lower() for f in os.listdir(R + '/gym/img/dbk/Z-Power/Z-Titles'))
+want += [k for k in ZM + ['zpower'] if k in an and k not in want]
 for sub in ('a', 'g', 'se'): os.makedirs(f'{O}/{sub}', exist_ok=True)
 gi, si = {}, {}
 GA, SE = P + '/Graphics/Animations/', P + '/Audio/SE/Anim/'
