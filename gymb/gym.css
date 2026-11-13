@@ -4289,3 +4289,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bt-enc .band.sm-def{background:repeating-linear-gradient(-60deg,#a8400c 0 10px,#963608 10px 20px);box-shadow:0 -4px 0 #fff1b8,0 4px 0 #fff1b8,0 -7px 0 #f8a020,0 7px 0 #f8a020}
 #gym .bt-enc .band.sm-def b{text-shadow:2px 2px 0 #5a1c04}
 #gym .bt-enc .band.sm-def b small{color:#ffe27a}
+/* v23.36 훈련장 카드 노력치 훈련 박스 = 노력치 배분 창 버튼 (› 화살표, 눌림 모션) */
+#gym .ev-tr[role=button]{cursor:pointer;transition:translate .06s,box-shadow .06s}#gym .ev-tr[role=button]:active:not(:has(button:active)){translate:0 2px;box-shadow:0 1px 0 rgba(0,0,0,.12)}#gym .ev-trh small{display:inline-flex;align-items:baseline;gap:0}#gym .ev-tra{font-style:normal;font-size:15px;font-weight:700;color:#7a54d0;margin-left:5px;line-height:1}

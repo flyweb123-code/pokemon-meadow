@@ -683,6 +683,8 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
       close();
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
+  /* v23.36 경완 '훈련장 카드 노력치 훈련 박스 누르면 노력치 배분 창으로, 올랐어요 옆에 >': 능력치 칸·? 말고 박스 어디든 → evPop(체육관 상세카드 노력치 박스와 같은 창), 닫으면 카드 새로 */
+  const evB = p.querySelector('.ev-tr'); if (evB) evB.onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); GB().evPop(P, () => { redraw(); slotRf?.(); trPop(id, p); }); };
   if (under) { const w = p.querySelector('.win'); if (w) w.style.animation = 'none'; under.remove(); }
 }
 /* v16.48 경완 '새 기술 박스는 따로 누르면 어떤 기술인지 팝업': 기술 이름 딱지(타입 색) → mvInfo. 여러 개면 목록 창에서 고름 */
@@ -992,7 +994,7 @@ function evTrHint(P, after) { const B = GB(), m = B.gm(P), e = B.evArr(m), pl = 
   const msg = k == null ? '추천 배분대로 노력치가 다 찼어요. 이제 노력치 훈련은 쉬어도 돼요.' : `지금은 <b>${N[k]}</b> 노력치 훈련이 좋아요.${T?.evk === k ? ' 이미 이 훈련을 하고 있어요!' : ''}`;
   B.gymPop(`<h4 class="mi-h">${esc(nmOf(P))}에게 좋은 훈련</h4><p class="gy-msg ev-trhint">${msg}</p><p class="gy-msg mi-d ev-trwhy">${pl.why}</p><div class="gy-btns${k == null || T?.evk === k ? ' one' : ''}"><button data-a="x"${k == null || T?.evk === k ? ' class="main"' : ''}>닫기</button>${k == null || T?.evk === k ? '' : `<button class="main" data-a="y">${N[k]} 훈련하기</button>`}</div>`, (a, c) => { c(); if (a === 'y' && T) { tickTrain(Date.now()); T.evk = k; K.save(); after?.(); } }).classList.add('ev-qpop'); }
 function evTrBox(P) { const B = GB(); if (!B.evOn?.()) return ''; const T = st().tr.find(e => e.id === P.id); if (!T) return ''; const on = T.evk ?? -1, g = T.evg | 0;
-  return `<div class="ev-tr"><div class="ev-trh"><b>노력치 훈련<button type="button" class="ev-q ev-trq" data-a="evq" aria-label="어떤 훈련이 좋을까"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}</small></div>
+  return `<div class="ev-tr" role="button" tabindex="0" aria-label="노력치 배분하기"><div class="ev-trh"><b>노력치 훈련<button type="button" class="ev-q ev-trq" data-a="evq" aria-label="어떤 훈련이 좋을까"><svg viewBox="0 0 5 7" width="8" height="11" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h-3zM0 1h1v1h-1zM4 1h1v2h-1zM3 3h1v1h-1zM2 4h1v1h-1zM2 6h1v1h-1z"/></svg></button></b><small>${on < 0 ? '키울 능력치를 골라 주세요' : `${B.EV_N[on]} 노력치 <b class="ev-trn">+${g}</b> 올랐어요`}<i class="ev-tra" aria-hidden="true">›</i></small></div>
     <div class="ev-trg">${B.EV_N.map((n, i) => `<button type="button" class="ev-tk${i === on ? ' on' : ''}" data-a="evk${i}"><img alt="" src="${B.itImg(B.EV_PW[i])}"><span>${n}</span></button>`).join('')}</div></div>`; }
 // 꾸미기: 사면 빈 칸에 바로 놓인다. 놓인 것을 누르면 치우기, 가진 것을 누르면 놓기
 function shopDeco(body) {
