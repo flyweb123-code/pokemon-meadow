@@ -835,6 +835,33 @@ function trChoose(q, L) {
   return new Promise(res => { const p = panel(`<div class="bp-yn bp-tr"><p>${q}</p>${L.map(([t, d, c], i) => `<button class="bb" data-a="${i}"${c ? ` style="--c1:${c.split(',')[0]};--c2:${c.split(',')[1]}"` : ''}><span>${t}${d ? `<small>${d}</small>` : ''}</span></button>`).join('')}</div>`);
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); panel(''); res(+b.dataset.a); }; });
 }
+/* v23.68 경완 '이번 훈련에만 동료로 함께할 포켓몬을 잡는 볼, 이름 앞에 동료': 훈련하기 야생 배틀 가방 = 동료 볼 (B.train.balls = {k: 개수}, 훈련 데이터라 계정엔 안 들어감).
+   잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
+const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
+async function trBall() {
+  const T = B.train, have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0);
+  if (!have.length) { await msg('동료 볼이 하나도 없다!'); return false; }
+  const i = await trChoose('어떤 볼을 던질까요?<small style="display:block;font-size:10px;opacity:.8">잡은 포켓몬은 이번 도전에만 동료로 함께해요</small>', [...have.map(([k, n]) => [`${n} ×${T.balls[k]}`, '', '']), ['그만두기', '', '#9aa0b4,#6c7288']]);
+  if (i >= have.length) return false;
+  const [k, nm, bm, col] = have[i], pk = B.btl.p2.active[0], E = B.act.e; if (!pk || pk.fainted) return false;
+  T.balls[k]--; idlePanel();
+  const cr = SPECIES[E?.sp]?.cr ?? 45, st = pk.status, sb = st === 'slp' || st === 'frz' ? 2 : st ? 1.5 : 1, M = pk.maxhp, H = Math.max(1, pk.hp);
+  const a = bm >= 255 ? 255 : Math.min(255, (3 * M - 2 * H) * cr * bm / (3 * M) * sb * (T.boss ? .5 : 1)), b = a >= 255 ? 1 : (a / 255) ** .25;
+  let sh = 0; while (sh < 4 && Math.random() < b) sh++; const ok = sh >= 4;
+  await msg(`관장은 ${eul(nm)} 던졌다!`, 0);
+  const fx = $b('.bt-fx'), bl = document.createElement('i'); bl.className = 'ball'; bl.style.background = `linear-gradient(${col} 0 45%,#202020 45% 55%,#f8f8f8 55%)`; fx.appendChild(bl);
+  se('NAGERU'); await bl.animate([{ transform: 'translate(40px,150px) rotate(0)' }, { transform: 'translate(110px,10px) rotate(360deg)', offset: .5 }, { transform: 'translate(176px,58px) rotate(720deg)' }], { duration: 520, easing: 'linear', fill: 'forwards' }).finished.catch(() => {});
+  const m = monEl('e'); se('SUIKOMU'); m.classList.add('recall'); await wait(480);
+  await bl.animate([{ transform: 'translate(176px,58px)' }, { transform: 'translate(176px,86px)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {});
+  for (let j = 0; j < Math.min(3, sh); j++) { await wait(520); se('KON'); await bl.animate([{ transform: 'translate(176px,86px) rotate(0)' }, { transform: 'translate(176px,86px) rotate(-24deg)', offset: .3 }, { transform: 'translate(176px,86px) rotate(20deg)', offset: .7 }, { transform: 'translate(176px,86px) rotate(0)' }], { duration: 360, fill: 'forwards' }).finished.catch(() => {}); }
+  await wait(560);
+  if (ok) { se('GETTING'); bl.style.filter = 'brightness(.6)'; for (let j = 0; j < 3; j++) { const t = document.createElement('i'); t.className = 'poof'; t.style.left = '176px'; t.style.top = '82px'; t.style.setProperty('--dx', (j - 1) * 18 + 'px'); t.style.setProperty('--dy', '-22px'); fx.appendChild(t); setTimeout(() => t.remove(), 600); }
+    $b('.bt-hb.e')?.classList.remove('on'); await wait(500);
+    T.caught = { sp: E.sp, lv: pk.level, hp: pk.hp / pk.maxhp, e: B.foe[B.o.e.indexOf(pk)] }; T.caught.shiny = !!(E.shiny || T.caught.e?.shiny);
+    await msgTap(`신난다! ${eul(E.nm)} 동료로 맞이했다!`); bl.remove(); await msgTap(`${eun(E.nm)} 이번 도전 동안 함께 싸워 준다!`); return true; }
+  ballPoof('e'); se('BOWA2'); bl.remove(); m.classList.remove('recall'); await wait(300);
+  await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return false;
+}
 function yesNo(q) {
   return new Promise(res => { const p = panel(`<div class="bp-yn"><p>${q}</p><button class="bb yes" data-a="1"><span>네</span></button><button class="bb no" data-a="0"><span>아니요</span></button></div>`);
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a === '1'); }; });
@@ -1183,7 +1210,7 @@ async function play() {
     if (!B || btl.ended) return;
     const r1 = btl.p1.activeRequest, r2 = btl.p2.activeRequest;
     let c1 = null;
-    if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'skip') { B.skipNow = 0; idlePanel(); btl.win('p1'); await readLog(); return; } if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
+    if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'skip' || c1 === 'caught') { B.skipNow = 0; idlePanel(); btl.win('p1'); await readLog(); return; } if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
     let c2 = null; if (r2 && !r2.wait) { const it = aiItem(btl); if (it) { foeUseItem(btl, it); btl.p2.__ip = 1; c2 = 'pass'; } else c2 = aiGmk(btl, aiChoice(btl, B.diff)); }
     if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
@@ -1213,8 +1240,8 @@ async function choose(req) {
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
-    if (a === 'bag') { await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
-    if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '훈련을 그만두고 나갈까요?<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
+    if (a === 'bag') { if (B.train?.balls) { if (await trBall()) return 'caught'; continue; } await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
+    if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
 // 이름표 "p1a: 피카츄" → 편
