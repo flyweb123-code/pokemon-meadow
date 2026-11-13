@@ -4508,3 +4508,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-bsw .gy-body{overflow:hidden}#gym .gy-bsw .bsw-mid{min-height:0}#gym .gy-bsw .bsw-top{flex:none}
 #gym .gy-bsw .bsw-ben{flex:0 1 auto;min-height:0;display:flex;flex-direction:column}#gym .gy-bsw .bsw-ben h5{flex:none}
 #gym .gy-bsw .bsw-ben .pk-ben{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}#gym .gy-bsw .bsw-ben .pk-ben li{flex:none}#gym .gy-bsw .bsw-go{flex:none}
+#gym .gy-bsw .bsw-ben .pk-ben{--fT:0px;--fB:0px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%)}#gym .gy-bsw .bsw-ben .pk-ben.fT{--fT:28px}#gym .gy-bsw .bsw-ben .pk-ben.fB{--fB:28px}   /* v24.24 스크롤 페이드 */
