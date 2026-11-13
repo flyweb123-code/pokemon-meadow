@@ -1343,12 +1343,12 @@ function bsScreen() {
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); if (bsMus) { bsMus = false; bgmPlay('gym'); } return homeSay(); }
-    if (b.dataset.a === 'go') { el.remove(); if (LEGK_ON && gi === GRADES.length - 1) bgmPlay('eyeChamp');   /* 경완 2026-11-13 '심사 받기 누를 때 챔피언 등장 곡으로 바로' (전설 심사) */
+    if (b.dataset.a === 'go') { el.remove(); /* v23.42 경완 '심사 받기 말고 라인업 결정 하면 바뀌게': 챔피언 등장 곡은 bsStart 에서 */
       openTab('battle', { title: '승급 심사 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); bsStart(gi); } }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (12.95: 고른 라인업으로 나감)
 }
 async function bsStart(gi) {
   const g = st();
-  if (LEGK_ON && gi === GRADES.length - 1 && bsReady(g)) { bsMus = true; openTab(null); bsMus = false; return legExam(gi); }   // 전설 심사는 강박사가 직접. [심사 받기] 때 바뀐 곡(챔피언 등장)이 배틀 전까지 이어짐
+  if (LEGK_ON && gi === GRADES.length - 1 && bsReady(g)) { bsMus = true; openTab(null); bsMus = false; bgmPlay('eyeChamp'); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
   bsMus = false; openTab(null);   // 전설 심사는 강박사가 직접
   await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
   if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
