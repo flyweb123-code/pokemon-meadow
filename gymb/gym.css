@@ -4385,56 +4385,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v23.59 상세카드 기술 줄 위 순서 바꾸기·추천 기술 (기술 바꾸기 목록 버튼 자리) */
 #gym .mp-mvh .mv-tools.mp-mvt{margin:0;gap:6px}
 #gym .mp-mvt .mv-ordb{min-width:0;padding:4px 10px;font-size:11px}
-/* 경완 2026-11-13 Z기술 버튼: 바뀌는 칸만 번쩍(zsw) + 켜진 동안 금빛 테두리 맥박 + 타입별 기운 입자(zpt) */
-.bt .mvw.zsw .mvb{animation:zSw .62s ease-out}
-@keyframes zSw{0%{filter:brightness(3.2) saturate(0)}35%{filter:brightness(1.9) saturate(.6)}100%{filter:none}}
-.bt .mvw.zsw::after{content:'';position:absolute;inset:-3px;border-radius:14px;pointer-events:none;background:radial-gradient(closest-side,rgba(255,250,210,.95),rgba(255,220,90,.5) 60%,transparent);animation:zSwR .62s ease-out forwards}
-@keyframes zSwR{0%{opacity:1;transform:scale(.7)}100%{opacity:0;transform:scale(1.25)}}
-.bt .mvw.zon .mvb{box-shadow:0 0 0 2px #ffe060,0 0 9px 2px color-mix(in srgb,var(--tc) 70%,#ffd84a),inset 0 0 10px rgba(255,240,170,.45);animation:zOn 1.6s ease-in-out infinite}
-.bt .mvw.zon.zsw .mvb{animation:zSw .62s ease-out,zOn 1.6s ease-in-out .62s infinite}
-@keyframes zOn{0%,100%{box-shadow:0 0 0 2px #ffe060,0 0 7px 1px color-mix(in srgb,var(--tc) 70%,#ffd84a),inset 0 0 8px rgba(255,240,170,.35)}50%{box-shadow:0 0 0 2px #fff4a8,0 0 14px 4px color-mix(in srgb,var(--tc) 80%,#ffd84a),inset 0 0 14px rgba(255,240,170,.6)}}
-.bt .mvw.zon .mvb{isolation:isolate}
-.bt .mvb>.zpt,.bt.mob .mvb>.zpt{position:absolute!important;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;z-index:-1;margin:0}
-.bt .zpt>i{position:absolute;left:var(--x);bottom:-8px;width:calc(9px*var(--s));height:calc(12px*var(--s));margin-left:calc(-4px*var(--s));border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#fff8d0,var(--zc,#ffd84a) 55%,transparent 72%);opacity:0;animation:zpRise 1.6s ease-in var(--d) infinite;mix-blend-mode:screen}
-@keyframes zpRise{0%{opacity:0;transform:translate(0,0) scale(1)}20%{opacity:.95}100%{opacity:0;transform:translate(calc(6px*var(--s) - 3px),-46px) scale(.3)}}
-/* 불꽃: 아래에서 일렁이며 올라가는 불꽃 혀 */
-.bt .zty10 .zpt>i,.bt .zty2 .zpt>i{--zc:#ff7a10;width:calc(12px*var(--s));height:calc(18px*var(--s));border-radius:50% 50% 40% 40%/70% 70% 30% 30%;background:radial-gradient(ellipse at 50% 75%,#fff6b0,#ffb020 35%,var(--zc) 60%,transparent 75%);animation:zpFire 1.1s ease-out var(--d) infinite}
-.bt .zty2 .zpt>i{--zc:#e04020}
-@keyframes zpFire{0%{opacity:0;transform:translate(0,4px) scale(1,.6)}25%{opacity:1;transform:translate(-2px,-8px) scale(1.1,1)}55%{transform:translate(2px,-20px) scale(.8,1.1)}100%{opacity:0;transform:translate(-1px,-38px) scale(.25,.6)}}
-.bt .zty10 .zpt,.bt .zty2 .zpt{background:linear-gradient(to top,rgba(255,120,20,.45),transparent 55%)}
-/* 물·독: 동그란 거품 */
-.bt .zty11 .zpt>i,.bt .zty4 .zpt>i{--zc:#bfe6ff;border-radius:50%;width:calc(7px*var(--s));height:calc(7px*var(--s));background:radial-gradient(circle at 35% 35%,#fff 0 18%,transparent 26%),radial-gradient(circle,transparent 52%,var(--zc) 60%,transparent 72%);mix-blend-mode:normal;animation:zpBub 1.9s ease-in-out var(--d) infinite}
-.bt .zty4 .zpt>i{--zc:#e0a0ff}
-@keyframes zpBub{0%{opacity:0;transform:translate(0,0)}20%{opacity:1}50%{transform:translate(4px,-24px)}100%{opacity:0;transform:translate(-3px,-50px)}}
-/* 풀·벌레: 흩날리는 잎 */
-.bt .zty12 .zpt>i,.bt .zty7 .zpt>i{--zc:#7de060;bottom:auto;top:-10px;width:calc(8px*var(--s));height:calc(5px*var(--s));border-radius:0 100% 0 100%;background:var(--zc);box-shadow:inset -1px -1px 0 rgba(0,80,0,.35);mix-blend-mode:normal;animation:zpLeaf 2.2s linear var(--d) infinite}
-.bt .zty7 .zpt>i{--zc:#c8e050}
-@keyframes zpLeaf{0%{opacity:0;transform:translate(0,0) rotate(0)}15%{opacity:1}50%{transform:translate(10px,32px) rotate(200deg)}100%{opacity:0;transform:translate(-6px,70px) rotate(420deg)}}
-/* 전기·강철: 번쩍이는 불꽃 튐 */
-.bt .zty13 .zpt>i,.bt .zty9 .zpt>i{--zc:#ff9a00;bottom:auto;top:calc(10% + var(--s)*45%);width:calc(12px*var(--s));height:2.5px;border-radius:1px;background:#fff;box-shadow:0 0 2px 1px #fff,0 0 6px 2px var(--zc);animation:zpSpk .9s steps(1) var(--d) infinite}
-.bt .zty9 .zpt>i{--zc:#7090c0}
-@keyframes zpSpk{0%{opacity:1;transform:rotate(30deg) scaleX(1)}14%{opacity:.2;transform:rotate(-40deg) translate(4px,3px) scaleX(1.4)}28%{opacity:1;transform:rotate(70deg) translate(-3px,0) scaleX(.8)}42%,100%{opacity:0}}
-.bt .zty13 .zpt{animation:zpFlick 1.3s steps(1) infinite}
-@keyframes zpFlick{0%,100%{background:none}46%{background:rgba(255,250,150,.35)}50%{background:none}}
-/* 얼음: 내리는 눈 결정 */
-.bt .zty15 .zpt>i{--zc:#e8fbff;bottom:auto;top:-8px;width:calc(6px*var(--s));height:calc(6px*var(--s));border-radius:1px;background:linear-gradient(var(--zc),var(--zc)) 50% 0/1px 100% no-repeat,linear-gradient(var(--zc),var(--zc)) 0 50%/100% 1px no-repeat;filter:drop-shadow(0 0 2px #a8e8ff);mix-blend-mode:normal;animation:zpSnow 2.4s linear var(--d) infinite}
-@keyframes zpSnow{0%{opacity:0;transform:translate(0,0) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(6px,66px) rotate(180deg)}}
-/* 비행: 옆으로 지나가는 바람 줄 */
-.bt .zty3 .zpt>i{--zc:#ffffff;left:-20%;bottom:auto;top:calc(var(--x)*.85);width:calc(22px*var(--s));height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--zc),transparent);mix-blend-mode:normal;animation:zpWind 1.3s linear var(--d) infinite}
-@keyframes zpWind{0%{opacity:0;transform:translateX(0)}20%{opacity:.9}100%{opacity:0;transform:translateX(160px)}}
-/* 땅·바위: 아래에서 튀는 돌 조각 */
-.bt .zty5 .zpt>i,.bt .zty6 .zpt>i{--zc:#c89050;width:calc(5px*var(--s));height:calc(5px*var(--s));border-radius:1px;background:var(--zc);box-shadow:inset -1px -1px 0 rgba(0,0,0,.3);mix-blend-mode:normal;animation:zpRock 1.2s cubic-bezier(.3,.7,.6,1) var(--d) infinite}
-.bt .zty6 .zpt>i{--zc:#b8a878}
-@keyframes zpRock{0%{opacity:0;transform:translate(0,0) rotate(0)}15%{opacity:1}55%{transform:translate(4px,-26px) rotate(120deg)}100%{opacity:0;transform:translate(8px,2px) rotate(260deg)}}
-.bt .zty5 .zpt,.bt .zty6 .zpt{background:linear-gradient(to top,rgba(150,100,40,.35),transparent 40%)}
-/* 고스트·악: 피어오르는 그림자 연기 */
-.bt .zty8 .zpt>i,.bt .zty17 .zpt>i{--zc:#a070e0;width:calc(16px*var(--s));height:calc(16px*var(--s));border-radius:50%;background:radial-gradient(circle,var(--zc),transparent 70%);mix-blend-mode:normal;opacity:0;animation:zpSmoke 2s ease-out var(--d) infinite}
-.bt .zty17 .zpt>i{--zc:rgba(30,20,40,.85)}
-@keyframes zpSmoke{0%{opacity:0;transform:translate(0,0) scale(.5)}25%{opacity:.85}100%{opacity:0;transform:translate(-4px,-40px) scale(1.6)}}
-/* 에스퍼·페어리·노말·드래곤: 반짝이는 빛 알갱이 */
-.bt .zty14 .zpt>i,.bt .zty18 .zpt>i,.bt .zty1 .zpt>i,.bt .zty16 .zpt>i{width:calc(6px*var(--s));height:calc(6px*var(--s));border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);background:var(--zc);animation:zpStar 1.8s ease-in-out var(--d) infinite}
-.bt .zty14 .zpt>i{--zc:#ff90d0}.bt .zty18 .zpt>i{--zc:#ffd0f0}.bt .zty1 .zpt>i{--zc:#fff6c0}.bt .zty16 .zpt>i{--zc:#b0a0ff}
-@keyframes zpStar{0%{opacity:0;transform:translate(0,0) scale(.4) rotate(0)}30%{opacity:1;transform:translate(2px,-12px) scale(1.2) rotate(45deg)}100%{opacity:0;transform:translate(-2px,-44px) scale(.3) rotate(120deg)}}
 
 /* v23.61 경완 '강박사 얼굴 띠 나올 때 뒷 배경좀 만들어줘 띠 배경도': 전설 심사(강박사) 심사관 띠 — 뒤에 남보라 무대 + 도는 금빛 빛살 + 흐르는 선, 띠는 흐르는 자줏빛 줄무늬 + 금테 */
 .bt-enc.ex.kg .kg-bg{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity .3s;background:radial-gradient(ellipse 90% 60% at 50% 50%,#5a3596 0,#2a1a5e 38%,#0e0a24 72%,#05040c 100%)}
@@ -4451,36 +4401,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .mr-get.to-get img{width:112px;height:112px;filter:drop-shadow(0 0 12px rgba(120,220,255,.85))}
 /* v23.69 테라스탈 버튼 타입 아이콘 (쇼다운 테라 타입 아이콘) */
 .bt.mob .bb.gkb.terastallize:has(.gk-ti){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-ti{position:absolute;left:8px;top:50%;width:40px;height:40px;margin-top:-20px;background:center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-/* 경완 2026-11-13 Z기술: 아래 화면 = 금빛 바탕 + 천천히 도는 빛살 + 가운데 Z 마크가 메가처럼 가끔 휙 돎 */
-.bt.mob .bt-bot::before{transition:opacity .8s ease}.bt.mob .gk-mark{transition:opacity .8s ease}.bt.mob .bt-bot{transition:background-color .8s ease}   /* 경완 2026-11-14: Z기술 끝나면 아래 화면 디졸브로 원래대로 */
-.bt.mob.gkbg-zmove .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff6d6,#ffe08a 55%,#fff0c0);animation:none}   /* 경완: 빛줄기 뺌 */
-.bt.mob.gkbg-zmove .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(255,190,40,.95))}
-.bt.mob.gkbg-zmove .gk-mark{opacity:.9;background-image:url(../gym/img/dbk/Z-Power/zmark.svg);width:84px;height:84px;margin:-42px 0 0 -42px;filter:drop-shadow(0 0 8px rgba(255,255,255,.9)) drop-shadow(0 0 16px rgba(255,170,30,.7));animation:gkMark 4.5s linear infinite}
-/* Z파워 두른 포켓몬: 발밑부터 금빛 불꽃 기운 + 올라가는 반짝이 (Z기술을 쓸 때까지) */
-.bt-mon .zaur{position:absolute;left:-18%;right:-18%;bottom:-6%;height:115%;pointer-events:none;z-index:0}
-.bt-mon.zon .clip{animation:zOnGlow .9s ease-in-out infinite alternate}
-@keyframes zOnGlow{from{filter:drop-shadow(0 0 2px #fff7b0) drop-shadow(0 0 5px #ffb81e) drop-shadow(0 0 1px #ff9a00)}to{filter:drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 11px #ffc830) drop-shadow(0 0 4px #ff9a00)}}
-.bt-mon .clip{z-index:1}
-.bt-mon .zaur b{position:absolute;bottom:0;width:34%;height:80%;border-radius:50% 50% 45% 45%/70% 70% 30% 30%;background:linear-gradient(to top,rgba(255,140,20,.2),rgba(255,160,30,.85) 25%,rgba(255,225,90,.9) 55%,rgba(255,250,200,0));filter:blur(2.5px);transform-origin:50% 100%;animation:zAurF .5s ease-in-out infinite alternate}
-.bt-mon .zaur b:nth-child(1){left:2%;height:58%;animation-delay:-.1s}.bt-mon .zaur b:nth-child(2){left:18%;height:80%;animation-delay:-.3s}.bt-mon .zaur b:nth-child(3){left:33%;height:96%;animation-delay:-.2s}.bt-mon .zaur b:nth-child(4){left:48%;height:78%;animation-delay:-.4s}.bt-mon .zaur b:nth-child(5){left:64%;height:60%;animation-delay:0s}
-@keyframes zAurF{from{transform:scale(.9,.85) translateX(-1px);opacity:.75}to{transform:scale(1.08,1.12) translateX(1px);opacity:1}}
-.bt-mon .zaur s{position:absolute;left:var(--x);bottom:6%;width:4px;height:4px;border-radius:50%;background:#fff6c0;box-shadow:0 0 4px 1px #ffc830;opacity:0;animation:zAurS 1.4s ease-out var(--d) infinite}
-@keyframes zAurS{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-70px)}}
-.bt-mon .zaur{transition:opacity .7s ease}.bt-mon .zaur.out{opacity:0}
-.bt-mon.zoff .clip{animation:zOffGlow .7s ease-out forwards}
-@keyframes zOffGlow{from{filter:drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 11px #ffc830) drop-shadow(0 0 4px #ff9a00)}to{filter:drop-shadow(0 0 0 rgba(255,251,224,0)) drop-shadow(0 0 0 rgba(255,200,48,0)) drop-shadow(0 0 0 rgba(255,154,0,0))}}
-.bt.mob.gkz-out:not(.gkbg-mega) .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff6d6,#ffe08a 55%,#fff0c0);animation:none}
-.bt.mob.gkz-out:not(.gkbg-mega) .gk-mark{background-image:url(../gym/img/dbk/Z-Power/zmark.svg);width:84px;height:84px;margin:-42px 0 0 -42px;animation:none}
-/* 경완 2026-11-14: Z 마크 = Z크리스탈 마름모, 타입별 바탕색·무늬 (tools/gym/mkzc.py) */
-.bt[data-zt="1"]{--zl:#fafaf9;--zm:#f4f4f2;--zg:#e9e9e4;--zi:url(../gym/img/dbk/Z-Power/zc/1.svg)}.bt[data-zt="2"]{--zl:#fbe2d1;--zm:#f6bc96;--zg:#ee7a2e;--zi:url(../gym/img/dbk/Z-Power/zc/2.svg)}.bt[data-zt="3"]{--zl:#d4e7fa;--zm:#9ec9f2;--zg:#3d93e6;--zi:url(../gym/img/dbk/Z-Power/zc/3.svg)}.bt[data-zt="4"]{--zl:#e6d9ef;--zm:#c7a8dc;--zg:#8f52b8;--zi:url(../gym/img/dbk/Z-Power/zc/4.svg)}.bt[data-zt="5"]{--zl:#f0ded1;--zm:#deb496;--zg:#bd6a2e;--zi:url(../gym/img/dbk/Z-Power/zc/5.svg)}.bt[data-zt="6"]{--zl:#eeebe6;--zm:#d8d2c6;--zg:#b2a48c;--zi:url(../gym/img/dbk/Z-Power/zc/6.svg)}.bt[data-zt="7"]{--zl:#e7f3d5;--zm:#c9e49e;--zg:#93c83e;--zi:url(../gym/img/dbk/Z-Power/zc/7.svg)}.bt[data-zt="8"]{--zl:#ece4f0;--zm:#d4c0de;--zg:#a982bd;--zi:url(../gym/img/dbk/Z-Power/zc/8.svg)}.bt[data-zt="9"]{--zl:#e6eaf3;--zm:#c7cfe4;--zg:#8f9fc8;--zi:url(../gym/img/dbk/Z-Power/zc/9.svg)}.bt[data-zt="10"]{--zl:#f8d4d4;--zm:#f09c9c;--zg:#e03a3a;--zi:url(../gym/img/dbk/Z-Power/zc/10.svg)}.bt[data-zt="11"]{--zl:#d3ebf9;--zm:#9cd2f0;--zg:#38a6e2;--zi:url(../gym/img/dbk/Z-Power/zc/11.svg)}.bt[data-zt="12"]{--zl:#d4ead5;--zm:#9cd0a0;--zg:#3aa040;--zi:url(../gym/img/dbk/Z-Power/zc/12.svg)}.bt[data-zt="13"]{--zl:#fdf7ce;--zm:#faee8e;--zg:#f6dc1e;--zi:url(../gym/img/dbk/Z-Power/zc/13.svg)}.bt[data-zt="14"]{--zl:#fadbe9;--zm:#f4aece;--zg:#ea5c9c;--zi:url(../gym/img/dbk/Z-Power/zc/14.svg)}.bt[data-zt="15"]{--zl:#e3f6fb;--zm:#bfeaf6;--zg:#7fd6ec;--zi:url(../gym/img/dbk/Z-Power/zc/15.svg)}.bt[data-zt="16"]{--zl:#d1e8ea;--zm:#96ccd0;--zg:#2c98a0;--zi:url(../gym/img/dbk/Z-Power/zc/16.svg)}.bt[data-zt="17"]{--zl:#d7d6d6;--zm:#a4a2a2;--zg:#4a4446;--zi:url(../gym/img/dbk/Z-Power/zc/17.svg)}.bt[data-zt="18"]{--zl:#fce7ee;--zm:#f8cada;--zg:#f294b4;--zi:url(../gym/img/dbk/Z-Power/zc/18.svg)}
-.bt.mob[data-zt].gkbg-zmove .bt-bot,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .bt-bot{background-color:var(--zl)}
-.bt.mob[data-zt].gkbg-zmove .bt-bot::before,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(var(--zl),var(--zm) 55%,var(--zl))}
-.bt.mob[data-zt].gkbg-zmove .gk-mark,.bt.mob[data-zt].gkz-out:not(.gkbg-mega) .gk-mark{background-image:var(--zi);width:112px;height:68px;margin:-34px 0 0 -56px}
-.bt.mob[data-zt].gkbg-zmove .gk-mark{filter:drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 16px var(--zg))}
-.bt.mob[data-zt].gkbg-zmove .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
-/* 경완 2026-11-14: 위 상태 막대 자리 = 위 화면 맨 위를 거울처럼 비춤 → 배경 들어오는 방향·어두워짐·번쩍·날씨·기술 연출·메가 장면이 같이 바뀜 */
-.bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
-@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선) */
-.bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
 /* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
 .bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}
