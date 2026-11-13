@@ -250,7 +250,7 @@ function gainXp(P, n, ask = false) {
   out.lv = m.lv; return out;
 }
 // v22.07 경완 '본가 기준 배틀 친밀도': 배틀에서 레벨업 +5/+3/+2 (친밀도 0~99 / 100~199 / 200~), 이긴 배틀에 나간 포켓몬 +3/+2/+1 (본가 관장 배틀), 쓰러지면 −1, 30레벨 이상 높은 상대에게 쓰러지면 −5 (200 이상은 −10). 연습 배틀은 없음
-const frAdd = (P, a) => { if (!P || B?.train) return;   /* v23.10 훈련하기는 친밀도 안 건드림 */ if (a > 0 && GA.addFr) GA.addFr(P.id, a); else P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }   /* 오를 땐 게임 addFr (만점 축하 frMaxHit 그대로) */, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
+const frAdd = (P, a) => { if (!P || B?.train) return;   /* v23.10 훈련하기는 친밀도 안 건드림 */ if (a < 0 && (P.fr || 0) >= 255) return;   /* v24.02 경완 '만점은 안 떨어지게' (본가는 떨어짐) */ if (a > 0 && GA.addFr) GA.addFr(P.id, a); else P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }   /* 오를 땐 게임 addFr (만점 축하 frMaxHit 그대로) */, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
 function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
   (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
     if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, B.frw || [3, 2, 1]))   /* v22.14 체육관 도전자 배틀은 gym.js FR_W (난이도별) */; }); }
@@ -406,7 +406,6 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let si = hb.querySelector('.shico'); if (A.shiny) { if (!si) { si = document.createElement('i'); si.className = 'shico'; hb.appendChild(si); } const nm = hb.querySelector('.nm'); si.style.left = (nm.offsetLeft + Math.min(nm.scrollWidth, nm.offsetWidth) + 1) + 'px'; } else si?.remove(); }   // 경완 11-11 '포켓몬 이름 옆에 우리 게임 이로치 아이콘'
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
