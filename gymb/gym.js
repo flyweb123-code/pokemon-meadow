@@ -3814,7 +3814,7 @@ let trTid = 991000;
 function trRollLu() { const g = st(); g.mon = g.mon || {}; const has = sp => GB().D.sp[sp], sh = L => L.filter(has).sort(() => Math.random() - .5), n = 1 + Math.floor(Math.random() * 3);
   return [...sh(TR_NEWB).slice(0, n).map(sp => [sp, 5 + Math.floor(Math.random() * 11)]), ...sh(TR_VET).slice(0, 6 - n).map(sp => [sp, 38 + Math.floor(Math.random() * 15)])].map(([sp, lv]) => {
     const P = { id: ++trTid, sp, iv: Array.from({ length: 6 }, () => 10 + Math.floor(Math.random() * 22)), fr: 70, gTst: 1 }; S.box.push(P); GB().gm(P); const e = GB().foeEntry(sp, lv);
-    Object.assign(g.mon[P.id], { lv, xp: GB().xpAt(GB().growth(sp), lv), mv: e.mv, ab: e.ab, nat: e.nat }); return P.id; }); }
+    Object.assign(g.mon[P.id], { lv, xp: GB().xpAt(GB().growth(sp), lv), mv: e.mv, ab: e.ab, nat: e.nat }); return P.id; }).filter((id, _, A) => { const P = GB().boxOf(id), c = GB().trCost(P); A.sum = A.sum || 0; if (A.sum + c > GB().TR_CAP) { trDrop([id]); return false; } A.sum += c; return true; }); }   /* 코스트 안에서만 */
 const trDrop = L => { const g = st(); for (let i = S.box.length - 1; i >= 0; i--) if (S.box[i].gTst && L.includes(S.box[i].id)) { if (g?.mon) delete g.mon[S.box[i].id]; S.box.splice(i, 1); } };
 const trNew = ids => ({ ids, balls: { mon: 5 }, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0] });
 function trPickSp(lv, boss, big) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? TR_BOSS : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; const ok = L.filter(has); return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
@@ -3832,7 +3832,7 @@ async function yaTest() {
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
 const trLineup = () => new Promise(ok => { const g = st(); g.lu = g.lu || [[], [], []];
-  openTab('battle', { title: '200층 수련탑 라인업', go: '수련탑 오르기', any: 1, rnd: i => { const old = (g.lu[i] || []).filter(id => GB().boxOf(id)?.gTst); g.lu[i] = trRollLu(); trDrop(old); save(); },
+  openTab('battle', { title: '200층 수련탑 라인업', go: '수련탑 오르기', any: 1, cost: 1, rnd: i => { const old = (g.lu[i] || []).filter(id => GB().boxOf(id)?.gTst); g.lu[i] = trRollLu(); trDrop(old); save(); },
     pick: i => { const L = (g.lu[i] || []).filter(id => GB().boxOf(id)); if (!L.length) { GA.toast?.('라인업에 포켓몬을 넣어 주세요'); return trLineup().then(ok); } g.luI = i; save(); openTab(null); ok(trClone(L)); } }); });
 async function trainTest() {
   if (!open || !st()?.d) return;
@@ -3885,10 +3885,14 @@ async function trMyst(R, o) {
   await o.msgTap(`${R.floor}층에 수상한 상자가 놓여 있다…\n'강박사 것. 절대 열지 마시오'`);
   if (await o.choose('상자를 열어 볼까요?', [['열어 본다', '무슨 일이 생길지 몰라요', TR_RC[2]], ['그냥 지나간다', '', '#9aa0b4,#6c7288']])) { await o.msgTap('못 본 척 지나갔다.\n(멀리서) 강박사: "휴…"'); return; }
   const r = Math.random(), live = R.ids.filter(id => (R.hp[id] ?? 1) > 0);
-  if (r < .25) { R.balls = R.balls || {}; R.balls.ultra = (R.balls.ultra | 0) + 2; await o.msgTap('상자 안에 동료 하이퍼볼 2개가 있었다!\n(쪽지: "비상용. 쓰지 마. -강박사")'); }
-  else if (r < .45) { R.coin = (R.coin | 0) + 80; await o.msgTap('상자 안에서 수련탑 코인 80개가 나왔다!\n강박사의 비상금인 것 같다…'); }
-  else if (r < .65) { R.ids.forEach(id => { R.hp[id] = 1; }); await o.msgTap('상자에서 따뜻한 김이 났다!\n쓰러진 포켓몬까지 모두 기운을 되찾았다!'); }
-  else { R.amb = 1; await o.msgTap('상자가 덜컹거린다…!\n안에서 화난 포켓몬이 튀어나왔다!'); await o.msgTap('(멀리서) 강박사: "그러게 열지 말랬잖니!\n이기면 귀한 걸 줄게!"'); }   /* 경완 '양말·연기 펑은 허무': 꽝 없이, 마지막은 우두머리급 배틀 (이기면 귀한 보상) */
+  /* v23.72 경완 '꽝을 없애달란 게 아니었고 꽝일 때 벌도 있어야지': 좋은 것 45% · 튀어나온 포켓몬 15% · 꽝(벌) 40% */
+  if (r < .15) { R.balls = R.balls || {}; R.balls.ultra = (R.balls.ultra | 0) + 2; await o.msgTap('상자 안에 동료 하이퍼볼 2개가 있었다!\n(쪽지: "비상용. 쓰지 마. -강박사")'); }
+  else if (r < .3) { R.coin = (R.coin | 0) + 80; await o.msgTap('상자 안에서 수련탑 코인 80개가 나왔다!\n강박사의 비상금인 것 같다…'); }
+  else if (r < .45) { R.ids.forEach(id => { R.hp[id] = 1; }); await o.msgTap('상자에서 따뜻한 김이 났다!\n쓰러진 포켓몬까지 모두 기운을 되찾았다!'); }
+  else if (r < .6) { R.amb = 1; await o.msgTap('상자가 덜컹거린다…!\n안에서 화난 포켓몬이 튀어나왔다!'); await o.msgTap('(멀리서) 강박사: "그러게 열지 말랬잖니!\n이기면 귀한 걸 줄게!"'); }
+  else if (r < .73) { const n = Math.ceil((R.coin | 0) / 2); R.coin = (R.coin | 0) - n; await o.msgTap('꽝! 상자 안엔 "벌금" 쪽지뿐이었다.'); await o.msgTap(n ? `강박사: "남의 상자를 열었으니 벌금이다!"\n수련탑 코인 ${n}개를 빼앗겼다…` : '강박사: "벌금…은 낼 코인도 없구나."\n강박사가 측은한 눈으로 쳐다본다.'); }
+  else if (r < .87) { live.forEach(id => { R.hp[id] = Math.max(.01, (R.hp[id] ?? 1) * .7); }); await o.msgTap('꽝! 상자 안엔 강박사의 양말 한 짝…'); await o.msgTap('지독한 냄새에 모두 정신을 잃을 뻔했다!\n모두 HP가 30% 줄었다…'); }
+  else { R.balls = R.balls || {}; let n = 0; for (const k in R.balls) { const t = Math.ceil((R.balls[k] | 0) / 2); R.balls[k] -= t; n += t; } await o.msgTap('꽝! 상자에서 고오스가 튀어나와 가방을 뒤졌다!'); await o.msgTap(n ? `동료 볼 ${n}개를 도둑맞았다…` : '…가방이 텅 비어서 그냥 웃고 갔다.'); }
 }
 /* v23.68 잡은 동료: 시험 포켓몬(gTst)으로 만들어 이번 판 팀에 넣음 → 훈련이 끝나면 trDrop 으로 사라짐. 6마리가 넘으면 하나를 쉬게 함 (이번 판에서 빠짐) */
 async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
