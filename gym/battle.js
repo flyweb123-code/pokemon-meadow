@@ -636,9 +636,10 @@ function playAnim(side, A) {
 }
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A, quick) {
-  A.gif = await pickGif(side, A); if (!B) return;
-  const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); showMon(side, A, false);
-  if (quick && side === 'e' && B.wild) { m.style.transition = 'none'; m.classList.add('on'); if (B.chain) se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)', opacity: 1 }, { transform: 'translateX(-8px)', opacity: 1, offset: .82 }, { transform: 'none', opacity: 1 }], { duration: 760, easing: 'cubic-bezier(.25,.7,.35,1)' }).finished.catch(() => {}); m.style.transition = ''; if (!B) return; }   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
+  const pre0 = side === 'e' && B.wild && monEl(side).classList.contains('wdk');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 */
+  if (pre0) A.gif = B.wG || A.gif; else { A.gif = await pickGif(side, A); if (!B) return;
+  } const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); if (!pre0) showMon(side, A, false);
+  if (quick && side === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(-256px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
   else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
@@ -1194,6 +1195,7 @@ async function run(opts) {
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
+  if (opts.wild && !opts.chain && foeT[0]) try { const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); } else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
@@ -1349,6 +1351,10 @@ async function frFx(s) { const m = monEl(s); if (!m) return; const im = m.queryS
 const frTr = () => { let n = ''; try { n = (GA.trOf?.().n || '').trim(); } catch (e) {} return n || '관장'; };
 async function readLog() {
   const L = B.btl.log;
+  if (B.wild && !B.eOut && !B.swp) {   /* v24.18 본가 순서: 야생은 '앗! 야생 ~ 튀어나왔다!' 가 먼저, 그다음 '가랏!' → 첫 내 포켓몬·상대 포켓몬 나오는 줄 순서를 바꿈 */
+    const blk = pl => { for (let j = B.li; j < L.length; j++) { if (/^\|turn\|/.test(L[j])) return null; if (L[j] === `|split|${pl}` && L[j + 1]?.startsWith(`|switch|${pl}a`)) return [j, 3]; if (L[j].startsWith(`|switch|${pl}a`)) return [j, 1]; } return null; };
+    const a = blk('p1'), b = blk('p2'); if (a && b) { B.swp = 1; if (a[0] < b[0]) { const mv = L.splice(b[0], b[1]); L.splice(a[0], 0, ...mv); } }
+  }
   while (B && B.li < L.length) {
     let line = L[B.li++];
     if (line === '|split|p1' || line === '|split|p2') { line = L[B.li]; B.li += 2; }   // 정확한 체력 줄만 쓴다
