@@ -4399,3 +4399,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes kgSheen{0%{transform:translateX(0)}60%,100%{transform:translateX(520%)}}
 /* v23.66 테라스탈오브 받는 창 (메가링 창 틀, 그림만 정사각) */
 #gym .gy-pop .mr-get.to-get img{width:112px;height:112px;filter:drop-shadow(0 0 12px rgba(120,220,255,.85))}
+/* v23.69 테라스탈 버튼 타입 아이콘 (보석 모양 육각 칸) */
+.bt.mob .bb.gkb.terastallize:has(.gk-ti){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-ti{position:absolute;left:10px;top:50%;width:34px;height:38px;margin-top:-19px;background:#fff center/30px 30px no-repeat;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}

@@ -1587,8 +1587,9 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
-  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', LN = X ? Object.keys(g.legE || {}).length + ((g.legE || {})[t] ? 0 : 1) : Object.keys(g.legE || {}).length || 1, TL = legLines(LN, E, ty), XL = X && legXLines(LN, E, ty, X.retry);
-  let lost = false, CR = null; const mix = async L => { for (const [w, h] of L) { if (w === '...') { dlg(''); root.classList.add('dhide'); if (h === 'g' ? gu : k) A.bub(h === 'g' ? gu : k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); } };
+  /* v23.69 경완 '강박사 인물 대사창하고 그냥 대사창 혼재, 인물 대사창으로 통합': 체육관 안 대사도 전당·튜토리얼과 같은 인물 대사창(storyTalk)으로 */ let TT = null; const h2t = h => String(h).replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'), tsay = (h, who) => { dlg(''); root.classList.add('dhide'); return (TT = TT || storyTalk()).say(h2t(h), { who }); };
+  const say = h => tsay(h, '강박사'), gsay = h => tsay(h, '안내원'), se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', LN = X ? Object.keys(g.legE || {}).length + ((g.legE || {})[t] ? 0 : 1) : Object.keys(g.legE || {}).length || 1, TL = legLines(LN, E, ty), XL = X && legXLines(LN, E, ty, X.retry);
+  let lost = false, CR = null; const mix = async L => { for (const [w, h] of L) { if (w === '...') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (h === 'g' ? gu : k) A.bub(h === 'g' ? gu : k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); } };
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR', 'se_ball', 'HG_DOOR', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
@@ -1604,22 +1605,22 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('HG_WALL_HIT', 2); GA.haptic?.(0); A.shake(); await wait(190); }   /* v19.24 경완 '좀 더 문 노크하는 소리로': 본가 GBA 벽에 부딪히는 '쿵' (나무 문 두드림처럼 짧고 둔탁) */ await wait(450); }
     meEnt.f = 'd'; place(meEnt); A.bub(meEnt, '!', 900); if (gu) A.bub(gu, '!', 900); se('DP_REGI', .8); await wait(900);
     await talk('누군가 체육관 문을 세게 두드리고 있다!');
-    dlg(''); root.classList.add('dhide'); doorSe(); await wait(180);
+    dlg(''); root.classList.add('dhide'); TT?.hide(true); doorSe(); await wait(180);
     k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
     dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!');
     CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
     for (const h of TL.in) await say(h);
     }
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
-    dlg(''); root.classList.add('dhide'); if (!X) bgmPlay('rgFollow');
+    dlg(''); root.classList.add('dhide'); TT?.hide(true); if (!X) bgmPlay('rgFollow');
     const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
     let guGo = false;   // v19.49 열여덟 번째: 안내원이 문 앞을 막아서고 같이 감
-    if (gu && TL.blk) { root.classList.remove('dhide'); A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700); dlg(''); root.classList.add('dhide');
+    if (gu && TL.blk) { root.classList.remove('dhide'); A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700); dlg(''); root.classList.add('dhide'); TT?.hide(true);
       const fc = [D.door[0], D.door[1] - 1], fr = [Math.round(k.x), Math.round(k.y)];
       for (const c of [fc, [fc[0] - 1, fc[1]], [fc[0] + 1, fc[1]], [fc[0], fc[1] - 1]]) if (await A.walkTo(gu, c, 150, [fr, [meEnt.x, meEnt.y]])) break;
       face(gu, k); face(k, gu);
-      for (const [w, h] of TL.blk) { if (w === '...') { dlg(''); root.classList.add('dhide'); A.bub(k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); }
-      dlg(''); root.classList.add('dhide'); guGo = true;
+      for (const [w, h] of TL.blk) { if (w === '...') { dlg(''); root.classList.add('dhide'); TT?.hide(true); A.bub(k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); }
+      dlg(''); root.classList.add('dhide'); TT?.hide(true); guGo = true;
       await walk(gu, outRoute(D, gu) || [D.door], 200); doorSe(); gu.el.style.visibility = 'hidden'; await wait(200); }
     else if (gu) { const ddx = D.door[0] - gu.x, ddy = D.door[1] - gu.y; gu.f = Math.abs(ddy) >= Math.abs(ddx) ? (ddy > 0 ? 'd' : 'u') : (ddx > 0 ? 'r' : 'l'); place(gu); }   /* 경완: 안내원은 나가는 쪽(문)을 바라봄 */
     await Promise.all([walk(k, P, WS).then(() => { doorSe(); k.el.style.visibility = 'hidden'; }), wait(WS).then(() => walk(meEnt, L, WS)).then(() => { doorSe(); meEnt.el.style.visibility = 'hidden'; })]);
@@ -1710,8 +1711,8 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     if (gu && guGo && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
     if (lost) { k.el.remove(); ents = ents.filter(x => x !== k); k = null; }   // 진 날은 강박사 없이 혼자 돌아옴
     bgmPlay('gym'); await A.black(false); await wait(300);
-    if (lost) { if (gu) { face(gu, meEnt); await mix(XL.loseG); dlg(''); root.classList.add('dhide'); } return { won: false }; }
-    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else for (const h of TL.back) await say(h);
+    if (lost) { if (gu) { face(gu, meEnt); await mix(XL.loseG); dlg(''); root.classList.add('dhide'); TT?.hide(true); } return { won: false }; }
+    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else for (const h of TL.back) await say(h);
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
@@ -1725,18 +1726,18 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     const B = TL.ban; await gsay(B[0]);
     if (gu) { face(gu, k); face(k, gu); }   /* v19.24 경완: 티키타카 땐 강박사·안내원이 서로 바라봄 */
     await say(B[1]); await gsay(B[2]); await say(B[3]); await gsay(B[4]); await say(B[5]);
-    dlg(''); root.classList.add('dhide'); if (gu) A.bub(gu, '...', 1200); await wait(1300);
+    dlg(''); root.classList.add('dhide'); TT?.hide(true); if (gu) A.bub(gu, '...', 1200); await wait(1300);
     await say(B[6]); await gsay(B[7]); await say(TL.bye);
-    dlg(''); root.classList.add('dhide'); meEnt.f = 'd'; place(meEnt);
+    dlg(''); root.classList.add('dhide'); TT?.hide(true); meEnt.f = 'd'; place(meEnt);
     await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120);
     k.el.remove(); ents = ents.filter(x => x !== k); k = null;
-    if (gu) { face(gu, meEnt); await wait(250); for (const h of TL.after) await gsay(h); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
+    if (gu) { face(gu, meEnt); await wait(250); for (const h of TL.after) await gsay(h); dlg(''); root.classList.add('dhide'); TT?.hide(true); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
     return { won: true };
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
     if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
-    if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
+    if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); TT?.hide(true); root.classList.remove('busy'); busy = false; }
 }
 /* ---------- 전설 승급 심사 = 강박사 (경완 2026-11-13 '전설 체육관 승급은 강박사가 하는 스토리도 재밌겠는데, 그럴라면 전설 알 연출도 바꿔야')
    평판이 가득 차 [승급 심사](곡이 포켓몬리그로) → 노크, 강박사 진지한 대화(개그 없음) → 훈련장 경기장 양 끝에 마주 서서 심사 배틀(서로 거다이맥스) →
@@ -1793,13 +1794,13 @@ function legXLines(N, E, ty, retry) {
     win: ['…졌네.', `해냈구먼, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
     back: [['k', `${E}, 다시 한번 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`], ['k', '한 번 졌다가 다시 일어선 관장이<br>제일 무서운 법이지.<br>자네가 딱 그렇구먼!'], ...tera] };
   if (N <= 1) return { pre: null,
-    in: [['k', `${E}. 기다리고 있었네.`], ['k', '전설 심사는 그 체육관을<br>처음 맡긴 사람이 직접 보는 것이<br>리그의 오랜 전통이란다.'], ['k', '문 닫기 직전이던 이 체육관을<br>자네에게 맡긴 것이 나였지.<br>그러니 마지막 심사도 내 몫이네.'],
+    in: [['k', `${E}. 기다리고 있었네.`], /* v23.69 경완 '강박사 들어오고 나서 관장이 전설 심사를 보게 된 감회와 소감' */ ['k', '처음 이 문을 열던 날,<br>빈 체육관에 혼자 서 있던<br>자네 모습이 아직도 선하구먼.'], ['k', '동네 체육관에서 한 계단씩<br>올라오는 것을 나는 전부<br>지켜보았단다.'], ['k', '그런 자네가 오늘 전설 심사를<br>받는다니… 솔직히 이 늙은이,<br>어젯밤엔 잠을 설쳤다네.'], ['k', '전설 심사는 그 체육관을<br>처음 맡긴 사람이 직접 보는 것이<br>리그의 오랜 전통이란다.'], ['k', '문 닫기 직전이던 이 체육관을<br>자네에게 맡긴 것이 나였지.<br>그러니 마지막 심사도 내 몫이네.'],
       ['k', '오늘은 박사가 아니라<br>심사관으로서 자네 앞에 서겠네.<br>봐주는 것은 없단다.'], ['k', '훈련장 경기장으로 가세.<br>자네 포켓몬들이 땀 흘려 온<br>바로 그 자리에서 겨루는 걸세.'], mood, ['g', '관장님… 다녀오세요.<br>여기서 기다리고 있을게요.']],
     court: ['이 경기장의 모래에는\n자네와 포켓몬들이 쌓아 온 시간이\n그대로 배어 있구먼.', '전설의 체육관이란\n그저 강한 체육관이 아니란다.\n누구도 넘지 못한 벽이라는 뜻이지.', '그 이름에 걸맞은지,\n내 30년을 함께한 포켓몬들로\n직접 확인하겠네.', `자, ${E}.\n가진 것을 전부 보여 주게!`],
     win: ['…졌네.', `훌륭했네, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
     back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>그때마다 심사는…<br>물론 또 내가 본단다. 허허!']] };
   return { pre: null,
-    in: [['k', `${E}. ${nth} 번째 전설 심사구먼.`], ['k', '몇 번을 치러도 이 심사는<br>가벼워지지 않는단다.<br>자네도, 나도 말일세.'], ['k', '경기장으로 가세.'], mood],
+    in: [['k', `${E}. ${nth} 번째 전설 심사구먼.`], ['k', '자네가 이 자리에 설 때마다<br>나는 처음 그날이 떠오른단다.<br>참 멀리도 왔구먼.'], ['k', '몇 번을 치러도 이 심사는<br>가벼워지지 않는단다.<br>자네도, 나도 말일세.'], ['k', '경기장으로 가세.'], mood],
     court: [`${ty} 타입으로도 전설의 이름에\n걸맞은지 확인하겠네.`, '지난 심사보다 나도 강해졌단다.\n각오하게.', `자, ${E}.\n전력으로 오너라!`],
     win: ['…졌네.', `또 해냈구먼, ${E}.\n심사 결과는… 합격일세.`, `${ty} 타입까지\n전설의 체육관이란다.`, '따라오게.\n전당이 자네를 기다리고 있네.'], hof: ['다시 왔구먼. 명예의 전당이란다.', '방법은 기억하지?\n몬스터볼을 하나씩 올려 보게.'], lose, loseG,
     back: [['k', `${E}, ${nth} 번째 전설이라니 대단하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 이번에도 잘 품어 주렴!`], ['k', `그리고 약속한 대로<br><b>${ty} 테라피스</b>도 받아 가게!`], ['tera'], ['k', `이제 어느 체육관에서든<br>${ty} 테라스탈을 쓸 수 있단다.<br>테라피스가 벌써 ${nth} 개째구먼!`]] };
@@ -4106,7 +4107,7 @@ const TR_TID = 990012, teraTy = t => { const s = TERA_EN[t] || ''; return s ? s[
 function orbPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>테라스탈오브</h4><div class="le-get mr-get to-get"><img alt="" src="${IMG}dbk/it/TERAORB.png"></div><p class="gy-msg mr-d">테라스탈에 쓰는 구슬.<br>배틀 중에 포켓몬을 테라 타입으로<br>테라스탈시킬 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 async function teraTut({ k, gu, D, t }) {
-  const g = st(), ty = TYPE_KO[t], M = MG_TUT[t] || MG_TUT[10], B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null;
+  const g = st(), ty = TYPE_KO[t], M = MG_TUT[t] || MG_TUT[10], B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null, k0 = null;
   try { try { window.GymBGM?.sePrep?.(['DP_DOOR', 'ME_FANFA3', 'DP_DECIDE']); } catch (e) {}
     T = storyTalk(); const say = (x, o) => T.say(x, o), duo = on => { if (!gu) return; if (on) { face(gu, k); face(k, gu); } else { face(k, meEnt); face(gu, meEnt); } };
     await say(`그리고 ${NK()}.\n드디어 마지막 비기를\n알려 줄 때가 온 것 같구먼!`);
@@ -4122,7 +4123,7 @@ async function teraTut({ k, gu, D, t }) {
       await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.\n테라 타입은 ${ty} 타입이란다.`);
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: TR_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[2], lv: 50, it: '', ab: M[3], tera: teraTy(t) });
       gse('DP_DECIDE'); await say('연습 배틀 상대는\n내 연구소 연구원이\n맡아 줄 거란다.');
-      { T.hide(true); const kx = Math.round(k.x), ky = Math.round(k.y), fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
+      { T.hide(true); const kx = Math.round(k.x), ky = Math.round(k.y); k0 = [kx, ky]; const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
         if (sx !== kx) await walk(k, [[sx, ky]], 300);
         face(k, { x: D.door[0], y: D.door[1] }); await wait(250); doorSe(); await wait(200);
         rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); const rp = route(D, D.door, [kx, ky], occOf([rs])) || route(D, D.door, [kx, ky], []) || [];
@@ -4142,7 +4143,7 @@ async function teraTut({ k, gu, D, t }) {
       if (!open) return; T.hide(false); if (rs) { face(meEnt, rs); face(k, rs); }
       await say('우와… 보석처럼 빛나더니\n제 꼬렛이 날아갔어요!', RW); await say('눈이 부셔서 기술이\n오는 줄도 몰랐어요…', RW); face(k, meEnt); face(meEnt, k);
       await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
-      if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); face(k, meEnt); T.hide(false); }
+      if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); /* v23.69 경완 '연구원 나가고 나서 강박사 다시 관장 앞으로 자리 잡기' */ if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); T.hide(false); }
     }
     if (!open) return;
     await say('이것으로 내가 전할 비기는\n전부 전했단다.'); await say(`이제부터는 ${NK()}${pI(NK())}\n자기만의 비기를\n만들어 갈 차례지. 허허!`);
