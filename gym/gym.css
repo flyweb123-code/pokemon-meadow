@@ -4401,3 +4401,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop .mr-get.to-get img{width:112px;height:112px;filter:drop-shadow(0 0 12px rgba(120,220,255,.85))}
 /* v23.69 테라스탈 버튼 타입 아이콘 (쇼다운 테라 타입 아이콘) */
 .bt.mob .bb.gkb.terastallize:has(.gk-ti){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-ti{position:absolute;left:8px;top:50%;width:40px;height:40px;margin-top:-20px;background:center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+/* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
+.bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}
