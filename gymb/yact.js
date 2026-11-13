@@ -223,13 +223,18 @@ const CSS = `
 #yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .mg-hg b{font-size:15px}#yact .ya-arc .ex b{font-size:12px;letter-spacing:-.5px}
 #yact .ya-arc .ri{width:16px;height:16px;font-size:8px}#yact .ya-arc .mg-hg .coin{width:13px;height:13px}
 #yact .ya-arc .sg small,#yact .ya-arc .sg .ya-egt{display:none}
+/* 경완 2026-11-14 'EV 대신 능력치 이름, Lv 말고 경험치, 번뜩임은 떨어지는 조각과 같은 아이콘' */
+#yact .ya-arc .ri{width:auto;height:13px;padding:0 3px;font-size:9px;line-height:13px;display:block;border-width:1.5px;white-space:nowrap;color:#fff}
+#yact .ya-arc .ri.sv{width:20px;height:20px;padding:0;border:0;background:none;margin-bottom:-2px}
+#yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .ex b{font-size:12px}
 #yact .ya-tl{left:8px;top:calc(138px + env(safe-area-inset-top))}
 /* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
-#yact .ya-cb{--cc:#ffe27a;display:inline-block;padding:4px 10px 7px 9px;background:rgba(26,28,50,.72);border:3px solid var(--ink);border-left:7px solid var(--cc);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 3px 0 rgba(0,0,0,.25);font-size:14px;font-weight:700;text-shadow:0 2px 0 var(--ink)}
-#yact .ya-cb[data-t="2"]{--cc:#ffa040}#yact .ya-cb[data-t="3"]{--cc:#ff5a4a}
-#yact .ya-cb b{font-size:36px;line-height:1;color:var(--cc);margin-right:5px;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 3px 0 var(--ink),2px 3px 0 var(--ink)}
-#yact .ya-cb small{display:table;font-size:10px;line-height:15px;padding:0 6px;margin-top:4px;background:#bff59a;color:var(--ink);text-shadow:none;border:2px solid var(--ink)}
-#yact .ya-cb i{width:100%;min-width:96px;height:7px;border-width:2px;margin-top:5px;box-sizing:border-box;background:#14162a}
+/* 경완 2026-11-14 '콤보는 박스 없이' + '색 자체가 마음에 안 듦': 칸을 없애고 흰 숫자에 진한 테두리, 남은 시간은 밑줄. 콤보가 쌓이면 밑줄과 '콤보' 글자만 하늘·보라로 */
+#yact .ya-cb{--cc:#fff;display:inline-block;padding:0 0 0 2px;background:none;border:0;box-shadow:none;font-size:14px;font-weight:700;color:var(--cc);text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
+#yact .ya-cb[data-t="2"]{--cc:#8adcff}#yact .ya-cb[data-t="3"]{--cc:#d2a8ff}
+#yact .ya-cb b{font-size:42px;line-height:1;color:#fff;margin-right:5px;text-shadow:-3px 0 0 var(--ink),3px 0 0 var(--ink),0 -3px 0 var(--ink),0 5px 0 var(--ink),-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 5px 0 var(--ink),3px 5px 0 var(--ink)}
+#yact .ya-cb small{display:block;font-size:11px;line-height:14px;padding:0;margin-top:5px;background:none;border:0;color:#fff;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
+#yact .ya-cb i{width:100%;min-width:92px;height:8px;border:2px solid var(--ink);margin-top:6px;box-sizing:border-box;background:var(--ink)}
 #yact .ya-cb u{background:var(--cc)}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
@@ -323,9 +328,9 @@ const HTML = `<canvas></canvas>
 <div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
 <div class="ya-hud ya-arc">
   <div class="sg mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></div>
-  <div class="sg ex"><i class="ri">Lv</i><b class="ya-rwe">+0</b></div>
-  <div class="sg ev"><i class="ri">EV</i><b class="ya-rwv">0/8</b><small class="ya-rwk"></small></div>
-  <div class="sg ya-eg"><i class="ri">★</i><b class="ya-egp"></b><em class="ya-egt"></em></div>
+  <div class="sg ex"><i class="ri">경험치</i><b class="ya-rwe">+0</b></div>
+  <div class="sg ev"><i class="ri ya-rwk"></i><b class="ya-rwv">0/8</b></div>
+  <div class="sg ya-eg"><svg class="ri sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b class="ya-egp"></b><em class="ya-egt"></em></div>
   <div class="ya-stb"><b class="ya-ph">스테이지</b><div class="ya-stn"><div class="n"><b class="ya-wn">1</b><small>/${STAGES.length}</small></div><div class="ya-stg"></div></div></div></div>
 <span hidden><i class="ya-rwxb"></i><i class="ya-rwvb"></i><i class="ya-egf"></i><i class="ya-egf0"></i></span>
 <div class="ya-hud ya-tl"><div class="ya-cb"><b>0</b>콤보<small></small><i><u></u></i></div></div>
