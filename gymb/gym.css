@@ -4403,3 +4403,12 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bb.gkb.terastallize:has(.gk-ti){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-ti{position:absolute;left:8px;top:50%;width:40px;height:40px;margin-top:-20px;background:center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
 /* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
 .bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}
+/* 경완 2026-11-14 관장·라이벌별 썬문식 배경 → 얼굴 띠도 배경 색에 맞춤 */
+#gym .bt-enc .band:is(.sm-defR,.sm-defB,.sm-crazy,.sm-digital,.sm-plasma,.sm-special,.sm-ultra){z-index:3}
+#gym .bt-enc .band.sm-defR{background:repeating-linear-gradient(-60deg,#6a1218 0 10px,#580e14 10px 20px);box-shadow:0 -4px 0 #ffb0a0,0 4px 0 #ffb0a0,0 -7px 0 #c02030,0 7px 0 #c02030}#gym .bt-enc .band.sm-defR b small{color:#ffb8a8}
+#gym .bt-enc .band.sm-defB{background:repeating-linear-gradient(-60deg,#1c2a78 0 10px,#172266 10px 20px);box-shadow:0 -4px 0 #bfe6ff,0 4px 0 #bfe6ff,0 -7px 0 #a040e0,0 7px 0 #a040e0}#gym .bt-enc .band.sm-defB b small{color:#bfe6ff}
+#gym .bt-enc .band.sm-digital{background:repeating-linear-gradient(-60deg,#18603a 0 10px,#12522f 10px 20px);box-shadow:0 -4px 0 #c8ffd8,0 4px 0 #c8ffd8,0 -7px 0 #40d080,0 7px 0 #40d080}#gym .bt-enc .band.sm-digital b small{color:#b8ffd0}
+#gym .bt-enc .band.sm-plasma{background:repeating-linear-gradient(-60deg,#3a3010 0 10px,#2c240a 10px 20px);box-shadow:0 -4px 0 #fff4b0,0 4px 0 #fff4b0,0 -7px 0 #e8b820,0 7px 0 #e8b820}#gym .bt-enc .band.sm-plasma b small{color:#ffe470}
+#gym .bt-enc .band.sm-crazy{background:repeating-linear-gradient(-60deg,#3e1258 0 10px,#320e48 10px 20px);box-shadow:0 -4px 0 #ffb8e8,0 4px 0 #ffb8e8,0 -7px 0 #d02870,0 7px 0 #d02870}#gym .bt-enc .band.sm-crazy b small{color:#ffb0e0}
+#gym .bt-enc .band.sm-special{background:repeating-linear-gradient(-60deg,#7a3a86 0 10px,#6c3078 10px 20px);box-shadow:0 -4px 0 #fff,0 4px 0 #fff,0 -7px 0 #f8a0d0,0 7px 0 #f8a0d0}#gym .bt-enc .band.sm-special b small{color:#ffd8f0}
+#gym .bt-enc .band.sm-ultra{background:repeating-linear-gradient(-60deg,#0e3a6a 0 10px,#0a305a 10px 20px);box-shadow:0 -4px 0 #fff,0 4px 0 #fff,0 -7px 0 #60c8ff,0 7px 0 #60c8ff}#gym .bt-enc .band.sm-ultra b small{color:#c8ecff}

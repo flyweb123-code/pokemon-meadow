@@ -1039,11 +1039,23 @@ const SM_ON = true;
 function smKind(o) { if (!SM_ON || o.exam || o.wild) return null; const m = o.music || '', t = o.foe?.tr || '';
   if (/Roc/i.test(m) || /rocket|ariana|archer|giovanni|proton|petrel/.test(t)) return 'evil';
   if (/champ|tenno|Tenno|Champ/.test(m)) return 'elite';
-  if (['gymBattle', 'rival', 'hgGymJ', 'hgGymK', 'hgRival', 'emGym', 'emRival'].includes(m)) return 'def'; return null; }
-const SM_F = { evil: ['EvilTeam/background', 'EvilTeam/swirl', 'EvilTeam/ring0', 'EvilTeam/ring1', 'EvilTeam/ray0', 'EvilTeam/ray1', 'EvilTeam/logo0', 'EvilTeam/logo1'], elite: ['Elite/background', 'Elite/vacuum', 'Elite/particle', 'Elite/shine'], def: ['Default/background', 'Default/layer', 'Default/final'] };
+  if (['gymBattle', 'rival', 'hgGymJ', 'hgGymK', 'hgRival', 'emGym', 'emRival'].includes(m)) return SM_TR[t] || 'def'; return null; }
+/* 경완 2026-11-14 '관장·라이벌별 배경 연출 다르게 (스컬단 빼고)': 관장은 타입 느낌에 맞는 썬문식 배경, 라이벌은 사람마다, 성도 사천왕은 사천왕 배경 (EBS4 그림)
+   def 주황 = 불꽃·바위·격투·노말·땅, defR 어두운 빨강 = 고스트·독·드래곤·악, defB 파랑 = 물·얼음·비행·에스퍼, digital 초록 = 풀·벌레, plasma 금빛 번개 = 전기·강철 */
+const SM_TR = { leader_roark: 'def', leader_gardenia: 'digital', leader_maylene: 'def', leader_wake: 'defB', leader_fantina: 'defR', leader_byron: 'plasma', leader_candice: 'defB', leader_volkner: 'plasma',
+  hg_falkner: 'defB', hg_bugsy: 'digital', hg_whitney: 'def', hg_morty: 'defR', hg_chuck: 'def', hg_jasmine: 'plasma', hg_pryce: 'defB', hg_clair: 'defR',
+  hg_will: 'elite', hg_koga2: 'elite', hg_bruno2: 'elite', hg_karen: 'elite',
+  hg_green: 'def', hg_brock: 'def', hg_misty: 'defB', hg_surge: 'plasma', hg_erika: 'digital', hg_janine: 'defR', hg_sabrina: 'defB', hg_blaine: 'def',
+  leader_roxanne: 'def', leader_brawly: 'def', leader_wattson: 'plasma', leader_flannery: 'def', leader_norman: 'def', leader_winona: 'defB', leader_tate_and_liza: 'defB', leader_juan: 'defB',
+  rival_barry: 'crazy', hg_silver: 'ultra', wally: 'special' };
+const SM_F = { evil: ['EvilTeam/background', 'EvilTeam/swirl', 'EvilTeam/ring0', 'EvilTeam/ring1', 'EvilTeam/ray0', 'EvilTeam/ray1', 'EvilTeam/logo0', 'EvilTeam/logo1'], elite: ['Elite/background', 'Elite/vacuum', 'Elite/particle', 'Elite/shine'], def: ['Default/background', 'Default/layer', 'Default/final'],
+  defR: ['Default/backgroundEvil', 'Default/layerEvil', 'Default/finalEvil'], defB: ['Default/backgroundSkull', 'Default/layerSkull', 'Default/finalSkull'],
+  crazy: ['Crazy/ring0', 'Crazy/ring1', 'Crazy/ring2', 'Crazy/particle'], digital: ['Digital/background', 'Digital/particle', 'Digital/shine'],
+  plasma: ['Plasma/background', 'Plasma/beam', 'Plasma/particle', 'Plasma/shine', 'Plasma/streaks'], special: ['Special/background', 'Special/glow0', 'Special/glow1', 'Special/glow2', 'Special/particle', 'Special/ring'],
+  ultra: ['Ultra/background', 'Ultra/overlay', 'Ultra/particle', 'Ultra/ring', 'Ultra/shine'] };
 const smImg = u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u; });
 async function smEnc(w, opts, kind) {
-  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1]] = await smImg(`${IMG}sm/${f}.png`)), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
+  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1].replace(/(Evil|Skull)$/, '')] = await smImg(`${IMG}sm/${f}.png`)), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
   const cv = document.createElement('canvas'), W = 512, H = Math.round(512 * Math.max(.6, w.clientHeight / Math.max(1, w.clientWidth)));
   cv.width = W; cv.height = H; cv.className = 'bt-sm'; w.append(cv); const x = cv.getContext('2d'), C = { x: W / 2, y: H / 2 };
   const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
@@ -1051,7 +1063,8 @@ async function smEnc(w, opts, kind) {
   const cover = im => { if (!im) return; const s = Math.max(W / im.width, H / im.height); x.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); };
   const rays = Array.from({ length: 26 }, () => ({ a: Math.random() * 6.28, d: 60 + Math.random() * 300, v: 300 + Math.random() * 400, big: Math.random() < .3 }));
   const flash = (t, a, b) => { if (t > a && t < b) { x.fillStyle = `rgba(255,255,255,${1 - (t - a) / (b - a)})`; x.fillRect(0, 0, W, H); } };
-  const T0 = { evil: 1.7, elite: 1.4, def: .35 }[kind], END = { evil: 3.7, elite: 3.4, def: 2.4 }[kind]; let snd = {};
+  const T0 = { evil: 1.7, elite: 1.4 }[kind] ?? .35, END = { evil: 3.7, elite: 3.4 }[kind] ?? 2.4; let snd = {};
+  const glowIn = t => Math.min(1, t / .35);   /* 새 배경들: 처음 0.35초에 확 밝아짐 */
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
   // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
   const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
@@ -1068,7 +1081,26 @@ async function smEnc(w, opts, kind) {
       rays.forEach(r => { r.d -= r.v * .02; if (r.d < 10) { r.d = 340; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
       if (t > 1.2) once('sh', () => se('KIRAKIRA2')); rot(I.shine, C.x, C.y, t, t < 1.2 ? .3 + t * .4 : .8 + Math.sin(t * 8) * .05, .9); flash(t, 1.2, 1.6); trainer(t); },
     def(t) { cover(I.background); [[I.layer, 900], [I.final, 1500]].forEach(([im, sp]) => { if (!im) return; const o = -(t * sp) % W; x.drawImage(im, o, 0, W, H); x.drawImage(im, o + W, 0, W, H); }); trainer(t); },
+    crazy(t) { x.fillStyle = '#12051c'; x.fillRect(0, 0, W, H); const s = Math.max(W, H) / 600, k = glowIn(t);
+      rot(I.ring0, C.x, C.y, t * 1.6, s * (1.05 + Math.sin(t * 6) * .04), k); rot(I.ring1, C.x, C.y, -t * 2.3, s * .92, k); rot(I.ring2, C.x, C.y, t * 3.1, s * (.8 + Math.sin(t * 9) * .05), .8 * k);
+      rays.forEach(r => { r.d += r.v * .02; if (r.d > 360) { r.d = 30; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, t * 4, r.big ? 1 : .6, .9); });
+      flash(t, 0, .3); trainer(t); },
+    digital(t) { cover(I.background); const k = glowIn(t);
+      rays.forEach(r => { r.d -= r.v * .012; if (r.d < -20) { r.d = H + 20; r.a = Math.random() * W; } rot(I.particle, r.a, r.d, 0, r.big ? .9 : .55, .85 * k); });
+      rot(I.shine, C.x, C.y, t * .8, (1.4 + Math.sin(t * 5) * .1) * k, .9); flash(t, 0, .3); trainer(t); },
+    plasma(t) { cover(I.background); if (I.streaks) { const o = (t * 1300) % W; x.globalAlpha = .9; x.drawImage(I.streaks, -o, C.y - 98, W, 196); x.drawImage(I.streaks, W - o, C.y - 98, W, 196); x.globalAlpha = 1; }
+      rot(I.beam, C.x, C.y, 0, W / 540, .55 + Math.random() * .35); rays.forEach(r => { r.d -= r.v * .02; if (r.d < 10) { r.d = 340; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d * .6, r.a, r.big ? .8 : .5, .9); });
+      rot(I.shine, C.x, C.y, -t * 1.5, 1.2 + Math.sin(t * 10) * .08, glowIn(t)); flash(t, 0, .3); trainer(t); },
+    special(t) { cover(I.background); [I.glow0, I.glow1, I.glow2].forEach((g, k) => { if (!g) return; x.globalAlpha = .5 + .5 * Math.sin(t * 3 + k * 2.1); cover(g); }); x.globalAlpha = 1;
+      for (let k = 0; k < 3; k++) { const q = (t * .7 + k / 3) % 1; rot(I.ring, C.x, C.y, t, .3 + q * 2.4, (1 - q) * .9); }
+      rays.forEach(r => { r.d += r.v * .006; if (r.d > 360) { r.d = 20; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, t, r.big ? .5 : .3, .8); });
+      flash(t, 0, .3); trainer(t); },
+    ultra(t) { cover(I.background); rot(I.overlay, C.x, C.y, t * .3, Math.max(W, H) / 400, .8);
+      for (let k = 0; k < 2; k++) { const q = (t * 1.1 + k / 2) % 1; rot(I.ring, C.x, C.y, -t, .4 + q * 3, 1 - q); }
+      rays.forEach(r => { r.d -= r.v * .025; if (r.d < 10) { r.d = 340; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, 0, r.big ? 1.4 : .8, .95); });
+      rot(I.shine, C.x, C.y, t * 2, (1.1 + Math.sin(t * 7) * .1) * glowIn(t), 1); flash(t, 0, .3); trainer(t); },
   };
+  D.defR = D.defB = D.def;
   await new Promise(ok => { const t0 = performance.now(); const tick = () => { const t = (performance.now() - t0) / 1000; x.clearRect(0, 0, W, H); D[kind](t); if (t < END) requestAnimationFrame(tick); else ok(); }; tick(); });
 }
 
