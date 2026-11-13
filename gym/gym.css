@@ -4420,3 +4420,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.18 본가 야생 등장: 어둡게(Tone -80) 발판과 같이 미끄러짐 → 0.2초에 제 색 */
 .bt-mon.e.wdk{filter:brightness(.45);transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .1s!important}
 .bt-mon.e.on:not(.wdk){transition:transform .3s ease-out,filter .2s linear,opacity .1s}
+/* v24.22 경완 '심사 받기 버튼은 하단 고정, 승급 혜택이 길면 혜택만 위아래 스크롤' */
+#gym .gy-bsw .gy-body{overflow:hidden}#gym .gy-bsw .bsw-mid{min-height:0}#gym .gy-bsw .bsw-top{flex:none}
+#gym .gy-bsw .bsw-ben{flex:0 1 auto;min-height:0;display:flex;flex-direction:column}#gym .gy-bsw .bsw-ben h5{flex:none}
+#gym .gy-bsw .bsw-ben .pk-ben{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}#gym .gy-bsw .bsw-ben .pk-ben li{flex:none}#gym .gy-bsw .bsw-go{flex:none}
