@@ -1369,6 +1369,7 @@ function bsScreen() {
           <div class="bsw-c nx"><small>승급 후</small><span class="bsw-bb"><i class="bsw-halo"></i>${bdHtml(g.ty, gi + 1)}</span><b>${GRADES[gi][1]}</b></div></div></div>
       <div class="bsw-ben"><h5>승급 혜택</h5>${perkHtml(gi)}</div></div>
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
+  { const L = el.querySelector('.bsw-ben .pk-ben'), fd = () => { const t = L.scrollTop > 2, d = L.scrollHeight - L.clientHeight - L.scrollTop > 2; L.classList.toggle('fT', t); L.classList.toggle('fB', d); }; L.addEventListener('scroll', fd, { passive: true }); requestAnimationFrame(fd); setTimeout(fd, 400); addEventListener('resize', fd); }   /* v24.24 경완 '스크롤 남은 쪽 끝을 흐리게' (스크롤 페이드) */
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); if (bsMus) { bsMus = false; bgmPlay('gym'); } return homeSay(); }
     if (b.dataset.a === 'go') { el.remove(); 
