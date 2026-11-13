@@ -25,31 +25,18 @@ const CSS = `
 #yact *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 #yact canvas{position:absolute;left:0;top:0;display:block;image-rendering:pixelated}
 #yact .ya-hud{position:absolute;z-index:3;pointer-events:none}
-#yact .mg-sc{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:8px;row-gap:2px;padding:6px 12px 6px 8px;background:rgba(28,28,46,.66);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22)}
-#yact .ya-ph{font-size:11px;line-height:15px;padding:0 6px;color:var(--ink);background:#ffe27a;border:2px solid var(--ink)}
-#yact .ya-m{font-size:22px;line-height:1.1;color:#fff;text-shadow:0 2px 0 var(--ink)}
-#yact .mg-hg{grid-column:1/-1;display:flex;align-items:center;gap:4px;font-size:13px;color:#ffe27a;text-shadow:0 1px 0 var(--ink);transform-origin:0 50%}
-#yact .mg-hg b{font-size:15px}
 #yact .mg-hg.up{animation:yaHg .35s ease-out}
 @keyframes yaHg{40%{transform:scale(1.25);color:#fff}}
 #yact .coin{display:inline-block;width:14px;height:14px;background:#ffc830;box-shadow:inset -3px -3px 0 #d08a00,inset 3px 3px 0 #fff2a0,0 0 0 2px #6a4400;flex:none;margin-right:6px}
-#yact .ya-tl{left:10px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 #yact .pan{background:rgba(28,28,46,.66);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22);padding:5px 8px}
-#yact .ya-hp{width:140px;font-size:11px}
 #yact .ya-hp .r1{display:flex;justify-content:space-between;gap:4px;margin-bottom:3px;white-space:nowrap}
 #yact .bar{height:8px;background:#4a4a5a;border:2px solid var(--ink);position:relative;overflow:hidden}
 #yact .ya-hpf{position:absolute;left:0;top:0;bottom:0;background:#58d050;transition:width .2s}
 #yact .ya-hpf.y{background:#f8c030}#yact .ya-hpf.r{background:#f05038}
-#yact .ya-tr{right:10px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:auto}
-#yact .ya-tm{font-size:26px;line-height:1;min-width:52px;text-align:center;text-shadow:0 2px 0 var(--ink)}
 #yact .ya-tm.low{color:#ff7a6a;animation:yaTm .5s steps(2) infinite}
 @keyframes yaTm{50%{opacity:.5}}
 #yact .b3{font-family:var(--px);font-weight:700;border:3px solid var(--ink);color:var(--ink);background:#fff;box-shadow:0 4px 0 var(--ink);cursor:pointer;transition:transform .06s,box-shadow .06s}
 #yact .b3:active,#yact .b3.pr{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-#yact .ya-quit{font-size:11px;padding:4px 8px;background:#e9e4d8}
-#yact .ya-rw{right:10px;top:calc(84px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:4px;width:140px}
-#yact .ya-rw .ch{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 8px}
-#yact .ya-rw .ch b{font-size:13px}
 #yact .ya-rw .ex b{color:#9fd8ff}#yact .ya-rw .ev b{color:#d6b4ff}
 #yact .ya-eg{padding:5px 8px 6px;transform-origin:0 50%}
 #yact .ya-eg.up{animation:yaEg .5s ease-out}
@@ -67,7 +54,6 @@ const CSS = `
 #yact .ya-joyk{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border-radius:50%;background:rgba(255,255,255,.85);border:3px solid var(--ink)}
 #yact .ya-hint{position:absolute;left:18px;bottom:calc(26px + env(safe-area-inset-bottom));z-index:3;font-size:11px;text-shadow:0 1px 0 var(--ink);opacity:.85;pointer-events:none;display:none}
 #yact .ya-pad{position:absolute;right:10px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:4;display:none;flex-direction:column;align-items:center;gap:10px}   /* 경완 2026-11-13: 회피 버튼은 기술 버튼 위 */
-#yact .ya-mvs{display:grid;grid-template-columns:repeat(2,84px);gap:7px}
 #yact .mvb{position:relative;height:54px;padding:4px 4px 3px;border:3px solid var(--ink);background:var(--tc);color:#fff;font-family:var(--px);text-align:left;box-shadow:0 4px 0 var(--ink),inset 0 2px 0 rgba(255,255,255,.35);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;cursor:pointer}
 #yact .mvb .tg{font-size:9px;line-height:1;align-self:flex-start;padding:1px 3px;background:rgba(0,0,0,.28)}
 #yact .mvb b{font-size:12px;line-height:1.1;text-shadow:0 1px 0 var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
@@ -114,66 +100,122 @@ const CSS = `
 @keyframes yaNo{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 #yact .ya-dg.cd{color:#8a8794}
 #yact .ya-ov{position:absolute;inset:0;z-index:8;background:rgba(14,14,28,.45)}
-#yact .ya-win{position:absolute;z-index:9;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 28px));max-height:calc(100% - 24px);overflow:auto;background:#fbf8f0;color:var(--ink);border:3px solid var(--ink);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--ink),6px 8px 0 6px rgba(0,0,0,.25);padding:14px 14px 16px}
-#yact .ya-win h2{margin:0 0 4px;font-size:18px;text-align:center}
-#yact .ya-win .sub{margin:0 0 10px;font-size:11px;text-align:center;color:#5a5a6a;line-height:1.5}
-#yact .ya-win h3{font-size:12px;margin:10px 0 6px;color:#5a5a6a}
-#yact .ya-op{font-size:10.5px;text-align:center;color:#2f7a3a;background:#e6f4e2;border:2px solid #b8dcb0;padding:4px 6px;margin:0 0 6px}
 #yact .ya-pk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 #yact .pkc{font-family:var(--px);border:3px solid var(--ink);background:#fff;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 3px 0 var(--ink);cursor:pointer;color:var(--ink);min-width:0}
 #yact .pkc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 #yact .pkc img{width:40px;height:40px;image-rendering:pixelated;object-fit:contain}
 #yact .pkc b{font-size:12px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#yact .pkc small{font-size:10px;color:#6a6a7a}
 #yact .pkc.on{background:#fff3c4;box-shadow:0 3px 0 var(--ink),inset 0 0 0 2px #f0b020}
-#yact .ya-pmv{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center}
 #yact .ya-pmv span{font-size:10px;padding:2px 5px;background:var(--tc);color:#fff;border:2px solid var(--ink);text-shadow:0 1px 0 rgba(0,0,0,.4)}
 #yact .ya-stt{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
 #yact .stc{font-family:var(--px);font-size:11px;padding:7px 0;border:2px solid var(--ink);background:#fff;color:var(--ink);box-shadow:0 2px 0 var(--ink);cursor:pointer}
 #yact .stc:active{transform:translateY(2px);box-shadow:none}
 #yact .stc.on{background:#b48cf0;color:#fff;text-shadow:0 1px 0 var(--ink)}
-#yact .ya-foe{font-size:11px;margin:8px 0 0;text-align:center;color:#4a4a5a}
-#yact .how{font-size:10.5px;line-height:1.6;color:#4a4a5a;background:#f0ebde;border:2px solid #d8d0bc;padding:6px 8px;margin-top:10px}
-#yact .how b{color:var(--ink)}
-#yact .bigb{display:block;width:100%;margin-top:12px;padding:11px 0;font-size:15px;background:#ffd84a}
+#yact .bigb{display:block;width:100%;margin-top:14px;padding:11px 0;font-size:15px;background:#ffd84a}
 #yact .bigb.sec{background:#e9e4d8;font-size:13px;padding:9px 0}
 #yact .ya-res.pop{animation:yaPop .32s cubic-bezier(.2,1.5,.4,1)}
 @keyframes yaPop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
-#yact .ya-rl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
-#yact .ya-rl li{animation:yaRow .3s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(var(--i,0)*.15s + .25s);display:grid;grid-template-columns:auto 1fr;grid-template-areas:"k b" "e e";align-items:center;padding:6px 9px;background:#fff;border:2px solid var(--ink);column-gap:6px}
-#yact .ya-rl .k{grid-area:k;font-size:12px;display:flex;align-items:center}
-#yact .ya-rl b{grid-area:b;text-align:right;font-size:16px}
-#yact .ya-rl em{grid-area:e;font-style:normal;font-size:10px;color:#6a6a7a;margin-top:2px}
-#yact .ya-rl .xb{grid-column:1/-1;height:6px;background:#dcd8ce;border:1px solid var(--ink);margin-top:4px;position:relative}
-#yact .ya-rl .xb i{position:absolute;left:0;top:0;bottom:0;background:#48a8f0;width:var(--w);animation:yaXb .7s .5s ease-out both}
 @keyframes yaXb{0%{width:0}}
 @keyframes yaRow{0%{opacity:0;transform:translateX(-16px) scale(.95)}}
 #yact .ya-rl .egq{font-style:normal;font-size:9px;padding:1px 4px;margin-right:5px;border:1px solid var(--ink);color:#fff;background:var(--tc);text-shadow:0 1px 0 rgba(0,0,0,.5)}
 #yact .ya-rl .lvup{font-style:normal;color:#e05a20;font-weight:700}
 #yact .ya-rl b.ev{color:#8a4ad8}#yact .ya-rl b.fr{color:#e0507a}#yact .ya-rl b.eg{color:#c08a00}
-#yact .ya-rl li.ya-gold{background:#fff6d0}#yact .ya-rl li.ya-gold b{color:#a87800}
+/* 경완 2026-11-13: 화면 배치·창 다듬기 — 왼쪽 = 내 포켓몬(HP·쓰러뜨린 수·골드·콤보), 가운데 = 웨이브·남은 시간, 오른쪽 = 그만하기·이번 판 보상 */
+#yact .ya-tl{left:10px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:5px;align-items:flex-start;width:134px}
+#yact .ya-hp{width:100%;font-size:11px;padding:5px 7px 6px}
+#yact .ya-hp .r2{display:flex;align-items:center;gap:6px}
+#yact .ya-hp .bar{height:10px;flex:1}
+#yact .ya-hpn{font-size:10px;white-space:nowrap}
+#yact .ya-me{min-width:0;overflow:hidden;text-overflow:ellipsis}
+#yact .ya-sc{display:flex;gap:5px;width:100%}
+#yact .ya-sc .pan{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:3px 4px;font-size:11px;white-space:nowrap;min-width:0}
+#yact .ya-kc small{font-size:9px;line-height:13px;padding:0 3px;background:#fff;color:var(--ink);font-weight:700}
+#yact .ya-m{font-size:13px;color:#fff;text-shadow:0 1px 0 var(--ink)}
+#yact .mg-hg{color:#ffe27a;text-shadow:0 1px 0 var(--ink)}
+#yact .mg-hg b{font-size:13px}
+#yact .mg-hg .coin{width:12px;height:12px;margin-right:4px}
+#yact .ya-tc{left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+#yact .ya-ph{font-size:10px;line-height:15px;padding:0 6px;color:var(--ink);background:#ffe27a;border:2px solid var(--ink);white-space:nowrap;position:relative;z-index:1;margin-bottom:-3px}
+#yact .ya-tm{font-size:26px;line-height:1;min-width:64px;padding:8px 0 5px;text-align:center;text-shadow:0 2px 0 var(--ink);background:rgba(28,28,46,.66);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22)}
+#yact .ya-tr{right:10px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:stretch;gap:5px;width:126px}
+#yact .ya-quit{font-size:11px;padding:4px 8px;background:#e9e4d8;align-self:flex-end;pointer-events:auto}
+#yact .ya-rw{display:flex;flex-direction:column;gap:4px}
+#yact .ya-rw .ch{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 7px;white-space:nowrap}
+#yact .ya-rw .ch b{font-size:13px}
+#yact .ya-mvs{display:grid;grid-template-columns:repeat(2,88px);gap:7px}
+#yact .ya-mvs .mvb{height:58px}
+#yact .ya-pad .ya-dg{width:66px;height:66px;font-size:13px}
+#yact .ya-win{position:absolute;z-index:9;left:50%;top:50%;transform:translate(-50%,-50%);width:min(344px,calc(100% - 28px));max-height:calc(100% - 24px);overflow:auto;background:#fbf8f0;color:var(--ink);border:3px solid var(--ink);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--ink),6px 8px 0 6px rgba(0,0,0,.25);padding:0}
+#yact .ya-hd{position:sticky;top:0;z-index:2;flex:none;min-height:42px;background:var(--ink);color:#fff;padding:10px 14px 9px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:3px solid #f0b020}
+#yact .ya-tt{display:block;margin:0;font-size:17px;line-height:1.2;text-shadow:0 2px 0 rgba(0,0,0,.4)}
+#yact .ya-tg{font-size:9.5px;line-height:1.3;padding:2px 6px;background:#bff59a;color:#1f5a2a;border:2px solid #0e0e18;white-space:nowrap}
+#yact .ya-hd.rs-hd{justify-content:center;text-align:center}
+#yact .ya-hd.win{background:#f0b020;border-bottom-color:var(--ink)}
+#yact .ya-hd.win .ya-tt{color:var(--ink);text-shadow:0 2px 0 #ffe9a0}
+#yact .ya-bd{padding:12px 14px 14px}
+#yact .ya-win .sub{margin:0 0 2px;font-size:11px;text-align:center;color:#5a5a6a;line-height:1.6}
+#yact .ya-win .sub b{color:var(--ink)}
+#yact .ya-win h3{font-size:11.5px;margin:12px 0 6px;color:var(--ink);display:flex;align-items:center;gap:6px}
+#yact .ya-win h3::before{content:"";width:4px;height:12px;background:#f0b020;flex:none}
+#yact .ya-win h3 small{font-size:10px;color:#7a7a8a;font-weight:400}
+#yact .ya-op{font-size:10px;text-align:center;color:#6a6a7a;margin:10px 0 0;line-height:1.4}
+#yact .ya-pmv{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;justify-content:center;padding:6px;background:#f0ebde;border:2px solid #d8d0bc}
+#yact .ya-foe{font-size:11px;margin:6px 0 0;padding:6px 8px;text-align:center;color:#4a4a5a;background:#f0ebde;border:2px solid #d8d0bc}
+#yact .how{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;font-size:10.5px;line-height:1.5;color:#4a4a5a;margin:12px 0 0;padding-top:11px;border-top:2px dashed #d8d0bc;align-items:start}
+#yact .how dt{font-weight:700;font-size:10px;line-height:1.5;color:#fff;background:var(--ink);padding:0 6px;text-align:center}
+#yact .how dd{margin:0}
+#yact .how b{color:var(--ink)}
+#yact .rs-me{display:flex;align-items:center;gap:10px;margin-top:10px;padding:8px 10px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 0 rgba(32,32,44,.25)}
+#yact .rs-im{width:44px;height:44px;image-rendering:pixelated;object-fit:contain;flex:none}
+#yact .rs-mi{flex:1;min-width:0}
+#yact .rs-mi .r1{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:13px;white-space:nowrap}
+#yact .rs-mi .r1 b{min-width:0;overflow:hidden;text-overflow:ellipsis}
+#yact .rs-lv{font-size:11px;color:#5a5a6a}
+#yact .rs-lv .lvup{font-style:normal;color:#e05a20;font-weight:700}
+#yact .rs-mi .xb{display:block;height:8px;background:#dcd8ce;border:2px solid var(--ink);margin:5px 0 3px;position:relative}
+#yact .rs-mi .xb i{position:absolute;left:0;top:0;bottom:0;background:#48a8f0;width:var(--w);animation:yaXb .7s .5s ease-out both}
+#yact .rs-xp{display:block;font-size:9.5px;color:#6a6a7a;text-align:right}
+#yact .ya-rl{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#yact .ya-rl li{animation:yaRow .3s cubic-bezier(.2,1.4,.4,1) both;animation-delay:calc(var(--i,0)*.15s + .25s);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1px;padding:7px 6px 6px;background:#fff;border:2px solid var(--ink);box-shadow:0 2px 0 rgba(32,32,44,.25);min-width:0}
+#yact .ya-rl li.w{grid-column:1/-1}
+#yact .ya-rl .k{font-size:10.5px;color:#5a5a6a;display:flex;align-items:center}
+#yact .ya-rl b{font-size:20px;line-height:1.15}
+#yact .ya-rl em{font-style:normal;font-size:9.5px;line-height:1.35;color:#6a6a7a}
+#yact .ya-rl li.ya-gold{grid-column:1/-1;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"k b" "e e";text-align:left;background:#fff6d0;padding:7px 10px}
+#yact .ya-rl li.ya-gold .k{grid-area:k;font-size:12px;color:var(--ink)}
+#yact .ya-rl li.ya-gold b{grid-area:b;text-align:right;color:#a87800}
+#yact .ya-rl li.ya-gold em{grid-area:e}
 #yact .rs-row{display:flex;gap:8px}
 #yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;background:#1c1c2e}
 `;
 const HTML = `<canvas></canvas>
-<div class="ya-hud ya-tl"><div class="mg-sc"><b class="ya-ph">웨이브 1/3</b><b class="ya-m">0마리</b><span class="mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div>
-  <div class="pan ya-hp"><div class="r1"><span class="ya-me"></span><span class="ya-hpn"></span></div><div class="bar"><i class="ya-hpf"></i></div></div>
+<div class="ya-hud ya-tl"><div class="pan ya-hp"><div class="r1"><span class="ya-me"></span></div><div class="r2"><div class="bar"><i class="ya-hpf"></i></div><span class="ya-hpn"></span></div></div>
+  <div class="ya-sc"><span class="pan ya-kc"><small>KO</small><b class="ya-m">0마리</b></span><span class="pan mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b>G</span></div>
   <div class="ya-cb"><b>0</b>콤보<small></small><i><u></u></i></div></div>
-<div class="ya-hud ya-rw"><div class="pan ch ex"><span>경험치</span><b class="ya-rwe">+0</b></div><div class="pan ch ev"><span><span class="ya-rwk"></span> 노력치</span><b class="ya-rwv">0/4</b></div>
-  <div class="pan ya-eg"><div class="r1"><b class="ya-egn"></b><span class="ya-egt"></span></div><div class="bar"><i class="ya-egf0"></i><i class="ya-egf"></i></div><div class="r2"><span class="ya-egs"></span><span class="ya-egp"></span></div></div></div>
-<div class="ya-hud ya-tr"><b class="ya-tm">90</b><button class="b3 ya-quit">그만하기</button></div>
+<div class="ya-hud ya-tc"><b class="ya-ph">웨이브 1/3</b><b class="ya-tm">90</b></div>
+<div class="ya-hud ya-tr"><button class="b3 ya-quit">그만하기</button>
+  <div class="ya-rw"><div class="pan ch ex"><span>경험치</span><b class="ya-rwe">+0</b></div><div class="pan ch ev"><span><span class="ya-rwk"></span> 노력치</span><b class="ya-rwv">0/4</b></div>
+  <div class="pan ya-eg"><div class="r1"><b class="ya-egn"></b><span class="ya-egt"></span></div><div class="bar"><i class="ya-egf0"></i><i class="ya-egf"></i></div><div class="r2"><span class="ya-egs"></span><span class="ya-egp"></span></div></div></div></div>
 <div class="ya-joy"></div><div class="ya-joyb"><i class="ya-joyk"></i></div>
 <div class="ya-hint">왼쪽 아래를 끌어서 이동</div>
 <div class="ya-pad"><button class="ya-dg">회피</button><div class="ya-mvs"></div></div>
 <div class="ya-ban"></div>
 <div class="ya-ov"></div>
-<div class="ya-win ya-start"><h2>직접 훈련</h2><p class="ya-op">운영자 시험: 보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요.</p>
-  <p class="sub">훈련 중인 포켓몬을 직접 움직여 상대를 쓰러뜨려요.<br>쓰러뜨리면 경험치·노력치·골드, 번뜩임 조각을 주우면 깨닫는 중인 기술 게이지가 올라요.</p>
+<div class="ya-win ya-start"><div class="ya-hd"><b class="ya-tt">직접 훈련</b><span class="ya-tg">운영자 시험</span></div><div class="ya-bd">
+  <p class="sub">포켓몬을 직접 움직여 상대를 쓰러뜨려요.<br>쓰러진 상대가 떨어뜨린 <b>골드</b>와 <b>번뜩임 조각</b>은 다가가서 주워요.</p>
   <h3>훈련할 포켓몬</h3><div class="ya-pk"></div><div class="ya-pmv"></div>
-  <h3>노력치 훈련 (훈련장 토글로 고른 능력치)</h3><div class="ya-stt"></div><p class="ya-foe"></p>
-  <div class="how"><b>조작</b> 왼쪽 아래를 끌어 이동 · 기술 버튼은 가장 가까운 상대를 자동으로 겨눠요 · 기술 버튼은 <b>꾹 누르는 동안</b> 쭉 이어져요 (짧게 누르면 한 방)<br><b>회피</b> 상대 머리 위에 <b style="color:#e0402a">!</b> 가 뜨고 바닥이 빨개지면 회피 · 딱 맞춰 피하면 <b style="color:#2a7ad0">저스트 회피</b>(잠깐 느려지고 3초 동안 급소 확정)<br><b>콤보</b> 이어 맞힐수록 기술이 빨리 다시 차요<br><b>PC</b> 방향키 이동 · Q W E R 기술 · 스페이스 회피</div>
-  <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">훈련 시작</button></div></div>
-<div class="ya-win ya-res" hidden><h2 class="rs-h">훈련 완료!</h2><p class="sub rs-sub"></p><ul class="ya-rl"></ul><p class="ya-op" style="margin:10px 0 0">운영자 시험이라 실제로는 아무것도 받지 않아요.</p>
-  <div class="rs-row"><button class="b3 bigb sec ya-back">훈련장으로</button><button class="b3 bigb ya-again">한 판 더</button></div></div>
+  <h3>노력치 훈련 <small>훈련장에서 고른 능력치</small></h3><div class="ya-stt"></div><p class="ya-foe"></p>
+  <dl class="how"><dt>조작</dt><dd>왼쪽 아래를 끌어 이동 · 기술은 가까운 상대를 자동으로 겨누고, <b>꾹 누르는 동안</b> 쭉 이어져요</dd>
+    <dt>회피</dt><dd>상대 머리 위에 <b style="color:#e0402a">!</b> 가 뜨면 회피 · 딱 맞춰 피하면 <b style="color:#2a7ad0">저스트 회피</b> (3초 동안 급소 확정)</dd>
+    <dt>콤보</dt><dd>이어 맞힐수록 기술이 빨리 다시 차요</dd>
+    <dt>PC</dt><dd>방향키 이동 · Q W E R 기술 · 스페이스 회피</dd></dl>
+  <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">훈련 시작</button></div>
+  <p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요.</p></div></div>
+<div class="ya-win ya-res" hidden><div class="ya-hd rs-hd"><b class="ya-tt rs-h">훈련 완료!</b></div><div class="ya-bd"><p class="sub rs-sub"></p>
+  <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div></div>
+  <ul class="ya-rl"></ul>
+  <div class="rs-row"><button class="b3 bigb sec ya-back">훈련장으로</button><button class="b3 bigb ya-again">한 판 더</button></div>
+  <p class="ya-op">운영자 시험이라 실제로는 아무것도 받지 않아요.</p></div></div>
 <div class="ya-load">훈련장 준비 중…</div>`;
 
 // ---------- 시작 ----------
@@ -211,7 +253,7 @@ async function resize() {
   const r = R, W = r.host.clientWidth || innerWidth, H = r.host.clientHeight || innerHeight, DPR = Math.min(2, window.devicePixelRatio || 1), cv = r.q('canvas');
   Object.assign(r, { W, H, DPR }); cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cv.style.width = W + 'px'; cv.style.height = H + 'px'; r.g = cv.getContext('2d');
   Object.assign(r.Y, { pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 } }); Object.assign(r.A, { y0: 132, y1: H - 20, x0: 16, x1: W - 16 });
-  try { const s = await window.GymManage?.yardShot?.(Math.ceil(W / 32), Math.ceil(H / 32)); if (s && R === r) { const im = new Image(); await new Promise(ok => { im.onload = im.onerror = ok; im.src = s.url; }); r.BG = im; } } catch (e) { console.error(e); }
+  try { const s = await window.GymManage?.yardShot?.(Math.ceil(W / 32), Math.ceil(H / 32), 1); if (s && R === r) { const im = new Image(); await new Promise(ok => { im.onload = im.onerror = ok; im.src = s.url; }); r.BG = im; } } catch (e) { console.error(e); }
 }
 const inPond = (x, y, m = 10) => { const P = R.Y.pond; return x > P.x0 - m && x < P.x1 + m && y > P.y0 - m && y < P.y1 + m; };
 function keepIn(e) { const A = R.A; e.x = Math.max(A.x0, Math.min(A.x1, e.x)); e.y = Math.max(A.y0, Math.min(A.y1, e.y));
@@ -340,7 +382,7 @@ function newGame() {
   const o = R.mons[R.pick], M = mineOf(o), P = o.P, W = R.W, H = R.H;
   const me = { sp: P.sp, sex: P.sex, shiny: !!P.shiny, lv: M.lv, st: M.st, mine: true, x: W / 2, y: H * .55, face: -1, anim: 'Idle', at: 0, inv: 0, cd: {}, cdMax: {}, dcd: 0, flash: 0, buff: 0, crit: 0, roll: 0, kx: 0, ky: 0, sq: 0, sqv: 0, z: 0, busy: 0, stepT: 0 };
   me.mhp = me.hp = Math.round(me.st[0] * 2.8);
-  Object.assign(R, { HS: 0, SLOW: 0, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, VIG: 0, BUF: null, HELD: {} }); R.Q.length = 0; R.PT.length = 0; R.GH.length = 0;
+  Object.assign(R, { HS: 0, SLOW: 0, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, VIG: 0, BUF: null, HELD: {} }); R.Q.length = 0; R.PT.length = 0; R.GH.length = 0; R.SH = null;
   R.G = { o, M, me, stat: R.stat, pool: R.pool || foePool(R.stat), mobs: [], shots: [], drops: [], wave: 0, ko: 0, gold: 0, goldShown: 0, exp: 0, ev: 0, evRaw: 0, shard: 0, fainted: false, time: TIME, start: R.T, over: false, egg0: M.eg?.p ?? 0, egg: M.eg?.p ?? 0, eggShown: M.eg?.p ?? 0,
     combo: 0, comboT: 0, best: 0, just: 0, pend: 0, clearT: 0, sec: TIME };
   R.G.pool.forEach(sp => spr(sp)); R.pool = null; M.mv.forEach(v => { me.cd[v.name] = 0; });
@@ -486,16 +528,16 @@ function ko(o, ux, uy) {
   stop(o.boss ? .2 : .1); shake(o.boss ? .9 : .32); kick(ux, uy, o.boss ? 12 : 7); zoom(o.boss ? .1 : .035);
   if (o.boss) { rumble(4, 65); snd('DUN_Explosion', .09); flash(.3); } else buzz(1);
   if (last) { slow(fin ? .95 : .5, fin ? .22 : .35); if (!o.boss) flash(.12); }   // 마지막 한 마리는 느리게 날아간다
-  const gold = o.boss ? 8 : 1; G.gold += gold;
+  const gold = o.boss ? 8 : 1;   /* 경완 2026-11-13: 골드는 바닥에 떨어지고, 주워야 내 것 */
   const ex = Math.max(1, Math.round(GB().xpFor({ sp: o.sp, lv: o.lv }, G.M.lv) * (o.boss ? 1.5 : 1))); G.exp += ex;
   const y = EVY()[o.sp] || '', evAdd = +y[G.stat] || 0, before = G.ev; G.evRaw += evAdd; G.ev = Math.min(EV_CAP, G.M.evRoom, G.evRaw);
-  const evUp = G.ev - before, shard = G.M.eg && G.shard + G.drops.length < SHARD_CAP && (o.boss || Math.random() < .35);
+  const evUp = G.ev - before, shard = G.M.eg && G.shard + G.drops.filter(p => !p.coin).length < SHARD_CAP && (o.boss || Math.random() < .35);
   // 펑 터지는 순간에 보상이 튀어나온다
   after(.42, () => { const x = o.x, yy = o.y;
     fxOnce(PX()?.s.Smoke_White ? 'Smoke_White' : 'Wood_Hammer_Smoke', 2, 0, x, yy - 14, 1, { s: o.boss ? 1.3 : .9 }); stars(x, yy - 16, o.boss ? 14 : 6, '#fff', o.boss ? 300 : 200); dust(x, yy, o.boss ? 12 : 5, 120); ring(x, yy, '#fff', 6, o.boss ? 90 : 44, .3, 5);
     if (o.boss) { shake(.5); rumble(2, 80, 1); } else buzz(0); snd('DUN_Rock_Smash', o.boss ? .07 : .035);
     pop(x, yy - 34, `+${ex} 경험치`, '#bfe6ff'); if (evUp > 0) pop(x, yy - 54, `${STAT_KO[G.stat]} 노력치 +${evUp}`, '#d6b4ff', true);
-    for (let i = 0; i < gold; i++) fly('coin', x, yy - 14, hudPt('.mg-hg .coin'), () => { if (R?.G !== G) return; G.goldShown = Math.min(G.gold, G.goldShown + 1); hgUp(); snd('DUN_Money', .03); buzz(0); });
+    for (let i = 0; i < gold; i++) { const a = Math.random() * 6.28, v = gold > 1 ? 50 + Math.random() * 80 : 15 + Math.random() * 35; G.drops.push({ coin: 1, x, y: yy - 4, t0: R.T, vy: -170 - Math.random() * 90, z: 12, vx: Math.cos(a) * v, gy: Math.sin(a) * v * .6 }); }
     for (let i = 0; i < (o.boss ? 8 : 3); i++) fly('xp', x, yy - 14, () => ({ x: me.x, y: me.y - 22 }), null, '#8fd0ff');
     if (shard) G.drops.push({ x, y: yy - 4, t0: R.T, vy: -150, z: 10, vx: (Math.random() - .5) * 60 });
     hud(); });
@@ -594,9 +636,10 @@ function step(dt) {
     if (s.mine) { for (const o of G.mobs) if (o.hp > 0 && o.enter <= 0 && !s.hit.has(o) && Math.hypot(o.x - s.x, o.y - 20 - s.y) < 24 + (o.boss ? 12 : 0)) { s.hit.add(o); const v = s.v; hurt(o, dmg(me, o, v.t, v.c, v.pw * (s.pm || 1), v.pw), Math.cos(s.ang) * .8, Math.sin(s.ang) * .8, s.light); hitFx(v.Rr, o, 0, s.f, s.col, Math.cos(s.ang), Math.sin(s.ang), s.light); if (!s.pierce) s.life = 0; } }
     else if (live && me.hp > 0 && !s.jd && Math.hypot(me.x - s.x, me.y - 20 - s.y) < 18) { if (me.inv <= 0) { s.life = 0; hitMe(s.from, s.t, s.c, s.pw, s.vx, s.vy); } else if (me.roll > 0) { s.jd = true; justDodge(s.from); } } }
   G.shots = G.shots.filter(s => T - s.t0 < s.life && s.x > -40 && s.x < R.W + 40 && s.y > -40 && s.y < R.H + 40);
-  for (const p of G.drops) { if (p.z > 0 || p.vy < 0) { p.vy += 620 * dt; p.z -= p.vy * dt; if (p.vx) p.x += p.vx * dt; if (p.z < 0) { p.z = 0; if (p.vy > 90) { p.vy = -p.vy * .4; p.z = .01; } else { p.vy = 0; p.vx = 0; } } }
-    const d = Math.hypot(me.x - p.x, me.y - p.y), pull = G.clearT ? 9999 : 78; if (T - p.t0 > .5 && d < pull && me.hp > 0) { const v = 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (me.y - p.y) * Math.min(1, dt * v); }
-    if (T - p.t0 > .5 && d < 20 && me.hp > 0) { p.got = true; gotShard(p); } }
+  for (const p of G.drops) { if (p.z > 0 || p.vy < 0) { p.vy += 620 * dt; p.z -= p.vy * dt; if (p.vx) p.x += p.vx * dt; if (p.gy) p.y += p.gy * dt; if (p.z < 0) { p.z = 0; if (p.vy > 90) { p.vy = -p.vy * .4; p.z = .01; } else { p.vy = 0; p.vx = 0; p.gy = 0; } }
+      const A = R.A; p.x = Math.max(A.x0 + 8, Math.min(A.x1 - 8, p.x)); p.y = Math.max(A.y0 + 8, Math.min(A.y1 - 4, p.y)); if (inPond(p.x, p.y, 0)) p.y = R.Y.pond.y0 - 4; }   // 연못 안엔 안 떨어지게
+    const d = Math.hypot(me.x - p.x, me.y - p.y), pull = G.clearT ? 9999 : p.coin ? 66 : 84; if (T - p.t0 > .5 && d < pull && me.hp > 0) { const v = 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (me.y - p.y) * Math.min(1, dt * v); }
+    if (T - p.t0 > .5 && d < 22 && me.hp > 0) { p.got = true; if (p.coin) gotCoin(p); else gotShard(p); } }
   G.drops = G.drops.filter(p => !p.got);
   for (let i = R.PT.length - 1; i >= 0; i--) { const p = R.PT[i], t = T - p.t0;
     if (p.home && t > p.hold) { const h = typeof p.home === 'function' ? p.home() : p.home, dx = h.x - p.x, dy = h.y - p.y, d = Math.hypot(dx, dy), v = 260 + (t - p.hold) * 1700; if (d < v * dt + 5) { R.PT.splice(i, 1); p.on?.(); continue; } p.x += dx / d * v * dt; p.y += dy / d * v * dt; if (t > p.life) R.PT.splice(i, 1); continue; }
@@ -620,21 +663,47 @@ function hitMe(o, t, c, pw, vx, vy) {
   hud();
   if (me.hp <= 0) { G.fainted = true; me.dead = R.T; setAnim(me, anyAnim(me, 'Faint', 'Hurt'), true); slow(.7, .3); rumble(3, 90); flash(.2, '255,120,100'); }
 }
+function gotCoin(p) {
+  const G = R.G; G.gold++; snd('DUN_Money', .03); buzz(0); stars(p.x, p.y - 10, 3, '#ffe27a', 110);
+  fly('coin', p.x, p.y - 12, hudPt('.mg-hg .coin'), () => { if (R?.G !== G) return; G.goldShown = Math.min(G.gold, G.goldShown + 1); hgUp(); });
+}
+// 경완 2026-11-13: 번뜩임 조각은 먹는 순간 화면이 멈칫하고 크게 번뜩인다 (멈칫 한도와 상관없이 꼭)
 function gotShard(p) {
-  const G = R.G, me = G.me; G.shard++; G.egg = Math.min(99, G.egg + 1); snd('DUN_Wonder_Tile', .07); buzz(1); stop(.04); flash(.1, '255,236,140');
-  pop(p.x, p.y - 40, '번뜩임 +1%', '#ffe27a', true); ring(me.x, me.y - 16, '#ffe27a', 6, 50, .35, 5, 1); stars(p.x, p.y - 16, 8);
+  const G = R.G, me = G.me; G.shard++; G.egg = Math.min(99, G.egg + 1);
+  R.HS = Math.max(R.HS, .34); R.SH = { t0: R.RT, x: me.x, y: me.y - 22 }; flash(.3, '255,240,170'); zoom(.13); shake(.3); me.flash = .3; rumble(3, 70, 1);
+  snd('DUN_Wonder_Tile', .09); snd('DUN_Stat_Up', .05, .14);
+  ring(me.x, me.y - 16, '#ffe27a', 6, 70, .4, 6, 1); ring(me.x, me.y - 16, '#fff', 4, 44, .3, 4, 1, .08); stars(p.x, p.y - 16, 14); stars(me.x, me.y - 22, 10, '#fff', 260);
   // 반짝이가 번뜩임 칸으로 날아가서 게이지가 오른다
-  const to = hudPt('.ya-eg .bar'); let n = 0; for (let i = 0; i < 5; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, '#ffe27a');
+  const to = hudPt('.ya-eg .bar'); let n = 0; for (let i = 0; i < 7; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, '#ffe27a');
   hud();
+}
+function shardFx() {   // 먹는 순간 화면 효과 (판 시간이 멈춰 있어도 도는 실제 시간)
+  const S = R.SH; if (!S) return; const g = R.g, t = R.RT - S.t0, D = .8; if (t > D) { R.SH = null; return; }
+  const p = t / D, e = 1 - (1 - p) * (1 - p), a = t < .34 ? 1 : Math.max(0, 1 - (t - .34) / (D - .34)), x = S.x, y = S.y, tx = Math.max(96, Math.min(R.W - 96, x));
+  g.fillStyle = `rgba(20,16,40,${.4 * a})`; g.fillRect(0, 0, R.W, R.H);
+  g.save(); g.translate(x, y); g.rotate(R.RT * 1.8); const L = 70 + 300 * e; g.fillStyle = `rgba(255,236,140,${.5 * a})`;
+  for (let i = 0; i < 10; i++) { g.rotate(Math.PI / 5); g.beginPath(); g.moveTo(0, 0); g.lineTo(-L * .085, -L); g.lineTo(L * .085, -L); g.closePath(); g.fill(); } g.restore();
+  g.strokeStyle = `rgba(255,255,255,${a})`; g.lineWidth = 6 * (1 - p) + 2; g.beginPath(); g.arc(x, y, 22 + 170 * e, 0, 7); g.stroke();
+  g.fillStyle = `rgba(255,252,224,${.85 * a})`; g.beginPath(); g.arc(x, y, 30 - 8 * p, 0, 7); g.fill();
+  const sz = 26 * (t < .14 ? 2 - t * 7.1 : 1), ty = Math.max(150, y - 62); g.textAlign = 'center'; g.font = `bold ${Math.round(sz)}px Galmuri11`; g.globalAlpha = a; g.lineWidth = 5; g.strokeStyle = '#20202c'; g.strokeText('번뜩임 +1%', tx, ty); g.fillStyle = t < .1 ? '#fff' : '#ffe27a'; g.fillText('번뜩임 +1%', tx, ty); g.globalAlpha = 1;
 }
 
 // ---------- 그리기 ----------
-function drawShard(p) { const g = R.g, T = R.T, y = p.y - p.z - 8 + Math.sin((T - p.t0) * 5) * 2, x = p.x;
-  g.fillStyle = 'rgba(20,40,10,.25)'; g.beginPath(); g.ellipse(x, p.y, 7, 3, 0, 0, 7); g.fill();
-  { const a = .25 + .2 * Math.sin((T - p.t0) * 6); g.fillStyle = `rgba(255,236,140,${a})`; g.beginPath(); g.arc(x, y, 13, 0, 7); g.fill(); }
-  g.save(); g.translate(Math.round(x), Math.round(y)); const s = 2, P = ['...k...', '..kyk..', '.kywyk.', 'kyywyyk', '.kyyok.', '..kok..', '...k...'], C = { k: '#6a4400', y: '#ffd640', w: '#fffbe0', o: '#e8a020' };
+function drawCoin(p) { const g = R.g, t = R.T - p.t0, x = Math.round(p.x), y = Math.round(p.y - p.z - 8 + (p.z ? 0 : Math.sin(t * 6 + p.x) * 1.5)), w = Math.max(2, Math.round(Math.abs(Math.cos(t * 7 + p.x)) * 12));
+  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, 7, 3, 0, 0, 7); g.fill();
+  g.fillStyle = '#6a4400'; g.fillRect(x - w / 2 - 2, y - 8, w + 4, 16); g.fillStyle = '#ffc830'; g.fillRect(x - w / 2, y - 6, w, 12); g.fillStyle = '#d08a00'; g.fillRect(x - w / 2, y + 3, w, 3); g.fillStyle = '#fff2a0'; g.fillRect(x - w / 2, y - 6, Math.max(1, Math.round(w / 3)), 5);
+  if ((t * 1.3 + p.x * .37) % 1 < .16) { g.fillStyle = '#fff'; g.fillRect(x + 5, y - 13, 2, 8); g.fillRect(x + 2, y - 10, 8, 2); } }
+// 번뜩임 조각: 멀리서도 보이게 크게 — 빛기둥·도는 빛살·바닥 빛 고리·이름표
+function drawShard(p) { const g = R.g, T = R.T, RT = R.RT, t = T - p.t0, x = Math.round(p.x), y = Math.round(p.y - p.z - 20 + Math.sin(t * 4) * 3), pu = .5 + .5 * Math.sin(RT * 6);
+  g.fillStyle = 'rgba(20,40,10,.3)'; g.beginPath(); g.ellipse(x, p.y, 13, 5, 0, 0, 7); g.fill();
+  g.strokeStyle = `rgba(255,236,140,${.4 + .35 * pu})`; g.lineWidth = 2; g.beginPath(); g.ellipse(x, p.y, 18 + pu * 6, 7 + pu * 2.4, 0, 0, 7); g.stroke();
+  { const gr = g.createLinearGradient(0, y - 84, 0, y); gr.addColorStop(0, 'rgba(255,236,140,0)'); gr.addColorStop(1, `rgba(255,236,140,${.34 + .16 * pu})`); g.fillStyle = gr; g.fillRect(x - 10, y - 84, 20, 84); }
+  g.save(); g.translate(x, y); g.rotate(RT * 1.3); g.fillStyle = `rgba(255,252,220,${.55 + .25 * pu})`; for (let i = 0; i < 4; i++) { g.rotate(Math.PI / 2); g.beginPath(); g.moveTo(0, 0); g.lineTo(-6, -40); g.lineTo(6, -40); g.closePath(); g.fill(); } g.restore();
+  g.fillStyle = `rgba(255,250,205,${.45 + .22 * pu})`; g.beginPath(); g.arc(x, y, 23 + pu * 2, 0, 7); g.fill(); g.strokeStyle = `rgba(232,160,32,${.55 + .3 * pu})`; g.lineWidth = 2; g.stroke();
+  g.save(); g.translate(x, y); const s = 4, P = ['...k...', '..kyk..', '.kywyk.', 'kyywyyk', '.kyyok.', '..kok..', '...k...'], C = { k: '#6a4400', y: '#ffd640', w: '#fffbe0', o: '#e8a020' };
   for (let j = 0; j < 7; j++) for (let i = 0; i < 7; i++) { const ch = P[j][i]; if (ch === '.') continue; g.fillStyle = C[ch]; g.fillRect((i - 3.5) * s, (j - 3.5) * s, s, s); }
-  const tw = (Math.sin((T - p.t0) * 8) + 1) / 2; g.fillStyle = `rgba(255,255,255,${tw})`; g.fillRect(4, -10, 2, 6); g.fillRect(2, -8, 6, 2); g.restore(); }
+  const tw = (Math.sin(t * 8) + 1) / 2; g.fillStyle = `rgba(255,255,255,${tw})`; g.fillRect(9, -22, 3, 11); g.fillRect(5, -18, 11, 3); g.restore();
+  g.textAlign = 'center'; g.font = 'bold 11px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText('번뜩임', x, y - 30); g.fillStyle = '#ffe27a'; g.fillText('번뜩임', x, y - 30); }
 function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx = e.flash > 0 ? Math.sin(R.RT * 90) * 2 : 0, x = Math.round(e.x - w / 2 + jx), y = Math.round(e.y + 6);
   g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, h + 2); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, h); const r = Math.max(0, e.hp / e.mhp), rl = Math.max(0, (e.hpLag ?? e.hp) / e.mhp);
   if (rl > r) { g.fillStyle = '#fff'; g.fillRect(x, y, Math.ceil(w * rl), h); }   // 방금 깎인 만큼은 하얗게 남았다가 줄어든다
@@ -665,7 +734,7 @@ function draw() {
   if (R.BG) g.drawImage(R.BG, 0, 0, W, H);
   if (!G) return;
   for (const o of G.mobs) if (o.hp > 0) drawTele(o);
-  for (const p of G.drops) drawShard(p);
+  for (const p of G.drops) if (p.coin) drawCoin(p); else drawShard(p);
   for (let i = R.GH.length - 1; i >= 0; i--) { const h = R.GH[i], t = T - h.t0; if (t > h.d) { R.GH.splice(i, 1); continue; } blit(h.F, h.x, h.y, { a: .5 * (1 - t / h.d) }); }
   for (const e of [...G.mobs, G.me].sort((a, b) => a.y - b.y)) { drawMon(e); if (!e.mine && e.hp > 0 && e.enter <= 0) hpBar(e); }
   for (const s of G.shots) { if (s.mine) { const E = s.v.Rr?.e || []; let n = 0; for (const [ro, kk, ft] of E) if (ro === 'proj' || ro === 'stream') { n++; pfxDraw(kk, ((T - s.t0) * 60 / ft) % (PX().s[kk]?.[2] || 1), s.x, s.y, s.f, { rot: s.f > 0 ? s.ang : s.ang - Math.PI }); } if (!n) orb(s.x, s.y, s.col, 9); }
@@ -682,6 +751,7 @@ function draw() {
   const low = G.me.hp > 0 && G.me.hp / G.me.mhp < .25 && R.run ? .35 + .25 * Math.sin(RT * 7) : 0, vg = Math.max(R.VIG, low);
   if (vg > .01) { const gr = g.createRadialGradient(W / 2, H / 2, Math.max(W, H) * .36, W / 2, H / 2, Math.max(W, H) * .68); gr.addColorStop(0, 'rgba(255,40,30,0)'); gr.addColorStop(1, `rgba(255,40,30,${.5 * vg})`); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
   if (R.SLOW > 0) { g.fillStyle = `rgba(90,140,255,${.1 * Math.min(1, R.SLOW * 6)})`; g.fillRect(0, 0, W, H); }
+  shardFx();
   if (R.FLASH > 0) { g.fillStyle = `rgba(${R.FLC},${Math.min(.85, R.FLASH * 3)})`; g.fillRect(0, 0, W, H); }
 }
 // 꾹 누르는 동안: 줄기 기술은 빔이 쭉 뻗는다 (원본 줄기 그림을 줄지어 흘려보내고, 밑에 타입 색 빛줄기), 머리 위엔 남은 지속 시간
@@ -748,7 +818,7 @@ function cdUi() { const G = R.G, me = G.me, box = R.q('.ya-mvs'), dg = R.q('.ya-
 function hud() {
   const G = R?.G; if (!G) return; const q = R.q, me = G.me, eg = G.M.eg, r = me.hp / me.mhp;
   q('.ya-ph').textContent = `웨이브 ${G.wave}/3`; q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
-  q('.ya-hpf').style.width = (r * 100) + '%'; q('.ya-hpf').className = 'ya-hpf' + (r > .5 ? '' : r > .2 ? ' y' : ' r'); q('.ya-hpn').textContent = `${me.hp}/${me.mhp}`; q('.ya-hp').classList.toggle('low', r > 0 && r < .25);
+  q('.ya-hpf').style.width = (r * 100) + '%'; q('.ya-hpf').className = 'ya-hpf' + (r > .5 ? '' : r > .2 ? ' y' : ' r'); q('.ya-hpn').textContent = me.hp; q('.ya-hp').classList.toggle('low', r > 0 && r < .25);
   q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat];
   q('.ya-eg').hidden = !eg;
   if (eg) { q('.ya-egn').textContent = '번뜩임 ???'; q('.ya-egt').textContent = TYPE_KO[eg.t] || ''; q('.ya-egt').style.background = TYPE_C[eg.t] || '#888'; q('.ya-egf').style.setProperty('--tc', TYPE_C[eg.t] || '#ee99ac');
@@ -764,7 +834,7 @@ function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>$
 // ---------- 끝: 보상은 계산해서 보여 주기만 (저장 안 함) ----------
 function end(clear, faint, quit) {
   const G = R.G; if (G.over) return; G.over = true; chEnd(); dashEnd(); R.run = false; R.JOY.dx = R.JOY.dy = 0; R.HELD = {}; R.BUF = null; R.el.classList.remove('play'); R.q('.ya-cb').classList.remove('on');
-  const left = Math.ceil(G.time), bonus = clear ? Math.floor(left / 6) : 0; G.gold += bonus; G.goldShown = G.gold; G.eggShown = G.egg;
+  const left = Math.ceil(G.time), bonus = clear ? Math.floor(left / 6) : 0; const picked = G.gold + (clear ? G.drops.filter(p => p.coin).length : 0); G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
   if (!clear && !faint && !quit) { banner('시간 끝!'); buzz(1); }
   const fr = (clear ? 1 : 0) + (G.fainted ? 0 : 1), B = GB(), P = G.o.P, gr = B.growth(P.sp), lv0 = G.M.lv, x1 = G.M.xp + G.exp; let lv1 = lv0;
   while (lv1 < B.LV_MAX && x1 >= B.xpAt(gr, lv1 + 1)) lv1++;
@@ -772,12 +842,14 @@ function end(clear, faint, quit) {
   setTimeout(() => { if (!R || R.G !== G) return; const q = R.q, r = q('.ya-res'), N = (n, pre = '+', suf = '') => `data-n="${n}" data-pre="${pre}" data-suf="${suf}">${pre}0${suf}`;
     q('.rs-h').textContent = clear ? '훈련 완료!' : faint ? `${josa(nm, '이', '가')} 지쳐 버렸다…` : quit ? '여기까지!' : '시간 끝!';
     q('.rs-sub').textContent = (clear ? `남은 시간 ${left}초 · 대장까지 다 쓰러뜨렸어요` : `${G.ko}마리 쓰러뜨렸어요`) + (G.best >= 5 ? ` · 최고 ${G.best}콤보` : '') + (G.just ? ` · 저스트 회피 ${G.just}번` : '');
+    q('.rs-hd').classList.toggle('win', !!clear); q('.rs-nm').textContent = nm; q('.rs-lv').innerHTML = lv1 > lv0 ? `Lv.${lv0} → <i class="lvup">Lv.${lv1}</i>` : `Lv.${lv1}`; q('.rs-mi .xb i').style.setProperty('--w', (prog * 100).toFixed(0) + '%');
+    q('.rs-xp').textContent = lv1 >= B.LV_MAX ? '레벨 끝' : `다음 레벨까지 ${Math.max(0, b - x1)}`; { const im = q('.rs-im'); im.removeAttribute('src'); GA.thumb?.(P).then(u => { if (im.isConnected && typeof u === 'string') im.src = u; }).catch(() => {}); }
     q('.ya-rl').innerHTML = `
-      <li><span class="k">경험치</span><b ${N(G.exp)}</b><em>${lv1 > lv0 ? `<i class="lvup">Lv.${lv0} → Lv.${lv1}</i>` : `Lv.${lv1}`}</em><i class="xb"><i style="--w:${(prog * 100).toFixed(0)}%"></i></i></li>
-      <li><span class="k">${STAT_KO[G.stat]} 노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '노력치가 이미 꽉 찼어요' : G.evRaw > G.ev ? `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}` : '쓰러뜨린 포켓몬 노력치'}</em></li>
-      <li><span class="k">친밀도</span><b class="fr" ${N(fr)}</b><em>${clear ? '훈련 완료 +1' : ''}${clear && !G.fainted ? ' · ' : ''}${G.fainted ? (clear ? '' : '지쳐서 못 받음') : '안 지침 +1'} (지금 ${G.M.fr})</em></li>
+      <li${eg ? '' : ' class="w"'}><span class="k">경험치</span><b ${N(G.exp)}</b><em>${lv1 > lv0 ? `레벨 ${lv1 - lv0} 올랐어요` : '쓰러뜨린 포켓몬 경험치'}</em></li>
+      <li><span class="k">${STAT_KO[G.stat]} 노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : G.evRaw > G.ev ? `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}` : '쓰러뜨린 포켓몬 노력치'}</em></li>
+      <li><span class="k">친밀도</span><b class="fr" ${N(fr)}</b><em>${clear ? '훈련 완료 +1' : ''}${clear && !G.fainted ? ' · ' : ''}${G.fainted ? (clear ? '' : '지쳐서 못 받음') : '안 지침 +1'}</em></li>
       ${eg ? `<li><span class="k">번뜩임</span><b class="eg" ${N(G.shard, '+', '%')}</b><em><i class="egq" style="--tc:${TYPE_C[eg.t] || '#888'}">${TYPE_KO[eg.t] || ''}</i>??? ${G.egg0}% → ${G.egg}%</em></li>` : ''}
-      <li class="ya-gold"><span class="k"><i class="coin"></i>골드</span><b ${N(G.gold, '+', 'G')}</b><em>쓰러뜨리기 ${G.gold - bonus}G${bonus ? ` · 남은 시간 ${bonus}G` : ''}</em></li>`;
+      <li class="ya-gold"><span class="k"><i class="coin"></i>골드</span><b ${N(G.gold, '+', 'G')}</b><em>주운 골드 ${picked}G${bonus ? ` · 남은 시간 ${bonus}G` : ''}</em></li>`;
     q('.ya-ov').hidden = false; r.hidden = false; r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); snd('DUN_Stat_Up', .07); buzz(1);
     // 줄이 하나씩 톡톡 나오면서 숫자가 올라간다
     [...q('.ya-rl').children].forEach((li, i) => { li.style.setProperty('--i', i); const bEl = li.querySelector('b[data-n]'), n = +bEl.dataset.n, t0 = 250 + i * 150;
