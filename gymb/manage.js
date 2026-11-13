@@ -106,11 +106,13 @@ const leftOf = e => e.d === K.dayStart(Date.now()) ? Math.max(0, TR_H - e.h) : T
 let Y = null;   // 마당: { el, W, H, L, pr: {소품}, mons, raf, last, pos: {id: [x, y]}, pond, court }
 const inPond = (x, y, m = 0) => { const p = Y.pond; return x > p.x0 - m && x < p.x1 + m && y > p.y0 - m && y < p.y1 + m; };   // 수영장(네모)
 const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
+/* v24.04 경완 '코치랑 포켓몬 버튼 있는 쪽으로 포켓몬이랑 코치가 내려오지 않게': 오른쪽 아래 버튼 칸(.ty-btns 124×116 + 발 둘레) */
+const BTN_W = 142, BTN_H = 124, inBtn = (x, y) => !!Y && x > Y.W - BTN_W && y > Y.H - BTN_H, offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - BTN_H - 2] : [x, y];
 const nearBush = (x, y) => Math.abs(x - Y.W / 2) < 120 && y < yTop() + 56;   // v20.85 문 옆 덤불 앞은 기술·훈련 자리로 안 씀 (경완 '덤불에 공격')
 function yardSpot(swim) {
   if (swim) { const p = Y.pond; return [p.x0 + 22 + Math.random() * Math.max(1, p.x1 - p.x0 - 44), p.y0 + 32 + Math.random() * Math.max(1, p.y1 - p.y0 - 44)]; }   // v21.01 경완 '가비루사 왜 육지로': 예전엔 훈련장 전체에서 60번 뽑다 다 빗나가면(약 1%) 땅 자리로 → 물 안에서만 뽑음
   for (let i = 0; i < 60; i++) { const x = 24 + Math.random() * (Y.W - 48), y = yTop() + Math.random() * (Y.H - yTop() - 20);
-    if (swim ? inPond(x, y - 10, -22) : !inPond(x, y, 16) && !nearBush(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
+    if (swim ? inPond(x, y - 10, -22) : !inPond(x, y, 16) && !nearBush(x, y) && !inBtn(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
   return [Y.W * .3, Y.H * .6];
 }
 // 훈련장 소품 = 스칼렛 작업물 그림 (gymb/yard.json, config/staff/scarlet.json 에서 골라 옮김 + 후프링) (경완 2026-10-29 '스칼렛 작업물 수준으로, 가져와도 돼')
@@ -271,9 +273,10 @@ async function drawTrain() {
   const r1 = H * .29, r2 = H * .39;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
-  /* v23.36 경완 '코치·포켓몬 버튼 밑에 있는 허들 지워야겠네': 허들 두 개와 허들 달리기 훈련(run)을 뺌 */
+  /* v23.36 경완 '코치·포켓몬 버튼 밑에 있는 허들 지워야겠네' → v24.04 경완 '밑에 하나만 없애 달란 거였어': 위 허들(h1)·허들 달리기 다시, 트랙은 버튼 칸 위까지만 */
+  yProp('h1', 'track-hurdle', W * .72, H * .76);
   [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
-  Y.lane = { x: W * .72, y0: H * .69, y1: H * .95 };
+  Y.lane = { x: W * .72, y0: H * .66, y1: Math.max(H * .8, Math.min(H * .95, H - BTN_H - 4)) };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
   { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
@@ -379,7 +382,7 @@ function yTag(m) { const g = GB().growth(m.P.sp), x = GB().gm(m.P), a = GB().xpA
   m.tag.innerHTML = `<span class="tt-r"><span class="rk ${GA.rankOf(m.P)}">${GA.rankOf(m.P)}</span><b>Lv.${x.lv}</b></span><i><s style="width:${(r * 100).toFixed(0)}%"></s></i>`; }
 // 기구 자리: 누가 쓰고 있나 (m.k)
 const yBusy = (k, m) => Y.mons.some(o => o !== m && o.k === k && o.st !== 'rest' && o.st !== 'sleep');
-function yGo(m, k, x, y, then) { m.st = 'go'; m.k = k; m.tx = x; m.ty = y; m.then = then; m.air = 0; }
+function yGo(m, k, x, y, then) { [x, y] = offBtn(x, y); m.st = 'go'; m.k = k; m.tx = x; m.ty = y; m.then = then; m.air = 0; }
 // 다음 할 일 (경완 2026-10-29 '6마리가 상호작용'): 타입에 맞는 기구를 고르고, 둘이 비어 있으면 가운데 코트에서 대련
 function yNext(m, now) {
   if (m.st === 'eat') { const b = Y.fd?.bw.find(b => b.m === m); if (b) { b.done = 1; b.el.style.backgroundImage = `url(${pxCv(BOWL0, BOWL_P)})`; } yEmo(m, '♥', 'mu'); m.st = 'rest'; }
@@ -394,7 +397,7 @@ function yNext(m, now) {
   const W8 = [];   // [기구, 무게]
   const add = (k, w) => { if (w > 0 && !yBusy(k, m)) W8.push([k, w]); };
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
-  else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); if (m.swimmer) add('water', 3); }
+  else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
   if (Math.random() < .2 && m.D?.P) { const [sx, sy] = yardSpot(false); return yGo(m, 'drill' + m.id, sx, sy, 'drill'); }   // v20.89 몸 풀기: 빙글빙글·구르기·점프
   if (GA.mvFx && yMove(m) && Math.random() < .28) { const [sx, sy] = yardSpot(false); return yGo(m, 'tech' + m.id, sx, sy, 'tech'); }   // v20.81 기술 연습: 빈 자리로 가서 아는 기술을 차례로
   if (!W8.length) { if (nearBush(m.x, m.y)) { const [sx, sy] = yardSpot(false); return yGo(m, 'train', sx, sy, 'train'); } m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
@@ -459,13 +462,14 @@ function yCoach(c, now, dt) {
   const fd = Y.fd && c === Y.co[0], t = fd ? null : c.tg; let tx = c.hx, ty = c.hy;
   if (t) {   // v17.77 경완 '코치랑 포켓몬 너무 겹치지 않게': 고른 포켓몬 양옆·조금 더 멀리 중 다른 포켓몬·다른 코치와 가장 덜 겹치는 자리
     const near = (x, y) => Math.min(99, ...Y.mons.map(m => Math.hypot((m.x - x) * 1.2, m.y - y)), ...(Y.co || []).filter(o => o !== c).map(o => Math.hypot(o.x - x, o.y - y)));
-    const cl = (x, y) => { x = Math.max(18, Math.min(Y.W - 18, x)); y = Math.max(Y.H * .3, Math.min(Y.H - 10, y)); if (inPond(x, y, 12)) { const p = Y.pond; y = p.y0 - 14; if (inPond(x, y, 12)) x = p.x1 + 16; } return [x, y]; };
+    const cl = (x, y) => { x = Math.max(18, Math.min(Y.W - 18, x)); y = Math.max(Y.H * .3, Math.min(Y.H - 10, y)); if (inPond(x, y, 12)) { const p = Y.pond; y = p.y0 - 14; if (inPond(x, y, 12)) x = p.x1 + 16; } return offBtn(x, y); };
     const gap = 58 + (t.k === 'spar' ? 26 : 0), C2 = [];
     for (const r of [gap, gap + 26]) for (const a of [0, .45, -.45, .9, Math.PI, Math.PI - .45, Math.PI + .45, Math.PI - .9]) C2.push(cl(t.x + Math.cos(a) * r * (a < 2 ? c.side : -c.side) * (a < 2 ? 1 : -1), t.y + 10 + Math.abs(Math.sin(a)) * r * .55));
     const sc = q => Math.min(48, near(q[0], q[1])) - Math.hypot(q[0] - c.x, q[1] - c.y) * .01;
     if (!c.spot || c.spot.t !== t || now > c.spot.n) { let best = C2[0], bv = -1e9; for (const q of C2) { const v = sc(q); if (v > bv) { bv = v; best = q; } }
       const keep = c.spot && c.spot.t === t && Math.hypot(c.spot.x - t.x, c.spot.y - t.y) < gap + 40 && sc([c.spot.x, c.spot.y]) > bv - 8; c.spot = keep ? { ...c.spot, n: now + .5 } : { t, n: now + .5, x: best[0], y: best[1] }; }
     tx = c.spot.x; ty = c.spot.y; }
+  [tx, ty] = offBtn(tx, ty);
   if (fd) { tx = Y.fd.cx; ty = Y.fd.y + 2; }   // v20.86 밥 주는 시간: 그릇 놓을 자리로
   if (c.snap && t) { c.x = tx; c.y = ty; } c.snap = 0;
   const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy), mv = d > 6;
@@ -553,6 +557,7 @@ function yardLoop(ts) {
   yFeedTick(now);
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
+    if (m.st !== 'go' && m.st !== 'run' && inBtn(m.x, m.y)) m.y = Y.H - BTN_H - 2;   /* v24.04 버튼 칸에 서 있지 않게 */
     if (m.st === 'go') {
       const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy), v = (m.flyer ? 60 : 46) * dt;
       if (m.flyer && !m.fish) m.air = Math.min(24, (m.air || 0) + dt * 40);
