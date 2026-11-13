@@ -1204,7 +1204,7 @@ async function run(opts) {
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
-  await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);
+  if (!opts.bgmKeep) await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);   /* v24.14 수련탑: 같은 곡이면 이어지는 배틀에서 곡을 다시 틀지 않음 */
   const encDone = opts.chain ? () => {} : await encounter(opts);   /* v23.10 훈련하기: 다음 층은 배틀 화면 그대로 상대만 바뀜 */
   el.classList.remove('off'); el.hidden = false; el.className = opts.chain ? 'bt open' : 'bt intro now'; fit();
   ['e', 'p'].forEach(k => { if (opts.pl) el.style.setProperty('--pl' + k, `url(${new URL(`${IMG}bt/pl_${k}_${opts.pl}.png`, location.href).href})`); else el.style.removeProperty('--pl' + k); });   /* v23.16 지형별 발판 (플래티넘, tools/gym/mkbattlebg.py) */
@@ -1223,7 +1223,7 @@ async function run(opts) {
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); } else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro'); await trPlay(trE, trA); }
   const foeNm = B.foeNm = opts.wild ? opts.foe.nm : `${opts.foe.cls} ${opts.foe.nm}`;
-  if (opts.pre && B) try { await opts.pre({ msg, msgTap }); } catch (e) { console.error(e); }
+  if (opts.pre && B) try { await opts.pre({ msg, msgTap, choose: trChoose }); } catch (e) { console.error(e); }
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
@@ -1236,7 +1236,7 @@ async function run(opts) {
   if (B) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
-      if (opts.wild) { if (won) M('play', winM, { fade: .05 }); } else {   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
+      if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
       { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
