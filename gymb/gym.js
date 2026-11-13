@@ -1372,7 +1372,7 @@ function bsScreen() {
 }
 async function bsStart(gi) {
   const g = st();
-  if (LEGK_ON && gi === GRADES.length - 1 && bsReady(g)) { bsMus = false; try { window.GymBGM?.stop(.5); } catch (e) {}   /* v23.61 경완 '이 라인업으로 결정 눌렀을 때 bgm 끊기게, 그 전까진 나오고' (v23.45 는 [심사 받기] 에서 껐음) */ openTab(null); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
+  if (legKang() && gi === GRADES.length - 1 && bsReady(g)) { bsMus = false; try { window.GymBGM?.stop(.5); } catch (e) {}   /* v23.61 경완 '이 라인업으로 결정 눌렀을 때 bgm 끊기게, 그 전까진 나오고' (v23.45 는 [심사 받기] 에서 껐음) */ openTab(null); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
   bsMus = false; openTab(null);   // 전설 심사는 강박사가 직접
   await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
   if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
@@ -1720,7 +1720,8 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     if (lost) { k.el.remove(); ents = ents.filter(x => x !== k); k = null; }   // 진 날은 강박사 없이 혼자 돌아옴
     bgmPlay('gym'); await A.black(false); await wait(300);
     if (lost) { if (gu) { face(gu, meEnt); await mix(XL.loseG); dlg(''); root.classList.add('dhide'); TT?.hide(true); } return { won: false }; }
-    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else for (const h of TL.back) await say(h);
+    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else { for (const h of TL.back) await say(h);
+      if (LEGK_ON) { /* 챔피언을 이긴 두 번째~ 전설: 전당 등록 뒤 테라피스도 (오브가 아직 없으면 테라스탈 설명부터) */ dlg(''); root.classList.add('dhide'); TT?.hide(true); if (!tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { await say(`그리고 이건 <b>${ty} 테라피스</b>란다.<br>전설의 체육관이 된 기념으로<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } }
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
@@ -1752,6 +1753,8 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
    이기면 명예의 전당으로 가서 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
    거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
 const LEGK_ON = false;
+/* v24.17 경완 '강박사 켜져도 두번째 체육관 전설 심사부터는 원래대로 챔피언, 강박사는 챔피언 이기면 전당 등록이랑 테라피스 주러': 강박사 심사는 전설인 체육관(휴업 포함)이 하나도 없을 때만 */
+const legKang = () => LEGK_ON && !gList().some(x => (x.gmax | 0) >= GRADES.length - 1);
 // 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼', '거다이맥스 한 번밖에 안 하는데 6마리 전부 거다이맥스 가능한 포켓몬일 필요 없다'):
 // 가장 어려운 심사: 에이스(마지막, 거다이맥스)는 거다이맥스 모습이 있는 종에서 체육관 타입의 천적, 나머지 다섯도 연구소 포켓몬(전설·환상 아닌 최종 진화) 가운데 천적 위주.
 // 종족값이 높을수록 먼저 보고, 이미 뽑힌 포켓몬과 타입·약점이 겹치면 점수를 깎아서 한 가지 기술에 팀이 다 쓸리지 않게 함
@@ -1806,7 +1809,7 @@ function legXLines(N, E, ty, retry) {
       ['k', '오늘은 박사가 아니라<br>심사관으로서 자네 앞에 서겠네.<br>봐주는 것은 없단다.'], ['k', '훈련장 경기장으로 가세.<br>자네 포켓몬들이 땀 흘려 온<br>바로 그 자리에서 겨루는 걸세.'], mood, ['g', '관장님… 다녀오세요.<br>여기서 기다리고 있을게요.']],
     court: ['이 경기장의 모래에는\n자네와 포켓몬들이 쌓아 온 시간이\n그대로 배어 있구먼.', '전설의 체육관이란\n그저 강한 체육관이 아니란다.\n누구도 넘지 못한 벽이라는 뜻이지.', '그 이름에 걸맞은지,\n내 30년을 함께한 포켓몬들로\n직접 확인하겠네.', `자, ${E}.\n가진 것을 전부 보여 주게!`],
     win: ['…졌네.', `훌륭했네, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
-    back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>그때마다 심사는…<br>물론 또 내가 본단다. 허허!']] };
+    back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>다음부터 심사는 챔피언들 몫이란다.<br>나는 전당 등록하러 달려오마. 허허!']] };
   return { pre: null,
     in: [['k', `${E}. ${nth} 번째 전설 심사구먼.`], ['k', '자네가 이 자리에 설 때마다<br>나는 처음 그날이 떠오른단다.<br>참 멀리도 왔구먼.'], ['k', '몇 번을 치러도 이 심사는<br>가벼워지지 않는단다.<br>자네도, 나도 말일세.'], ['k', '경기장으로 가세.'], mood],
     court: [`${ty} 타입으로도 전설의 이름에\n걸맞은지 확인하겠네.`, '지난 심사보다 나도 강해졌단다.\n각오하게.', `자, ${E}.\n전력으로 오너라!`],
@@ -2083,7 +2086,7 @@ function homeSay() {
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
-  if (bs) try { window.GymBGM?.prep('league'); if (LEGK_ON && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
+  if (bs) try { window.GymBGM?.prep('league'); if (legKang() && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
   if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
   if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
