@@ -1874,7 +1874,7 @@ function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm
 
 // ---------- 배틀 탭: 라인업 (gym.js 의 배틀 메뉴 창) ----------
 let tabEl = null;
-/* v23.71 경완 '수련탑 데려갈 포켓몬 정해진 총 코스트, 포켓몬별 코스트' → 카드에서 '종족값 + 레벨 코스트': 종족값 합 1~8 + 레벨 25마다 +1, 총 TR_CAP */
+/* v23.72 경완 '수련탑 데려갈 포켓몬 정해진 총 코스트, 포켓몬별 코스트' → 카드에서 '종족값 + 레벨 코스트': 종족값 합 1~8 + 레벨 25마다 +1, 총 TR_CAP */
 const TR_CAP = 12, trCost = P => { const t = (SPECIES[P?.sp]?.bs || []).reduce((a, b) => a + b, 0), lv = gm(P).lv | 0; return (t <= 300 ? 1 : t <= 400 ? 2 : t <= 480 ? 3 : t <= 530 ? 4 : t <= 579 ? 5 : t <= 600 ? 6 : t <= 660 ? 7 : 8) + Math.floor(lv / 25); };
 let luCost = false; const luSum = () => luCost ? curLu().reduce((a, id) => a + (boxOf(id) ? trCost(boxOf(id)) : 0), 0) : 0, luFit = P => !luCost || curLu().includes(P.id) || luSum() + trCost(P) <= TR_CAP;
 let luPickCb = null, luTitle = '', luGo = '', luRnd = null;   // 승급 심사 라인업 고르기 (경완 2026-10-30): 연습 배틀 대신 '이 라인업으로 결정'
