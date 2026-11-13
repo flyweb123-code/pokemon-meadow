@@ -232,8 +232,8 @@ const CSS = `
 /* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
 /* 경완 2026-11-14 '콤보는 박스 없이' + '색 자체가 마음에 안 듦': 칸을 없애고 흰 숫자에 진한 테두리, 남은 시간은 밑줄. 콤보가 쌓이면 밑줄과 '콤보' 글자만 하늘·보라로 */
 #yact .ya-cb{--cc:#fff;display:inline-block;padding:0 0 0 2px;background:none;border:0;box-shadow:none;font-size:14px;font-weight:700;color:var(--cc);text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
-#yact .ya-cb[data-t="2"]{--cc:#8adcff}#yact .ya-cb[data-t="3"]{--cc:#d2a8ff}
-#yact .ya-cb b{font-size:42px;line-height:1;color:#fff;margin-right:5px;text-shadow:-3px 0 0 var(--ink),3px 0 0 var(--ink),0 -3px 0 var(--ink),0 5px 0 var(--ink),-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 5px 0 var(--ink),3px 5px 0 var(--ink)}
+#yact .ya-cb[data-t="2"]{--cc:#ff8a70}#yact .ya-cb[data-t="3"]{--cc:#ff2e2e}   /* 경완 2026-11-14 색 후보 R2: 평소 흰색, 10콤보 다홍, 30콤보 빨강 (숫자도 같이) */
+#yact .ya-cb b{font-size:42px;line-height:1;color:var(--cc);margin-right:5px;text-shadow:-3px 0 0 var(--ink),3px 0 0 var(--ink),0 -3px 0 var(--ink),0 5px 0 var(--ink),-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 5px 0 var(--ink),3px 5px 0 var(--ink)}
 #yact .ya-cb small{display:block;font-size:11px;line-height:14px;padding:0;margin-top:5px;background:none;border:0;color:#fff;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
 #yact .ya-cb i{width:100%;min-width:92px;height:8px;border:2px solid var(--ink);margin-top:6px;box-sizing:border-box;background:var(--ink)}
 #yact .ya-cb u{background:var(--cc)}
