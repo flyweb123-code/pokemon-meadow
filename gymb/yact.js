@@ -200,6 +200,37 @@ const CSS = `
 #yact .ya-stn .ya-stg i{position:absolute;margin:-5px}
 #yact .ya-stn .ya-stg i.c{box-shadow:0 0 0 2px #ffe27a}
 #yact .ya-hud.ya-rw{top:calc(92px + env(safe-area-inset-top))}
+/* 경완 2026-11-14 '보상 3칸에 골드까지 반원으로, 반투명하게': 가운데 반원(스테이지) 둘레에 바깥 반원 띠를 두르고 네 칸(골드·경험치·노력치·번뜩임)으로 나눈다 */
+#yact .ya-top{justify-content:flex-end}
+#yact .ya-arc{left:50%;top:env(safe-area-inset-top);width:0;height:0}
+#yact .ya-arc .sg{position:absolute;width:58px;height:46px;margin:-23px -29px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;text-shadow:0 2px 0 var(--ink),0 0 3px var(--ink);white-space:nowrap;line-height:1;padding:0;background:none;border:0;box-shadow:none}
+#yact .ya-arc .sg:nth-of-type(2){left:-98px;top:38px}#yact .ya-arc .sg:nth-of-type(3){left:-41px;top:98px}#yact .ya-arc .sg:nth-of-type(4){left:41px;top:98px}#yact .ya-arc .sg:nth-of-type(5){left:98px;top:38px}
+#yact .ya-arc .sg b{font-size:14px}
+#yact .ya-arc .sg small{font-size:8px;opacity:.9}
+#yact .ya-arc .ri{width:19px;height:19px;display:grid;place-items:center;border:2px solid var(--ink);font-style:normal;font-weight:700;font-size:9px;text-shadow:none}
+#yact .ya-arc .ex .ri{background:#3a98e8}#yact .ya-arc .ev .ri{background:#8a4ae0}#yact .ya-arc .ya-eg .ri{background:#e060b0}
+#yact .ya-arc .ex b{color:#9fd8ff}#yact .ya-arc .ev b{color:#d6b4ff}#yact .ya-arc .ya-eg b{color:#ffb4e0}#yact .ya-arc .mg-hg b{font-size:17px;color:#ffe27a}
+#yact .ya-arc .mg-hg .coin{width:15px;height:15px;margin:0}
+#yact .ya-arc .ya-egt{font-style:normal;font-size:8px;line-height:11px;padding:0 3px;border:1px solid var(--ink);text-shadow:none}
+#yact .ya-arc .ya-stb{top:0;width:152px;height:76px;padding-top:3px;border-radius:0 0 76px 76px;background:rgba(26,28,50,.62);box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.16)}
+#yact .ya-arc .ya-stb .ya-ph{font-size:10px;line-height:14px;margin:0 0 2px}
+#yact .ya-arc .ya-stn .n b{font-size:26px}
+/* 경완 2026-11-14 '반원에 구슬 4개 좋다': 바깥 띠를 없애고 스테이지 반원 둘레에 동그란 구슬 네 개(골드·경험치·노력치·번뜩임), 구슬 테두리가 게이지(--p 0~1)로 차오른다. 능력치 이름·타입 딱지는 구슬에선 뺌 */
+#yact .ya-arc .sg{width:56px;height:56px;margin:-28px;border-radius:50%;background:rgba(26,28,50,.66);border:3px solid var(--ink);box-sizing:border-box;gap:1px;--p:0;--c:#fff}
+#yact .ya-arc .sg::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1turn),rgba(255,255,255,.2) 0);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+#yact .ya-arc .sg>*{position:relative}
+#yact .ya-arc .sg:nth-of-type(1){left:-106px;top:44px;--c:#ffcf3a;--p:1}#yact .ya-arc .sg:nth-of-type(2){left:-53px;top:102px;--c:#3a98e8}#yact .ya-arc .sg:nth-of-type(3){left:53px;top:102px;--c:#a060f0}#yact .ya-arc .sg:nth-of-type(4){left:106px;top:44px;--c:#e060b0}
+#yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .mg-hg b{font-size:15px}#yact .ya-arc .ex b{font-size:12px;letter-spacing:-.5px}
+#yact .ya-arc .ri{width:16px;height:16px;font-size:8px}#yact .ya-arc .mg-hg .coin{width:13px;height:13px}
+#yact .ya-arc .sg small,#yact .ya-arc .sg .ya-egt{display:none}
+#yact .ya-tl{left:8px;top:calc(138px + env(safe-area-inset-top))}
+/* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
+#yact .ya-cb{--cc:#ffe27a;display:inline-block;padding:4px 10px 7px 9px;background:rgba(26,28,50,.72);border:3px solid var(--ink);border-left:7px solid var(--cc);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 3px 0 rgba(0,0,0,.25);font-size:14px;font-weight:700;text-shadow:0 2px 0 var(--ink)}
+#yact .ya-cb[data-t="2"]{--cc:#ffa040}#yact .ya-cb[data-t="3"]{--cc:#ff5a4a}
+#yact .ya-cb b{font-size:36px;line-height:1;color:var(--cc);margin-right:5px;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 3px 0 var(--ink),2px 3px 0 var(--ink)}
+#yact .ya-cb small{display:table;font-size:10px;line-height:15px;padding:0 6px;margin-top:4px;background:#bff59a;color:var(--ink);text-shadow:none;border:2px solid var(--ink)}
+#yact .ya-cb i{width:100%;min-width:96px;height:7px;border-width:2px;margin-top:5px;box-sizing:border-box;background:#14162a}
+#yact .ya-cb u{background:var(--cc)}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
 #yact .ya-me{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -289,12 +320,14 @@ const CSS = `
 #yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;background:#1c1c2e}
 `;
 const HTML = `<canvas></canvas>
-<div class="ya-hud ya-top"><span class="pan mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></span>
-  <div class="ya-stb"><b class="ya-ph">스테이지</b><div class="pan ya-stn"><div class="n"><b class="ya-wn">1</b><small>/${STAGES.length}</small></div><div class="ya-stg"></div></div></div>
-  <button class="b3 ya-quit">그만하기</button></div>
-<div class="ya-hud ya-rw"><div class="pan ch ex"><i class="ri">Lv</i><div class="rt"><span>경험치</span><b class="ya-rwe">+0</b></div><div class="rb"><u class="ya-rwxb"></u></div></div>
-  <div class="pan ch ev"><i class="ri">EV</i><div class="rt"><span><span class="ya-rwk"></span> 노력치</span><b class="ya-rwv">0/8</b></div><div class="rb"><u class="ya-rwvb"></u></div></div>
-  <div class="pan ch ya-eg"><i class="ri">★</i><div class="rt"><span>번뜩임 <em class="ya-egt"></em></span><b class="ya-egp"></b></div><div class="bar rb"><i class="ya-egf0"></i><i class="ya-egf"></i></div></div></div>
+<div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
+<div class="ya-hud ya-arc">
+  <div class="sg mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></div>
+  <div class="sg ex"><i class="ri">Lv</i><b class="ya-rwe">+0</b></div>
+  <div class="sg ev"><i class="ri">EV</i><b class="ya-rwv">0/8</b><small class="ya-rwk"></small></div>
+  <div class="sg ya-eg"><i class="ri">★</i><b class="ya-egp"></b><em class="ya-egt"></em></div>
+  <div class="ya-stb"><b class="ya-ph">스테이지</b><div class="ya-stn"><div class="n"><b class="ya-wn">1</b><small>/${STAGES.length}</small></div><div class="ya-stg"></div></div></div></div>
+<span hidden><i class="ya-rwxb"></i><i class="ya-rwvb"></i><i class="ya-egf"></i><i class="ya-egf0"></i></span>
 <div class="ya-hud ya-tl"><div class="ya-cb"><b>0</b>콤보<small></small><i><u></u></i></div></div>
 <span hidden><i class="ya-me"></i><i class="ya-m"></i><i class="ya-tm"></i><i class="ya-egn"></i><i class="ya-egs"></i></span>
 <div class="ya-joy"></div><div class="ya-joyb"><i class="ya-joyk"></i></div>
@@ -956,7 +989,7 @@ function gotShard(p) {
     snd('DUN_Wonder_Tile', .09); snd('DUN_Stat_Up', .05, .14);
     ring(me.x, me.y - 16, col, 6, 80, .4, 6, 1); ring(me.x, me.y - 16, '#fff', 4, 50, .3, 4, 1, .08); stars(p.x, p.y - 16, 14, col); stars(me.x, me.y - 22, 10, '#fff', 260); }
   // 반짝이가 번뜩임 칸으로 날아가서 게이지가 오른다
-  const to = hudPt('.ya-eg .bar'); let n = 0; for (let i = 0; i < 2 + sh * 2; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, col);
+  const to = hudPt('.ya-eg .ri'); let n = 0; for (let i = 0; i < 2 + sh * 2; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, col);
   hud();
 }
 function shardFx() {   // 먹는 순간 화면 효과 (판 시간이 멈춰 있어도 도는 실제 시간)
@@ -990,10 +1023,11 @@ function drawShard(p) { const g = R.g, T = R.T, RT = R.RT, t = T - p.t0, sh = p.
 // 내 포켓몬 머리 위: 체력바(늘 보임) + 깨닫는 기술 게이지(가는 줄, 조각을 먹으면 잠깐 커지고 %가 뜸) + 범위 UP 남은 시간
 function meBar(me) { const g = R.g, G = R.G, RT = R.RT, w = 46, x = Math.round(me.x - w / 2 + (me.flash > 0 ? Math.sin(RT * 90) * 2 : 0)), y = Math.round(me.y - 62 - (GA.lift?.(me.sp) || 0) - (me.z || 0)), r = Math.max(0, me.hp / me.mhp);
   g.fillStyle = '#20202c'; g.fillRect(x - 2, y - 2, w + 4, 10); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, 6); g.fillStyle = r > .5 ? '#58d050' : r > .2 ? '#f8c030' : (Math.floor(RT * 6) % 2 ? '#f05038' : '#ff9a8a'); g.fillRect(x, y, Math.round(w * r), 6); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x, y, Math.round(w * r), 2);
-  let yy = y + 10; const eg = G.M.eg;
-  if (eg) { const up = Math.max(0, 1 - (RT - G.egT) / 2.2), h = up > 0 ? 5 : 3, c = TYPE_C[eg.t] || '#ee99ac'; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#5a5a6a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = up > 0 && Math.floor(RT * 12) % 2 ? '#fff' : c; g.fillRect(x, yy + 1, Math.round(w * G.eggShown / 100), h);
-    if (up > 0) { g.textAlign = 'left'; g.font = 'bold 10px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(`${G.eggShown}%`, x + w + 5, yy + 7); g.fillStyle = '#ffe27a'; g.fillText(`${G.eggShown}%`, x + w + 5, yy + 7); } yy += h + 4; }
-  for (const [v, mx, c] of [[me.buff, BUFF_T, '#bff59a'], [me.shrink, 8, '#ffd0f0'], [me.clone, 8, '#c8c8ff'], [me.haste, 8, '#9fe4ff'], [me.guard, 8, '#8cc8ff'], [me.prot, 2.5, '#7af0a0']]) if (v > 0) { g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, 5); g.fillStyle = c; g.fillRect(x, yy + 1, Math.round(w * v / mx), 2); yy += 5; } }
+  // 체력 밑 게이지 = 기술 남은 시간 (경완 2026-11-14 '빈 게이지를 기술 남은 시간 게이지로'): 꾹 누르는 기술은 버틸 수 있는 시간, 아니면 걸어 둔 효과가 남은 시간. 보여 줄 게 없으면 안 그림
+  let yy = y + 10; const H = me.hide, C = me.ch, D = me.dash?.hold != null ? me.dash : null, ef = [[me.buff, BUFF_T, '#bff59a'], [me.shrink, 8, '#ffd0f0'], [me.clone, 8, '#c8c8ff'], [me.haste, 8, '#9fe4ff'], [me.guard, 8, '#8cc8ff'], [me.prot, 2.5, '#7af0a0']].filter(e => e[0] > 0);
+  const hold = H ? [H.max - H.t, H.max, H.col] : C ? [C.max - C.t, C.max, C.col] : D ? [D.max - D.el, D.max, TYPE_C[D.v?.t]] : null, main = hold || ef.shift();
+  if (main) { const q = Math.max(0, Math.min(1, main[0] / main[1])), h = 5, low = hold && q < .25 && Math.floor(RT * 14) % 2; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#4a4a5a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = low ? '#fff' : (main[2] || '#ffe27a'); g.fillRect(x, yy + 1, Math.round(w * q), h); g.fillStyle = 'rgba(255,255,255,.4)'; g.fillRect(x, yy + 1, Math.round(w * q), 1); yy += h + 4; }
+  for (const [v, mx, c] of ef) { g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, 5); g.fillStyle = c; g.fillRect(x, yy + 1, Math.round(w * v / mx), 2); yy += 5; } }
 function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx = e.flash > 0 ? Math.sin(R.RT * 90) * 2 : 0, x = Math.round(e.x - w / 2 + jx), y = Math.round(e.y + 6);
   g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, h + 2); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, h); const r = Math.max(0, e.hp / e.mhp), rl = Math.max(0, (e.hpLag ?? e.hp) / e.mhp);
   if (rl > r) { g.fillStyle = '#fff'; g.fillRect(x, y, Math.ceil(w * rl), h); }   // 방금 깎인 만큼은 하얗게 남았다가 줄어든다
@@ -1115,15 +1149,15 @@ function cdUi() { const G = R.G, me = G.me, box = R.q('.ya-mvs'), dg = R.q('.ya-
 function hud() {
   const G = R?.G; if (!G) return; const q = R.q, me = G.me, eg = G.M.eg, r = me.hp / me.mhp;
   q('.ya-wn').textContent = G.wave; q('.ya-stg').innerHTML = STAGES.map((S, i) => { const a = (166 - i * 152 / (STAGES.length - 1)) * Math.PI / 180;   /* 반원 테두리를 따라 왼쪽에서 오른쪽으로 */
-    return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(85 + Math.cos(a) * 70).toFixed(1)}px;bottom:${(85 - Math.sin(a) * 70).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
-  q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
+    return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(73 + Math.cos(a) * 59).toFixed(1)}px;bottom:${(73 - Math.sin(a) * 59).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
+  q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-arc .ex').style.setProperty('--p', Math.min(1, G.exp / Math.max(1, G.xpB))); q('.ya-arc .ev').style.setProperty('--p', Math.min(1, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)))); q('.ya-arc .ya-eg').style.setProperty('--p', (G.M.eg ? G.eggShown : 0) / 100); q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
   q('.ya-eg').hidden = !eg;
   if (eg) { q('.ya-egn').textContent = '번뜩임 ???'; q('.ya-egt').textContent = TYPE_KO[eg.t] || ''; q('.ya-egt').style.background = TYPE_C[eg.t] || '#888'; q('.ya-egf').style.setProperty('--tc', TYPE_C[eg.t] || '#ee99ac');
     q('.ya-egf').style.width = G.eggShown + '%'; q('.ya-egf0').style.width = G.egg0 + '%'; q('.ya-egp').textContent = `${G.eggShown}%`; q('.ya-egs').textContent = `이번 판 +${G.shard}%`; }
   q('.ya-me').textContent = `${nmOf(G.o.P)} Lv.${me.lv}`;
 }
 function hgUp() { const el = R.q('.mg-hg'); el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); hud(); }
-function cbUi(up) { const G = R.G, el = R.q('.ya-cb'), n = G.combo; el.classList.toggle('on', n >= 2); if (n < 2) return;
+function cbUi(up) { const G = R.G, el = R.q('.ya-cb'), n = G.combo; el.classList.toggle('on', n >= 2); if (n < 2) return; el.dataset.t = n >= 30 ? 3 : n >= 10 ? 2 : 1;
   el.querySelector('b').textContent = n; el.querySelector('small').textContent = `기술 충전 +${Math.round(Math.min(.45, n * .015) * 100)}%`;
   if (up) { el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); } }
 function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>${t}</span>`; b.className = 'ya-ban'; void b.offsetWidth; b.className = 'ya-ban on ' + kind; }
