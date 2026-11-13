@@ -338,6 +338,17 @@
     const fl = Array.from({ length: 7 }, (_, i) => mk(`left:${MW * (.45 + i * .18) - MW * .25}px;bottom:${MH * .18}px;width:${MW * .5}px;height:${MH * (1.1 + (i % 3) * .18)}px;border-radius:50% 50% 45% 45% / 70% 70% 30% 30%;background:linear-gradient(to top,${rgba(tO, .0)},${rgba([255, 150, 40], .75)} 25%,${rgba([255, 230, 90], .9)} 55%,rgba(255,255,255,0));filter:blur(${Wd * .012}px);mix-blend-mode:screen;transform-origin:50% 100%`, 'div', fx));
     const core = mk(`left:${MW * .5}px;top:${MH * .55}px;width:${MW}px;height:${MH}px;border-radius:50%;background:radial-gradient(circle,${rgba([255, 255, 220], .9)} 0,${rgba(tO, .55)} 45%,rgba(0,0,0,0) 70%);filter:blur(${Wd * .02}px);mix-blend-mode:screen`, 'div', fx);
     const mcl = mon ? mk(`left:${mR.left}px;top:${mR.top}px;width:${mR.width}px;height:${mR.height}px;opacity:0`) : null; if (mcl) { const im = mon.cloneNode(); im.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${getComputedStyle(mon).transform !== 'none' ? 'transform:' + getComputedStyle(mon).transform : ''}`; mcl.appendChild(im); }   /* 불꽃 기운 위에 포켓몬을 한 번 더 그려 기운에 안 묻히게 */
+    /* 경완 2026-11-13 'Z파워에 둘러싸인 효과': 포켓몬을 감싸는 금빛 막 + 빙글빙글 도는 Z파워 빛 고리(뒤쪽 절반은 포켓몬 뒤, 앞쪽 절반은 앞) */
+    const shell = mk(`left:${MX - MW * .78}px;top:${MY - MH * .9}px;width:${MW * 1.56}px;height:${MH * 1.5}px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,240,170,0) 52%,${rgba([255, 214, 70], .32)} 70%,${rgba(tO, .55)} 82%,rgba(255,255,255,0) 90%);box-shadow:0 0 ${Wd * .04}px ${rgba([255, 214, 70], .5)};mix-blend-mode:screen;opacity:0`);
+    const orbB = mk('inset:0', 'canvas'), orbF = mk('inset:0', 'canvas'); [orbB, orbF].forEach(o => { o.width = Wd * 2; o.height = Hd * 2; o.style.width = Wd + 'px'; o.style.height = Hd + 'px'; o.style.opacity = 0; });
+    if (mcl) { root.insertBefore(shell, mcl); root.insertBefore(orbB, mcl); }
+    const orbit = () => { const T0 = performance.now(), gb = orbB.getContext('2d'), gf = orbF.getContext('2d'), RX = MW * .78, RY = MH * .22, rings = [[0, -.35, 1], [2.1, .3, -1], [4.2, 0, 1.3]], N = 34;
+      const dr = now => { if (!root.isConnected || !cvOn) return; const e = (now - T0) / 1000; [gb, gf].forEach(g => { g.clearRect(0, 0, orbB.width, orbB.height); g.globalCompositeOperation = 'lighter'; });
+        rings.forEach(([ph, tilt, sp], r) => { const yc = MY - MH * (.15 - r * .22) - Math.min(1, e * 1.2) * MH * .05;
+          for (let i = 0; i < N; i++) { const a = e * 5.2 * sp + ph - i * .065, sn = Math.sin(a), x = MX + Math.cos(a) * RX * (1 - r * .12), y = yc + sn * RY + Math.cos(a) * RX * tilt * .25, al = (1 - i / N) * (.55 + .45 * Math.abs(sn)), g = sn > 0 ? gf : gb, rad = Wd * (.017 - i * .0004) * (sn > 0 ? 1.15 : .8);
+            g.shadowBlur = 0; g.beginPath(); g.arc(x * 2, y * 2, Math.max(2, rad * 5), 0, 7); g.fillStyle = i % 3 ? `rgba(255,190,40,${al * .22})` : rgba(tO, al * .3); g.fill(); g.beginPath(); g.arc(x * 2, y * 2, Math.max(1, rad * 2), 0, 7); g.fillStyle = i < 3 ? `rgba(255,255,240,${al})` : `rgba(255,224,110,${al})`; g.fill(); } });   /* 그림자 번짐(shadowBlur)은 폰에서 느려서 큰 옅은 원으로 빛 번짐 */
+        if (e < 1.35) requestAnimationFrame(dr); };
+      requestAnimationFrame(dr); };
     const sparks = Array.from({ length: 18 }, (_, i) => mk(`left:0;top:0;width:${Wd * .045}px;height:${Wd * .045}px;background:url(${P}Z-Power/particle.png) center/contain no-repeat;opacity:0;mix-blend-mode:screen;filter:hue-rotate(${i * 20}deg) saturate(1.5)`));
     // 5) 기술 이름 쾅
     const band = mk(`left:-15%;right:-15%;top:${Hd * .4}px;height:${Hd * .2}px;background:linear-gradient(to bottom,${TYD} 0 8%,#14101c 8% 92%,${TYD} 92%);transform:skewY(-5deg) scaleY(0);box-shadow:0 0 0 ${Wd * .008}px ${GOLD},0 0 36px ${rgba(tO, .9)};opacity:0`);
@@ -374,8 +385,8 @@
     at(3550, () => A(aura, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }));   /* 2250 에 만든 애니메이션보다 뒤에 만들어야 이김 */
     [trn].forEach(e => A(e, [{ opacity: 1, transform: `${e === trn && !opp ? 'scaleX(-1) ' : ''}translate(0,0) scale(1)` }, { opacity: 1, transform: `translate(${CXT - Wd / 2}px,${CYT - (TT + TH / 2)}px) ${e === trn && !opp ? 'scaleX(-1) ' : ''}scale(${kz})` }], { duration: 420, delay: 3550, easing: 'cubic-bezier(.5,0,.2,1)' }));
     at(5100, () => [trn].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
-    /* 띠가 포켓몬에게 갈 땐 위 화면만 살짝 어둡게, 아래는 그대로 깜깜하게 (반투명이면 숨긴 아래 화면이 비쳐 얼룩져 보임) */
-    const tR = rel(c.top.getBoundingClientRect()), dT = mk(`left:0;right:0;top:0;height:${tR.top + tR.height}px;background:rgba(6,4,14,.42);opacity:0`), dB = mk(`left:0;right:0;top:${tR.top + tR.height}px;bottom:0;background:radial-gradient(ellipse at 50% 30%,${mix(tB, .25)} 0,rgb(6,4,14) 70%);opacity:0`); root.insertBefore(dB, dim.nextSibling); root.insertBefore(dT, dim.nextSibling);
+    /* 띠가 포켓몬에게 갈 땐 위·아래 모두 반투명 검정 (위는 옅게) */
+    const tR = rel(c.top.getBoundingClientRect()), dT = mk(`left:0;right:0;top:0;height:${tR.top + tR.height}px;background:rgba(0,0,0,.42);opacity:0`), dB = mk(`left:0;right:0;top:${tR.top + tR.height}px;bottom:0;background:rgba(0,0,0,.6);opacity:0`);   /* 경완 2026-11-13: 아래도 깜깜하게 덮지 말고 배경이 살짝 보이게 반투명 검정 */ root.insertBefore(dB, dim.nextSibling); root.insertBefore(dT, dim.nextSibling);
     [dT, dB].forEach(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 3500 })); A(dim, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, delay: 3550 });
     at(3650, () => { vib(1); const g2 = bm.getContext('2d'), ax = CXT, ay = CYT - TH * kz * .05, T0 = performance.now(), cols = ['#ff5a7a', '#ffb347', '#fff275', '#6dff8a', '#4dd2ff', '#9b7bff'];
       const dr = now => { const p = Math.min(1, (now - T0) / 600), e = (now - T0) / 1000; g2.clearRect(0, 0, bm.width, bm.height); g2.globalCompositeOperation = 'lighter';
@@ -389,6 +400,8 @@
       fl.forEach((f, i) => f.animate([{ transform: 'scaleY(.85) translateX(0)' }, { transform: `scaleY(1.15) translateX(${(i % 2 ? 1 : -1) * Wd * .006}px)` }, { transform: 'scaleY(.85) translateX(0)' }], { duration: 300 + (i % 3) * 70, iterations: Infinity, delay: i * 40 }));
       core.animate([{ opacity: .7, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.12)' }, { opacity: .7, transform: 'scale(1)' }], { duration: 420, iterations: Infinity });
       if (mcl) { mcl.style.opacity = 1; mcl.style.filter = `drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px ${GOLD}) drop-shadow(0 0 12px ${TY})`; mcl.animate([{ transform: 'none' }, { transform: 'translateY(-8%) scale(1.04,.96)', offset: .25 }, { transform: 'translateY(-14%) scale(.97,1.06)', offset: .5 }, { transform: 'none' }], { duration: 520, iterations: 2, easing: 'ease-in-out' }); }
+      A(shell, [{ opacity: 0, transform: 'scale(.5)' }, { opacity: 1, transform: 'scale(1.06)', offset: .4 }, { opacity: 1, transform: 'scale(1)' }], { duration: 380 }); shell.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(1.5)' }, { filter: 'brightness(1)' }], { duration: 360, iterations: Infinity });
+      [orbB, orbF].forEach(o => A(o, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); orbit();
       sparks.forEach((p, i) => { const x0 = MX - MW * .7 + Math.random() * MW * 1.4, y0 = MY + MH * .1; A(p, [{ opacity: 0, transform: `translate(${x0}px,${y0}px) scale(.4)` }, { opacity: 1, offset: .2 }, { opacity: 0, transform: `translate(${x0 + (Math.random() - .5) * Wd * .1}px,${y0 - MH * (1 + Math.random())}px) scale(1.1)` }], { duration: 700 + Math.random() * 300, delay: (i % 9) * 110, iterations: 2 }); }); });
     shake(4300, 700, 5); at(4700, () => c.se('Psych Up'));
     // 5) 기술 이름 쾅 (5500~6900)
@@ -400,9 +413,12 @@
     A(shine, [{ opacity: 1, transform: 'translateX(-60%)' }, { opacity: 1, transform: 'translateX(60%)' }], { duration: 500, delay: 6000, easing: 'ease-in-out' });
     const END = 7300;
     [band, bz, ttl, shine, fx, dim, mcl, dT, dB].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350, delay: END - 650 }));
+    /* 경완 2026-11-13: 무지개 띠가 갈 때 아래 화면(배경)도 반투명 검정 밑으로 살짝 보이게 → 기술 이름 땐 다시 숨김 */
+    const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid')), xA = []; at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }))));
+    at(5300, () => [shell, orbB, orbF].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
     return new Promise(res => {
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
-      setTimeout(() => { lk.remove(); cvOn = false; timers.forEach(t => clearTimeout(t));         const back = hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
+      setTimeout(() => { lk.remove(); cvOn = false; timers.forEach(t => clearTimeout(t));         const back = hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); xA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
   }
 
   // ---------- 테라스탈 ([DBK] Terastallization [011] Animations.rb BattlerTerastallize) ----------
