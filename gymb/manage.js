@@ -259,7 +259,7 @@ async function drawTrain() {
   const r1 = H * .29, r2 = H * .39;   // 의자·아이스박스 없앰, 후프링 위로, 수영장 왼쪽 (경완 2026-10-29)
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
-  yProp('h1', 'track-hurdle', W * .72, H * .76); yProp('h2', 'track-hurdle', W * .72, H * .88);
+  /* v23.36 경완 '코치·포켓몬 버튼 밑에 있는 허들 지워야겠네': 허들 두 개와 허들 달리기 훈련(run)을 뺌 */
   [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
   Y.lane = { x: W * .72, y0: H * .69, y1: H * .95 };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
@@ -337,7 +337,7 @@ function yNext(m, now) {
   const W8 = [];   // [기구, 무게]
   const add = (k, w) => { if (w > 0 && !yBusy(k, m)) W8.push([k, w]); };
   if (m.flyer) { add('hoop', 4); add('tgt', m.shooter ? 2 : .5); add('bag1', 1); add('bag2', 1); }
-  else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); add('run', 1.8); if (m.swimmer) add('water', 3); }
+  else { add('bag1', m.fighter ? 4 : 1.4); add('bag2', m.fighter ? 4 : 1.4); add('tgt', m.shooter ? 4 : .6); add('tramp', 1.6); if (m.swimmer) add('water', 3); }
   if (Math.random() < .2 && m.D?.P) { const [sx, sy] = yardSpot(false); return yGo(m, 'drill' + m.id, sx, sy, 'drill'); }   // v20.89 몸 풀기: 빙글빙글·구르기·점프
   if (GA.mvFx && yMove(m) && Math.random() < .28) { const [sx, sy] = yardSpot(false); return yGo(m, 'tech' + m.id, sx, sy, 'tech'); }   // v20.81 기술 연습: 빈 자리로 가서 아는 기술을 차례로
   if (!W8.length) { if (nearBush(m.x, m.y)) { const [sx, sy] = yardSpot(false); return yGo(m, 'train', sx, sy, 'train'); } m.st = 'train'; m.k = null; m.face = m.x > Y.W / 2 ? 1 : -1; m.until = now + 4 + Math.random() * 3; return; }   // 다 차 있으면 그 자리에서 섀도 훈련
@@ -519,7 +519,7 @@ function yardLoop(ts) {
     if (m.st === 'eat' && now > m.nm) { m.nm = now + 1.6 + Math.random() * 1.2; yEmo(m, Math.random() < .7 ? '냠냠' : '♪', 'mu'); }
     if (m.st === 'tramp') { const p0 = m.ph; m.ph += dt / .62; m.air = Math.abs(Math.sin(m.ph * Math.PI)) * 30; if (Math.floor(m.ph) !== Math.floor(p0)) { yWob(Y.pr.tramp, 'sq'); if (Math.random() < .3) yEmo(m, '♪', 'mu'); } }
     if (m.st === 'run') { const L = Y.lane, v = 80 * dt; m.y += m.dir * v; m.x = L.x; m.an = 'Walk';   // 세로 트랙: 위아래로 달리며 허들 넘기
-      const hd = ['h1', 'h2'].map(k => Math.abs(m.y - Y.pr[k].y)).reduce((a, b) => Math.min(a, b)), J = 16; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 26 : 0;
+      const hd = ['h1', 'h2'].filter(k => Y.pr[k]).map(k => Math.abs(m.y - Y.pr[k].y)).reduce((a, b) => Math.min(a, b), 1e9), J = 16; m.air = hd < J ? Math.cos(hd / J * Math.PI / 2) * 26 : 0;
       if (m.y > L.y1 || m.y < L.y0) { m.y = clampN(m.y, L.y0, L.y1); m.dir = -m.dir; m.face = Math.random() < .5 ? 1 : -1; if (++m.lap >= 4) { yEmo(m, '!', 'hit'); yNext(m, now); } } }
     if (m.st === 'hoop') { m.ph += dt / 4.2; const p = hoopAt(m.ph % 1); m.x = p.x; m.y = p.y; m.air = p.air; m.face = p.f; m.an = 'Walk'; m.zb = 0;
       m.air = Math.max(0, p.air - (m.top != null ? -m.top * .5 : 18) - (m.lift || 0));   // 몸통 가운데가 고리 구멍 높이로
