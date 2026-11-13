@@ -941,7 +941,8 @@ function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return
   return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
 function mkBoss(gi, t) {
-  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && NAMED.find(n => n.id === 'red'), P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
+  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && !gList().some(x => (x.gmax | 0) >= 5) && NAMED.find(n => n.id === 'red'),   /* v24.16 경완 '첫번째 체육관 명문 심사만 고정, 그 뒤부터는 원래대로': 명문 이상인 체육관(휴업 포함)이 하나도 없을 때만 */
+    P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
   if (!P?.length) return null;
   const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
   return c;
