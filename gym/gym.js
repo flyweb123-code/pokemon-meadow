@@ -4176,6 +4176,8 @@ function mgCanShow(L) { const p = document.createElement('div'); p.className = '
   root.appendChild(p); p.querySelectorAll('.mgc-b').forEach((b, i) => pmdCell(L[i], b)); gse('DP_WIN_OPEN'); return () => p.remove(); }
 /* v23.66 경완 '테라스탈도 메가링처럼 본가에 필요한 도구 있지 않아?', '강박사가 드디어 마지막 비기를 알려줄 때가 온 것 같군! 하면서 테라스탈 설명, 메가진화처럼 네 아니오로 튜토리얼까지':
    전설 심사를 통과하고 체육관에 돌아오면 테라스탈오브(g.teraOrb, 중요한 물건) → 테라피스 → '알고 있니?' 아니요면 빌린 포켓몬(테라 타입 = 체육관 타입)으로 연구원 하람과 연습 배틀에서 직접 테라스탈 */
+/* 타입별 약점 (본가 상성표): 테라스탈 설명에서 '원래 약점이 사라지고 테라 타입의 약점이 생긴다'를 말할 때 씀 */
+const TY_WK = { 1: [2], 2: [3, 14, 18], 3: [13, 15, 6], 4: [5, 14], 5: [11, 12, 15], 6: [11, 12, 2, 5, 9], 7: [10, 3, 6], 8: [8, 17], 9: [10, 2, 5], 10: [11, 5, 6], 11: [12, 13], 12: [10, 15, 4, 3, 7], 13: [5], 14: [7, 8, 17], 15: [10, 2, 6, 9], 16: [15, 16, 18], 17: [2, 7, 18], 18: [4, 9] };
 /* 테라스탈 연습 포켓몬: 체육관 타입 → [종, '', 기술, 특성, 그 포켓몬 타입(체육관 타입의 천적)] */
 const TR_CT = { 1: [68, '', ['terablast', 'crosschop', 'bulkup', 'rockslide'], 'noguard', 2], 2: [65, '', ['terablast', 'psychic', 'recover', 'shadowball'], 'synchronize', 14], 3: [25, '', ['terablast', 'thunderbolt', 'quickattack', 'irontail'], 'static', 13], 4: [196, '', ['terablast', 'psychic', 'quickattack', 'swift'], 'synchronize', 14],
   5: [134, '', ['terablast', 'surf', 'quickattack', 'bite'], 'waterabsorb', 11], 6: [470, '', ['terablast', 'leafblade', 'quickattack', 'swordsdance'], 'leafguard', 12], 7: [136, '', ['terablast', 'flamethrower', 'quickattack', 'bite'], 'flashfire', 10], 8: [197, '', ['terablast', 'darkpulse', 'quickattack', 'moonlight'], 'synchronize', 17],
@@ -4186,7 +4188,7 @@ const TR_TID = 990012, teraTy = t => { const s = TERA_EN[t] || ''; return s ? s[
 function orbPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>테라스탈오브</h4><div class="le-get mr-get to-get"><img alt="" src="${IMG}dbk/it/TERAORB.png"></div><p class="gy-msg mr-d">테라스탈에 쓰는 구슬.<br>배틀 중에 포켓몬을 테라 타입으로<br>테라스탈시킬 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 async function teraTut({ k, gu, D, t }) {
-  const g = st(), ty = TYPE_KO[t], /* 경완 '시험 포켓몬은 체육관 타입이랑 다른 타입으로' → v23.81 '천적 타입이어야 이해가 쉽다, 불 테라피스면 물 포켓몬': 체육관 타입의 천적 타입 포켓몬 + 테라버스트 */ M = TR_CT[t] || TR_CT[10], ty0 = TYPE_KO[M[4]], B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null, k0 = null;
+  const g = st(), ty = TYPE_KO[t], /* 경완 '시험 포켓몬은 체육관 타입이랑 다른 타입으로' → v23.81 '천적 타입이어야 이해가 쉽다, 불 테라피스면 물 포켓몬': 체육관 타입의 천적 타입 포켓몬 + 테라버스트 */ M = TR_CT[t] || TR_CT[10], ty0 = TYPE_KO[M[4]], /* v23.82 경완 '물 타입이지만 불꽃으로 테라스탈하면 불꽃 타입이 되어서 약점이 없어진다고 설명': 원래 약점(테라 타입도 약한 건 뺌)·새로 생기는 약점 */ wk0 = (TY_WK[M[4]] || []).filter(x => !(TY_WK[t] || []).includes(x)).map(x => TYPE_KO[x]).join('·'), wk1 = (TY_WK[t] || []).map(x => TYPE_KO[x]).join('·'), B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null, k0 = null;
   try { try { window.GymBGM?.sePrep?.(['DP_DOOR', 'ME_FANFA3', 'DP_DECIDE']); } catch (e) {}
     T = storyTalk(); const say = (x, o) => T.say(x, o), duo = on => { if (!gu) return; if (on) { face(gu, k); face(k, gu); } else { face(k, meEnt); face(gu, meEnt); } };
     await say(`그리고 ${NK()}.\n드디어 마지막 비기를\n알려 줄 때가 온 것 같구먼!`);
@@ -4199,7 +4201,7 @@ async function teraTut({ k, gu, D, t }) {
     const know = await T.ask(`그런데 ${NK()},\n테라스탈하는 방법은\n알고 있니?`, { hiNo: 1 }, '네', '아니요'); if (!open) return;
     if (know || !B) { await say(`오, 역시 ${NK()}${jong(NK()) ? '이' : ''}구나!\n그럼 짧게만 짚고 가자.`); await say('배틀에서 \'싸운다\'를 누르면\n테라스탈 버튼이 생긴단다.\n켜고 기술을 고르면 끝!'); }
     else { const sp = SPECIES[M[0]]?.n || '포켓몬';
-      await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`); await say(`${sp}${pN(sp)} ${ty0} 타입.\n${ty} 타입에게는 천적이지?`); await say(`그런데 이 녀석의 테라 타입은\n바로 그 ${ty} 타입이란다.\n어떻게 되는지 잘 지켜보렴!`);
+      await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`); await say(`${sp}${pN(sp)} ${ty0} 타입이라\n${wk0} 타입 기술에\n약하단다.`); await say(`그런데 ${ty} 타입으로 테라스탈하면\n${ty} 타입이 되어서\n그 약점이 사라지지!`); await say('어떻게 되는지\n잘 지켜보렴!');
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: TR_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[2], lv: 50, it: '', ab: M[3], tera: teraTy(t) });
       gse('DP_DECIDE'); await say('연습 배틀 상대는\n내 연구소 연구원이\n맡아 줄 거란다.');
       { T.hide(true); const kx = Math.round(k.x), ky = Math.round(k.y); k0 = [kx, ky]; const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
@@ -4222,7 +4224,7 @@ async function teraTut({ k, gu, D, t }) {
       if (!open) return; T.hide(false); if (rs) { face(meEnt, rs); face(k, rs); }
       busy = true; root.classList.add('busy');
       await say('우와… 보석처럼 빛나더니\n제 꼬렛이 날아갔어요!', RW); await say('눈이 부셔서 기술이\n오는 줄도 몰랐어요…', RW); face(k, meEnt); face(meEnt, k);
-      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} 원래\n${ty0} 타입이지만, 테라스탈한 뒤로는\n${ty} 타입으로 취급받았단다.`); await say(`${ty} 타입의 천적이던 녀석이\n${ty} 타입이 되어 버린 게지!`); await say(`약점도, 잘 버티는 타입도\n전부 ${ty} 타입 그대로!\n테라버스트도 ${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
+      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`테라버스트도\n${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
       if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); /* v23.69 경완 '연구원 나가고 나서 강박사 다시 관장 앞으로 자리 잡기' */ if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); T.hide(false); }
     }
     if (!open) return;
