@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 72" width="120" height="72"><!-- Bug -->
+<path d="M60 3L117 36 60 69 3 36z" fill="#93c83e"/>
+<path d="M60 3L117 36H3z" fill="#bce46e" fill-opacity=".55"/><path d="M60 3L3 36l57 33z" fill="#fff" fill-opacity=".18"/>
+<path d="M3 36l57 33 57-33z" fill="#6fa024" fill-opacity=".35"/><path d="M60 3L117 36 60 69z" fill="#000" fill-opacity=".08"/>
+<path d="M60 9L20 32" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" stroke-linecap="round"/>
+<g transform="translate(60 36) scale(1.3) translate(-60 -36)"><ellipse cx="60" cy="37" rx="7" ry="9" fill="rgba(20,16,20,.62)"/><circle cx="60" cy="26" r="4" fill="rgba(20,16,20,.62)"/><path d="M53 33l-8-4M53 38h-9M54 43l-7 5M67 33l8-4M67 38h9M66 43l7 5M58 23l-3-4M62 23l3-4" stroke="rgba(20,16,20,.62)" stroke-width="2.4" stroke-linecap="round"/></g>
+<path d="M60 3L117 36 60 69 3 36z" fill="none" stroke="#231c1e" stroke-width="4.5" stroke-linejoin="round"/>
+</svg>
