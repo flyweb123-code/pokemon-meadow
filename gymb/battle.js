@@ -2015,7 +2015,7 @@ const ivJudge = v => v >= 31 ? '최고' : v >= 26 ? '훌륭해' : v >= 16 ? '굉
 // 능력치 육각형 (경완 2026-10-29 '노력치는 없으니까 나머지 다 반영한 능력치로, 판정에 개체값 판정'): 종족값·개체값·레벨·성격으로 본가 공식 그대로 계산
 const ST_KEY = ['', 'atk', 'def', 'spa', 'spd', 'spe'];
 /* 경완 2026-11-14 Z 튜토리얼 '화염방사랑 Z 화염방사 위력 비교': 연습 상대 레벨 = 일반 기술 한 번에 체력이 약 tg 만큼 줄어드는 레벨 (본가 대미지 공식, 난수 평균 .925, 특성·급소 뺌) */
-function zFoeLv(atk, mvId, foeSp, tg = .3) { const dx = window.PSim?.Dex, mv = dx?.moves.get(mvId); if (!mv?.basePower) return 40;
+function zFoeLv(atk, mvId, foeSp, tg = .3) { const dx = window.PSim?.Dex, mv = dx?.moves.get(mvId); if (!mv?.basePower) return 40; if (tg === 'z') { const r = (mv.zMove?.basePower || mv.basePower * 1.9) / mv.basePower; tg = 1.2 / (1 + r); }   /* v24.28 경완 '그냥 기술 한 번 뒤 Z기술로 마무리': 그냥 + Z 기대 대미지 = 체력 120% (난수 최악에도 Z 한 방에 쓰러짐, 그냥 기술로는 안 쓰러짐) */
   const A = statsOf(atk.sp, atk.lv, atk.iv || [], atk.nat || 'hardy'), phys = mv.category === 'Physical', at = A[phys ? 1 : 3], fT = (SPECIES[foeSp]?.t || []).map(t => TY_EN[t]).filter(Boolean), stab = (SPECIES[atk.sp]?.t || []).map(t => TY_EN[t]).includes(mv.type) ? 1.5 : 1, eff = dx.getImmunity(mv.type, fT) ? 2 ** dx.getEffectiveness(mv.type, fT) : 0; if (!eff) return 40;
   let best = 40, bd = 9; for (let L = 5; L <= 100; L++) { const F = statsOf(foeSp, L, [31, 31, 31, 31, 31, 31], 'hardy'), d = (Math.floor(Math.floor(2 * atk.lv / 5 + 2) * mv.basePower * at / F[phys ? 2 : 4] / 50) + 2) * stab * eff * .925, f = d / F[0]; if (Math.abs(f - tg) < bd) { bd = Math.abs(f - tg); best = L; } } return best; }
 const foeHp = () => { const X = B?.act?.e; return X && X.mhp ? X.hp / X.mhp : null; };
