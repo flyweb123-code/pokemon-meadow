@@ -292,6 +292,17 @@ function yBtns() {
     + `<button type="button" class="ty-bt ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기 ${g.tr.length}/${trMax()}"><img class="ty-bic ty-ball" alt="" src="${IMG}item/pokeball.png"><span><b>포켓몬</b>${yDots(g.tr.length, trMax(), TR_ALL)}</span></button></div>`;
 }
 // 훈련장 코치 창: 포켓몬 슬롯 창(statPop)과 같은 틀. 코치 칸 누르면 트레이너 상세카드, ✕ 는 코치에서 빼기(고용은 그대로), 빈 칸은 고용한 트레이너 중에서 고르기
+/* v23.36 경완 '트레이너 발 발판 가운데에 맞춰': 그림마다 발 자리가 달라서 아래쪽 6줄 불투명 칸 가운데를 재서 발판 가운데(배틀 자리 176,88)로 옮김 */
+const FOOT = {};
+function footFix(im) {
+  const put = f => { if (!f) return; im.style.setProperty('--dx', (40 - f[0] * 1.25).toFixed(2)); im.style.setProperty('--dy', (80 - f[1] * 1.25).toFixed(2)); };
+  if (im.src in FOOT) return put(FOOT[im.src]);
+  const go = () => { try { const W = im.naturalWidth, H = im.naturalHeight; if (!W) return; const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0); const D = x.getImageData(0, 0, W, H).data, a = (i, j) => D[(j * W + i) * 4 + 3] > 40;
+      let by = -1; for (let j = H - 1; j >= 0 && by < 0; j--) for (let i = 0; i < W; i++) if (a(i, j)) { by = j; break; } if (by < 0) return;
+      let l = W, r = -1; for (let j = Math.max(0, by - 5); j <= by; j++) for (let i = 0; i < W; i++) if (a(i, j)) { l = Math.min(l, i); r = Math.max(r, i); }
+      const k = 64 / W; FOOT[im.src] = [(l + r + 1) / 2 * k, (by + 1) * k]; put(FOOT[im.src]); } catch (e) { FOOT[im.src] = null; } };
+  if (im.complete && im.naturalWidth) go(); else im.addEventListener('load', go, { once: true });
+}
 function coWin() {
   const g = st(); let w = document.querySelector('#gym .gy-boxw.co-win');
   if (!w) { document.querySelector('#gym .gy-boxw')?.remove(); w = document.createElement('div'); w.className = 'gy-boxw ts-win co-win'; document.querySelector('#gym .gy-main').appendChild(w); }
@@ -302,6 +313,7 @@ function coWin() {
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4></div>
     <div class="co-list">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="co-card co-new" data-cnew="1"><span class="co-av"><span class="co-fig"><i class="co-sil"></i></span></span><span class="co-in"><b>+ 코치 맡기기</b><small>고용한 트레이너 중에서 골라요</small></span></button>`).join('')}</div>
     <p class="co-note">${(g.sf || []).length ? `코치는 ${YARD_SF}명까지 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
+  w.querySelectorAll('.co-trs').forEach(footFix);
   const re = () => { if (w.isConnected) coWin(); };
   const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? 1 : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
   w.onclick = e => {
