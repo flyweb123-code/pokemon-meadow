@@ -1043,7 +1043,7 @@ function smKind(o) { if (!SM_ON || o.exam || o.wild) return null; const m = o.mu
 const SM_F = { evil: ['EvilTeam/background', 'EvilTeam/swirl', 'EvilTeam/ring0', 'EvilTeam/ring1', 'EvilTeam/ray0', 'EvilTeam/ray1', 'EvilTeam/logo0', 'EvilTeam/logo1'], elite: ['Elite/background', 'Elite/vacuum', 'Elite/particle', 'Elite/shine'], def: ['Default/background', 'Default/layer', 'Default/final'] };
 const smImg = u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u; });
 async function smEnc(w, opts, kind) {
-  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1]] = await smImg(`${IMG}sm/${f}.png`)), smImg(`${IMG}sm/vs.png`).then(i => I.vs = i), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
+  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1]] = await smImg(`${IMG}sm/${f}.png`)), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
   const cv = document.createElement('canvas'), W = 512, H = Math.round(512 * Math.max(.6, w.clientHeight / Math.max(1, w.clientWidth)));
   cv.width = W; cv.height = H; cv.className = 'bt-sm'; w.append(cv); const x = cv.getContext('2d'), C = { x: W / 2, y: H / 2 };
   const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
@@ -1054,7 +1054,7 @@ async function smEnc(w, opts, kind) {
   const T0 = { evil: 1.7, elite: 1.4, def: .35 }[kind], END = { evil: 3.7, elite: 3.4, def: 2.4 }[kind]; let snd = {};
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
   // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
-  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><i class="sm-vs"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
   const D = {
     evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
       for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
