@@ -26,7 +26,9 @@ const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
 const CV = [0, 1, 3, 10], CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
-const ITEMS = { magnet: { n: '자석', c: '#e04848' }, bomb: { n: '폭탄', c: '#3a3a4a' }, berry: { n: '열매', c: '#4a8ae8' }, power: { n: '기합', c: '#f08020' } };
+const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#3a3a4a', im: 'smokeball' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
+/* 경완 2026-11-14: 아이템 = 본가 도구 그림(자석·연막탄·자뭉열매·플러스파워) + 테두리 빛만 */
+const ITIM = {}; function itemIm(k) { let o = ITIM[k]; if (!o) { o = ITIM[k] = { im: new Image(), wh: null }; o.im.onload = () => { const c = document.createElement('canvas'); c.width = o.im.width; c.height = o.im.height; const x = c.getContext('2d'); x.drawImage(o.im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); o.wh = c; }; o.im.src = `gym/img/item/${ITEMS[k].im}.png`; } return o; }
 /* 경완 2026-11-13 '회오리불꽃·병상첨병·불꽃세례가 다 똑같은 탄': 필드 기술 효과 자료(PMD)가 258개뿐이라 없는 기술은 전부 둥근 탄이었다.
    레조넌스처럼 기술마다 갈래를 정한다 (기술 id 로): 소용돌이 장판·지점 낙하·빔·여러 발·흡수, 탄 모양은 타입별. */
 const RX = { hide: /^dig$|^fly$|^dive$|^bounce$|phantomforce|shadowforce|skydrop/, vortex: /firespin|whirlpool|sandtomb|^wrap$|^bind$|clamp|magmastorm|infestation|thundercage|snaptrap|twister|hurricane|tornado|razorwind|bleakwindstorm|sandsearstorm|wildboltstorm/, drain: /absorb|drain|leechlife|hornleech|oblivionwing|dreameater|paraboliccharge/,
@@ -145,9 +147,21 @@ const CSS = `
 #yact .ya-rw{display:flex;flex-direction:column;gap:4px}
 #yact .ya-rw .ch{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 7px;white-space:nowrap}
 #yact .ya-rw .ch b{font-size:13px}
-#yact .ya-mvs{display:grid;grid-template-columns:repeat(2,88px);gap:7px}
-#yact .ya-mvs .mvb{height:58px}
-#yact .ya-pad .ya-dg{width:66px;height:66px;font-size:13px}
+/* 경완 2026-11-14 버튼 A안(부채꼴): 첫 기술이 엄지 밑에 크게, 나머지는 둘레로. 회피는 오른쪽 위, 글자만 */
+#yact .ya-pad{right:0;bottom:env(safe-area-inset-bottom);width:250px;height:270px;pointer-events:none}
+#yact .ya-pad button{pointer-events:auto}
+#yact .ya-mvs{position:absolute;inset:0}
+#yact .ya-mvs .mvb{position:absolute;width:66px;height:66px;border-radius:50%;padding:0 3px;align-items:center;justify-content:center;gap:2px;text-align:center}
+#yact .ya-mvs .mvb .tg{align-self:center;border-radius:6px;font-size:8px;padding:1px 4px}
+#yact .ya-mvs .mvb b{font-size:11px;white-space:nowrap;line-height:1.1;overflow:visible}
+#yact .ya-mvs .mvb b.l5{font-size:10px}#yact .ya-mvs .mvb b.l6{font-size:9px}#yact .ya-mvs .mvb b.l7{font-size:9px;white-space:normal;word-break:break-all}
+#yact .ya-mvs .mvb small{font-size:8px;line-height:1}
+#yact .ya-mvs .mvb:nth-child(1){right:14px;bottom:24px;width:84px;height:84px}
+#yact .ya-mvs .mvb:nth-child(1) b{font-size:13px}#yact .ya-mvs .mvb:nth-child(1) b.l6{font-size:12px}#yact .ya-mvs .mvb:nth-child(1) b.l7{font-size:11px}#yact .ya-mvs .mvb:nth-child(1) small{font-size:9px}
+#yact .ya-mvs .mvb:nth-child(2){right:108px;bottom:18px}
+#yact .ya-mvs .mvb:nth-child(3){right:92px;bottom:98px}
+#yact .ya-mvs .mvb:nth-child(4){right:18px;bottom:120px}
+#yact .ya-pad .ya-dg{position:absolute;right:14px;bottom:200px;width:58px;height:58px;font-size:13px}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
 #yact .ya-me{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -487,16 +501,13 @@ function itemUse(it) {
     for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - it.x, o.y - it.y) || 1; hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .18 : .6))), e: 1, crit: false, w: 3 }, (o.x - it.x) / l * 1.4, (o.y - it.y) / l * 1.4); } }
   hud();
 }
-function drawItem(it) { const g = R.g, T = R.T, t = T - it.t0, left = 14 - t, I = ITEMS[it.k]; if (left < 3 && Math.floor(R.RT * 8) % 2) return;
-  const x = Math.round(it.x), y = Math.round(it.y - 16 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), r = 15 * ap;
-  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, it.y, 12, 4.5, 0, 0, 7); g.fill();
-  g.fillStyle = '#20202c'; g.beginPath(); g.arc(x, y, r + 3, 0, 7); g.fill(); g.fillStyle = '#fbf8f0'; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); if (r > 4) { g.strokeStyle = I.c; g.lineWidth = 2; g.beginPath(); g.arc(x, y, r - 2, 0, 7); g.stroke(); }
-  if (ap < 1) return; g.save(); g.translate(x, y);
-  if (it.k === 'magnet') { g.strokeStyle = '#e04848'; g.lineWidth = 6; g.lineCap = 'butt'; g.beginPath(); g.arc(0, -1, 6, Math.PI, 0); g.moveTo(-6, -1); g.lineTo(-6, 6); g.moveTo(6, -1); g.lineTo(6, 6); g.stroke(); g.fillStyle = '#d8dce8'; g.fillRect(-9, 4, 6, 4); g.fillRect(3, 4, 6, 4); }
-  else if (it.k === 'bomb') { g.fillStyle = '#2a2a38'; g.beginPath(); g.arc(-1, 2, 8, 0, 7); g.fill(); g.fillStyle = '#8a8a9c'; g.fillRect(-5, -2, 3, 3); g.strokeStyle = '#8a5a20'; g.lineWidth = 2; g.beginPath(); g.moveTo(3, -5); g.lineTo(7, -9); g.stroke(); g.fillStyle = Math.floor(R.RT * 10) % 2 ? '#ffe27a' : '#ff7a3a'; g.fillRect(6, -12, 4, 4); }
-  else if (it.k === 'berry') { g.fillStyle = '#4a8ae8'; g.beginPath(); g.arc(0, 2, 8, 0, 7); g.fill(); g.fillStyle = '#9fc4ff'; g.fillRect(-5, -2, 3, 3); g.fillStyle = '#48a838'; g.beginPath(); g.ellipse(3, -8, 5, 2.5, -.5, 0, 7); g.fill(); }
-  else { g.fillStyle = '#f08020'; for (const oy of [-7, 1]) { g.beginPath(); g.moveTo(0, oy - 3); g.lineTo(9, oy + 5); g.lineTo(5, oy + 5); g.lineTo(0, oy + 1); g.lineTo(-5, oy + 5); g.lineTo(-9, oy + 5); g.closePath(); g.fill(); } }
-  g.restore(); g.textAlign = 'center'; g.font = 'bold 10px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(I.n, x, y - 21); g.fillStyle = '#fff'; g.fillText(I.n, x, y - 21); }
+function drawItem(it) { const g = R.g, T = R.T, t = T - it.t0, left = 14 - t, I = ITEMS[it.k], o = itemIm(it.k); if (left < 3 && Math.floor(R.RT * 8) % 2) return;
+  const x = Math.round(it.x), y = Math.round(it.y - 20 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), sz = Math.round(52 * ap), pu = .55 + .45 * Math.sin(R.RT * 6);
+  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, it.y, 13, 4.5, 0, 0, 7); g.fill();
+  if (sz < 6 || !o.wh) return;
+  g.globalAlpha = pu; for (const [ox, oy] of [[-3, 0], [3, 0], [0, -3], [0, 3], [-2, -2], [2, -2], [-2, 2], [2, 2]]) g.drawImage(o.wh, x - sz / 2 + ox, y - sz / 2 + oy, sz, sz);   /* 테두리 빛 */
+  g.globalAlpha = 1; g.drawImage(o.im, x - sz / 2, y - sz / 2, sz, sz); if (ap < 1) return;
+  g.textAlign = 'center'; g.font = 'bold 10px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(I.n, x, y - 24); g.fillStyle = '#fff'; g.fillText(I.n, x, y - 24); }
 
 // ---------- 변화 기술: 기술 이름대로 ----------
 function statusUse(v, col, noPre) {
@@ -1048,7 +1059,7 @@ function bind() {
 function buildButtons() {
   const box = R.q('.ya-mvs'); box.innerHTML = '';
   R.G.M.mv.forEach((v, i) => { const b = document.createElement('button'); b.className = 'mvb'; b.style.setProperty('--tc', TYPE_C[v.t] || '#888');
-    b.innerHTML = `<i class="cdo"></i><span class="tg">${TYPE_KO[v.t] || ''}</span><b>${v.name}</b><small>${v.c === 1 ? `물리 ${v.pw}` : v.c === 2 ? `특수 ${v.pw}` : '변화'}</small>`;
+    b.innerHTML = `<i class="cdo"></i><span class="tg">${TYPE_KO[v.t] || ''}</span><b class="l${Math.min(7, v.name.length)}">${v.name}</b><small>${v.c === 1 ? `물리 ${v.pw}` : v.c === 2 ? `특수 ${v.pw}` : '변화'}</small>`;
     // 누르고 있으면 다시 찰 때마다 이어서 나간다
     const go = e => { e.preventDefault(); useMove(i, true); if (R) R.HELD[i] = 1; }, up = () => { if (R) delete R.HELD[i]; };
     b.addEventListener('touchstart', go, { passive: false }); b.addEventListener('touchend', up); b.addEventListener('touchcancel', up); b.addEventListener('mousedown', go); b.addEventListener('mouseleave', up); box.append(b); });
