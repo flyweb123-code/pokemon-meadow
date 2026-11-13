@@ -515,6 +515,9 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
 function monEl(side) { return $b(`.bt-mon.${side}`); }
+/* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
+function zAura(side, on) { const m = monEl(side); if (!m) return; m.querySelector('.zaur')?.remove(); m.classList.toggle('zon', !!on); if (!on) return;
+  const z = document.createElement('i'); z.className = 'zaur'; z.innerHTML = '<b></b><b></b><b></b><b></b><b></b>' + Array.from({ length: 8 }, (_, k) => `<s style="--x:${8 + k * 12}%;--d:${(k * .41 % 1) * 1.4}s"></s>`).join(''); m.prepend(z); }
 // 1~649 는 블랙·화이트 움직이는 gif 를 smogon/sprites(고정 커밋)에서 바로 받아 계속 움직인다. 못 받으면 저장소 그림
 const G5 = 'https://raw.githubusercontent.com/smogon/sprites/18fc3d83b8bc6746f0052273232c1794ef2d7d42/src/sprites/gen5/';
 const G5K = ['-b', '-s', '-f', '-b-s', '-b-f', '-f-s', '-b-f-s'];
@@ -663,9 +666,9 @@ function ballPoof(side) {
   const fx = $b('.bt-fx'), x = side === 'e' ? 176 : 80, y = side === 'e' ? 66 : 112;
   for (let k = 0; k < 10; k++) { const i = document.createElement('i'); i.className = 'poof'; const a = k / 10 * Math.PI * 2; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--dx', Math.cos(a) * 30 + 'px'); i.style.setProperty('--dy', Math.sin(a) * 22 + 'px'); fx.appendChild(i); setTimeout(() => i.remove(), 600); }
 }
-async function recall(side) { const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(`.bt-hb.${side}`).classList.remove('on'); }
+async function recall(side) { zAura(side, false); const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(`.bt-hb.${side}`).classList.remove('on'); }
 // 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
-async function faint(side, A) {
+async function faint(side, A) { zAura(side, false);
   // 본가처럼 낮은 울음소리를 다 낸 뒤 쓰러진다 (경완 2026-10-28)
   let d = 0; try { d = await GA.cry?.(A.sp, 0, .8, CRY_K) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400)); vibBig(side === 'p' ? 3 : 2, 2);
   se('POKE_DEAD', { pan: panOf(side) }); monEl(side).classList.add('faint'); await wait(420);
@@ -1399,7 +1402,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); if (dm.isZ) zAura(s, false); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1438,7 +1441,7 @@ async function handle(a) {
       else { await gmFx(s, X, 'primal'); await msg(`${n}의 원시회귀! 원시의 모습으로 돌아왔다!`); }
       break; }
     case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
-      await gmFx(s, A(s), 'z', zi); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower')]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
+      await gmFx(s, A(s), 'z', zi); zAura(s, true); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower')]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
     case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);

@@ -447,7 +447,7 @@
     const END = 7300;
     [band, bz, ttl, shine, fx, dim, mcl, dT, dB].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350, delay: END - 650 }));
     /* 경완 2026-11-13: 무지개 띠가 갈 때 아래 화면(배경)도 반투명 검정 밑으로 살짝 보이게 → 기술 이름 땐 다시 숨김 */
-    const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid')), xA = []; at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }))));
+    const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid,.bt-msg')), xA = [];   /* 경완: 대사창 자리도 배경 그대로 */ at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }))));
     at(5300, () => [shell, orbB, orbF].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
     return new Promise(res => {
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
