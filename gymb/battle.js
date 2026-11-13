@@ -1367,7 +1367,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] ? B.gmBase[s] : id; await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1606,7 +1606,7 @@ const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'noble
 const CHG_LIKE = { solarblade: 'solarbeam', phantomforce: 'shadowforce', skydrop: 'fly', meteorbeam: 'skullbash', electroshot: 'skullbash', geomancy: 'solarbeam', freezeshock: 'skyattack', iceburn: 'skyattack' };
 const chgOf = id => MFX[id + '_c'] ? id + '_c' : CHG_LIKE[id] && MFX[CHG_LIKE[id] + '_c'] ? CHG_LIKE[id] + '_c' : null;
 async function moveFx(s, id, miss, fx) {
-  const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
+  const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   if (!A && !fx && await essFx(s, id)) return;
