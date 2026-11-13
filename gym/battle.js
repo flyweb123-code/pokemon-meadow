@@ -1105,6 +1105,9 @@ async function run(opts) {
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   /* v23.10 훈련하기: 지난 층에서 남은 체력(opts.hp = {pid: 비율}), 우두머리는 체력 크게(foe.hpX) */
+  /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
+  if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
+    ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
