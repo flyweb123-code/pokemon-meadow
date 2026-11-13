@@ -981,7 +981,8 @@ const NM_SKIP = 12;
 function nmSt(n, s) { const fl = (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - NM_SKIP; while (s < n.st.length - 1 && (teamLv(n.st[s]) < fl || !n.st[s].some(m => !spOff(m[0])))) s++; return s; }
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (n.id === 'red' && (g.gmax | 0) < 5) return false;   /* v24.15 경완 '명문부터 오긴 해야돼 도전자로는': 레드는 명문 체육관부터 (레벨 조건 대신 등급) */
+    if (n.id === 'red' && x.s < n.st.length) return n.st[0].filter(m => !spOff(m[0])).length >= 2; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
   if (!ok.length) return null;
   const n = pick(ok), s0 = (g.nt[n.id] || {}).s || 0, s = s0 >= n.st.length ? s0 : nmSt(n, s0), v = s >= n.st.length ? s - n.st.length + 1 : 0;
   const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
