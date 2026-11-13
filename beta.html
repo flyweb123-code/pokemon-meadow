@@ -459,7 +459,7 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 /* v23.21 이상한사탕: 짝꿍 칸 게이지 오른쪽 위 버튼 + 짝꿍 탭처럼 생긴 고르는 창 */
 .bd-evo{position:relative}.bd-cdy{position:absolute;right:0;bottom:calc(100% + 1px);display:flex;align-items:center;gap:2px;height:26px;padding:0 6px 0 2px;box-sizing:border-box;font:inherit;background:linear-gradient(#fff 50%,#ffe6ef 50%);border:2px solid #9a3462;box-shadow:0 2px 0 #9a3462;cursor:pointer;color:#9a3462}.bd-cdy:active{transform:translateY(2px);box-shadow:none}.bd-cdy img{width:22px;height:22px;margin:-2px 0;image-rendering:pixelated}.bd-cdy b{font-size:12px;line-height:1;font-variant-numeric:tabular-nums}
-.cdy-q img{width:56px;height:56px;image-rendering:pixelated}.cdy-q .cdy-to{font-size:13px;color:var(--win-ink,#20202c)}.cdy-q .cdy-to b{color:#2a58a8}.cdy-q .cdy-to b.up{color:#d0487e}.cdy-q .bag-cnt .opt:disabled{opacity:.4}
+.cdy-q img{width:56px;height:56px;image-rendering:pixelated}.cdy-q .cdy-to{font-size:13px;color:var(--win-ink,#20202c)}.cdy-q .cdy-to b{color:#2a58a8}.cdy-q .cdy-to b.up{color:#d0487e}.cdy-q .bag-cnt .opt:disabled{opacity:.4}.cdy-q .cdy-own2{font-size:12px}.cdy-q .bag-yn .lk-btn.main{white-space:nowrap;padding-left:12px;padding-right:12px}.cdy-q .lk-btn .coin{margin-right:6px!important}.cdy-q .bag-yn .lk-btn.main:disabled{background:#c8c8d8;border-color:#a8a8b8;color:#fff;box-shadow:none;cursor:default}.cdy-q .cdy-own2 b{color:#d0487e}.cdy-q .cdy-poor{font-size:12px;color:#d03a3a;font-weight:700}
 .pp-cdy{flex:none;height:40px;display:flex;align-items:center;gap:2px;padding:0 8px 0 3px;box-sizing:border-box;font:inherit;background:linear-gradient(#fff 50%,#ffe6ef 50%);border:3px solid #9a3462;box-shadow:0 3px 0 #9a3462;cursor:pointer;color:#9a3462}.pp-cdy[hidden]{display:none}.pp-cdy:active{transform:translateY(3px);box-shadow:none}.pp-cdy img{width:28px;height:28px;image-rendering:pixelated}.pp-cdy b{font-size:13px;font-variant-numeric:tabular-nums}
 .cdypick #boxGrid .cdy-no{opacity:.35;filter:grayscale(.8)}body:has(#mgr.cdypick:not([hidden])) #pokePop{z-index:6110}body:has(#mgr.cdypick:not([hidden])) #itemPop{z-index:6130}
 .cdy-fly{position:fixed;z-index:9000;width:36px;height:36px;image-rendering:pixelated;pointer-events:none;animation:cdyFly .5s cubic-bezier(.5,0,.75,0) forwards}@keyframes cdyFly{0%{transform:translateY(-26px) scale(1.3);opacity:0}25%{opacity:1}80%{transform:translateY(18px) scale(.9);opacity:1}100%{transform:translateY(26px) scale(.3);opacity:0}}
@@ -10353,18 +10353,22 @@ let cdyPick = false;
 function cdyPickGo() { closeToggles(); hideSheets(); sfx('open'); cdyPick = true; mgr.classList.add('mgpick', 'cdypick'); openMgr(); setMgrTab('box'); $('#mgrTitle').textContent = '이상한사탕을 줄 포켓몬 고르기'; cdyMark(); }
 function cdyMark() { const g = $('#boxGrid'); if (!g) return; g.querySelectorAll('[data-id]').forEach(el => el.classList.toggle('cdy-no', cdyPick && !cdyOkP(boxOf(+el.dataset.id)))); }
 function cdyGive(P) { if (!P) return; openPoke(P.id); requestAnimationFrame(() => cdyQty(P)); }
-function cdyQty(P) {   /* 몇 개 줄까요? 창 — 상세카드 위 */
-  const el = $('#itemPop'), o = ITEM.rcandy, need = evoNeed(P); let q = 1;
-  const draw = () => { const n = itemsOf().rcandy || 0, f = cdyFill(P), mx = Math.max(1, Math.min(n, f)), km0 = cdyKmOf(P), km1 = Math.min(need, km0 + q * CDY_KM); q = Math.min(q, mx);
+function cdyQty(P) {   /* 몇 개 줄까요? 창 — 상세카드 위. v23.21 경완 '0개일 땐 영양제처럼 창에서 바로 사서 먹이게': 모자란 만큼은 그 자리에서 사서 줌 */
+  const el = $('#itemPop'), o = ITEM.rcandy, need = evoNeed(P), cn = '<i class="coin" aria-hidden="true"></i>'; let q = 1;
+  const lim = () => { const n = itemsOf().rcandy || 0, pr = itemPrice('rcandy'), f = cdyFill(P); return { n, pr, f, mx: Math.max(1, Math.min(f, n + Math.floor(S.gold / pr))) }; };
+  const draw = () => { const { n, pr, f, mx } = lim(); q = Math.max(1, Math.min(q, mx)); const buy = Math.max(0, q - n), cost = buy * pr, poor = S.gold < cost, km0 = cdyKmOf(P), km1 = Math.min(need, km0 + q * CDY_KM);
     el.innerHTML = `<div class="win ipwin bag-ask cdy-q" role="dialog" aria-label="이상한사탕 주기"><img src="${ITEM_ART[o.a]}" alt=""><p><b>${esc(nameOf(P))}</b>에게 이상한사탕을 줄까요?</p>`
-      + (n ? `<div class="bag-cnt"><button class="lk-btn" data-m${q <= 1 ? ' disabled' : ''}>−</button><b>${q}</b><button class="lk-btn" data-p${q >= mx ? ' disabled' : ''}>+</button><button class="opt" data-mx${q >= mx ? ' disabled' : ''}>${mx >= f ? '다 채우기' : '최대'}</button></div>`
-        + `<span class="cdy-to">진화 거리 <b>${fmtKm(km0)}</b> → <b class="up">${fmtKm(km1)}</b> / ${need}km</span><span>가진 개수 ${n} · 다 채우려면 ${f}개</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>${q}개 주기</button></div>`
-        : `<span>가진 이상한사탕이 없어요. 한 개에 진화 거리를 ${CDY_KM}km 채워요.</span><div class="bag-yn"><button class="lk-btn" data-no>닫기</button><button class="lk-btn main" data-buy>상점에서 사요</button></div>`) + `</div>`; };
+      + `<div class="bag-cnt"><button class="lk-btn" data-m${q <= 1 ? ' disabled' : ''}>−</button><b>${q}</b><button class="lk-btn" data-p${q >= mx ? ' disabled' : ''}>+</button><button class="opt" data-mx${q >= mx ? ' disabled' : ''}>${mx >= f ? '다 채우기' : '최대'}</button></div>`
+      + `<span class="cdy-to">진화 거리 <b>${fmtKm(km0)}</b> → <b class="up">${fmtKm(km1)}</b> / ${need}km</span>`
+      + `<span class="cdy-own2">${buy ? `가진 사탕 ${Math.min(n, q)}개 · 새로 살 사탕 <b>${buy}</b>개` : `가진 개수 ${n} · 다 채우려면 ${f}개`}</span>`
+      + (poor ? `<span class="cdy-poor">골드가 ${(cost - S.gold).toLocaleString()}G 모자라요</span>` : '')
+      + `<div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes${poor ? ' disabled' : ''}>${buy ? `${cn}${cost.toLocaleString()}G 사서 주기` : `${q}개 주기`}</button></div></div>`; };
   draw(); el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (e.target.closest('[data-buy]')) { sfx('tap'); el.hidden = true; shopToItem('rcandy'); return; }
-    const n = itemsOf().rcandy || 0, mx = Math.max(1, Math.min(n, cdyFill(P)));
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } const { n, pr, mx } = lim();
     if (e.target.closest('[data-m]:not([disabled]),[data-p]:not([disabled]),[data-mx]:not([disabled])')) { sfx('tap'); q = e.target.closest('[data-mx]') ? mx : Math.max(1, Math.min(mx, q + (e.target.closest('[data-p]') ? 1 : -1))); draw(); return; }
-    if (!e.target.closest('[data-yes]')) return; el.hidden = true; const km0 = cdyKmOf(P), add = cdyUse(P, q); if (!add) return; cdyAnim(P, km0); };
+    if (!e.target.closest('[data-yes]:not([disabled])')) return; const buy = Math.max(0, Math.min(q, cdyFill(P)) - n), cost = buy * pr; if (S.gold < cost) { sfx('wob'); return; }
+    el.hidden = true; if (buy) { S.gold -= cost; window.pkGold?.('item', cost, 'rcandy'); const I = itemsOf(); I.rcandy = (I.rcandy || 0) + buy; renderGold(); buySnd(); log(`이상한사탕 ${buy}개를 샀다.`, [], true); }
+    const km0 = cdyKmOf(P), add = cdyUse(P, q); if (!add) { save(); return; } cdyAnim(P, km0); };
 }
 function cdyAnim(P, km0) {   /* 상세카드 진화하기 게이지가 차오름: 사탕이 위에서 쏙 → 막대·숫자 올라감 → 다 차면 진화하기 켜짐 */
   const btn = $('#ppEvoBtn'), need = evoNeed(P), km1 = cdyKmOf(P), done = () => { setEvoBtn(btn, P); ppCdySet(P); try { renderRun(); } catch (er) {} if (km1 >= need) { sfx('shiny'); btn.classList.add('cdy-pop'); setTimeout(() => btn.classList.remove('cdy-pop'), 700); } };
