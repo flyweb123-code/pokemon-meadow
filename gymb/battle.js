@@ -644,7 +644,7 @@ function playAnim(side, A) {
 async function sendOut(side, A, quick) {
   A.gif = await pickGif(side, A); if (!B) return;
   const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); showMon(side, A, false);
-  if (quick && side === 'e' && B.wild) { m.style.transition = 'none'; m.classList.add('on'); if (B.chain) se('SLIDEIN'); await m.animate([{ transform: 'translateX(-300px)', opacity: 1 }, { transform: 'translateX(8px)', opacity: 1, offset: .82 }, { transform: 'none', opacity: 1 }], { duration: 760, easing: 'cubic-bezier(.25,.7,.35,1)' }).finished.catch(() => {}); m.style.transition = ''; if (!B) return; }   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 왼쪽 화면 밖에서 미끄러져 들어옴 */
+  if (quick && side === 'e' && B.wild) { m.style.transition = 'none'; m.classList.add('on'); if (B.chain) se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)', opacity: 1 }, { transform: 'translateX(-8px)', opacity: 1, offset: .82 }, { transform: 'none', opacity: 1 }], { duration: 760, easing: 'cubic-bezier(.25,.7,.35,1)' }).finished.catch(() => {}); m.style.transition = ''; if (!B) return; }   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
   else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
