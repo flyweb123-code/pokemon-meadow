@@ -639,7 +639,7 @@ async function sendOut(side, A, quick) {
   const pre0 = side === 'e' && B.wild && monEl(side).classList.contains('wdk');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 */
   if (pre0) A.gif = B.wG || A.gif; else { A.gif = await pickGif(side, A); if (!B) return;
   } const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); if (!pre0) showMon(side, A, false);
-  if (quick && side === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(-256px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
+  if (quick && side === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.20 경완 '오른쪽에서 들어오게': 본가 Intro 움직임(어둡게 0.9초 → 제 색·울음 → HP 박스)은 그대로, 들어오는 방향만 오른쪽 화면 밖에서 (첫 층도) · v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
   else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
@@ -1195,7 +1195,6 @@ async function run(opts) {
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
-  if (opts.wild && !opts.chain && foeT[0]) try { const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); } else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
