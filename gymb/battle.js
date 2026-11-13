@@ -250,7 +250,7 @@ function gainXp(P, n, ask = false) {
   out.lv = m.lv; return out;
 }
 // v22.07 경완 '본가 기준 배틀 친밀도': 배틀에서 레벨업 +5/+3/+2 (친밀도 0~99 / 100~199 / 200~), 이긴 배틀에 나간 포켓몬 +3/+2/+1 (본가 관장 배틀), 쓰러지면 −1, 30레벨 이상 높은 상대에게 쓰러지면 −5 (200 이상은 −10). 연습 배틀은 없음
-const frAdd = (P, a) => { if (!P || B?.train) return;   /* v23.10 훈련하기는 친밀도 안 건드림 */ if (a > 0 && GA.addFr) GA.addFr(P.id, a); else P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }   /* 오를 땐 게임 addFr (만점 축하 frMaxHit 그대로) */, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
+const frAdd = (P, a) => { if (!P || B?.train) return;   /* v23.10 훈련하기는 친밀도 안 건드림 */ if (a < 0 && (P.fr || 0) >= 255) return;   /* v24.02 경완 '만점은 안 떨어지게' (본가는 떨어짐) */ if (a > 0 && GA.addFr) GA.addFr(P.id, a); else P.fr = Math.max(0, Math.min(255, (P.fr || 0) + a)); }   /* 오를 땐 게임 addFr (만점 축하 frMaxHit 그대로) */, frStep = (P, A) => A[(P.fr || 0) >= 200 ? 2 : (P.fr || 0) >= 100 ? 1 : 0];
 function frBattle(won) { const fl = Math.max(0, ...(B.foe || []).map(f => f?.lv || 0));
   (B.my || []).forEach((e, i) => { const P = boxOf(e.pid), pk = B.o.p[i]; if (!P || !pk) return;
     if (pk.fainted) frAdd(P, fl - (e.lv || 0) >= 30 ? -((P.fr || 0) >= 200 ? 10 : 5) : -1); else if (won && B.used?.has(e.pid)) frAdd(P, frStep(P, B.frw || [3, 2, 1]))   /* v22.14 체육관 도전자 배틀은 gym.js FR_W (난이도별) */; }); }
@@ -644,7 +644,8 @@ function playAnim(side, A) {
 async function sendOut(side, A, quick) {
   A.gif = await pickGif(side, A); if (!B) return;
   const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); showMon(side, A, false);
-  if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
+  if (quick && side === 'e' && B.wild) { m.style.transition = 'none'; m.classList.add('on'); if (B.chain) se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)', opacity: 1 }, { transform: 'translateX(-8px)', opacity: 1, offset: .82 }, { transform: 'none', opacity: 1 }], { duration: 760, easing: 'cubic-bezier(.25,.7,.35,1)' }).finished.catch(() => {}); m.style.transition = ''; if (!B) return; }   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
+  else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
@@ -1302,7 +1303,7 @@ async function choose(req) {
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
     if (a === 'bag') { if (B.train?.balls) { const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = 1; const M = req.active[0].moves, k = M.findIndex(m => !m.disabled && m.pp > 0); return 'move ' + (k < 0 ? 1 : k + 1); } continue; }   /* 놓치면 본가처럼 턴이 넘어감 (상대만 움직임) */ await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
-    if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
+    if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>여기까지 보상은 받고,<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
 // 이름표 "p1a: 피카츄" → 편

@@ -222,6 +222,7 @@ const CSS = `
 #yact .ya-arc .sg:nth-of-type(1){left:-106px;top:44px;--c:#ffcf3a;--p:1}#yact .ya-arc .sg:nth-of-type(2){left:-53px;top:102px;--c:#3a98e8}#yact .ya-arc .sg:nth-of-type(3){left:53px;top:102px;--c:#a060f0}#yact .ya-arc .sg:nth-of-type(4){left:106px;top:44px;--c:#e060b0}
 #yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .mg-hg b{font-size:15px}#yact .ya-arc .ex b{font-size:12px;letter-spacing:-.5px}
 #yact .ya-arc .ri{width:16px;height:16px;font-size:8px}#yact .ya-arc .mg-hg .coin{width:13px;height:13px}
+#gym #yact .ya-arc .mg-hg .coin{margin:0 0 2px!important}   /* 체육관 공통 '동전 옆 글자 여백 6px' 이 구슬 안(위아래 배치)에선 동전을 왼쪽으로 밀어서 뺌 (경완 '골드 아이콘 정렬') */
 #yact .ya-arc .sg small,#yact .ya-arc .sg .ya-egt{display:none}
 /* 경완 2026-11-14 'EV 대신 능력치 이름, Lv 말고 경험치, 번뜩임은 떨어지는 조각과 같은 아이콘' */
 #yact .ya-arc .ri{width:auto;height:13px;padding:0 3px;font-size:9px;line-height:13px;display:block;border-width:1.5px;white-space:nowrap;color:#fff}
@@ -231,8 +232,8 @@ const CSS = `
 /* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
 /* 경완 2026-11-14 '콤보는 박스 없이' + '색 자체가 마음에 안 듦': 칸을 없애고 흰 숫자에 진한 테두리, 남은 시간은 밑줄. 콤보가 쌓이면 밑줄과 '콤보' 글자만 하늘·보라로 */
 #yact .ya-cb{--cc:#fff;display:inline-block;padding:0 0 0 2px;background:none;border:0;box-shadow:none;font-size:14px;font-weight:700;color:var(--cc);text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
-#yact .ya-cb[data-t="2"]{--cc:#8adcff}#yact .ya-cb[data-t="3"]{--cc:#d2a8ff}
-#yact .ya-cb b{font-size:42px;line-height:1;color:#fff;margin-right:5px;text-shadow:-3px 0 0 var(--ink),3px 0 0 var(--ink),0 -3px 0 var(--ink),0 5px 0 var(--ink),-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 5px 0 var(--ink),3px 5px 0 var(--ink)}
+#yact .ya-cb[data-t="2"]{--cc:#ff8a70}#yact .ya-cb[data-t="3"]{--cc:#ff2e2e}   /* 경완 2026-11-14 색 후보 R2: 평소 흰색, 10콤보 다홍, 30콤보 빨강 (숫자도 같이) */
+#yact .ya-cb b{font-size:42px;line-height:1;color:var(--cc);margin-right:5px;text-shadow:-3px 0 0 var(--ink),3px 0 0 var(--ink),0 -3px 0 var(--ink),0 5px 0 var(--ink),-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 5px 0 var(--ink),3px 5px 0 var(--ink)}
 #yact .ya-cb small{display:block;font-size:11px;line-height:14px;padding:0;margin-top:5px;background:none;border:0;color:#fff;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 2px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink)}
 #yact .ya-cb i{width:100%;min-width:92px;height:8px;border:2px solid var(--ink);margin-top:6px;box-sizing:border-box;background:var(--ink)}
 #yact .ya-cb u{background:var(--cc)}

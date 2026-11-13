@@ -975,11 +975,15 @@ function nmVar(n, k, gi) {
   return T;
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.31)
+/* v24.08 경완 '원규 난이도 왜 이렇게 쉽게 나온거지': 첫 방문 때 본가 1단계 팀(꼬마돌 2·코코파스, 초반 기술)은 레벨만 올려도 높은 등급에선 너무 쉬움.
+   단계 팀의 본가 레벨이 지금 등급 바닥(LV_FLOOR)보다 NM_SKIP 넘게 낮으면 그 단계는 건너뛰고 등급에 맞는 단계 팀으로 옴 (마지막 단계까지만) */
+const NM_SKIP = 12;
+function nmSt(n, s) { const fl = (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - NM_SKIP; while (s < n.st.length - 1 && (teamLv(n.st[s]) < fl || !n.st[s].some(m => !spOff(m[0])))) s++; return s; }
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
   if (!ok.length) return null;
-  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0, v = s >= n.st.length ? s - n.st.length + 1 : 0;
+  const n = pick(ok), s0 = (g.nt[n.id] || {}).s || 0, s = s0 >= n.st.length ? s0 : nmSt(n, s0), v = s >= n.st.length ? s - n.st.length + 1 : 0;
   const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
   return { id: ++g.cid, t, named: n.id, s, nv: v || undefined, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
@@ -1315,7 +1319,7 @@ async function challenge(picked) {
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
       window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
-    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
+    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: Math.max(x.s | 0, c.s | 0) + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
@@ -3821,7 +3825,9 @@ function trRollLu() { const g = st(); g.mon = g.mon || {}; const has = sp => GB(
     const P = { id: ++trTid, sp, iv: Array.from({ length: 6 }, () => 10 + Math.floor(Math.random() * 22)), fr: 70, gTst: 1 }; S.box.push(P); GB().gm(P); const e = GB().foeEntry(sp, lv);
     Object.assign(g.mon[P.id], { lv, xp: GB().xpAt(GB().growth(sp), lv), mv: e.mv, ab: e.ab, nat: e.nat }); return P.id; }).filter((id, _, A) => { const P = GB().boxOf(id), c = GB().trCost(P); A.sum = A.sum || 0; if (A.sum + c > GB().TR_CAP) { trDrop([id]); return false; } A.sum += c; return true; }); }   /* 코스트 안에서만 */
 const trDrop = L => { const g = st(); for (let i = S.box.length - 1; i >= 0; i--) if (S.box[i].gTst && L.includes(S.box[i].id)) { if (g?.mon) delete g.mon[S.box[i].id]; S.box.splice(i, 1); } };
-const trNew = ids => ({ ids, balls: { mon: 5 }, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0] });
+const trNew = ids => trMark({ ids, balls: { mon: 5 }, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0] });
+/* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 정산 기준점 (도전 시작·지난 그만두기 때 레벨·경험치·층·코인) */
+const trMark = R => { R.m0 = Object.fromEntries(R.ids.map(id => { const m = GB().gm(GB().boxOf(id)); return [id, [m.lv, m.xp | 0]]; })); R.f0 = R.floor; R.c0 = R.coin | 0; R.t = Date.now(); return R; };
 function trPickSp(lv, boss, big) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? TR_BOSS : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; const ok = L.filter(has); return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
 // 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (gym/yact.js). 보상은 보여 주기만, 아무것도 안 씀
 async function yaTest() {
@@ -3840,7 +3846,7 @@ function trClone(ids) { const g = st(); g.mon = g.mon || {};
    위 = 지금 시각 하늘(낮·저녁·밤 별) + 도트 돌탑(벽돌 무늬·층 처마·아치 창·현수막·횃불·지붕 깃발) + 탑 앞 관장·첫 번째 포켓몬, 왼쪽 층 눈금(50·100·150 큰 우두머리 왕관)
    가운데 = '등반대' 창 6칸 + 코스트 칸 막대, 아래 = 내 포켓몬 카드(타입 색 띠), 맨 아래 = 게임 입체 버튼 */
 const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:#20222e;color:var(--win-ink);font-family:var(--px);overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
-#trLobby .tl-sky{position:relative;flex:none;height:min(40vh,330px);overflow:hidden;background:linear-gradient(var(--s1),var(--s2) 55%,var(--s3));image-rendering:pixelated}
+#trLobby .tl-sky{position:relative;flex:none;height:min(25vh,200px);overflow:hidden;background:linear-gradient(var(--s1),var(--s2) 55%,var(--s3));image-rendering:pixelated}
 #trLobby.day{--s1:#5aa8e8;--s2:#9fd4f4;--s3:#dff2fa;--st:0}#trLobby.eve{--s1:#2c2f6e;--s2:#7a5a9e;--s3:#f2a878;--st:.35}#trLobby.night{--s1:#0c1030;--s2:#1c2456;--s3:#36407a;--st:1}
 #trLobby .tl-stars{position:absolute;inset:0;opacity:var(--st);background-image:radial-gradient(1.5px 1.5px at 12% 14%,#fff 99%,transparent),radial-gradient(1px 1px at 28% 32%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 72% 10%,#fff 99%,transparent),radial-gradient(1px 1px at 86% 28%,#fff 99%,transparent),radial-gradient(1px 1px at 44% 8%,#fff 99%,transparent),radial-gradient(1px 1px at 63% 40%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 92% 52%,#fff 99%,transparent),radial-gradient(1px 1px at 6% 48%,#fff 99%,transparent);animation:tlTw 3s steps(2) infinite}
 @keyframes tlTw{50%{opacity:calc(var(--st) * .6)}}
@@ -3849,24 +3855,24 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-cl::before{left:0;right:0;bottom:0;height:8px}#trLobby .tl-cl::after{left:12px;width:20px;bottom:6px;height:10px;box-shadow:12px 2px 0 -2px #fff}
 #trLobby.night .tl-cl{opacity:.25}
 @keyframes tlCl{from{transform:translateX(-80px)}to{transform:translateX(560px)}}
-#trLobby .tl-tw{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+#trLobby .tl-tw{position:absolute;left:50%;bottom:0;height:330px;transform:translateX(-50%)}
 #trLobby .tl-tw .fl{animation:tlFl .5s steps(2) infinite}#trLobby .tl-tw .fl2{animation-delay:-.25s}
 @keyframes tlFl{50%{transform:translateY(-1px);opacity:.75}}
 #trLobby .tl-tw .flag{transform-box:fill-box;transform-origin:0 50%;animation:tlFg 1.2s steps(3) infinite}
 @keyframes tlFg{50%{transform:scaleX(.8) skewY(6deg)}}
 #trLobby .tl-me{position:absolute;bottom:6px;left:calc(50% + 38px);height:68px;image-rendering:pixelated}
 #trLobby .tl-lead{position:absolute;bottom:6px;left:calc(50% + 92px);width:52px;height:52px;object-fit:contain;image-rendering:pixelated}
-#trLobby .tl-rail{position:absolute;left:10px;top:52px;bottom:16px;width:46px;white-space:nowrap;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font-size:10px;color:#fff;text-shadow:1px 1px 0 #000a}
+#trLobby .tl-rail{position:absolute;left:10px;top:12px;bottom:12px;width:46px;white-space:nowrap;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font-size:10px;color:#fff;text-shadow:1px 1px 0 #000a}
 #trLobby .tl-rail::before{content:'';position:absolute;left:3px;top:4px;bottom:4px;width:3px;background:rgba(255,255,255,.35);box-shadow:1px 0 0 #0004}
 #trLobby .tl-rail span{position:relative;padding-left:11px;line-height:1}#trLobby .tl-rail span::before{content:'';position:absolute;left:1px;top:2px;width:7px;height:7px;background:#fff;box-shadow:0 0 0 1px #383848}
 #trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
-#trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:200px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:6px 14px 8px}
-#trLobby .tl-hd h2{margin:0;font-size:17px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
-#trLobby .tl-c img{max-width:52px;max-height:52px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
+#trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:170px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:4px 12px 6px}
+#trLobby .tl-hd h2{margin:0;font-size:15px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
+#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
 #trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
 #trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
 #trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
-#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px 10px 0;background:#2b2b3c;border-top:3px solid #1c1c26;box-shadow:inset 0 3px 0 #4b4b66}
+#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px 8px 0;background:#2b2b3c;border-top:3px solid #1c1c26;box-shadow:inset 0 3px 0 #4b4b66}
 #trLobby .tl-win{background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff;padding:6px 8px 8px}
 #trLobby .tl-win h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;font-size:13px;color:var(--win-ink)}#trLobby .tl-win h3 small{font-size:11px;opacity:.7}
 #trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
@@ -3878,20 +3884,40 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-pips{display:flex;gap:2px;margin-top:7px}#trLobby .tl-pips i{flex:1;height:9px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}
 #trLobby .tl-pips i.f{background:#5cc27a;box-shadow:inset 0 -2px 0 #2f9a52,inset 0 2px 0 #9ae8b0}#trLobby .tl-pips.ov i.f{background:#e05050;box-shadow:inset 0 -2px 0 #a82424,inset 0 2px 0 #ff9a9a}
 #trLobby .tl-ci{margin:4px 0 0;font-size:9px;opacity:.6}
-#trLobby .tl-lw{flex:1;min-height:0;display:flex;flex-direction:column}
-#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
-#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
-#trLobby .tl-c::before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:var(--tc,#8890a8)}
+#trLobby .tl-lw{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:6px 6px 0;background:var(--win);border:3px solid var(--frame);border-bottom:0;box-shadow:inset 0 0 0 2px #fff}
+#trLobby .tl-fb{display:flex;flex-direction:column;gap:5px;flex:none}#trLobby .tl-fr{display:flex;align-items:center;gap:5px;min-width:0}
+#trLobby .tl-fb .bag-sort{display:flex;flex:none}#trLobby .tl-fb .tl-sort{flex:1 1 100%}#trLobby .tl-fb .tl-sort button{flex:1 1 0;min-width:0;padding:4px 0;text-align:center}
+#trLobby .tl-fb .bag-sort button{font:inherit;font-size:12px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);padding:4px 9px;margin-left:-3px;white-space:nowrap}#trLobby .tl-fb .bag-sort button:first-child{margin-left:0}
+#trLobby .tl-fb .bag-sort button[aria-pressed="true"]{border-color:var(--frame);background:var(--frame);color:var(--win)}#trLobby .tl-fb .bag-sort button::after{content:none!important}
+#trLobby .tl-fb .tl-sort button[aria-pressed="true"]::after{content:attr(data-dir)!important;font-size:9px;margin-left:3px;vertical-align:1px}
+#trLobby .tl-fb .tl-tyb{display:flex;align-items:center;gap:4px}#trLobby .tl-fb .tl-tyb .tyi{width:15px;height:15px}#trLobby .tl-fb .tl-tyb::after{content:'▾';font-size:10px;margin-left:2px}
+#trLobby .tl-q{flex:1 1 100%;min-width:0;position:relative;display:flex}#trLobby .tl-q input{flex:1 1 auto;width:100%;min-width:0;font:inherit;font-size:16px;padding:5px 36px 5px 9px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);border-radius:0;-webkit-appearance:none;appearance:none;outline:0}#trLobby .tl-q input:focus{border-color:var(--frame)}
+#trLobby .tl-c .tl-tg{position:absolute;left:3px;top:3px;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:1px}#trLobby .tl-c .tl-tg i{font-style:normal;font-size:9px;line-height:13px;padding:0 3px;color:#fff;white-space:nowrap}#trLobby .tl-tg .lu{background:#d84a3a}#trLobby .tl-tg .tr{background:#9a6a3c}#trLobby .tl-tg .bd{background:#e8679a}
+#trLobby .tl-fb .tl-cnt{margin-left:auto;font-size:11px;opacity:.7;white-space:nowrap}
+#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;height:104px;padding:6px 2px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
+#trLobby .tl-c .ty{position:absolute;right:3px;top:3px;display:flex;flex-direction:column;gap:1px}#trLobby .tl-c .ty .tyi{width:15px;height:15px;display:block}
 #trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
-#trLobby .tl-c.on::after{content:'✔';position:absolute;left:4px;top:7px;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
+#trLobby .tl-c.on::after{content:'✔';position:absolute;left:3px;top:46px;z-index:2;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
 #trLobby .tl-c:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #c8c8d8}
 #trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#trLobby .tl-c span{display:flex;gap:3px;font-size:9px}#trLobby .tl-c span em{font-style:normal;padding:1px 4px;color:#fff;background:#383848}#trLobby .tl-c span em.c{background:#2f7cd0}
+#trLobby .tl-c .st{display:flex;gap:2px;font-size:9px;white-space:nowrap}#trLobby .tl-c .st em{font-style:normal;padding:1px 3px;color:#fff;background:#383848}#trLobby .tl-c .st em.c{background:#2f7cd0}
 #trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 10px 10px;background:#2b2b3c}
 #trLobby .tl-ft.two{grid-template-columns:1fr 1fr 1.6fr}
 #trLobby .tl-ft .gy-key{min-height:52px;font-size:14px;flex-direction:column}
 #trLobby .tl-ft .gy-key small{font-size:9px;opacity:.75}
-#trLobby .tl-ft .gy-key.main{font-size:16px}`;
+#trLobby .tl-ft .gy-key.main{font-size:16px}
+#trLobby .tl-gb{overflow:auto;padding-bottom:10px}#trLobby .tl-ft.two2{grid-template-columns:1fr 1.2fr 1.8fr}#trLobby.settle .tl-ft{grid-template-columns:1fr}
+#trLobby .tl-sm{margin:6px 0 0;font-size:11px;line-height:1.5;opacity:.75}
+#trLobby .tl-sv{display:flex;align-items:center;gap:8px;margin:0 0 8px}#trLobby .tl-sv .fl{font-size:28px;line-height:1;color:#e04838}#trLobby .tl-sv .fl small{font-size:13px;color:var(--win-ink);margin-left:2px}#trLobby .tl-sv>small{font-size:10px;opacity:.7;white-space:nowrap}
+#trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
+#trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;left:3px;right:3px;top:3px;height:3px;background:#0003}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
+#trLobby .gy-key.sure{background:#e05050!important;color:#fff!important}
+#trLobby .tl-rh{text-align:center;padding:4px 0 8px}#trLobby .tl-rh b{display:block;font-size:18px}#trLobby .tl-rh small{font-size:11px;opacity:.7}#trLobby.top .tl-rh b{color:#e0a020}
+#trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
+#trLobby .tl-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}#trLobby .tl-rows li{display:grid;grid-template-columns:40px 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:3px 6px;background:#f0f0f6;box-shadow:inset 0 0 0 2px #d8d8e4}
+#trLobby .tl-rows li>:first-child{grid-row:1/3;max-width:40px;max-height:40px}#trLobby .tl-rows img{max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-rows b{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#trLobby .tl-rows .mt{font-style:normal;font-size:9px;color:#fff;background:#2f7cd0;padding:1px 4px;margin-left:4px}
+#trLobby .tl-rows .lv{grid-column:3;grid-row:1/3;font-size:12px;white-space:nowrap}#trLobby .tl-rows .lv i{font-style:normal;font-size:9px;color:#e0a020}#trLobby .tl-rows .lv strong{color:#e04838}#trLobby .tl-rows .xp{font-size:10px;opacity:.7}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
 /* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
 function trTowerSvg(tod) {
@@ -3912,6 +3938,8 @@ function trTowerSvg(tod) {
   s += `<rect x="78" y="${y - 30}" width="4" height="6" fill="#ffd84a"/><rect x="79" y="${y - 44}" width="2" height="14" fill="#5a4032"/><rect class="flag" x="81" y="${y - 44}" width="14" height="8" fill="#e04838"/><rect class="flag" x="81" y="${y - 44}" width="14" height="2" fill="#ff8a78"/>`;
   return `<svg class="tl-tw" viewBox="0 ${y - 50} 160 ${360 - y}" shape-rendering="crispEdges" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${s}</svg>`;
 }
+/* v24.02 경완 '탑 정상까지 안 보여도 되니 포켓몬 목록을 더 늘리고, 포켓몬 박스처럼 필터, 타입은 테두리 말고 타입 아이콘': 하늘 낮게(탑 위는 잘림), 목록 = 박스 창(정렬 레벨·코스트·종족값·날짜, 다시 누르면 ▲▼ / 타입·넣을 수 있는·이로치 / 마리 수), 카드 오른쪽 위 타입 아이콘 */
+const TRL_SORT = [['lv', '레벨'], ['cost', '코스트'], ['bs', '종족값'], ['new', '날짜']]; let trlSo = 'lv', trlDir = 1, trlTy = 0, trlFit = false, trlSh = false;
 const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
   const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
   const nmOf = P => P.nm || SPECIES[P.sp]?.n || '', h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
@@ -3919,24 +3947,34 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
   const el = document.createElement('div'); el.id = 'trLobby'; el.className = tod; let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
   const fl = save?.floor | 0;
   el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:46%;animation-delay:-34s;animation-duration:84s"></i><i class="tl-cl" style="top:12%;animation-delay:-50s;animation-duration:72s;transform:scale(.7)"></i>
-      ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}<img class="tl-lead" alt="" hidden>
+      ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
       <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
       <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
       <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
-    <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div><p class="tl-ci">코스트 = 종족값(1~8) + 레벨 25마다 1 · 잡은 동료는 코스트 없음</p></div>
-      <div class="tl-lw"><div class="tl-list"></div></div></div>
+    <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
+      <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="fit">넣을 수 있는</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
     <div class="tl-ft${save ? ' two' : ''}"><button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
   root.appendChild(el);
   const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
     el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<em>${cost(P)}</em></button>` : `<span class="tl-s">${TRL_PB}</span>`; }).join('');
     el.querySelector('.tl-n').textContent = `${sel.length}/6 · 코스트 ${n}/${cap}`;
     const pp = el.querySelector('.tl-pips'); pp.classList.toggle('ov', ov); pp.innerHTML = Array.from({ length: Math.max(cap, n) }, (_, i) => `<i class="${i < n ? 'f' : ''}"></i>`).join('');
-    const L = all().sort((a, b) => (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
-    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[(SPECIES[P.sp]?.t || [])[0]] || '#8890a8'}">${B.thumb(P)}<b>${esc(nmOf(P))}</b><span><em>Lv.${B.gm(P).lv}</em><em class="c">코스트 ${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
-    const ld = el.querySelector('.tl-lead'); if (sel[0]) { ld.hidden = false; ld.dataset.th = sel[0]; } else { ld.hidden = true; delete ld.dataset.th; }
+    const A0 = all(), bs = P => (SPECIES[P.sp]?.bs || []).reduce((a, b) => a + b, 0), ix = new Map(S.box.map((P, i) => [P, i])), K = { lv: P => B.gm(P).lv, cost, bs, new: P => ix.get(P) };
+    const q = (el.querySelector('.tl-q input')?.value || '').trim(), qh = P => !q || (window.pkNameHit ? window.pkNameHit(nmOf(P), q) || window.pkNameHit(SPECIES[P.sp]?.n || '', q) : nmOf(P).includes(q)) || String(P.sp) === q.replace(/^0+/, '');   /* v24.06 경완 '검색 기능도': 박스처럼 이름·초성·번호 */
+    const luS = new Set((S.gym?.lu || []).flat()), trS = new Set((S.gym?.tr || []).map(e => e.id)), budS = new Set((S.buds || []).map(b => b.pid)), tags = P => [luS.has(P.id) && ['lu', '라인업'], trS.has(P.id) && ['tr', '훈련장'], budS.has(P.id) && ['bd', '짝꿍']].filter(Boolean);   /* v24.06 경완 '라인업·훈련장·짝꿍 딱지' */
+    if (trlTy && !A0.some(P => (SPECIES[P.sp]?.t || []).includes(trlTy))) trlTy = 0;
+    const L = A0.filter(P => (sel.includes(P.id) && !q) || (qh(P) && (!trlTy || (SPECIES[P.sp]?.t || []).includes(trlTy)) && (!trlSh || P.shiny) && (!trlFit || (sel.length < 6 && n + cost(P) <= cap)))).sort((a, b) => trlDir * (K[trlSo](b) - K[trlSo](a)) || (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
+    el.querySelectorAll('[data-so]').forEach(b => { const on = b.dataset.so === trlSo; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (trlDir > 0 ? '▼' : '▲') : ''; });
+    const tb = el.querySelector('[data-f=ty]'); tb.innerHTML = trlTy ? `${tyI0(trlTy)}${TYPE_KO[trlTy]}` : '모든 타입'; tb.setAttribute('aria-pressed', !!trlTy);
+    el.querySelector('[data-f=fit]').setAttribute('aria-pressed', trlFit); el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="ty">${(SPECIES[P.sp]?.t || []).map(tyI0).join('')}</span>${B.thumb(P)}<span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c">코스트 ${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
     list.scrollTop = sc; B.fillTh(el); };
   const end = v => { el.remove(); ok(v); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.q) { const i = el.querySelector('.tl-q input'); i.value = ''; i.blur(); draw(); return; }
+    if (b.dataset.so) { const k = b.dataset.so; if (k === trlSo) trlDir = -trlDir; else { trlSo = k; trlDir = 1; } draw(); el.querySelector('.tl-list').scrollTop = 0; return; }
+    if (b.dataset.f === 'ty') { const T = [...new Set(all().flatMap(P => SPECIES[P.sp]?.t || []))].sort((a, c) => a - c); fPop('타입', [[0, '모든 타입'], ...T.map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], trlTy, v => { trlTy = v; draw(); el.querySelector('.tl-list').scrollTop = 0; }); return; }
+    if (b.dataset.f === 'fit') { trlFit = !trlFit; draw(); return; } if (b.dataset.f === 'sh') { trlSh = !trlSh; draw(); return; }
     if (b.dataset.p) { const id = +b.dataset.p || b.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
       if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); return; }
     const a = b.dataset.a;
@@ -3945,13 +3983,47 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
     if (a === 'cont') { trDrop(rnd); end('cont'); return; }
     if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
       trDrop(rnd.filter(id => !sel.includes(id))); end(trClone(sel)); } };
+  el.querySelector('.tl-q input').addEventListener('input', () => { draw(); el.querySelector('.tl-list').scrollTop = 0; });
   draw();
+});
+/* v24.02 기록 고르기 화면: 이어 오르기(기록 카드: 층·등반대·코인·멈춘 때) / 새로 시작(한 번 더 눌러야 지움) */
+const trScr = async (cls, body, ft) => { const h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
+  if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; document.head.appendChild(st0); } document.getElementById('trlCss').textContent = TRL_CSS;
+  let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
+  const el = document.createElement('div'); el.id = 'trLobby'; el.className = `${tod} ${cls}`;
+  el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:56%;animation-delay:-34s;animation-duration:84s"></i>${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
+    <div class="tl-hd"><h2><b>200</b>층 수련탑</h2></div></div><div class="tl-body tl-gb">${body}</div><div class="tl-ft two2">${ft}</div>`;
+  root.appendChild(el); GB().fillTh(el); return el; };
+const trAgo = t => { const m = Math.max(0, Math.round((Date.now() - (t || Date.now())) / 60000)); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.floor(m / 60)}시간 전` : `${Math.floor(m / 1440)}일 전`; };
+const trGate = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), alive = L.filter(P => (R.hp[P.id] ?? 1) > 0).length;
+  const el = await trScr('gate', `<div class="tl-win tl-save"><h3>이어 오르기 <small>${trAgo(R.t)} 멈춤</small></h3>
+      <div class="tl-sv"><b class="fl">${R.floor}<small>층</small></b><span class="tl-gauge"><i style="width:${Math.max(2, R.floor / TR.top * 100)}%"></i></span><small>200층까지 ${TR.top - R.floor}층</small></div>
+      <div class="tl-party">${[0, 1, 2, 3, 4, 5].map(i => { const P = L[i]; if (!P) return `<span class="tl-s">${TRL_PB}</span>`; const h = R.hp[P.id] ?? 1; return `<span class="tl-s on${h > 0 ? '' : ' ko'}">${B.thumb(P)}<em class="lv">${B.gm(P).lv}</em><i class="hp" style="--h:${Math.round(h * 100)}%"></i></span>`; }).join('')}</div>
+      <p class="tl-sm">코인 ${R.coin | 0} · 동료 볼 ${Object.values(R.balls || {}).reduce((a, b) => a + (b | 0), 0)}개 · 싸울 수 있는 포켓몬 ${alive}/${L.length}</p></div>
+    <div class="tl-win tl-new"><h3>새로 시작</h3><p class="tl-sm">1층부터 다시 오를 포켓몬을 골라요.<br>지금 기록은 사라져요.</p></div>`,
+    `<button class="gy-key" data-a="x">나가기</button><button class="gy-key" data-a="new">새로 시작<small>1층부터</small></button><button class="gy-key main" data-a="cont">이어 오르기<small>${R.floor}층부터</small></button>`);
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const a = b.dataset.a;
+    if (a === 'new' && !b.classList.contains('sure')) { b.classList.add('sure'); b.innerHTML = '정말 새로?<small>기록이 지워져요</small>'; return; }
+    if (a) { el.remove(); ok(a === 'x' ? null : a); } };
+});
+/* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 끝날 때(그만두기·쓰러짐·꼭대기) 정산 화면 — 지난 기준점부터 오른 층·레벨·경험치·코인·동료 */
+const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), m0 = R.m0 || {}, up = Math.max(0, R.floor - (R.f0 || 1)), coin = Math.max(0, (R.coin | 0) - (R.c0 | 0));
+  const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
+  const rows = L.map(P => { const m = B.gm(P), [lv0, xp0] = m0[P.id] || [m.lv, m.xp | 0], dl = m.lv - lv0, dx = Math.max(0, (m.xp | 0) - xp0);
+    return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em class="mt">동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
+  const el = await trScr('settle ' + (R.end || ''), `<div class="tl-win tl-res"><div class="tl-rh"><b>${T[0]}</b><small>${T[1]}</small></div>
+      <div class="tl-chips"><span><small>오른 층</small><b>${up}</b></span><span><small>기록</small><b>${R.floor}층</b></span><span><small>코인</small><b>+${coin}</b></span></div>
+      <ul class="tl-rows">${rows}</ul><p class="tl-sm">시연이라 내 포켓몬 상자에는 들어가지 않아요</p></div>`, `<button class="gy-key main" data-a="ok">받기</button>`);
+  if (R.end === 'top') try { sfx('win'); } catch (e) {}
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); el.remove(); ok(); };
 });
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  if (trSave?.keep) { const g = st(); g.mon = g.mon || {}; trSave.keep.forEach(([P, m]) => { if (!GB().boxOf(P.id)) { S.box.push(JSON.parse(JSON.stringify(P))); g.mon[P.id] = JSON.parse(JSON.stringify(m)); } }); }   /* v24.02 시연 사본은 시뮬을 나가면 상자에서 사라짐 → 멈출 때 떠 둔 걸로 되살려 이어 오르기 */
   let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
-  { const v = await trLineup(R); if (!v) return; if (v === 'cont' && R) { /* 이어 오르기 */ } else { if (R) trDrop(R.ids); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
+  { const gv = R ? await trGate(R) : 'new'; if (!gv) return;   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
+    if (gv === 'new') { if (R) { trDrop(R.ids); R = null; trSave = null; } const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
@@ -3969,6 +4041,7 @@ async function trainTest() {
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }]] });
       first = false; if (!res?.keep) break;
     }
+    if (R?.end) { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; }
   } catch (err) { console.error(err); GA.toast?.('수련탑을 이어 가지 못했어요'); }
   finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSave?.ids?.includes(P.id)).map(P => P.id)); save(); bgmPlay('gym'); }
 }
@@ -3976,13 +4049,13 @@ async function trPost(R, o, boss, ids, T) {
   Object.assign(R.hp, o.hp);
   if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
   if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
-  if (o.quit) { trSave = R; await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n다음엔 여기서부터 이어 할 수 있다.`); return false; }
-  if (!o.won) { trSave = null; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); return false; }
+  if (o.quit) { trSave = R; R.end = 'quit'; R.keep = R.ids.map(id => [GB().boxOf(id), GB().gm(GB().boxOf(id))]).filter(x => x[0]).map(([P, m]) => [JSON.parse(JSON.stringify(P)), JSON.parse(JSON.stringify(m))]); await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n여기까지 한 만큼 보상을 받는다.`); return false; }
+  if (!o.won) { trSave = null; R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); return false; }
   if (o.act) R.lead = o.act;
   if (T?.caught) await trMate(R, o, T.caught);
   if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap('우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
-  if (R.floor >= TR.top) { trSave = null; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); return false; }
+  if (R.floor >= TR.top) { trSave = null; R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); return false; }
   R.coin = (R.coin | 0) + (boss ? 40 : 10);
   await o.msg(`수련탑 코인 ${boss ? 40 : 10}개를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
