@@ -3845,7 +3845,7 @@ async function trainTest() {
       const my = [R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)).map(GB().boxOf);
       const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : 1.8;
       const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : '' };
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: { xp: TR.xp * (R.xpM || 1) }, hp: R.hp, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: { xp: TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2 }, hp: R.hp, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
         badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : ''}`, post: o => trPost(R, o, boss, ids),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }]] });
@@ -3882,6 +3882,7 @@ async function trReward(R, o, ids, boss) {
   const U = boss ? 3 : 1, H = hurt.length ? 1 : 0, D = down.length ? 1 : 0, C = [   // [무게, 등급(0 흔함 1 좋음 2 귀함), 이름, 설명, 고르면]
     [4 * H, 0, '상처약', 'HP를 20 회복', heal(20)], [3 * H, 0, '좋은상처약', 'HP를 60 회복', heal(60)], [2 * H, 1, '고급상처약', 'HP를 120 회복', heal(120)], [U * H, 2, '회복약', 'HP를 모두 회복', heal(1e9)],
     [4 * D, 1, '기력의조각', '기절한 포켓몬 하나를 HP 절반으로', rev(.5)], [U * D, 2, '기력의덩어리', '기절한 포켓몬 하나를 HP 가득', rev(1)],
+    [(R.sh | 0) < 5 ? 3 : 0, 1, '학습장치', `배틀에 안 나간 포켓몬도 경험치를 받아요 (${Math.min(5, (R.sh | 0) + 1) * 20}%)`, async () => { R.sh = Math.min(5, (R.sh | 0) + 1); return `학습장치를 손에 넣었다!\n배틀에 안 나간 포켓몬도\n경험치를 ${R.sh * 20}% 받는다!`; }],   /* v23.57 경완 '포켓로그처럼 학습장치': 하나에 20%, 5개까지 (이번 훈련만) */
     [2, 1, '경험치 부적', '이번 훈련 경험치 +25%', async () => { R.xpM = (R.xpM || 1) + .25; return `이번 훈련 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }],
     [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'; } return '상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'; }]];
   const L = []; let pool = C.filter(c => c[0] > 0);
