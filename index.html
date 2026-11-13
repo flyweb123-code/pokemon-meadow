@@ -10161,13 +10161,13 @@ const ITEMS = [
   { id: 'sweets', n: '하트사탕공예', k: 'tool', p: 1500, a: 'loveSweet', d: '하트 모양으로 빚은 달콤한 사탕공예. 마빌크가 지니면 하트 장식의 마휘핑으로 진화한다.' }, { id: 'mcandy', n: '멜탄 사탕', k: 'tool', p: 50, bulk: 1, a: 'meltanCandy', d: '멜탄의 기운이 듬뿍 담긴 사탕. 특정 포켓몬을 진화시킨다.' }, { id: 'gcoin', n: '모으령 코인', k: 'tool', p: 20, bulk: 1, a: 'gimmiCoin', d: '모으령이 모아 온 낡은 코인. 특정 포켓몬을 진화시킨다.' },
   { id: 'incense', n: '향로', k: 'item', c: 'pick', p: 900, a: 'incense' }, { id: 'charm', n: '빛나는 부적', k: 'item', c: 'pick', p: 5000, a: 'charm' },
   /* v23.21 경완 '짝꿍 슬롯이 적어서 진화 km 줄이는 아이템' → '비율 말고 절댓값, 한도 없이': 한 개 = 1km (CDY_KM), 몇 개든. 1km 걷기 ≈ 12분, 미니게임 300G ≈ 9분 */
-  { id: 'rcandy', n: '이상한사탕', k: 'tool', p: 300, bulk: 1, a: 'rcandy', d: '포켓몬에게 주면 진화 거리를 1km 채워 주는 신기한 사탕. 몇 개든 먹을 수 있다.' },   /* v6.37 경완: 3,000 → 5,000G */
+  { id: 'rcandy', n: '이상한사탕', k: 'item', c: 'cdy', p: 300, bulk: 1, a: 'rcandy', d: '포켓몬에게 주면 진화 거리를 1km 채워 주는 신기한 사탕. 몇 개든 먹을 수 있다.' },   /* v6.37 경완: 3,000 → 5,000G */
   /* v19.74 경완: 알 뽑기권 (운영자 계정 베타만, TK_ON). 1점 = 50G: 10점 500G · 12점 600G · 15점 750G · 드래곤 1,000G. 알 뽑기에서 점수 대신 한 장에 한 번 */
   ...[0, 1, 7, 4, 6, 3, 12, 11, 13, 14, 2, 15, 5, 8, 10, 9, 17, 18, 16].map(t => ({ id: 'tk' + t, n: `${t ? TYPE_KO[t] : '모든 타입'} 뽑기권`, k: 'item', c: 'tk', tk: t, a: 'tk' + t, p: { 0: 10, 1: 10, 7: 10, 4: 12, 6: 12, 3: 13, 12: 13, 11: 13, 13: 13, 14: 13, 2: 14, 15: 14, 5: 15, 8: 17, 10: 18, 9: 19, 17: 19, 18: 20, 16: 35 }[t] * 50,   /* v20.14: 뽑기 점수 × 50G */
     d: `알 뽑기에서 쓰면 ${t ? TYPE_KO[t] + ' 타입 알이' : '모든 타입 알 가운데 하나가'} 나와요. 점수 대신 한 장에 한 번 뽑아요.` })),
 ];
 const TK_ON = () => true;   /* v19.96 경완 '본게임에 배포' — 모두에게 (v19.74 는 운영자 계정 베타만) */
-const ITEM_CATS = [['pick', '알 줍기 아이템'], ['tk', '알 뽑기권']];   /* v19.74 경완: 상점·가방 아이템 탭 항목 */
+const ITEM_CATS = [['cdy', ''], ['pick', '알 줍기 아이템'], ['tk', '알 뽑기권']]   /* 경완 11-13: 이상한사탕은 이름 없는 맨 앞 칸 */;   /* v19.74 경완: 상점·가방 아이템 탭 항목 */
 const itemHide = o => o.tk != null && !TK_ON();
 const ITEM = Object.fromEntries(ITEMS.map(o => [o.id, o])), ITEM_BY_N = Object.fromEntries(ITEMS.map(o => [o.n, o.id]));
 // 향로: 쓰고 min 분 동안 줍는 알의 등급 확률에 mul 을 곱한다 (다시 나눠 합 1). 빛나는 부적: min 분 동안 줍는 알 n 개에 1개꼴로 이로치가 든 알
@@ -10315,16 +10315,16 @@ function renderIBag() {
   // v5.88 경완: 가방도 아래 탭(아이템·진화 도구)으로 나눈다
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => { b.setAttribute('aria-selected', b.dataset.bt === ibagTab); const on = itemNewK(b.dataset.bt).length > 0, d = b.querySelector('.dot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새로 생김"></i>'); else if (!on && d) d.remove(); });
   const T = L.filter(o => o.k === ibagTab);
-  $('#ibagBody').innerHTML = T.length ? ibagTab === 'item' && TK_ON() ? ITEM_CATS.map(([c, n]) => sec('item', n, o => (o.c || 'pick') === c)).join('') : sec(ibagTab, '').replace('<h4 class="bag-h"></h4>', '') : L.length ? `<p class="bag-none">${ibagTab === 'item' ? '가진 아이템이 없어요' : '가진 도구가 없어요'}.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>` : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
+  $('#ibagBody').innerHTML = T.length ? ibagTab === 'item' && TK_ON() ? ITEM_CATS.map(([c, n]) => sec('item', n, o => (o.c || 'pick') === c).replace('<h4 class="bag-h"></h4>', '')).join('') : sec(ibagTab, '').replace('<h4 class="bag-h"></h4>', '') : L.length ? `<p class="bag-none">${ibagTab === 'item' ? '가진 아이템이 없어요' : '가진 도구가 없어요'}.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>` : `<p class="bag-none">아직 가진 도구가 없어요.<br>상점에서 살 수 있어요.</p><button class="lk-btn main bag-shop" data-shop>상점 가기</button>`;
   artFit($('#ibagBody'));
   ibagEl.classList.toggle('ibag-multi', ibagMul); $('#ibagMulti').setAttribute('aria-pressed', ibagMul); $('#ibagMulti').textContent = ibagMul ? '선택 끝' : '선택'; $('#ibagMulti').hidden = !L.length;
   if (ibagMul) { for (const k of [...ibagPick]) if (!(I[k] > 0) || ITEM[k].k !== ibagTab) ibagPick.delete(k); const bar = $('#ibagBar'), T2 = T.filter(o => ibagPick.has(o.id)); bar.hidden = false;
     bar.innerHTML = `<div class="sb-name"><b>${T2.length ? `${T2.length}종 ${T2.reduce((a, o) => a + I[o.id], 0)}개 골랐어요` : '버릴 것을 골라 주세요'}</b><span><button class="opt" data-all>${T2.length === T.length && T.length ? '모두 풀기' : '모두 고르기'}</button></span></div><button class="lk-btn warn" data-toss${T2.length ? '' : ' disabled'}>버리기</button>`; return; }
   const o = ITEM[ibagSel], bar = $('#ibagBar'); bar.hidden = !o; if (!o) return; const left = o.k === 'item' ? fxLeft(o.id) : 0;
-  bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n} ×${I[o.id]}</b><span>${o.k === 'item' ? itemDesc(o) + (left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : '') : (o.d || '진화 도구예요')}</span></div>` + `<button class="ibag-toss" data-toss aria-label="버리기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#20202c" d="M4 0h4v1h3v2H1V1h3zM2 4h8v8H2z"/><path fill="#b8b8c8" d="M4 5h1v5H4zM7 5h1v5H7z"/></svg></button>` + (o.k === 'item' ? `<button class="lk-btn main" data-use>${o.tk != null ? '사용' : left ? '더 쓰기' : '쓰기'}</button>` : o.id === 'rcandy' ? '<button class="lk-btn main" data-use>주기</button>' : o.fm ? '<button class="lk-btn main" data-fuse>쓰기</button>' : '');
+  bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n} ×${I[o.id]}</b><span>${o.k === 'item' ? itemDesc(o) + (left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : '') : (o.d || '진화 도구예요')}</span></div>` + `<button class="ibag-toss" data-toss aria-label="버리기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#20202c" d="M4 0h4v1h3v2H1V1h3zM2 4h8v8H2z"/><path fill="#b8b8c8" d="M4 5h1v5H4zM7 5h1v5H7z"/></svg></button>` + (o.k === 'item' ? `<button class="lk-btn main" data-use>${o.tk != null ? '사용' : o.id === 'rcandy' ? '주기' : left ? '더 쓰기' : '쓰기'}</button>` : o.fm ? '<button class="lk-btn main" data-fuse>쓰기</button>' : '');
 }
 function ibagAsk(o) {
-  if (o.id === 'rcandy') return cdyPickGo();   /* 경완 11-13: 짝꿍 아이템 항목 없앰 → 진화 도구 탭 */
+  if (o.id === 'rcandy') return cdyPickGo();   /* 경완 11-13: 짝꿍 아이템 항목 없앰 (아이템 탭 맨 앞) */
   const el = $('#itemPop'), left = fxLeft(o.id);
   if (o.tk != null) { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 사용"><img class="tkp" src="${ITEM_ART[o.a]}" alt=""><p><b>${o.n}</b>을 사용할까요?</p><span>알 뽑기 화면에서 이 뽑기권이 골라져요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>사용</button></div></div>`; el.hidden = false; sfx('open');   /* v19.74 경완: 가방에서 뽑기권 사용 → 알 뽑기 화면, 그 뽑기권이 골라진 채로 */
     el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; if (!(itemsOf()[o.id] > 0)) return; sfx('tap'); ibagSel = null; gaTk = o.tk; gaSt().t = o.tk; gaTyTk = true; save(); closeToggles(); hideSheets(); runTab = 'gacha'; openRun(); }; return; }   /* v19.87 경완: 넘어올 때 타입 박스 반짝임 없앰 */
@@ -12645,7 +12645,7 @@ const SHOP_PRE = []; setTimeout(() => { try { renderItems('item'); renderItems('
 function renderItems(k) {
   const I = itemsOf(), L = shopOrd(k, ITEMS.filter(o => o.k === k && !o.ns && !itemHide(o)), o => o.id, o => (o.bulk ? 1e9 : 0) + itemPrice(o.id)), sel = itemSel[k];   // 경완 2026-11-03: 모으령 코인·멜탄 사탕(묶음 사는 것)은 맨 뒤로
   const cell = o => `<button class="vin itm${o.tk != null ? ' tkv' : ''}" data-it="${o.id}" aria-current="${sel === o.id}"><span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""${o.tk != null ? '' : ' data-fit'}></span><span class="vname">${o.n}</span><span class="vtag">${itemPrice(o.id).toLocaleString()}G</span>${shopNew(k, o.id) ? '<i class="vdot" aria-label="새로 들어옴"></i>' : ''}</button>`, cats = k === 'item' && TK_ON();   /* v19.74 경완: 아이템 탭은 항목별로 (운영자 베타) */
-  $(`#${k}List`).classList.toggle('cats', cats); $(`#${k}List`).innerHTML = cats ? ITEM_CATS.map(([c, n]) => { const R = L.filter(o => (o.c || 'pick') === c); return R.length ? `<h4 class="bag-h">${n}</h4><div class="shop-inv">${R.map(cell).join('')}</div>` : ''; }).join('') : L.map(cell).join(''); artFit($(`#${k}List`));
+  $(`#${k}List`).classList.toggle('cats', cats); $(`#${k}List`).innerHTML = cats ? ITEM_CATS.map(([c, n]) => { const R = L.filter(o => (o.c || 'pick') === c); return R.length ? `${n ? `<h4 class="bag-h">${n}</h4>` : ''}<div class="shop-inv">${R.map(cell).join('')}</div>` : ''; }).join('') : L.map(cell).join(''); artFit($(`#${k}List`));
   const o = ITEM[sel], bar = $(`#${k}Bar`); bar.hidden = !o; if (!o) return;
   const left = o.k === 'item' ? fxLeft(o.id) : 0;
   bar.innerHTML = sbOwn(I[o.id]) + `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n}</b><span>${itemDesc(o)}${left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : ''}</span></div>`
