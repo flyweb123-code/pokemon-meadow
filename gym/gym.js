@@ -858,7 +858,13 @@ function strOf(my) {
 }
 const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
 // 배틀 직전에 고른 라인업으로 상대 레벨·마리 수를 다시 맞춘다 (경완 2026-10-29). 본가 단계 팀(pickNamed)은 그대로
-function refit(c, my) {
+/* v23.48 경완 '등급별 레벨 천장이 있어야 육성하는 맛', '전설 100 기준', '일단 천장 배포해줘': 상대 레벨은 지금처럼 내 라인업을 따라오되 등급 천장에서 멈춤.
+   LV_CEIL = 지금 등급의 도전자(이름 있는 트레이너 포함) 천장, BS_CEIL = 그 등급에서 받는 승급 심사 천장. 팀에서 가장 높은 레벨이 천장을 넘으면 넘은 만큼 팀 전체를 내림 */
+const LV_CEIL = [30, 40, 50, 60, 72, 85, 100], BS_CEIL = [30, 42, 54, 66, 78, 90];
+function lvCeil(c) { if (!c?.team?.length) return c; const cap = c.boss ? BS_CEIL[c.boss - 1] : LV_CEIL[clampN(st()?.gmax | 0, 0, LV_CEIL.length - 1)]; if (!cap) return c;
+  const over = Math.max(...c.team.map(m => m[1] | 0)) - cap; if (over > 0) c.team = c.team.map(m => [m[0], Math.max(2, m[1] - over), ...m.slice(2)]); return c; }
+function refit(c, my) { refit0(c, my); lvCeil(c); }
+function refit0(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
   const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
@@ -1756,7 +1762,7 @@ function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = 
   let out = null; for (const t of ORD) { const T = one(t); if (t === ty) { out = T; break; } }
   return out || KANG_TEAM; }
 function mkKang(gi) { const g = st(), sp = kangPick(g.ty, STR_BS[gi - 1]), lv = clampN(bsBase(gi) + BS_LV[gi - 1] + 2, 5, 100);
-  return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
+  return lvCeil({ id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }); }
 // 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
 function legXLines(N, E, ty, retry) {
   const nth = ['', '첫', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟'][N] || N;
