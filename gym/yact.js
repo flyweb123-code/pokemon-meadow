@@ -203,10 +203,6 @@ const CSS = `
 /* 경완 2026-11-14 '보상 3칸에 골드까지 반원으로, 반투명하게': 가운데 반원(스테이지) 둘레에 바깥 반원 띠를 두르고 네 칸(골드·경험치·노력치·번뜩임)으로 나눈다 */
 #yact .ya-top{justify-content:flex-end}
 #yact .ya-arc{left:50%;top:env(safe-area-inset-top);width:0;height:0}
-#yact .ya-ring{position:absolute;left:-134px;top:0;width:268px;height:134px;box-sizing:border-box;border-radius:0 0 134px 134px;background:rgba(26,28,50,.5);border:3px solid rgba(32,32,44,.85);border-top:0;box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.14)}
-#yact .ya-ring::before{content:"";position:absolute;left:-3px;right:-3px;bottom:100%;height:env(safe-area-inset-top);background:rgba(26,28,50,.5)}
-#yact .ya-ring i{position:absolute;left:131px;top:-1px;width:58px;height:2px;background:rgba(255,255,255,.22);transform-origin:0 50%}
-#yact .ya-ring i:nth-child(1){transform:rotate(135deg) translateX(76px)}#yact .ya-ring i:nth-child(2){transform:rotate(90deg) translateX(76px)}#yact .ya-ring i:nth-child(3){transform:rotate(45deg) translateX(76px)}
 #yact .ya-arc .sg{position:absolute;width:58px;height:46px;margin:-23px -29px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;text-shadow:0 2px 0 var(--ink),0 0 3px var(--ink);white-space:nowrap;line-height:1;padding:0;background:none;border:0;box-shadow:none}
 #yact .ya-arc .sg:nth-of-type(2){left:-98px;top:38px}#yact .ya-arc .sg:nth-of-type(3){left:-41px;top:98px}#yact .ya-arc .sg:nth-of-type(4){left:41px;top:98px}#yact .ya-arc .sg:nth-of-type(5){left:98px;top:38px}
 #yact .ya-arc .sg b{font-size:14px}
@@ -219,7 +215,15 @@ const CSS = `
 #yact .ya-arc .ya-stb{top:0;width:152px;height:76px;padding-top:3px;border-radius:0 0 76px 76px;background:rgba(26,28,50,.62);box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.16)}
 #yact .ya-arc .ya-stb .ya-ph{font-size:10px;line-height:14px;margin:0 0 2px}
 #yact .ya-arc .ya-stn .n b{font-size:26px}
-#yact .ya-tl{left:8px;top:calc(104px + env(safe-area-inset-top))}
+/* 경완 2026-11-14 '반원에 구슬 4개 좋다': 바깥 띠를 없애고 스테이지 반원 둘레에 동그란 구슬 네 개(골드·경험치·노력치·번뜩임), 구슬 테두리가 게이지(--p 0~1)로 차오른다. 능력치 이름·타입 딱지는 구슬에선 뺌 */
+#yact .ya-arc .sg{width:56px;height:56px;margin:-28px;border-radius:50%;background:rgba(26,28,50,.66);border:3px solid var(--ink);box-sizing:border-box;gap:1px;--p:0;--c:#fff}
+#yact .ya-arc .sg::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1turn),rgba(255,255,255,.2) 0);-webkit-mask:radial-gradient(closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(closest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+#yact .ya-arc .sg>*{position:relative}
+#yact .ya-arc .sg:nth-of-type(1){left:-106px;top:44px;--c:#ffcf3a;--p:1}#yact .ya-arc .sg:nth-of-type(2){left:-53px;top:102px;--c:#3a98e8}#yact .ya-arc .sg:nth-of-type(3){left:53px;top:102px;--c:#a060f0}#yact .ya-arc .sg:nth-of-type(4){left:106px;top:44px;--c:#e060b0}
+#yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .mg-hg b{font-size:15px}#yact .ya-arc .ex b{font-size:12px;letter-spacing:-.5px}
+#yact .ya-arc .ri{width:16px;height:16px;font-size:8px}#yact .ya-arc .mg-hg .coin{width:13px;height:13px}
+#yact .ya-arc .sg small,#yact .ya-arc .sg .ya-egt{display:none}
+#yact .ya-tl{left:8px;top:calc(138px + env(safe-area-inset-top))}
 /* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
 #yact .ya-cb{--cc:#ffe27a;display:inline-block;padding:4px 10px 7px 9px;background:rgba(26,28,50,.72);border:3px solid var(--ink);border-left:7px solid var(--cc);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 3px 0 rgba(0,0,0,.25);font-size:14px;font-weight:700;text-shadow:0 2px 0 var(--ink)}
 #yact .ya-cb[data-t="2"]{--cc:#ffa040}#yact .ya-cb[data-t="3"]{--cc:#ff5a4a}
@@ -317,7 +321,7 @@ const CSS = `
 `;
 const HTML = `<canvas></canvas>
 <div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
-<div class="ya-hud ya-arc"><div class="ya-ring"><i></i><i></i><i></i></div>
+<div class="ya-hud ya-arc">
   <div class="sg mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></div>
   <div class="sg ex"><i class="ri">Lv</i><b class="ya-rwe">+0</b></div>
   <div class="sg ev"><i class="ri">EV</i><b class="ya-rwv">0/8</b><small class="ya-rwk"></small></div>
@@ -1146,7 +1150,7 @@ function hud() {
   const G = R?.G; if (!G) return; const q = R.q, me = G.me, eg = G.M.eg, r = me.hp / me.mhp;
   q('.ya-wn').textContent = G.wave; q('.ya-stg').innerHTML = STAGES.map((S, i) => { const a = (166 - i * 152 / (STAGES.length - 1)) * Math.PI / 180;   /* 반원 테두리를 따라 왼쪽에서 오른쪽으로 */
     return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(73 + Math.cos(a) * 59).toFixed(1)}px;bottom:${(73 - Math.sin(a) * 59).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
-  q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
+  q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-arc .ex').style.setProperty('--p', Math.min(1, G.exp / Math.max(1, G.xpB))); q('.ya-arc .ev').style.setProperty('--p', Math.min(1, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)))); q('.ya-arc .ya-eg').style.setProperty('--p', (G.M.eg ? G.eggShown : 0) / 100); q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
   q('.ya-eg').hidden = !eg;
   if (eg) { q('.ya-egn').textContent = '번뜩임 ???'; q('.ya-egt').textContent = TYPE_KO[eg.t] || ''; q('.ya-egt').style.background = TYPE_C[eg.t] || '#888'; q('.ya-egf').style.setProperty('--tc', TYPE_C[eg.t] || '#ee99ac');
     q('.ya-egf').style.width = G.eggShown + '%'; q('.ya-egf0').style.width = G.egg0 + '%'; q('.ya-egp').textContent = `${G.eggShown}%`; q('.ya-egs').textContent = `이번 판 +${G.shard}%`; }
