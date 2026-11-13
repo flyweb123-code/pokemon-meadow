@@ -3833,35 +3833,84 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-/* v23.76 경완 '포켓몬 메뉴는 냅두고, 수련탑 오르기를 누르면 새로운 화면에서 오를 포켓몬 선택': 체육관 라인업을 안 건드리는 수련탑 전용 고르기 화면.
-   내 포켓몬 상자 전체(타입 상관없이)에서 최대 6마리, 코스트 TR_CAP 안. 🎲 랜덤은 시험 포켓몬(gTst·P.rnd) */
-const trLineup = () => new Promise(ok => { let sel = [], rnd = [];
+/* v23.77 경완 '수련탑 고르기는 창으로 뜨기보다 아예 새로운 대기 화면, 수련탑 컨셉으로': 화면 전체 대기실 (#trLobby).
+   하늘·구름·200층 탑(10층마다 우두머리 깃발)·탑 아래 관장, 함께 오를 6칸 + 코스트 막대, 아래 내 포켓몬 상자 전체(타입 상관없이). 체육관 라인업은 안 건드림.
+   이어 할 기록(trSave)이 있으면 'N층부터 이어 오르기'. 🎲 랜덤 = 시험 포켓몬(gTst·P.rnd) */
+const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;color:#20222c;background:#2b2f6e;font-family:inherit;overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
+#trLobby .tl-hd{display:flex;align-items:center;gap:8px;padding:10px 12px 0;color:#fff}
+#trLobby .tl-hd h2{flex:1;margin:0;font-size:20px;letter-spacing:.04em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+#trLobby .tl-hd small{display:block;font-size:11px;font-weight:400;opacity:.85;letter-spacing:0}
+#trLobby .tl-x{flex:none;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.25);color:#fff;border-radius:10px;padding:6px 10px;font:inherit;font-size:12px}
+#trLobby .tl-sky{position:relative;flex:none;height:min(38vh,300px);background:linear-gradient(#2b2f6e,#5a4f9a 40%,#d98a7a 80%,#f4c48a)}
+#trLobby .tl-sky svg.tw{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%);image-rendering:pixelated;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+#trLobby .tl-cl{position:absolute;height:14px;border-radius:8px;background:rgba(255,255,255,.75);animation:tlCl 38s linear infinite}
+#trLobby .tl-cl::before{content:'';position:absolute;left:12px;top:-8px;width:22px;height:16px;border-radius:50%;background:inherit}
+@keyframes tlCl{from{transform:translateX(-120px)}to{transform:translateX(520px)}}
+#trLobby .tl-me{position:absolute;bottom:2px;left:calc(50% + 42px);height:64px;image-rendering:pixelated}
+#trLobby .tl-tag{position:absolute;right:10px;top:8px;background:rgba(0,0,0,.35);color:#ffe9a0;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700}
+#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px 12px 0;background:#f4f1e8;border-top:4px solid #6b5a48}
+#trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+#trLobby .tl-s{aspect-ratio:1;border-radius:10px;border:2px dashed #b8ad9a;display:grid;place-items:center;background:#fffdf6;padding:0;position:relative;min-width:0}
+#trLobby .tl-s.on{border:2px solid #f0b040;background:#fff6dc}
+#trLobby .tl-s .rk-fr{transform:scale(.72)}
+#trLobby .tl-s i{position:absolute;right:2px;bottom:1px;font-style:normal;font-size:9px;font-weight:700;color:#2f7cd0}
+#trLobby .tl-cost{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px}
+#trLobby .tl-cost span:last-child{flex:1;height:8px;border-radius:4px;background:#d8d2c2;overflow:hidden}
+#trLobby .tl-cost b{display:block;height:100%;background:#58b868;transition:width .2s}
+#trLobby .tl-cost.ov{color:#d04040}#trLobby .tl-cost.ov b{background:#e05050}
+#trLobby .tl-hint{margin:0;font-size:10px;opacity:.65}
+#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-content:start;padding:2px 0 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+#trLobby .tl-c{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;border:2px solid rgba(0,0,0,.1);background:#fff;font:inherit;color:#20222c;min-width:0}
+#trLobby .tl-c.on{border-color:#f0b040;background:#fff6dc}
+#trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#trLobby .tl-c small{font-size:10px}#trLobby .tl-c small em{font-style:normal;color:#2f7cd0;font-weight:700}
+#trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 12px 10px;background:#f4f1e8}
+#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 2fr}
+#trLobby .tl-ft button{border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;font-size:14px;color:#fff;background:#4a4e68;box-shadow:0 4px 0 #2c2f44;transition:transform .06s,box-shadow .06s}
+#trLobby .tl-ft button small{display:block;font-size:9px;font-weight:400;opacity:.8}
+#trLobby .tl-ft button.go{background:#f6c344;color:#3a2a08;box-shadow:0 4px 0 #b88a18;font-size:16px}
+#trLobby .tl-ft button:active{transform:translateY(3px);box-shadow:0 1px 0 #2c2f44}
+#trLobby .tl-ft button.go:active{box-shadow:0 1px 0 #b88a18}`;
+/* 탑 그림 (도트): 아래가 넓고 위로 갈수록 좁아지는 돌탑, 층마다 창문, 10층 칸마다 깃발, 꼭대기 200 */
+const trTowerSvg = () => { let s = '', y = 286; const W = [64, 60, 56, 52, 48, 44, 40, 36, 32, 28];
+  W.forEach((w, i) => { const h = 26, x = 60 - w / 2; y -= h; s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${i % 2 ? '#8e93ad' : '#9da2bb'}"/><rect x="${x}" y="${y}" width="${w}" height="3" fill="#c7cbe0"/><rect x="${x}" y="${y + h - 2}" width="${w}" height="2" fill="#6c7090"/>`;
+    for (let k = 0, n = Math.max(1, Math.floor(w / 14)); k < n; k++) { const wx = x + (w - n * 8 - (n - 1) * 6) / 2 + k * 14; s += `<rect x="${wx}" y="${y + 9}" width="8" height="10" fill="${Math.random() < .7 ? '#ffd86a' : '#4a4e68'}"/><rect x="${wx}" y="${y + 9}" width="8" height="2" fill="#5a4f3a"/>`; }
+    s += `<rect x="${x + w - 2}" y="${y - 10}" width="2" height="10" fill="#5a4f3a"/><rect x="${x + w}" y="${y - 10}" width="8" height="5" fill="${i === 4 || i === 9 ? '#f0b040' : '#e05050'}"/><text x="${x - 3}" y="${y + 16}" font-size="7" text-anchor="end" fill="#fff" font-weight="700">${(i + 1) * 20}</text>`; });
+  s += `<rect x="44" y="${y - 14}" width="32" height="14" fill="#6c7090"/><polygon points="40,${y - 14} 60,${y - 34} 80,${y - 14}" fill="#e05050"/><rect x="58" y="${y - 44}" width="4" height="12" fill="#f0b040"/>`;
+  return `<svg class="tw" viewBox="0 ${y - 48} 140 ${334 - y}" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="284" width="100" height="8" fill="#6b5a48"/>${s}<rect x="50" y="268" width="20" height="18" fill="#3a3040"/><rect x="50" y="268" width="20" height="3" fill="#f0b040"/></svg>`; };
+const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
   const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
   const nmOf = P => P.nm || SPECIES[P.sp]?.n || '';
-  const card = (P, on) => `<button type="button" data-p="${P.id}" class="trp-c${on ? ' on' : ''}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;border:2px solid ${on ? '#f0b040' : 'rgba(0,0,0,.12)'};background:${on ? '#fff6dc' : '#fff'};font:inherit;color:#20222c;min-width:0">${B.thumb(P)}<b style="font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nmOf(P))}</b><small style="font-size:10px">Lv.${B.gm(P).lv} · <b style="color:#2f7cd0">코스트 ${cost(P)}</b></small></button>`;
-  const html = () => { const n = sum(), ov = n > B.TR_CAP, L = all().sort((a, b) => (sel.includes(b.id) - sel.includes(a.id)) || (B.gm(b).lv - B.gm(a).lv));
-    return `<h4>200층 수련탑</h4><p class="gy-msg" style="font-size:12px;margin:2px 0 6px">함께 오를 포켓몬을 골라요 (최대 6마리)</p>
-    <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;color:${ov ? '#d04040' : '#2a2e40'}"><span>코스트 ${n} / ${B.TR_CAP} · ${sel.length}/6</span><span style="flex:1;height:8px;border-radius:4px;background:#d8dce8;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, n / B.TR_CAP * 100)}%;background:${ov ? '#e05050' : '#58b868'}"></i></span></div>
-    <p style="margin:2px 0 6px;font-size:10px;opacity:.7">코스트 = 종족값(1~8) + 레벨 25마다 1. 잡은 동료는 코스트가 없어요.</p>
-    <div class="trp-l" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-height:52vh;overflow:auto;padding:2px">${L.length ? L.map(P => card(P, sel.includes(P.id))).join('') : '<p style="grid-column:1/-1;font-size:12px">포켓몬이 없어요.</p>'}</div>
-    <div class="gy-btns" style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px"><button data-a="rnd">🎲 랜덤<small style="display:block;font-size:9px">시험 포켓몬</small></button><button data-a="x">취소</button><button class="main" data-a="go">수련탑 오르기</button></div>`; };
-  const win = pop(html(), (a, close) => {
-    if (a === 'x') { close(); trDrop(rnd); ok(null); return; }
+  if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; st0.textContent = TRL_CSS; document.head.appendChild(st0); }
+  const el = document.createElement('div'); el.id = 'trLobby'; let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
+  el.innerHTML = `<div class="tl-hd"><h2>200층 수련탑<small>꼭대기까지 함께 오를 포켓몬을 골라요</small></h2><button class="tl-x" data-a="x">나가기</button></div>
+    <div class="tl-sky"><i class="tl-cl" style="top:18%;width:46px;animation-delay:-6s"></i><i class="tl-cl" style="top:42%;width:34px;animation-delay:-22s;animation-duration:52s"></i><i class="tl-cl" style="top:8%;width:28px;animation-delay:-31s;animation-duration:46s"></i>${trTowerSvg()}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}${save ? `<span class="tl-tag">${save.floor}층까지 올랐어요</span>` : ''}</div>
+    <div class="tl-body"><div class="tl-party"></div><div class="tl-cost"><span></span><span><b></b></span></div><p class="tl-hint">코스트 = 종족값(1~8) + 레벨 25마다 1 · 최대 6마리 · 잡은 동료는 코스트 없음</p><div class="tl-list"></div></div>
+    <div class="tl-ft${save ? ' two' : ''}"><button data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button data-a="cont">이어 오르기<small>${save.floor}층부터</small></button>` : ''}<button class="go" data-a="go">수련탑 오르기</button></div>`;
+  root.appendChild(el);
+  const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
+    el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<i>${cost(P)}</i></button>` : '<span class="tl-s"></span>'; }).join('');
+    const c = el.querySelector('.tl-cost'); c.classList.toggle('ov', ov); c.firstElementChild.textContent = `코스트 ${n} / ${cap} · ${sel.length}/6`; c.querySelector('b').style.width = Math.min(100, n / cap * 100) + '%';
+    const L = all().sort((a, b) => (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}">${B.thumb(P)}<b>${esc(nmOf(P))}</b><small>Lv.${B.gm(P).lv} · <em>코스트 ${cost(P)}</em></small></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px">포켓몬이 없어요.</p>';
+    list.scrollTop = sc; B.fillTh(el); };
+  const end = v => { el.remove(); ok(v); };
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.p) { const id = +b.dataset.p || b.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
+      if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); return; }
+    const a = b.dataset.a;
+    if (a === 'x') { trDrop(rnd); end(null); return; }
     if (a === 'rnd') { trDrop(rnd); rnd = trRollLu(); rnd.forEach(id => { const P = B.boxOf(id); if (P) P.rnd = 1; }); sel = [...rnd]; draw(); return; }
+    if (a === 'cont') { trDrop(rnd); end('cont'); return; }
     if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
-      close(); trDrop(rnd.filter(id => !sel.includes(id))); ok(trClone(sel)); } });
-  const draw = () => { const w = win.querySelector('.win'), st0 = w.querySelector('.trp-l')?.scrollTop || 0; w.innerHTML = html(); w.querySelector('.trp-l').scrollTop = st0; B.fillTh(w); };
-  win.classList.add('gy-np'); B.fillTh(win);   /* 바깥 눌러 닫기 없음 (버튼으로만) */
-  win.addEventListener('click', e => { const c = e.target.closest('.trp-c'); if (!c) return; sfx('tap'); const id = +c.dataset.p || c.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
-    if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); });
+      trDrop(rnd.filter(id => !sel.includes(id))); end(trClone(sel)); } };
+  draw();
 });
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
   let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
-  if (R) { const go = await new Promise(ok => pop(`<h4>200층 수련탑</h4><p class="gy-msg"><b>${R.floor}층</b>부터 이어 할 수 있어요.</p><p class="gy-msg" style="font-size:11px;opacity:.75">운영자 시험: 내 포켓몬·저장은 건드리지 않아요.</p><div class="gy-btns"><button data-a="new">새로 고르기</button><button class="main" data-a="go">이어 하기</button></div>`, (a, close) => { close(); ok(a); }));
-    if (go !== 'go') { trDrop(R.ids); R = null; } }
-  if (!R) { const ids = await trLineup(); if (!ids?.length) return; R = trNew(ids); }
+  { const v = await trLineup(R); if (!v) return; if (v === 'cont' && R) { /* 이어 오르기 */ } else { if (R) trDrop(R.ids); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
