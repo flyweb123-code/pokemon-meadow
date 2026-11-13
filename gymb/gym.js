@@ -4606,20 +4606,36 @@ async function zTut(test) {
         rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); const rp = route(D, D.door, [kx, ky], occOf([rs])) || route(D, D.door, [kx, ky], []) || [];
         const wr = walk(rs, rp, 300); for (let i = 0; i < 80 && !(Math.abs(rs.x - kx) < 3 && Math.abs(rs.y - ky) < 3); i++) await wait(50); face(k, rs); await wr; face(rs, meEnt); face(meEnt, rs); face(k, rs); if (gu()) face(gu(), rs); await wait(300); hideT(false);
         await say(`${NK()}, 안녕하세요!\n강박사님 연구소의\n연구원 하람이에요.`, RW); await say('박사님이 전화로\n\'허리에 붙일 파스 좀\n사 오게!\' 하셔서…', RW); await say('…박사님, 또 포즈\n하셨죠?', RW); await say('에헴! 그, 그건 됐고\n연습 배틀이나 부탁하네!'); await say('네! 연습 배틀,\n잘 부탁드려요!', RW); hideT(true); }
-      const fe = (sp2, nm2) => ({ sp: sp2, nm: nm2, lv: 22, mv: ['tackle', 'quickattack'], ab: 'runaway', nat: 'hardy', iv: [10, 10, 10, 10, 10, 10], g: 'M' });
-      const team = [T0 === 8 ? fe(10, '캐터피') : fe(19, '꼬렛')];   // 한 마리, Z기술 한 방에 쓰러지는 레벨 (고스트 Z는 노말에 안 맞으니 캐터피)
+      /* 경완 2026-11-14 '먼저 화염방사 쓰고 데미지 보고, Z기술 쓰고 데미지 비교': 상대 = 튼튼한 포켓몬 한 마리(울음소리만), 레벨은 일반 기술 한 번에 체력 약 30% 줄게 (zFoeLv).
+         1턴 그냥 기술 → 줄어든 만큼 짚기 → 2턴 Z기술 → 두 번을 비교 → 3턴 마무리. 고스트·격투 체육관은 노말 잠만보가 안 맞거나 약점이라 샤미드 */
+      try { await B.loadSim?.(); } catch (e) {}
+      const fSp = T0 === 2 || T0 === 8 ? 134 : 143, fNm = SPECIES[fSp]?.n || '포켓몬', m0 = B.gm(P), fLv = B.zFoeLv ? B.zFoeLv({ sp: P.sp, lv: m0.lv || 50, iv: P.iv, nat: m0.nat }, M[1][0], fSp, .3) : 40;
+      const team = [{ sp: fSp, nm: fNm, lv: fLv, mv: ['growl'], ab: fSp === 143 ? 'immunity' : 'waterabsorb', nat: 'hardy', iv: [31, 31, 31, 31, 31, 31], g: 'M' }];
       document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
       const run = B.run({ meFrontUrl: await fitSrc('tr'), my: [P], foe: { tr: 'scientist', cls: '연구원', nm: '하람', team, hold: 0, say: { win: 'Z기술, 정말 화려하네요!', lose: '연습이라 다행이에요!' } }, practice: true, diff: 0, bg: 'in2', music: 'gymBattle', gmk: { z: 1, meOnly: 1 }, meBackUrl: await fitSrc('trb') }).catch(e => console.error(e));
       let done = false; run.then(() => { done = true; });
-      for (let i = 0; i < 300 && !done && !gtEl('.bt [data-a=fight]'); i++) await wait(100);
+      const fight = async () => { for (let i = 0; i < 600 && !done && !gtEl('.bt [data-a=fight]'); i++) await wait(100); }, hp = () => B.foeHp?.() ?? 1, pc = x => Math.max(1, Math.round(x * 100));
+      await fight(); let h0 = hp(), h1 = h0, h2 = h0;
       if (!done && open) await gtu([
-        { c: 'Z기술', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .gkb') || done, after: 500, s: '먼저 \'싸운다\'를 눌러 보렴!' },
+        { c: '일반 기술', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .mvb') || done, after: 500, s: `먼저 Z기술 없이 그냥\n${mvN}${pE(mvN)} 써 보자.\n'싸운다'를 눌러 보렴!` },
+        { c: '일반 기술', when: () => gtEl('.bt .mvb') && !gtEl('.bt .gkb.on') && !done, t: '.bt .mvb[data-i="0"]', tap: '.bt .mvb[data-i="0"]', until: () => !gtEl('.bt .mvb') || done, after: 300, s: `${mvN}${pE(mvN)} 눌러 보렴!\n${fNm}의 체력이 얼마나\n줄어드는지 잘 보렴.` }]);
+      await fight(); h1 = hp();
+      if (!done && open) await gtu([
+        { c: 'Z기술', t: '.bt-hb.e', s: `${mvN}로 체력이\n약 ${pc(h0 - h1)}% 줄었구나.\n이번엔 같은 기술을 Z기술로!` },
+        { c: 'Z기술', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .gkb') || done, after: 500, s: '\'싸운다\'를 눌러 보렴!' },
         { c: 'Z기술', when: () => gtEl('.bt .gkb') && !done, t: '.bt .gkb', tap: '.bt .gkb', until: () => gtEl('.bt .gkb.on') || done, after: 600, s: 'Z기술 버튼이 생겼지?\n눌러서 켜 보렴!' },
         { c: 'Z기술', when: () => gtEl('.bt .gkb.on') && !done, t: () => gtEl('.bt .mvw.zon .mvb') || gtEl('.bt .mvb'), snap: ['4b', '.bt', '.bt .mvw.zon'], tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: `${mvN}${pI(mvN)} Z기술로 바뀌었지?\n빛나는 기술을 눌러 보렴!` }]);
+      await fight(); h2 = done ? 0 : hp();
+      const d1 = pc(h0 - h1), d2 = pc(h1 - h2);
+      if (!done && open) await gtu([
+        { c: 'Z기술', t: '.bt-hb.e', s: `봤니? 그냥 ${mvN}는 약 ${d1}%,\nZ기술은 약 ${d2}%!\n같은 기술인데 ${d2 >= d1 * 1.8 ? '두 배쯤' : '훨씬'} 세지?` },
+        { c: '마무리', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .mvb') || done, after: 500, s: 'Z기술은 한 배틀에 한 번뿐!\n이제 아무 기술로나\n마무리해 보렴.' },
+        { c: '마무리', when: () => gtEl('.bt .mvb') && !done, t: '.bt .mvb[data-i="0"]', tap: '.bt .mvb', quiet: 1, until: () => !gtEl('.bt .mvb') || done, after: 300 }]);
+      for (let n = 0; n < 6 && !done && open; n++) { await fight(); if (done || !open) break; await gtu([{ c: '마무리', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', quiet: 1, until: () => gtEl('.bt .mvb') || done, after: 400 }, { c: '마무리', when: () => gtEl('.bt .mvb') && !done, t: '.bt .mvb[data-i="0"]', tap: '.bt .mvb', quiet: 1, until: () => !gtEl('.bt .mvb') || done, after: 300 }]); }
       await run;
       document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); bgmPlay('gym');
       if (!open) return; hideT(false); k.el.style.visibility = ''; if (rs) { face(meEnt, rs); face(k, rs); }
-      await say('우와… 화면이 번쩍해서\n아직도 눈앞이 반짝반짝해요!', RW); await say(`역시 ${NK()}${jong(NK()) ? '이' : ''}네요.\n처음 쓰는 Z기술인데도\n완벽했어요!`, RW); face(k, meEnt); face(meEnt, k);
+      await say(`우와… 제 ${fNm}${pI(fNm)}\nZ기술 한 방에 저만큼이나…!`, RW); await say(`역시 ${NK()}${jong(NK()) ? '이' : ''}네요.\n처음 쓰는 Z기술인데도\n완벽했어요!`, RW); face(k, meEnt); face(meEnt, k);
       await say('어떠냐, 화려하지?\n이게 바로 Z기술이란다!'); await say('Z기술은 한 배틀에 한 번뿐이니\n언제 쓸지가 중요하단다.\n상대 에이스가 나왔을 때라든가!');
       await say(`${sp}${pN(sp)} 이제 돌려받으마.\n${zn}${pN(zn)} 네 것이니\n창고에 넣어 두마.`);
       if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 박사님께\n파스 붙여 드리고\n먼저 가 볼게요!', RW); hideT(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); hideT(false); }
