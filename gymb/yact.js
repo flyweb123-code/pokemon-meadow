@@ -222,6 +222,7 @@ const CSS = `
 #yact .ya-arc .sg:nth-of-type(1){left:-106px;top:44px;--c:#ffcf3a;--p:1}#yact .ya-arc .sg:nth-of-type(2){left:-53px;top:102px;--c:#3a98e8}#yact .ya-arc .sg:nth-of-type(3){left:53px;top:102px;--c:#a060f0}#yact .ya-arc .sg:nth-of-type(4){left:106px;top:44px;--c:#e060b0}
 #yact .ya-arc .sg b{font-size:13px}#yact .ya-arc .mg-hg b{font-size:15px}#yact .ya-arc .ex b{font-size:12px;letter-spacing:-.5px}
 #yact .ya-arc .ri{width:16px;height:16px;font-size:8px}#yact .ya-arc .mg-hg .coin{width:13px;height:13px}
+#gym #yact .ya-arc .mg-hg .coin{margin:0 0 2px!important}   /* 체육관 공통 '동전 옆 글자 여백 6px' 이 구슬 안(위아래 배치)에선 동전을 왼쪽으로 밀어서 뺌 (경완 '골드 아이콘 정렬') */
 #yact .ya-arc .sg small,#yact .ya-arc .sg .ya-egt{display:none}
 /* 경완 2026-11-14 'EV 대신 능력치 이름, Lv 말고 경험치, 번뜩임은 떨어지는 조각과 같은 아이콘' */
 #yact .ya-arc .ri{width:auto;height:13px;padding:0 3px;font-size:9px;line-height:13px;display:block;border-width:1.5px;white-space:nowrap;color:#fff}
