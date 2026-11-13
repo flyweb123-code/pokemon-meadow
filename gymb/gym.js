@@ -3807,6 +3807,7 @@ const MEGA_T = [[6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 
    지금 라인업으로 1층부터. 배틀 화면을 닫지 않고 야생 포켓몬이 계속 나옴(포켓로그처럼), 10층마다 우두머리(레벨 +3·체력 ×1.8, 50층마다 큰 우두머리 +5·×2.5).
    이기면 체력 20% 회복, 5층마다 보급 고르기, 우두머리를 쓰러뜨리면 모두 회복. 경험치 ×0.3·학습장치 없음, 1층 = 라인업 최저 레벨, 4층마다 +1.
    친밀도·진화·포켓몬 상자는 안 건드리고, 레벨·기술(S.gym)은 시뮬에서 나가면 되돌아감. 그만두기 = 그 층부터 이어 하기(앱 켜 있는 동안) */
+const TR_BGM = ['wild', 'train', 'rival', 'hgRival', 'emRival', 'hgGymK', 'gymBattle', 'hgGymJ', 'emGym', 'tenno', 'emTenno', 'hgChamp', 'champ', 'emChamp'];   /* v24.14 10층마다 바뀌는 곡 (우두머리 층은 우두머리 곡) */
 const TR = { xp: .3, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 40, myst: .1 };
 const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
@@ -4034,8 +4035,9 @@ async function trainTest() {
       R.amb = 0; const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : amb ? 2 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
       const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
       R.balls = R.balls || { mon: 5 }; const T = { xp: TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss };   /* v23.68 동료 볼 (가방) */
-      const intro = first && f === 1 ? async o => { await o.msgTap('동료 몬스터볼 5개를 받았다!'); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); await o.msgTap('도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'); } : null;
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
+      const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await o.msgTap('동료 몬스터볼 5개를 받았다!'); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); await o.msgTap('도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'); await trReward(R, o, ids, false, false, true); } : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
+      const music = big ? 'bossBig' : boss ? 'boss' : TR_BGM[Math.floor((f - 1) / 10) % TR_BGM.length], keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: true, win: 'winWild', meFrontUrl, meBackUrl,
         badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : ''} · 코인 ${R.coin | 0}`, post: o => trPost(R, o, boss, ids, T),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }]] });
@@ -4093,7 +4095,46 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
-async function trReward(R, o, ids, boss, shop) {
+/* v24.14 보상 그림 = 본가 도구 (gym/img/item, 없던 것은 PokeAPI sprites/items 에서 받아 넣음) · 등급별 볼 (흔함 몬스터볼·좋음 슈퍼볼·귀함 하이퍼볼) */
+const TR_IC = [['상처약', 'potion'], ['좋은상처약', 'superpotion'], ['고급상처약', 'hyperpotion'], ['회복약', 'maxpotion'], ['기력의조각', 'revive'], ['기력의덩어리', 'maxrevive'], ['학습장치', 'expshare'], ['맥스업', 'hpup'], ['타우린', 'protein'], ['사포닌', 'iron'], ['리보플라빈', 'calcium'], ['키토산', 'zinc'], ['알칼로이드', 'carbos'], ['경험치 부적', 'expcharm'], ['동료 몬스터볼', 'pokeball'], ['동료 슈퍼볼', 'greatball'], ['동료 하이퍼볼', 'ultraball'], ['동료 마스터볼', 'masterball'], ['강박사 야식', 'bigmalasada']];
+const trIc = n => (TR_IC.find(([k]) => n.startsWith(k)) || [, 'pokeball'])[1], TR_BX = ['pokeball', 'greatball', 'ultraball'];
+const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;background:rgba(8,10,24,0);transition:background .35s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
+.trbx.on{background:rgba(8,10,24,.62)}.trbx.out{background:rgba(8,10,24,0);transition:background .25s}.trbx.out .trb-c,.trbx.out h3{opacity:0;transition:opacity .2s}
+.trbx h3{margin:0;color:#fff;font-size:16px;text-align:center;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-8px);transition:opacity .3s .15s,transform .3s .15s}.trbx.on h3{opacity:1;transform:none}
+.trbx .trb-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(100%,380px)}
+.trbx .trb-c{position:relative;height:190px;display:flex;align-items:center;justify-content:center;border:0;padding:0;background:none;font:inherit;color:var(--win-ink)}
+.trbx .trb-b{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;image-rendering:pixelated;transform:translateY(-120vh);filter:drop-shadow(0 4px 0 #0006)}
+.trbx.on .trb-b{animation:trbDrop .62s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:var(--d)}
+@keyframes trbDrop{from{transform:translateY(-120vh)}to{transform:none}}
+.trbx .trb-c.wob .trb-b{transform:none;animation:trbWob .42s ease-in-out}
+@keyframes trbWob{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
+.trbx .trb-c.op .trb-b{transform:none;animation:trbPop .26s ease-in forwards}
+@keyframes trbPop{to{transform:scale(1.7);opacity:0}}
+.trbx .trb-c i.fl{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
+.trbx .trb-c.op i.fl{animation:trbFl .45s ease-out}
+@keyframes trbFl{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(9)}}
+.trbx .trb-k{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:12px 6px 8px;background:var(--win);border:3px solid var(--g2);box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1);opacity:0;transform:scale(.3)}
+.trbx .trb-c.op .trb-k{animation:trbIn .34s cubic-bezier(.3,1.6,.5,1) .12s forwards}.trbx .trb-c.now .trb-k{opacity:1;transform:none}
+@keyframes trbIn{to{opacity:1;transform:none}}
+.trbx .trb-k img{width:56px;height:56px;margin-top:6px;image-rendering:pixelated;object-fit:contain}
+.trbx .trb-k b{font-size:13px;text-align:center;line-height:1.25;word-break:keep-all}.trbx .trb-k small{font-size:10px;line-height:1.4;text-align:center;opacity:.75;word-break:keep-all}
+.trbx .trb-k em{position:absolute;top:-3px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#fff;background:var(--g2);padding:1px 6px}
+.trbx.ready .trb-c:active .trb-k{transform:translateY(3px);box-shadow:0 1px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1)}
+.trbx .trb-tip{color:#fff;font-size:12px;opacity:0;transition:opacity .3s}.trbx.ready .trb-tip{opacity:.8}`;
+const trBoxPick = (L, title, again) => new Promise(ok => {
+  if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
+  const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['흔함', '좋음', '귀함'];
+  const el = document.createElement('div'); el.className = 'trbx';
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .14}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${G[c[1]]}</em><img alt="" src="${IMG}item/${trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">하나만 가져갈 수 있어요</p>`;
+  document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
+  let ready = !!again; if (again) el.classList.add('ready');
+  else (async () => { await wait(780); const C = [...el.querySelectorAll('.trb-c')];
+    C.forEach(c => c.classList.add('wob')); se('KON'); await wait(460);
+    for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(170); }
+    await wait(380); ready = true; el.classList.add('ready'); })();
+  el.onclick = e => { const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
+});
+async function trReward(R, o, ids, boss, shop, first) {
   const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .999);
   const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id));
   const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
@@ -4120,8 +4161,7 @@ async function trReward(R, o, ids, boss, shop) {
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
   const L = []; let pool = C.filter(c => c[0] > 0);
   while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
-  await o.msg(boss ? '우두머리가 귀한 보상을 떨어뜨렸다!\n하나만 가져가자.' : '보상을 찾았다!\n하나만 가져가자.', 400);
-  for (;;) { const i = await o.choose('보상을 하나 골라요', L.map(c => [c[2], c[3], TR_RC[c[1]]])); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
+  for (let again = 0; ; again = 1) { const i = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* v24.14 경완 '보상은 하단 메뉴 말고 화면이 어두워지며 몬스터볼 3개가 터지며 등장, 본가 도구 그림' */   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
