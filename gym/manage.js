@@ -322,7 +322,7 @@ function coWin() {
   const slot = s => `<button type="button" class="co-card" data-s="${g.sf.indexOf(s)}" style="--cb:${CK_BG[coachK(s)]};--cc:${CK[coachK(s)][1]};${cbgSt(s.tr)}"><span class="co-av"><i class="co-kd">${CK[coachK(s)][0]} 코치</i><i class="co-pl"></i><img class="co-trs" alt="" src="${K.trSrc(s.tr)}"></span><span class="co-in"><span class="co-nm"><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>${tags(s)}</span><span class="co-x" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4></div>
     <div class="co-list">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="co-card co-new" data-cnew="1"><span class="co-av"><span class="co-fig"><i class="co-sil"></i></span></span><span class="co-in"><b>+ 코치 맡기기</b><small>고용한 트레이너 중에서 골라요</small></span></button>`).join('')}</div>
-    <p class="co-note">${(g.sf || []).length ? `코치는 ${YARD_SF}명까지 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
+    </div>`;
   w.querySelectorAll('.co-trs').forEach(footFix);
   const re = () => { if (w.isConnected) coWin(); };
   const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? 1 : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
@@ -827,6 +827,7 @@ const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" sr
 const sfEmpty = (ic, t, d) => `<div class="sf-void">${ic ? `<span class="sf-void-ic">${SF_IC[ic]}</span>` : ''}<b>${t}</b><p>${d}</p></div>`;
 function drawStaff() {
   const g = st(), now = Date.now(), max = K.staffMax();
+  try { K.warmImgs?.(); } catch (e) {}
   const C = g.cands || (g.cands = []); if (C.length && !g.candSeen && sfT === 'cand') { g.candSeen = 1; K.setAt(); K.save(); K.menuDot(); }   // 지원서 탭을 보면 빨간 점이 꺼진다 (경완 2026-10-29)
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button></div>`;
