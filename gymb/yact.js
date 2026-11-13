@@ -256,9 +256,9 @@ const HTML = `<canvas></canvas>
   <div class="ya-sec"><h3>노력치 훈련</h3><div class="ya-stt"></div></div>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
   <div class="ya-tips"><div><b>이동</b><span>왼쪽 아래<br>끌기</span></div><div><b>기술</b><span>꾹 누르면<br>쭉 이어져요</span></div><div><b>회피</b><span><b style="display:inline;color:#e0402a">!</b> 뜰 때<br>딱 맞춰</span></div><div><b>줍기</b><span>골드·번뜩임<br>아이템</span></div></div>
-  <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">훈련 시작</button></div>
+  <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">특훈 시작</button></div>
   <p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요 · PC: 방향키, Q W E R, 스페이스</p></div></div>
-<div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">훈련 완료!</b><span class="rs-stg"></span>
+<div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
     <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div><b class="rs-rk">S</b></div></div>
   <div class="ya-bd"><p class="rs-chips rs-sub"></p>
   <ul class="ya-rl"></ul>
@@ -373,7 +373,7 @@ function drawMon(e) {
   if (e.fade != null) al = Math.max(0, e.fade);
   const sq = Math.max(-.45, Math.min(.45, e.sq || 0)), ms = e.mine ? (e.shrink > 0 ? .5 : e.buff > 0 ? 1.2 : 1) : 1;
   if (e.mine && e.clone > 0 && e.hp > 0) for (const sg of [-1, 1]) blit(F, e.x + sg * (22 + Math.sin(R.RT * 5) * 6), e.y - lift - z, { a: .4, sx: ms, sy: ms });
-  blit(F, e.x + ox, e.y - (lift + z) * ms + oy, { a: al, wh, sx: (1 + sq) * ms, sy: (1 - sq) * ms, rot: dead ? e.rot : 0, hue: e.mine && e.shiny ? (GA.shinyHue?.(e.sp) || 0) : 0 });
+  blit(F, e.x + ox, e.y - (lift + z) * ms + oy, { a: al, wh, sx: (1 + sq) * ms, sy: (1 - sq) * ms, rot: dead ? e.rot : e.mine && e.roll > 0 ? (1 - e.roll / .36) * 6.283 * (e.rollF || 1) : 0, hue: e.mine && e.shiny ? (GA.shinyHue?.(e.sp) || 0) : 0 });
   if (e.mine && e.hp > 0 && (e.guard > 0 || e.prot > 0)) { const pr = e.prot > 0, pu = .5 + .5 * Math.sin(R.RT * (pr ? 14 : 6)), c = pr ? '122,240,160' : '140,200,255'; g.fillStyle = `rgba(${c},${pr ? .28 : .14})`; g.strokeStyle = `rgba(${c},${.6 + .3 * pu})`; g.lineWidth = pr ? 4 : 3; g.beginPath(); g.ellipse(e.x, e.y - 20 - lift, 26 + pu * 2, 30 + pu * 2, 0, 0, 7); g.fill(); g.stroke(); }
   if (!e.mine && e.hp > 0 && e.enter <= 0 && (e.weak > 0 || e.slowT > .7 || e.dot || e.dz > 0)) { const y = e.y - F.h - lift - 8; if (e.dz > 0) for (let i = 0; i < 3; i++) { const a = R.RT * 5 + i * 2.1; g.save(); g.translate(e.x + Math.cos(a) * 14, y + Math.sin(a) * 5); starPath(g, 5, 2); g.fillStyle = '#ffe27a'; g.fill(); g.restore(); }
     const tx = [e.weak > 0 ? '약해짐' : '', e.slowT > .7 ? '느림' : '', e.dot ? '독' : ''].filter(Boolean).join('·'); if (tx) { g.textAlign = 'center'; g.font = 'bold 9px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(tx, e.x, y - 6); g.fillStyle = '#d8b0ff'; g.fillText(tx, e.x, y - 6); } }
@@ -763,7 +763,7 @@ function dodge() {
   const G = R?.G, me = G?.me; if (!R.run || !me || me.hp <= 0 || me.dcd > 0 || G.over || me.hide) return; const J = R.JOY;
   let dx = J.dx, dy = J.dy; if (Math.hypot(dx, dy) < .2) { dx = me.face; dy = 0; } const l = Math.hypot(dx, dy); dx /= l; dy /= l;
   chEnd(); dashEnd(); me.dash = { vx: dx * 560, vy: dy * 560, t: .2, roll: true, gt: 0 }; me.inv = .4; me.roll = .36; me.just = false; me.dcd = .8; me.busy = 0; R.BUF = null;
-  snd('DUN_Miss', .04); buzz(0); setAnim(me, anyAnim(me, 'Hop', 'Rotate', 'Walk'), true); squash(me, -.22); dust(me.x, me.y, 7, 110); ghost(me);
+  snd('DUN_Miss', .04); buzz(0); setAnim(me, 'Walk', true); me.rollF = dx >= 0 ? 1 : -1; squash(me, .2); dust(me.x, me.y, 7, 110);   /* 경완 2026-11-14 '점프 말고 구르는 모션': 구르기(Tumble) 그림은 1099종 중 225종뿐이라 모두 같게 몸을 말아 한 바퀴 굴린다 */
   pressEl(R.q('.ya-dg'));
 }
 function justDodge(o) {
@@ -874,7 +874,7 @@ function step(dt) {
   if (live) {
     if (G.mobs.every(o => o.hp <= 0) && !G.pend && !G.waiting) {
       if (G.wave < STAGES.length) { G.waiting = true; stageClear(); after(1.1, () => { if (!G.over) { G.waiting = false; nextWave(); } }); }
-      else if (!G.clearT) { G.clearT = T; banner('훈련 완료!', 'win'); setAnim(me, anyAnim(me, 'Pose', 'Hop', 'Idle'), true); me.busy = .8; rumble(3, 120, 1); for (let i = 0; i < 26; i++) part({ kind: 'star', x: R.W * Math.random(), y: R.A.y0 - 30 - Math.random() * 60, vx: (Math.random() - .5) * 60, vy: 120 + Math.random() * 140, life: 1.6, sz: 2, col: ['#ffe27a', '#ff9ab0', '#9fe4ff', '#bff59a'][i % 4] }); }
+      else if (!G.clearT) { G.clearT = T; banner('특훈 완료!', 'win'); setAnim(me, anyAnim(me, 'Pose', 'Hop', 'Idle'), true); me.busy = .8; rumble(3, 120, 1); for (let i = 0; i < 26; i++) part({ kind: 'star', x: R.W * Math.random(), y: R.A.y0 - 30 - Math.random() * 60, vx: (Math.random() - .5) * 60, vy: 120 + Math.random() * 140, life: 1.6, sz: 2, col: ['#ffe27a', '#ff9ab0', '#9fe4ff', '#bff59a'][i % 4] }); }
       else if (T - G.clearT > 1.5 && (!G.drops.length || T - G.clearT > 3.5)) end(true); }
     if (!G.over && me.hp <= 0 && T - me.dead > .55) end(false, true);
   }
@@ -1085,7 +1085,7 @@ function end(clear, faint, quit) {
   while (lv1 < B.LV_MAX && x1 >= B.xpAt(gr, lv1 + 1)) lv1++;
   const a = B.xpAt(gr, lv1), b = B.xpAt(gr, lv1 + 1), prog = lv1 >= B.LV_MAX ? 1 : Math.max(0, Math.min(1, (x1 - a) / (b - a || 1))), nm = nmOf(P), eg = G.M.eg;
   setTimeout(() => { if (!R || R.G !== G) return; const q = R.q, r = q('.ya-res'), N = (n, pre = '+', suf = '') => `data-n="${n}" data-pre="${pre}" data-suf="${suf}">${pre}0${suf}`;
-    q('.rs-h').textContent = clear ? '훈련 완료!' : faint ? `${josa(nm, '이', '가')} 지쳐 버렸다…` : '여기까지!';
+    q('.rs-h').textContent = clear ? '특훈 완료!' : faint ? `${josa(nm, '이', '가')} 지쳐 버렸다…` : '여기까지!';
     const rk = clear ? (G.hits <= 3 ? 'S' : 'A') : G.wave >= 7 ? 'B' : G.wave >= 4 ? 'C' : 'D', ic = (t, c) => `<i class="ic" style="--c:${c}">${t}</i>`;
     q('.rs-hero').classList.toggle('win', !!clear); q('.rs-stg').textContent = clear ? `스테이지 ${STAGES.length}/${STAGES.length} · ${mmss(G.time)}` : `스테이지 ${G.wave}/${STAGES.length} 에서 끝 · ${mmss(G.time)}`;
     { const k = q('.rs-rk'); k.textContent = rk; k.style.color = rk === 'S' ? '#e0402a' : rk === 'A' ? '#e08a00' : '#6a6a7a'; k.style.animation = 'none'; void k.offsetWidth; k.style.animation = ''; }
@@ -1095,7 +1095,7 @@ function end(clear, faint, quit) {
     q('.ya-rl').innerHTML = `
       <li>${ic('Lv', '#48a8f0')}<span class="k">경험치</span><b ${N(G.exp)}</b><em>${lv1 > lv0 ? `레벨 ${lv1 - lv0} 올랐어요` : '쓰러뜨린 만큼 받아요'}</em></li>
       <li>${ic('EV', '#8a4ad8')}<span class="k">${STAT_KO[G.stat]} 노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}`}</em></li>
-      <li>${ic('♥', '#e0507a')}<span class="k">친밀도</span><b class="fr" ${N(fr)}</b><em>${clear ? '훈련 완료 +1' : ''}${clear && !G.fainted ? ' · ' : ''}${G.fainted ? (clear ? '' : '지쳐서 못 받음') : '안 지침 +1'}</em></li>
+      <li>${ic('♥', '#e0507a')}<span class="k">친밀도</span><b class="fr" ${N(fr)}</b><em>${clear ? '특훈 완료 +1' : ''}${clear && !G.fainted ? ' · ' : ''}${G.fainted ? (clear ? '' : '지쳐서 못 받음') : '안 지침 +1'}</em></li>
       ${eg ? `<li>${ic('★', '#c08a00')}<span class="k">번뜩임</span><b class="eg" ${N(G.shard, '+', '%')}</b><em><i class="egq" style="--tc:${TYPE_C[eg.t] || '#888'}">${TYPE_KO[eg.t] || ''}</i>??? ${G.egg0}% → ${G.egg}%</em></li>` : ''}
       <li class="ya-gold">${ic('G', '#e0a000')}<span class="k">골드</span><b ${N(G.gold, '+', 'G')}</b><em>주운 골드 ${picked}G</em></li>`;
     q('.ya-ov').hidden = false; r.hidden = false; r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); snd('DUN_Stat_Up', .07); buzz(1);
