@@ -1053,9 +1053,9 @@ async function encounter(opts) {
   const smk = smKind(opts);
   if (smk) { w.insertAdjacentHTML('beforeend', '<i class="bk"></i>'); await smEnc(w, opts, smk); }
   else if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
-    w.classList.add('ex');
+    w.classList.add('ex'); if (opts.exam.kang) w.classList.add('kg');   /* v23.61 경완 '강박사 얼굴 띠 나올 때 뒷 배경·띠 배경': 심사관 띠가 들어올 때 금빛 빛살 배경(.kg-bg) + 띠 무늬 */
     // 줄무늬·빛줄기 없이 (경완 2026-10-31 '구려'): 암전 → 금빛 실선이 가로로 그어지고 → 위아래로 열리는 어두운 무대 → 배지가 떠오름 → '승급 심사' → 심사관 띠
-    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i>${opts.exam.kang ? '<i class="kg-bg"><i></i></i>' : ''}<i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
     await wait(500); se('KIRAKIRA2'); await wait(1000); w.classList.add('hit'); se('KON'); await wait(1500); w.classList.add('foe'); se('SLIDEIN'); await wait(1600);
   } else if (!big) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
