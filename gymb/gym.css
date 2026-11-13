@@ -4504,3 +4504,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-mon.e.on:not(.wdk){transition:transform .3s ease-out,filter .2s linear,opacity .1s}
 #gym .gy-pop .mr-get.zr-get img,#gym .gy-pop .mr-get.zc-get img{width:112px;height:112px}   /* 경완 2026-11-14 Z링·Z크리스탈 그림은 정사각형(48×48) — 메가링 칸 150×116 그대로 쓰면 찌그러짐 */
 #gym .gy-pop .mr-get.zc-get img{filter:drop-shadow(0 0 12px var(--tc,#8cf))}
+/* v24.22 경완 '심사 받기 버튼은 하단 고정, 승급 혜택이 길면 혜택만 위아래 스크롤' */
+#gym .gy-bsw .gy-body{overflow:hidden}#gym .gy-bsw .bsw-mid{min-height:0}#gym .gy-bsw .bsw-top{flex:none}
+#gym .gy-bsw .bsw-ben{flex:0 1 auto;min-height:0;display:flex;flex-direction:column}#gym .gy-bsw .bsw-ben h5{flex:none}
+#gym .gy-bsw .bsw-ben .pk-ben{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}#gym .gy-bsw .bsw-ben .pk-ben li{flex:none}#gym .gy-bsw .bsw-go{flex:none}

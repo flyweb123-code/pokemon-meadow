@@ -771,7 +771,11 @@ const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX) ** 1.5;   // 평판이 오를수록 도전자가 어려워짐 (0~1): 초반 쉽고 뒤로 갈수록 가파르게 (경완 2026-10-29)
 const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0]; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
 const repFloor = g => GRADES[g.gmax | 0]?.[0] | 0;   /* v15.67 경완: 승급한 등급의 문턱 아래로는 평판이 안 떨어진다 */
-const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : REP_MAX; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
+/* v24.19 경완 '전설 등급부터는 천장도 없고 난이도도 계속 어려움, 평판 계속 올라가게. 고용 트레이너는 평판 안 올리고 관장 배틀로만 — 순수 관장 실력으로 랭킹': 전설의 체육관은 평판 상한 없음 */
+const isLeg = g => (g?.gmax | 0) >= GRADES.length - 1;
+/* 전설의 체육관에 오는 보통 도전자 = 본가 후반(챔피언로드·리그 앞) 트레이너 종류만. 이름 있는 트레이너도 더 자주 (보통 도전자 LEG_NC 명마다, 다른 등급은 9명) */
+const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_trainer_f', 'dragon_tamer', 'veteran', 'black_belt', 'psychic_m', 'psychic_f', 'ranger_m', 'ranger_f', 'pokemaniac'], LEG_NC = 4;
+const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : Infinity; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
@@ -907,11 +911,11 @@ function mkChal(t) {
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
-  if ((g.nc | 0) >= 9 && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
+  if ((g.nc | 0) >= (isLeg(g) ? LEG_NC : 9) && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   // v14.31 경완: 처음 5명은 무조건 쉬운 도전자(g.ez = 만든 보통 도전자 수), 첫 등급의 어려운 도전자 확률 30% → 15%
-  const diff = (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
-  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS = Object.keys(CLS).filter(x => !!CLS[x].e === !diff);
+  const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
+  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = Object.keys(CLS).filter(x => !!CLS[x].e === !diff), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
   { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq, tw) }; }
@@ -1069,7 +1073,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const sfOn = sfRepOn(c.t || Date.now()); if (sfOn) addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const sfOn = sfRepOn(c.t || Date.now()); if (sfOn && !isLeg(g)) addRep(sfRep(s, R.r), 1);   /* v24.19: 전설의 체육관에선 고용 트레이너가 막아도 평판은 안 오름 (골드만) */   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
@@ -1752,7 +1756,7 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
    평판이 가득 차 [승급 심사](곡이 포켓몬리그로) → 노크, 강박사 진지한 대화(개그 없음) → 훈련장 경기장 양 끝에 마주 서서 심사 배틀(서로 거다이맥스) →
    이기면 명예의 전당으로 가서 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
    거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
-const LEGK_ON = false;
+const LEGK_ON = true;   /* v24.19 경완 '강박사 스위치도 그냥 켜놔줘' */
 /* v24.17 경완 '강박사 켜져도 두번째 체육관 전설 심사부터는 원래대로 챔피언, 강박사는 챔피언 이기면 전당 등록이랑 테라피스 주러': 강박사 심사는 전설인 체육관(휴업 포함)이 하나도 없을 때만 */
 const legKang = () => LEGK_ON && !gList().some(x => (x.gmax | 0) >= GRADES.length - 1);
 // 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼', '거다이맥스 한 번밖에 안 하는데 6마리 전부 거다이맥스 가능한 포켓몬일 필요 없다'):
