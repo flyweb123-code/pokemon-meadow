@@ -885,7 +885,7 @@ function justDodge(o) {
   const G = R.G, me = G.me; if (me.just) return; me.just = true; G.just++; se('KIRAN');
   slow(.6, .28); flash(.14, '170,220,255'); zoom(.05); buzz(1); setTimeout(() => R && buzz(0), 110); snd('DUN_Double_Team', .07);
   me.inv = Math.max(me.inv, .7); me.crit = 3; me.dcd = 0; for (const k in me.cd) me.cd[k] *= .35;
-  pop(me.x, me.y - 76, '아슬아슬 대쉬!', '#9fe4ff', true); ring(me.x, me.y, '#9fe4ff', 10, 90, .4, 6); stars(me.x, me.y - 24, 8, '#9fe4ff');
+  pop(me.x, me.y - 76, '아슬아슬 회피!', '#9fe4ff', true); ring(me.x, me.y, '#9fe4ff', 10, 90, .4, 6); stars(me.x, me.y - 24, 8, '#9fe4ff');
   for (let i = 0; i < 3; i++) after(i * .03, () => ghost(me, .5));
 }
 
@@ -1208,7 +1208,7 @@ function end(clear, faint, quit) {
     { const k = q('.rs-rk'); k.textContent = rk; k.style.color = rk === 'S' ? '#e0402a' : rk === 'A' ? '#e08a00' : '#6a6a7a'; k.style.animation = 'none'; void k.offsetWidth; k.style.animation = ''; }
     q('.rs-nm').textContent = nm; q('.rs-lv').innerHTML = lv1 > lv0 ? `Lv.${lv0} → <i class="lvup">Lv.${lv1}</i>` : `Lv.${lv1}`; q('.rs-mi .xb i').style.setProperty('--w', (prog * 100).toFixed(0) + '%');
     q('.rs-xp').textContent = lv1 >= B.LV_MAX ? '레벨 끝' : `다음 레벨까지 ${Math.max(0, b - x1)}`; { const im = q('.rs-im'); im.removeAttribute('src'); GA.thumb?.(P).then(u => { if (im.isConnected && typeof u === 'string') im.src = u; }).catch(() => {}); }
-    q('.rs-sub').innerHTML = `<span>쓰러뜨림<b>${G.ko}</b></span><span>최고 콤보<b>${G.best}</b></span><span>아슬아슬 대쉬<b>${G.just}</b></span><span>맞은 횟수<b>${G.hits}</b></span>`;
+    q('.rs-sub').innerHTML = `<span>쓰러뜨림<b>${G.ko}</b></span><span>최고 콤보<b>${G.best}</b></span><span>아슬아슬 회피<b>${G.just}</b></span><span>맞은 횟수<b>${G.hits}</b></span>`;
     q('.ya-rl').innerHTML = `
       <li>${ic('Lv', '#48a8f0')}<span class="k">경험치</span><b ${N(G.exp)}</b><em>${lv1 > lv0 ? `레벨 ${lv1 - lv0} 올랐어요` : '쓰러뜨린 만큼 받아요'}</em></li>
       <li>${ic('EV', '#8a4ad8')}<span class="k">${STAT_KO[G.stat]} 노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}`}</em></li>
