@@ -287,6 +287,37 @@
   // 애니: 팔을 X자로 교차해 Z링이 번쩍 → 포즈 동작마다 몸 둘레에 빛 자국 → 트레이너와 포켓몬 마음이 하나로(같은 자세) → 기술.
   // 메가(포켓몬 쪽으로 화면을 당김·하얀 실루엣·게이지)와 달리 Z는 '트레이너가 주인공': 트레이너 무대 → 빛 자국 Z → 무지개 띠로 포켓몬에게 → 금빛 불꽃 기운 → 기술 이름 쾅.
   // c.bt·c.top·c.monEl 은 megaFull 과 같음. c.zName = 한국어 기술 이름, c.type = 타입 영어, c.stone = Z크리스탈 그림, c.item = Z링 그림
+  /* 경완 2026-11-13 'Z기술 할 때 bgm': 7.3초 장면에 맞춰 WebAudio 로 만든 짧은 곡 (D단조로 쌓다가 기술 이름에서 D장조로 터짐). 배경 곡은 그동안 줄임 */
+  function zBgm(ms) {
+    let ctx = null; try { ctx = window.GA?.audio?.(); } catch (e) {} if (!ctx) return () => {};
+    let on = true; try { on = window.GA?.bgmOn?.() !== false; } catch (e) {} let v = .1; try { v = window.GA?.sfxVol?.() ?? .1; } catch (e) {} if (!on || !v) return () => {};
+    const T0 = ctx.currentTime + .03, t = x => T0 + x / 1000, M = ctx.createGain(), C = ctx.createDynamicsCompressor(); M.gain.value = Math.min(1.2, 3.2 * v); M.connect(C); C.connect(ctx.destination);
+    const hz = n => 440 * 2 ** ((n - 69) / 12), nodes = [];
+    const tone = (type, n, a, d, vol, o = {}) => { const os = ctx.createOscillator(), g = ctx.createGain(); os.type = type; os.frequency.setValueAtTime(hz(n), t(a)); if (o.to) os.frequency.exponentialRampToValueAtTime(hz(o.to), t(a + d)); if (o.det) os.detune.value = o.det;
+      let out = os; if (o.lp) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(o.lp, t(a)); if (o.lp2) f.frequency.exponentialRampToValueAtTime(o.lp2, t(a + d)); os.connect(f); out = f; }
+      out.connect(g); g.connect(M); const at0 = o.att || 8; g.gain.setValueAtTime(0, t(a)); g.gain.linearRampToValueAtTime(vol, t(a + at0)); if (o.hold) g.gain.setValueAtTime(vol, t(a + d - (o.rel || 60))); g.gain.exponentialRampToValueAtTime(.0001, t(a + d)); os.start(t(a)); os.stop(t(a + d + 20)); nodes.push(os); };
+    let nb = null; const noise = (a, d, vol, f1, f2, q = 1.2, att = 5) => { if (!nb) { nb = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const ch = nb.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1; }
+      const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); src.buffer = nb; src.loop = true; f.type = 'bandpass'; f.Q.value = q; f.frequency.setValueAtTime(f1, t(a)); f.frequency.exponentialRampToValueAtTime(f2, t(a + d)); src.connect(f); f.connect(g); g.connect(M);
+      g.gain.setValueAtTime(0, t(a)); g.gain.linearRampToValueAtTime(vol, t(a + att)); g.gain.exponentialRampToValueAtTime(.0001, t(a + d)); src.start(t(a)); src.stop(t(a + d + 20)); nodes.push(src); };
+    const kick = (a, vol = .9) => tone('sine', 40, a, 260, vol, { to: 26, att: 2 }), snare = (a, vol = .35) => { noise(a, 140, vol, 2500, 1800, .7, 2); tone('triangle', 52, a, 90, vol * .6, { to: 45, att: 2 }); };
+    const hit = (a, ch, vol = .22, d = 320) => { ch.forEach(n => { tone('sawtooth', n, a, d, vol, { lp: 4200, lp2: 900, att: 4, det: -7 }); tone('square', n, a, d * .8, vol * .45, { lp: 3000, lp2: 700, att: 4, det: 7 }); }); noise(a, d * .7, vol * 1.4, 6000, 2000, .6, 2); kick(a, .9); };
+    const Dm = [50, 57, 62, 65, 69], BB = [46, 53, 58, 62, 65], Am = [45, 52, 57, 61, 64], DM = [38, 50, 57, 62, 66, 69, 74];
+    // 1) 깔리는 소리: 낮은 D 웅웅 (필터가 열림) + 8분 베이스 + 큰북
+    tone('sawtooth', 38, 0, 3600, .16, { lp: 220, lp2: 1400, att: 600, hold: 1, rel: 300 }); tone('sawtooth', 26, 0, 3600, .12, { lp: 160, lp2: 600, att: 600, hold: 1, rel: 300, det: 5 });
+    for (let k = 0; k < 18; k++) { const a = 200 + k * 190; tone('square', k % 4 === 3 ? 41 : 38, a, 150, .08, { lp: 900, att: 3 }); if (k % 2 === 0) kick(a, .55); }
+    // 2) 포즈 박자마다 오케스트라 히트 (Z크리스탈 끼움 · X자 · Z 세 획 · 번쩍)
+    hit(1370, Dm, .2, 380); hit(1650, BB, .2, 380); hit(2250, Dm, .17, 260); hit(2550, BB, .17, 260); hit(2850, Am, .19, 300); hit(3150, Dm, .24, 520);
+    [2250, 2550, 2850].forEach((a, i) => tone('triangle', 74 + i * 3, a, 240, .12, { att: 4 }));
+    // 3) 무지개 띠·Z파워 (3500~5450): 올라가는 소리 + 점점 빨라지는 작은북 + 위로 도는 아르페지오
+    noise(3500, 1950, .28, 300, 7000, 1.6, 900); tone('sawtooth', 50, 3500, 1950, .1, { to: 74, lp: 1200, lp2: 6000, att: 400 }); tone('sawtooth', 57, 3500, 1950, .07, { to: 81, lp: 1200, lp2: 6000, att: 400, det: 9 });
+    for (let a = 3500, g = 180; a < 5420; a += g, g = Math.max(45, g * .9)) snare(a, .12 + (a - 3500) / 1950 * .25);
+    const arp = [62, 65, 69, 74, 77, 81]; for (let k = 0; k < 20; k++) tone('triangle', arp[k % 6] + (k > 11 ? 12 : 0), 4250 + k * 55, 120, .07, { att: 3 });
+    // 4) 기술 이름 쾅 (5550): D장조로 터짐 + 심벌 + 낮게 떨어지는 쿵 → 남는 울림
+    hit(5550, DM, .2, 1500); noise(5550, 1700, .22, 9000, 4000, .4, 3); tone('sine', 38, 5730, 1100, .9, { to: 22, att: 3 }); hit(5730, [38, 50, 57, 62], .16, 900);
+    tone('sawtooth', 62, 6000, 1250, .07, { lp: 2500, lp2: 600, att: 200 }); tone('sawtooth', 66, 6000, 1250, .06, { lp: 2500, lp2: 600, att: 200, det: 8 }); tone('sawtooth', 69, 6000, 1250, .06, { lp: 2500, lp2: 600, att: 200, det: -8 });
+    try { window.GymBGM?.duck?.(0, .35); } catch (e) {}
+    return () => { try { const n = ctx.currentTime; M.gain.cancelScheduledValues(n); M.gain.setValueAtTime(M.gain.value, n); M.gain.linearRampToValueAtTime(0, n + .25); setTimeout(() => nodes.forEach(o => { try { o.stop(); } catch (e) {} }), 300); } catch (e) {} try { window.GymBGM?.duck?.(1, .8); } catch (e) {} };
+  }
   async function zFull(c) {
     const P = c.path; await preload({ ...c, extra: [P + 'particle.png', P + 'Z-Power/particle.png'] });
     const bt = c.bt, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q });
@@ -302,7 +333,7 @@
     const mix = (cc, k) => `rgb(${cc.map((v, i) => Math.round(v * k + [6, 4, 14][i] * (1 - k))).join(',')})`;   /* 불투명 색으로: 반투명이면 숨긴 아래 화면이 비쳐 얼룩짐 */
     const dim = mk(`inset:0;background:radial-gradient(ellipse at 50% 55%,${mix(tB, .38)} 0,rgb(6,4,14) 70%);opacity:0`);
     // 1) 트레이너 무대: 비스듬한 타입 색 띠 + 흐르는 집중선 (본가 Z포즈 컷처럼 트레이너만 크게)
-    const stg = mk(`left:-20%;right:-20%;top:${Hd * .2}px;height:${Hd * .56}px;transform:skewY(${opp ? 7 : -7}deg) translateX(${side * 120}%);opacity:0;overflow:hidden;background:linear-gradient(${opp ? 'to left' : 'to right'},${rgba(tO, .95)},${rgba(tB, .85)} 55%,rgba(20,10,30,.92));box-shadow:0 0 0 ${Wd * .012}px #fff,0 0 40px ${rgba(tO, .9)}`);
+    const stg = mk(`left:-20%;right:-20%;top:${-Hd * .15}px;height:${Hd * 1.3}px;transform:skewY(${opp ? 7 : -7}deg) translateX(${side * 120}%);opacity:0;overflow:hidden;background:linear-gradient(${opp ? 'to left' : 'to right'},${rgba(tO, .95)},${rgba(tB, .85)} 55%,rgba(20,10,30,.92));box-shadow:0 0 0 ${Wd * .012}px #fff,0 0 40px ${rgba(tO, .9)}`);
     const spd = mk(`inset:-30% -10%;background:repeating-linear-gradient(${opp ? 180 : 0}deg,rgba(255,255,255,0) 0 ${Wd * .05}px,rgba(255,255,255,.28) ${Wd * .05}px ${Wd * .056}px,rgba(255,255,255,0) ${Wd * .056}px ${Wd * .13}px);transform:skewY(${opp ? -7 : 7}deg)`, 'div', stg);
     spd.animate([{ backgroundPosition: '0 0' }, { backgroundPosition: `0 ${side * Hd * .6}px` }], { duration: 700, iterations: Infinity, easing: 'linear' });
     const big = mk(`left:50%;top:50%;width:${Wd * .9}px;height:${Wd * .9}px;margin:${-Wd * .45}px 0 0 ${-Wd * .45}px;font:900 ${Wd * .85}px/1 ${FONT};color:rgba(255,255,255,.1);text-align:center;transform:skewY(${opp ? -7 : 7}deg)`, 'div', stg); big.textContent = 'Z';
@@ -359,6 +390,8 @@
     const flash = mk('inset:0;background:#fff;opacity:0');
     bt.appendChild(root);
     // ── 시간표 ──
+    const zStop = zBgm(7300); const zse = (n, v = 100) => { try { window.GymEss?.snd?.(n, v, 100); } catch (e) {} };   /* 팩 Z파워 효과음 PRSFX- ZPower1~3 (ess se 730~732) */
+    at(3650, () => zse('730', 90)); at(4250, () => zse('731', 100)); at(5550, () => zse('732', 80));
     const hA = hide.map(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }));
     A(dim, [{ opacity: 0 }, { opacity: 1 }], { duration: 450 }); at(0, () => c.se('fog2'));
     // 1) 트레이너 무대 (250~900)
@@ -418,7 +451,7 @@
     at(5300, () => [shell, orbB, orbF].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
     return new Promise(res => {
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
-      setTimeout(() => { lk.remove(); cvOn = false; timers.forEach(t => clearTimeout(t));         const back = hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); xA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
+      setTimeout(() => { lk.remove(); cvOn = false; zStop(); timers.forEach(t => clearTimeout(t));         const back = hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); xA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
   }
 
   // ---------- 테라스탈 ([DBK] Terastallization [011] Animations.rb BattlerTerastallize) ----------
