@@ -4397,3 +4397,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes kgBand{to{background-position:0 0,27.713px 0}}
 .bt-enc.ex.kg .ex-band::before{content:'';position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,240,200,.35),transparent);animation:kgSheen 1.6s .7s ease-in-out infinite}
 @keyframes kgSheen{0%{transform:translateX(0)}60%,100%{transform:translateX(520%)}}
+/* v23.66 테라스탈오브 받는 창 (메가링 창 틀, 그림만 정사각) */
+#gym .gy-pop .mr-get.to-get img{width:112px;height:112px;filter:drop-shadow(0 0 12px rgba(120,220,255,.85))}
