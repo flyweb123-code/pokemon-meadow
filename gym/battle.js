@@ -835,7 +835,7 @@ function trChoose(q, L) {
   return new Promise(res => { const p = panel(`<div class="bp-yn bp-tr"><p>${q}</p>${L.map(([t, d, c], i) => `<button class="bb" data-a="${i}"${c ? ` style="--c1:${c.split(',')[0]};--c2:${c.split(',')[1]}"` : ''}><span>${t}${d ? `<small>${d}</small>` : ''}</span></button>`).join('')}</div>`);
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); panel(''); res(+b.dataset.a); }; });
 }
-/* v23.64 경완 '이번 훈련에만 동료로 함께할 포켓몬을 잡는 볼, 이름 앞에 동료': 훈련하기 야생 배틀 가방 = 동료 볼 (B.train.balls = {k: 개수}, 훈련 데이터라 계정엔 안 들어감).
+/* v23.68 경완 '이번 훈련에만 동료로 함께할 포켓몬을 잡는 볼, 이름 앞에 동료': 훈련하기 야생 배틀 가방 = 동료 볼 (B.train.balls = {k: 개수}, 훈련 데이터라 계정엔 안 들어감).
    잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
 const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
 async function trBall() {
