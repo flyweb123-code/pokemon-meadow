@@ -3657,8 +3657,9 @@ async function evGo(id0) {
 /* v16.48 경완 '트레이너 메뉴 눌렀을 때 트레이너 스프라이트 바로 안 뜸': 메뉴를 열 때 처음 받던 그림을 체육관에 들어올 때·지원자가 올 때 미리 받아 둔다
    (고용·지원 트레이너, 명단 도전자, 카드 배경·발판) */
 const warmSeen = new Set();
+const cbgOf = tr => { const bg = CBG_TR[tr] || CBG_CLS[tr] || 'in1'; return { bg, pl: CBG_PL[bg] || '' }; };
 function warmImgs() { const g = st(); if (!g) return; const L = [`${IMG}bt/bg_in1c.png`, `${IMG}bt/pl_e.png`];
-  [...(g.sf || []), ...(g.cands || []), ...(g.q || [])].forEach(x => { if (x?.tr) L.push(trSrc(x.tr)); });
+  [...(g.sf || []), ...(g.cands || []), ...(g.q || [])].forEach(x => { if (!x?.tr) return; L.push(trSrc(x.tr)); const e = cbgOf(x.tr); L.push(`${IMG}bt/bg_${e.bg}.png`, `${IMG}bt/pl_e${e.pl ? '_' + e.pl : ''}.png`); });   /* v23.56 경완 '고용 관리·지원서 배틀 배경이 바로 안 뜸': 트레이너 종류별 배경·발판도 미리 받기 */
   for (const u of L) { if (warmSeen.has(u)) continue; warmSeen.add(u); const im = new Image(); im.src = u; im.decode?.().catch(() => {}); iconKeep.push(im); } }
 /* v15.88 경완 '고용한 트레이너가 평판 올렸거나 골드 벌었을 때, 훈련장에서 특별한 기술 배웠을 때 체육관 들어가면 알림창':
    g.aw = { sf: {트레이너 id: [막은 수, 골드, 평판]}, mv: [[포켓몬 id, 기술 id, 기술 이름, 타입]] } 에 모았다가 들어올 때 한 번 보여 주고 비운다 */
@@ -4180,7 +4181,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf: tr => { const bg = CBG_TR[tr] || CBG_CLS[tr] || 'in1'; return { bg, pl: CBG_PL[bg] || '' }; }, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
+  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf, warmImgs, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
