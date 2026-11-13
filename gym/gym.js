@@ -941,9 +941,9 @@ function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return
   return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
 function mkBoss(gi, t) {
-  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
+  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && NAMED.find(n => n.id === 'red'), P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
   if (!P?.length) return null;
-  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
+  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
   return c;
 }
 /* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
@@ -981,7 +981,8 @@ const NM_SKIP = 12;
 function nmSt(n, s) { const fl = (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - NM_SKIP; while (s < n.st.length - 1 && (teamLv(n.st[s]) < fl || !n.st[s].some(m => !spOff(m[0])))) s++; return s; }
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (n.id === 'red' && (g.gmax | 0) < 5) return false;   /* v24.15 경완 '명문부터 오긴 해야돼 도전자로는': 레드는 명문 체육관부터 (레벨 조건 대신 등급) */
+    if (n.id === 'red' && x.s < n.st.length) return n.st[0].filter(m => !spOff(m[0])).length >= 2; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
   if (!ok.length) return null;
   const n = pick(ok), s0 = (g.nt[n.id] || {}).s || 0, s = s0 >= n.st.length ? s0 : nmSt(n, s0), v = s >= n.st.length ? s - n.st.length + 1 : 0;
   const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
@@ -1277,7 +1278,7 @@ async function challenge(picked) {
     await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData();
     // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
     const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.88 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
-    try { window.GymBGM?.prep(bm); if (c.named) { const ey = (!c.boss && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    try { window.GymBGM?.prep(bm); if (c.named) { const ey = ((!c.boss || c.named === 'red') && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
