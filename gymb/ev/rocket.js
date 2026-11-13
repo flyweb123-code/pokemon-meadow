@@ -27,7 +27,7 @@ async function fight(A, F, S, s, o) {
   if (F.sees(s) > 1) await F.come(s); else { s.face(F.me); F.me.face(s); }
   for (const t of s.lost ? ['또 왔냐?\n몇 번을 와도 똑같다고!'] : o.pre) await S.say(t, { who: o.who || G });
   S.hide(true);
-  const won = await A.battle({ tr: o.tr || trOf(s.ow), cls: o.cls || '로켓단', nm: o.nm || '조무래기', team: o.team, tier: o.tier | 0, g: o.g || 0, say: o.say, music: 'hgVsRoc', win: o.win });
+  const won = await A.battle({ tr: o.tr || trOf(s.ow), cls: o.cls || '로켓단', nm: o.nm || '조무래기', team: o.team, tier: o.tier | 0, g: o.g || 0, say: o.say, music: 'hgVsRoc', bg: 'arcade', win: o.win });
   if (!won) { A.music(o.song || 'hgAjito'); s.lost = true; await A.wait(300); await S.say('(포켓몬들이 지쳐 버렸다...\n포켓몬 센터에 가서 회복시키자.)', { who: A.me() }); S.hide(true);
     if (A.center) A.tired = true;   // 돌담시티: 직접 센터까지 걸어가서 간호순에게
     else A.woQ = true;   // 아지트: 눈앞이 캄캄 → 돌담시티 포켓몬 센터에서 다시 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접 가서')
@@ -630,7 +630,7 @@ GymEv.def({
         await S.say('전부 이 람다 님이\n잘 맡아 두겠다! 우하하!', { who: B }); A.mark('c4meet');
       } else await S.say('우하하! 또 왔구먼!\n이번에도 쫓아 보내 주마!', { who: B });
       S.hide(true);
-      const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 1, g: 1000, music: 'hgVsRoc', win: 'winGym',
+      const won = await A.battle({ tr: 'hg_petrel', cls: '로켓단 간부', nm: '람다', tier: 1, g: 1000, music: 'hgVsRoc', bg: 'arcade', win: 'winGym',
         team: [[A.lv() >= 28 ? 42 : 41, A.lv()], [A.lv() >= 28 ? 20 : 19, A.lv()], [A.lv() >= 28 ? 24 : 23, A.lv() + 1], [A.lv() >= 30 ? 110 : 109, A.lv() + 2]],   /* 이벤트라 너무 어렵진 않게 보통 AI, 그래도 조무래기(쉬움·2~3마리)보다 세게: 4마리·평균/평균/+1/+2·똑똑한 기술 (경완 2026-11-08) */
         say: { win: '우하하!\n관장도 별거 아니구먼!', lose: '이, 이럴 수가...!\n이 람다 님이 지다니!' } });
       // 지면 돌담시티 포켓몬 센터로 (경완 2026-11-08 '져서 포켓몬 센터 가는건 직접 가서')

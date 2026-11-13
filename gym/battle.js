@@ -307,7 +307,8 @@ function fillTh(root) { root.querySelectorAll('img[data-th]').forEach(im => { co
   root.querySelectorAll('img[data-sp]').forEach(im => { if (im.dataset.ok) return; im.dataset.ok = 1; GA.thumb({ sp: +im.dataset.sp }).then(u => { if (u) im.src = u; }).catch(() => {}); }); }
 const rfKey = sp => GA.SPECIES?.[sp]?.rb ? D?.sp?.[sp]?.id : '', fmDir = fm => RFA[fm] ? 'rf' : 'fm';
 const pkSrc = (sp, o = {}) => rfKey(sp) ? `${IMG}pk/rf/${rfKey(sp)}${o.b ? 'b' : ''}${o.s ? 's' : ''}.png?v=${VER}` : `${IMG}pk/${sp}${o.b ? 'b' : ''}${o.s ? 's' : ''}${o.f && FEM.has(+sp) ? 'f' : ''}.png?v=${VER}`;
-const TR_KO = { youngster: '반바지 꼬마', lass: '짧은 치마', bug_catcher: '곤충채집 소년', camper: '캠프 보이', picnicker: '피크닉 걸', hiker: '등산가', fisherman: '낚시꾼', swimmer_m: '수영팬티 소년', swimmer_f: '비키니 아가씨', cool_trainer_m: '엘리트 트레이너', cool_trainer_f: '엘리트 트레이너', beauty: '아가씨', gentleman: '신사', super_nerd: '괴짜', black_belt: '태권왕', bird_keeper: '새 조련사', psychic_m: '초능력자', psychic_f: '초능력자', engineer: '기술자', sailor: '뱃사람', rocker: '로커', tamer: '조련사', school_kid_m: '학원 소년', school_kid_f: '학원 소녀', battle_girl: '배틀걸', channeler: '기도사', juggler: '마술사', aroma_lady: '아로마 아가씨', ruin_maniac: '유적 마니아', poke_maniac: '포켓몬 마니아', pokemaniac: '포켓몬 마니아', ninja_boy: '닌자 보이', dragon_tamer: '드래곤 조련사', skier_f: '스키어', poke_kid: '포켓몬 꼬마', artist: '화가', cyclist_m: '사이클링 보이', jogger: '조깅맨' };
+const TR_KO = { youngster: '반바지 꼬마', lass: '짧은 치마', bug_catcher: '곤충채집 소년', camper: '캠프 보이', picnicker: '피크닉 걸', hiker: '등산가', fisherman: '낚시꾼', swimmer_m: '수영팬티 소년', swimmer_f: '비키니 아가씨', cool_trainer_m: '엘리트 트레이너', cool_trainer_f: '엘리트 트레이너', beauty: '아가씨', gentleman: '신사', super_nerd: '괴짜', black_belt: '태권왕', bird_keeper: '새 조련사', psychic_m: '초능력자', psychic_f: '초능력자', engineer: '기술자', sailor: '뱃사람', rocker: '로커', tamer: '조련사', school_kid_m: '학원 소년', school_kid_f: '학원 소녀', battle_girl: '배틀걸', channeler: '기도사', juggler: '마술사', aroma_lady: '아로마 아가씨', ruin_maniac: '유적 마니아', poke_maniac: '포켓몬 마니아', pokemaniac: '포켓몬 마니아', ninja_boy: '닌자 보이', dragon_tamer: '드래곤 조련사', skier_f: '스키어', poke_kid: '포켓몬 꼬마', artist: '화가', cyclist_m: '사이클링 보이', jogger: '조깅맨',
+  snow_trainer_m: '엘리트 트레이너', snow_trainer_f: '엘리트 트레이너', belle_pa: '아가씨와 아빠', breeder_m: '포켓몬 브리더', breeder_f: '포켓몬 브리더', cameraman: '카메라맨', reporter: '리포터', interviewers: '인터뷰어', clown: '피에로', idol: '아이돌', cowgirl: '카우걸', rancher: '목장 주인', ranger_m: '포켓몬 레인저', ranger_f: '포켓몬 레인저', cyclist_f: '사이클링 걸', double_team: '더블 팀', veteran: '베테랑', lady: '레이디', socialite: '귀부인', rich_boy: '도련님', maid: '메이드', waiter: '웨이터', waitress: '웨이트리스', parasol_lady: '양산 아가씨', pokefan_m: '포켓몬 애호가', pokefan_f: '포켓몬 애호가', pi: '사립탐정', policeman: '경찰관', roughneck: '불량배', skier_m: '스키어', tuber_m: '튜브 소년', tuber_f: '튜브 소녀', sis_bro: '남매', twins: '쌍둥이', young_couple: '젊은 부부', worker: '작업원' };
 const NAMES_M = ['철수', '민준', '지훈', '현우', '도윤', '준서', '태양', '하준', '시우', '건우', '동현', '재민', '우진', '성민', '영호'];
 const NAMES_F = ['영희', '서연', '지우', '하은', '수아', '민지', '예린', '소희', '유나', '채원', '다은', '지민', '나연', '보람', '은비'];
 // 연습 상대 (도전자 방문은 3단계): 트레이너 종류별로 어울리는 포켓몬
@@ -999,6 +1000,46 @@ function aiChoice(btl, diff) {
   return 'move ' + (sc[0].o.i + 1);
 }
 
+// ---------- 썬문식 VS 전환 (시안, 2026-11-12 경완 '이름 있는 트레이너·로켓단 배틀 때') ----------
+// 그림: Elite Battle System 4 (Luka S.J.) Graphics/Transitions/SunMoon → gym/img/sm. 움직임은 EBS 스크립트 대신 캔버스로 비슷하게.
+// 종류: evil = 로켓단(로고·소용돌이·빛줄기), elite = 사천왕·챔피언(회전 무대·빨려드는 빛), def = 이름 있는 관장·라이벌(가로 빛띠)
+const SM_ON = true;
+function smKind(o) { if (!SM_ON || o.exam || o.wild) return null; const m = o.music || '', t = o.foe?.tr || '';
+  if (/Roc/i.test(m) || /rocket|ariana|archer|giovanni|proton|petrel/.test(t)) return 'evil';
+  if (/champ|tenno|Tenno|Champ/.test(m)) return 'elite';
+  if (['gymBattle', 'rival', 'hgGymJ', 'hgGymK', 'hgRival', 'emGym', 'emRival'].includes(m)) return 'def'; return null; }
+const SM_F = { evil: ['EvilTeam/background', 'EvilTeam/swirl', 'EvilTeam/ring0', 'EvilTeam/ring1', 'EvilTeam/ray0', 'EvilTeam/ray1', 'EvilTeam/logo0', 'EvilTeam/logo1'], elite: ['Elite/background', 'Elite/vacuum', 'Elite/particle', 'Elite/shine'], def: ['Default/background', 'Default/layer', 'Default/final'] };
+const smImg = u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u; });
+async function smEnc(w, opts, kind) {
+  const I = {}; await Promise.all([...SM_F[kind].map(async f => I[f.split('/')[1]] = await smImg(`${IMG}sm/${f}.png`)), smImg(`${IMG}sm/vs.png`).then(i => I.vs = i), smImg(trSrc(opts.foe.tr)).then(i => I.tr = i)]);
+  const cv = document.createElement('canvas'), W = 512, H = Math.round(512 * Math.max(.6, w.clientHeight / Math.max(1, w.clientWidth)));
+  cv.width = W; cv.height = H; cv.className = 'bt-sm'; w.append(cv); const x = cv.getContext('2d'), C = { x: W / 2, y: H / 2 };
+  const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+  const rot = (im, px, py, a, s = 1, al = 1) => { if (!im) return; x.save(); x.globalAlpha = al; x.translate(px, py); x.rotate(a); x.scale(s, s); x.drawImage(im, -im.width / 2, -im.height / 2); x.restore(); };
+  const cover = im => { if (!im) return; const s = Math.max(W / im.width, H / im.height); x.drawImage(im, (W - im.width * s) / 2, (H - im.height * s) / 2, im.width * s, im.height * s); };
+  const rays = Array.from({ length: 26 }, () => ({ a: Math.random() * 6.28, d: 60 + Math.random() * 300, v: 300 + Math.random() * 400, big: Math.random() < .3 }));
+  const flash = (t, a, b) => { if (t > a && t < b) { x.fillStyle = `rgba(255,255,255,${1 - (t - a) / (b - a)})`; x.fillRect(0, 0, W, H); } };
+  const T0 = { evil: 1.7, elite: 1.4, def: .35 }[kind], END = { evil: 3.7, elite: 3.4, def: 2.4 }[kind]; let snd = {};
+  const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
+  // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><i class="sm-vs"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
+  const D = {
+    evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
+      for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
+      rays.forEach(r => { r.d -= r.v * .016; if (r.d < 20) { r.d = 340; r.a = Math.random() * 6.28; } rot(I[r.big ? 'ray1' : 'ray0'], C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
+      let lx = C.x, ly = C.y, ls = 1.3; if (t > 1.6) { const q = ease((t - 1.6) / .4); ly = C.y - q * Math.min(H * .3, 190); ls = 1.3 - q * .5; }
+      if (t > .3 && t < .8) { const q = ease((t - .3) / .5); rot(I.logo1, lx, ly, 0, 5 - q * 3.7, q); }
+      if (t >= .8) { once('logo', () => se('KON')); const sh = t < 1.05 ? (Math.random() - .5) * 10 : 0; rot(I.ring1, lx, ly, -t, ls, .7); rot(I.logo0, lx + sh, ly + sh, 0, ls); }
+      flash(t, .8, 1.15); trainer(t); },
+    elite(t) { rot(I.background, C.x, C.y, t * .4, Math.max(W, H) / 560);
+      for (let k = 0; k < 3; k++) { const q = (t * .9 + k / 3) % 1; rot(I.vacuum, C.x, C.y, 0, 1.8 - q * 1.7, q); }
+      rays.forEach(r => { r.d -= r.v * .02; if (r.d < 10) { r.d = 340; r.a = Math.random() * 6.28; } rot(I.particle, C.x + Math.cos(r.a) * r.d, C.y + Math.sin(r.a) * r.d, r.a, 1, .9); });
+      if (t > 1.2) once('sh', () => se('KIRAKIRA2')); rot(I.shine, C.x, C.y, t, t < 1.2 ? .3 + t * .4 : .8 + Math.sin(t * 8) * .05, .9); flash(t, 1.2, 1.6); trainer(t); },
+    def(t) { cover(I.background); [[I.layer, 900], [I.final, 1500]].forEach(([im, sp]) => { if (!im) return; const o = -(t * sp) % W; x.drawImage(im, o, 0, W, H); x.drawImage(im, o + W, 0, W, H); }); trainer(t); },
+  };
+  await new Promise(ok => { const t0 = performance.now(); const tick = () => { const t = (performance.now() - t0) / 1000; x.clearRect(0, 0, W, H); D[kind](t); if (t < END) requestAnimationFrame(tick); else ok(); }; tick(); });
+}
+
 // ---------- 배틀 들어가는 화면 전환 (DP·Pt 본가처럼) ----------
 // 화면이 두 번 하얗게 번쩍 → 일반 트레이너는 가로 띠가 양옆에서 번갈아 밀려 들어와 화면을 덮고,
 // 관장·사천왕·챔피언·라이벌(music 이 gymBattle·champ·rival)은 어두운 화면에 트레이너 얼굴 띠가 미끄러져 들어온다.
@@ -1007,7 +1048,9 @@ async function encounter(opts) {
   const host = el.parentElement || document.body, w = document.createElement('div'), big = ['gymBattle', 'champ', 'rival', 'tenno', 'hgGymJ', 'hgGymK', 'hgRival', 'hgChamp', 'emGym', 'emTenno', 'emChamp', 'emRival'].includes(opts.music);
   w.className = 'bt-enc'; host.append(w);
   for (let i = 0; i < 2; i++) { w.classList.add('flash'); await wait(90); w.classList.remove('flash'); await wait(120); }
-  if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
+  const smk = smKind(opts);
+  if (smk) { w.insertAdjacentHTML('beforeend', '<i class="bk"></i>'); await smEnc(w, opts, smk); }
+  else if (opts.exam) {   // 승급 심사 (경완 2026-10-31 '배틀 시작할 때 연출도 웅장하게'): 암전 → 금빛 띠 → 빛줄기 속 배지 → '승급 심사' → 심사관 띠
     w.classList.add('ex');
     // 줄무늬·빛줄기 없이 (경완 2026-10-31 '구려'): 암전 → 금빛 실선이 가로로 그어지고 → 위아래로 열리는 어두운 무대 → 배지가 떠오름 → '승급 심사' → 심사관 띠
     w.insertAdjacentHTML('beforeend', `<i class="bk"></i><i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);

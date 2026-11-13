@@ -2579,8 +2579,8 @@ const acSwap = n => { const was = BGM.on; try { BGM.stop(0); } catch (e) {} try 
 const au = () => { const pa = pAu(); if (pa) { if (pa !== ac) acSwap(pa); return ac; } try { ac = ac || (window.__EMB && parent.__stAC) || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state !== 'running' && !document.hidden) ac.resume(); } catch (e) {} return ac; };
 const tone = (f, d, ty = 'square', v = .06, f2) => { const a = au(); if (!a) return; const o = a.createOscillator(), gn = a.createGain(), t = a.currentTime; o.type = ty; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d); gn.gain.setValueAtTime(v, t); gn.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(gn); gn.connect(a.destination); o.start(t); o.stop(t + d + .02); };
 const noise = (d, v = .08, hp = 600) => { const a = au(); if (!a) return; const b = a.createBuffer(1, a.sampleRate * d, a.sampleRate), ch = b.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / ch.length); const s = a.createBufferSource(), f = a.createBiquadFilter(), gn = a.createGain(); f.type = 'highpass'; f.frequency.value = hp; s.buffer = b; gn.gain.value = v; s.connect(f); f.connect(gn); gn.connect(a.destination); s.start(); };
-const HB_PT = 4, HC_PT = 2, HC_MAX = 5, HM_PT = 20, HC_MUL = .2, HC_MMAX = 5; let hFlash = 0;   /* v23.00 경완 '최고 높이 쌓는 게 중요한 게임' (1~3 모두): 높이 점수 = 최고 높이가 h1→h2m 로 오르면 HM_PT×(h2²−h1²) (n번째 m ≈ n×40점, 10m 탑 ≈ 2,000점), 높이 콤보는 그 점수에 ×(1+0.2×(콤보−1)) 최대 ×2, 놓기 기본 10점·딱 맞음 덤 절반 (HB_PT·HC_PT 는 안 씀) */   /* v22.28 높이 덤: 최고 높이 +4, 높이 콤보 2연속부터 한 번에 +2씩 (최대 +10) — 모두 ×4 해서 점수판에 (16점 / 콤보당 8점, 최대 56점) */
-const SFX = { hbest: () => { tone(660, .06, 'triangle', .05); setTimeout(() => tone(990, .1, 'triangle', .05), 60); }, hcmb: n => { const b = 660 * Math.pow(1.06, Math.min(n, 8)); tone(b, .05, 'square', .04); setTimeout(() => tone(b * 1.25, .05, 'square', .04), 55); setTimeout(() => tone(b * 1.5, .12, 'triangle', .05), 110); }, drop: () => tone(520, .08, 'square', .04, 300), land: () => { tone(150, .1, 'triangle', .1, 70); noise(.06, .05, 300); }, perfect: () => { tone(880, .07, 'square', .05); setTimeout(() => tone(1320, .12, 'square', .05), 70); },
+const HB_PT = 4, HC_PT = 2, HC_MAX = 5, HM_PT = 20, HC_MUL = .2, HC_MMAX = 5; let hFlash = 0, pbH = 0, pbBroke = 0, pbT = -1e9;   /* v23.21 경완 '내 계정 역대 최고 높이는 항상 점선으로, 경신할 때는 임팩트 있는 효과 (처음 뚫을 때 한 번만)': pbH = 부모가 보내 준 역대 최고 높이(R.hi) */   /* v23.00 경완 '최고 높이 쌓는 게 중요한 게임' (1~3 모두): 높이 점수 = 최고 높이가 h1→h2m 로 오르면 HM_PT×(h2²−h1²) (n번째 m ≈ n×40점, 10m 탑 ≈ 2,000점), 높이 콤보는 그 점수에 ×(1+0.2×(콤보−1)) 최대 ×2, 놓기 기본 10점·딱 맞음 덤 절반 (HB_PT·HC_PT 는 안 씀) */   /* v22.28 높이 덤: 최고 높이 +4, 높이 콤보 2연속부터 한 번에 +2씩 (최대 +10) — 모두 ×4 해서 점수판에 (16점 / 콤보당 8점, 최대 56점) */
+const SFX = { pb: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, .09, 'square', .05), i * 70)); setTimeout(() => { tone(1047, .45, 'triangle', .06); tone(1319, .45, 'triangle', .05); tone(1568, .45, 'triangle', .04); }, 300); }, hbest: () => { tone(660, .06, 'triangle', .05); setTimeout(() => tone(990, .1, 'triangle', .05), 60); }, hcmb: n => { const b = 660 * Math.pow(1.06, Math.min(n, 8)); tone(b, .05, 'square', .04); setTimeout(() => tone(b * 1.25, .05, 'square', .04), 55); setTimeout(() => tone(b * 1.5, .12, 'triangle', .05), 110); }, drop: () => tone(520, .08, 'square', .04, 300), land: () => { tone(150, .1, 'triangle', .1, 70); noise(.06, .05, 300); }, perfect: () => { tone(880, .07, 'square', .05); setTimeout(() => tone(1320, .12, 'square', .05), 70); },
   miss: () => tone(300, .35, 'sawtooth', .05, 90), skill: () => { tone(660, .06, 'square', .05); setTimeout(() => tone(990, .1, 'square', .05), 60); setTimeout(() => tone(1320, .14, 'triangle', .06), 120); }, pop: () => tone(700, .05, 'square', .04, 1000), ptlOpen: () => gS('ptlOpen'), ptlIn: () => gS('ptlIn'), ptlClose: () => gS('ptlClose'), boom: () => { noise(.35, .12, 120); tone(90, .3, 'triangle', .12, 40); } };
 
 /* 경완: 진화구슬 키우기처럼 효과별 효과음 — 실제 게임(beta.html) 소리 엔진(tone·metalRing·noise·미니게임 기술 소리)을 그대로 옮김 */
@@ -2701,7 +2701,7 @@ function reset() {
   tstRun = tstCfg || Object.values(TS).some(Boolean) ? 1 : 0;
   world = new pl.World({ gravity: V(0, 20) }); slabs = []; base = null; P = []; walls = []; props = []; strings = []; vines = []; welds = []; parts = []; flt = []; rings = []; fxs = [];
   ground = world.createBody({ type: 'static', position: V(m(W / 2), m(GY + 200)) }); ground.createFixture(pl.Box(m(W * 3), m(200)), { friction: .8 }); ground.isGround = 1;
-  mkBase(BASE_W0); sc = 0; lmax = 1 + fh; lives = lmax; gen++; t0g = performance.now(); paused = !!($('stSetP') && !$('stSetP').hidden); down = null; ax = W / 2; $('mgPop').hidden = true; nPlaced = 0; nPerfect = 0; nHard = 0; combo = 0; hCmb = 0; hCmbM = 0; wob = null; maxH = 0; camY = GY - VH + 150; camT = camY; shake = 0; dead = false; waitT = 0; uses = USES[rk]; used = 0; armed = null; mist = aqua = frz = goo = 0; hv = null; banner = null; drag = null; ghostP = null; wind = null; selK = null; charm = null; ghostDrop = 0; portal = null; webs = []; selT = 0; muds = []; roots = []; flyPlan = null; relY = null; aimYd = null; beams = []; efx = []; goos = []; jel = 0; gFire(false);
+  mkBase(BASE_W0); sc = 0; pbBroke = 0; pbT = -1e9; lmax = 1 + fh; lives = lmax; gen++; t0g = performance.now(); paused = !!($('stSetP') && !$('stSetP').hidden); down = null; ax = W / 2; $('mgPop').hidden = true; nPlaced = 0; nPerfect = 0; nHard = 0; combo = 0; hCmb = 0; hCmbM = 0; wob = null; maxH = 0; camY = GY - VH + 150; camT = camY; shake = 0; dead = false; waitT = 0; uses = USES[rk]; used = 0; armed = null; mist = aqua = frz = goo = 0; hv = null; banner = null; drag = null; ghostP = null; wind = null; selK = null; charm = null; ghostDrop = 0; portal = null; webs = []; selT = 0; muds = []; roots = []; flyPlan = null; relY = null; aimYd = null; beams = []; efx = []; goos = []; jel = 0; gFire(false);
   $('hint').classList.remove('on'); cur = pick(); nxt = pick(); nxt2 = pick(); nxt3 = pick(); $('nx').classList.toggle('yj', pv('yj')); nxDraw(0); mode = 'aim'; rot = 0; rotD = 0; introStart();
   world.on('begin-contact', c => { const a = c.getFixtureA().getBody(), b = c.getFixtureB().getBody(); for (const [x, y] of [[a, b], [b, a]]) { const p = x.pk; if (!p || p.landed || p.ghost) continue; if (y.isGround) p.hitG = 1; else if (y.pk || y.isBase || y.isProp) { p.touch = p.touch || now0; p.on = y; if (!p.mist && !p.heat) p.dmp = 1; } } });
   hud(); abDraw(); nxDraw(); if (!last) last = performance.now(); BGM.stop(); bgmGo();
@@ -2753,8 +2753,12 @@ function onLand(p) {
   if (hb) { const yy = y - (perfect ? 64 : 40); flt.push({ x, y: yy, s: hCmb > 1 ? `높이 콤보 ×${hCmb}` : '최고 높이!', t: now0, c: '#8fe3ff', big: 1 }); hFlash = now0; if (hCmb > 1) setTimeout(() => SFX.hcmb(hCmb), perfect ? 140 : 0); else if (!perfect) SFX.hbest(); }
   flt.push({ x, y: y - 18, s: '+' + pts, t: now0, c: '#fff' });
   if (mode === 'fall') { mode = 'aim'; }
+  if (pbH > .5 && !pbBroke && hNow > pbH + .05) pbFx(x, y);   /* 역대 최고 높이를 이번 판 처음 넘을 때 한 번만 */
   if (hNow > maxH) maxH = hNow; hud();
 }
+function pbFx(x, y) { pbBroke = 1; pbT = now0; shake = Math.max(shake, .6); hap(2); setTimeout(() => SFX.pb(), 120); const ly = GY - BASE_H - pbH * 40, C = ['#ff6fae', '#ffe27a', '#8fe3ff', '#b8ff8f', '#ffffff'];
+  for (let i = 0; i < 70; i++) { const a = -Math.PI / 2 + (Math.random() - .5) * 2.6, sp = 160 + Math.random() * 260; parts.push({ x: Math.random() * W, y: ly, vx: Math.cos(a) * sp * .6, vy: Math.sin(a) * sp, r: 3 + Math.random() * 3, c: C[i % C.length], t: now0, life: 1100 + Math.random() * 500, g: 520, sq: 1 }); }
+  rings.push({ x, y, c: '#ff6fae', t: now0, big: 1 }); rings.push({ x, y, c: '#ffe27a', t: now0 + 120, big: 1 }); }
 const FIT_T = .62, FIT_PT = 50;   /* v23.14 시뮬: 놓은 것의 약 20%가 넘음 (가운데 맞추기 정확도와 거의 상관없음), 드물어진 만큼 덤 30→50×콤보. 맞닿은 폭 ÷ (놓은 것·받친 것 중 좁은 폭) 이 이만큼 넘으면 '딱 맞아' */
 function fitChk(p) { const TU = window.__tune || {}; if (p.b.getLinearVelocity().length() > .4 || Math.abs(p.b.getAngularVelocity()) > .4) { combo = 0; return; }   /* 아직 흔들리면 안 맞물린 것 */
   const pw = Math.max(8, p.I.w * p.s * (p.qx || 1)), cy = pxv(p.b.getWorldCenter().y); let x0 = 1e9, x1 = -1e9, sw = 0;
@@ -2800,6 +2804,7 @@ function missPiece(p, why) {
 }
 const HEART_R = '<svg viewBox="0 0 7 6" width="20" height="18" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a1e28" d="M1 0h2v1h1V0h2v1h1v3H6v1H5v1H2V5H1V4H0V1h1z"/><path fill="#ff4a78" d="M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z"/><path fill="#ffc0d0" d="M1 1h1v1H1z"/></svg>';
 function end() { if (dead) return; dead = true; down = null; BGM.stop(.6); gFire(false); const prev = best, nb = sc > best && sc > 0; if (nb) best = sc; hud(); SFX[nb ? 'perfect' : 'miss']();
+  if (maxH > pbH) pbH = +maxH.toFixed(1);   /* 다시 하기 판은 방금 세운 기록이 역대 최고 */
   if (window.__EMB) { try { parent.postMessage({ t: 'stEnd', tst: tstRun, sc, n: nPlaced, h: +maxH.toFixed(1), pf: nPerfect, hc: hCmbM, hd: nHard, used, sec: Math.round((performance.now() - t0g) / 1000) }, '*'); } catch (e) {} return; }   /* 게임 안: 기록창·보상은 미니게임 창(다른 미니게임과 같은 기록창)이 */
   /* 골드·친밀도는 시안용 숫자 (실제 한 판 시간 기록이 쌓이면 1분당 골드를 다른 미니게임과 맞춤) */
   const goldV = Math.floor((Math.floor(sc / 12) + (nb && prev > 0 ? 20 : 0)) * (pv('pick') ? 1.1 : 1)), frV = Math.floor(sc / 1200 * (pv('fg') ? 1.2 : 1));   /* F 픽업 골드 +10%, E 프렌드가드 친밀도 +20% */
@@ -2857,13 +2862,14 @@ const solidify = ps => { let n = 0; for (const p of ps) { if (!p || p.gone || p.
 const touching = b => { const s = []; for (let ce = b.getContactList(); ce; ce = ce.next) if (ce.contact.isTouching() && ce.other && ce.other.pk) s.push(ce.other.pk); return s; };
 const killProp = o => { if (!o.dead && o.kind === 'rock') { const ps = touching(o.b); solidify(ps); } if (o.dead) return; o.dead = 1; try { world.destroyBody(o.b); } catch (e) {} for (let i = 0; i < 14; i++) dust(o.x + (Math.random() - .5) * o.w, o.y + (Math.random() - .5) * o.h, 1, o.kind === 'rock' ? '#a89070' : '#c8a060'); };
 function useSkill() {
+  if (!dead && ((selK && !(drag && drag.p)) || (charm && !charm.pick))) { skCancel(); return; }   /* v23.23 경완 '불태우기처럼 포켓몬 고르는 기술은 고르기 전이면 버튼 다시 누르면 취소': 불태우기·사이코키네시스·매혹(바꿀 포켓몬 고르기) — 횟수·콤보 되돌림 */
   if (dead || used >= uses || hv || selK || charm || (drag && drag.p)) return; const sk = SK[ty]; if (sk.k === 'arm' && armed) { return; }
   if ([2, 3, 10, 14, 17, 18].includes(ty) && mode !== 'aim') { msk('포켓몬이 자리 잡은 뒤에 써요'); return; }
   if ([2, 10, 14, 17].includes(ty) && !live().length) { msk('쌓인 포켓몬이 없어요'); return; }
   if (ty === 11 && !lastPut()) { msk('되돌릴 포켓몬이 없어요'); return; }
   if (ty === 3) { flyPlan = planFly(); if (!flyPlan) { msk('놓을 자리가 없어요'); return; } }
   const B = $('ab'); B.classList.add('on'); setTimeout(() => { B.classList.remove('on'); B.classList.add('pop'); setTimeout(() => B.classList.remove('pop'), 300); }, 160);
-  used++; abDraw(); SFX.skill(); hap(1); combo = 0;
+  used++; abDraw(); SFX.skill(); hap(1); skCmb = combo; combo = 0;
   const tb = towerBox(), sp = spTgt(), tgt = sp ? sp : sk.k === 'arm' ? [aimX(), dropY()] : ty === 5 ? [W / 2, GY - BASE_H] : ty === 16 ? (() => { const t = sortY(live())[0]; if (!t) return [W / 2, tb.top]; const tx = pxv(t.b.getPosition().x), r = Math.max(t.I.w, t.I.h) * t.I.k * .6 + 46, sd = tx > W / 2 ? -1 : 1; dragonSd = sd; return [tx + sd * r, pxv(t.b.getPosition().y) - 10, tx]; })() : [ (tb.x0 + tb.x1) / 2 + (comX() < W / 2 ? 50 : -50), Math.max(tb.top, GY - 340) + 40 ];
   if (ty === 10) { doSkill(); bannerShow(sk.n); return; }   /* 경완: 불태우기는 고르기 전엔 내 포켓몬 안 나옴 */
   if (ty === 11) { doSkill(); gS('surf'); }
@@ -2871,6 +2877,8 @@ function useSkill() {
   helper(tgt[0], tgt[1], ty === 11 || ty === 8 ? () => {} : () => doSkill(), tgt[2] != null ? tgt[2] : sk.k === 'arm' ? aimX() : tgt[0], HOLD[ty]);
   bannerShow(sk.n);
 }
+let skCmb = 0;
+function skCancel() { selK = null; charm = null; used = Math.max(0, used - 1); combo = skCmb; clearTimeout(msg.t); $('hint').classList.remove('on'); hap(0); const B = $('ab'); B.classList.add('pop'); setTimeout(() => B.classList.remove('pop'), 300); abDraw(); }
 function doSkill() {
   const L = live(), C = TYPE_C[ty];
   switch (ty) {
@@ -3180,6 +3188,10 @@ function draw() {
     if (armed === 'small' && now0 - smallT < 900 && Math.random() < .5) spark(x + (Math.random() - .5) * 50, dropY() + (Math.random() - .5) * 50, '#ffffff');
     if (armed && armed !== 'elec' && armed !== 'goo' && armed !== 'small') { g.save(); g.globalAlpha = .55 + .25 * Math.sin(now0 / 120); g.strokeStyle = TYPE_C[ty]; g.lineWidth = 3; g.beginPath(); g.arc(x, y + bob, Math.max(IMG[cur].w, IMG[cur].h) * IMG[cur].k * sm * .62, 0, 7); g.stroke(); g.restore(); } }
   // 최고 높이 선
+  if (pbH > .5) { const e = now0 - pbT, yy = sy(GY - BASE_H - pbH * 40), on = !pbBroke, fa = on ? 1 : Math.max(0, 1 - e / 700);   /* 역대 최고 높이 점선 (분홍): 늘 보임, 화면 위로 벗어나면 위쪽에 딱지만 */
+    if (fa > 0 && yy < VH) { g.save(); g.globalAlpha = fa; const pin = yy < 66, py = pin ? 66 : yy, lb = `역대 최고 ${pbH.toFixed(1)}m`; g.font = '11px Galmuri11'; const tw = g.measureText(lb).width + (pin ? 16 : 8);
+      if (!pin) { g.strokeStyle = on ? 'rgba(255,111,174,.95)' : '#ffffff'; g.setLineDash([10, 6]); g.lineWidth = on ? 2 : 2 + (1 - fa) * 6; g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); g.setLineDash([]); }
+      g.fillStyle = '#20202c'; g.fillRect(W - 4 - tw, py - 16, tw, 15); g.fillStyle = '#ff8fc0'; g.fillText((pin ? '▲ ' : '') + lb, W - tw, py - 5); g.restore(); } }
   if (maxH > .5) { const yy = sy(GY - BASE_H - maxH * 40); if (yy > 60 && yy < VH) { g.save(); const fe = now0 - hFlash, fl = fe < 500 ? 1 - fe / 500 : 0; g.strokeStyle = fl ? `rgba(143,227,255,${.9})` : 'rgba(255,226,122,.9)'; g.setLineDash([8, 6]); g.lineWidth = 2 + fl * 2; g.beginPath(); g.moveTo(0, yy); g.lineTo(W, yy); g.stroke(); g.setLineDash([]); g.font = '11px Galmuri11'; g.fillStyle = '#20202c'; g.fillRect(4, yy - 16, 62, 15); g.fillStyle = '#ffe27a'; g.fillText(`최고 ${maxH.toFixed(1)}m`, 8, yy - 5); g.restore(); } }
   // 입자·고리·글자
   for (const o of parts) { const e = (now0 - o.t) / o.life; if (e >= 1) continue; g.globalAlpha = 1 - e; g.fillStyle = o.c; const x = o.x, y = sy(o.y); if (o.sq) g.fillRect(x - o.r / 2, y - o.r / 2, o.r, o.r); else { g.beginPath(); g.arc(x, y, o.r * (1 - e * .5), 0, 7); g.fill(); } } g.globalAlpha = 1;
@@ -3187,6 +3199,9 @@ function draw() {
   g.restore();
   helperDraw();
   for (const f of flt) { const e = now0 - f.t; if (e > 1000) continue; const pop = e < 140 ? 1.6 - .6 * (e / 140) : 1; g.save(); g.globalAlpha = e > 700 ? 1 - (e - 700) / 300 : 1; g.translate(f.x, sy(f.y) - e * .04); g.scale(pop, pop); g.font = `${f.big ? 16 : 13}px Galmuri11`; g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#20202c'; g.strokeText(f.s, 0, 0); g.fillStyle = f.c; g.fillText(f.s, 0, 0); g.restore(); }
+  if (pbBroke && now0 - pbT < 1900) { const e = now0 - pbT; g.save(); if (e < 260) { g.fillStyle = `rgba(255,255,255,${.55 * (1 - e / 260)})`; g.fillRect(0, 0, W, VH); }   /* 역대 최고 돌파: 하얀 번쩍 + 가운데 큰 글자 */
+    const k = e < 220 ? 2.2 - 1.2 * (e / 220) : 1, al = e > 1500 ? 1 - (e - 1500) / 400 : 1, cy = VH * .36; g.globalAlpha = al; g.translate(W / 2, cy); g.scale(k, k); g.textAlign = 'center'; g.font = '26px Galmuri11'; g.lineWidth = 6; g.strokeStyle = '#20202c'; g.strokeText('역대 최고 돌파!', 0, 0); g.fillStyle = '#ff8fc0'; g.fillText('역대 최고 돌파!', 0, 0);
+    g.font = '13px Galmuri11'; g.lineWidth = 4; const t2 = `${pbH.toFixed(1)}m를 넘었어요`; g.strokeText(t2, 0, 24); g.fillStyle = '#fff'; g.fillText(t2, 0, 24); g.restore(); }
   if (banner) { const e = now0 - banner.t; if (e > 1300) banner = null; else { const q = e < 220 ? ez(e / 220) : e > 1000 ? 1 - (e - 1000) / 300 : 1; g.save(); g.globalAlpha = Math.max(0, q); g.translate(W / 2, VH * .2); g.scale(.7 + .3 * q, .7 + .3 * q); g.font = '22px Galmuri11'; const tw = g.measureText(banner.s).width + 40; g.fillStyle = '#20202c'; g.fillRect(-tw / 2 - 3, -23, tw + 6, 40); g.fillStyle = banner.c; g.fillRect(-tw / 2, -20, tw, 34); g.fillStyle = 'rgba(255,255,255,.3)'; g.fillRect(-tw / 2, -20, tw, 6); g.textAlign = 'center'; g.lineWidth = 4; g.strokeStyle = '#20202c'; g.strokeText(banner.s, 0, 5); g.fillStyle = '#fff'; g.fillText(banner.s, 0, 5); g.restore(); } }
 }
 const tintC = (I, c) => { I.tc = I.tc || {}; if (I.tc[c]) return I.tc[c]; const cv2 = document.createElement('canvas'); cv2.width = I.w; cv2.height = I.h; const q = cv2.getContext('2d'); q.drawImage(I.im, 0, 0); q.globalCompositeOperation = 'source-in'; q.fillStyle = c; q.fillRect(0, 0, I.w, I.h); return I.tc[c] = cv2; };
@@ -3335,7 +3350,7 @@ $('dmBuild').addEventListener('click', () => { SFX.pop(); setP(0); reset(); tstR
 
 /* 게임 안(iframe): 미니게임 창이 함께 놀 포켓몬·랭크·하트·최고 기록·골드 기준을 보내 줌 */
 function embInit() { document.documentElement.classList.add('emb'); return new Promise(ok => { const on = async e => { const d = e.data; if (!d || d.t !== 'stInit') return; removeEventListener('message', on); const c = d.cfg;
-    document.documentElement.style.setProperty('--sat', (c.sat || 0) + 'px'); document.documentElement.style.setProperty('--sab', (c.sab || 0) + 'px'); window.__GPP = c.gpp || 9; best = c.best | 0; try { if (parent.__stAC) { ac = parent.__stAC; if (ac.state === 'suspended') ac.resume(); } } catch (er) {}   /* 경완 'BGM 클릭해야 시작': 미니게임 창에서 시작하기를 누를 때 열어 둔 소리를 그대로 써서 바로 곡이 나옴 */
+    document.documentElement.style.setProperty('--sat', (c.sat || 0) + 'px'); document.documentElement.style.setProperty('--sab', (c.sab || 0) + 'px'); window.__GPP = c.gpp || 9; best = c.best | 0; pbH = +c.hi || 0; try { if (parent.__stAC) { ac = parent.__stAC; if (ac.state === 'suspended') ac.resume(); } } catch (er) {}   /* 경완 'BGM 클릭해야 시작': 미니게임 창에서 시작하기를 누를 때 열어 둔 소리를 그대로 써서 바로 곡이 나옴 */
     if (c.spU && c.spK) try { const j = await (await fetch(c.spU)).json(), o = j[c.spK]; if (o && o.i && o.a) { const im = await loadImg(o.i); if (im) { PM.me = { im, a: typeof o.a === 'string' ? JSON.parse(o.a) : o.a }; A.H[c.ty - 1] = 'me'; A.nm.me = c.nm || ''; delete PBB.me; } } } catch (er) {}
     setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); ok(); };
   addEventListener('message', on); parent.postMessage({ t: 'stReady' }, '*'); });

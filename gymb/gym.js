@@ -9,7 +9,7 @@ const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO;
 const S = GA.S;
 const IMG = 'gym/img/';
 // 4세대 플라티나 그림 (경완 2026-10-27 'npc들도 4세대 pt에 맞춰야'): 있으면 pt/ 에서, 걸음 그림은 32칸
-const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster'.split(' ')), PT_OW = new Set('hg_rocket_m hg_rocket_f hg_ariana hg_archer hg_petrel hg_proton aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster'.split(' '));
+const PT_TR = new Set('artist battle_girl beauty bird_keeper black_belt bug_catcher camper champion_cynthia channeler cool_trainer_f cool_trainer_m cyclist_m dragon_tamer elite_four_aaron elite_four_bertha elite_four_flint elite_four_lucian fisherman gentleman hiker jogger lass leader_byron leader_candice leader_fantina leader_gardenia leader_maylene leader_roark leader_volkner leader_wake ninja_boy picnicker poke_kid pokemaniac psychic_m rival_barry rocker ruin_maniac sailor skier_f super_nerd swimmer_f youngster snow_trainer_m snow_trainer_f aroma_lady belle_pa breeder_m breeder_f cameraman reporter interviewers clown idol cowgirl rancher ranger_m ranger_f cyclist_f double_team veteran lady socialite rich_boy maid waiter waitress parasol_lady pokefan_m pokefan_f pi policeman roughneck school_kid_m school_kid_f skier_m swimmer_m tuber_m tuber_f sis_bro twins young_couple worker'.split(' ')), PT_OW = new Set('hg_rocket_m hg_rocket_f hg_ariana hg_archer hg_petrel hg_proton aaron artist barry bird_keeper battle_girl beauty bertha black_belt boy bug_catcher byron camper candice channeler cooltrainer_f cooltrainer_m crasher_wake cyclist_m cynthia dragon_tamer fantina fisher flint gardenia gentleman gym_guy hiker jogger lass lucian man maylene ninja_boy picnicker poke_kid poke_maniac roark rocker ruin_maniac sailor scientist skier_f swimmer_f_land volkner youngster ace_trainer_f ace_trainer_m ace_trainer_snow_f ace_trainer_snow_m cameraman clown cowgirl cyclist_f expert_m idol lady looker maid parasol_lady pokefan_f pokefan_m pokemon_breeder_f pokemon_breeder_m policeman rancher reporter rich_boy roughneck school_kid_f school_kid_m skier_m socialite tuber_f tuber_m twin waiter waitress worker'.split(' '));
 const trSrc = k => `${IMG}${PT_TR.has(k) || /^hg_/.test(k || '') ? 'pt/' : ''}tr/${k}.png`, owSrc = k => `${IMG}${PT_OW.has(k) ? 'pt/' : ''}ow/${k}.png?v=3`, owW = k => PT_OW.has(k) || /^pt_/.test(k || '') ? 32 : 16;   // v18.65 경완: 비키니 아가씨 필드 그림을 파이어레드 땅 위 전신(1.25배)으로 바꿔 캐시 v3
 const VER = ((document.currentScript && document.currentScript.src.match(/[?&]v=([^&]+)/)) || [])[1] || '';
 const loadJs = (src, g) => window[g] ? Promise.resolve() : new Promise(ok => { const x = document.createElement('script'); x.src = `${src}?v=${VER}`; x.onload = x.onerror = () => ok(); document.head.appendChild(x); });
@@ -574,6 +574,47 @@ const CLS = {
   poke_kid: { ow: 'poke_kid', f: 1, t: [1, 13, 18], e: 1 }, jogger: { ow: 'jogger', f: 0, t: [1, 2, 3], e: 1 }, cyclist_m: { ow: 'cyclist_m', f: 0, t: [13, 3, 1], e: 1 },
   battle_girl: { ow: 'battle_girl', f: 1, t: [2] }, ninja_boy: { ow: 'ninja_boy', f: 0, t: [4, 7, 17] }, ruin_maniac: { ow: 'ruin_maniac', f: 0, t: [5, 6, 9] },
   dragon_tamer: { ow: 'dragon_tamer', f: 0, t: [16] }, skier_f: { ow: 'skier_f', f: 1, t: [15] }, artist: { ow: 'artist', f: 0, t: [18, 14, 1] },
+  /* v23.24 경완 '싹 다 우리 게임에 넣어줘': 플래티넘 일반 트레이너 40종 더 (tools/gym/mkpttr.py) */
+  snow_trainer_m: { ow: 'ace_trainer_snow_m', f: 0, t: [15, 6, 11] },
+  snow_trainer_f: { ow: 'ace_trainer_snow_f', f: 1, t: [15, 11, 5] },
+  aroma_lady: { ow: 'beauty', f: 1, t: [12, 18], e: 1 },
+  belle_pa: { ow: 'cowgirl', f: 1, t: [1, 5, 10] },
+  breeder_m: { ow: 'pokemon_breeder_m', f: 0, t: [1, 12, 13], e: 1 },
+  breeder_f: { ow: 'pokemon_breeder_f', f: 1, t: [1, 18, 11], e: 1 },
+  cameraman: { ow: 'cameraman', f: 0, t: [13, 1] },
+  reporter: { ow: 'reporter', f: 1, t: [1, 18, 13], e: 1 },
+  interviewers: { ow: 'reporter', f: 1, t: [13, 1, 18] },
+  clown: { ow: 'clown', f: 0, t: [14, 18, 1] },
+  idol: { ow: 'idol', f: 1, t: [18, 1, 13], e: 1 },
+  cowgirl: { ow: 'cowgirl', f: 1, t: [1, 10, 5], e: 1 },
+  rancher: { ow: 'rancher', f: 0, t: [1, 5, 2] },
+  ranger_m: { ow: 'ace_trainer_m', f: 0, t: [12, 7, 3, 11] },
+  ranger_f: { ow: 'ace_trainer_f', f: 1, t: [12, 7, 3, 11] },
+  cyclist_f: { ow: 'cyclist_f', f: 1, t: [13, 3, 1], e: 1 },
+  double_team: { ow: 'ace_trainer_m', f: 0, t: [] },
+  veteran: { ow: 'expert_m', f: 0, t: [] },
+  lady: { ow: 'lady', f: 1, t: [1, 18, 12], e: 1 },
+  socialite: { ow: 'socialite', f: 1, t: [18, 14, 1] },
+  rich_boy: { ow: 'rich_boy', f: 0, t: [1, 18, 14], e: 1 },
+  maid: { ow: 'maid', f: 1, t: [1, 18, 14] },
+  waiter: { ow: 'waiter', f: 0, t: [1, 10, 11] },
+  waitress: { ow: 'waitress', f: 1, t: [1, 10, 11], e: 1 },
+  parasol_lady: { ow: 'parasol_lady', f: 1, t: [11, 12, 18] },
+  pokefan_m: { ow: 'pokefan_m', f: 0, t: [1, 18, 13], e: 1 },
+  pokefan_f: { ow: 'pokefan_f', f: 1, t: [1, 18, 13], e: 1 },
+  pi: { ow: 'looker', f: 0, t: [17, 1, 14] },
+  policeman: { ow: 'policeman', f: 0, t: [10, 17, 2] },
+  roughneck: { ow: 'roughneck', f: 0, t: [17, 4, 2] },
+  school_kid_m: { ow: 'school_kid_m', f: 0, t: [12, 13, 1], e: 1 },
+  school_kid_f: { ow: 'school_kid_f', f: 1, t: [12, 13, 1], e: 1 },
+  skier_m: { ow: 'skier_m', f: 0, t: [15] },
+  swimmer_m: { ow: 'swimmer_m_land', f: 0, t: [11], e: 1 },
+  tuber_m: { ow: 'tuber_m', f: 0, t: [11], e: 1 },
+  tuber_f: { ow: 'tuber_f', f: 1, t: [11], e: 1 },
+  sis_bro: { ow: 'swimmer_f_land', f: 1, t: [11, 15] },
+  twins: { ow: 'twin', f: 1, t: [1, 7, 18], e: 1 },
+  young_couple: { ow: 'lady', f: 1, t: [1, 18, 12] },
+  worker: { ow: 'worker', f: 0, t: [9, 6, 5, 2] },
 };
 const N3 = new Set();   // v17.47 경완 '마티스가 걷는 모션이 없네': 3칸뿐이던 관장·사천왕 21명 그림에 걸음 6칸을 만들어 9칸으로 (tools/gym/owwalk.py, 다리 4줄 들기·보폭). 이제 3칸 그림 없음
 const CHAL_LINES = [
@@ -614,6 +655,46 @@ const SAY_CLS = {
   dragon_tamer: { i: ['드래곤의 분노를 감당할 수 있겠어?', '내 드래곤은 아무나 다룰 수 없지!', '용의 피가 끓는다…!'], w: ['드래곤이… 졌다고?', '더 강한 드래곤을 키워 오겠다!'], l: ['드래곤은 최강이다!', '용의 힘을 봤나!'] },
   skier_f: { i: ['설산에서 내려오자마자 왔어요!', '얼음처럼 차갑게 이겨 드릴게요!', '눈보라 속에서 단련했어요!'], w: ['꽁꽁 얼어붙은 기분이에요…', '다시 설산에서 수련할게요.'], l: ['슝! 활강하듯 이겼어요!', '얼음의 승리예요!'] },
   artist: { i: ['오늘 배틀을 그림으로 남기고 싶네요.', '영감을 얻으러 왔어요. 멋진 배틀 부탁해요!', '제 포켓몬은 움직이는 예술이에요.'], w: ['패배도 예술이죠… 아마도.', '좋은 그림 소재를 얻었어요.'], l: ['걸작이 탄생했네요!', '이 승리를 캔버스에 담아야겠어요!'] },
+  snow_trainer_m: { i: ['눈보라 속에서 단련한 엘리트입니다. 추위엔 강하죠!', '설산 정상에서 바로 내려왔어요. 손이 아직 꽁꽁이지만요.', '얼음처럼 냉정하게 가겠습니다.'], w: ['녹아내리는 기분이군요…', '다시 설산으로 돌아가겠습니다.'], l: ['눈보라는 제 편이었군요!', '역시 설산 훈련은 배신하지 않아요.'] },
+  snow_trainer_f: { i: ['눈밭에서 단련한 실력, 보여 드릴게요!', '털모자 쓰고 왔어요. 실내라 좀 덥네요…', '차가운 승부, 시작할까요?'], w: ['꽁꽁 언 건 제 쪽이었네요.', '설산으로 수련하러 갈게요!'], l: ['눈사람도 축하해 주겠죠!', '설원의 엘리트, 승리!'] },
+  aroma_lady: { i: ['꽃향기로 마음을 차분하게… 그리고 이길 거예요.', '오늘 향은 라벤더예요. 관장님도 느껴지세요?', '꽃처럼 피어나는 배틀을 보여 드릴게요.'], w: ['향기가 다 날아가 버렸어요…', '다음엔 더 진한 향으로 올게요.'], l: ['꽃향기의 승리예요!', '향기롭게 이겼네요.'] },
+  belle_pa: { i: ['아빠! 오늘은 둘이 힘 합쳐서 이겨요!', '(아빠) 우리 딸 앞에서 질 순 없지!', '목장에서 온 부녀 팀이에요!'], w: ['(아빠) 허허… 딸 앞에서 체면이 말이 아니구먼.', '아빠, 집에 가서 소 젖이나 짜요…'], l: ['아빠 최고!', '(아빠) 우리 딸 봤나! 하하!'] },
+  breeder_m: { i: ['정성껏 키운 아이들이에요. 털 윤기 좀 보세요!', '아침마다 포켓몬 밥을 직접 만들어요!', '키우는 게 제일 자신 있어요. 배틀도요!'], w: ['더 정성껏 키워 올게요.', '사료를 바꿔 봐야겠어요…'], l: ['키운 보람이 있네요!', '사랑으로 키운 아이들의 승리!'] },
+  breeder_f: { i: ['제 아이들 정말 예쁘게 컸죠?', '양동이 가득 포켓몬 간식 챙겨 왔어요!', '키우는 법이라면 누구에게도 안 져요!'], w: ['간식이 부족했나 봐요…', '돌아가서 더 잘 돌봐 줄게요.'], l: ['역시 정성이 최고예요!', '아이들아, 잘했어!'] },
+  cameraman: { i: ['지금 촬영 중입니다! 멋지게 부탁드려요!', '이 배틀, 뉴스에 나갑니다!', '카메라 돌아갑니다. 큐!'], w: ['컷! 다시 찍을게요…', '이 장면은 편집해야겠네요.'], l: ['완벽한 그림이 나왔네요!', '시청률 대박 예감!'] },
+  reporter: { i: ['관장님, 인터뷰 한마디만요! 아, 배틀부터요?', '오늘의 특종은 바로 여기입니다!', '현장에서 직접 배틀하는 리포터예요!'], w: ['특종은 관장님 쪽이었네요.', '이상, 현장에서 졌습니다…'], l: ['특종! 리포터가 관장을 이겼다!', '오늘 뉴스 헤드라인 확정!'] },
+  interviewers: { i: ['저희 둘이 취재 겸 도전하러 왔어요!', '(카메라맨) 각도 좋습니다! 시작하세요!', '시청자 여러분, 배틀 생중계입니다!'], w: ['생방송 사고네요…', '(카메라맨) 이건 내보내지 말자…'], l: ['생방송 승리 인증!', '(카메라맨) 이 장면 그대로 나간다!'] },
+  clown: { i: ['자, 보세요! 몬스터볼이 하나, 둘, 셋!', '웃음과 배틀, 둘 다 드릴게요!', '빨간 코는 진짜예요. 아마도요.'], w: ['어릿광대가 울면 슬프잖아요…', '공연은 망했지만 박수는 쳐 주세요!'], l: ['짜잔! 마술처럼 이겼죠?', '앵콜 부탁드려요!'] },
+  idol: { i: ['팬 여러분, 오늘도 반짝반짝!', '노래보다 배틀이 더 자신 있어요!', '사인은 배틀 끝나고 해 드릴게요!'], w: ['무대에서 넘어진 기분이에요…', '팬들한텐 비밀로 해 주세요!'], l: ['반짝반짝 승리!', '오늘 무대는 대성공이에요!'] },
+  cowgirl: { i: ['이랴! 목장에서 달려왔어요!', '밧줄 던지기만큼 배틀도 자신 있어요!', '우리 목장 우유 마시고 힘냈어요!'], w: ['말에서 떨어진 기분이에요…', '목장 일 하면서 다시 단련할게요!'], l: ['이랴! 우리가 이겼다!', '오늘 저녁은 우유 파티!'] },
+  rancher: { i: ['목장 일 하다 잠깐 나왔소!', '쇠스랑 대신 몬스터볼이오!', '우리 목장 포켓몬은 튼튼하다네!'], w: ['허허, 소들이 웃겠구먼.', '목장으로 돌아가 풀이나 베야겠소.'], l: ['하하! 목장의 힘이다!', '오늘은 풍년이로구먼!'] },
+  ranger_m: { i: ['자연을 지키는 레인저입니다. 승부도 지키죠!', '숲에서 포켓몬과 함께 단련했어요!', '레인저의 사명, 배틀에서도!'], w: ['오늘은 제가 구조받아야겠네요.', '숲으로 돌아가 다시 수련할게요.'], l: ['미션 완료!', '자연의 힘이에요!'] },
+  ranger_f: { i: ['포켓몬 레인저, 출동!', '산과 숲을 누비던 실력이에요!', '포켓몬을 지키는 마음으로 싸울게요!'], w: ['미션 실패네요…', '다음 순찰 때 또 올게요!'], l: ['미션 성공!', '레인저의 승리예요!'] },
+  cyclist_f: { i: ['자전거로 날아왔어요! 숨도 안 찼어요!', '바람 가르듯 시원하게 갈게요!', '페달처럼 쉬지 않고 밀어붙일 거예요!'], w: ['바퀴에 바람이 빠졌나 봐요…', '한 바퀴 더 돌고 올게요!'], l: ['씽씽! 결승선 통과!', '오늘 최고 기록이에요!'] },
+  double_team: { i: ['저희 둘의 호흡, 깨 보시죠!', '(둘이 동시에) 준비 완료!', '둘이라서 두 배로 강해요!'], w: ['호흡이 어긋났어…', '둘이서 다시 연습할게요.'], l: ['완벽한 콤비네이션!', '역시 우리 둘이 최고야!'] },
+  veteran: { i: ['오랜 세월 배틀만 해 왔소. 실망시키지 않겠네.', '젊은 관장의 실력, 이 늙은이가 확인해 보지.', '경험은 배신하지 않는 법이지.'], w: ['허허… 세월이 무색하구먼.', '훌륭하오. 아직 배울 게 많군.'], l: ['경험의 승리로다.', '아직 녹슬지 않았군.'] },
+  lady: { i: ['어머, 여기가 체육관이군요. 우아하게 할게요.', '배틀도 품격이 있어야죠.', '드레스가 더러워지기 전에 끝낼게요.'], w: ['어머나… 드레스에 먼지가…', '오늘은 품격 있게 물러날게요.'], l: ['호호, 우아한 승리네요.', '품격이 다르죠?'] },
+  socialite: { i: ['파티 가기 전에 잠깐 들렀어요.', '보석보다 빛나는 제 포켓몬, 보세요.', '사교계에서도 배틀이 유행이랍니다.'], w: ['파티에 늦겠네요… 흑.', '오늘 일은 비밀로 해 주세요.'], l: ['파티에서 자랑해야겠어요!', '보석처럼 빛나는 승리예요.'] },
+  rich_boy: { i: ['우리 집 포켓몬은 다 최고급이에요!', '아빠가 사 준 포켓몬이라고 얕보지 마세요!', '집사가 응원하러 왔어요!'], w: ['아빠한테 이르지 마세요…', '돈으로도 안 되는 게 있구나…'], l: ['역시 최고급!', '집사! 축하 파티 준비해!'] },
+  maid: { i: ['주인님 대신 도전하러 왔어요!', '청소하듯 깔끔하게 끝낼게요.', '차 끓여 놓고 왔어요. 식기 전에 갈게요.'], w: ['차가 다 식었겠네요…', '주인님께 혼나겠어요…'], l: ['깔끔하게 정리 끝!', '주인님께 자랑해야지!'] },
+  waiter: { i: ['주문하신 배틀, 나왔습니다!', '오늘의 추천 메뉴는 승리입니다.', '쟁반 위에 몬스터볼을 올려 왔습니다.'], w: ['주문이 잘못 들어갔군요…', '계산은 제가 하겠습니다…'], l: ['맛있게 드셨나요? 승리 한 접시!', '서비스 만점이었죠?'] },
+  waitress: { i: ['어서 오세요! 아, 제가 도전자죠?', '주문받듯 빠르게 끝낼게요!', '오늘의 특선 배틀이에요!'], w: ['쟁반을 엎은 기분이에요…', '다음엔 더 맛있게 준비해 올게요!'], l: ['서빙 완료!', '팁은 승리로 받을게요!'] },
+  parasol_lady: { i: ['양산 아래에서 우아하게 겨뤄 볼까요?', '햇볕도 배틀도 양산 하나면 충분해요.', '피부도 실력도 지킬 거예요.'], w: ['양산이 뒤집혔네요…', '오늘은 그늘에서 쉴게요.'], l: ['양산 아래 우아한 승리!', '햇살이 눈부시네요.'] },
+  pokefan_m: { i: ['포켓몬이 너무 좋아서 왔어요! 관장님 포켓몬도 좋아요!', '제 아이들 귀엽죠? 강하기도 해요!', '포켓몬 사랑이라면 누구에게도 안 져요!'], w: ['져도 포켓몬은 귀엽네요!', '관장님 포켓몬 구경한 걸로 만족!'], l: ['귀여움이 이겼다!', '우리 아이들 최고야!'] },
+  pokefan_f: { i: ['포켓몬은 다 귀여워요! 관장님 포켓몬도요!', '제 아이들한테 리본 달아 주고 왔어요!', '사랑으로 키운 아이들이에요!'], w: ['그래도 다들 귀여웠어요!', '돌아가서 꼭 안아 줄게요.'], l: ['꺄아! 이겼다!', '사랑의 승리예요!'] },
+  pi: { i: ['당신의 약점은 이미 조사가 끝났소.', '단서는 모두 이 배틀 안에 있지.', '사건 수사 중 잠깐 들렀소.'], w: ['내 추리가 빗나갔군…', '사건은 미궁 속으로…'], l: ['사건 해결!', '추리대로였소.'] },
+  policeman: { i: ['순찰 중 이상 없음! 아, 배틀은 이상 있음!', '정의의 이름으로 승부합니다!', '삐익! 체육관 앞 배틀 단속 나왔습니다!'], w: ['오늘은 제가 체포당했네요…', '순찰로 돌아가겠습니다!'], l: ['정의는 승리한다!', '상황 종료!'] },
+  roughneck: { i: ['어이, 관장! 한판 붙자고!', '이 동네 최강은 나라고!', '겉모습만 보고 판단하지 마라!'], w: ['쳇… 인정한다.', '다음엔 안 봐준다!'], l: ['봤냐! 이게 내 실력이다!', '하하! 오늘은 내가 짱이다!'] },
+  school_kid_m: { i: ['학원 끝나고 바로 왔어요! 숙제는 나중에!', '책에서 배운 걸 실전에서 써 볼게요!', '상성표는 다 외웠어요!'], w: ['시험 망친 기분이에요…', '다시 공부해 올게요!'], l: ['백 점 만점!', '공부한 보람이 있다!'] },
+  school_kid_f: { i: ['오늘 배운 거 바로 써 볼게요!', '선생님이 관장님한테 배우고 오래요!', '노트 필기 다 해 왔어요!'], w: ['복습이 필요하겠어요…', '내일 학원에서 다시 공부할게요!'], l: ['만점이에요!', '공부도 배틀도 최고!'] },
+  skier_m: { i: ['슬로프에서 바로 내려왔어요!', '얼음 위의 스피드, 따라올 수 있어요?', '스키 부츠 신은 채로 왔어요. 걷기 힘드네요.'], w: ['꽈당! 넘어졌네요…', '다시 리프트 타고 올라갈게요.'], l: ['활강 성공!', '설원의 왕자, 승리!'] },
+  swimmer_m: { i: ['물에서 막 나왔어요! 몸은 다 풀렸죠!', '수영팬티 하나로도 충분해요!', '파도를 가르듯 시원하게!'], w: ['물 밖은 역시 힘드네요…', '바다에서 다시 수련할게요!'], l: ['시원하게 이겼다!', '수영도 배틀도 일등!'] },
+  tuber_m: { i: ['튜브 타고 둥둥 떠서 왔어요!', '수영은 못해도 배틀은 잘해요!', '튜브에 바람 넣고 왔어요!'], w: ['튜브에 구멍 났어요… 으앙!', '엄마한테 혼나기 전에 갈게요!'], l: ['둥둥! 이겼다!', '튜브 최고!'] },
+  tuber_f: { i: ['튜브 들고 놀러 왔어요!', '해변에서 연습 많이 했어요!', '튜브는 못 놓지만 배틀은 자신 있어요!'], w: ['튜브랑 같이 둥둥 떠내려갈래요…', '다음엔 더 잘할게요!'], l: ['와아! 이겼다!', '해변 친구들한테 자랑해야지!'] },
+  sis_bro: { i: ['누나랑 같이 왔어요! / 동생 잘 따라와!', '남매의 팀워크를 보여 드릴게요!', '(동생) 누나가 다 해 준대요!'], w: ['(누나) 동생 탓이야! (동생) 아니거든!', '집에 가서 같이 연습하자…'], l: ['남매 최고!', '(동생) 누나 덕분이야!'] },
+  twins: { i: ['저희 둘은 똑같아요! 실력도 똑같이 세요!', '누가 언니게요? 맞혀 보세요!', '둘이서 하나! 하나라서 둘!'], w: ['둘 다 졌어요…', '둘이 같이 더 연습할게요!'], l: ['둘이라서 이겼어요!', '쌍둥이 파워!'] },
+  young_couple: { i: ['저희 데이트 중이에요! 금방 끝낼게요!', '둘의 사랑으로 이겨 볼게요!', '(남편) 여보, 내가 지켜 줄게!'], w: ['데이트 망쳤네요…', '(아내) 괜찮아, 다음에 또 오자.'], l: ['사랑의 승리!', '오늘 데이트 대성공!'] },
+  worker: { i: ['공사장에서 쉬는 시간에 왔소!', '안전모 꽉 쓰고! 승부다!', '단단하게 다진 팀이오!'], w: ['공사 다시 해야겠군…', '현장으로 돌아가겠소!'], l: ['공사 완료!', '튼튼하게 지었지!'] },
 };
 const SAY_GEN = {
   i: [
@@ -781,12 +862,12 @@ function refit(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
   const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
-  const avg = (c.boss ? Math.max(mean, Math.max(...L) - BS_GAP) : mean) + (c.boss ? 0 : stkLv(g.stk) - lsLv(g.lstk));   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
+  const avg = c.boss ? bsBase(c.boss) : mean + stkLv(g.stk) - lsLv(g.lstk);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 4 - teamLv(c.team)); c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
     const n = NAMED.find(x => x.id === c.named), bn = c.bn ?? (c.boss ? BS_LV[c.boss - 1] : clampN((g.gmax | 0) - 2, 0, 3));
-    const T = n && nmTeam(n, avg + bn + 2 + rndI(-1, 1)); if (T) c.team = T;
+    const T = n && nmTeam(n, avg + bn + 2 + (c.boss ? 0 : rndI(-1, 1))); if (T) c.team = T;
     return;
   }
   const C = CLS[c.k]; if (!C) return;
@@ -831,8 +912,15 @@ function mkScripted(L, t, bonus, n0) {
 }
 // 승급 심사 보스 (gi = 올라갈 등급 1~6): 동네·떠오르는·이름난 = 관장, 인기 = 라이벌·관장, 명문 = 사천왕, 전설 = 챔피언
 // v13.87 경완 '승급심사는 초반에는 쉽고 갈수록 어려워지게' (시뮬레이션: 예전엔 첫 심사부터 통과율 3%): 등급마다 레벨(내 평균 + 표 + 2)·마리 수·개체값·AI 가 오른다
-const BS_LV = [-2, 0, 2, 4, 7, 10], BS_N = [3, 4, 5, 6, 6, 6], BS_IV = [[8, 20], [14, 26], [20, 31], [31, 31], [31, 31], [31, 31]], BS_AI = [1, 1, 2, 2, 2, 2];
-const BS_GAP = 3;   // 승급 심사 기준 레벨은 내 라인업 최고 레벨 − 3 보다 낮아지지 않음 (v13.88)
+// v23.33 경완 '라인업은 본가 기준을 따라가야 해서 레벨 보너스를 높여야겠네' (승급 심사 승률 86% vs 하드 도전자 38~63%): 모든 등급 +2
+const BS_LV = [0, 2, 4, 6, 9, 12], BS_N = [3, 4, 5, 6, 6, 6], BS_IV = [[8, 20], [14, 26], [20, 31], [31, 31], [31, 31], [31, 31]], BS_AI = [1, 1, 2, 2, 2, 2];
+const BS_GAP = 3;   // (옛 규칙 v13.88: 심사 기준 레벨은 내 라인업 최고 레벨 − 3 보다 낮아지지 않음. v23.36 부터 bsBase 가 대신함)
+/* v23.36 경완 '내 체육관 포켓몬 박스 상위 레벨 기준으로, 처음에 정할 때' + '유저가 포켓몬 좀 키워서 다시 맞붙을 수 있게':
+   심사 기준 레벨은 그 등급 심사를 처음 받는 순간 박스에서 레벨 높은 여섯 마리 평균(±1)으로 정하고, 통과할 때까지 그대로 (g.bsL[gi]).
+   약한 라인업으로 먼저 져서 레벨을 낮추는 편법은 안 통하고(라인업을 안 봄), 진 뒤에 키워서 다시 오면 그만큼 유리하다. 통과하면 blocked() 가 지움 */
+function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return M[gi];
+  const L = (S.box || []).map(P => g.mon?.[P.id]?.lv | 0).filter(Boolean).sort((a, b) => b - a).slice(0, 6);
+  return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
 function mkBoss(gi, t) {
   const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
@@ -840,13 +928,42 @@ function mkBoss(gi, t) {
   const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
   return c;
 }
-// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다
+/* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
+   본가 단계를 다 이긴 트레이너도 계속 온다. 마지막 단계 팀에서 에이스(마지막 칸)는 그대로, 나머지 몇 칸(첫 재방문 2칸, 그 뒤 3칸)을
+   같은 타입(팀 테마 타입, 테마가 없으면 바꾸는 포켓몬과 같은 타입) 포켓몬으로 바꾼다. 방문마다 팀이 정해져 있어 지고 다시 와도 같은 팀.
+   새 포켓몬 후보 = 보통 포켓몬(바꾸는 포켓몬 종족값 −40~+40) + 에픽·전설 알에서 나오는 포켓몬(재방문이 거듭될수록 자주, 팀에 본가 전설·환상은 1마리까지).
+   어느 쪽이든 종족값 합계는 체육관 등급 천장 STR_BS(명문 600·전설 680)를 넘지 않는다 (원래 포켓몬이 천장보다 세면 그 포켓몬까지) */
+let nvEgg = null;
+const nvEggG = sp => { if (!nvEgg) { nvEgg = {}; const f = GA.eggTop; if (f) for (const k of Object.keys(SPECIES)) if (+k <= 1025) nvEgg[k] = f(+k) | 0; } return nvEgg[sp] | 0; };
+const NV_KEEP = { red: [25, 3, 6, 9] };   // 에이스 말고도 꼭 데려오는 상징 포켓몬 (레드 = 피카츄·이상해꽃·리자몽·거북왕)
+let nvPre = null; const nvFin = sp => { if (!nvPre) { nvPre = new Set(); for (const o of Object.values(SPECIES)) if (o?.fr) nvPre.add(+o.fr); } return !nvPre.has(+sp); };   // 더 진화하지 않는 포켓몬
+const nvLeg = sp => !!(SPECIES[sp]?.leg || SPECIES[sp]?.my);
+const NV_SAY = ['지난번이랑 똑같은 팀일 줄 알았지? 이번엔 새 멤버도 데려왔어!', '그동안 나도 놀고만 있진 않았거든. 새로 키운 포켓몬들을 보여 줄게!', '같은 팀으로 두 번 지는 건 자존심이 허락 안 해서 말이야. 팀을 좀 바꿔 왔어!', '이번 팀은 비밀 특훈의 성과야. 놀라지 마!'];   // v23.31 재방문 팀 (nmVar) 첫 마디 뒤 한 줄
+function nmVar(n, k, gi) {
+  const B = n.st[n.st.length - 1].filter(m => !spOff(m[0])); if (B.length < 2) return null;
+  const r = seeded('nv' + n.id + ':' + k), rp = L => L[Math.floor(r() * L.length)], cap0 = STR_BS[clampN(gi, 0, STR_BS.length - 1)];
+  const T = B.map(m => [m[0], m[1], m[2]]), cnt = {};
+  B.forEach(m => (SPECIES[m[0]]?.t || []).forEach(x => cnt[x] = (cnt[x] | 0) + 1));
+  const th = Object.keys(cnt).map(Number).filter(x => cnt[x] >= B.length * .6);   // 팀 테마 타입 (관장·사천왕처럼 한 타입 팀)
+  const KP = NV_KEEP[n.id] || [], I = Array.from({ length: T.length - 1 }, (_, i) => i).filter(i => !KP.includes(T[i][0])); for (let i = I.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [I[i], I[j]] = [I[j], I[i]]; }
+  const ns = Math.min(I.length, k <= 1 ? 2 : 3), pr = Math.min(.55, .2 + .1 * k);   // 바꾸는 칸 수, 에픽·전설에서 고를 확률
+  for (const i of I.slice(0, ns)) {
+    const o = T[i][0], ob = bsOf(o), fin = nvFin(o), ty = th.length ? th : SPECIES[o]?.t || [], cap = Math.max(cap0, ob), used = new Set(T.map(m => m[0])), legN = T.filter(m => nvLeg(m[0])).length;
+    const C = Object.keys(SPECIES).map(Number).filter(x => { const d = SPECIES[x]; if (x > 1025 || !d?.bs || d.baby || used.has(x) || spOff(x) || (fin && !nvFin(x)) || !(d.t || []).some(z => ty.includes(z))) return false; const b = bsOf(x); return b <= cap && b >= ob - 40 && (!nvLeg(x) || !legN); });
+    const R = C.filter(x => nvEggG(x) >= 4), N = C.filter(x => nvEggG(x) < 4 && !nvLeg(x) && bsOf(x) <= ob + 40);
+    const L = R.length && (r() < pr || !N.length) ? R : N; if (!L.length) continue;
+    const x = rp(L), up = bsOf(x) - ob; T[i] = [x, clampN(T[i][1] - (up > 60 ? Math.round(up / 40) : 0), 5, 100)];   // 훨씬 센 포켓몬(+60 넘게)은 종족값 40 당 레벨 −1 (루카리오 → 루기아 = −4)
+  }
+  return T;
+}
+// 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.31)
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || x.s >= n.st.length || t < (x.n || 0) || !n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
   if (!ok.length) return null;
-  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0;
-  return { id: ++g.cid, t, named: n.id, s, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team: n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]) };
+  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0, v = s >= n.st.length ? s - n.st.length + 1 : 0;
+  const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
+  return { id: ++g.cid, t, named: n.id, s, nv: v || undefined, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
 // 하루 시간표 (v15.61 경완 '3시간에 2-3명씩은 와야'): 하루를 3시간 칸 8개로 나눠, 칸마다 2~3명씩 그 칸 안 아무 때나 (6~24시 6칸 = 하루 12~18명, 예전 9~11명).
 // 새벽 칸(0~3·3~6시)은 0~1명, 단 그 시간에 앱을 자주 쓰면(사용 기록 GA.useH 이 가장 많은 칸의 15% 이상) 똑같이 2~3명
@@ -882,7 +999,7 @@ function blocked(c, sf) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
   if (c && !c.named && !c.boss && !sf) g.nc = (g.nc | 0) + 1;   /* v15.85 경완: 고용 트레이너가 막은 건 안 셈 */   // 보통 도전자를 막은 수 → 9명이면 다음은 이름 있는 트레이너 (v12.23)
   if (!c?.boss) return;
-  const gi = c.boss, r0 = g.rep || 0; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
+  const gi = c.boss, r0 = g.rep || 0; if (g.bsL) delete g.bsL[gi]; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
   if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; g.grwN = gi; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n, 'promo'); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
@@ -998,8 +1115,10 @@ const grEggN = i => { const R = grEggT(i); return R ? `${R[1] ? (GA.LT_ADJ?.[R[1
 const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) || '' : ''; };   // v13.01 경완: 전설 6명
 // 등급 혜택 (승급 심사 화면·승급 축하창): 바로 앞 등급과 달라지는 것만, 앞→뒤 숫자로 (경완 2026-10-31 '등급 혜택이나 잘 보이게')
 const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
+  /* v23.37 경완 '전설의 체육관 승급 혜택에 전설 알이 없네': 심사 화면(보상 보이는 쪽)에는 그 타입 전설 알도 한 줄. 이미 받은 타입이면 안 보임. 주는 건 그대로 전당 연출. v23.38 경완 '전설 알을 골드 위로' */
+  { const t = g?.ty; if (i === GRADES.length - 1 && !noRw && t && !(g.legE || {})[t]) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(t) || ''}</span>`, `${GA.LT_ADJ?.[t] || TYPE_KO[t]} 전설 알`, '<b>1개</b>']); }
+  if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);   /* v23.39 경완 '다른 등급 혜택도 알 먼저, 그 밑에 골드' */
   if (GR_GOLD[i] && !noRw) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
-  if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
   /* v18.87 경완 '전설 체육관은 전설 알 슬롯 없이 등급 혜택만': 전설 알은 강박사가 따로 들고 와서 준다 (legEggPop) */
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
@@ -1145,7 +1264,7 @@ async function challenge(picked) {
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
-    const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
+    const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
     for (const t of L.slice(0, -1)) await talk(who + esc(t));
     do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
@@ -1159,7 +1278,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { gmk: { mega: 1 } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, bg: pick(['in1', 'in2', 'in3']), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { gmk: { mega: 1 } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res && !res.cut && g.mgUse && (g.gmax | 0) >= 3) g.mgN = (g.mgN | 0) + 1;   // 이 체육관이 이름난 체육관이 된 뒤(메가링도 있음) 직접 싸운 판 수 (도전자 메가진화 MG_FOE, 체육관마다 따로)
@@ -1224,10 +1343,13 @@ function bsScreen() {
       <button class="bsw-go" type="button" data-a="go"><span>심사 받기</span></button></div>`;   // 버튼은 맨 아래, 설명 문구 없음 (경완 2026-10-31)
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') { el.remove(); if (bsMus) { bsMus = false; bgmPlay('gym'); } return homeSay(); }
-    if (b.dataset.a === 'go') { el.remove(); openTab('battle', { title: '승급 심사 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); bsStart(gi); } }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (12.95: 고른 라인업으로 나감)
+    if (b.dataset.a === 'go') { el.remove(); if (LEGK_ON && gi === GRADES.length - 1) bgmPlay('eyeChamp');   /* 경완 2026-11-13 '심사 받기 누를 때 챔피언 등장 곡으로 바로' (전설 심사) */
+      openTab('battle', { title: '승급 심사 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); bsStart(gi); } }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (12.95: 고른 라인업으로 나감)
 }
 async function bsStart(gi) {
-  const g = st(); bsMus = false; openTab(null);
+  const g = st();
+  if (LEGK_ON && gi === GRADES.length - 1 && bsReady(g)) { bsMus = true; openTab(null); bsMus = false; return legExam(gi); }   // 전설 심사는 강박사가 직접. [심사 받기] 때 바뀐 곡(챔피언 등장)이 배틀 전까지 이어짐
+  bsMus = false; openTab(null);   // 전설 심사는 강박사가 직접
   await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
   if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
   g.q = g.q.filter(x => !x.boss); g.q.unshift(c); challenge(true);
@@ -1444,11 +1566,12 @@ function legLines(N, E, ty) {
     ['g', '알아요. 그래도 문 닫기 직전이던<br>그날부터 매일 이 문 앞에서<br>도전자를 맞았어요. 딱 한 번만요…!'], ['...'], ['k', '…허허. 그래, 오늘은 특별한 날이지.<br>좋네! 자네도 같이 가세!'], ['g', '정말요?! 강박사님 최고예요!<br>(…말해 보길 잘했다!)']];
   T18.guHof = true; return T18;
 }
-async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete g.legN; save(); legLast = t;
+async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) return; if (!X) { delete g.legN; save(); legLast = t; }   /* X = 강박사 전설 심사 (legExam): 노크 → 전당으로 → 심사 배틀 → 이기면 그 자리에서 등록·전설 알 */
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
-  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', TL = legLines(Object.keys(g.legE || {}).length || 1, E, ty);
+  const say = h => { root.classList.remove('dhide'); return talk(KW + h); }, gsay = h => { root.classList.remove('dhide'); return talk(GW + h); }, se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', LN = X ? Object.keys(g.legE || {}).length + ((g.legE || {})[t] ? 0 : 1) : Object.keys(g.legE || {}).length || 1, TL = legLines(LN, E, ty), XL = X && legXLines(LN, E, ty, X.retry);
+  let lost = false, CR = null; const mix = async L => { for (const [w, h] of L) { if (w === '...') { dlg(''); root.classList.add('dhide'); if (h === 'g' ? gu : k) A.bub(h === 'g' ? gu : k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); } };
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR', 'se_ball', 'HG_DOOR', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
@@ -1457,6 +1580,10 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     A = window.GymEv?.tools?.(EV_API, { id: 'hof' }); if (!A) return legEggBox(t);
     const mons = (luNow().length ? luNow() : [0, 1, 2].map(luOf).find(L => L.length) || []).slice(0, 6);
     // ---- 1. 노크: 쿵쿵쿵! 쿵쿵쿵! (화면이 흔들림) ----
+    if (X) {   // 심사: 안내원 설레발 → 노크 → 강박사 '내가 그 심사관이란다'
+      if (M?.name !== 'eyeChamp') bgmPlay('eyeChamp');   // [심사 받기] 때 바뀐 곡이 그대로 이어짐
+      [k, CR] = await kangIn(D); await mix(XL.in);
+    } else {
     await wait(600);
     for (const r of [0, 1]) { dlg(`<b>쿵쿵쿵!${r ? ' 쿵쿵쿵!' : ''}</b>`); for (let j = 0; j < 3; j++) { se('HG_WALL_HIT', 2); GA.haptic?.(0); A.shake(); await wait(190); }   /* v19.24 경완 '좀 더 문 노크하는 소리로': 본가 GBA 벽에 부딪히는 '쿵' (나무 문 두드림처럼 짧고 둔탁) */ await wait(450); }
     meEnt.f = 'd'; place(meEnt); A.bub(meEnt, '!', 900); if (gu) A.bub(gu, '!', 900); se('DP_REGI', .8); await wait(900);
@@ -1464,10 +1591,11 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     dlg(''); root.classList.add('dhide'); doorSe(); await wait(180);
     k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
     dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!');
-    const CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
+    CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 170); k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
     for (const h of TL.in) await say(h);
+    }
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
-    dlg(''); root.classList.add('dhide'); bgmPlay('rgFollow');
+    dlg(''); root.classList.add('dhide'); if (!X) bgmPlay('rgFollow');
     const P = outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], L = [[Math.round(k.x), Math.round(k.y)], ...P], WS = 267;
     let guGo = false;   // v19.49 열여덟 번째: 안내원이 문 앞을 막아서고 같이 감
     if (gu && TL.blk) { root.classList.remove('dhide'); A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700); dlg(''); root.classList.add('dhide');
@@ -1481,16 +1609,34 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     await Promise.all([walk(k, P, WS).then(() => { doorSe(); k.el.style.visibility = 'hidden'; }), wait(WS).then(() => walk(meEnt, L, WS)).then(() => { doorSe(); meEnt.el.style.visibility = 'hidden'; })]);
     await wait(900);
     await A.black(true);
+    { const rR = root.getBoundingClientRect(), mR = main.getBoundingClientRect(); root.style.setProperty('--lgB', `${Math.max(0, Math.round(rR.bottom - mR.bottom)) + 8}px`); root.classList.add('lgF'); }   /* v19.24 경완: 전당 화면 대사창·알림창도 하단 메뉴 있을 때 대사창 자리(메뉴 위)에 */
+    let me = null, kg = null, hg = null, S0 = null; const S = { say: (...a) => (S0 = S0 || A.talk()).say(...a), hide: (...a) => S0?.hide(...a) };   // 대사창은 첫 대사 때 만듦 (걸어가는 동안 빈 창이 뜨지 않게)
+    // ---- 3-0. 심사 배틀 = 훈련장 경기장 (경완 2026-11-13 '훈련장에 있는 경기장 양쪽에 서서 시작, 이기면 명예의 전당으로'): 훈련장 그림 한 장을 필드 맵으로 깔고 코트 양 끝 칸에 마주 섬 ----
+    if (X) {
+      await loadJs('gymb/manage.js', 'GymManage').catch(() => {});
+      const kf = Math.max(2, Math.round((root.clientWidth || innerWidth) / (12 * 16) * 4) / 4), TW = 12, TH = clampN(Math.ceil((root.clientHeight || innerHeight) / (16 * kf)), 20, 30), cr = Math.round(TH * .53 - .5);
+      const YS = await window.GymManage?.yardShot?.(TW, TH).catch(() => null);
+      if (YS) { F = A.field({ nm: '훈련장', img: YS.url, w: TW, h: TH, col: Array.from({ length: TH }, (_, y) => (y < 4 ? '#' : '.').repeat(TW)), door: {} });
+        me = F.me = F.npc(myOw(), 5, 4, 'd'); EV_API.fitMe(me); kg = F.npc(KANG_OW, 6, 4, 'd', { fw: 32 });
+        F.follow = false; F.cam(5.5, cr); await A.black(false); await F.show();
+        await Promise.all([kg.go([[6, cr], [TW - 2, cr]], WS), wait(WS).then(() => me.go([[5, cr], [1, cr]], WS))]);
+        kg.turn('l'); me.turn('r'); await wait(500); }
+      for (const h of XL.court) await S.say(h); S.hide(true); await wait(200);
+      const won = await X.battle(); lost = !won; if (won) bgmPlay('rgPallet'); else M?.stop?.(.6); await wait(600);
+      for (const h of won ? XL.win : XL.lose) await S.say(h); S.hide(true);
+      if (won) { await wait(300); await A.black(true); if (F) { F.el.remove(); F = null; } }
+    }
+    if (!lost) {
     // ---- 3. 명예의 전당 (본가 파이어레드 맵) ----
     const HJ = await fetch(`${IMG}ev/hof/hof.json?v=${VER}`).then(r => r.json());
-    { const rR = root.getBoundingClientRect(), mR = main.getBoundingClientRect(); root.style.setProperty('--lgB', `${Math.max(0, Math.round(rR.bottom - mR.bottom)) + 8}px`); root.classList.add('lgF'); }   /* v19.24 경완: 전당 화면 대사창·알림창도 하단 메뉴 있을 때 대사창 자리(메뉴 위)에 */
     F = A.field({ nm: '명예의 전당', img: `${IMG}ev/hof/hof.png?v=${VER}`, over: `${IMG}ev/hof/hof_o.png?v=${VER}`, w: HJ.w, h: HJ.h, col: HJ.col, door: {} });
-    const me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); const kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 }), hg = guGo ? F.npc(GUY_OW, 4, 12, 'u') : null;
+    me = F.me = F.npc(myOw(), 5, 12, 'u'); EV_API.fitMe(me); kg = F.npc(KANG_OW, 5, 11, 'u', { fw: 32 }); hg = guGo ? F.npc(GUY_OW, 4, 12, 'u') : null;
     F.cam(5, 6); bgmPlay('rgPallet'); await A.black(false); await F.show();
     await Promise.all([kg.go([[5, 6], [6, 6], [6, 5]], WS), wait(WS).then(() => me.go([[5, 5]], WS)), hg ? wait(WS * 2).then(() => hg.go([[4, 5]], WS)) : 0]);
     kg.turn('l'); await wait(200); me.turn('r'); if (hg) hg.turn('r'); await wait(300);
-    const S = A.talk();
-    for (const h of TL.hof) await (Array.isArray(h) ? S.say(h[1], { who: h[0] }) : S.say(h)); S.hide(true);
+    for (const h of X ? XL.hof : TL.hof) await (Array.isArray(h) ? S.say(h[1], { who: h[0] }) : S.say(h)); S.hide(true);
+    }
+    if (!lost) {
     me.turn('u'); if (hg) hg.turn('u'); await wait(400);
     // 본가 FldEff_HallOfFameRecord: 볼을 25프레임마다 하나씩 (SE_BALL) → 32프레임 쉬고 → 볼이 반짝이며 모니터가 켜짐
     const kk = F.k, bw = document.createElement('div'); bw.className = 'hm-balls'; F.map.appendChild(bw);
@@ -1528,6 +1674,7 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     if (guGo) { cap.classList.remove('on'); await wait(400); ov.classList.add('hGu'); ov.classList.remove('hBurst'); void ov.offsetWidth; ov.classList.add('hBurst'); se('DP_KIRAKIRA2');
       cap.innerHTML = `<i>특별 등록</i><b>안내원의 전당 제1호</b><em>${esc(g.nm || '')} 안내원</em><small>${ds}</small>`; void cap.offsetWidth; cap.classList.add('on'); confetti(); await hofWait(ov, 3600); }
     // 하늘에서 전설 알
+    if (!X || X.egg) {
     cap.classList.remove('on'); ov.classList.add('hEgg');
     ov.insertAdjacentHTML('beforeend', `<i class="hof-pil"></i><i class="hof-ray"></i><div class="hof-egg">${GA.eggIco?.(t) || ''}</div>`);
     await wait(60); ov.classList.add('hDrop'); se('DP_KIRAKIRA2'); await wait(1900);
@@ -1538,13 +1685,16 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
       n2.innerHTML = `<i class="hg-shine"></i><div class="hg-ic"><i class="hg-halo"></i>${GA.eggIco?.(t) || ''}</div><div class="hg-tx"><small>전설 알 획득!</small><b>${adj} 전설 알</b><p>${ty} 타입 전설 포켓몬이 태어나요<br>필드의 알 가방에 넣었어요</p></div><button class="hg-ok">좋아!</button>`;
       ov.appendChild(n2); try { GA.sfx('newdex'); } catch (e) {} GA.haptic?.(1);
       n2.querySelector('.hg-ok').addEventListener('click', e => { e.stopPropagation(); se('DP_DECIDE'); n2.classList.add('bye'); setTimeout(() => { n2.remove(); ok(); }, 260); }, { once: true }); });
+    } }
     // ---- 5. 체육관으로 돌아옴 ----
-    M?.stop?.(1); await A.black(true); ov.remove(); ov = null; root.classList.remove('lgOn', 'lgF'); F.el.remove(); F = null;
+    M?.stop?.(1); await A.black(true); if (ov) ov.remove(); ov = null; root.classList.remove('lgOn', 'lgF'); if (F) F.el.remove(); F = null;
     meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; meEnt.f = CR?.mf || 'd'; meEnt.el.style.visibility = ''; place(meEnt);
     const kt = CR?.path?.at(-1) || D.door; k.x = kt[0]; k.y = kt[1]; k.f = CR?.cf || 'u'; k.el.style.visibility = ''; place(k);
     if (gu && guGo && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
+    if (lost) { k.el.remove(); ents = ents.filter(x => x !== k); k = null; }   // 진 날은 강박사 없이 혼자 돌아옴
     bgmPlay('gym'); await A.black(false); await wait(300);
-    for (const h of TL.back) await say(h);
+    if (lost) { if (gu) { face(gu, meEnt); await mix(XL.loseG); dlg(''); root.classList.add('dhide'); } return { won: false }; }
+    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera') { dlg(''); root.classList.add('dhide'); await teraPop(t); } else await (w === 'g' ? gsay(h) : say(h)); } } else for (const h of TL.back) await say(h);
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
@@ -1565,10 +1715,124 @@ async function legEggPop() { const g = st(), t = g.legN; if (!t) return; delete 
     k.el.remove(); ents = ents.filter(x => x !== k); k = null;
     if (gu) { face(gu, meEnt); await wait(250); for (const h of TL.after) await gsay(h); dlg(''); root.classList.add('dhide'); }   /* v19.24 경완: 강박사 간 뒤 안내원 뒷담 한마디 */
     if (gu && gu0) { if (gPath) await walk(gu, [...gPath.slice(0, -1).reverse(), [gu0[0], gu0[1]]], 200); else await A.walkTo(gu, [gu0[0], gu0[1]], 200); gu.f = gu0[2]; place(gu); }
+    return { won: true };
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
     if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
     if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; }
+}
+/* ---------- 전설 승급 심사 = 강박사 (경완 2026-11-13 '전설 체육관 승급은 강박사가 하는 스토리도 재밌겠는데, 그럴라면 전설 알 연출도 바꿔야')
+   평판이 가득 차 [승급 심사](곡이 포켓몬리그로) → 노크, 강박사 진지한 대화(개그 없음) → 훈련장 경기장 양 끝에 마주 서서 심사 배틀(서로 거다이맥스) →
+   이기면 명예의 전당으로 가서 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
+   거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
+const LEGK_ON = false;
+// 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼', '거다이맥스 한 번밖에 안 하는데 6마리 전부 거다이맥스 가능한 포켓몬일 필요 없다'):
+// 가장 어려운 심사: 에이스(마지막, 거다이맥스)는 거다이맥스 모습이 있는 종에서 체육관 타입의 천적, 나머지 다섯도 연구소 포켓몬(전설·환상 아닌 최종 진화) 가운데 천적 위주.
+// 종족값이 높을수록 먼저 보고, 이미 뽑힌 포켓몬과 타입·약점이 겹치면 점수를 깎아서 한 가지 기술에 팀이 다 쓸리지 않게 함
+const KANG_GMAX = [3, 6, 9, 68, 94, 131, 143, 569, 812, 815, 818, 823, 826, 834, 839, 841, 842, 844, 849, 851, 858, 861, 869, 879, 884];
+const KANG_POOL = [3, 6, 9, 59, 65, 68, 94, 130, 131, 143, 149, 154, 157, 160, 181, 196, 197, 212, 214, 230, 248, 254, 257, 260, 282, 306, 330, 350, 373, 376, 389, 392, 395, 445, 448, 461, 462, 464, 466, 467, 468, 472, 473, 475, 477, 530, 553, 609, 612, 635, 637, 663, 700, 706, 715, 748, 778, 784, 823, 887];
+// 전설·환상 후보. 실제로는 등급 천장(심사 때 등급 = 명문, STR_BS 600) 안의 종만 뽑힘. 천장을 올리면 600 넘는 전설은 한 팀에 KANG_BIG 마리까지만
+const KANG_LEG = [144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 480, 481, 482, 483, 484, 485, 487, 488, 490, 491, 492, 494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 716, 717, 718, 719, 720, 721, 785, 786, 787, 788, 791, 792, 800, 801, 802, 807, 888, 889, 893, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1007, 1008, 1025];
+const KANG_BIG = 2;
+const KANG_REP = 2;   // 후보(65종쯤)가 자리(18×5)보다 적어서 한 번씩만은 못 함
+const KANG_TEAM = [94, 143, 131, 3, 9, 6];   // 상성 표를 못 읽을 때
+// 체육관마다 얼굴이 달라지게 (경완 2026-11-13): 18타입 팀을 차례로 다 뽑으면서 앞 타입에서 이미 쓴 종은 쓴 횟수만큼 감점. 상성을 가장 크게 보고 종족값은 조금만
+function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = TERA_EN[t] || ''; return e[0] + e.slice(1).toLowerCase(); }; if (!Dx || !TERA_EN[ty]) return KANG_TEAM;
+  const eff = (a, D) => !Dx.getImmunity(a, D) ? 0 : 2 ** Dx.getEffectiveness(a, D), ALL = TERA_EN.slice(1).map((_, i) => nm(i + 1)), CAP = cap || STR_BS[STR_BS.length - 2], lk = st()?.lkTry | 0;   // 심사 때는 아직 명문이라 명문 천장(600)
+  const ok = x => SPECIES[x] && !spOff(x) && bsOf(x) <= CAP, TB = GA.eggFinals?.([4, 5]) || [];   // 게임 안 분류는 본가 전설·환상이 아니라 작업실 티어표: 에픽·전설 알에서 나오는 포켓몬의 최종 진화
+  const POOL0 = (TB.length >= 12 ? TB : [...new Set([...KANG_POOL, ...KANG_LEG])]).filter(x => ok(x) && bsOf(x) >= 480), used = {}, kn = x => SPECIES[x].n;   // 겹침은 이름으로 셈 (지역 폼은 같은 얼굴)
+  const one = t => { const G = nm(t), r = seeded('kang' + t + lk);
+    const mOf = (T, g2) => Math.max(...T.map(a => eff(a, [g2]))) - eff(g2, T);
+    // 천적이 아닌 자리(상성 1 미만)에는 다른 타입의 천적으로 쓸 종을 아껴 둠 (천적 되는 타입 수만큼 감점)
+    const info = x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm), b = bsOf(x), m = mOf(T, G); return { x, T, b, W: ALL.filter(a => eff(a, T) > 1), s: m * 1.5 + Math.max(0, b - 500) / 100 * .3 + r() * .8 - (used[kn(x)] | 0) * .7 - (m < 1 ? ALL.filter(g2 => mOf(T, g2) >= 1.5).length * .25 : 0) }; };
+    const ace = KANG_GMAX.filter(ok).map(info).sort((a, b) => b.s - a.s)[0]; if (!ace) return null;
+    const got = [ace]; let L = POOL0.filter(x => x !== ace.x && (used[kn(x)] | 0) < KANG_REP).map(info);   // 한 종은 18타입 팀을 통틀어 KANG_REP 번까지만
+    const cut = o => got.reduce((n, p) => n + o.T.filter(z => p.T.includes(z)).length * .6 + o.W.filter(w => p.W.includes(w)).length * .2, 0);
+    while (got.length < 6 && L.length) { if (got.filter(o => o.b > 600).length >= KANG_BIG) L = L.filter(o => o.b <= 600); L.sort((a, b) => b.s - cut(b) - a.s + cut(a)); if (L.length) got.push(L.shift()); }
+    if (got.length < 6) return null; for (const o of got) used[kn(o.x)] = (used[kn(o.x)] | 0) + 1;
+    return [...got.slice(1).sort((a, b) => a.b - b.b).map(o => o.x), ace.x]; };
+  // 천적 후보가 적은 타입부터 먼저 뽑음 (전기처럼 천적이 땅뿐인 타입이 뒤에서 천적을 다 뺏기지 않게)
+  const tyOf = x => (SPECIES[x].t || []).filter(Boolean).map(nm), mm = (T, g2) => Math.max(...T.map(a => eff(a, [g2]))) - eff(g2, T);
+  const ORD = ALL.map((g2, i) => [i + 1, POOL0.filter(x => mm(tyOf(x), g2) >= 1.5).length]).sort((a, b) => a[1] - b[1] || a[0] - b[0]).map(o => o[0]);
+  let out = null; for (const t of ORD) { const T = one(t); if (t === ty) { out = T; break; } }
+  return out || KANG_TEAM; }
+function mkKang(gi) { const g = st(), sp = kangPick(g.ty, STR_BS[gi - 1]), lv = clampN(bsBase(gi) + BS_LV[gi - 1] + 2, 5, 100);
+  return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
+// 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
+function legXLines(N, E, ty, retry) {
+  const nth = ['', '첫', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟'][N] || N;
+  /* 경완 2026-11-13 '긴장감이 있으면 좋겠어서 개그 연출 빼고 강박사가 진지하게 대화하고 배틀 장소로': 심사 앞·배틀·진 뒤는 웃음기 없이. 이긴 뒤(전당·복귀)부터 평소 강박사로 돌아옴 */
+  const lose = ['…여기까지일세.', '부끄러워할 것 없네.\n이 심사는 그만큼 높은 벽이란다.', '포켓몬들과 다시 단련하고 오게.\n나는 언제든 기다리고 있겠네.'];
+  const loseG = [['g', '관장님… 수고하셨어요.<br>다음엔 꼭 넘으실 거예요.']];
+  const hof = ['여기가 명예의 전당이란다.', '리그가 인정한 최고의 체육관만\n저 기록 기계에 이름을 남길 수 있지.', '자, 함께 싸운 포켓몬들의 몬스터볼을\n하나씩 올려 보게.'];
+  /* 전설 승급 보상 = 그 체육관 타입 테라피스 (경완 2026-11-13 '전설 체육관 되면 언제든 해당 체육관 타입 테라로 바꿀 수 있는 아이템', '다른 체육관 운영할 때 해당 테라를 쓸 수 있게') */
+  const tera = [['k', '그리고 전설의 체육관에만 전하는<br>마지막 비기가 있단다.<br>바로 <b>테라스탈</b>이지!'], ['k', '포켓몬은 저마다 테라 타입을<br>하나씩 품고 있는데, 배틀 중에<br>그 타입으로 빛나며 변하는 힘이란다.'], ['tera'],
+    ['k', `그 <b>${ty} 테라피스</b>가 있으면<br>어떤 포켓몬이든 테라 타입을<br>${ty} 타입으로 바꿀 수 있단다. 몇 번이든!`], ['k', '다른 타입 체육관을 맡아도<br>그대로 쓸 수 있지. 전설을 늘릴수록<br>테라피스도 하나씩 모이는 셈이야.'],
+    ['k', '참고로 사람은<br>테라스탈도 안 된다네.'], ['k', '…머리에 샹들리에만<br>얹어 봤지.'], ['g', '(메가진화에 이어<br>그것도 해 보셨구나…)']];
+  if (retry) return { pre: null, in: [['k', `${E}. 다시 왔구먼.`], ['k', '그 눈빛을 보니 지난 패배를<br>헛되이 보내지는 않은 모양이네.'], ['k', '말은 길게 하지 않겠네.<br>경기장으로 가세.']],
+    court: ['자리는 지난번과 같네.\n달라진 것은 자네뿐이지.', `자, ${E}.\n이번에는 넘어 보게!`],
+    win: ['…졌네.', `해냈구먼, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
+    back: [['k', `${E}, 다시 한번 축하하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 정성껏 품어 주렴!`], ['k', '한 번 졌다가 다시 일어선 관장이<br>제일 무서운 법이지.<br>자네가 딱 그렇구먼!'], ...tera] };
+  if (N <= 1) return { pre: null,
+    in: [['k', `${E}. 기다리고 있었네.`], ['k', '전설 심사는 그 체육관을<br>처음 맡긴 사람이 직접 보는 것이<br>리그의 오랜 전통이란다.'], ['k', '문 닫기 직전이던 이 체육관을<br>자네에게 맡긴 것이 나였지.<br>그러니 마지막 심사도 내 몫이네.'],
+      ['k', '오늘은 박사가 아니라<br>심사관으로서 자네 앞에 서겠네.<br>봐주는 것은 없단다.'], ['k', '훈련장 경기장으로 가세.<br>자네 포켓몬들이 땀 흘려 온<br>바로 그 자리에서 겨루는 걸세.'], ['g', '관장님… 다녀오세요.<br>여기서 기다리고 있을게요.']],
+    court: ['이 경기장의 모래에는\n자네와 포켓몬들이 쌓아 온 시간이\n그대로 배어 있구먼.', '전설의 체육관이란\n그저 강한 체육관이 아니란다.\n누구도 넘지 못한 벽이라는 뜻이지.', '그 이름에 걸맞은지,\n내 30년을 함께한 포켓몬들로\n직접 확인하겠네.', `자, ${E}.\n가진 것을 전부 보여 주게!`],
+    win: ['…졌네.', `훌륭했네, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
+    back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>그때마다 심사는…<br>물론 또 내가 본단다. 허허!']] };
+  return { pre: null,
+    in: [['k', `${E}. ${nth} 번째 전설 심사구먼.`], ['k', '몇 번을 치러도 이 심사는<br>가벼워지지 않는단다.<br>자네도, 나도 말일세.'], ['k', '경기장으로 가세.']],
+    court: [`${ty} 타입으로도 전설의 이름에\n걸맞은지 확인하겠네.`, '지난 심사보다 나도 강해졌단다.\n각오하게.', `자, ${E}.\n전력으로 오너라!`],
+    win: ['…졌네.', `또 해냈구먼, ${E}.\n심사 결과는… 합격일세.`, `${ty} 타입까지\n전설의 체육관이란다.`, '따라오게.\n전당이 자네를 기다리고 있네.'], hof: ['다시 왔구먼. 명예의 전당이란다.', '방법은 기억하지?\n몬스터볼을 하나씩 올려 보게.'], lose, loseG,
+    back: [['k', `${E}, ${nth} 번째 전설이라니 대단하네!<br>그 알에선 ${ty} 타입 <b>전설 포켓몬</b>이<br>태어난단다. 이번에도 잘 품어 주렴!`], ['k', `그리고 약속한 대로<br><b>${ty} 테라피스</b>도 받아 가게!`], ['tera'], ['k', `이제 어느 체육관에서든<br>${ty} 테라스탈을 쓸 수 있단다.<br>테라피스가 벌써 ${nth} 개째구먼!`]] };
+}
+// 테라피스 받는 알림창 (저절로 뜨는 창: 버튼으로만 닫힘). 테라스탈을 만들 때 여기서 실제로 창고에 넣는다 (지금은 연출만)
+const TERA_EN = ['', 'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL', 'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK', 'FAIRY'];   // 테라피스 그림 = DBK 팩 (gym/img/dbk/it/<타입>TERASHARD.png, 경완 2026-11-13 '압축 파일 안에 있는 걸로')
+function teraPop(t) { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
+    const p = pop(`<h4>${TYPE_KO[t]} 테라피스를 받았다!</h4><div class="le-get tp-get" style="--tc:${GA.TYPE_C?.[t] || '#8cf'}"><img class="tp-shard" alt="" src="${IMG}dbk/it/${TERA_EN[t]}TERASHARD.png"></div><p class="gy-msg" style="text-align:center">포켓몬의 테라 타입을<br><b>${TYPE_KO[t]} 타입</b>으로 바꿀 수 있어요.<br><small>몇 번이든 쓸 수 있고, 다른 체육관에서도 쓸 수 있어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); confetti(); }); }
+// 심사 진행 (test = 운영자 시험: 가상 체육관, 저장·알·골드 안 건드림)
+async function legExam(gi, test) {
+  const g = st(); if (!g?.d || busy) return;
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB().loadData(); try { await GB().loadSim?.(); } catch (e) {}   // 팀 뽑기(kangPick)가 상성 표를 읽으려면 배틀 엔진이 먼저 실려 있어야 함
+  if (!test) await loadNamed();
+  const c = mkKang(gi), N = Object.keys(g.legE || {}).length + ((g.legE || {})[g.ty] ? 0 : 1), newEgg = test || !(g.legE || {})[g.ty];
+  let done = null;
+  const battle = async () => {
+    const my = luNow(), R = rewOf(c), now = Date.now(), me = trName() || '관장';
+    const team = c.team.map(([sp, lv]) => { const o = GB().foeEntry(sp, lv, BS_AI[gi - 1]); o.iv = o.iv.map(() => 31); o.evs = GB().foeEvs?.(sp, gi); o.gmax = 1; return o; });
+    const sayEnd = { win: `…훌륭하네.\n${me}의 체육관은\n진짜였구먼.`, lose: '아직은 넘을 수 없단다.' };
+    document.body.classList.add('gymBattle'); let res;
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, gmk: { dmax: 1, ...(MEGA_ON && tutSeen('mgRing') ? { mega: 1 } : {}) }, frw: FR_W[3], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: BS_AI[gi - 1] }, rew: { g: R.g, r: repWin(R.r), rl: 0 }, diff: BS_AI[gi - 1], ...chalEnv(c, team), music: 'champ', exam: { g: GRADES[gi][1], bd: bdHtml(g.ty, gi + 1) }, meBackUrl: await fitSrc('trb'), ...(test ? { practice: true } : {}) }); }
+    finally { document.body.classList.remove('gymBattle'); }
+    if (res?.cut) { done = { cut: 1 }; return false; }
+    const won = !!res?.won, r0 = g.rep || 0; let gold = 0;
+    if (test) { if (won) { g.gmax = gi; g.rep = Math.max(r0, GRADES[gi][0]); g.newBdg = g.ty; g.newG = gi; } }
+    else {
+      if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); delete g.legN; delete g.lkTry; legLast = g.ty; }
+      else { g.stk = 0; g.l++; if (g.wk) g.wk.l++; g.lkTry = (g.lkTry | 0) + 1; }
+      try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
+        window.pkBal?.('gym', { c: 'boss', df: 2, bs: gi, nm: 'kang', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: (g.rep || 0) - r0, stk: g.stk | 0, ls: 0, sl: 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}
+      { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += (g.rep || 0) - r0; }
+      glog(won ? 'win' : 'lose', `포켓몬 박사 <b>강박사</b>${won ? `에게 이겼다! <small>+${gold}G</small>` : '에게 졌다…'}`);
+      if (g.stk && won) g.stk = 0; setAt(); save(); renderTop();
+    }
+    await resultPop(c, res, gold, (g.rep || 0) - r0, R);
+    for (const u of res?.eg || []) try { await window.GymManage?.egGainPop?.(u); } catch (er) { console.error(er); }
+    done = { won }; return won;
+  };
+  let out = null;
+  try { out = await legEggPop({ retry: g.lkTry | 0, egg: newEgg, battle }); } catch (e) { console.error(e); GA.toast?.('심사를 시작하지 못했어요'); }
+  if (out?.won && g.newBdg && open) { busy = true; root.classList.add('busy'); try { await badgeGet(g.newBdg); await unlockChk(); } finally { busy = false; root.classList.remove('busy'); } }
+  if (open) renderHome();
+  return out;
+}
+// 운영자 '전설 심사 (강박사)': 시뮬 안 가상 불꽃 체육관(명문, 평판 가득) + 시험 포켓몬 여섯 (끝나면 상자에서 뺌)
+const LEGX_T = [[59, ['flareblitz', 'extremespeed', 'wildcharge', 'closecombat'], 'intimidate'], [257, ['flareblitz', 'closecombat', 'thunderpunch', 'swordsdance'], 'speedboost'], [851, ['firelash', 'leechlife', 'powerwhip', 'knockoff'], 'flashfire'], [839, ['rockblast', 'heatcrash', 'earthquake', 'rapidspin'], 'steamengine'], [815, ['pyroball', 'highjumpkick', 'gunkshot', 'uturn'], 'blaze'], [6, ['flamethrower', 'airslash', 'solarbeam', 'dragonpulse'], 'blaze']];
+async function legExamTest(retry) {
+  if (!open || !st()?.d) return; await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  const g = st(); S.box = S.box || []; g.mon = g.mon || {}; const ids = [];
+  LEGX_T.forEach(([sp, mv, ab], i) => { const P = { id: 990021 + i, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 72, it: '', ab, gmax: 1 }); ids.push(P.id); });
+  g.lu = [ids, [], []]; g.luI = 0; if (retry) g.lkTry = 1;
+  try { await legExam(GRADES.length - 1, true); } finally { dropMgT(); ids.forEach(id => { delete g.mon[id]; }); g.lu = [[], [], []]; }
 }
 // 승급 (경완 2026-10-31): 홈 타이틀 배지가 밝게 빛나다가 번쩍 → 다음 등급 배지로 바뀜 → 축하창 (등급 혜택만, 설명 문구 없음)
 async function badgeGet(ty) {
@@ -1790,7 +2054,7 @@ function homeSay() {
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
-  if (bs) try { window.GymBGM?.prep('league'); } catch (e) {}   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
+  if (bs) try { window.GymBGM?.prep('league'); if (LEGK_ON && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
   if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
   if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
@@ -2275,7 +2539,7 @@ function mgPop() {
 // 승급하면 강박사가 알려 주는 것 (등급 i 로 오른 뒤 튜토리얼, 플래그 k = promoTut 이 세우는 체육관 플래그)
 const PK_TIP = { 1: { k: 'egT', t: '특별한 기술', d: '훈련으로 깨닫는 숨은 기술' },   /* 경완 11-12: 첫 번째 비기 = 특별한 기술, 비기는 그 등급 카드 바로 위(오르기 전과 사이) */ 2: { k: ['evTB', 'evTC'], t: '노력치', d: '키운 만큼 쌓이는 능력치' }, 3: { k: 'mgTut', t: '메가진화', d: '메가링과 메가스톤으로 배틀 중에 메가진화' },
   /* 경완 2026-11-13 '앞으로 개발할 Z기술·테라·거다이맥스도 비기 4·5·6 으로 실루엣' — dev:1 = 아직 개발 중이라 등급을 달성해도 실루엣 그대로 (다 만들면 dev 지우기) */
-  4: { k: 'zTut', t: 'Z기술', d: 'Z링과 Z크리스탈로 배틀 중 한 번 쓰는 필살기', dev: 1 }, 5: { k: 'teraTut', t: '테라스탈', d: '테라스탈 오브로 포켓몬의 타입을 바꾸는 힘', dev: 1 }, 6: { k: 'dmaxTut', t: '거다이맥스', d: '다이맥스 밴드로 포켓몬을 거대하게', dev: 1 } };
+  4: { k: 'zTut', t: 'Z기술', d: 'Z링과 Z크리스탈로 배틀 중 한 번 쓰는 필살기', dev: 1 }, 5: { k: 'dmaxTut', t: '거다이맥스', d: '다이맥스 밴드로 포켓몬을 거대하게', dev: 1 }, 6: { k: 'teraTut', t: '테라스탈', d: '테라스탈 오브로 포켓몬의 타입을 바꾸는 힘', dev: 1 } };   /* v23.15 경완 '테라랑 거다이 순서 바꾸기': 거다이맥스는 명문, 전설 승급 심사에서 쓸 수 있게 */
 /* 비기 다시 보기: 그 튜토리얼의 강박사 설명만 차례로 (눌러 보기 단계·저장 바꾸는 건 빼고, 비출 곳이 화면에 없으면 그냥 말만) */
 const gtTalk = L => L.filter(x => !x.tap && !x.until && typeof x.t !== 'function').map(x => ({ c: x.c, t: typeof x.t === 'string' ? x.t : undefined, s: x.s }));
 PK_TIP[1].re = () => { const L = gtTalk(GT_EGD()); L.splice(1, 0, { c: '특별한 기술', s: '훈련장 포켓몬 카드의\n\'새 기술\'에서 볼 수 있지.' }); return L; };
@@ -2511,10 +2775,11 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
+    if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.31 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
     if (a === 'rep+' || a === 'rep-') { g.rep = clampN((g.rep || 0) + (a === 'rep+' ? 125 : -125), 0, REP_MAX); g.gmax = Math.max(g.gmax | 0, gradeOf(g.rep, 99).i); save(); renderTop(); return say(`평판 ${g.rep} (${gradeOf(g.rep).n})`); }
     if (a === 'gold') { S.gold += 100000; save(); renderGoldG(); return say(`골드 ${S.gold.toLocaleString()}G`); }
@@ -3287,6 +3552,7 @@ function enter() {
   // 경완 2026-11-12 '운영자 모드 튜토리얼은 내 계정 체육관 말고 가상의 체육관으로': 승급 튜토리얼 시험은 시뮬(나가면 되돌림) 안에서 새 연습 체육관을 잠깐 만든다 (내 체육관 타입·옷만 가져옴)
   if (window.gymSimOn && window.gymNewTut) { S.gym = { fit: S.gym?.fit }; }   // 경완 2026-11-12 운영자 '체육관 처음 열기': 시뮬 안에서 빈 체육관 → 처음 개설 튜토리얼 (나가면 되돌림)
   window.gymNewTut = 0;
+  if (window.gymSimOn && window.gymLegExam) { const g0 = S.gym || {}, k = GRADES.length - 2; S.gym = { d: (DESIGNS.find(d => d.ty === 10) || DESIGNS[0]).id, ty: 10, nm: '연습 체육관', rep: GRADES[k + 1][0], gmax: k, unl: 1, rv: 6, lu: [[], [], []], tr: [], mon: {}, itm: {}, tms: {}, own: {}, dp: [], vis: Date.now(), fit: g0.fit, bsAl: k + 1 }; }
   if (window.gymSimOn && window.gymMegaTut) { const k = window.gymMegaTut, g0 = S.gym || {}, ty = g0.ty || 10; S.gym = { d: (DESIGNS.find(d => d.ty === ty) || DESIGNS[0]).id, ty, nm: '연습 체육관', rep: GRADES[k][0], gmax: k, ...(k > 1 ? { unl: 1 } : {}), rv: 6, lu: [[], [], []], tr: [], mon: {}, itm: {}, tms: {}, own: {}, dp: [], vis: Date.now(), fit: g0.fit }; }
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
@@ -3294,6 +3560,7 @@ function enter() {
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }   // v23.10 운영자 훈련하기 시연 (시뮬 안)
+  { const k = window.gymSimOn ? window.gymLegExam : null; window.gymLegExam = null; if (k) setTimeout(() => legExamTest(k === 2), 900); }   // 운영자 전설 심사 (강박사) 시험
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
     try { await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); } catch (e) {}
@@ -3576,6 +3843,26 @@ async function trSupply(R, o, ids) {
   else if (Math.random() < .5) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .3); }); await o.msgTap('강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'); }
   else await o.msgTap('상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"');
 }
+/* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
+   보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
+   노말·비행 = 배틀타워, 물·얼음·드래곤 = 배틀스테이지). 사천왕·챔피언 본인은 자기 방, 승급 심사는 챔피언 난천 방 */
+const CBG_TY = { 7: 'aaron', 12: 'aaron', 4: 'aaron', 5: 'bertha', 6: 'bertha', 9: 'bertha', 2: 'bertha', 10: 'flint', 13: 'flint', 14: 'lucian', 8: 'lucian', 17: 'lucian', 18: 'lucian', 1: 'tower', 3: 'tower', 11: 'hall', 15: 'hall', 16: 'hall' };
+/* v23.22 경완 '난이도로 차이 주는 건 이름 있는 트레이너만, 일반 도전자는 도전자 종류로': 트레이너 종류 → 방 */
+const CBG_CLS = { youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
+  camper: 'aaron', picnicker: 'aaron', bug_catcher: 'aaron', aroma_lady: 'aaron', artist: 'aaron',
+  hiker: 'bertha', ruin_maniac: 'bertha', black_belt: 'bertha', battle_girl: 'bertha',
+  fisherman: 'in2', swimmer_m: 'in2', swimmer_f: 'in2', sailor: 'in2', skier_f: 'hall',
+  cool_trainer_m: 'tower', cool_trainer_f: 'tower', tamer: 'tower', dragon_tamer: 'tower', bird_keeper: 'cynthia',
+  beauty: 'castle', gentleman: 'castle', psychic_m: 'lucian', psychic_f: 'lucian', channeler: 'lucian',
+  super_nerd: 'factory', engineer: 'factory', poke_maniac: 'factory', pokemaniac: 'factory', rocker: 'flint', juggler: 'arcade', ninja_boy: 'arcade',
+  snow_trainer_m: 'hall', snow_trainer_f: 'hall', belle_pa: 'aaron', breeder_m: 'in3', breeder_f: 'in3', cameraman: 'arcade', reporter: 'arcade', interviewers: 'arcade', clown: 'arcade', idol: 'arcade', cowgirl: 'aaron', rancher: 'aaron', ranger_m: 'aaron', ranger_f: 'aaron', cyclist_f: 'in3', double_team: 'tower', veteran: 'tower', lady: 'castle', socialite: 'castle', rich_boy: 'castle', maid: 'castle', waiter: 'castle', waitress: 'castle', parasol_lady: 'castle', pokefan_m: 'castle', pokefan_f: 'castle', pi: 'lucian', policeman: 'tower', roughneck: 'flint', skier_m: 'hall', tuber_m: 'in2', tuber_f: 'in2', sis_bro: 'in2', twins: 'in1', young_couple: 'in3', worker: 'bertha' };
+const CBG_TR = { elite_four_aaron: 'aaron', elite_four_bertha: 'bertha', elite_four_flint: 'flint', elite_four_lucian: 'lucian', champion_cynthia: 'cynthia' };
+const CBG_PL = { aaron: 'league_aaron', bertha: 'league_bertha', flint: 'league_flint', lucian: 'league_lucian', cynthia: 'league_cynthia', tower: 'battle_tower', hall: 'battle_hall', factory: 'battle_factory', arcade: 'battle_arcade', castle: 'battle_castle' };
+function chalEnv(c, team) { const of = bg => ({ bg, pl: CBG_PL[bg] || '' });
+  if (c.boss) return of('cynthia'); if (CBG_TR[c.tr]) return of(CBG_TR[c.tr]);
+  if (!c.named) return of(CBG_CLS[c.tr] || pick(['in1', 'in2', 'in3']));   // 일반 도전자 = 트레이너 종류
+  const n = {}; team.forEach(o => (SPECIES[o.sp]?.t || []).forEach((t, i) => { n[t] = (n[t] || 0) + (i ? 1 : 2); }));
+  const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; return of(CBG_TY[top] || pick(['in1', 'in2', 'in3'])); }
 async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
@@ -3847,7 +4134,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick } };
+  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
