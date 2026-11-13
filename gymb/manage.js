@@ -823,6 +823,8 @@ const SF_IC = { mail: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" ari
   crew: '<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#383848" d="M5 1h6v1h1v4h-1v1H5V6H4V2h1zM3 8h10v1h1v6H2V9h1z"/><path fill="#ffd8b0" d="M5 3h6v3H5z"/><path fill="#e84a3a" d="M5 2h6v1H5z"/><path fill="#4a7ad8" d="M3 9h10v5H3z"/><path fill="#fffdf4" d="M7 9h2v3H7z"/></svg>' };
 /* v16.40 경완 '오늘 630G인데 이번 주 90G?': 이번 주(s.eg)는 주급날에 0으로 돌아가서 오늘보다 작을 수 있었다 → 둘 다 일지(g.days)에서 오늘 / 최근 7일(오늘 포함)로 */
 const sfEarn = x => { const g = st(), nm = `${x.cls} ${x.nm}`, t0 = K.dayStart(Date.now()); let d1 = 0, d7 = 0; try { K.dayRec(); } catch (e) {} for (const [k, d] of Object.entries(g.days || {})) { const v = d?.sf?.[nm]?.g || 0; if (!v) continue; const kk = +k; if (kk === t0) d1 += v; if (kk > t0 - 7 * K.DAY) d7 += v; } return [d1, d7]; };
+/* v23.56 경완 '우상단 고용·훈련장 코치 박스 = 네모 점(2번)': 글자 + 숫자, 아래 칸 수만큼 네모 점 (찬 칸 색, 넘친 칸 빨강) */
+const capDot = (lb, n, m, c) => `<span class="cp2" style="--cc:${c}"><span class="cp2-h"><small>${lb}</small><b>${n}<em>/${m}</em></b></span><span class="cp2-d">${Array.from({ length: Math.max(m, n) }, (_, i) => `<i class="${i < n ? (i >= m ? 'on ov' : 'on') : ''}"></i>`).join('')}</span></span>`;
 const sfFace = x => `<div class="sf-face"><i class="sfc-base"></i><img alt="" src="${K.trSrc(x.tr)}"></div>`;
 const sfEmpty = (ic, t, d) => `<div class="sf-void">${ic ? `<span class="sf-void-ic">${SF_IC[ic]}</span>` : ''}<b>${t}</b><p>${d}</p></div>`;
 function drawStaff() {
@@ -848,7 +850,7 @@ function drawStaff() {
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
       <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage.toLocaleString()}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
     : sfEmpty('', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
-  sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap"><span><small>고용</small><b>${g.sf.length}<em>/${max}명</em></b></span><span><small>훈련장 코치</small><b>${yN}<em>/${YARD_SF}명</em></b></span></span></div>${tabs}${sfT === 'cand' ? cand : list}`;
+  sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap sf-cap2">${capDot('고용', g.sf.length, max, '#b07a10')}${capDot('훈련장 코치', yN, YARD_SF, '#d0601a')}</span></div>${tabs}${sfT === 'cand' ? cand : list}`;
   sh.querySelectorAll('.sfc .co-trs').forEach(footFix);
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
