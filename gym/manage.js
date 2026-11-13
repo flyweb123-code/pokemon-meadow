@@ -729,7 +729,7 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
     <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
     <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
-    (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) return GB().mvInfo(a.slice(1));
+    (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) { const mid = a.slice(1), k = m.mv.indexOf(mid); return k >= 0 ? GB().mvInfo(mid, () => GB().movesPop(P, () => { redraw(); trPop(id, p); }, -1, k), '기술 바꾸기', () => {}) : GB().mvInfo(mid); }   /* v23.58 경완 '훈련장 카드에서도 기술 누르면 기술 바꾸기' (체육관 상세카드와 같음) */
       if (a === 'hit') return GB().hitPop(P, close, () => { redraw(); trPop(id); });   // v20.88 경완 '훈련장 상세카드에서도 지닌 도구 눌러서 바꾸게'
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
