@@ -3868,26 +3868,19 @@ async function trPost(R, o, boss, ids) {
   R.floor++; return true;
 }
 /* v23.54 경완 '포켓로그처럼 층 끝날 때마다 아이템 선택': 이길 때마다 보상 3개 중 하나 (흔함 초록·좋음 파랑·귀함 금빛, 우두머리 층은 귀한 것이 더 자주).
-   지닌 도구는 시험용 사본에만 지니게 함 (훈련이 끝나면 사본째 지움) */
-const TR_HOLD = ['leftovers', 'lifeorb', 'choiceband', 'choicespecs', 'choicescarf', 'expertbelt', 'shellbell', 'scopelens', 'quickclaw', 'kingsrock', 'muscleband', 'wiseglasses', 'sitrusberry', 'lumberry', 'rockyhelmet', 'assaultvest', 'widelens'];
+   v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자': 회복·부활·경험치 부적만 (모두 그 판에서만) */
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
 async function trReward(R, o, ids, boss) {
   const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .95).sort((a, b) => hp(a) - hp(b));
   const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id)), lead = live.includes(R.lead) ? R.lead : live[0];
-  const candy = async (id, n = 1) => { const p = P(id), mm = m(id), g = GB().growth(p.sp), r = GB().gainXp(p, GB().xpAt(g, Math.min(100, mm.lv + n)) - mm.xp); return r.lv > r.lv0 ? `${eun(nm(id))} 레벨 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!` : `${eun(nm(id))} 더 오를 레벨이 없었다…`; };
-  const held = new Set(ids.map(id => m(id).it).filter(Boolean)), tgt = ids.find(id => id === lead && !m(id).it) || live.find(id => !m(id).it), its = TR_HOLD.filter(k => GB().HOLD?.[k] && !held.has(k));
   const U = boss ? 3 : 1, C = [   // [무게, 등급, 제목, 설명, 고르면]
     [hurt.length ? 4 : 0, 0, '상처약', hurt.length ? `${nm(hurt[0])} HP 50% 회복` : '', async () => { R.hp[hurt[0]] = Math.min(1, hp(hurt[0]) + .5); return `${eun(nm(hurt[0]))} 기운을 차렸다!`; }],
     [hurt.length > 1 ? 3 : 1, 0, '좋은상처약', '모두 HP 30% 회복', async () => { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '모두 HP가 회복됐다!'; }],
     [down.length ? 5 : 0, 1, '기력의조각', down.length ? `${nm(down[0])} HP 절반으로 부활` : '', async () => { R.hp[down[0]] = .5; return `${eun(nm(down[0]))} 다시 일어섰다!`; }],
-    [lead ? 4 : 0, 0, '이상한사탕', lead ? `${nm(lead)} 레벨 +1` : '', () => candy(lead)],
-    [tgt && its.length ? 3 : 0, 1, '', '', null, 'hold'],
     [2, 1, '경험치 부적', '이번 훈련 경험치 +25%', async () => { R.xpM = (R.xpM || 1) + .25; return `이번 훈련 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }],
-    [live.length > 1 ? U : 0, 2, '이상한사탕 꾸러미', '모두 레벨 +1', async () => { const L = []; for (const id of live) L.push(await candy(id)); return L.slice(0, 3).join('\n'); }],
     [down.length ? U : 0, 2, '기력의덩어리', '쓰러진 포켓몬 모두 HP 가득 부활', async () => { down.forEach(id => { R.hp[id] = 1; }); return '쓰러졌던 포켓몬이 모두 일어섰다!'; }],
     [hurt.length ? U : 0, 2, '회복의 샘', '모두 HP 가득 회복', async () => { live.forEach(id => { R.hp[id] = 1; }); return '모두 HP가 가득 찼다!'; }],
     [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'; } return '상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'; }]];
-  const hi = C.findIndex(c => c[5] === 'hold'); if (C[hi][0]) { const k = pick(its); C[hi] = [C[hi][0], 1, GB().HOLD[k][0], `${nm(tgt)}에게 지니게 하기`, async () => { m(tgt).it = k; return `${iga(nm(tgt))} ${eul(GB().HOLD[k][0])} 지니게 됐다!`; }]; }
   const L = []; let pool = C.filter(c => c[0] > 0);
   while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
   await o.msg(boss ? '우두머리가 귀한 보상을 떨어뜨렸다!\n하나만 가져가자.' : '보상을 찾았다!\n하나만 가져가자.', 400);
