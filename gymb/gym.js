@@ -4534,7 +4534,7 @@ const ZC_TUT = { 1: [143, ['bodyslam', 'crunch', 'earthquake', 'rest'], 'thickfa
   17: [359, ['nightslash', 'suckerpunch', 'superpower', 'swordsdance'], 'superluck'], 18: [36, ['moonblast', 'flamethrower', 'softboiled', 'calmmind'], 'magicguard'] };
 const ZC_TID = 990013, zcOf = t => GB()?.ZC_ST?.[t] || '', zcNm = t => `${TYPE_KO[t] || ''}Z`;
 function zRingPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
-  const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>Z링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/ZRING.png"></div><p class="gy-msg mr-d">Z기술에 쓰는 팔찌.<br>포켓몬에게 Z크리스탈을 지니게 하면<br>배틀 중 한 번 Z기술을 쓸 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
+  const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>Z링</h4><div class="le-get mr-get zr-get"><img alt="" src="${IMG}dbk/it/ZRING.png"></div><p class="gy-msg mr-d">Z기술에 쓰는 팔찌.<br>포켓몬에게 Z크리스탈을 지니게 하면<br>배틀 중 한 번 Z기술을 쓸 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 function zcPop(t) { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>${zcNm(t)}</h4><div class="le-get mr-get zc-get" style="--tc:${GA.TYPE_C?.[t] || '#8cf'}"><img alt="" src="${IMG}dbk/it/${zcOf(t).toUpperCase()}.png"></div><p class="gy-msg mr-d">${TYPE_KO[t]} 타입 기술을<br>Z기술로 바꿔 주는 크리스탈.<br>몇 번이든 쓸 수 있어요.<br><small>창고 › 도구에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); confetti(); }); }
 /* 이 체육관 라인업에서 Z크리스탈 타입(t)의 공격 기술을 아는 포켓몬 */
@@ -4572,7 +4572,7 @@ async function zTut(test) {
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: ZC_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[1], lv: 50, it: '', ab: M[2] }); save();
       gse('DP_DECIDE'); await say(`${sp}${pN(sp)} ${ty} 타입 기술\n${mvN}${pE(mvN)} 알고 있지.`); await say(`방금 받은 ${zn}를\n${sp}에게 지니게 해 보자!`);
       hideT(true);
-      const P = made, sid = `[data-it="${zid}"]`;
+      const P = made, sid = `[data-it="${zid}"]`, inLu = () => (g.lu?.[g.luI | 0] || []).includes(P.id);
       busy = false; root.classList.remove('busy');
       await gtu([
         { c: '지니게 하기', pre: async () => { g.luI = 0; }, hold: 50, t: '.gy-menu [data-t=battle]', tap: '.gy-menu [data-t=battle]', until: () => gtEl('.gy-sheet [data-box]'), after: 900, s: '\'포켓몬\' 메뉴를 눌러 보렴!' },
@@ -4585,9 +4585,12 @@ async function zTut(test) {
         { c: '지니게 하기', when: () => gtEl('.gy-pop [data-a=t]'), t: '.gy-pop [data-a=t]', tap: '.gy-pop [data-a=t]', quiet: 1, until: () => B.gm(P).it === zid, after: 700 },
         { c: '지니게 하기', when: () => gtEl('.gy-pop .gy-btns.one [data-a=x]'), t: '.gy-pop .gy-btns.one [data-a=x]', tap: '.gy-pop .gy-btns.one [data-a=x]', quiet: 1, until: () => !gtEl('.gy-pop .gy-btns.one [data-a=x]'), after: 500 },
         { c: '체육관', when: () => gtEl('.gy-storew .gy-back'), t: '.gy-storew .gy-back', tap: '.gy-storew .gy-back', until: () => !gtEl('.gy-storew'), after: 700, s: '잘했다! ◀ 를 눌러\n돌아가자.' },
-        { c: '지니게 하기', when: () => gtEl('.gy-pop .mp-head'), t: () => gtEl('.gy-pop .mp-head'), snap: ['4a', '.gy-pop .win'], s: `${zn}${pE(zn)} 지닌 게 보이지?\n이제 배틀에서 Z기술을\n쓸 수 있단다.` },
+        { c: '지니게 하기', when: () => gtEl('.gy-pop .mp-head'), t: () => gtEl('.gy-pop .mp-head'), snap: ['4a', '.gy-pop .win'], s: `${zn}${pE(zn)} 지닌 게 보이지?\n이제 라인업에 넣어 보자.` },
+        /* 경완 2026-11-14 '연습 배틀 전에 리자몽 라인업에 넣는 것': 메가 튜토리얼처럼 카드에서 라인업으로 */
+        { c: '라인업', when: () => !inLu() && gtEl('.gy-pop [data-a=add]:not([disabled])'), t: '.gy-pop [data-a=add]', tap: '.gy-pop [data-a=add]', until: inLu, after: 900, s: '\'라인업으로\'를 눌러 보렴!' },
         { c: '체육관', when: () => gtEl('.gy-pop [data-a=x]'), t: '.gy-pop [data-a=x]', tap: '.gy-pop [data-a=x]', until: () => !gtEl('.gy-pop'), after: 500, s: '✕ 를 눌러 보렴.' },
         { c: '체육관', when: () => gtEl('.gy-boxw .bw-x'), t: '.gy-boxw .bw-x', tap: '.gy-boxw .bw-x', until: () => !gtEl('.gy-boxw'), after: 500, s: '‹ 를 눌러 돌아가자.' },
+        { c: '라인업', when: () => inLu() && gtEl(`.gy-sheet .lu-slot[data-p="${P.id}"]`), t: `.gy-sheet .lu-slot[data-p="${P.id}"]`, s: `라인업 1에 ${sp}${pI(sp)}\n들어갔지? 지닌 ${zn}도\n그림 옆에 같이 보인단다.` },
         { c: '체육관', when: () => !$g('.gy-sheet')?.hidden, t: '.gy-menu [data-t=battle]', tap: '.gy-menu [data-t=battle]', until: () => $g('.gy-sheet')?.hidden, after: 700, s: '\'포켓몬\' 메뉴를 한 번 더 누르면\n체육관으로 돌아간단다.' }]);
       document.querySelectorAll('#gym .gy-storew, #gym .gy-boxw').forEach(x => x.remove()); root.querySelectorAll('.gy-pop').forEach(x => x.remove()); openTab(null);
       if (B.gm(P).it !== zid) { B.gm(P).it = zid; if (g.itm?.[zid] > 0) g.itm[zid]--; }   // 도중에 길이 막혀 못 지녔어도 배틀은 할 수 있게
