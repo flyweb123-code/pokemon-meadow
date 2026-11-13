@@ -2089,7 +2089,7 @@ function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌�
       m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
       mark(re())(nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }); return true; }
     if (/^(i.|mvs\d)/.test(a) && (drag || ord)) return true;
-    if (a.startsWith('mvs')) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }
+    if (/^mvs\d$/.test(a)) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }   /* v23.98 경완 '훈련장 새 기술 버튼이 기술 바꾸기로': 새 기술 버튼(data-a mvs)과 빈 칸(mvs0~3) 이름이 겹쳤음 → 숫자 붙은 것만 */
     return false; };
 }
 function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프로필 박스 밑까지 꽉 차게, 왼쪽 아래 '경험치'
