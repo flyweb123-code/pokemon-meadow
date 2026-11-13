@@ -4273,6 +4273,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-tools{position:absolute;right:6px;top:calc(var(--st,0px) + 30px);z-index:41;display:flex;gap:5px;white-space:nowrap}
 .bt .bt-tools button{padding:3px 8px;white-space:nowrap;border:1px solid rgba(255,255,255,.5);border-radius:12px;background:rgba(20,22,34,.45);color:#fff;font:inherit;font-size:11px;font-weight:700;opacity:.8;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
 .bt .bt-tools button:active{transform:translateY(2px);box-shadow:none;opacity:1}
+/* 전설 심사 (강박사): 테라피스 받는 창 — DBK 팩 테라피스 그림 + 타입 색 빛 */
+.gy-pop .tp-get{padding:22px 0 14px}.gy-pop .tp-shard{width:96px;height:96px;image-rendering:pixelated;filter:drop-shadow(0 0 10px var(--tc));animation:tpGem 2.4s ease-in-out infinite}
+@keyframes tpGem{50%{translate:0 -5px}}
 
 /* 썬문식 VS 전환 시안 (smEnc) */
 #gym .bt-enc .bt-sm{position:absolute;inset:0;width:100%;height:100%;z-index:2}
