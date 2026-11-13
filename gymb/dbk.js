@@ -331,7 +331,7 @@
     const shake = (t, d, amp, el = root) => at(t, () => { el.animate(Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.06)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.06)` })), { duration: d, easing: 'linear' }); for (let k = 0; k < d; k += 80) timers.push(setTimeout(hz, k)); });
     // ── 층 ──
     const mix = (cc, k) => `rgb(${cc.map((v, i) => Math.round(v * k + [6, 4, 14][i] * (1 - k))).join(',')})`;   /* 불투명 색으로: 반투명이면 숨긴 아래 화면이 비쳐 얼룩짐 */
-    const dim = mk(`inset:0;background:radial-gradient(ellipse at 50% 55%,${mix(tB, .38)} 0,rgb(6,4,14) 70%);opacity:0`);
+    const dim = mk(`inset:0;background:radial-gradient(ellipse at 50% 55%,${rgba(tB, .42)} 0,rgba(6,4,14,.66) 70%);opacity:0`);   /* 경완 2026-11-14: 기술 이름 때 뒤 배틀 화면이 어둡게 비치게 (검정으로 덮지 않음) */
     // 1) 트레이너 무대: 비스듬한 타입 색 띠 + 흐르는 집중선 (본가 Z포즈 컷처럼 트레이너만 크게)
     const stg = mk(`left:-20%;right:-20%;top:${-Hd * .15}px;height:${Hd * 1.3}px;transform:skewY(${opp ? 7 : -7}deg) translateX(${side * 120}%);opacity:0;overflow:hidden;background:linear-gradient(${opp ? 'to left' : 'to right'},${rgba(tO, .95)},${rgba(tB, .85)} 55%,rgba(20,10,30,.92));box-shadow:0 0 0 ${Wd * .012}px #fff,0 0 40px ${rgba(tO, .9)}`);
     const spd = mk(`inset:-30% -10%;background:repeating-linear-gradient(${opp ? 180 : 0}deg,rgba(255,255,255,0) 0 ${Wd * .05}px,rgba(255,255,255,.28) ${Wd * .05}px ${Wd * .056}px,rgba(255,255,255,0) ${Wd * .056}px ${Wd * .13}px);transform:skewY(${opp ? -7 : 7}deg)`, 'div', stg);
@@ -447,11 +447,11 @@
     const END = 7300;
     [band, bz, ttl, shine, fx, dim, mcl, dT, dB].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350, delay: END - 650 }));
     /* 경완 2026-11-13: 무지개 띠가 갈 때 아래 화면(배경)도 반투명 검정 밑으로 살짝 보이게 → 기술 이름 땐 다시 숨김 */
-    const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid,.bt-msg')), xA = [];   /* 경완: 대사창 자리도 배경 그대로 */ at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }))));
+    const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid,.bt-msg')), xA = [];   /* 경완: 대사창 자리도 배경 그대로 */ at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1, filter: 'brightness(1)' }, { opacity: 1, filter: 'brightness(.6)' }], { duration: 300 }))));   /* 경완 2026-11-14: 기술 이름 나올 때 아래 화면 검정 말고 어둡게 보이게 */
     at(5300, () => [shell, orbB, orbF].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
     return new Promise(res => {
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
-      setTimeout(() => { lk.remove(); cvOn = false; zStop(); timers.forEach(t => clearTimeout(t));         const back = hide.map(e => A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); xA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
+      setTimeout(() => { lk.remove(); cvOn = false; zStop(); timers.forEach(t => clearTimeout(t));         const back = hide.map(e => bot.includes(e) ? A(e, [{ opacity: 1, filter: 'brightness(.6)' }, { opacity: 1, filter: 'brightness(1)' }], { duration: 250 }) : A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 })); A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 }).finished.catch(() => {}).then(() => { back.forEach(a => a.cancel()); hA.forEach(a => a.cancel()); xA.forEach(a => a.cancel()); root.remove(); res(); }); }, END - 250); });
   }
 
   // ---------- 테라스탈 ([DBK] Terastallization [011] Animations.rb BattlerTerastallize) ----------
