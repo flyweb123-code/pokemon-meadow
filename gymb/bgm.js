@@ -21,6 +21,7 @@ const PART = {
   sLeague: [784384, 6912], bDungeon: [1635936, 3948], wDungeon: [7096288, 34312],   // SEQ_D_LEAGUE 포켓몬리그 (승급 심사 화면, 경완 2026-11-04 'bgm 웅장하게')
   sTsure: [1160800, 5228],   // SEQ_TSURETEKE 같이 걷는 곡 (친밀도 만점 창, 경완 2026-10-31)   // SEQ_KENKYUJO 연구소 (튜토리얼, 경완 2026-10-29)
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
+  sBaPoke: [979776, 7688], sWinPoke: [1081600, 2544], sBaSec1: [1076224, 3284], sBaDpoke1: [1001344, 11948],   // v23.10 훈련하기: SEQ_BA_POKE 야생 배틀, SEQ_WINPOKE 야생 승리, SEQ_BA_SECRET1 전설(우두머리), SEQ_BA_DPOKE1 디아루가·펄기아(큰 우두머리)
   sBaTenno: [1133088, 13836], sEyeTenno: [959232, 4864], sTheRiv: [1166048, 9000], sWinTenno: [1111328, 3036], sWinChamp: [1095968, 7220],   // v16.88 경완 '이름 있는 트레이너 시그니처 bgm': 사천왕 배틀·등장, 용식 테마, 사천왕·챔피언 승리
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
   seBlock: [1450624, 126400], fanBlock: [1244704, 7144], bSe: [1648288, 4416], bBasic: [1624352, 3720], wSe: [7219648, 85568],
@@ -53,6 +54,10 @@ const SONG = {
   champ: { s: 'sBaChamp', bank: 'battle', vol: 90 },      // 챔피언 배틀
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다
   winGym: { s: 'sWinGym', bank: 'battle', vol: 120 },     // 관장에게 이겼다
+  wild: { s: 'sBaPoke', bank: 'battle', vol: 88 },        // 야생 포켓몬 배틀 (훈련하기)
+  winWild: { s: 'sWinPoke', bank: 'battle', vol: 114 },   // 야생 포켓몬에게 이겼다
+  boss: { s: 'sBaSec1', bank: 'battle', vol: 92 },        // 우두머리 (전설 배틀 곡)
+  bossBig: { s: 'sBaDpoke1', bank: 'battle', vol: 78 },   // 큰 우두머리 (디아루가·펄기아 곡)
   eyeElite: { s: 'sEyeElite', bank: 'B', vol: 80 },       // 이름 있는 트레이너 등장 (시선 마주침, 엘리트)
   eyeChamp: { s: 'sEyeChamp', bank: 'B', vol: 100 },      // 챔피언 등장
   tenno: { s: 'sBaTenno', bank: 'battle', vol: 94 },      // 사천왕 배틀
