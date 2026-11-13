@@ -832,12 +832,13 @@ function drawStaff() {
    /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 주급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '' : '<i class="sfc-rib">대기 중</i>';
   const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', ].join('');
-      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}${s.yard ? '<i class="sd2-coach sfc-coach">훈련장 코치</i>' : ''}<span class="sfc-pic" style="${cbgSt(s.tr)}"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
+      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}" style="--cb:${CK_BG[coachK(s)]};--cc:${CK[coachK(s)][1]}">${rib(s)}${s.yard ? '<i class="sd2-coach sfc-coach">훈련장 코치</i>' : ''}<span class="sfc-av co-av" style="${cbgSt(s.tr)}"><i class="co-pl"></i><img class="co-trs" alt="" src="${K.trSrc(s.tr)}"></span>
       <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s)}${ckBox(s)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
       <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage.toLocaleString()}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
     : sfEmpty('', '아직 고용한 트레이너가 없어요', '지원서 탭에서 마음에 드는<br>트레이너를 고용해 보세요.');
   sh.innerHTML = `<div class="sf-hd"><h3>트레이너</h3><span class="sf-cap"><span><small>고용</small><b>${g.sf.length}<em>/${max}명</em></b></span><span><small>훈련장 코치</small><b>${yN}<em>/${YARD_SF}명</em></b></span></span></div>${tabs}${sfT === 'cand' ? cand : list}`;
+  sh.querySelectorAll('.sfc .co-trs').forEach(footFix);
   const dk = sh.querySelector('.cv-deck'); if (dk) dk.onscroll = () => { const i = Math.round(dk.scrollLeft / (dk.firstElementChild.offsetWidth + 12)); sh.querySelectorAll('.cv-dots i').forEach((d, j) => d.classList.toggle('on', i === j)); };
   sh.onclick = e => {
     const tp = e.target.closest('[data-tsp]'); if (tp) { sfx('tap'); return GB().foePop(+tp.dataset.tsp, +tp.dataset.tlv, tp.dataset.tk); }   // 지원서 포켓몬 → 상세카드 (경완 2026-10-29)
