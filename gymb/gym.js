@@ -975,11 +975,15 @@ function nmVar(n, k, gi) {
   return T;
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.31)
+/* v24.08 경완 '원규 난이도 왜 이렇게 쉽게 나온거지': 첫 방문 때 본가 1단계 팀(꼬마돌 2·코코파스, 초반 기술)은 레벨만 올려도 높은 등급에선 너무 쉬움.
+   단계 팀의 본가 레벨이 지금 등급 바닥(LV_FLOOR)보다 NM_SKIP 넘게 낮으면 그 단계는 건너뛰고 등급에 맞는 단계 팀으로 옴 (마지막 단계까지만) */
+const NM_SKIP = 12;
+function nmSt(n, s) { const fl = (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - NM_SKIP; while (s < n.st.length - 1 && (teamLv(n.st[s]) < fl || !n.st[s].some(m => !spOff(m[0])))) s++; return s; }
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
   if (!ok.length) return null;
-  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0, v = s >= n.st.length ? s - n.st.length + 1 : 0;
+  const n = pick(ok), s0 = (g.nt[n.id] || {}).s || 0, s = s0 >= n.st.length ? s0 : nmSt(n, s0), v = s >= n.st.length ? s - n.st.length + 1 : 0;
   const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
   return { id: ++g.cid, t, named: n.id, s, nv: v || undefined, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
@@ -1315,7 +1319,7 @@ async function challenge(picked) {
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
       window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
-    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
+    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: Math.max(x.s | 0, c.s | 0) + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
