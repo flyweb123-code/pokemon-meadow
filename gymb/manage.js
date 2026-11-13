@@ -47,7 +47,7 @@ const CK = { xp: ['경험치', '#2a7ad0'], ev: ['노력치', '#d0601a'], mv: ['�
 const coachK = s => s.ck || { train: 'xp', effort: 'ev', teach: 'mv' }[s.trait] || CK_O[Math.abs(Math.imul(s.id | 0, 40503)) % 3];   // 훈련광=경험치, 노력파=노력치, 기술 선생=기술, 나머지는 id 로 고정
 const CK_W = [1, .6, .3];   // v20.94 경완 '코치 3명까지, % 밸런스': 같은 종류 코치는 겹칠수록 덜 (센 순서로 100%·60%·30%) — 셋 다 경험치면 최대 +76%(훈련광 둘이면 더), 종류를 나누면 각자 그대로
 const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).map(coachP).sort((a, b) => b - a).reduce((a, p, i) => a + p * (CK_W[i] ?? 0) / 100, 0);
-const CK_BG = { xp: '#eaf2fc', ev: '#fdf0e6', mv: '#f4ecfb' }, ckAbs = f => new URL(IMG + f, location.href).href, CK_D = { xp: '훈련 경험치가', ev: '노력치 훈련이', mv: '특별한 기술 깨달음이' };
+const CK_BG = { xp: '#eaf2fc', ev: '#fdf0e6', mv: '#f4ecfb' }, ckAbs = f => new URL(IMG + f, location.href).href, cbgSt = tr => { const e = K.cbgOf(tr); return `--cbg:url(${ckAbs(`bt/bg_${e.bg}.png`)});--cpl:url(${ckAbs(`bt/pl_e${e.pl ? '_' + e.pl : ''}.png`)})`; }, CK_D = { xp: '훈련 경험치가', ev: '노력치 훈련이', mv: '특별한 기술 깨달음이' };
 // v21.04 경완 '코치 실력 박스는 특성 박스처럼, 게이지 없이, 특성 대신 코치 딱지, 종류는 딱지 없이 색으로만'
 const ckBox = (s, full, bare) => { const k = coachK(s), p = coachP(s); return `<span class="trt trt-ck" style="--tc:${CK[k][1]};--tb:${CK_BG[k]}">${bare ? '' : '<b>코치</b>'}<i>${CK[k][0]} +${p}%</i>${full ? `<small>${CK_D[k]} ${p}% 더 빨리</small>` : ''}</span>`; };
 const ckIn = s => `<em class="ck-t ck-in" style="--ck:${CK[coachK(s)][1]}">${CK[coachK(s)][0]}</em>`;   // v21.01 경완 '훈련장 코치 딱지에도 종류'
@@ -309,7 +309,7 @@ function coWin() {
   const C = yCoaches(), free = (g.sf || []).filter(x => !x.yard);
   /* v23.36 경완 '코치 슬롯 화면은 포켓몬 슬롯이랑 다르게, 우상단 효과 딱지 없이, 특성 딱지 위 · 코치 딱지 아래 두 줄': 코치 종류 색 명찰 카드 */
   const tags = s => `<span class="co-tags">${trtBox(s) || ''}${ckBox(s)}</span>`;
-  const slot = s => `<button type="button" class="co-card" data-s="${g.sf.indexOf(s)}" style="--cb:${CK_BG[coachK(s)]};--cc:${CK[coachK(s)][1]};--cbg:url(${ckAbs(`bt/bg_${K.cbgOf(s.tr).bg}.png`)});--cpl:url(${ckAbs(`bt/pl_e${K.cbgOf(s.tr).pl ? '_' + K.cbgOf(s.tr).pl : ''}.png`)})"><span class="co-av"><i class="co-kd">${CK[coachK(s)][0]} 코치</i><i class="co-pl"></i><img class="co-trs" alt="" src="${K.trSrc(s.tr)}"></span><span class="co-in"><span class="co-nm"><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>${tags(s)}</span><span class="co-x" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
+  const slot = s => `<button type="button" class="co-card" data-s="${g.sf.indexOf(s)}" style="--cb:${CK_BG[coachK(s)]};--cc:${CK[coachK(s)][1]};${cbgSt(s.tr)}"><span class="co-av"><i class="co-kd">${CK[coachK(s)][0]} 코치</i><i class="co-pl"></i><img class="co-trs" alt="" src="${K.trSrc(s.tr)}"></span><span class="co-in"><span class="co-nm"><b>${esc(s.nm)}</b><small>${esc(s.cls)}</small>${s.rest ? '<em class="co-rest">쉬는 중</em>' : ''}</span>${tags(s)}</span><span class="co-x" data-cout="${g.sf.indexOf(s)}" role="button" aria-label="코치에서 빼기">✕</span></button>`;
   w.innerHTML = `<div class="win" role="dialog" aria-label="훈련장 코치"><div class="bw-hd"><button class="bw-x" data-x aria-label="뒤로">‹</button><h4>훈련장 코치 <small>${C.length}/${YARD_SF}</small></h4></div>
     <div class="co-list">${Array.from({ length: YARD_SF }, (_, i) => C[i] ? slot(C[i]) : `<button type="button" class="co-card co-new" data-cnew="1"><span class="co-av"><span class="co-fig"><i class="co-sil"></i></span></span><span class="co-in"><b>+ 코치 맡기기</b><small>고용한 트레이너 중에서 골라요</small></span></button>`).join('')}</div>
     <p class="co-note">${(g.sf || []).length ? `코치는 ${YARD_SF}명까지 · 같은 종류 코치가 겹치면 덜 올라요` : '아직 고용한 트레이너가 없어요. 트레이너 메뉴에서 고용하면 코치로 맡길 수 있어요.'}</p></div>`;
@@ -822,7 +822,7 @@ function drawStaff() {
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
   const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
-      <div class="cv-photo"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
+      <div class="cv-photo" style="${cbgSt(x.tr)}"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x, true, true)}</dd><dt>코치 실력</dt><dd>${ckBox(x, false, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 주급</dt><dd>7일에 <b>${x.wage.toLocaleString()}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
@@ -832,7 +832,7 @@ function drawStaff() {
    /* v16.36 경완 '번 돈이 일지랑 안 맞음': 일지는 하루, 카드는 주급날부터라 달랐음 → 카드에 '오늘'(일지와 같은 값)과 '이번 주'를 따로 */
   const rib = x => K.inGym(x) ? `<i class="sfc-rib g">체육관${gNo(x) >= 0 ? ` ${gNo(x) + 1}번` : ''}</i>` : x.yard ? '' : '<i class="sfc-rib">대기 중</i>';
   const list = g.sf.length ? `<div class="sf-list sfl2">${g.sf.map((s, i) => { const st = [s.rest ? '<em class="r">쉬는 중</em>' : '', ].join('');
-      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}${s.yard ? '<i class="sd2-coach sfc-coach">훈련장 코치</i>' : ''}<span class="sfc-pic"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
+      return `<button class="sfc${s.rest ? ' rest' : ''}${s.yard ? ' yard' : ''}" data-sf="${i}">${rib(s)}${s.yard ? '<i class="sd2-coach sfc-coach">훈련장 코치</i>' : ''}<span class="sfc-pic" style="${cbgSt(s.tr)}"><i class="sfc-base"></i><img alt="" src="${K.trSrc(s.tr)}"></span>
       <span class="sfc-mid"><span class="sfc-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></span>${trtBox(s)}${ckBox(s)}${st ? `<span class="sfc-st">${st}</span>` : ''}</span><i class="sfc-go" aria-hidden="true">›</i>
       <span class="sfc-team"><i class="sfc-tag">라인업</i>${teamIc(s.team)}</span>
       <span class="sfc-num"><span><small>전적</small><b>${s.w || 0}승 ${s.l || 0}패</b></span><span><small>주급 (7일)</small><b class="pay">${s.wage.toLocaleString()}G</b></span>${(([d1, d7]) => `<span><small>오늘 번 돈</small><b class="${d1 ? 'up' : ''}">${d1.toLocaleString()}G</b></span><span><small>최근 7일</small><b class="${d7 >= s.wage ? 'up' : 'dn'}">${d7.toLocaleString()}G</b></span>`)(sfEarn(s))}</span></button>`; }).join('')}</div>`
@@ -857,7 +857,7 @@ function sfDetail(s, home) {
   const bar = (f, c) => `<i class="sd2-bar ${c || ''}"><i style="width:${Math.round(Math.max(0, Math.min(1, f)) * 100)}%"></i></i>`;
   const rib = K.inGym(s) ? `<i class="sfc-rib g">체육관${gi >= 0 ? ` ${gi + 1}번` : ''}</i>` : s.yard ? `<i class="sfc-rib y">훈련장 코치${ckIn(s)}</i>` : '<i class="sfc-rib">대기 중</i>';
   /* v16.35~36 경완 '상세 카드 디자인 퀄': 위는 지원서처럼 배경 + 받침 위 전신과 자리 딱지, 아래는 라인업 · 막대가 있는 숫자 칸 */
-  const p = pop(`<div class="sd2">${K.inGym(s) || !s.yard ? rib.replace('sfc-rib', 'sfc-rib sd2-corner') : ''}<div class="sd2-hero">${s.yard ? '<i class="sd2-coach">훈련장 코치</i>' : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
+  const p = pop(`<div class="sd2">${K.inGym(s) || !s.yard ? rib.replace('sfc-rib', 'sfc-rib sd2-corner') : ''}<div class="sd2-hero" style="${cbgSt(s.tr)}">${s.yard ? '<i class="sd2-coach">훈련장 코치</i>' : ''}<img alt="" src="${K.trSrc(s.tr)}"><div class="sd2-nm"><small>${esc(s.cls)}</small><b>${esc(s.nm)}</b></div>${s.rest ? '<em class="sd2-rest">쉬는 중</em>' : ''}</div>
     <div class="sd2-trt">${trtBox(s, true)}${ckBox(s, true)}</div>
     <p class="sd2-h">라인업 <small>평균 Lv.${lv}</small></p>
     <div class="sd2-team">${s.team.map(([sp, l]) => `<span><img alt="" data-sp="${sp}"><b>${esc(SPECIES[sp]?.n || '???')}</b><small>Lv.${l}</small></span>`).join('')}</div>
