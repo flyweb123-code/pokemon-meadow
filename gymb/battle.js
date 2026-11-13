@@ -472,7 +472,6 @@ async function gmFx(s, X, kind, ty) {
       if (kind === 'z') { const zid = ty?.id || '', zt = zid && (ZT_ID[zid] || zid.toUpperCase()), c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/ZRING.png`), cr = toID(ty?.item || '');
         if (cr) { const z = await dxImg(`${IMG}dbk/it/${cr.toUpperCase()}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${cr.toUpperCase()}.png`, w: z.w, h: z.h }; }
         c.type = ty?.type || 'Normal'; if (zt && PSim.Dex.moves.get(zid).isZ && PSim.Dex.moves.get(zid).category !== 'Status') { const T = await dxImg(`${IMG}dbk/Z-Power/Z-Titles/${zt}.png`); if (T) { c.title = `${IMG}dbk/Z-Power/Z-Titles/${zt}.png`; c.titleW = T.w; c.titleH = T.h; c.upper = /^(catastropika|10000000voltthunderbolt|letssnuggleforever)$/.test(zid); } }
-        if (GymDBK.zFull) { await Promise.race([loadEss(), wait(1500)]); c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.zName = mvKo(zid) || 'Z기술'; await GymDBK.zFull(c); return; }   /* 경완 2026-11-13: Z기술 전체 화면 연출 (본가·애니 고증) */
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
         await GymDBK.tera(c); teraOn(s, ty); return; }
@@ -733,13 +732,12 @@ function movePanel(req) {
     const tera = R.canTerastallize && TYK[R.canTerastallize] || '', gmx = R.maxMoves?.gigantamax && !R.maxMoves.maxMoves?.every(x => !/^gmax/.test(toID(x.move)));
     const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k];
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
-      const h = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); return gk === 'zmove' && R.canZMove?.[i] ? h.replace('class="mvw"', `class="mvw zon zty${d[2] || 1}"`).replace('</b>', '</b>' + zPtH()) : h; }).join('')}
+      return mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); }).join('')}
       ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}">${k === 'terastallize' && tera && TERA_I[R.canTerastallize] ? `<i class="gk-ti" style="background-image:url(${IMG}dbk/Tera/ty/${TERA_I[R.canTerastallize]}.png)"></i>` : ''}<span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
       if (b.hasAttribute('data-x')) { B.gkSel = null; return res(null); }
       if (b.dataset.gk) { B.gkSel = B.gkSel === b.dataset.gk ? null : b.dataset.gk; vib(1); if (B.gkSel && /^mega/.test(B.gkSel)) { se('SUIKOMU'); setTimeout(() => se('KIRAN'), 260); vib(2); }   /* 경완 2026-11-12 '메가진화 버튼 누를 때 뭔가 변하는 듯한 효과음': 켤 때 기운 빨아들이는 소리 → 반짝 */
-        if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
         if (/^(mega|terastallize)/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
         return movePanel(req).then(res); }
       if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req).then(res));
@@ -747,18 +745,6 @@ function movePanel(req) {
     };
   });
 }
-/* 경완 2026-11-13: Z 버튼 → Z기술로 바뀌는 칸만 번쩍 빛나며 바뀌고(효과음), 켜져 있는 동안 타입별 기운(불이면 불꽃이 일렁임)이 칸에 계속 */
-const ZPT_N = 9, zPtH = () => '<i class="zpt">' + Array.from({ length: ZPT_N }, (_, k) => `<i style="--x:${(k + .5) / ZPT_N * 100}%;--d:${(k * .37 % 1) * 1.6}s;--s:${.7 + (k * .53 % 1) * .6}"></i>`).join('') + '</i>';
-function zSwap(p, R, mv) {
-  const on = B.gkSel === 'zmove', ws = p.querySelectorAll('.bp-moves > .mvw, .bp-moves > .mvb.empty'); let n = 0;
-  [0, 1, 2, 3].forEach(i => { const m = mv[i], w = ws[i]; if (!m || !w || !w.classList.contains('mvw')) return;
-    const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, on ? 'zmove' : null), chg = !!R.canZMove?.[i];
-    if (!chg) { w.querySelector('.mvb').disabled = !!(m.disabled || m.pp <= 0 || zx); return; }
-    const t = document.createElement('div'); t.innerHTML = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); const nw = t.firstElementChild;
-    if (on) { nw.classList.add('zon', 'zty' + (d[2] || 1)); nw.querySelector('.mvb').insertAdjacentHTML('beforeend', zPtH()); }
-    nw.classList.add('zsw'); setTimeout(() => nw.classList.remove('zsw'), 700); w.replaceWith(nw); n++; });
-  p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg();
-  if (on && n) { se('SUIKOMU'); setTimeout(() => se('KIRAKIRA2'), 180); vib(2); } }
 // 기술 설명: 타입·분류·위력·명중·PP·설명 (아래 화면)
 /* v21.89 [DBK] Enhanced Battle UI '배틀러 정보': 싸우기 메뉴의 정보 버튼 → 지금 나와 있는 포켓몬(내 쪽·상대)의 레벨·타입·테라·능력 변화(▲▼)·급소·특성/도구(내 포켓몬만)·마지막 기술·턴·걸린 효과와 남은 턴. ◀▶로 넘김 */
 const BI_FX = { sunnyday: ['쾌청', '불꽃 기술 위력 1.5배, 물 기술 위력 반감.'], desolateland: ['아주 강한 햇살', '불꽃 기술 위력 1.5배, 물 기술이 사라진다.'], raindance: ['비', '물 기술 위력 1.5배, 불꽃 기술 위력 반감.'], primordialsea: ['강한 비', '물 기술 위력 1.5배, 불꽃 기술이 사라진다.'], sandstorm: ['모래바람', '매 턴 HP가 줄 수 있다. 바위 타입 특수방어 1.5배.'], hail: ['싸라기눈', '매 턴 HP가 줄 수 있다. 눈보라가 반드시 맞는다.'], snow: ['설경', '얼음 타입 방어 1.5배. 눈보라가 반드시 맞는다.'], deltastream: ['난기류', '비행 타입의 약점이 없어진다.'],
@@ -1399,7 +1385,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] ? B.gmBase[s] : id; await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1438,7 +1424,7 @@ async function handle(a) {
       else { await gmFx(s, X, 'primal'); await msg(`${n}의 원시회귀! 원시의 모습으로 돌아왔다!`); }
       break; }
     case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
-      await gmFx(s, A(s), 'z', zi); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower')]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
+      await gmFx(s, A(s), 'z', zi); await msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`); break; }
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
     case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);
@@ -1547,7 +1533,7 @@ function endMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusi
 /* v23.69 경완 '테라스탈 버튼에는 타입 아이콘': v23.71 본가 테라 타입 보석 아이콘 (Pokémon Showdown sprites/types/Tera<타입>.png, gym/img/dbk/Tera/ty/<번호>.png) */ const TERA_I = Object.fromEntries(['Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy', 'Stellar'].map((n, i) => [n, i + 1]));
 const TYK = { Normal: '노말', Fire: '불꽃', Water: '물', Grass: '풀', Electric: '전기', Ice: '얼음', Fighting: '격투', Poison: '독', Ground: '땅', Flying: '비행', Psychic: '에스퍼', Bug: '벌레', Rock: '바위', Ghost: '고스트', Dragon: '드래곤', Dark: '악', Steel: '강철', Fairy: '페어리', Stellar: '스텔라' };
 /* v20.75 경완 '효과나 문장 빼먹은 특성 검토': 특성 줄('ability: 이름')이 따로 오는 cant·-block·-start·-end·-activate 에 특성 창+본가 문장 */
-const AB_ANN = { pressure: n => `${eun(n)} 프레셔를 발하고 있다!`, moldbreaker: n => `${eun(n)} 틀깨기다!`, teravolt: n => `${eun(n)} 파직파직한 오라를 발하고 있다!`, turboblaze: n => `${eun(n)} 활활 타오르는 오라를 발하고 있다!`, airlock: () => '날씨의 영향이 없어졌다!', cloudnine: () => '날씨의 영향이 없어졌다!', unnerve: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asoneglastrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asonespectrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, darkaura: n => `${eun(n)} 다크오라를 발하고 있다!`, fairyaura: n => `${eun(n)} 페어리오라를 발하고 있다!`, aurabreak: n => `${eun(n)} 모든 오라를 제압한다!`, comatose: n => `${eun(n)} 꿈속을 헤매고 있다!`, neutralizinggas: () => '주변이 화학변화가스로 가득 찼다!', vesselofruin: n => `${n}의 재앙의그릇으로 주위의 특수공격이 약해졌다!`, swordofruin: n => `${n}의 재앙의검으로 주위의 방어가 약해졌다!`, tabletsofruin: n => `${n}의 재앙의목간으로 주위의 공격이 약해졌다!`, beadsofruin: n => `${n}의 재앙의구슬로 주위의 특수방어가 약해졌다!` };   // v21.30: 나올 때 특성 창 다음 본가 문장
+const AB_ANN = { pressure: n => `${eun(n)} 프레셔를 발하고 있다!`, moldbreaker: n => `${eun(n)} 틀깨기!`, teravolt: n => `${eun(n)} 파직파직한 오라를 발하고 있다!`, turboblaze: n => `${eun(n)} 활활 타오르는 오라를 발하고 있다!`, airlock: () => '날씨의 영향이 없어졌다!', cloudnine: () => '날씨의 영향이 없어졌다!', unnerve: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asoneglastrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, asonespectrier: (n, id) => `${sideOf(id) === 'p' ? '상대 편' : '우리 편'}은 긴장해서 나무열매를 먹을 수 없게 되었다!`, darkaura: n => `${eun(n)} 다크오라를 발하고 있다!`, fairyaura: n => `${eun(n)} 페어리오라를 발하고 있다!`, aurabreak: n => `${eun(n)} 모든 오라를 제압한다!`, comatose: n => `${eun(n)} 꿈속을 헤매고 있다!`, neutralizinggas: () => '주변이 화학변화가스로 가득 찼다!', vesselofruin: n => `${n}의 재앙의그릇으로 주위의 특수공격이 약해졌다!`, swordofruin: n => `${n}의 재앙의검으로 주위의 방어가 약해졌다!`, tabletsofruin: n => `${n}의 재앙의목간으로 주위의 공격이 약해졌다!`, beadsofruin: n => `${n}의 재앙의구슬로 주위의 특수방어가 약해졌다!` };   // v21.30: 나올 때 특성 창 다음 본가 문장
 const HADRON = n => `${eun(n)} 일렉트릭필드를 전개하여 미래 기관을 가동했다!`;   // v21.31 경완 '기억 안 나면 검색': 나무위키 특성 문서 — 이미 일렉트릭필드여도 나올 때 이 문장
 const AB_ACT = { hadronengine: HADRON, stickyhold: n => `${n}의 도구는 빼앗을 수 없다!`, suctioncups: n => `${eun(n)} 흡반으로 단단히 달라붙어 있다!`, quickdraw: n => `${eun(n)} 퀵드로로 먼저 행동할 수 있게 되었다!`, telepathy: n => `${eun(n)} 아군의 공격을 피했다!`, guarddog: n => `${eun(n)} 밀려나지 않는다!`, magicguard: () => '', disguise: n => `${n}의 탈이 대신 공격을 받았다!`, icface: () => '', screencleaner: () => '모든 벽이 사라졌다!', symbiosis: n => `${eun(n)} 도구를 건네주었다!`, battlebond: n => `${eun(n)} 트레이너와의 유대가 깊어졌다!`, mimicry: n => `${n}의 타입이 원래대로 돌아왔다!` };
 function actMsg(n, w, o = '상대', x = []) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠져 있다!`, Protect: `${eun(n)} 공격으로부터 몸을 지켰다!`, Substitute: '대타가 대신 공격을 받았다!', 'Destiny Bond': `${eun(n)} 상대를 길동무로 삼았다!`, Endure: `${eun(n)} 공격을 버텼다!`,
@@ -1639,7 +1625,7 @@ const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'noble
 const CHG_LIKE = { solarblade: 'solarbeam', phantomforce: 'shadowforce', skydrop: 'fly', meteorbeam: 'skullbash', electroshot: 'skullbash', geomancy: 'solarbeam', freezeshock: 'skyattack', iceburn: 'skyattack' };
 const chgOf = id => MFX[id + '_c'] ? id + '_c' : CHG_LIKE[id] && MFX[CHG_LIKE[id] + '_c'] ? CHG_LIKE[id] + '_c' : null;
 async function moveFx(s, id, miss, fx) {
-  const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
+  const m = mvOf(id); if (!m || miss) return; const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
   if (!A && !fx && await essFx(s, id)) return;

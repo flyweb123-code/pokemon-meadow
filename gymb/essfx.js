@@ -30,7 +30,7 @@ window.GymEss = (() => {
   }
   let idx = null;
   const base = () => window.GymEssBase || 'gym/img/ess/';
-  const index = () => idx || (idx = fetch(base() + 'idx.json?v=2').then(r => r.json()).catch(() => { idx = null; return {}; }));
+  const index = () => idx || (idx = fetch(base() + 'idx.json?v=1').then(r => r.json()).catch(() => { idx = null; return {}; }));
   const get = id => jsC[id] || (jsC[id] = fetch(base() + `a/${id}.json?v=1`).then(r => r.json()).catch(() => { delete jsC[id]; return null; }));
   // 소리: 게임 효과음처럼 GA.audio + 효과음 볼륨, 피치는 재생 빠르기
   async function snd(n, vol, pitch, pan) {
