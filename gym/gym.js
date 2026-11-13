@@ -1733,6 +1733,7 @@ const KANG_POOL = [3, 6, 9, 59, 65, 68, 94, 130, 131, 143, 149, 154, 157, 160, 1
 // 전설·환상 후보. 실제로는 등급 천장(심사 때 등급 = 명문, STR_BS 600) 안의 종만 뽑힘. 천장을 올리면 600 넘는 전설은 한 팀에 KANG_BIG 마리까지만
 const KANG_LEG = [144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 480, 481, 482, 483, 484, 485, 487, 488, 490, 491, 492, 494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 716, 717, 718, 719, 720, 721, 785, 786, 787, 788, 791, 792, 800, 801, 802, 807, 888, 889, 893, 894, 895, 896, 897, 905, 1001, 1002, 1003, 1004, 1007, 1008, 1025];
 const KANG_BIG = 2;
+const KANG_CT = 3, KANG_LV = 8;   /* v23.46 경완 '레벨 낮추고 천적 절반만' (시뮬 12판 0승이라): 천적은 에이스까지 3마리, 레벨은 박스 기준 +8 (에이스 +2, 그 앞 둘 +1) */
 const KANG_REP = 2;   // 후보(65종쯤)가 자리(18×5)보다 적어서 한 번씩만은 못 함
 const KANG_TEAM = [94, 143, 131, 3, 9, 6];   // 상성 표를 못 읽을 때
 // 체육관마다 얼굴이 달라지게 (경완 2026-11-13): 18타입 팀을 차례로 다 뽑으면서 앞 타입에서 이미 쓴 종은 쓴 횟수만큼 감점. 상성을 가장 크게 보고 종족값은 조금만
@@ -1743,11 +1744,13 @@ function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = 
   const one = t => { const G = nm(t), r = seeded('kang' + t + lk);
     const mOf = (T, g2) => Math.max(...T.map(a => eff(a, [g2]))) - eff(g2, T);
     // 천적이 아닌 자리(상성 1 미만)에는 다른 타입의 천적으로 쓸 종을 아껴 둠 (천적 되는 타입 수만큼 감점)
-    const info = x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm), b = bsOf(x), m = mOf(T, G); return { x, T, b, W: ALL.filter(a => eff(a, T) > 1), s: m * 1.5 + Math.max(0, b - 500) / 100 * .3 + r() * .8 - (used[kn(x)] | 0) * .7 - (m < 1 ? ALL.filter(g2 => mOf(T, g2) >= 1.5).length * .25 : 0) }; };
+    const info = x => { const T = (SPECIES[x].t || []).filter(Boolean).map(nm), b = bsOf(x), m = mOf(T, G); return { x, T, b, m, W: ALL.filter(a => eff(a, T) > 1), s: m * 1.5 + Math.max(0, b - 500) / 100 * .3 + r() * .8 - (used[kn(x)] | 0) * .7 - (m < 1 ? ALL.filter(g2 => mOf(T, g2) >= 1.5).length * .25 : 0) }; };
     const ace = KANG_GMAX.filter(ok).map(info).sort((a, b) => b.s - a.s)[0]; if (!ace) return null;
     const got = [ace]; let L = POOL0.filter(x => x !== ace.x && (used[kn(x)] | 0) < KANG_REP).map(info);   // 한 종은 18타입 팀을 통틀어 KANG_REP 번까지만
     const cut = o => got.reduce((n, p) => n + o.T.filter(z => p.T.includes(z)).length * .6 + o.W.filter(w => p.W.includes(w)).length * .2, 0);
-    while (got.length < 6 && L.length) { if (got.filter(o => o.b > 600).length >= KANG_BIG) L = L.filter(o => o.b <= 600); L.sort((a, b) => b.s - cut(b) - a.s + cut(a)); if (L.length) got.push(L.shift()); }
+    while (got.length < 6 && L.length) { if (got.filter(o => o.b > 600).length >= KANG_BIG) L = L.filter(o => o.b <= 600);
+      if (got.filter(o => o.m >= 1).length >= KANG_CT) { const N0 = L.filter(o => Math.abs(o.m) <= .5), N1 = L.filter(o => o.m < 1 && o.m >= -1); L = N0.length ? N0 : N1.length ? N1 : L.filter(o => o.m < 1); if (!L.length) break; }   /* v23.46: 천적은 KANG_CT 마리까지, 남은 자리는 상성이 비슷한 종 */
+      L.sort((a, b) => b.s - cut(b) - a.s + cut(a)); if (L.length) got.push(L.shift()); }
     if (got.length < 6) return null; for (const o of got) used[kn(o.x)] = (used[kn(o.x)] | 0) + 1;
     return [...got.slice(1).sort((a, b) => a.b - b.b).map(o => o.x), ace.x]; };
   // 천적 후보가 적은 타입부터 먼저 뽑음 (전기처럼 천적이 땅뿐인 타입이 뒤에서 천적을 다 뺏기지 않게)
@@ -1755,7 +1758,7 @@ function kangPick(ty, cap) { const Dx = window.PSim?.Dex, nm = t => { const e = 
   const ORD = ALL.map((g2, i) => [i + 1, POOL0.filter(x => mm(tyOf(x), g2) >= 1.5).length]).sort((a, b) => a[1] - b[1] || a[0] - b[0]).map(o => o[0]);
   let out = null; for (const t of ORD) { const T = one(t); if (t === ty) { out = T; break; } }
   return out || KANG_TEAM; }
-function mkKang(gi) { const g = st(), sp = kangPick(g.ty, STR_BS[gi - 1]), lv = clampN(bsBase(gi) + BS_LV[gi - 1] + 2, 5, 100);
+function mkKang(gi) { const g = st(), sp = kangPick(g.ty, STR_BS[gi - 1]), lv = clampN(bsBase(gi) + KANG_LV, 5, 100);
   return { id: ++g.cid, t: Date.now(), boss: gi, kang: 1, sc: 1, bn: BS_LV[gi - 1], cls: '포켓몬 박사', tr: 'kang', ow: 'kang', nm: '강박사', diff: 2, music: 'champ', team: sp.map((x, i) => [x, clampN(lv + (i === sp.length - 1 ? 2 : i >= sp.length - 3 ? 1 : 0), 5, 100)]) }; }
 // 심사 대사: pre 안내원 설레발, in 체육관(['k'|'g'|'...', 글]), hof 배틀 앞, win·lose 배틀 뒤(전당), loseG 진 뒤 안내원, back 복귀. retry = 진 뒤 다시 (짧게), N = 몇 번째 전설 체육관
 function legXLines(N, E, ty, retry) {
