@@ -773,6 +773,8 @@ const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && 
 const repFloor = g => GRADES[g.gmax | 0]?.[0] | 0;   /* v15.67 경완: 승급한 등급의 문턱 아래로는 평판이 안 떨어진다 */
 /* v24.19 경완 '전설 등급부터는 천장도 없고 난이도도 계속 어려움, 평판 계속 올라가게. 고용 트레이너는 평판 안 올리고 관장 배틀로만 — 순수 관장 실력으로 랭킹': 전설의 체육관은 평판 상한 없음 */
 const isLeg = g => (g?.gmax | 0) >= GRADES.length - 1;
+/* 전설의 체육관에 오는 보통 도전자 = 본가 후반(챔피언로드·리그 앞) 트레이너 종류만. 이름 있는 트레이너도 더 자주 (보통 도전자 LEG_NC 명마다, 다른 등급은 9명) */
+const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_trainer_f', 'dragon_tamer', 'veteran', 'black_belt', 'psychic_m', 'psychic_f', 'ranger_m', 'ranger_f', 'pokemaniac'], LEG_NC = 4;
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : Infinity; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
@@ -909,11 +911,11 @@ function mkChal(t) {
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
-  if ((g.nc | 0) >= 9 && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
+  if ((g.nc | 0) >= (isLeg(g) ? LEG_NC : 9) && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   // v14.31 경완: 처음 5명은 무조건 쉬운 도전자(g.ez = 만든 보통 도전자 수), 첫 등급의 어려운 도전자 확률 30% → 15%
   const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
-  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS = Object.keys(CLS).filter(x => !!CLS[x].e === !diff);
+  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = Object.keys(CLS).filter(x => !!CLS[x].e === !diff), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
   { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq, tw) }; }
