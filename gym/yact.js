@@ -200,6 +200,26 @@ const CSS = `
 #yact .ya-stn .ya-stg i{position:absolute;margin:-5px}
 #yact .ya-stn .ya-stg i.c{box-shadow:0 0 0 2px #ffe27a}
 #yact .ya-hud.ya-rw{top:calc(92px + env(safe-area-inset-top))}
+/* 경완 2026-11-14 '보상 3칸에 골드까지 반원으로, 반투명하게': 가운데 반원(스테이지) 둘레에 바깥 반원 띠를 두르고 네 칸(골드·경험치·노력치·번뜩임)으로 나눈다 */
+#yact .ya-top{justify-content:flex-end}
+#yact .ya-arc{left:50%;top:env(safe-area-inset-top);width:0;height:0}
+#yact .ya-ring{position:absolute;left:-134px;top:0;width:268px;height:134px;box-sizing:border-box;border-radius:0 0 134px 134px;background:rgba(26,28,50,.5);border:3px solid rgba(32,32,44,.85);border-top:0;box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.14)}
+#yact .ya-ring::before{content:"";position:absolute;left:-3px;right:-3px;bottom:100%;height:env(safe-area-inset-top);background:rgba(26,28,50,.5)}
+#yact .ya-ring i{position:absolute;left:131px;top:-1px;width:58px;height:2px;background:rgba(255,255,255,.22);transform-origin:0 50%}
+#yact .ya-ring i:nth-child(1){transform:rotate(135deg) translateX(76px)}#yact .ya-ring i:nth-child(2){transform:rotate(90deg) translateX(76px)}#yact .ya-ring i:nth-child(3){transform:rotate(45deg) translateX(76px)}
+#yact .ya-arc .sg{position:absolute;width:58px;height:46px;margin:-23px -29px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#fff;text-shadow:0 2px 0 var(--ink),0 0 3px var(--ink);white-space:nowrap;line-height:1;padding:0;background:none;border:0;box-shadow:none}
+#yact .ya-arc .sg:nth-of-type(2){left:-98px;top:38px}#yact .ya-arc .sg:nth-of-type(3){left:-41px;top:98px}#yact .ya-arc .sg:nth-of-type(4){left:41px;top:98px}#yact .ya-arc .sg:nth-of-type(5){left:98px;top:38px}
+#yact .ya-arc .sg b{font-size:14px}
+#yact .ya-arc .sg small{font-size:8px;opacity:.9}
+#yact .ya-arc .ri{width:19px;height:19px;display:grid;place-items:center;border:2px solid var(--ink);font-style:normal;font-weight:700;font-size:9px;text-shadow:none}
+#yact .ya-arc .ex .ri{background:#3a98e8}#yact .ya-arc .ev .ri{background:#8a4ae0}#yact .ya-arc .ya-eg .ri{background:#e060b0}
+#yact .ya-arc .ex b{color:#9fd8ff}#yact .ya-arc .ev b{color:#d6b4ff}#yact .ya-arc .ya-eg b{color:#ffb4e0}#yact .ya-arc .mg-hg b{font-size:17px;color:#ffe27a}
+#yact .ya-arc .mg-hg .coin{width:15px;height:15px;margin:0}
+#yact .ya-arc .ya-egt{font-style:normal;font-size:8px;line-height:11px;padding:0 3px;border:1px solid var(--ink);text-shadow:none}
+#yact .ya-arc .ya-stb{top:0;width:152px;height:76px;padding-top:3px;border-radius:0 0 76px 76px;background:rgba(26,28,50,.62);box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.16)}
+#yact .ya-arc .ya-stb .ya-ph{font-size:10px;line-height:14px;margin:0 0 2px}
+#yact .ya-arc .ya-stn .n b{font-size:26px}
+#yact .ya-tl{left:8px;top:calc(104px + env(safe-area-inset-top))}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
 #yact .ya-me{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -289,12 +309,14 @@ const CSS = `
 #yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;background:#1c1c2e}
 `;
 const HTML = `<canvas></canvas>
-<div class="ya-hud ya-top"><span class="pan mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></span>
-  <div class="ya-stb"><b class="ya-ph">스테이지</b><div class="pan ya-stn"><div class="n"><b class="ya-wn">1</b><small>/${STAGES.length}</small></div><div class="ya-stg"></div></div></div>
-  <button class="b3 ya-quit">그만하기</button></div>
-<div class="ya-hud ya-rw"><div class="pan ch ex"><i class="ri">Lv</i><div class="rt"><span>경험치</span><b class="ya-rwe">+0</b></div><div class="rb"><u class="ya-rwxb"></u></div></div>
-  <div class="pan ch ev"><i class="ri">EV</i><div class="rt"><span><span class="ya-rwk"></span> 노력치</span><b class="ya-rwv">0/8</b></div><div class="rb"><u class="ya-rwvb"></u></div></div>
-  <div class="pan ch ya-eg"><i class="ri">★</i><div class="rt"><span>번뜩임 <em class="ya-egt"></em></span><b class="ya-egp"></b></div><div class="bar rb"><i class="ya-egf0"></i><i class="ya-egf"></i></div></div></div>
+<div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
+<div class="ya-hud ya-arc"><div class="ya-ring"><i></i><i></i><i></i></div>
+  <div class="sg mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></div>
+  <div class="sg ex"><i class="ri">Lv</i><b class="ya-rwe">+0</b></div>
+  <div class="sg ev"><i class="ri">EV</i><b class="ya-rwv">0/8</b><small class="ya-rwk"></small></div>
+  <div class="sg ya-eg"><i class="ri">★</i><b class="ya-egp"></b><em class="ya-egt"></em></div>
+  <div class="ya-stb"><b class="ya-ph">스테이지</b><div class="ya-stn"><div class="n"><b class="ya-wn">1</b><small>/${STAGES.length}</small></div><div class="ya-stg"></div></div></div></div>
+<span hidden><i class="ya-rwxb"></i><i class="ya-rwvb"></i><i class="ya-egf"></i><i class="ya-egf0"></i></span>
 <div class="ya-hud ya-tl"><div class="ya-cb"><b>0</b>콤보<small></small><i><u></u></i></div></div>
 <span hidden><i class="ya-me"></i><i class="ya-m"></i><i class="ya-tm"></i><i class="ya-egn"></i><i class="ya-egs"></i></span>
 <div class="ya-joy"></div><div class="ya-joyb"><i class="ya-joyk"></i></div>
@@ -956,7 +978,7 @@ function gotShard(p) {
     snd('DUN_Wonder_Tile', .09); snd('DUN_Stat_Up', .05, .14);
     ring(me.x, me.y - 16, col, 6, 80, .4, 6, 1); ring(me.x, me.y - 16, '#fff', 4, 50, .3, 4, 1, .08); stars(p.x, p.y - 16, 14, col); stars(me.x, me.y - 22, 10, '#fff', 260); }
   // 반짝이가 번뜩임 칸으로 날아가서 게이지가 오른다
-  const to = hudPt('.ya-eg .bar'); let n = 0; for (let i = 0; i < 2 + sh * 2; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, col);
+  const to = hudPt('.ya-eg .ri'); let n = 0; for (let i = 0; i < 2 + sh * 2; i++) fly('xp', p.x, p.y - 16, to, () => { if (R?.G !== G || n++) return; G.eggShown = G.egg; const b = R.q('.ya-eg'); b.classList.remove('up'); void b.offsetWidth; b.classList.add('up'); buzz(0); hud(); }, col);
   hud();
 }
 function shardFx() {   // 먹는 순간 화면 효과 (판 시간이 멈춰 있어도 도는 실제 시간)
@@ -1115,7 +1137,7 @@ function cdUi() { const G = R.G, me = G.me, box = R.q('.ya-mvs'), dg = R.q('.ya-
 function hud() {
   const G = R?.G; if (!G) return; const q = R.q, me = G.me, eg = G.M.eg, r = me.hp / me.mhp;
   q('.ya-wn').textContent = G.wave; q('.ya-stg').innerHTML = STAGES.map((S, i) => { const a = (166 - i * 152 / (STAGES.length - 1)) * Math.PI / 180;   /* 반원 테두리를 따라 왼쪽에서 오른쪽으로 */
-    return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(85 + Math.cos(a) * 70).toFixed(1)}px;bottom:${(85 - Math.sin(a) * 70).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
+    return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(73 + Math.cos(a) * 59).toFixed(1)}px;bottom:${(73 - Math.sin(a) * 59).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
   q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
   q('.ya-eg').hidden = !eg;
   if (eg) { q('.ya-egn').textContent = '번뜩임 ???'; q('.ya-egt').textContent = TYPE_KO[eg.t] || ''; q('.ya-egt').style.background = TYPE_C[eg.t] || '#888'; q('.ya-egf').style.setProperty('--tc', TYPE_C[eg.t] || '#ee99ac');
