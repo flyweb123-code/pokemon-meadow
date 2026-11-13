@@ -3865,7 +3865,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
 #trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:170px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:4px 12px 6px}
 #trLobby .tl-hd h2{margin:0;font-size:15px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
-#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
+#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s .rk-fr>img[data-th]{width:84%!important;height:84%!important;max-width:none;max-height:none;object-fit:contain}
 #trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
 #trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
 #trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
@@ -3875,8 +3875,8 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
 #trLobby .tl-s{position:relative;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff;border:0}
 #trLobby .tl-s.on{background:#fff6d0;box-shadow:inset 0 0 0 2px #e0a020}
-#trLobby .tl-s .rk-fr{transform:scale(.62)}
-#trLobby .tl-s em{position:absolute;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
+#trLobby .tl-s .rk-fr{position:absolute;inset:0;width:100%;height:100%}
+#trLobby .tl-s em{position:absolute;z-index:3;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
 #trLobby .tl-s .pb{width:22px;height:22px;opacity:.28}
 #trLobby .tl-pips{display:flex;gap:2px;margin-top:7px}#trLobby .tl-pips i{flex:1;height:9px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}
 #trLobby .tl-pips i.f{background:#5cc27a;box-shadow:inset 0 -2px 0 #2f9a52,inset 0 2px 0 #9ae8b0}#trLobby .tl-pips.ov i.f{background:#e05050;box-shadow:inset 0 -2px 0 #a82424,inset 0 2px 0 #ff9a9a}
@@ -3895,7 +3895,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;height:114px;padding:4px 3px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
 #trLobby .tl-c .ty{display:flex;gap:1px;flex:none;margin-left:auto}#trLobby .tl-c .ty .tyi{width:15px;height:15px;display:block}
 #trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
-#trLobby .tl-c.on::after{content:'✔';position:absolute;left:4px;top:22px;z-index:2;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
+#trLobby .tl-c.on::after{display:none;content:'✔';position:absolute;left:4px;top:22px;z-index:2;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
 #trLobby .tl-c:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #c8c8d8}
 #trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #trLobby .tl-c .st{display:flex;gap:2px;font-size:9px;white-space:nowrap}#trLobby .tl-c .st em{font-style:normal;padding:1px 3px;color:#fff;background:#383848}#trLobby .tl-c .st em.c{background:#2f7cd0}
@@ -3908,7 +3908,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-sm{margin:6px 0 0;font-size:11px;line-height:1.5;opacity:.75}
 #trLobby .tl-sv{display:flex;align-items:center;gap:8px;margin:0 0 8px}#trLobby .tl-sv .fl{font-size:28px;line-height:1;color:#e04838}#trLobby .tl-sv .fl small{font-size:13px;color:var(--win-ink);margin-left:2px}#trLobby .tl-sv>small{font-size:10px;opacity:.7;white-space:nowrap}
 #trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
-#trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;left:3px;right:3px;top:3px;height:3px;background:#0003}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
+#trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;z-index:3;left:4px;right:4px;top:4px;height:4px;background:#0005}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
 #trLobby .gy-key.sure{background:#e05050!important;color:#fff!important}
 #trLobby .tl-rh{text-align:center;padding:4px 0 8px}#trLobby .tl-rh b{display:block;font-size:18px}#trLobby .tl-rh small{font-size:11px;opacity:.7}#trLobby.top .tl-rh b{color:#e0a020}
 #trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
