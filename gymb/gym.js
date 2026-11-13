@@ -873,7 +873,8 @@ function refit(c, my) { refit0(c, my); lvCeil(c); }
 const XP_M = [.6, .4, .25, .15, .15, .1, .1], xpM = () => XP_M[clampN(st()?.gmax | 0, 0, XP_M.length - 1)];
 /* v23.49 경완 '고용 트레이너로 얻는 평판도 관장이 직접 배틀을 좀 해야 오르는 식으로': 트레이너가 막아 번 평판은 대기 평판(g.sfB, 최대 SF_BANK)으로 쌓이고, 관장이 직접 이길 때마다 SF_REL 씩 들어옴. 골드는 그대로 바로 */
 const SF_BANK = 20, SF_REL = 2;
-function sfRel() { const g = st(), k = Math.min(SF_REL, g.sfB | 0); if (k <= 0) return 0; const r0 = g.rep || 0; addRep(k, 1); const got = (g.rep || 0) - r0; g.sfB = (g.sfB | 0) - Math.max(got, 0); return Math.max(got, 0); }
+/* v23.51 경완 '이길 때 풀린 몫은 나갔다 들어왔을 때 트레이너 알림창으로': 직접 배틀하면 대기 평판(g.sfB)에서 SF_REL 만큼 '받을 평판'(g.sfP)으로 옮기기만 하고, 실제 평판은 다음 입장 때 트레이너 알림창(awayPop)이 뜨면서 오름 */
+function sfRel() { const g = st(), k = Math.min(SF_REL, g.sfB | 0); if (k > 0) { g.sfB = (g.sfB | 0) - k; g.sfP = (g.sfP | 0) + k; } return k; }
 function refit0(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
   const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
@@ -1062,10 +1063,10 @@ function arrive(c) {
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
       const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const bk0 = g.sfB | 0; g.sfB = Math.min(SF_BANK, bk0 + sfRep(s, R.r));   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
-      const rep = (g.sfB | 0) - bk0;   /* v23.49: 바로 오르지 않고 대기 평판으로 */
+      const rep = 0;   /* v23.49: 바로 오르지 않고 대기 평판으로. v23.51: 평판은 입장 알림창(awayPop)에서 오르고 그때 기록 */
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
-      glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G · 평판 +${rep}</small>`, c.t);   /* v23.50 경완 '대기 평판은 게임 시스템, 유저는 모르게 원래처럼': 화면 글은 예전 그대로 */
+      glog('sf', `${sfName(s)}${jong(s.nm) ? '이' : '가'} ${cn}${jong(c.nm) ? '을' : '를'} 막아 냈다! <small>+${gold}G</small>`, c.t);   /* v23.50 경완 '대기 평판은 게임 시스템, 유저는 모르게': 대기 평판은 화면에 안 씀. v23.51: 평판은 입장 알림창에서 */
       const c2 = mkChal(c.t); c2.sfOk = 1; arrive(c2); return;   // v15.62 경완 '트레이너를 많이 세웠다고 명단이 줄면 안 돼': 트레이너가 막은 도전자는 덤, 관장 명단엔 다른 도전자가 그대로 온다
     }
     if (lost.length) try { window.pkBal?.('sf', { w: 0, df: c.diff | 0, n: lost.length, gd: 0, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)) }); } catch (e) {}   /* 밸런스 기록: 트레이너가 다 졌음 */
@@ -1309,7 +1310,7 @@ async function challenge(picked) {
     if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
     else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
-    rep = (g.rep || 0) - r0; if (won) sfRel();   /* v23.49: 직접 이기면 트레이너 대기 평판에서 조금 들어옴 (v23.50: 화면에는 따로 안 보임) */
+    rep = (g.rep || 0) - r0; if (!res?.quit && !res?.cut) sfRel();   /* v23.51 경완 '꼭 이길 필욘 없고 직접 배틀에 참가하면 돼': 직접 싸우면(기권·끊긴 배틀 빼고) 트레이너 대기 평판이 조금 풀림 */
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
       window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
@@ -3666,6 +3667,13 @@ function awSf(s, gold, rep) { const a = awOf().sf, x = a[s.id] || (a[s.id] = [0,
 const awMv = (id, mv, nm, ty) => awOf().mv.push([id, mv, nm, ty]);
 async function awayPop() {
   const g = st(), A = g.aw; if (!A || !open) return; const SF = Object.entries(A.sf).map(([id, v]) => [g.sf.find(s => String(s.id) === id), v]).filter(x => x[0]).sort((a, b) => b[1][1] - a[1][1]), MV = A.mv.map(([id, mv, nm, ty]) => [S.box.find(P => P.id === id), mv, nm, ty]).filter(x => x[0]);
+  SF.forEach(([, v]) => { v[2] = 0; });
+  if (SF.length && (g.sfP | 0) > 0) {   /* v23.51: 직접 배틀해서 풀린 트레이너 몫이 이 알림창과 함께 실제 평판에 들어옴 (막은 수대로 나눠 적음) */
+    const r0 = g.rep || 0; addRep(g.sfP | 0, 1); const got = Math.max(0, (g.rep || 0) - r0); g.sfP = Math.max(0, (g.sfP | 0) - got);
+    if (got) { const tw = SF.reduce((a, [, v]) => a + v[0], 0) || 1; let left = got; SF.forEach(([, v]) => { v[2] = Math.floor(got * v[0] / tw); left -= v[2]; });
+      for (let i = 0; left > 0; i = (i + 1) % SF.length, left--) SF[i][1][2]++;
+      const D = dayRec(); SF.forEach(([s, v]) => { if (!v[2]) return; try { wkSf(s).r += v[2]; daySf(D, `${s.cls} ${s.nm}`).r += v[2]; } catch (e) {} });
+      glog('sf', `트레이너들이 체육관을 지킨 덕분에 평판이 올랐다! <small>평판 +${got}</small>`); renderTop(); } }
   g.aw = null; save();
   if (SF.length) await awSfPop(SF);
   for (let i = 0; i < MV.length && open; i++) await awMvPop(MV[i], i, MV.length);
