@@ -4385,3 +4385,15 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v23.59 상세카드 기술 줄 위 순서 바꾸기·추천 기술 (기술 바꾸기 목록 버튼 자리) */
 #gym .mp-mvh .mv-tools.mp-mvt{margin:0;gap:6px}
 #gym .mp-mvt .mv-ordb{min-width:0;padding:4px 10px;font-size:11px}
+
+/* v23.61 경완 '강박사 얼굴 띠 나올 때 뒷 배경좀 만들어줘 띠 배경도': 전설 심사(강박사) 심사관 띠 — 뒤에 남보라 무대 + 도는 금빛 빛살 + 흐르는 선, 띠는 흐르는 자줏빛 줄무늬 + 금테 */
+.bt-enc.ex.kg .kg-bg{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity .3s;background:radial-gradient(ellipse 90% 60% at 50% 50%,#5a3596 0,#2a1a5e 38%,#0e0a24 72%,#05040c 100%)}
+.bt-enc.ex.kg.foe .kg-bg{opacity:1}
+.bt-enc.ex.kg .kg-bg::before{content:'';position:absolute;left:50%;top:50%;width:220vmax;height:220vmax;margin:-110vmax 0 0 -110vmax;background:repeating-conic-gradient(rgba(255,216,120,.2) 0 5deg,transparent 5deg 18deg);-webkit-mask:radial-gradient(circle,transparent 4%,#000 14%,transparent 58%);mask:radial-gradient(circle,transparent 4%,#000 14%,transparent 58%);animation:kgSpin 16s linear infinite}
+.bt-enc.ex.kg .kg-bg::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 26px,rgba(255,255,255,.07) 26px 28px,transparent 28px 61px,rgba(255,226,150,.09) 61px 62px);background-size:100% 124px;animation:kgLn .5s linear infinite;box-shadow:inset 0 0 90px 30px rgba(4,3,10,.85)}
+.bt-enc.ex.kg .kg-bg>i{position:absolute;left:50%;top:50%;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;background:radial-gradient(circle,rgba(255,236,170,.5),rgba(255,200,90,.14) 42%,transparent 68%);animation:bswPulse 2.4s ease-in-out infinite}
+@keyframes kgSpin{to{transform:rotate(360deg)}}@keyframes kgLn{to{background-position:0 124px}}
+.bt-enc.ex.kg .ex-band{background:linear-gradient(180deg,rgba(255,255,255,.16) 0,rgba(255,255,255,0) 34%,rgba(0,0,0,.28) 100%),repeating-linear-gradient(-60deg,#7a2238 0 12px,#641a2d 12px 24px)!important;background-size:auto,27.713px 100%!important;box-shadow:0 -3px 0 #f4d27a,0 3px 0 #f4d27a,0 -8px 0 rgba(244,210,122,.32),0 8px 0 rgba(244,210,122,.32),0 0 34px 6px rgba(0,0,0,.6)!important;animation:encBand .35s .15s cubic-bezier(.2,.8,.3,1) both,kgBand .7s linear infinite}
+@keyframes kgBand{to{background-position:0 0,27.713px 0}}
+.bt-enc.ex.kg .ex-band::before{content:'';position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,240,200,.35),transparent);animation:kgSheen 1.6s .7s ease-in-out infinite}
+@keyframes kgSheen{0%{transform:translateX(0)}60%,100%{transform:translateX(520%)}}
