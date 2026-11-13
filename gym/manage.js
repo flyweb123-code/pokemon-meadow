@@ -178,12 +178,14 @@ function yRing(i, x, y) {
 let YBG = null;
 // 전설 심사 (강박사, 경완 2026-11-13 '훈련장에 있는 경기장 양쪽에 서서 시작'): 훈련장 바닥·기구 그림을 필드 맵 한 장으로 (tw×th 칸, 1칸 = 16px). 열려 있는 훈련장(Y)과 바닥 그림 캐시는 건드리지 않음
 async function yardShot(tw, th, bare) {   /* bare = 기구 없이 바닥만 (직접 훈련, 경완 2026-11-13) */ await loadYA(); const Y0 = Y, W = tw * 32, H = th * 32, c = document.createElement('canvas');
+  /* v23.66 경완 '강박사랑 훈련장으로 나갈 때 후프링 없음?': 후프링 셋도 그림에 넣고(기둥·뒤 반쪽·앞 반쪽), 훈련장에서 없앤 허들은 뺌 */ const RG = bare ? [] : await Promise.all(ringArt().map(u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u; })));
   try { Y = { W, H, pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } }; Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
     yardBg0(c); const g = c.getContext('2d'), r2 = H * .39;
-    for (const [id, x, y] of bare ? [] : [['punch-bag', W * .1, r2], ['punch-bag', W * .27, r2], ['spring-trampoline', W * .5, r2], ['target-easel', W * .9, r2], ['track-hurdle', W * .72, H * .76], ['track-hurdle', W * .72, H * .88]]) { const A = YA?.[id]; if (!A) continue;
+    for (const [id, x, y] of bare ? [] : [['punch-bag', W * .1, r2], ['punch-bag', W * .27, r2], ['spring-trampoline', W * .5, r2], ['target-easel', W * .9, r2]]) { const A = YA?.[id]; if (!A) continue;
       const w = A.px[0].length, h = A.px.length, x0 = Math.round(x / 2 - w / 2), y0 = Math.round(y / 2 - h);
       g.fillStyle = 'rgba(20,40,10,.22)'; g.beginPath(); g.ellipse(x0 + w / 2, y0 + h, w * .42, 2.5, 0, 0, 6.3); g.fill();
       for (const L of A.mv ? [A.mv.st, A.mv.mp] : [A.px]) L.forEach((r, yy) => [...r].forEach((ch, xx) => { const col = A.pal[ch]; if (col) { g.fillStyle = col; g.fillRect(x0 + xx, y0 + yy, 1, 1); } })); }
+    if (RG.length) for (const f of [.24, .5, .76]) { const x0 = Math.round(W * f / 2 - 9), y0 = Math.round(H * .29 / 2 - 44); g.fillStyle = 'rgba(20,40,10,.22)'; g.beginPath(); g.ellipse(x0 + 10, y0 + 43, 6, 2, 0, 0, 6.3); g.fill(); for (const im of [RG[2], RG[0], RG[1]]) if (im) g.drawImage(im, x0, y0); }
     return { url: c.toDataURL(), W, H, court: Y.court };
   } finally { Y = Y0; } }
 function yardBg(c) {
