@@ -220,6 +220,13 @@ const CSS = `
 #yact .ya-arc .ya-stb .ya-ph{font-size:10px;line-height:14px;margin:0 0 2px}
 #yact .ya-arc .ya-stn .n b{font-size:26px}
 #yact .ya-tl{left:8px;top:calc(104px + env(safe-area-inset-top))}
+/* 경완 2026-11-14 '콤보 좀 더 잘 보이게': 금색 띠 달린 반투명 판 + 큰 숫자(검은 테두리) + 충전 딱지 + 굵은 남은 시간 막대. 10·30 콤보부터 색이 달아오른다 */
+#yact .ya-cb{--cc:#ffe27a;display:inline-block;padding:4px 10px 7px 9px;background:rgba(26,28,50,.72);border:3px solid var(--ink);border-left:7px solid var(--cc);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 3px 0 rgba(0,0,0,.25);font-size:14px;font-weight:700;text-shadow:0 2px 0 var(--ink)}
+#yact .ya-cb[data-t="2"]{--cc:#ffa040}#yact .ya-cb[data-t="3"]{--cc:#ff5a4a}
+#yact .ya-cb b{font-size:36px;line-height:1;color:var(--cc);margin-right:5px;text-shadow:-2px 0 0 var(--ink),2px 0 0 var(--ink),0 -2px 0 var(--ink),0 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 3px 0 var(--ink),2px 3px 0 var(--ink)}
+#yact .ya-cb small{display:table;font-size:10px;line-height:15px;padding:0 6px;margin-top:4px;background:#bff59a;color:var(--ink);text-shadow:none;border:2px solid var(--ink)}
+#yact .ya-cb i{width:100%;min-width:96px;height:7px;border-width:2px;margin-top:5px;box-sizing:border-box;background:#14162a}
+#yact .ya-cb u{background:var(--cc)}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
 #yact .ya-me{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1012,10 +1019,11 @@ function drawShard(p) { const g = R.g, T = R.T, RT = R.RT, t = T - p.t0, sh = p.
 // 내 포켓몬 머리 위: 체력바(늘 보임) + 깨닫는 기술 게이지(가는 줄, 조각을 먹으면 잠깐 커지고 %가 뜸) + 범위 UP 남은 시간
 function meBar(me) { const g = R.g, G = R.G, RT = R.RT, w = 46, x = Math.round(me.x - w / 2 + (me.flash > 0 ? Math.sin(RT * 90) * 2 : 0)), y = Math.round(me.y - 62 - (GA.lift?.(me.sp) || 0) - (me.z || 0)), r = Math.max(0, me.hp / me.mhp);
   g.fillStyle = '#20202c'; g.fillRect(x - 2, y - 2, w + 4, 10); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, 6); g.fillStyle = r > .5 ? '#58d050' : r > .2 ? '#f8c030' : (Math.floor(RT * 6) % 2 ? '#f05038' : '#ff9a8a'); g.fillRect(x, y, Math.round(w * r), 6); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(x, y, Math.round(w * r), 2);
-  let yy = y + 10; const eg = G.M.eg;
-  if (eg) { const up = Math.max(0, 1 - (RT - G.egT) / 2.2), h = up > 0 ? 5 : 3, c = TYPE_C[eg.t] || '#ee99ac'; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#5a5a6a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = up > 0 && Math.floor(RT * 12) % 2 ? '#fff' : c; g.fillRect(x, yy + 1, Math.round(w * G.eggShown / 100), h);
-    if (up > 0) { g.textAlign = 'left'; g.font = 'bold 10px Galmuri11'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(`${G.eggShown}%`, x + w + 5, yy + 7); g.fillStyle = '#ffe27a'; g.fillText(`${G.eggShown}%`, x + w + 5, yy + 7); } yy += h + 4; }
-  for (const [v, mx, c] of [[me.buff, BUFF_T, '#bff59a'], [me.shrink, 8, '#ffd0f0'], [me.clone, 8, '#c8c8ff'], [me.haste, 8, '#9fe4ff'], [me.guard, 8, '#8cc8ff'], [me.prot, 2.5, '#7af0a0']]) if (v > 0) { g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, 5); g.fillStyle = c; g.fillRect(x, yy + 1, Math.round(w * v / mx), 2); yy += 5; } }
+  // 체력 밑 게이지 = 기술 남은 시간 (경완 2026-11-14 '빈 게이지를 기술 남은 시간 게이지로'): 꾹 누르는 기술은 버틸 수 있는 시간, 아니면 걸어 둔 효과가 남은 시간. 보여 줄 게 없으면 안 그림
+  let yy = y + 10; const H = me.hide, C = me.ch, D = me.dash?.hold != null ? me.dash : null, ef = [[me.buff, BUFF_T, '#bff59a'], [me.shrink, 8, '#ffd0f0'], [me.clone, 8, '#c8c8ff'], [me.haste, 8, '#9fe4ff'], [me.guard, 8, '#8cc8ff'], [me.prot, 2.5, '#7af0a0']].filter(e => e[0] > 0);
+  const hold = H ? [H.max - H.t, H.max, H.col] : C ? [C.max - C.t, C.max, C.col] : D ? [D.max - D.el, D.max, TYPE_C[D.v?.t]] : null, main = hold || ef.shift();
+  if (main) { const q = Math.max(0, Math.min(1, main[0] / main[1])), h = 5, low = hold && q < .25 && Math.floor(RT * 14) % 2; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#4a4a5a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = low ? '#fff' : (main[2] || '#ffe27a'); g.fillRect(x, yy + 1, Math.round(w * q), h); g.fillStyle = 'rgba(255,255,255,.4)'; g.fillRect(x, yy + 1, Math.round(w * q), 1); yy += h + 4; }
+  for (const [v, mx, c] of ef) { g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, 5); g.fillStyle = c; g.fillRect(x, yy + 1, Math.round(w * v / mx), 2); yy += 5; } }
 function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx = e.flash > 0 ? Math.sin(R.RT * 90) * 2 : 0, x = Math.round(e.x - w / 2 + jx), y = Math.round(e.y + 6);
   g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, h + 2); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, h); const r = Math.max(0, e.hp / e.mhp), rl = Math.max(0, (e.hpLag ?? e.hp) / e.mhp);
   if (rl > r) { g.fillStyle = '#fff'; g.fillRect(x, y, Math.ceil(w * rl), h); }   // 방금 깎인 만큼은 하얗게 남았다가 줄어든다
@@ -1145,7 +1153,7 @@ function hud() {
   q('.ya-me').textContent = `${nmOf(G.o.P)} Lv.${me.lv}`;
 }
 function hgUp() { const el = R.q('.mg-hg'); el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); hud(); }
-function cbUi(up) { const G = R.G, el = R.q('.ya-cb'), n = G.combo; el.classList.toggle('on', n >= 2); if (n < 2) return;
+function cbUi(up) { const G = R.G, el = R.q('.ya-cb'), n = G.combo; el.classList.toggle('on', n >= 2); if (n < 2) return; el.dataset.t = n >= 30 ? 3 : n >= 10 ? 2 : 1;
   el.querySelector('b').textContent = n; el.querySelector('small').textContent = `기술 충전 +${Math.round(Math.min(.45, n * .015) * 100)}%`;
   if (up) { el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); } }
 function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>${t}</span>`; b.className = 'ya-ban'; void b.offsetWidth; b.className = 'ya-ban on ' + kind; }
