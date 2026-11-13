@@ -406,7 +406,6 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let si = hb.querySelector('.shico'); if (A.shiny) { if (!si) { si = document.createElement('i'); si.className = 'shico'; hb.appendChild(si); } const nm = hb.querySelector('.nm'); si.style.left = (nm.offsetLeft + Math.min(nm.scrollWidth, nm.offsetWidth) + 1) + 'px'; } else si?.remove(); }   // 경완 11-11 '포켓몬 이름 옆에 우리 게임 이로치 아이콘'
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
@@ -2090,7 +2089,7 @@ function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌�
       m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
       mark(re())(nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }); return true; }
     if (/^(i.|mvs\d)/.test(a) && (drag || ord)) return true;
-    if (a.startsWith('mvs')) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }
+    if (/^mvs\d$/.test(a)) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }   /* v23.98 경완 '훈련장 새 기술 버튼이 기술 바꾸기로': 새 기술 버튼(data-a mvs)과 빈 칸(mvs0~3) 이름이 겹쳤음 → 숫자 붙은 것만 */
     return false; };
 }
 function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프로필 박스 밑까지 꽉 차게, 왼쪽 아래 '경험치'
