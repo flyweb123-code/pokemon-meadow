@@ -1728,9 +1728,9 @@ async function expGain(X) {
   // v13.04 경완: 연습 배틀은 경험치 연출도 없음
   // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)
-  for (const pid of [...B.vs, ...(B.train ? [] : B.my.map(o => o.pid).filter(p => !B.vs.has(p)))]) {   /* v23.10 훈련하기는 학습장치 없음 (경완) */
+  for (const pid of [...B.vs, ...(B.train && !B.train.sh ? [] : B.my.map(o => o.pid).filter(p => !B.vs.has(p)))]) {   /* v23.10 훈련하기는 학습장치 없음 (경완) → v23.57 보상 '학습장치'를 고르면 한 개당 20% (포켓로그처럼, 5개까지) */
     const i = B.my.findIndex(o => o.pid === pid), pk = B.o.p[i], P = boxOf(pid); if (!P || !pk || pk.fainted) continue;
-    const share = !B.vs.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? .5 : 1) * (B.train?.xp ?? 1) * (B.xpm ?? 1), true); if (!r.n) continue; for (let l = r.lv0; l < r.lv; l++) frAdd(P, frStep(P, [5, 3, 2]));   // v22.07 레벨업 친밀도
+    const share = !B.vs.has(pid), m = gm(P), g0 = xpGauge(B.my[i]), r = gainXp(P, xpFor(foe, m.lv) * (share ? (B.train ? B.train.sh : .5) : 1) * (B.train?.xp ?? 1) * (B.xpm ?? 1), true); if (!r.n) continue; for (let l = r.lv0; l < r.lv; l++) frAdd(P, frStep(P, [5, 3, 2]));   // v22.07 레벨업 친밀도
     if (share) { const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
       if (r.lv > r.lv0) { const L = lvWin(P, r.lv0, r.lv); lvApply(pk, null, r.lv, L.a, L.b); B.my[i].lv = r.lv; }
       SH.push({ i, P, r, g0 }); continue; }
