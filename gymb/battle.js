@@ -1991,13 +1991,42 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'
 const boxPop = () => boxWin(false);
 // 정보 카드 html (넘기기 때 옆 카드도 같은 걸로 그린다)
 const inTr = id => !!S.gym?.tr?.some(e => e.id === id);
+/* v23.59 경완 '상세카드 기술 바꾸기 목록 창 버튼 없애고 그 자리에 순서 바꾸기·추천 기술, 기술 꾹 누르면 순서': 체육관·훈련장 상세카드 같이 */
+const mvHdTools = m => `<span class="mv-tools mp-mvt">${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="mvord">순서 바꾸기</button>' : ''}<button type="button" class="mv-ordb mv-recb" data-a="mvrec">추천 기술</button></span>`;
+const mvEmpty = m => m.mv.length < 4 ? `<button type="button" class="mp-mv empty" data-a="mvs${m.mv.length}"><b>빈 칸</b></button>` : '';
+function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌려줌). 돌려주는 함수 h(a) = 처리했으면 true
+  const m = gm(P), list = p.querySelector('.mp-moves.mp-line'); if (!list) return () => false;
+  list.classList.add('mv-ord'); let ord = false, drag = 0, lp = null;
+  const mark = q => hi => { hi.forEach(i => q?.querySelectorAll('.mp-moves.mp-line .mp-mv')[i]?.classList.add('just')); q?.addEventListener('pointerdown', () => q.querySelectorAll('.mp-mv.just').forEach(b => b.classList.remove('just')), { once: true }); };
+  const end = () => { if (!lp) return; clearTimeout(lp.t); const on = lp.on; lp.b.classList.remove('drag'); lp = null; if (!on) return;
+    const ids = [...list.querySelectorAll('.mp-mv:not(.empty)')].map(b => b.dataset.a.slice(1)); if (ids.length === m.mv.length && ids.every(id => m.mv.includes(id))) { m.mv = ids; GA.save(); }
+    setTimeout(() => { drag = 0; }, 0); };
+  list.addEventListener('contextmenu', e => e.preventDefault());
+  list.addEventListener('pointerdown', e => { const b = e.target.closest('.mp-mv:not(.empty)'); if (!b || m.mv.length < 2) return;
+    addEventListener('pointerup', end, { once: true }); addEventListener('pointercancel', end, { once: true });
+    if (ord) { e.preventDefault(); lp = { b, y: e.clientY, on: true }; drag = 1; b.classList.add('drag'); sfx('tap'); return; }
+    lp = { b, y: e.clientY, on: false, t: setTimeout(() => { if (!lp) return; lp.on = true; drag = 1; b.classList.add('drag'); sfx('tap'); vib(1); }, 380) }; });
+  list.addEventListener('pointermove', e => { if (!lp) return;
+    if (!lp.on) { if (Math.abs(e.clientY - lp.y) > 8) { clearTimeout(lp.t); lp = null; } return; }
+    e.preventDefault(); e.stopPropagation(); const rows = [...list.querySelectorAll('.mp-mv:not(.empty)')];
+    for (const r of rows) { if (r === lp.b) continue; const R = r.getBoundingClientRect(); if (e.clientY > R.top && e.clientY < R.bottom) { const i = rows.indexOf(r), j = rows.indexOf(lp.b); r.parentNode.insertBefore(lp.b, i > j ? r.nextSibling : r); break; } } });
+  return a => {
+    if (a === 'mvord') { ord = !ord; const b = p.querySelector('[data-a=mvord]'); list.classList.toggle('on', ord); if (b) { b.textContent = ord ? '완료' : '순서 바꾸기'; b.classList.toggle('on', ord); } return true; }
+    if (a === 'mvrec') { if (ord) return true; const b = p.querySelector('[data-a=mvrec]'); loadSim().then(() => { if (!p.isConnected) return; const nw = recMoves(P, m), was = m.mv.slice();
+      if (nw.join() === was.join()) { if (b) { b.textContent = '지금이 추천 기술'; b.classList.add('on'); setTimeout(() => { if (b.isConnected) { b.textContent = '추천 기술'; b.classList.remove('on'); } }, 1400); } return; }
+      m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
+      mark(re())(nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }); return true; }
+    if (/^(i.|mvs\d)/.test(a) && (drag || ord)) return true;
+    if (a.startsWith('mvs')) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }
+    return false; };
+}
 function monHtml(P, mode) {   // v18.75 경완: 경험치 막대(.mp-xpr)는 프로필 박스 밑까지 꽉 차게, 왼쪽 아래 '경험치'
   const inLu = curLu().includes(P.id); const m = gm(P), g = growth(P.sp), a = xpAt(g, m.lv), b = xpAt(g, m.lv + 1), mv = m.mv.map(x => mvOf(x)).filter(Boolean);
   return `<div class="mp-head"><button type="button" class="mp-thb" data-a="hit" aria-label="지닌 도구">${thumb(P)}</button>${mode !== 'view' && !gm(P).it ? '<button type="button" class="th-add" data-a="hit" aria-label="도구 지니게 하기">+</button>' : ''}<div class="mp-hd"><h4>${mode === 'view' || !GA.nmEdit ? esc(nmOf(P)) : GA.nmEdit(P)}${inTr(P.id) ? '<em class="tr-tag">훈련중</em>' : ''}</h4><p class="mp-tys">${(SPECIES[P.sp]?.t || []).map(t => tyTag(t)).join('')}</p><p class="mp-lv"><b>Lv.${m.lv}</b> · 랭크 ${GA.rankOf(P)}</p>${frRow(P)}</div><div class="mp-xpr"><i class="mp-xp"><i style="width:${m.lv >= LV_MAX ? 100 : clampN((m.xp - a) / (b - a), 0, 1) * 100}%"></i></i><span class="mp-xpt"><small class="mp-xpl">경험치</small><small class="mp-xpn">${m.lv >= LV_MAX ? '최고 레벨' : `${Math.max(0, m.xp - a).toLocaleString()}/${(b - a).toLocaleString()}`}</small></span></div></div>
     <div class="mp-na"><button type="button" class="mp-nat" data-a="nat"><small>성격 <i class="mp-more">›</i></small><p><b>${natKo(m.nat)}</b></p></button><button type="button" class="mp-ab${m.ha ? ' ha' : ''}" data-a="ab"><small>특성 <i class="mp-more">›</i></small><p><b${m.ha ? ' class="ha"' : ''}>${abKo(m.ab)}</b>${m.ha ? '<em class="ha-tag">숨겨진</em>' : ''}</p></button></div>
     ${ivHex(P, m)}${mode === 'view' && !S.gym?.d ? '' : evBox(m)}   <!-- v20.66 경완: 보기 전용 카드(상점 배울 수 있는 포켓몬 등)에도 노력치 -->
-    <div class="mp-mvh"><small>기술</small>${!S.gym ? '' : '<button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button>'}</div>   <!-- v14.28 경완: 기술 바꾸기는 상세 카드 어디서나 (체육관 세우기 전 미리 보기만 빼고) -->
-    <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`).join('')}</div>
+    <div class="mp-mvh"><small>기술</small>${!S.gym || mode === 'view' ? '' : mvHdTools(m)}</div>   <!-- v14.28 경완: 기술 바꾸기는 상세 카드 어디서나 (체육관 세우기 전 미리 보기만 빼고) -->
+    <div class="mp-moves mp-line">${mv.map(x => `<button type="button" class="mp-mv" data-a="i${x[0]}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`).join('')}${!S.gym || mode === 'view' ? '' : mvEmpty(m)}</div>
     ${mode === 'view' ? '' : mode === 'add' ? `<div class="gy-btns one mp-btns">${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" class="main" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업에 넣기</button>`}</div>` : `<div class="gy-btns mp-btns mp-3"><button data-a="tm">도구 사용</button>${inLu ? '<button data-a="rm" class="danger">라인업에서 빼기</button>' : `<button data-a="add" ${tyOk(P) && curLu().length < 6 ? '' : 'disabled'}>라인업으로</button>`}${!inTr(P.id) && window.Gym?.k?.lockedT?.('train') ? '<button data-a="tr" class="tr-go tr-lk" aria-disabled="true" data-tip="동네 체육관이 되면 열려요" data-tipc><i class="mp-lk" aria-hidden="true"></i>훈련장으로</button>' : `<button data-a="tr" class="${inTr(P.id) ? 'tr-on' : 'tr-go'}">${inTr(P.id) ? '훈련장에서 빼기' : '훈련장으로'}</button>`}</div>`}<button class="mp-x" data-a="x" aria-label="닫기">✕</button>`;
 }
 function hitPop(P, close, reopen, reHit) { const m = gm(P), it = m.it, x = HOLD[it];   // v20.88 상세카드 지닌 도구 창 (체육관 상세카드·훈련장 상세카드 같이)
@@ -2019,8 +2048,9 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
   const abShow = (k, hid, hk) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
+  let mvH = null;
   const p = gymPop(monHtml(P, fromBox),
-    (a, close) => { const c = curLu(), i = c.indexOf(P.id);
+    (a, close) => { if (mvH?.(a)) return; const c = curLu(), i = c.indexOf(P.id);
       if (a === 'ev') { close(); evPop(P, () => monPop(P.id, fromBox, null, lst)); return; }   // v20.45 노력치 박스 → 설정 창, 닫으면 카드 다시
       if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
       if (a[0] === 'i' && a.length > 1) { const id = a.slice(1), k = m.mv.indexOf(id); return S.gym && k >= 0 ? mvInfo(id, () => movesPop(P, () => monPop(P.id, fromBox, p, lst), -1, k), '기술 바꾸기', () => {}) : mvInfo(id); }
@@ -2042,7 +2072,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'rm') return luAsk(P, fin);   // 빼기 전에 한 번 묻기 (경완 2026-10-29)
       fin(); });
   p.querySelector('.win').classList.toggle('mp-tr', inTr(P.id));
-  p.dataset.pid = P.id;
+  p.dataset.pid = P.id; if (S.gym && fromBox !== 'view') mvH = mvCardOrd(P, p, () => monPop(P.id, fromBox, p, lst));
   if (p.querySelector('.ev-box2')) window.Gym?.k?.tutEv?.('C');   // v20.45 처음 노력치 박스를 볼 때 강박사 설명   // 훈련 중이면 카드 색이 바뀐다 (경완 2026-10-29)
   // 라인업 포켓몬은 카드를 좌우로 밀면 다음·이전 포켓몬: 꾸미기 모드 포켓몬 박스처럼 옆 카드가 붙어 따라 들어온다, 좌우 힌트 화살표 (경완 2026-10-29)
   const L = lst ? lst() : curLu(), k = L.indexOf(P.id), w = p.querySelector('.win');
@@ -2626,5 +2656,5 @@ function vitPick(i, done) {
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
-window.GymBattle = { skipNow, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { skipNow, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();

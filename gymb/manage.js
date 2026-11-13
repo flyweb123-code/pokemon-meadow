@@ -726,10 +726,10 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
     <div class="tp2-today" role="button" tabindex="0"><span class="tp2-th"><b>훈련 현황</b><small>${TT.d}일 · 훈련 일지 ›</small></span>
       <span class="tp2-g"><span><small>경험치</small><b>+${TT.x.toLocaleString()}</b></span><span><small>레벨</small><b class="${TT.lv ? 'up' : ''}">${TT.lv ? `▲${TT.lv}` : '-'}</b></span><span><small>친밀도</small><b class="${TT.f ? 'fr' : ''}">${TT.f ? `+${TT.f}` : '-'}</b></span><button type="button" class="tp2-mvc" data-a="mvs"><small>새 기술</small><b class="${TT.mv.length ? 'mv' : ''}">${TT.mv.length ? `${TT.mv.length}개 ›` : '- ›'}</b></button></span>
       ${TT.mv.length ? `<span class="tp2-mvs">${mvChips(TT.mv)}</span>` : ''}</div>${evTrBox(P)}
-    <div class="mp-mvh"><small>기술</small><button type="button" class="mp-tx" data-a="mv">기술 바꾸기 ›</button></div>
-    <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}</div>
+    <div class="mp-mvh"><small>기술</small>${GB().mvHdTools(m)}</div>
+    <div class="mp-moves mp-line">${m.mv.map(x => GB().mvOf(x)).filter(Boolean).map(x => GB().mvRow(x, 'i' + x[0])).join('')}${GB().mvEmpty(m)}</div>
     <div class="gy-btns tp2-btns"><button data-a="out" class="danger">빼기</button><button class="main" data-a="x">닫기</button></div></div>`,
-    (a, close) => { if (!a) return; if (a[0] === 'i' && a.length > 1) { const mid = a.slice(1), k = m.mv.indexOf(mid); return k >= 0 ? GB().mvInfo(mid, () => GB().movesPop(P, () => { redraw(); trPop(id, p); }, -1, k), '기술 바꾸기', () => {}) : GB().mvInfo(mid); }   /* v23.58 경완 '훈련장 카드에서도 기술 누르면 기술 바꾸기' (체육관 상세카드와 같음) */
+    (a, close) => { if (!a) return; if (mvH?.(a)) return; if (a[0] === 'i' && a.length > 1) { const mid = a.slice(1), k = m.mv.indexOf(mid); return k >= 0 ? GB().mvInfo(mid, () => GB().movesPop(P, () => { redraw(); trPop(id, p); }, -1, k), '기술 바꾸기', () => {}) : GB().mvInfo(mid); }   /* v23.58 경완 '훈련장 카드에서도 기술 누르면 기술 바꾸기' (체육관 상세카드와 같음) */
       if (a === 'hit') return GB().hitPop(P, close, () => { redraw(); trPop(id); });   // v20.88 경완 '훈련장 상세카드에서도 지닌 도구 눌러서 바꾸게'
       if (a === 'mv') return GB().movesPop(P, () => { redraw(); trPop(id, p); });   // v14.43 경완: 기술 창이 떠 있는 동안 뒤에 창 그대로
       if (a === 'mvs') return mvListPop(TT.mv, P);
@@ -739,8 +739,10 @@ function trPop(id, under) {   // under: 기술 창을 닫고 돌아올 때 예�
       if (a === 'out') { tickTrain(Date.now()); st().tr = st().tr.filter(e => e.id !== P.id); K.save(); redraw(); slotRf?.(); } });
   p.querySelector('.tp2-today').onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); trLogPop(P, p); };   /* 상자 = 훈련 일지, 안의 새 기술 = 기술 창 */
   /* v23.36 경완 '훈련장 카드 노력치 훈련 박스 누르면 노력치 배분 창으로, 올랐어요 옆에 >': 능력치 칸·? 말고 박스 어디든 → evPop(체육관 상세카드 노력치 박스와 같은 창), 닫으면 카드 새로 */
+  const mvH = GB().mvCardOrd(P, p, () => { redraw(); return trPop(id, p); });
   const evB = p.querySelector('.ev-tr'); if (evB) evB.onclick = ev => { if (ev.target.closest('button')) return; sfx('tap'); GB().evPop(P, () => { redraw(); slotRf?.(); trPop(id, p); }); };
   if (under) { const w = p.querySelector('.win'); if (w) w.style.animation = 'none'; under.remove(); }
+  return p;
 }
 /* v16.48 경완 '새 기술 박스는 따로 누르면 어떤 기술인지 팝업': 기술 이름 딱지(타입 색) → mvInfo. 여러 개면 목록 창에서 고름 */
 const mvChips = L => L.map(id => { const x = GB().mvOf(id); return `<button type="button" class="mv-chip" data-a="i${id}" style="--tc:${GA.TYPE_C?.[x?.[2]] || '#2a8a3e'}">${esc(GB().mvKo(id))}</button>`; }).join('');
