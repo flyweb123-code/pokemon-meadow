@@ -176,6 +176,16 @@ function yRing(i, x, y) {
   const p = el(-61, po, ' po'), b = el(-60, bk, ' rg'), f = el(70, ft, ' rg fr'); return (Y.pr['ring' + i] = { k: 'ring' + i, x, y, w, h, el: b, fr: f, po: p, ring: [x, y - h + 12 / 44 * h] });
 }
 let YBG = null;
+// 전설 심사 (강박사, 경완 2026-11-13 '훈련장에 있는 경기장 양쪽에 서서 시작'): 훈련장 바닥·기구 그림을 필드 맵 한 장으로 (tw×th 칸, 1칸 = 16px). 열려 있는 훈련장(Y)과 바닥 그림 캐시는 건드리지 않음
+async function yardShot(tw, th) { await loadYA(); const Y0 = Y, W = tw * 32, H = th * 32, c = document.createElement('canvas');
+  try { Y = { W, H, pond: { x0: 16, y0: H * .74, x1: W * .54, y1: H - 16 }, court: { x0: 22, y0: H * .43, x1: W - 22, y1: H * .63 } }; Y.pond.x = (Y.pond.x0 + Y.pond.x1) / 2; Y.pond.y = (Y.pond.y0 + Y.pond.y1) / 2;
+    yardBg0(c); const g = c.getContext('2d'), r2 = H * .39;
+    for (const [id, x, y] of [['punch-bag', W * .1, r2], ['punch-bag', W * .27, r2], ['spring-trampoline', W * .5, r2], ['target-easel', W * .9, r2], ['track-hurdle', W * .72, H * .76], ['track-hurdle', W * .72, H * .88]]) { const A = YA?.[id]; if (!A) continue;
+      const w = A.px[0].length, h = A.px.length, x0 = Math.round(x / 2 - w / 2), y0 = Math.round(y / 2 - h);
+      g.fillStyle = 'rgba(20,40,10,.22)'; g.beginPath(); g.ellipse(x0 + w / 2, y0 + h, w * .42, 2.5, 0, 0, 6.3); g.fill();
+      for (const L of A.mv ? [A.mv.st, A.mv.mp] : [A.px]) L.forEach((r, yy) => [...r].forEach((ch, xx) => { const col = A.pal[ch]; if (col) { g.fillStyle = col; g.fillRect(x0 + xx, y0 + yy, 1, 1); } })); }
+    return { url: c.toDataURL(), W, H, court: Y.court };
+  } finally { Y = Y0; } }
 function yardBg(c) {
   const key = `${Y.W}x${Y.H}:${st().ty}:${new Date().getMonth()}`;
   if (YBG?.key === key) { c.width = YBG.cv.width; c.height = YBG.cv.height; c.getContext('2d').drawImage(YBG.cv, 0, 0); return; }
@@ -1102,6 +1112,6 @@ function spWipe() {
 try { spWipe(); } catch (e) { console.warn('spWipe', e); }
 // v20.68 경완 '퇴근하고 돌아오면 상점 필터 다 기본값': 탭·타입·형태·위력순·가격순·추천받기 모두 처음대로
 function shopReset() { itCat = -1; shopT = 'tm'; tmTy = -1; tmCat = -1; tmPow = 1; shopPr = 1; shRec = null; }
-window.GymManage = { egGainPop: u => new Promise(ok => { const P = boxOf(u.pid); if (!P) return ok(); if (u.got && u.mv) return mvListPop([], P, { aw: { mv: u.mv, i: 0, n: 1, bt: 1, rare: !!u.rare }, got: 1, done: ok });   /* v22.19: 배틀에서 다 차면 (보통·레어) 배틀 끝나고 익힘 알림창 */ mvListPop([], P, { ...u, done: ok }); }), egAwPop: (P, mv, i, n) => new Promise(ok => mvListPop([], P, { aw: { mv, i, n }, got: 1, done: ok })), tab, tickTrain, spWipe, redraw, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
+window.GymManage = { egGainPop: u => new Promise(ok => { const P = boxOf(u.pid); if (!P) return ok(); if (u.got && u.mv) return mvListPop([], P, { aw: { mv: u.mv, i: 0, n: 1, bt: 1, rare: !!u.rare }, got: 1, done: ok });   /* v22.19: 배틀에서 다 차면 (보통·레어) 배틀 끝나고 익힘 알림창 */ mvListPop([], P, { ...u, done: ok }); }), egAwPop: (P, mv, i, n) => new Promise(ok => mvListPop([], P, { aw: { mv, i, n }, got: 1, done: ok })), tab, tickTrain, spWipe, redraw, yardShot, trSend, sfDetail, coachX, coachP, shopReset, shopHas, shopLeave };
 setTimeout(() => K.menuDot?.(), 0);   // v20.78 상점 빨간 점: 불러오자마자 한 번
 })();
