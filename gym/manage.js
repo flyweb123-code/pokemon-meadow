@@ -821,8 +821,8 @@ function drawStaff() {
   const c = C.length, yN = g.sf.filter(s => s.yard).length;
   const tabs = `<div class="sp-tabs" role="tablist"><button role="tab" data-sft="sf" aria-selected="${sfT === 'sf'}">고용 관리</button><button role="tab" data-sft="cand" aria-selected="${sfT === 'cand'}">지원서${c && !g.candSeen ? ' <i class="tdot"></i>' : ''}</button></div>`;
   // 지원서 (경완 2026-10-28): 스프라이트가 잘 보이는 세로 카드, 여러 장이면 옆으로 넘긴다. 면접 내용도 카드 안에, 바로 고용하기
-  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
-      <div class="cv-photo" style="${cbgSt(x.tr)}"><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
+  const cand = c ? `<div class="cv-deck">${C.map((x, i) => `<article class="cv-card" data-i="${i}" style="--cb:${CK_BG[coachK(x)]};--cc:${CK[coachK(x)][1]}"><header><b>트레이너 지원서</b><span class="cv-tm"><em>남은 시간</em><b class="cv-left" data-exp="${x.exp}">${cvLeft(x.exp - now)}</b></span></header>
+      <div class="cv-photo" style="${cbgSt(x.tr)}"><i class="cv-kd">${CK[coachK(x)][0]} 코치</i><img alt="" src="${K.trSrc(x.tr)}"><div class="cv-nm"><small>${esc(x.cls)}</small><b>${esc(x.nm)}</b></div></div>
       <p class="cv-say">“${esc(sayOf(x))}”</p>
       <dl class="cv-dl"><dt>특성</dt><dd>${trtBox(x, true, true)}</dd><dt>코치 실력</dt><dd>${ckBox(x, false, true)}</dd><dt>포켓몬</dt><dd>${teamIc(x.team, x.id)}</dd><dt>평균 레벨</dt><dd>Lv.${Math.round(K.teamLv(x.team))}</dd><dt>희망 주급</dt><dd>7일에 <b>${x.wage.toLocaleString()}G</b></dd></dl>
       <div class="cv-btns"><button class="gy-key" data-no="${i}">돌려보내기</button><button class="gy-key main" data-hire="${i}">고용하기</button></div></article>`).join('')}</div>
