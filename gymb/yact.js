@@ -190,7 +190,16 @@ const CSS = `
 #yact .ya-rw .rb u{position:absolute;left:0;top:0;bottom:0;display:block;transition:width .3s}
 #yact .ya-rw .ex .rb u{background:#3a98e8}#yact .ya-rw .ev .rb u{background:#8a4ae0}
 #yact .ya-rw .ya-egt{font-style:normal;font-size:8px;padding:0 3px;border:1px solid var(--ink)}
-#yact .ya-tl{left:10px;top:calc(154px + env(safe-area-inset-top));width:auto}
+#yact .ya-tl{left:10px;top:calc(176px + env(safe-area-inset-top));width:auto}
+/* 경완 2026-11-14 '상단 레이아웃 반원형으로': 화면 위 가운데에 반원 판이 매달리고, 스테이지 칸 10개가 둥근 테두리를 따라 놓인다 */
+#yact .ya-stb{top:calc(-9px - env(safe-area-inset-top));width:176px;height:calc(88px + env(safe-area-inset-top));padding-top:calc(5px + env(safe-area-inset-top));box-sizing:border-box;border-radius:0 0 88px 88px;background:rgba(26,28,50,.94);border:3px solid var(--ink);border-top:0;box-shadow:inset 0 -3px 0 2px rgba(255,255,255,.16),0 4px 0 rgba(0,0,0,.25);justify-content:flex-start}
+#yact .ya-stb .ya-ph{margin:0 0 3px}
+#yact .ya-stb .ya-stn{background:none;border:0;box-shadow:none;padding:0;gap:0}
+#yact .ya-stn .n b{font-size:30px}
+#yact .ya-stn .ya-stg{position:absolute;inset:0;display:block}
+#yact .ya-stn .ya-stg i{position:absolute;margin:-5px}
+#yact .ya-stn .ya-stg i.c{box-shadow:0 0 0 2px #ffe27a}
+#yact .ya-hud.ya-rw{top:calc(92px + env(safe-area-inset-top))}
 /* 경완 2026-11-13 '시작 창·훈련 완료 창 디자인 다시': 위 = 남색 무대(포켓몬 크게·이름·기술), 아래 = 종이 */
 #yact .ya-hp{padding:3px 8px;font-size:11px;max-width:100%}
 #yact .ya-me{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1105,7 +1114,8 @@ function cdUi() { const G = R.G, me = G.me, box = R.q('.ya-mvs'), dg = R.q('.ya-
 // ---------- HUD ----------
 function hud() {
   const G = R?.G; if (!G) return; const q = R.q, me = G.me, eg = G.M.eg, r = me.hp / me.mhp;
-  q('.ya-wn').textContent = G.wave; q('.ya-stg').innerHTML = STAGES.map((S, i) => `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}"></i>`).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
+  q('.ya-wn').textContent = G.wave; q('.ya-stg').innerHTML = STAGES.map((S, i) => { const a = (166 - i * 152 / (STAGES.length - 1)) * Math.PI / 180;   /* 반원 테두리를 따라 왼쪽에서 오른쪽으로 */
+    return `<i class="${S.boss ? 'b ' : ''}${i < G.wave - 1 ? 'd' : i === G.wave - 1 ? 'c' : ''}" style="left:${(85 + Math.cos(a) * 70).toFixed(1)}px;bottom:${(85 - Math.sin(a) * 70).toFixed(1)}px"></i>`; }).join(''); q('.ya-m').textContent = `${G.ko}마리`; q('.mg-hg b').textContent = G.goldShown;
   q('.ya-rwe').textContent = `+${G.exp}`; q('.ya-rwv').textContent = `${G.ev}/${Math.min(EV_CAP, G.M.evRoom)}`; q('.ya-rwk').textContent = STAT_KO[G.stat]; q('.ya-rwxb').style.width = Math.min(100, G.exp / Math.max(1, G.xpB) * 100) + '%'; q('.ya-rwvb').style.width = Math.min(100, G.ev / Math.max(1, Math.min(EV_CAP, G.M.evRoom)) * 100) + '%';
   q('.ya-eg').hidden = !eg;
   if (eg) { q('.ya-egn').textContent = '번뜩임 ???'; q('.ya-egt').textContent = TYPE_KO[eg.t] || ''; q('.ya-egt').style.background = TYPE_C[eg.t] || '#888'; q('.ya-egf').style.setProperty('--tc', TYPE_C[eg.t] || '#ee99ac');
