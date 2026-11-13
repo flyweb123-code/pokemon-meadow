@@ -3833,66 +3833,104 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-/* v23.80 경완 '수련탑 고르기는 창으로 뜨기보다 아예 새로운 대기 화면, 수련탑 컨셉으로': 화면 전체 대기실 (#trLobby).
-   하늘·구름·200층 탑(10층마다 우두머리 깃발)·탑 아래 관장, 함께 오를 6칸 + 코스트 막대, 아래 내 포켓몬 상자 전체(타입 상관없이). 체육관 라인업은 안 건드림.
-   이어 할 기록(trSave)이 있으면 'N층부터 이어 오르기'. 🎲 랜덤 = 시험 포켓몬(gTst·P.rnd) */
-const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;color:#20222c;background:#2b2f6e;font-family:inherit;overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
-#trLobby .tl-hd{display:flex;align-items:center;gap:8px;padding:10px 12px 0;color:#fff}
-#trLobby .tl-hd h2{flex:1;margin:0;font-size:20px;letter-spacing:.04em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#trLobby .tl-hd small{display:block;font-size:11px;font-weight:400;opacity:.85;letter-spacing:0}
-#trLobby .tl-x{flex:none;border:2px solid rgba(255,255,255,.7);background:rgba(0,0,0,.25);color:#fff;border-radius:10px;padding:6px 10px;font:inherit;font-size:12px}
-#trLobby .tl-sky{position:relative;flex:none;height:min(38vh,300px);background:linear-gradient(#2b2f6e,#5a4f9a 40%,#d98a7a 80%,#f4c48a)}
-#trLobby .tl-sky svg.tw{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%);image-rendering:pixelated;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
-#trLobby .tl-cl{position:absolute;height:14px;border-radius:8px;background:rgba(255,255,255,.75);animation:tlCl 38s linear infinite}
-#trLobby .tl-cl::before{content:'';position:absolute;left:12px;top:-8px;width:22px;height:16px;border-radius:50%;background:inherit}
-@keyframes tlCl{from{transform:translateX(-120px)}to{transform:translateX(520px)}}
-#trLobby .tl-me{position:absolute;bottom:2px;left:calc(50% + 42px);height:64px;image-rendering:pixelated}
-#trLobby .tl-tag{position:absolute;right:10px;top:8px;background:rgba(0,0,0,.35);color:#ffe9a0;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700}
-#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:8px 12px 0;background:#f4f1e8;border-top:4px solid #6b5a48}
+/* v23.83 경완 '디자인 퀄 높여서 다시': 게임 픽셀 RPG 창 모양(네모 테두리·Galmuri·입체 버튼 눌림)에 맞춘 수련탑 대기 화면.
+   위 = 지금 시각 하늘(낮·저녁·밤 별) + 도트 돌탑(벽돌 무늬·층 처마·아치 창·현수막·횃불·지붕 깃발) + 탑 앞 관장·첫 번째 포켓몬, 왼쪽 층 눈금(50·100·150 큰 우두머리 왕관)
+   가운데 = '등반대' 창 6칸 + 코스트 칸 막대, 아래 = 내 포켓몬 카드(타입 색 띠), 맨 아래 = 게임 입체 버튼 */
+const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:#20222e;color:var(--win-ink);font-family:var(--px);overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
+#trLobby .tl-sky{position:relative;flex:none;height:min(40vh,330px);overflow:hidden;background:linear-gradient(var(--s1),var(--s2) 55%,var(--s3));image-rendering:pixelated}
+#trLobby.day{--s1:#5aa8e8;--s2:#9fd4f4;--s3:#dff2fa;--st:0}#trLobby.eve{--s1:#2c2f6e;--s2:#7a5a9e;--s3:#f2a878;--st:.35}#trLobby.night{--s1:#0c1030;--s2:#1c2456;--s3:#36407a;--st:1}
+#trLobby .tl-stars{position:absolute;inset:0;opacity:var(--st);background-image:radial-gradient(1.5px 1.5px at 12% 14%,#fff 99%,transparent),radial-gradient(1px 1px at 28% 32%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 72% 10%,#fff 99%,transparent),radial-gradient(1px 1px at 86% 28%,#fff 99%,transparent),radial-gradient(1px 1px at 44% 8%,#fff 99%,transparent),radial-gradient(1px 1px at 63% 40%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 92% 52%,#fff 99%,transparent),radial-gradient(1px 1px at 6% 48%,#fff 99%,transparent);animation:tlTw 3s steps(2) infinite}
+@keyframes tlTw{50%{opacity:calc(var(--st) * .6)}}
+#trLobby .tl-cl{position:absolute;width:48px;height:16px;animation:tlCl 60s linear infinite;opacity:.9}
+#trLobby .tl-cl::before,#trLobby .tl-cl::after{content:'';position:absolute;background:#fff}
+#trLobby .tl-cl::before{left:0;right:0;bottom:0;height:8px}#trLobby .tl-cl::after{left:12px;width:20px;bottom:6px;height:10px;box-shadow:12px 2px 0 -2px #fff}
+#trLobby.night .tl-cl{opacity:.25}
+@keyframes tlCl{from{transform:translateX(-80px)}to{transform:translateX(560px)}}
+#trLobby .tl-tw{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+#trLobby .tl-tw .fl{animation:tlFl .5s steps(2) infinite}#trLobby .tl-tw .fl2{animation-delay:-.25s}
+@keyframes tlFl{50%{transform:translateY(-1px);opacity:.75}}
+#trLobby .tl-tw .flag{transform-box:fill-box;transform-origin:0 50%;animation:tlFg 1.2s steps(3) infinite}
+@keyframes tlFg{50%{transform:scaleX(.8) skewY(6deg)}}
+#trLobby .tl-me{position:absolute;bottom:6px;left:calc(50% + 38px);height:68px;image-rendering:pixelated}
+#trLobby .tl-lead{position:absolute;bottom:6px;left:calc(50% + 92px);width:52px;height:52px;object-fit:contain;image-rendering:pixelated}
+#trLobby .tl-rail{position:absolute;left:10px;top:52px;bottom:16px;width:46px;white-space:nowrap;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font-size:10px;color:#fff;text-shadow:1px 1px 0 #000a}
+#trLobby .tl-rail::before{content:'';position:absolute;left:3px;top:4px;bottom:4px;width:3px;background:rgba(255,255,255,.35);box-shadow:1px 0 0 #0004}
+#trLobby .tl-rail span{position:relative;padding-left:11px;line-height:1}#trLobby .tl-rail span::before{content:'';position:absolute;left:1px;top:2px;width:7px;height:7px;background:#fff;box-shadow:0 0 0 1px #383848}
+#trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
+#trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:200px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:6px 14px 8px}
+#trLobby .tl-hd h2{margin:0;font-size:17px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
+#trLobby .tl-c img{max-width:52px;max-height:52px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
+#trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
+#trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
+#trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
+#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px 10px 0;background:#2b2b3c;border-top:3px solid #1c1c26;box-shadow:inset 0 3px 0 #4b4b66}
+#trLobby .tl-win{background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff;padding:6px 8px 8px}
+#trLobby .tl-win h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;font-size:13px;color:var(--win-ink)}#trLobby .tl-win h3 small{font-size:11px;opacity:.7}
 #trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-#trLobby .tl-s{aspect-ratio:1;border-radius:10px;border:2px dashed #b8ad9a;display:grid;place-items:center;background:#fffdf6;padding:0;position:relative;min-width:0}
-#trLobby .tl-s.on{border:2px solid #f0b040;background:#fff6dc}
-#trLobby .tl-s .rk-fr{transform:scale(.72)}
-#trLobby .tl-s i{position:absolute;right:2px;bottom:1px;font-style:normal;font-size:9px;font-weight:700;color:#2f7cd0}
-#trLobby .tl-cost{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px}
-#trLobby .tl-cost span:last-child{flex:1;height:8px;border-radius:4px;background:#d8d2c2;overflow:hidden}
-#trLobby .tl-cost b{display:block;height:100%;background:#58b868;transition:width .2s}
-#trLobby .tl-cost.ov{color:#d04040}#trLobby .tl-cost.ov b{background:#e05050}
-#trLobby .tl-hint{margin:0;font-size:10px;opacity:.65}
-#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-content:start;padding:2px 0 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
-#trLobby .tl-c{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;border:2px solid rgba(0,0,0,.1);background:#fff;font:inherit;color:#20222c;min-width:0}
-#trLobby .tl-c.on{border-color:#f0b040;background:#fff6dc}
+#trLobby .tl-s{position:relative;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff;border:0}
+#trLobby .tl-s.on{background:#fff6d0;box-shadow:inset 0 0 0 2px #e0a020}
+#trLobby .tl-s .rk-fr{transform:scale(.62)}
+#trLobby .tl-s em{position:absolute;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
+#trLobby .tl-s .pb{width:22px;height:22px;opacity:.28}
+#trLobby .tl-pips{display:flex;gap:2px;margin-top:7px}#trLobby .tl-pips i{flex:1;height:9px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}
+#trLobby .tl-pips i.f{background:#5cc27a;box-shadow:inset 0 -2px 0 #2f9a52,inset 0 2px 0 #9ae8b0}#trLobby .tl-pips.ov i.f{background:#e05050;box-shadow:inset 0 -2px 0 #a82424,inset 0 2px 0 #ff9a9a}
+#trLobby .tl-ci{margin:4px 0 0;font-size:9px;opacity:.6}
+#trLobby .tl-lw{flex:1;min-height:0;display:flex;flex-direction:column}
+#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
+#trLobby .tl-c::before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:var(--tc,#8890a8)}
+#trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
+#trLobby .tl-c.on::after{content:'✔';position:absolute;left:4px;top:7px;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
+#trLobby .tl-c:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #c8c8d8}
 #trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#trLobby .tl-c small{font-size:10px}#trLobby .tl-c small em{font-style:normal;color:#2f7cd0;font-weight:700}
-#trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 12px 10px;background:#f4f1e8}
-#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 2fr}
-#trLobby .tl-ft button{border:0;border-radius:12px;padding:12px 6px;font:inherit;font-weight:700;font-size:14px;color:#fff;background:#4a4e68;box-shadow:0 4px 0 #2c2f44;transition:transform .06s,box-shadow .06s}
-#trLobby .tl-ft button small{display:block;font-size:9px;font-weight:400;opacity:.8}
-#trLobby .tl-ft button.go{background:#f6c344;color:#3a2a08;box-shadow:0 4px 0 #b88a18;font-size:16px}
-#trLobby .tl-ft button:active{transform:translateY(3px);box-shadow:0 1px 0 #2c2f44}
-#trLobby .tl-ft button.go:active{box-shadow:0 1px 0 #b88a18}`;
-/* 탑 그림 (도트): 아래가 넓고 위로 갈수록 좁아지는 돌탑, 층마다 창문, 10층 칸마다 깃발, 꼭대기 200 */
-const trTowerSvg = () => { let s = '', y = 286; const W = [64, 60, 56, 52, 48, 44, 40, 36, 32, 28];
-  W.forEach((w, i) => { const h = 26, x = 60 - w / 2; y -= h; s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${i % 2 ? '#8e93ad' : '#9da2bb'}"/><rect x="${x}" y="${y}" width="${w}" height="3" fill="#c7cbe0"/><rect x="${x}" y="${y + h - 2}" width="${w}" height="2" fill="#6c7090"/>`;
-    for (let k = 0, n = Math.max(1, Math.floor(w / 14)); k < n; k++) { const wx = x + (w - n * 8 - (n - 1) * 6) / 2 + k * 14; s += `<rect x="${wx}" y="${y + 9}" width="8" height="10" fill="${Math.random() < .7 ? '#ffd86a' : '#4a4e68'}"/><rect x="${wx}" y="${y + 9}" width="8" height="2" fill="#5a4f3a"/>`; }
-    s += `<rect x="${x + w - 2}" y="${y - 10}" width="2" height="10" fill="#5a4f3a"/><rect x="${x + w}" y="${y - 10}" width="8" height="5" fill="${i === 4 || i === 9 ? '#f0b040' : '#e05050'}"/><text x="${x - 3}" y="${y + 16}" font-size="7" text-anchor="end" fill="#fff" font-weight="700">${(i + 1) * 20}</text>`; });
-  s += `<rect x="44" y="${y - 14}" width="32" height="14" fill="#6c7090"/><polygon points="40,${y - 14} 60,${y - 34} 80,${y - 14}" fill="#e05050"/><rect x="58" y="${y - 44}" width="4" height="12" fill="#f0b040"/>`;
-  return `<svg class="tw" viewBox="0 ${y - 48} 140 ${334 - y}" shape-rendering="crispEdges" aria-hidden="true"><rect x="10" y="284" width="100" height="8" fill="#6b5a48"/>${s}<rect x="50" y="268" width="20" height="18" fill="#3a3040"/><rect x="50" y="268" width="20" height="3" fill="#f0b040"/></svg>`; };
+#trLobby .tl-c span{display:flex;gap:3px;font-size:9px}#trLobby .tl-c span em{font-style:normal;padding:1px 4px;color:#fff;background:#383848}#trLobby .tl-c span em.c{background:#2f7cd0}
+#trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 10px 10px;background:#2b2b3c}
+#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 1.6fr}
+#trLobby .tl-ft .gy-key{min-height:52px;font-size:14px;flex-direction:column}
+#trLobby .tl-ft .gy-key small{font-size:9px;opacity:.75}
+#trLobby .tl-ft .gy-key.main{font-size:16px}`;
+const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
+/* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
+function trTowerSvg(tod) {
+  const night = tod === 'night', st = night ? ['#5c6288', '#4c5278', '#7c82aa', '#363a5a'] : ['#a4a8c0', '#9094b0', '#cdd0e2', '#6a6e8c'];
+  const win = night ? '#ffd860' : tod === 'eve' ? '#ffcf70' : '#5a6a9a';
+  let s = `<defs><pattern id="tlBr" width="8" height="6" patternUnits="userSpaceOnUse"><rect width="8" height="6" fill="${st[0]}"/><rect y="2" width="8" height="1" fill="${st[1]}"/><rect y="5" width="8" height="1" fill="${st[1]}"/><rect x="3" width="1" height="2" fill="${st[1]}"/><rect x="7" y="3" width="1" height="2" fill="${st[1]}"/></pattern></defs>`;
+  s += `<rect x="0" y="296" width="160" height="14" fill="${night ? '#2c4a34' : '#5a9a48'}"/><rect x="0" y="296" width="160" height="2" fill="${night ? '#3c6a44' : '#7cc060'}"/><rect x="66" y="296" width="28" height="14" fill="${night ? '#5a4a3a' : '#b89a6a'}"/>`;
+  let y = 296; const T = [[96, 34], [86, 30], [78, 28], [70, 26], [62, 24], [54, 24], [46, 22], [38, 22]];
+  T.forEach(([w, h], i) => { const x = 80 - w / 2; y -= h;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#tlBr)"/><rect x="${x}" y="${y}" width="3" height="${h}" fill="${st[2]}" opacity=".5"/><rect x="${x + w - 3}" y="${y}" width="3" height="${h}" fill="${st[3]}" opacity=".6"/>`;
+    s += `<rect x="${x - 3}" y="${y}" width="${w + 6}" height="4" fill="${st[2]}"/><rect x="${x - 3}" y="${y + 4}" width="${w + 6}" height="1" fill="${st[3]}"/>`;
+    if (i === 0) { s += `<rect x="70" y="${y + 12}" width="20" height="${h - 12}" fill="#3a2a22"/><rect x="72" y="${y + 9}" width="16" height="3" fill="#3a2a22"/><rect x="74" y="${y + 7}" width="12" height="2" fill="#3a2a22"/><rect x="79" y="${y + 13}" width="2" height="${h - 13}" fill="#5a4032"/><rect x="74" y="${y + 20}" width="2" height="2" fill="#ffd84a"/><rect x="84" y="${y + 20}" width="2" height="2" fill="#ffd84a"/>`;
+      [60, 98].forEach((tx, k) => { s += `<rect x="${tx}" y="${y + 14}" width="2" height="8" fill="#5a4032"/><g class="fl${k ? ' fl2' : ''}"><rect x="${tx - 1}" y="${y + 9}" width="4" height="5" fill="#ff9a2a"/><rect x="${tx}" y="${y + 8}" width="2" height="4" fill="#ffe27a"/></g>`; }); }
+    else { const n = Math.max(1, Math.floor((w - 10) / 14)), gap = (w - n * 6) / (n + 1);
+      for (let k = 0; k < n; k++) { const wx = Math.round(x + gap + k * (6 + gap)), wy = y + 9; s += `<rect x="${wx}" y="${wy + 1}" width="6" height="${h - 14}" fill="${win}"/><rect x="${wx + 1}" y="${wy}" width="4" height="1" fill="${win}"/><rect x="${wx}" y="${wy + 1}" width="6" height="1" fill="#0003"/><rect x="${wx + 2}" y="${wy + 2}" width="2" height="${h - 15}" fill="#0002"/>`; }
+      if (i % 2) [x + 2, x + w - 8].forEach(bx => { s += `<rect x="${bx}" y="${y + 5}" width="6" height="12" fill="#c83a32"/><rect x="${bx}" y="${y + 5}" width="6" height="2" fill="#ffd84a"/><rect x="${bx + 2}" y="${y + 10}" width="2" height="2" fill="#fff"/><rect x="${bx}" y="${y + 17}" width="2" height="2" fill="#c83a32"/><rect x="${bx + 4}" y="${y + 17}" width="2" height="2" fill="#c83a32"/>`; }); } });
+  s += `<rect x="54" y="${y - 6}" width="52" height="6" fill="#b8322c"/><rect x="58" y="${y - 12}" width="44" height="6" fill="#d8443a"/><rect x="64" y="${y - 18}" width="32" height="6" fill="#b8322c"/><rect x="70" y="${y - 24}" width="20" height="6" fill="#d8443a"/><rect x="54" y="${y - 6}" width="52" height="1" fill="#ff8a78"/><rect x="58" y="${y - 12}" width="44" height="1" fill="#ff8a78"/><rect x="64" y="${y - 18}" width="32" height="1" fill="#ff8a78"/>`;
+  s += `<rect x="78" y="${y - 30}" width="4" height="6" fill="#ffd84a"/><rect x="79" y="${y - 44}" width="2" height="14" fill="#5a4032"/><rect class="flag" x="81" y="${y - 44}" width="14" height="8" fill="#e04838"/><rect class="flag" x="81" y="${y - 44}" width="14" height="2" fill="#ff8a78"/>`;
+  return `<svg class="tl-tw" viewBox="0 ${y - 50} 160 ${360 - y}" shape-rendering="crispEdges" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${s}</svg>`;
+}
 const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
   const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
-  const nmOf = P => P.nm || SPECIES[P.sp]?.n || '';
-  if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; st0.textContent = TRL_CSS; document.head.appendChild(st0); }
-  const el = document.createElement('div'); el.id = 'trLobby'; let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
-  el.innerHTML = `<div class="tl-hd"><h2>200층 수련탑<small>꼭대기까지 함께 오를 포켓몬을 골라요</small></h2><button class="tl-x" data-a="x">나가기</button></div>
-    <div class="tl-sky"><i class="tl-cl" style="top:18%;width:46px;animation-delay:-6s"></i><i class="tl-cl" style="top:42%;width:34px;animation-delay:-22s;animation-duration:52s"></i><i class="tl-cl" style="top:8%;width:28px;animation-delay:-31s;animation-duration:46s"></i>${trTowerSvg()}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}${save ? `<span class="tl-tag">${save.floor}층까지 올랐어요</span>` : ''}</div>
-    <div class="tl-body"><div class="tl-party"></div><div class="tl-cost"><span></span><span><b></b></span></div><p class="tl-hint">코스트 = 종족값(1~8) + 레벨 25마다 1 · 최대 6마리 · 잡은 동료는 코스트 없음</p><div class="tl-list"></div></div>
-    <div class="tl-ft${save ? ' two' : ''}"><button data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button data-a="cont">이어 오르기<small>${save.floor}층부터</small></button>` : ''}<button class="go" data-a="go">수련탑 오르기</button></div>`;
+  const nmOf = P => P.nm || SPECIES[P.sp]?.n || '', h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
+  if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; document.head.appendChild(st0); } document.getElementById('trlCss').textContent = TRL_CSS;
+  const el = document.createElement('div'); el.id = 'trLobby'; el.className = tod; let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
+  const fl = save?.floor | 0;
+  el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:46%;animation-delay:-34s;animation-duration:84s"></i><i class="tl-cl" style="top:12%;animation-delay:-50s;animation-duration:72s;transform:scale(.7)"></i>
+      ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}<img class="tl-lead" alt="" hidden>
+      <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
+      <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
+      <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
+    <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div><p class="tl-ci">코스트 = 종족값(1~8) + 레벨 25마다 1 · 잡은 동료는 코스트 없음</p></div>
+      <div class="tl-lw"><div class="tl-list"></div></div></div>
+    <div class="tl-ft${save ? ' two' : ''}"><button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
   root.appendChild(el);
   const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
-    el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<i>${cost(P)}</i></button>` : '<span class="tl-s"></span>'; }).join('');
-    const c = el.querySelector('.tl-cost'); c.classList.toggle('ov', ov); c.firstElementChild.textContent = `코스트 ${n} / ${cap} · ${sel.length}/6`; c.querySelector('b').style.width = Math.min(100, n / cap * 100) + '%';
+    el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<em>${cost(P)}</em></button>` : `<span class="tl-s">${TRL_PB}</span>`; }).join('');
+    el.querySelector('.tl-n').textContent = `${sel.length}/6 · 코스트 ${n}/${cap}`;
+    const pp = el.querySelector('.tl-pips'); pp.classList.toggle('ov', ov); pp.innerHTML = Array.from({ length: Math.max(cap, n) }, (_, i) => `<i class="${i < n ? 'f' : ''}"></i>`).join('');
     const L = all().sort((a, b) => (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
-    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}">${B.thumb(P)}<b>${esc(nmOf(P))}</b><small>Lv.${B.gm(P).lv} · <em>코스트 ${cost(P)}</em></small></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px">포켓몬이 없어요.</p>';
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[(SPECIES[P.sp]?.t || [])[0]] || '#8890a8'}">${B.thumb(P)}<b>${esc(nmOf(P))}</b><span><em>Lv.${B.gm(P).lv}</em><em class="c">코스트 ${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
+    const ld = el.querySelector('.tl-lead'); if (sel[0]) { ld.hidden = false; ld.dataset.th = sel[0]; } else { ld.hidden = true; delete ld.dataset.th; }
     list.scrollTop = sc; B.fillTh(el); };
   const end = v => { el.remove(); ok(v); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
