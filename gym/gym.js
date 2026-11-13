@@ -3831,9 +3831,28 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-const trLineup = () => new Promise(ok => { const g = st(); g.lu = g.lu || [[], [], []];
-  openTab('battle', { title: '200층 수련탑 라인업', go: '수련탑 오르기', any: 1, cost: 1, rnd: i => { const old = (g.lu[i] || []).filter(id => GB().boxOf(id)?.gTst); g.lu[i] = trRollLu(); trDrop(old); save(); },
-    pick: i => { const L = (g.lu[i] || []).filter(id => GB().boxOf(id)); if (!L.length) { GA.toast?.('라인업에 포켓몬을 넣어 주세요'); return trLineup().then(ok); } g.luI = i; save(); openTab(null); ok(trClone(L)); } }); });
+/* v23.76 경완 '포켓몬 메뉴는 냅두고, 수련탑 오르기를 누르면 새로운 화면에서 오를 포켓몬 선택': 체육관 라인업을 안 건드리는 수련탑 전용 고르기 화면.
+   내 포켓몬 상자 전체(타입 상관없이)에서 최대 6마리, 코스트 TR_CAP 안. 🎲 랜덤은 시험 포켓몬(gTst·P.rnd) */
+const trLineup = () => new Promise(ok => { let sel = [], rnd = [];
+  const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
+  const nmOf = P => P.nm || SPECIES[P.sp]?.n || '';
+  const card = (P, on) => `<button type="button" data-p="${P.id}" class="trp-c${on ? ' on' : ''}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;border:2px solid ${on ? '#f0b040' : 'rgba(0,0,0,.12)'};background:${on ? '#fff6dc' : '#fff'};font:inherit;color:#20222c;min-width:0">${B.thumb(P)}<b style="font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(nmOf(P))}</b><small style="font-size:10px">Lv.${B.gm(P).lv} · <b style="color:#2f7cd0">코스트 ${cost(P)}</b></small></button>`;
+  const html = () => { const n = sum(), ov = n > B.TR_CAP, L = all().sort((a, b) => (sel.includes(b.id) - sel.includes(a.id)) || (B.gm(b).lv - B.gm(a).lv));
+    return `<h4>200층 수련탑</h4><p class="gy-msg" style="font-size:12px;margin:2px 0 6px">함께 오를 포켓몬을 골라요 (최대 6마리)</p>
+    <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px;color:${ov ? '#d04040' : '#2a2e40'}"><span>코스트 ${n} / ${B.TR_CAP} · ${sel.length}/6</span><span style="flex:1;height:8px;border-radius:4px;background:#d8dce8;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100, n / B.TR_CAP * 100)}%;background:${ov ? '#e05050' : '#58b868'}"></i></span></div>
+    <p style="margin:2px 0 6px;font-size:10px;opacity:.7">코스트 = 종족값(1~8) + 레벨 25마다 1. 잡은 동료는 코스트가 없어요.</p>
+    <div class="trp-l" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-height:52vh;overflow:auto;padding:2px">${L.length ? L.map(P => card(P, sel.includes(P.id))).join('') : '<p style="grid-column:1/-1;font-size:12px">포켓몬이 없어요.</p>'}</div>
+    <div class="gy-btns" style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px"><button data-a="rnd">🎲 랜덤<small style="display:block;font-size:9px">시험 포켓몬</small></button><button data-a="x">취소</button><button class="main" data-a="go">수련탑 오르기</button></div>`; };
+  const win = pop(html(), (a, close) => {
+    if (a === 'x') { close(); trDrop(rnd); ok(null); return; }
+    if (a === 'rnd') { trDrop(rnd); rnd = trRollLu(); rnd.forEach(id => { const P = B.boxOf(id); if (P) P.rnd = 1; }); sel = [...rnd]; draw(); return; }
+    if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
+      close(); trDrop(rnd.filter(id => !sel.includes(id))); ok(trClone(sel)); } });
+  const draw = () => { const w = win.querySelector('.win'), st0 = w.querySelector('.trp-l')?.scrollTop || 0; w.innerHTML = html(); w.querySelector('.trp-l').scrollTop = st0; B.fillTh(w); };
+  win.classList.add('gy-np'); B.fillTh(win);   /* 바깥 눌러 닫기 없음 (버튼으로만) */
+  win.addEventListener('click', e => { const c = e.target.closest('.trp-c'); if (!c) return; sfx('tap'); const id = +c.dataset.p || c.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
+    if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); });
+});
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/bgm.js', 'GymBGM');
