@@ -3030,7 +3030,7 @@ const KANG_HI = () => [
 const KANG_TR = () => [
   '오, 훈련장이 열렸구나!',
   '여기에 포켓몬을 보내 두면\n시간이 지나면서 경험치가\n조금씩 쌓인단다.',
-  '오른쪽 아래 + 버튼을 눌러\n훈련할 포켓몬을 보내 보렴.',
+  '오른쪽 아래 포켓몬 버튼을 눌러\n훈련할 포켓몬을 보내 보렴.',
   '처음엔 한 마리뿐이지만\n체육관 등급이 오를 때마다\n자리가 하나씩 늘어난단다.',
   '훈련하다가 가끔 새 기술을\n배우기도 하지.\n열심히 키워 보렴!',
 ];
@@ -3133,13 +3133,13 @@ const GT_TREV = (eg = 1) => { const g = st(); return [
   { c: '떠오르는 체육관', s: '하지만 이름이 알려질수록\n더 강한 도전자들이\n찾아올 거란다.' },
   { c: '떠오르는 체육관', s: '그러니 포켓몬들도\n한 단계 더 강해져야겠지?' },
   { c: '노력치', s: '마침 딱 좋은 방법이 있지.\n지금부터 알려 주마!' },
-  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '포켓몬 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
   { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr') || gtEl('.gy-pop .tp2-today'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
   ...(eg ? [] : GT_EGO()),
   ...GT_EVT(g),
   { c: '노력치', s: '노력치를 잘 쌓아서\n어떤 도전자도 막아 내는\n체육관을 만들어 보렴!' }]; };
 const GT_TRB = () => { const g = st(); return [
-  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '+ 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
+  { c: '훈련 카드', when: () => g.tr?.length && !gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win button.ts-slot:not(.empty)'), s: '포켓몬 버튼을 눌러\n훈련 중인 포켓몬을\n보러 가자.' },
   { c: '훈련 카드', when: () => gtEl('.ts-win button.ts-slot:not(.empty)'), t: '.ts-win button.ts-slot:not(.empty)', tap: '.ts-win button.ts-slot:not(.empty)', until: () => gtEl('.gy-pop .ev-tr') || gtEl('.gy-pop .tp2-today'), after: 900, s: '훈련 중인 포켓몬을\n눌러 보렴!' },
   { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '여기가 훈련 현황이란다.\n얻은 경험치, 오른 레벨과\n친밀도, 새로 배운 기술을\n확인할 수 있지.' },
   { c: '훈련 현황', t: '.gy-pop .tp2-today', s: '앱을 꺼 두어도 훈련은\n계속된단다.' },
@@ -3152,7 +3152,7 @@ const GT_TR = () => { const g = st(), n0 = g.tr?.length || 0; return [
   { c: '훈련장', s: () => `오, 훈련장이 열렸구나!\n동네 체육관이 된 걸\n축하한다, ${NK()}!` },
   { c: '훈련장', t: '.ty-yd', s: '여기에 포켓몬을 보내 두면\n앱을 꺼도 쉬지 않고\n훈련한단다.' },
   { c: '훈련장', t: '.ty-yd', s: '훈련하면 경험치가 쌓여\n레벨이 오르고, 특별한\n기술도 조금씩 깨우치지.' },
-  { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 + 버튼을\n눌러 보렴!' },
+  { c: '훈련장', t: '.ty-add', tap: '.ty-add', until: () => gtEl('.ts-win'), after: 900, s: '오른쪽 아래 포켓몬 버튼을\n눌러 보렴!' },
   { c: '훈련장', when: () => gtEl('.ts-win'), t: '.ts-win .tsc-grid', s: '자, 여기서 훈련에 내보낼\n포켓몬을 고를 수 있단다.' },   // 경완 2026-11-12 '+ 를 눌러 보렴 하고 들어가면' 바로
   { c: '훈련장 칸', t: gtAll('.ts-win .tsc-lock'), s: '잠긴 칸들이 보이지?\n체육관 등급이 오를 때마다\n훈련장 자리가 하나씩\n늘어난단다.' },
   { c: '훈련 보내기', when: () => gtEl('.ts-win .tsc-new'), t: '.ts-win .tsc-new', tap: '.ts-win .tsc-new', until: () => gtEl('.bw-grid'), after: 900, s: '지금은 한 자리가 비었구나.\n+ 칸을 눌러 보렴!' },
@@ -4185,7 +4185,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
+  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf: tr => { const bg = CBG_TR[tr] || CBG_CLS[tr] || 'in1'; return { bg, pl: CBG_PL[bg] || '' }; }, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')

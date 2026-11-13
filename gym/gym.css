@@ -4289,3 +4289,90 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .bt-enc .band.sm-def{background:repeating-linear-gradient(-60deg,#a8400c 0 10px,#963608 10px 20px);box-shadow:0 -4px 0 #fff1b8,0 4px 0 #fff1b8,0 -7px 0 #f8a020,0 7px 0 #f8a020}
 #gym .bt-enc .band.sm-def b{text-shadow:2px 2px 0 #5a1c04}
 #gym .bt-enc .band.sm-def b small{color:#ffe27a}
+/* v23.36 훈련장 카드 노력치 훈련 박스 = 노력치 배분 창 버튼 (› 화살표, 눌림 모션) */
+#gym .ev-tr[role=button]{cursor:pointer;transition:translate .06s,box-shadow .06s}#gym .ev-tr[role=button]:active:not(:has(button:active)){translate:0 2px;box-shadow:0 1px 0 rgba(0,0,0,.12)}#gym .ev-trh small{display:inline-flex;align-items:baseline;gap:0}#gym .ev-tra{font-style:normal;font-size:15px;font-weight:700;color:#7a54d0;margin-left:5px;line-height:1}
+/* v23.36 훈련장 오른쪽 아래 두 버튼 (위 코치 · 아래 포켓몬): 가로로 긴 입체 버튼 + 네모 점(찬 칸 색 · 빈 칸 흰색 · 잠긴 칸 회색) */
+#gym .ty-btns{position:absolute;right:calc(var(--si-right,env(safe-area-inset-right)) + 12px);bottom:14px;z-index:5000;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#gym .ty-btns .ty-bt{position:relative;inset:auto;width:112px;height:46px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:6px;padding:0 10px 0 8px;font:inherit;text-align:left;color:#20202c;border:3px solid #20202c;border-radius:10px;background:var(--bg);box-shadow:inset 0 -4px 0 var(--sd),0 3px 0 rgba(0,0,0,.35);cursor:pointer;transition:translate .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}
+#gym .ty-btns .ty-bt:active{translate:0 3px;box-shadow:inset 0 -2px 0 var(--sd),0 0 0 rgba(0,0,0,.35)}
+#gym .ty-btns .ty-add{--bg:#fff;--sd:#c8c8d0;--on:#e8403a}#gym .ty-btns .ty-cob{--bg:#fff3dc;--sd:#e6c690;--on:#d0701a}
+#gym .ty-btns .ty-bt>span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}#gym .ty-btns .ty-bt b{font-size:13px;white-space:nowrap;color:#20202c}
+#gym .ty-bic{flex:none;display:block;image-rendering:pixelated}
+#gym .ty-ball{width:30px;height:30px}
+#gym .ty-cof{height:36px;margin:-6px -3px 0 -3px;background-repeat:no-repeat;background-size:auto 36px;background-position:0 0}#gym .ty-cof.none{filter:grayscale(1);opacity:.45}
+#gym .ty-cof.empty{width:24px;height:24px;margin:0 3px;border:2px dashed #b8a070;border-radius:5px}
+#gym .ty-dd{display:flex;flex-wrap:nowrap;gap:3px;margin-top:3px}#gym .ty-dd i{display:block;flex:none;width:6px;height:6px;border:1.5px solid #20202c;background:#fff}#gym .ty-dd i.on{background:var(--on)}#gym .ty-dd i.lk{background:#a8a8b4;border-color:#7a7a88}
+#gym .ty-btns .ty-add.pulse{animation:tyPulse 1.4s ease-in-out infinite}
+/* 훈련장 코치 창 */
+#gym .co-th{display:flex;align-items:flex-end;justify-content:center;overflow:hidden;background:#f3ead6}#gym .co-th img{width:56px;height:56px;image-rendering:pixelated;margin-bottom:-4px}
+#gym .co-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:3px}#gym .co-row .trt{margin:0}
+#gym .co-d{display:block;font-size:11px;color:#7a7a8a;margin-top:3px}
+#gym .co-rest{font-style:normal;font-size:10px;color:#fff;background:#8a8a9a;border-radius:4px;padding:1px 5px;margin-left:4px}
+#gym .co-note{font-size:11px;color:#7a7a8a;text-align:center;margin:12px 6px 4px;line-height:1.5;word-break:keep-all}
+#gym .co-pick{display:flex;flex-direction:column;gap:8px;max-height:56vh;overflow:auto;margin:8px 0 4px}
+#gym .co-pk{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 8px;font:inherit;text-align:left;color:#20202c;background:#fffaf0;border:3px solid #20202c;border-radius:8px;box-shadow:inset 0 -3px 0 #e0d4b8,0 2px 0 rgba(0,0,0,.25);cursor:pointer;transition:translate .06s,box-shadow .06s}
+#gym .co-pk:active{translate:0 2px;box-shadow:inset 0 -1px 0 #e0d4b8,0 0 0 rgba(0,0,0,.25)}
+#gym .co-pk img{width:48px;height:48px;flex:none;image-rendering:pixelated;background:#f3ead6;border-radius:6px}#gym .co-pk>span{display:flex;flex-direction:column;min-width:0}#gym .co-pk b{font-size:14px}#gym .co-pk small{font-size:11px;color:#7a7a8a}
+/* v23.36 훈련장 코치 창 = 코치 카드 (경완 9안: 코치 종류 색 + 배틀 받침, 트레이너 상하 가운데, 세 칸이 창을 꽉 채움) */
+#gym .co-win>.win{display:flex;flex-direction:column;background:#f4efe2}
+#gym .co-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;margin:12px 0 0}
+#gym .co-card{--cb:#fbf8f0;--cc:#b8a070;position:relative;flex:1;min-height:96px;display:flex;align-items:stretch;gap:12px;width:100%;padding:8px 34px 8px 8px;font:inherit;text-align:left;color:#20202c;cursor:pointer;
+  background:linear-gradient(115deg,transparent 0 58%,rgba(255,255,255,.5) 58% 64%,transparent 64% 68%,rgba(255,255,255,.35) 68% 70%,transparent 70%),linear-gradient(#fff,var(--cb));
+  border:3px solid #20202c;border-radius:14px;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px color-mix(in srgb,var(--cc) 45%,#fff),0 4px 0 rgba(0,0,0,.28);transition:translate .06s,box-shadow .06s}
+#gym .co-card:active{translate:0 3px;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px color-mix(in srgb,var(--cc) 45%,#fff),0 1px 0 rgba(0,0,0,.28)}
+#gym .co-av{--u:1cqh;--x0:calc(50cqw - 176 * var(--u));--y0:calc(100cqh - 16px - 88 * var(--u));container-type:size;position:relative;flex:none;width:122px;display:flex;align-items:center;justify-content:center;border-radius:9px;overflow:hidden;border:2px solid #20202c;
+  background:#e8e4d8}
+#gym .co-av::before{content:'';position:absolute;inset:0;background:var(--cbg,none) var(--x0) min(var(--y0), 0px)/calc(512 * var(--u)) calc(192 * var(--u)) no-repeat;image-rendering:pixelated}   /* cq 단위는 자식에서만 이 칸 기준 (칸 자신의 배경은 화면 기준으로 풀림) */   /* 배틀 화면 그대로 키워서 자름: 상대 발판 112,56 128×64 · 트레이너 136,8 80×80 (발판 잘려도 됨, 경완) */
+#gym .co-pl{position:absolute;left:calc(var(--x0) + 176 * var(--u) - 56px);top:calc(var(--y0) + 88 * var(--u) - 29px);width:112px;height:56px;background:var(--cpl,none) 0 0/100% 100% no-repeat;image-rendering:pixelated}
+#gym .co-trs{position:absolute;z-index:1;left:calc(var(--x0) + 136 * var(--u));top:calc(var(--y0) + 8 * var(--u));width:calc(80 * var(--u));height:calc(80 * var(--u));max-width:none;transform:translate(calc(var(--dx, 0) * var(--u)), calc(var(--dy, 0) * var(--u)));image-rendering:pixelated}
+#gym .co-fig{position:absolute;left:0;right:0;top:20px;bottom:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+#gym .co-fig::after{content:'';flex:none;width:112px;height:56px;margin-top:-40px;background:var(--cpl,none) 0 0/100% 100% no-repeat;image-rendering:pixelated}
+#gym .co-fig img{position:relative;z-index:1;flex:none;height:calc(100% - 8px);max-height:150px;width:auto;aspect-ratio:1;margin-bottom:-2px;image-rendering:pixelated}
+#gym .co-kd{position:absolute;left:0;top:0;z-index:2;font-style:normal;font-size:10px;font-weight:700;line-height:1;color:#fff;background:var(--cc);padding:4px 7px 4px 6px;border-radius:0 0 8px 0;border:0 solid #20202c;border-width:0 2px 2px 0}
+#gym .co-in{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;flex:1}
+#gym .co-nm{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;padding-bottom:6px;border-bottom:2px dotted color-mix(in srgb,var(--cc) 50%,#c8c0b0)}#gym .co-nm b{font-size:17px}#gym .co-nm small{font-size:11px;color:#6a6a7a}
+#gym .co-tags{display:flex;flex-direction:column;align-items:flex-start;gap:5px}#gym .co-tags .trt{margin:0}
+#gym .co-x{position:absolute;top:7px;right:7px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6a6a7a;border-radius:50%;background:rgba(255,255,255,.8);border:2px solid #c8c0b0}
+#gym .co-x:active{background:#eee}
+#gym .co-rest{font-style:normal;font-size:10px;color:#fff;background:#8a8a9a;border-radius:4px;padding:1px 5px}
+#gym .co-new{background:rgba(255,255,255,.45);border:3px dashed #b8a888;box-shadow:none}#gym .co-new:active{box-shadow:none}
+#gym .co-new .co-av{border:2px dashed #c8b898;background:#f6f0e2}
+#gym .co-new .co-fig::after{content:none}
+#gym .co-new .co-sil{margin-bottom:10px}
+#gym .co-sil{position:relative;z-index:1;display:block;flex:none;width:58px;height:calc(100% - 22px);max-height:128px;margin-bottom:4px}
+#gym .co-sil::before{content:'';position:absolute;left:15px;top:0;width:28px;height:28px;border-radius:50%;background:#dccfb2}
+#gym .co-sil::after{content:'';position:absolute;left:2px;right:2px;top:32px;bottom:0;border-radius:18px 18px 6px 6px;background:#dccfb2}
+#gym .co-new .co-in b{font-size:15px;color:#7a5a2a}#gym .co-new .co-in small{font-size:11px;color:#8a8a9a}
+#gym .co-note{font-size:11px;color:#7a7a8a;text-align:center;margin:10px 6px 2px;line-height:1.5;word-break:keep-all}
+#gym .co-pk .co-tags{margin-top:4px}
+/* v23.36 경완 '지원서 배경·고용 관리 프로필 박스·고용 트레이너 상세카드도 트레이너 종류별 배틀 배경': --cbg/--cpl = 도전자 배틀과 같은 배경·발판 (manage.js cbgSt). 배경 파일 아래 32줄은 검은 띠라 위 160줄만 보이게 높이 120% */
+.cv-deck .cv-photo,#gym .sfc-pic,#gym .sd2-hero{background:var(--cbg,url(../gym/img/bt/bg_in1.png)) center 0/auto 120% no-repeat,#e8c070;image-rendering:pixelated}
+.cv-photo::after,#gym .sd2-hero::after{background-image:var(--cpl,url(../gym/img/bt/pl_e.png))}
+#gym .sfc-pic{overflow:hidden}   /* 발판이 프로필 박스 밖으로 안 나오게 (경완) */
+#gym .sfc-pic .sfc-base{left:0;right:0;bottom:-12px;height:36px;border-radius:0;box-shadow:none;background:var(--cpl,url(../gym/img/bt/pl_e.png)) 0 0/100% 100% no-repeat;image-rendering:pixelated}
+/* v23.36 경완 '고용 관리 칸도 훈련장 코치 카드처럼': 코치 종류 색 카드 + 두 줄 테두리·광택, 그림 칸 = 코치 카드 그림 칸(배틀 배경 확대·발판 아래·발 가운데) */
+#gym .sfc{--cb:#fbf8f0;--cc:#b8a070;grid-template-columns:104px 1fr 14px;gap:0 12px;padding:5px;color:#20202c;border:3px solid #20202c;border-radius:14px;
+  background:linear-gradient(115deg,transparent 0 58%,rgba(255,255,255,.5) 58% 64%,transparent 64% 68%,rgba(255,255,255,.35) 68% 70%,transparent 70%),linear-gradient(#fff,var(--cb));
+  box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px color-mix(in srgb,var(--cc) 45%,#fff),0 4px 0 rgba(0,0,0,.28);transition:translate .06s,box-shadow .06s}
+#gym .sfc:active{translate:0 3px;box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px color-mix(in srgb,var(--cc) 45%,#fff),0 1px 0 rgba(0,0,0,.28)}
+#gym .sfc.yard,#gym .sfc.rest{background:linear-gradient(115deg,transparent 0 58%,rgba(255,255,255,.5) 58% 64%,transparent 64% 68%,rgba(255,255,255,.35) 68% 70%,transparent 70%),linear-gradient(#fff,var(--cb))}
+#gym .sfc .sfc-av{grid-area:p;width:auto;height:128px;margin:22px 0 6px 4px}
+#gym .sfc .sfc-mid{padding:26px 0 8px}
+#gym .sfc .sfc-rib{left:5px;top:5px;border-radius:9px 0 0 0}
+#gym .sfc .sfc-coach{top:10px;right:10px}
+#gym .sfc .sfc-team{margin:0 4px;border-radius:8px 8px 0 0;border:0;background:rgba(255,255,255,.6)}
+#gym .sfc .sfc-num{margin:0 4px 4px;border:0;border-radius:0 0 8px 8px;background:rgba(255,255,255,.85)}
+#gym .sfc .sfc-num>span+span{border-left-color:color-mix(in srgb,var(--cc) 18%,#e8e4d8)}
+#gym .sfc.rest .co-trs{filter:grayscale(.7) brightness(.95)}
+/* v23.36 경완 지원서 A안 '세로 코치 카드': 코치 종류 색 카드 + 두 줄 테두리·광택, 사진 위 종류 탭, 정보는 흰 판 */
+#gym .cv-deck .cv-card{--cb:#fbf8f0;--cc:#b8a070;padding:8px 0 12px;color:#20202c;border:3px solid #20202c;border-radius:14px;
+  background:linear-gradient(115deg,transparent 0 58%,rgba(255,255,255,.5) 58% 64%,transparent 64% 68%,rgba(255,255,255,.35) 68% 70%,transparent 70%),linear-gradient(#fff,var(--cb));
+  box-shadow:inset 0 0 0 3px #fff,inset 0 0 0 5px color-mix(in srgb,var(--cc) 45%,#fff),0 4px 0 rgba(0,0,0,.28)}
+#gym .cv-deck .cv-card header{background:none;border:0;padding:4px 14px 2px}
+#gym .cv-deck .cv-card header b{color:#20202c;font-size:14px}
+#gym .cv-deck .cv-tm{background:#2a3a5c;border:2px solid #20202c;border-radius:8px}
+#gym .cv-deck .cv-photo{margin:0 10px!important;border:2px solid #20202c!important;border-radius:10px}
+#gym .cv-deck .cv-nm{border-radius:8px}
+#gym .cv-kd{position:absolute;left:0;top:0;z-index:3;font-style:normal;font-size:11px;font-weight:700;line-height:1;color:#fff;background:var(--cc);padding:5px 8px 5px 7px;border-radius:0 0 9px 0;border:0 solid #20202c;border-width:0 2px 2px 0}
+#gym .cv-deck .cv-dl{background:rgba(255,255,255,.85);border-radius:10px;padding:8px 10px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--cc) 18%,#ece6d8)}
+#gym .cv-deck .cv-say{border-color:color-mix(in srgb,var(--cc) 30%,#e4ddcc)}
