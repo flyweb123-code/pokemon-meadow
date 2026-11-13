@@ -472,6 +472,7 @@ async function gmFx(s, X, kind, ty) {
       if (kind === 'z') { const zid = ty?.id || '', zt = zid && (ZT_ID[zid] || zid.toUpperCase()), c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/ZRING.png`), cr = toID(ty?.item || '');
         if (cr) { const z = await dxImg(`${IMG}dbk/it/${cr.toUpperCase()}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${cr.toUpperCase()}.png`, w: z.w, h: z.h }; }
         c.type = ty?.type || 'Normal'; if (zt && PSim.Dex.moves.get(zid).isZ && PSim.Dex.moves.get(zid).category !== 'Status') { const T = await dxImg(`${IMG}dbk/Z-Power/Z-Titles/${zt}.png`); if (T) { c.title = `${IMG}dbk/Z-Power/Z-Titles/${zt}.png`; c.titleW = T.w; c.titleH = T.h; c.upper = /^(catastropika|10000000voltthunderbolt|letssnuggleforever)$/.test(zid); } }
+        if (GymDBK.zFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.zName = mvKo(zid) || 'Z기술'; await GymDBK.zFull(c); return; }   /* 경완 2026-11-13: Z기술 전체 화면 연출 (본가·애니 고증) */
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
         await GymDBK.tera(c); teraOn(s, ty); return; }
