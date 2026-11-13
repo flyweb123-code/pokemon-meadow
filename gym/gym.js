@@ -774,7 +774,11 @@ const gShort = i => GRADES[i][1].replace(/ 체육관$/, '');
 const bdPh = rep => Math.min(1, (rep || 0) / REP_MAX) ** 1.5;   // 평판이 오를수록 도전자가 어려워짐 (0~1): 초반 쉽고 뒤로 갈수록 가파르게 (경완 2026-10-29)
 const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && (g.rep || 0) >= nx[0]; };   // 평판이 이 등급 끝까지 찼다 = 승급 심사를 받을 수 있다
 const repFloor = g => GRADES[g.gmax | 0]?.[0] | 0;   /* v15.67 경완: 승급한 등급의 문턱 아래로는 평판이 안 떨어진다 */
-const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : REP_MAX; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
+/* v24.19 경완 '전설 등급부터는 천장도 없고 난이도도 계속 어려움, 평판 계속 올라가게. 고용 트레이너는 평판 안 올리고 관장 배틀로만 — 순수 관장 실력으로 랭킹': 전설의 체육관은 평판 상한 없음 */
+const isLeg = g => (g?.gmax | 0) >= GRADES.length - 1;
+/* 전설의 체육관에 오는 보통 도전자 = 본가 후반(챔피언로드·리그 앞) 트레이너 종류만. 이름 있는 트레이너도 더 자주 (보통 도전자 LEG_NC 명마다, 다른 등급은 9명) */
+const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_trainer_f', 'dragon_tamer', 'veteran', 'black_belt', 'psychic_m', 'psychic_f', 'ranger_m', 'ranger_f', 'pokemaniac'], LEG_NC = 4;
+const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : Infinity; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gym/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
@@ -910,11 +914,11 @@ function mkChal(t) {
   // 중간 이름 있는 트레이너 (자리마다 한 번)
   const ms = g.ms.r || (g.ms.r = []), mid = BD_MID.find(a => rep >= a && a < (nx ? nx[0] : 1e9) && !ms.includes(a));
   if (mid != null && !g.q.some(c => c.named)) { const c = mkScripted(L, t, 0); if (c) { ms.push(mid); return c; } }
-  if ((g.nc | 0) >= 9 && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
+  if ((g.nc | 0) >= (isLeg(g) ? LEG_NC : 9) && !g.q.some(c => c.named)) { const nm = pickNamed(avg, t); if (nm) { g.nc = 0; return nm; } }   // v12.23 경완 '페이즈 느낌으로, 9명 방어하면 10번째에는 반드시 이름 있는 트레이너' (확률로는 안 옴)
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   // v14.31 경완: 처음 5명은 무조건 쉬운 도전자(g.ez = 만든 보통 도전자 수), 첫 등급의 어려운 도전자 확률 30% → 15%
-  const diff = (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
-  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS = Object.keys(CLS).filter(x => !!CLS[x].e === !diff);
+  const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
+  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = Object.keys(CLS).filter(x => !!CLS[x].e === !diff), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
   { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq, tw) }; }
@@ -944,9 +948,10 @@ function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return
   return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
 function mkBoss(gi, t) {
-  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], P = q && NAMED.filter(n => q.test(n.cls));
+  const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && !gList().some(x => (x.gmax | 0) >= 5) && NAMED.find(n => n.id === 'red'),   /* v24.16 경완 '첫번째 체육관 명문 심사만 고정, 그 뒤부터는 원래대로': 명문 이상인 체육관(휴업 포함)이 하나도 없을 때만 */
+    P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
   if (!P?.length) return null;
-  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = gi >= 5 ? 'champ' : c.music; }
+  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
   return c;
 }
 /* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
@@ -978,11 +983,16 @@ function nmVar(n, k, gi) {
   return T;
 }
 // 이름 있는 트레이너: 본가 팀 단계. 그 단계 평균 레벨이 내 라인업 평균 + 6 이하일 때부터 온다. 단계를 다 이기면 nmVar 로 조금씩 바뀐 팀 (v23.31)
+/* v24.08 경완 '원규 난이도 왜 이렇게 쉽게 나온거지': 첫 방문 때 본가 1단계 팀(꼬마돌 2·코코파스, 초반 기술)은 레벨만 올려도 높은 등급에선 너무 쉬움.
+   단계 팀의 본가 레벨이 지금 등급 바닥(LV_FLOOR)보다 NM_SKIP 넘게 낮으면 그 단계는 건너뛰고 등급에 맞는 단계 팀으로 옴 (마지막 단계까지만) */
+const NM_SKIP = 12;
+function nmSt(n, s) { const fl = (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - NM_SKIP; while (s < n.st.length - 1 && (teamLv(n.st[s]) < fl || !n.st[s].some(m => !spOff(m[0])))) s++; return s; }
 function pickNamed(avg, t) {
   const g = st(), busy = new Set(g.q.filter(c => c.named).map(c => c.named));
-  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; if (!n.st[x.s].some(m => !spOff(m[0]))) return false; return avg >= teamLv(n.st[x.s]) - 6; });
+  const ok = NAMED.filter(n => { const x = g.nt[n.id] || { s: 0, n: 0 }; if (busy.has(n.id) || t < (x.n || 0)) return false; if (n.id === 'red' && (g.gmax | 0) < 5) return false;   /* v24.15 경완 '명문부터 오긴 해야돼 도전자로는': 레드는 명문 체육관부터 (레벨 조건 대신 등급) */
+    if (n.id === 'red' && x.s < n.st.length) return n.st[0].filter(m => !spOff(m[0])).length >= 2; if (x.s >= n.st.length) return n.st[n.st.length - 1].filter(m => !spOff(m[0])).length >= 2; const s1 = nmSt(n, x.s); if (!n.st[s1].some(m => !spOff(m[0]))) return false; return s1 > x.s || avg >= teamLv(n.st[s1]) - 6; });
   if (!ok.length) return null;
-  const n = pick(ok), s = (g.nt[n.id] || {}).s || 0, v = s >= n.st.length ? s - n.st.length + 1 : 0;
+  const n = pick(ok), s0 = (g.nt[n.id] || {}).s || 0, s = s0 >= n.st.length ? s0 : nmSt(n, s0), v = s >= n.st.length ? s - n.st.length + 1 : 0;
   const team = v ? nmVar(n, v, gradeOf(g.rep || 0).i) : n.st[s].filter(m => !spOff(m[0])).map(m => [m[0], m[1], m[2]]); if (!team) return null;
   return { id: ++g.cid, t, named: n.id, s, nv: v || undefined, cls: n.cls, tr: n.tr, ow: n.ow, nm: n.nm, diff: 2, music: n.music, team };
 }
@@ -1066,7 +1076,7 @@ function arrive(c) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
       const R = REW(c.diff), r0 = g.rep || 0;
-      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const sfOn = sfRepOn(c.t || Date.now()); if (sfOn) addRep(sfRep(s, R.r), 1);   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
+      const gold = addG(Math.round(R.g * GYMB().GYM_SF_PCT / 100 * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const sfOn = sfRepOn(c.t || Date.now()); if (sfOn && !isLeg(g)) addRep(sfRep(s, R.r), 1);   /* v24.19: 전설의 체육관에선 고용 트레이너가 막아도 평판은 안 오름 (골드만) */   // v14.97 경완: 트레이너가 대신 막은 건 연승으로 치지 않는다 (연승·평판 보너스 없음)
       const rep = (g.rep || 0) - r0;
       try { window.pkBal?.('sf', { w: 1, df: c.diff | 0, n: lost.length + 1, gd: gold, gr: g.gmax | 0, cl: Math.round(teamLv(c.team)), sl: Math.round(teamLv(s.team)) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 트레이너가 막음 */
       { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(c, 1); { const x = daySf(dayRec(c.t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
@@ -1276,7 +1286,7 @@ async function challenge(picked) {
     await loadJs('gym/battle.js', 'GymBattle'); await GB().loadData();
     // 문 소리 → 문 앞 카펫에 나타나 잠깐 섰다가 → 관장 앞까지 걸어온다 (경완 2026-10-28 '소리랑 타이밍 맞춰서, 카펫 위에 잠깐 멈췄다가')
     const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.88 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
-    try { window.GymBGM?.prep(bm); if (c.named) { const ey = (!c.boss && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
+    try { window.GymBGM?.prep(bm); if (c.named) { const ey = ((!c.boss || c.named === 'red') && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
     dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
@@ -1318,7 +1328,7 @@ async function challenge(picked) {
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
       window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
-    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: x.s + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
+    if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: Math.max(x.s | 0, c.s | 0) + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
     setAt(); save(); renderTop();
     await resultPop(c, res, gold, rep, R);
@@ -1369,7 +1379,7 @@ function bsScreen() {
 }
 async function bsStart(gi) {
   const g = st();
-  if (LEGK_ON && gi === GRADES.length - 1 && bsReady(g)) { bsMus = false; try { window.GymBGM?.stop(.5); } catch (e) {}   /* v23.61 경완 '이 라인업으로 결정 눌렀을 때 bgm 끊기게, 그 전까진 나오고' (v23.45 는 [심사 받기] 에서 껐음) */ openTab(null); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
+  if (legKang() && gi === GRADES.length - 1 && bsReady(g)) { bsMus = false; try { window.GymBGM?.stop(.5); } catch (e) {}   /* v23.61 경완 '이 라인업으로 결정 눌렀을 때 bgm 끊기게, 그 전까진 나오고' (v23.45 는 [심사 받기] 에서 껐음) */ openTab(null); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
   bsMus = false; openTab(null);   // 전설 심사는 강박사가 직접
   await loadNamed(); const c = bsReady(g) && mkBoss(gi, Date.now());
   if (!c) return say('심사관을 부르지 못했어요.', '잠시 뒤 다시 해 주세요');
@@ -1717,7 +1727,8 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     if (lost) { k.el.remove(); ents = ents.filter(x => x !== k); k = null; }   // 진 날은 강박사 없이 혼자 돌아옴
     bgmPlay('gym'); await A.black(false); await wait(300);
     if (lost) { if (gu) { face(gu, meEnt); await mix(XL.loseG); dlg(''); root.classList.add('dhide'); TT?.hide(true); } return { won: false }; }
-    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else for (const h of TL.back) await say(h);
+    if (X && XL.back) { for (const [w, h] of XL.back) { if (w === 'tera' || w === 'teraTut') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (X.test ? w === 'teraTut' : !tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { if (w === 'teraTut') await say(`약속한 <b>${ty} 테라피스</b>도<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } else await (w === 'g' ? gsay(h) : say(h)); } } else { for (const h of TL.back) await say(h);
+      if (LEGK_ON) { /* 챔피언을 이긴 두 번째~ 전설: 전당 등록 뒤 테라피스도 (오브가 아직 없으면 테라스탈 설명부터) */ dlg(''); root.classList.add('dhide'); TT?.hide(true); if (!tutSeen('teraOrb')) await teraTut({ k, gu, D, t }); else { await say(`그리고 이건 <b>${ty} 테라피스</b>란다.<br>전설의 체육관이 된 기념으로<br>받아 가게!`); dlg(''); root.classList.add('dhide'); TT?.hide(true); await teraPop(t); } } }
     // ---- 6. 안내원 축하 + 티키타카 ----
     if (gu) { A.bub(gu, '!', 800); se('DP_REGI', .7); await wait(700);
       /* v19.24 경완 '바로 옆까지 안 가도 돼': 관장·강박사에게서 두세 칸 떨어진 곳 (가까운 곳부터) */
@@ -1748,7 +1759,9 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
    평판이 가득 차 [승급 심사](곡이 포켓몬리그로) → 노크, 강박사 진지한 대화(개그 없음) → 훈련장 경기장 양 끝에 마주 서서 심사 배틀(서로 거다이맥스) →
    이기면 명예의 전당으로 가서 등록·전설 알 → 체육관 복귀·티키타카 → 승급창·보상창. 지면 혼자 돌아오고, 다시 받을 땐 짧은 대사.
    거다이맥스는 명문 체육관 비기(경완 '테라랑 거다이 순서 바꾸자')라 심사 때는 이미 쓸 수 있음. 배포 전: LEGK_ON 꺼 둠, 운영자 '전설 심사 (강박사)'(시뮬 안 가상 체육관)로만 */
-const LEGK_ON = false;
+const LEGK_ON = true;   /* v24.19 경완 '강박사 스위치도 그냥 켜놔줘' */
+/* v24.17 경완 '강박사 켜져도 두번째 체육관 전설 심사부터는 원래대로 챔피언, 강박사는 챔피언 이기면 전당 등록이랑 테라피스 주러': 강박사 심사는 전설인 체육관(휴업 포함)이 하나도 없을 때만 */
+const legKang = () => LEGK_ON && !gList().some(x => (x.gmax | 0) >= GRADES.length - 1);
 // 강박사 팀 (경완 2026-11-13 '관동 스타팅으로 제한 안 해도 돼', '거다이맥스 한 번밖에 안 하는데 6마리 전부 거다이맥스 가능한 포켓몬일 필요 없다'):
 // 가장 어려운 심사: 에이스(마지막, 거다이맥스)는 거다이맥스 모습이 있는 종에서 체육관 타입의 천적, 나머지 다섯도 연구소 포켓몬(전설·환상 아닌 최종 진화) 가운데 천적 위주.
 // 종족값이 높을수록 먼저 보고, 이미 뽑힌 포켓몬과 타입·약점이 겹치면 점수를 깎아서 한 가지 기술에 팀이 다 쓸리지 않게 함
@@ -1803,7 +1816,7 @@ function legXLines(N, E, ty, retry) {
       ['k', '오늘은 박사가 아니라<br>심사관으로서 자네 앞에 서겠네.<br>봐주는 것은 없단다.'], ['k', '훈련장 경기장으로 가세.<br>자네 포켓몬들이 땀 흘려 온<br>바로 그 자리에서 겨루는 걸세.'], mood, ['g', '관장님… 다녀오세요.<br>여기서 기다리고 있을게요.']],
     court: ['이 경기장의 모래에는\n자네와 포켓몬들이 쌓아 온 시간이\n그대로 배어 있구먼.', '전설의 체육관이란\n그저 강한 체육관이 아니란다.\n누구도 넘지 못한 벽이라는 뜻이지.', '그 이름에 걸맞은지,\n내 30년을 함께한 포켓몬들로\n직접 확인하겠네.', `자, ${E}.\n가진 것을 전부 보여 주게!`],
     win: ['…졌네.', `훌륭했네, ${E}.\n심사 결과는… 합격일세.`, `오늘부터 이곳은 ${ty} 타입\n전설의 체육관이란다.`, '따라오게.\n자네 이름을 새겨야 할 곳이 있네.'], hof, lose, loseG,
-    back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>그때마다 심사는…<br>물론 또 내가 본단다. 허허!']] };
+    back: [['k', `${E}, 다시 한번 축하하네!<br>전당이 내려 준 그 알에선<br>${ty} 타입 <b>전설 포켓몬</b>이 태어난단다.`], ...tera, ['k', '다른 타입 체육관도 전설로 만들어 보게!<br>다음부터 심사는 챔피언들 몫이란다.<br>나는 전당 등록하러 달려오마. 허허!']] };
   return { pre: null,
     in: [['k', `${E}. ${nth} 번째 전설 심사구먼.`], ['k', '자네가 이 자리에 설 때마다<br>나는 처음 그날이 떠오른단다.<br>참 멀리도 왔구먼.'], ['k', '몇 번을 치러도 이 심사는<br>가벼워지지 않는단다.<br>자네도, 나도 말일세.'], ['k', '경기장으로 가세.'], mood],
     court: [`${ty} 타입으로도 전설의 이름에\n걸맞은지 확인하겠네.`, '지난 심사보다 나도 강해졌단다.\n각오하게.', `자, ${E}.\n전력으로 오너라!`],
@@ -2080,7 +2093,7 @@ function homeSay() {
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
-  if (bs) try { window.GymBGM?.prep('league'); if (LEGK_ON && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
+  if (bs) try { window.GymBGM?.prep('league'); if (legKang() && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
   if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
   if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
@@ -3803,6 +3816,7 @@ const MEGA_T = [[6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 
    지금 라인업으로 1층부터. 배틀 화면을 닫지 않고 야생 포켓몬이 계속 나옴(포켓로그처럼), 10층마다 우두머리(레벨 +3·체력 ×1.8, 50층마다 큰 우두머리 +5·×2.5).
    이기면 체력 20% 회복, 5층마다 보급 고르기, 우두머리를 쓰러뜨리면 모두 회복. 경험치 ×0.3·학습장치 없음, 1층 = 라인업 최저 레벨, 4층마다 +1.
    친밀도·진화·포켓몬 상자는 안 건드리고, 레벨·기술(S.gym)은 시뮬에서 나가면 되돌아감. 그만두기 = 그 층부터 이어 하기(앱 켜 있는 동안) */
+const TR_BGM = ['wild', 'train', 'rival', 'hgRival', 'emRival', 'hgGymK', 'gymBattle', 'hgGymJ', 'emGym', 'tenno', 'emTenno', 'hgChamp', 'champ', 'emChamp'];   /* v24.14 10층마다 바뀌는 곡 (우두머리 층은 우두머리 곡) */
 const TR = { xp: .3, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 40, myst: .1 };
 const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
@@ -3864,7 +3878,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
 #trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:170px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:4px 12px 6px}
 #trLobby .tl-hd h2{margin:0;font-size:15px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
-#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
+#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s .rk-fr>img[data-th]{width:84%!important;height:84%!important;max-width:none;max-height:none;object-fit:contain}
 #trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
 #trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
 #trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
@@ -3874,8 +3888,8 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
 #trLobby .tl-s{position:relative;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff;border:0}
 #trLobby .tl-s.on{background:#fff6d0;box-shadow:inset 0 0 0 2px #e0a020}
-#trLobby .tl-s .rk-fr{transform:scale(.62)}
-#trLobby .tl-s em{position:absolute;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
+#trLobby .tl-s .rk-fr{position:absolute;inset:0;width:100%;height:100%}
+#trLobby .tl-s em{position:absolute;z-index:3;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
 #trLobby .tl-s .pb{width:22px;height:22px;opacity:.28}
 #trLobby .tl-pips{display:flex;gap:2px;margin-top:7px}#trLobby .tl-pips i{flex:1;height:9px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}
 #trLobby .tl-pips i.f{background:#5cc27a;box-shadow:inset 0 -2px 0 #2f9a52,inset 0 2px 0 #9ae8b0}#trLobby .tl-pips.ov i.f{background:#e05050;box-shadow:inset 0 -2px 0 #a82424,inset 0 2px 0 #ff9a9a}
@@ -3888,13 +3902,13 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-fb .tl-sort button[aria-pressed="true"]::after{content:attr(data-dir)!important;font-size:9px;margin-left:3px;vertical-align:1px}
 #trLobby .tl-fb .tl-tyb{display:flex;align-items:center;gap:4px}#trLobby .tl-fb .tl-tyb .tyi{width:15px;height:15px}#trLobby .tl-fb .tl-tyb::after{content:'▾';font-size:10px;margin-left:2px}
 #trLobby .tl-q{flex:1 1 100%;min-width:0;position:relative;display:flex}#trLobby .tl-q input{flex:1 1 auto;width:100%;min-width:0;font:inherit;font-size:16px;padding:5px 36px 5px 9px;border:3px solid var(--inner);background:#fff;color:var(--win-ink);border-radius:0;-webkit-appearance:none;appearance:none;outline:0}#trLobby .tl-q input:focus{border-color:var(--frame)}
-#trLobby .tl-c .tl-tg{display:flex;gap:2px;height:13px;justify-content:center}#trLobby .tl-c .tl-tg i{font-style:normal;font-size:9px;line-height:13px;padding:0 3px;color:#fff;white-space:nowrap}#trLobby .tl-tg .lu{background:#d84a3a}#trLobby .tl-tg .tr{background:#9a6a3c}#trLobby .tl-tg .bd{background:#e8679a}
+#trLobby .tl-c .tl-top{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:2px;height:15px;padding:0 1px;min-width:0}#trLobby .tl-c .tl-tg{display:flex;gap:1px;min-width:0;overflow:hidden}#trLobby .tl-c .tl-tg i{font-style:normal;font-size:9px;line-height:14px;padding:0 2px;color:#fff;white-space:nowrap}#trLobby .tl-tg .lu{background:#3c9a4c}#trLobby .tl-tg .tr{background:#9a6a3c}#trLobby .tl-tg .bd{background:#e8679a}
 #trLobby .tl-fb .tl-cnt{margin-left:auto;font-size:11px;opacity:.7;white-space:nowrap}
 #trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
-#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;height:118px;padding:6px 2px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
-#trLobby .tl-c .ty{position:absolute;right:3px;top:3px;display:flex;flex-direction:column;gap:1px}#trLobby .tl-c .ty .tyi{width:15px;height:15px;display:block}
+#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;height:114px;padding:4px 3px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
+#trLobby .tl-c .ty{display:flex;gap:1px;flex:none;margin-left:auto}#trLobby .tl-c .ty .tyi{width:15px;height:15px;display:block}
 #trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
-#trLobby .tl-c.on::after{content:'✔';position:absolute;left:3px;top:3px;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
+#trLobby .tl-c.on::after{display:none;content:'✔';position:absolute;left:4px;top:22px;z-index:2;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
 #trLobby .tl-c:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #c8c8d8}
 #trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #trLobby .tl-c .st{display:flex;gap:2px;font-size:9px;white-space:nowrap}#trLobby .tl-c .st em{font-style:normal;padding:1px 3px;color:#fff;background:#383848}#trLobby .tl-c .st em.c{background:#2f7cd0}
@@ -3907,7 +3921,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-sm{margin:6px 0 0;font-size:11px;line-height:1.5;opacity:.75}
 #trLobby .tl-sv{display:flex;align-items:center;gap:8px;margin:0 0 8px}#trLobby .tl-sv .fl{font-size:28px;line-height:1;color:#e04838}#trLobby .tl-sv .fl small{font-size:13px;color:var(--win-ink);margin-left:2px}#trLobby .tl-sv>small{font-size:10px;opacity:.7;white-space:nowrap}
 #trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
-#trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;left:3px;right:3px;top:3px;height:3px;background:#0003}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
+#trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;z-index:3;left:4px;right:4px;top:4px;height:4px;background:#0005}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
 #trLobby .gy-key.sure{background:#e05050!important;color:#fff!important}
 #trLobby .tl-rh{text-align:center;padding:4px 0 8px}#trLobby .tl-rh b{display:block;font-size:18px}#trLobby .tl-rh small{font-size:11px;opacity:.7}#trLobby.top .tl-rh b{color:#e0a020}
 #trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
@@ -3963,7 +3977,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
     el.querySelectorAll('[data-so]').forEach(b => { const on = b.dataset.so === trlSo; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (trlDir > 0 ? '▼' : '▲') : ''; });
     const tb = el.querySelector('[data-f=ty]'); tb.innerHTML = trlTy ? `${tyI0(trlTy)}${TYPE_KO[trlTy]}` : '모든 타입'; tb.setAttribute('aria-pressed', !!trlTy);
     el.querySelector('[data-f=fit]').setAttribute('aria-pressed', trlFit); el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
-    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="ty">${(SPECIES[P.sp]?.t || []).map(tyI0).join('')}</span>${B.thumb(P)}<span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c">코스트 ${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="tl-top"><span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><span class="ty">${(SPECIES[P.sp]?.t || []).map(tyI0).join('')}</span></span>${B.thumb(P)}<b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c" title="코스트">${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
     list.scrollTop = sc; B.fillTh(el); };
   const end = v => { el.remove(); ok(v); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
@@ -4030,8 +4044,9 @@ async function trainTest() {
       R.amb = 0; const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : amb ? 2 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
       const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
       R.balls = R.balls || { mon: 5 }; const T = { xp: TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss };   /* v23.68 동료 볼 (가방) */
-      const intro = first && f === 1 ? async o => { await o.msgTap('동료 몬스터볼 5개를 받았다!'); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); await o.msgTap('도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'); } : null;
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
+      const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await o.msgTap('동료 몬스터볼 5개를 받았다!'); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); await o.msgTap('도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'); await trReward(R, o, ids, false, false, true); } : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
+      const music = big ? 'bossBig' : boss ? 'boss' : TR_BGM[Math.floor((f - 1) / 10) % TR_BGM.length], keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: true, win: 'winWild', meFrontUrl, meBackUrl,
         badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : ''} · 코인 ${R.coin | 0}`, post: o => trPost(R, o, boss, ids, T),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }]] });
@@ -4089,7 +4104,46 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
-async function trReward(R, o, ids, boss, shop) {
+/* v24.14 보상 그림 = 본가 도구 (gym/img/item, 없던 것은 PokeAPI sprites/items 에서 받아 넣음) · 등급별 볼 (흔함 몬스터볼·좋음 슈퍼볼·귀함 하이퍼볼) */
+const TR_IC = [['상처약', 'potion'], ['좋은상처약', 'superpotion'], ['고급상처약', 'hyperpotion'], ['회복약', 'maxpotion'], ['기력의조각', 'revive'], ['기력의덩어리', 'maxrevive'], ['학습장치', 'expshare'], ['맥스업', 'hpup'], ['타우린', 'protein'], ['사포닌', 'iron'], ['리보플라빈', 'calcium'], ['키토산', 'zinc'], ['알칼로이드', 'carbos'], ['경험치 부적', 'expcharm'], ['동료 몬스터볼', 'pokeball'], ['동료 슈퍼볼', 'greatball'], ['동료 하이퍼볼', 'ultraball'], ['동료 마스터볼', 'masterball'], ['강박사 야식', 'bigmalasada']];
+const trIc = n => (TR_IC.find(([k]) => n.startsWith(k)) || [, 'pokeball'])[1], TR_BX = ['pokeball', 'greatball', 'ultraball'];
+const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;background:rgba(8,10,24,0);transition:background .35s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
+.trbx.on{background:rgba(8,10,24,.62)}.trbx.out{background:rgba(8,10,24,0);transition:background .25s}.trbx.out .trb-c,.trbx.out h3{opacity:0;transition:opacity .2s}
+.trbx h3{margin:0;color:#fff;font-size:16px;text-align:center;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-8px);transition:opacity .3s .15s,transform .3s .15s}.trbx.on h3{opacity:1;transform:none}
+.trbx .trb-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(100%,380px)}
+.trbx .trb-c{position:relative;height:190px;display:flex;align-items:center;justify-content:center;border:0;padding:0;background:none;font:inherit;color:var(--win-ink)}
+.trbx .trb-b{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;image-rendering:pixelated;transform:translateY(-120vh);filter:drop-shadow(0 4px 0 #0006)}
+.trbx.on .trb-b{animation:trbDrop .62s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:var(--d)}
+@keyframes trbDrop{from{transform:translateY(-120vh)}to{transform:none}}
+.trbx .trb-c.wob .trb-b{transform:none;animation:trbWob .42s ease-in-out}
+@keyframes trbWob{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
+.trbx .trb-c.op .trb-b{transform:none;animation:trbPop .26s ease-in forwards}
+@keyframes trbPop{to{transform:scale(1.7);opacity:0}}
+.trbx .trb-c i.fl{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
+.trbx .trb-c.op i.fl{animation:trbFl .45s ease-out}
+@keyframes trbFl{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(9)}}
+.trbx .trb-k{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:12px 6px 8px;background:var(--win);border:3px solid var(--g2);box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1);opacity:0;transform:scale(.3)}
+.trbx .trb-c.op .trb-k{animation:trbIn .34s cubic-bezier(.3,1.6,.5,1) .12s forwards}.trbx .trb-c.now .trb-k{opacity:1;transform:none}
+@keyframes trbIn{to{opacity:1;transform:none}}
+.trbx .trb-k img{width:56px;height:56px;margin-top:6px;image-rendering:pixelated;object-fit:contain}
+.trbx .trb-k b{font-size:13px;text-align:center;line-height:1.25;word-break:keep-all}.trbx .trb-k small{font-size:10px;line-height:1.4;text-align:center;opacity:.75;word-break:keep-all}
+.trbx .trb-k em{position:absolute;top:-3px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#fff;background:var(--g2);padding:1px 6px}
+.trbx.ready .trb-c:active .trb-k{transform:translateY(3px);box-shadow:0 1px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1)}
+.trbx .trb-tip{color:#fff;font-size:12px;opacity:0;transition:opacity .3s}.trbx.ready .trb-tip{opacity:.8}`;
+const trBoxPick = (L, title, again) => new Promise(ok => {
+  if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
+  const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['흔함', '좋음', '귀함'];
+  const el = document.createElement('div'); el.className = 'trbx';
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .14}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${G[c[1]]}</em><img alt="" src="${IMG}item/${trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">하나만 가져갈 수 있어요</p>`;
+  document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
+  let ready = !!again; if (again) el.classList.add('ready');
+  else (async () => { await wait(780); const C = [...el.querySelectorAll('.trb-c')];
+    C.forEach(c => c.classList.add('wob')); se('KON'); await wait(460);
+    for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(170); }
+    await wait(380); ready = true; el.classList.add('ready'); })();
+  el.onclick = e => { const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
+});
+async function trReward(R, o, ids, boss, shop, first) {
   const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .999);
   const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id));
   const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
@@ -4116,8 +4170,7 @@ async function trReward(R, o, ids, boss, shop) {
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
   const L = []; let pool = C.filter(c => c[0] > 0);
   while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
-  await o.msg(boss ? '우두머리가 귀한 보상을 떨어뜨렸다!\n하나만 가져가자.' : '보상을 찾았다!\n하나만 가져가자.', 400);
-  for (;;) { const i = await o.choose('보상을 하나 골라요', L.map(c => [c[2], c[3], TR_RC[c[1]]])); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
+  for (let again = 0; ; again = 1) { const i = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* v24.14 경완 '보상은 하단 메뉴 말고 화면이 어두워지며 몬스터볼 3개가 터지며 등장, 본가 도구 그림' */   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
