@@ -3822,25 +3822,33 @@ async function yaTest() {
   root.classList.add('dhide');
   try { await window.GymYA.start({ host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('dhide'); }
 }
+/* v23.54 경완 '라인업 고르는 화면부터, 거기서 랜덤 라인업도, 내 계정엔 아무 영향 없이': 실제 라인업 화면(시뮬 안이라 나가면 되돌아감)에서 고르고,
+   내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
+function trClone(ids) { const g = st(); g.mon = g.mon || {};
+  return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
+const trLineup = () => new Promise(ok => { const g = st(); g.lu = g.lu || [[], [], []];
+  openTab('battle', { title: '훈련하기 라인업', go: '훈련 시작', any: 1, rnd: i => { const old = (g.lu[i] || []).filter(id => GB().boxOf(id)?.gTst); g.lu[i] = trRollLu(); trDrop(old); save(); },
+    pick: i => { const L = (g.lu[i] || []).filter(id => GB().boxOf(id)); if (!L.length) { GA.toast?.('라인업에 포켓몬을 넣어 주세요'); return trLineup().then(ok); } g.luI = i; save(); openTab(null); ok(trClone(L)); } }); });
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
-  let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;   /* v23.16 경완 '왜 내 라인업으로 시작하지?': 시연은 늘 시험 포켓몬 6마리 (내 포켓몬은 배틀에 안 씀) */
-  const go = await new Promise(ok => pop(`<h4>훈련하기</h4><p class="gy-msg">야생 포켓몬이 쉬지 않고 나오는<br>200층 훈련 코스예요. 시험 포켓몬 6마리(뉴비 + 키운 포켓몬)로 들어가요.${R ? `<br><b>${R.floor}층</b>부터 이어 할 수 있어요.` : ''}</p><p class="gy-msg" style="font-size:11px;opacity:.75">운영자 시험: 내 포켓몬·저장은 건드리지 않아요.</p><div class="gy-btns">${R ? '<button data-a="new">처음부터</button><button class="main" data-a="go">이어 하기</button>' : '<button data-a="x">취소</button><button class="main" data-a="new">훈련 시작</button>'}</div>`, (a, close) => { close(); ok(a); }));
-  if (go !== 'go' && go !== 'new') return;
-  if (go === 'new' || !R) { if (R) trDrop(R.ids); R = trNew(trRollLu()); }
+  let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
+  if (R) { const go = await new Promise(ok => pop(`<h4>훈련하기</h4><p class="gy-msg"><b>${R.floor}층</b>부터 이어 할 수 있어요.</p><p class="gy-msg" style="font-size:11px;opacity:.75">운영자 시험: 내 포켓몬·저장은 건드리지 않아요.</p><div class="gy-btns"><button data-a="new">새로 고르기</button><button class="main" data-a="go">이어 하기</button></div>`, (a, close) => { close(); ok(a); }));
+    if (go !== 'go') { trDrop(R.ids); R = null; } }
+  if (!R) { const ids = await trLineup(); if (!ids?.length) return; R = trNew(ids); }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
     for (;;) {
-      if (R.roll) { trDrop(R.ids); R = trNew(trRollLu()); }   /* 시험: 랜덤 라인업은 다음 층부터 1층으로 */
+      if (R.roll) { trDrop(R.ids); R = trNew(trRollLu()); }   /* 시험: 랜덤 라인업으로 1층부터 */
       const ids = R.ids, f = R.floor, boss = f % 10 === 0, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
       const my = [R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)).map(GB().boxOf);
       const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : 1.8;
       const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : '' };
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: { xp: TR.xp }, hp: R.hp, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: { xp: TR.xp * (R.xpM || 1) }, hp: R.hp, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
         badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : ''}`, post: o => trPost(R, o, boss, ids),
-        tools: [['🎲 랜덤', () => { R.roll = 1; GA.toast?.('이 배틀이 끝나면 랜덤 라인업으로 1층부터 (시험 포켓몬)'); }], ['⏩ 우두머리', () => { R.skip = 1; GA.toast?.('이 배틀이 끝나면 다음 우두머리 바로 앞으로'); }]] });
+        /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
+        tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }]] });
       first = false; if (!res?.keep) break;
     }
   } catch (err) { console.error(err); GA.toast?.('훈련을 이어 가지 못했어요'); }
@@ -3848,27 +3856,43 @@ async function trainTest() {
 }
 async function trPost(R, o, boss, ids) {
   Object.assign(R.hp, o.hp);
+  if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
+  if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
   if (o.quit) { trSave = R; await o.msgTap(`${R.floor}층에서 훈련을 멈췄다!\n다음엔 여기서부터 이어 할 수 있다.`); return false; }
   if (!o.won) { trSave = null; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 훈련 기록: ${R.floor}층!`); return false; }
   if (o.act) R.lead = o.act;
   if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap('우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
   if (R.floor >= TR.top) { trSave = null; await o.msgTap('200층 훈련 코스를 완주했다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); return false; }
-  if (R.floor % 5 === 0) await trSupply(R, o, ids);
-  if (R.roll) return true;
-  if (R.skip) { R.skip = 0; const nb = Math.ceil((R.floor + 1) / 10) * 10; if (nb - 1 > R.floor) { R.floor = nb - 1; await o.msg(`${nb}층 우두머리 바로 앞으로!`, 500); return true; } }   /* 시험: 다음 우두머리 앞으로 */
+  await trReward(R, o, ids, boss);
   R.floor++; return true;
 }
-// 보급 고르기 (5층마다): 쉬어 가기 · 이상한사탕 · (쓰러진 포켓몬이 있으면) 기력의조각, 없으면 강박사 야식
-async function trSupply(R, o, ids) {
-  const down = ids.filter(id => (R.hp[id] ?? 1) <= 0), lead = GB().boxOf(R.lead), nmOf = P => P?.nm || SPECIES[P?.sp]?.n || '';
-  const L = [['쉬어 가기', '모두 HP 50% 회복', '#5cc27a,#2f9a52'], ['이상한사탕', `${nmOf(lead)} 레벨 +1`, '#62aef0,#2f7cd0'], down.length ? ['기력의조각', `${nmOf(GB().boxOf(down[0]))} HP 절반으로 부활`, '#f0b040,#c88418'] : ['강박사 야식', '뭐가 들었을까?', '#e07ab0,#b84c88']];
-  await o.msg('보급 상자를 찾았다!\n하나만 가져가자.', 400); const i = await o.choose('보급 상자에서 하나를 골라요', L);
-  if (i === 0) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .5); }); await o.msgTap('모두 푹 쉬었다!\nHP가 회복됐다!'); }
-  else if (i === 1 && lead) { const m = GB().gm(lead), g = GB().growth(lead.sp), r = GB().gainXp(lead, GB().xpAt(g, m.lv + 1) - m.xp); await o.msgTap(r.lv > r.lv0 ? `${eun(nmOf(lead))} 이상한사탕을 먹었다!\n레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!` : `${eun(nmOf(lead))} 이상한사탕을 먹었지만\n더 오를 레벨이 없었다…`); }
-  else if (down.length) { R.hp[down[0]] = .5; await o.msgTap(`${eun(nmOf(GB().boxOf(down[0])))} 기운을 차렸다!`); }
-  else if (Math.random() < .5) { ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + .3); }); await o.msgTap('강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'); }
-  else await o.msgTap('상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"');
+/* v23.54 경완 '포켓로그처럼 층 끝날 때마다 아이템 선택': 이길 때마다 보상 3개 중 하나 (흔함 초록·좋음 파랑·귀함 금빛, 우두머리 층은 귀한 것이 더 자주).
+   지닌 도구는 시험용 사본에만 지니게 함 (훈련이 끝나면 사본째 지움) */
+const TR_HOLD = ['leftovers', 'lifeorb', 'choiceband', 'choicespecs', 'choicescarf', 'expertbelt', 'shellbell', 'scopelens', 'quickclaw', 'kingsrock', 'muscleband', 'wiseglasses', 'sitrusberry', 'lumberry', 'rockyhelmet', 'assaultvest', 'widelens'];
+const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
+async function trReward(R, o, ids, boss) {
+  const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .95).sort((a, b) => hp(a) - hp(b));
+  const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id)), lead = live.includes(R.lead) ? R.lead : live[0];
+  const candy = async (id, n = 1) => { const p = P(id), mm = m(id), g = GB().growth(p.sp), r = GB().gainXp(p, GB().xpAt(g, Math.min(100, mm.lv + n)) - mm.xp); return r.lv > r.lv0 ? `${eun(nm(id))} 레벨 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!` : `${eun(nm(id))} 더 오를 레벨이 없었다…`; };
+  const held = new Set(ids.map(id => m(id).it).filter(Boolean)), tgt = ids.find(id => id === lead && !m(id).it) || live.find(id => !m(id).it), its = TR_HOLD.filter(k => GB().HOLD?.[k] && !held.has(k));
+  const U = boss ? 3 : 1, C = [   // [무게, 등급, 제목, 설명, 고르면]
+    [hurt.length ? 4 : 0, 0, '상처약', hurt.length ? `${nm(hurt[0])} HP 50% 회복` : '', async () => { R.hp[hurt[0]] = Math.min(1, hp(hurt[0]) + .5); return `${eun(nm(hurt[0]))} 기운을 차렸다!`; }],
+    [hurt.length > 1 ? 3 : 1, 0, '좋은상처약', '모두 HP 30% 회복', async () => { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '모두 HP가 회복됐다!'; }],
+    [down.length ? 5 : 0, 1, '기력의조각', down.length ? `${nm(down[0])} HP 절반으로 부활` : '', async () => { R.hp[down[0]] = .5; return `${eun(nm(down[0]))} 다시 일어섰다!`; }],
+    [lead ? 4 : 0, 0, '이상한사탕', lead ? `${nm(lead)} 레벨 +1` : '', () => candy(lead)],
+    [tgt && its.length ? 3 : 0, 1, '', '', null, 'hold'],
+    [2, 1, '경험치 부적', '이번 훈련 경험치 +25%', async () => { R.xpM = (R.xpM || 1) + .25; return `이번 훈련 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }],
+    [live.length > 1 ? U : 0, 2, '이상한사탕 꾸러미', '모두 레벨 +1', async () => { const L = []; for (const id of live) L.push(await candy(id)); return L.slice(0, 3).join('\n'); }],
+    [down.length ? U : 0, 2, '기력의덩어리', '쓰러진 포켓몬 모두 HP 가득 부활', async () => { down.forEach(id => { R.hp[id] = 1; }); return '쓰러졌던 포켓몬이 모두 일어섰다!'; }],
+    [hurt.length ? U : 0, 2, '회복의 샘', '모두 HP 가득 회복', async () => { live.forEach(id => { R.hp[id] = 1; }); return '모두 HP가 가득 찼다!'; }],
+    [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'; } return '상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'; }]];
+  const hi = C.findIndex(c => c[5] === 'hold'); if (C[hi][0]) { const k = pick(its); C[hi] = [C[hi][0], 1, GB().HOLD[k][0], `${nm(tgt)}에게 지니게 하기`, async () => { m(tgt).it = k; return `${iga(nm(tgt))} ${eul(GB().HOLD[k][0])} 지니게 됐다!`; }]; }
+  const L = []; let pool = C.filter(c => c[0] > 0);
+  while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
+  await o.msg(boss ? '우두머리가 귀한 보상을 떨어뜨렸다!\n하나만 가져가자.' : '보상을 찾았다!\n하나만 가져가자.', 400);
+  const i = await o.choose('보상을 하나 골라요', L.map(c => [c[2], c[3], TR_RC[c[1]]]));
+  const t = await L[i]?.[4]?.(); if (t) await o.msgTap(t);
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
