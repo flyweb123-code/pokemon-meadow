@@ -445,11 +445,14 @@
     at(5730, () => { c.se('Explosion3'); vib(3); A(flash, [{ opacity: .9 }, { opacity: 0 }], { duration: 300 }); }); shake(5730, 500, 10);
     A(shine, [{ opacity: 1, transform: 'translateX(-60%)' }, { opacity: 1, transform: 'translateX(60%)' }], { duration: 500, delay: 6000, easing: 'ease-in-out' });
     const END = 7300;
-    [band, bz, ttl, shine, fx, dim, mcl, dT, dB].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350, delay: END - 650 }));
+    /* 경완 2026-11-14 '기술 이름하고 띠가 부드럽게 사라지게': 0.35초 뚝 → 0.65초 ease-in-out, 기술 이름은 살짝 커지며 흐려지고 띠는 위아래로 접히며 */
+    [bz, shine, fx, dim, mcl, dT, dB].forEach(e => e && A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 650, delay: END - 900, easing: 'ease-in-out' }));
+    A(ttl, [{ opacity: 1, transform: 'scale(1)', filter: 'blur(0)' }, { opacity: 0, transform: 'scale(1.08)', filter: 'blur(3px)' }], { duration: 650, delay: END - 900, easing: 'ease-in-out' });
+    A(band, [{ opacity: 1, transform: 'skewY(-5deg) scaleY(1)' }, { opacity: 0, transform: 'skewY(-5deg) scaleY(.2)' }], { duration: 650, delay: END - 900, easing: 'ease-in-out' });
     /* 경완 2026-11-13: 무지개 띠가 갈 때 아래 화면(배경)도 반투명 검정 밑으로 살짝 보이게 → 기술 이름 땐 다시 숨김 */
     const bot = hide.filter(e => e.matches('.bt-bot,.bt-mid,.bt-msg')), xA = [];   /* 경완: 대사창 자리도 배경 그대로 */ at(3500, () => bot.forEach(e => xA.push(A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 })))); at(5400, () => bot.forEach(e => xA.push(A(e, [{ opacity: 1, filter: 'brightness(1)' }, { opacity: 1, filter: 'brightness(.6)' }], { duration: 300 }))));   /* 경완 2026-11-14: 기술 이름 나올 때 아래 화면 검정 말고 어둡게 보이게 */
-    /* 경완 2026-11-14 '기술 이름 나오고 원래 화면 돌아올 때 검정 여백 같은 지저분함': 대사창이 어두운 채로, 체력 막대는 숨은 채로 기술 이름 띠보다 늦게 돌아왔음 → 띠가 걷히는 순간(END−650)에 같이 350ms 로 돌아옴 */
-    const back = []; at(END - 650, () => hide.forEach(e => back.push(bot.includes(e) ? A(e, [{ opacity: 1, filter: 'brightness(.6)' }, { opacity: 1, filter: 'brightness(1)' }], { duration: 350 }) : A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 350 }))));
+    /* 경완 2026-11-14 '기술 이름 나오고 원래 화면 돌아올 때 검정 여백 같은 지저분함': 대사창이 어두운 채로, 체력 막대는 숨은 채로 기술 이름 띠보다 늦게 돌아왔음 → 띠가 걷히는 동안 같이 돌아옴 */
+    const back = []; at(END - 850, () => hide.forEach(e => back.push(bot.includes(e) ? A(e, [{ opacity: 1, filter: 'brightness(.6)' }, { opacity: 1, filter: 'brightness(1)' }], { duration: 600, easing: 'ease-in-out' }) : A(e, [{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: 'ease-in-out' }))));
     at(5300, () => [shell, orbB, orbF].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })));
     return new Promise(res => {
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
