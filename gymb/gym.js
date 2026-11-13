@@ -4193,7 +4193,7 @@ async function teraTut({ k, gu, D, t }) {
     T = storyTalk(); const say = (x, o) => T.say(x, o), duo = on => { if (!gu) return; if (on) { face(gu, k); face(k, gu); } else { face(k, meEnt); face(gu, meEnt); } };
     await say(`그리고 ${NK()}.\n드디어 마지막 비기를\n알려 줄 때가 온 것 같구먼!`);
     duo(1); await say('마, 마지막 비기요!?\n잠깐만요, 수첩 새 걸로\n바꿀게요!', GWo); await say('…지난번 수첩은\n어쨌나?'); await say('박사님 얼굴 그리다가\n다 써 버렸어요!', GWo); await say('에헴! 이번엔 글씨로\n적어 두게나.'); duo(0);
-    for (const x of ['전설의 체육관에만 전하는\n마지막 비기.\n바로 \'테라스탈\'이란다!', '포켓몬은 저마다 테라 타입을\n하나씩 품고 있지.\n배틀 중에 보석처럼 빛나며\n그 타입으로 변하는 힘이란다.', '테라스탈하면 테라 타입 기술이\n훨씬 강해지고, 약점도\n그 타입의 것으로 바뀐단다.', '테라스탈에는 두 가지가 필요해.\n트레이너의 테라스탈오브, 그리고\n테라 타입을 바꿔 주는 테라피스!', '자, 먼저 이걸 받으렴.']) { if (!open) return; await say(x); }
+    for (const x of ['전설의 체육관에만 전하는\n마지막 비기.\n바로 \'테라스탈\'이란다!', '포켓몬은 저마다 테라 타입을\n하나씩 품고 있지.\n배틀 중에 보석처럼 빛나며\n그 타입으로 변하는 힘이란다.', '테라스탈하면 약점과 버티는 타입이\n테라 타입의 것으로 바뀌고,\n테라 타입 기술이 훨씬 강해진단다.', /* v23.83 경완 '불 타입으로 바뀐단다 하면 물 타입 기술 약해지는 걸로 생각할 수도': 원래 타입 기술은 그대로 */ '그렇다고 원래 타입 기술이\n약해지는 건 아니란다.\n그쪽은 그대로 강하지!', '테라스탈에는 두 가지가 필요해.\n트레이너의 테라스탈오브, 그리고\n테라 타입을 바꿔 주는 테라피스!', '자, 먼저 이걸 받으렴.']) { if (!open) return; await say(x); }
     T.hide(true); await orbPop(); g.teraOrb = 1; save(); T.hide(false);
     await say(`그리고 이건 ${ty} 타입\n전설의 체육관이 된 기념,\n${ty} 테라피스란다!`); T.hide(true); await teraPop(t); T.hide(false);
     await say(`${ty} 테라피스가 있으면\n어떤 포켓몬이든 테라 타입을\n${ty} 타입으로 바꿀 수 있단다.\n몇 번이든!`); await say('다른 타입 체육관을 맡아도\n그대로 쓸 수 있지.\n전설을 늘릴수록 테라피스도\n하나씩 모이는 셈이야.'); await say('단, 테라스탈은 한 배틀에\n한 마리만 할 수 있단다.');
@@ -4224,7 +4224,7 @@ async function teraTut({ k, gu, D, t }) {
       if (!open) return; T.hide(false); if (rs) { face(meEnt, rs); face(k, rs); }
       busy = true; root.classList.add('busy');
       await say('우와… 보석처럼 빛나더니\n제 꼬렛이 날아갔어요!', RW); await say('눈이 부셔서 기술이\n오는 줄도 몰랐어요…', RW); face(k, meEnt); face(meEnt, k);
-      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`테라버스트도\n${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
+      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`헷갈리면 안 된다!\n바뀌는 건 기술을 맞을 때의\n상성뿐이란다.`); await say(`${sp}의 ${ty0} 타입 기술은\n약해지지 않고 그대로 강하지.\n거기에 ${ty} 타입 기술까지\n강해지는 거란다.`); await say(`테라버스트도\n${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
       if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); /* v23.69 경완 '연구원 나가고 나서 강박사 다시 관장 앞으로 자리 잡기' */ if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); T.hide(false); }
     }
     if (!open) return;
