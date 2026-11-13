@@ -4256,13 +4256,13 @@ async function teraTut({ k, gu, D, t }) {
       if (!done && open) await gtu([
         { c: '테라스탈', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .gkb') || done, after: 500, s: '먼저 \'싸운다\'를 눌러 보렴!' },
         { c: '테라스탈', when: () => gtEl('.bt .gkb') && !done, t: '.bt .gkb', tap: '.bt .gkb', until: () => gtEl('.bt .gkb.on') || done, after: 400, s: '테라스탈 버튼이 생겼지?\n눌러서 켜 보렴!' },
-        { c: '테라스탈', when: () => gtEl('.bt .gkb.on') && !done, t: gtAll('.bt .mvb'), tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: '이제 테라버스트를 고르면\n그 턴에 테라스탈한단다!' }]);
+        { c: '테라스탈', when: () => gtEl('.bt .gkb.on') && !done, t: gtAll('.bt .mvb'), tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: '이제 아무 기술이나 고르면\n그 턴에 테라스탈한단다!' }]);
       await run;
       document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); bgmPlay('gym');
       if (!open) return; T.hide(false); if (rs) { face(meEnt, rs); face(k, rs); }
       busy = true; root.classList.add('busy');
       await say('우와… 보석처럼 빛나더니\n제 꼬렛이 날아갔어요!', RW); await say('눈이 부셔서 기술이\n오는 줄도 몰랐어요…', RW); face(k, meEnt); face(meEnt, k);
-      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`헷갈리면 안 된다!\n바뀌는 건 기술을 맞을 때의\n상성뿐이란다.`); await say(`${sp}의 ${ty0} 타입 기술은\n약해지지 않고 그대로 강하지.\n거기에 ${ty} 타입 기술까지\n강해지는 거란다.`); await say(`테라버스트도\n${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
+      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`헷갈리면 안 된다!\n바뀌는 건 기술을 맞을 때의\n상성뿐이란다.`); await say(`${sp}의 ${ty0} 타입 기술은\n약해지지 않고 그대로 강하지.\n거기에 ${ty} 타입 기술까지\n강해지는 거란다.`); await say(`참고로 테라버스트라는 기술은\n테라스탈하면 ${ty} 타입 기술로\n바뀐단다.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
       if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); /* v23.69 경완 '연구원 나가고 나서 강박사 다시 관장 앞으로 자리 잡기' */ if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); T.hide(false); }
     }
     if (!open) return;
