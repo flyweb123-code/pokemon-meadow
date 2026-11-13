@@ -288,7 +288,8 @@ function xpFor(foe, Lp) { const bs = SPECIES[foe.sp]?.bs || [60, 60, 60, 60, 60,
   return Math.floor(1.5 * b * L / 5 * ((2 * L + 10) / (L + Lp + 10)) ** 2.5) + 1; }
 const boxOf = id => S.box.find(p => p.id === id);
 const nmOf = P => P.nm || SPECIES[SPECIES[P.sp]?.rb || P.sp]?.n || '???';   /* v15.93 배틀에선 본가처럼 지역 폼도 원래 이름 */   // 지어 준 이름 먼저 (경완 2026-10-31 '체육관 정보카드에서도 이름 바꾸기')
-const tyOk = P => (SPECIES[P.sp]?.t || []).includes(S.gym?.ty);
+let luAny = false;   /* v23.54 훈련하기 라인업은 타입 상관없이 */
+const tyOk = P => luAny || (SPECIES[P.sp]?.t || []).includes(S.gym?.ty);
 
 const CRY_K = 2.2;   // 배틀 울음소리는 곡보다 잘 들리게 (v12.20 경완)
 // ---------- 라인업 (3개 저장, 6마리) ----------
@@ -689,6 +690,7 @@ function mainPanel(A) {
       <button class="bb mon" data-a="mon"><span>포켓몬</span></button>
       ${DBK_ON ? '<button class="bb binfo" data-a="info" aria-label="배틀 정보"><span>정보</span></button>' : ''}
       <p class="bp-q">${esc(A.nm)}${jong(A.nm) ? '은' : '는'} 무엇을 할까?</p></div>`);
+    B.mainRes = res; if (B.skipNow) return res('skip');   /* v23.54 훈련하기 시험 버튼: 누르면 지금 배틀을 바로 끝냄 */
     p.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; tapSe(); res(b.dataset.a); };
   });
 }
@@ -1178,7 +1180,7 @@ async function play() {
     if (!B || btl.ended) return;
     const r1 = btl.p1.activeRequest, r2 = btl.p2.activeRequest;
     let c1 = null;
-    if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
+    if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'skip') { B.skipNow = 0; idlePanel(); btl.win('p1'); await readLog(); return; } if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
     let c2 = null; if (r2 && !r2.wait) { const it = aiItem(btl); if (it) { foeUseItem(btl, it); btl.p2.__ip = 1; c2 = 'pass'; } else c2 = aiGmk(btl, aiChoice(btl, B.diff)); }
     if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
@@ -1204,7 +1206,7 @@ async function choose(req) {
   { const M = req.active?.[0]?.moves || []; if (M.length === 1 && M[0].pp == null) return 'move 1'; }   // 꽃잎댄스·역린 같은 연속 공격, 반동으로 쉬기: 본가처럼 고르지 않고 바로 (경완 2026-11-02 'PP undefined')
   B.gkUsed = null;   /* 이번 턴에 고른 기믹: 그 턴 메시지 동안은 바탕색 유지, 다음 턴엔 지금 포켓몬 모습으로 (경완 2026-11-12) */
   for (;;) {
-    const a = await mainPanel(A);
+    const a = await mainPanel(A); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
@@ -1839,9 +1841,9 @@ function xpGauge(src) { const P = boxOf(src.pid); if (!P) return 0; const m = gm
 
 // ---------- 배틀 탭: 라인업 (gym.js 의 배틀 메뉴 창) ----------
 let tabEl = null;
-let luPickCb = null, luTitle = '', luGo = '';   // 승급 심사 라인업 고르기 (경완 2026-10-30): 연습 배틀 대신 '이 라인업으로 결정'
+let luPickCb = null, luTitle = '', luGo = '', luRnd = null;   // 승급 심사 라인업 고르기 (경완 2026-10-30): 연습 배틀 대신 '이 라인업으로 결정'
 async function tab(sh, opt) {
-  tabEl = sh; luOrd = false; luPickCb = opt?.pick || null; luTitle = opt?.title || ''; luGo = opt?.go || ''; if (S.gym && !luPickCb) S.gym.luI = 0;   // 포켓몬 메뉴는 늘 라인업 1부터 (경완 2026-10-30) sh.innerHTML = `<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>`;
+  tabEl = sh; luOrd = false; luPickCb = opt?.pick || null; luTitle = opt?.title || ''; luGo = opt?.go || ''; luRnd = opt?.rnd || null; luAny = !!opt?.any; if (S.gym && !luPickCb) S.gym.luI = 0;   // 포켓몬 메뉴는 늘 라인업 1부터 (경완 2026-10-30) sh.innerHTML = `<h3>포켓몬</h3><p class="gy-lead">불러오는 중…</p>`;
   try { await loadData(); } catch (e) { sh.innerHTML = `<h3>포켓몬</h3><p class="gy-lead">배틀 정보를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</p>`; return; }
   drawTab();
 }
@@ -1856,6 +1858,7 @@ function drawTab() {
       return `<button class="lu-slot${luOrd ? ' lu-ord' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[ty] || '#8890a8'}"><i class="lu-n">${i + 1}</i>${luOrd ? '' : `<span class="lu-x" data-rm="${P.id}" role="button" aria-label="라인업에서 빼기">✕</span>`}${thumb(P)}<span class="lu-mid"><b>${esc(nmOf(P))}</b><span class="lu-ft"><em>Lv.${m.lv}</em><span class="lu-tys">${T.map(tyI).join('')}</span></span></span><span class="lu-inf">${m.ha ? `<span class="lu-hab"><span><small>숨겨진 특성</small>${esc(abKo(m.ab))}</span></span>` : `<span><small>특성</small>${esc(abKo(m.ab))}</span>`}</span></button>`; }).join('')}</div>
     ${can.length ? '' : `<p class="lu-none">${TYPE_KO[ty]} 타입 포켓몬이 아직 없어요. 알을 부화시켜 데려와 주세요.</p>`}
     <div class="lu-act"><div class="lu-row2"><button class="gy-key" data-box><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 2h12v1H2zM1 3h1v11H1zM14 3h1v11h-1zM2 14h12v1H2zM2 7h12v1H2zM6 8h4v1H6zM6 9h1v1H6zM9 9h1v1H9zM6 10h4v1H6z"/><path fill="#e85a4a" d="M2 3h12v4H2z"/><path fill="#ff8a78" d="M2 3h12v1H2z"/><path fill="#f4f4f8" d="M2 8h4v6H2zM10 8h4v6h-4zM6 11h4v3H6z"/><path fill="#fff" d="M7 9h2v1H7z"/></svg></i>포켓몬 박스</button><button class="gy-key${luOrd ? ' on' : ''}" data-ord ${cur.length > 1 ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M4 1h1v1H4zM3 2h3v1H3zM2 3h5v1H2zM4 4h1v9H4zM11 3h1v9h-1zM9 11h5v1H9zM10 12h3v1h-3zM11 13h1v1h-1z"/></svg></i>${luOrd ? '순서 바꾸기 끝' : '순서 바꾸기'}</button></div><button class="gy-key main lu-go" data-go ${cur.length ? '' : 'disabled'}><i class="lu-ic"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M5 1h6v1H5zM3 2h2v1H3zM11 2h2v1h-2zM2 3h1v2H2zM13 3h1v2h-1zM1 5h1v6H1zM14 5h1v6h-1zM2 11h1v2H2zM13 11h1v2h-1zM3 13h2v1H3zM11 13h2v1h-2zM5 14h6v1H5zM2 7h4v1H2zM10 7h4v1h-4zM6 6h4v1H6zM5 7h1v2H5zM10 7h1v2h-1zM6 9h4v1H6z"/><path fill="#e83a3a" d="M5 2h6v1H5zM3 3h10v2H3zM2 5h12v2H2zM6 6h0z"/><path fill="#fff" d="M2 8h3v1H2zM11 8h3v1h-3zM2 9h12v2H2zM3 11h10v2H3zM5 13h6v1H5zM6 7h4v2H6z"/><path fill="#ff9a9a" d="M4 3h2v1H4zM3 4h1v1H3z"/></svg></i>${luPickCb ? luGo || '이 라인업으로 결정' : '연습 배틀'}</button></div>`;   // 연습 배틀은 아래 가운데 크게, 박스 옆에 순서 바꾸기 (경완 2026-10-29)
+  if (luPickCb && luRnd) sh.querySelector('.lu-act')?.insertAdjacentHTML('afterbegin', '<button type="button" class="gy-key lu-rnd" data-rnd>🎲 랜덤 라인업 <small>시험 포켓몬</small></button>');   /* v23.54 훈련하기 시연 */
   fillTh(sh);
   // 끌어서 순서 바꾸기 (경완 2026-10-28 '라인업 화면에서 포켓몬 순서 바꿀 수 있게')
   const grid = sh.querySelector('.lu-grid'); let dg = null, noTap = 0;
@@ -1886,11 +1889,12 @@ function drawTab() {
     const x = e.target.closest('.lu-x'); if (x && Date.now() - noTap >= 400) { sfx('tap'); const id = +x.dataset.rm || x.dataset.rm; luAsk(boxOf(id), () => { const j = cur.indexOf(id); if (j >= 0) { cur.splice(j, 1); GA.save(); } drawTab(); }); return; }   // 슬롯 ✕ = 바로 빼기 (경완 2026-10-29)
     const b = e.target.closest('button'); if (!b || b.disabled || Date.now() - noTap < 400) return; sfx('tap');
     if (b.dataset.lu) { g.luI = +b.dataset.lu; GA.save(); drawTab(); return; }
+    if (b.hasAttribute('data-rnd')) { luRnd?.(g.luI); drawTab(); return; }
     if (b.dataset.add) return pickMon();
     if (b.dataset.p) return luOrd ? undefined : monPop(b.dataset.p);
     if (b.hasAttribute('data-box')) return boxPop();
     if (b.hasAttribute('data-ord')) { luOrd = !luOrd; drawTab(); return; }
-    if (b.hasAttribute('data-go')) { if (luPickCb) { const f = luPickCb; luPickCb = null; return f(g.luI); } return practice(); }
+    if (b.hasAttribute('data-go')) { if (luPickCb) { const f = luPickCb; luPickCb = null; luAny = false; return f(g.luI); } return practice(); }
   };
 }
 function gymPop(html, onClick) { const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`;
@@ -2621,5 +2625,6 @@ function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
-window.GymBattle = { statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
+window.GymBattle = { skipNow, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
