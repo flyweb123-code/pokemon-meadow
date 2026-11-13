@@ -998,7 +998,7 @@ function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레�
 /* v19.49 경완: 기술머신(계속 씀)·기술레코드(한 번 쓰면 없어짐) 안내를 색 딱지로 구분, 사기 창에 라인업에서 배울 수 있는 포켓몬 목록(스프라이트) */
 const tmKdBox = id => { const tr = GB().isTR(id); return `<div class="tm-kd${tr ? ' tr' : ''}"><div class="tm-kdr"><i class="tm-kdb">${tr ? '1회용' : '계속 사용'}</i><span>${tr ? '기술레코드는 한 번 가르치면 없어져요.' : '기술머신은 한 번 사면 몇 번이든 가르칠 수 있어요.'}</span></div></div>`; };   // v19.49 경완: 기술 설명은 위 기술 칸 안으로(진한 글자)
 function tmWho(id, i) {
-  const D = GB().D, M = luMons().filter(P => GB().tmOf(P.sp).includes(i)), kn = P => GB().gm(P).mv.includes(id), L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
+  const D = GB().D, M = luMons().filter(P => GB().tmOf(P.sp).includes(i)), kn = P => { const m = GB().gm(P); return m.mv.includes(id) || (m.kn || []).includes(id); }, L = [...M.filter(P => !kn(P)), ...M.filter(kn)], n = L.length - L.filter(kn).length;
   const h = `<p class="tm-whoh">라인업에서 배울 수 있는 포켓몬${n ? ` <b>${n}</b>` : ''}</p>`;
   if (!L.length) return `${h}<p class="tm-who0">라인업에 배울 수 있는 포켓몬이 없어요.</p>`;
   return `${h}<div class="tm-who${L.length > 4 ? ' many' : ''}${L.length > 8 ? ' scr' : ''}">${L.map(P => `<button type="button" class="tm-wp${kn(P) ? ' kn' : ''}" data-a="wp${P.id}">${GB().thumb(P)}<b>${esc(nmOf(P))}</b>${kn(P) ? '<small>이미 앎</small>' : ''}</button>`).join('')}</div>`;
