@@ -4482,3 +4482,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
 @supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선) */
 .bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
+/* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
+.bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}

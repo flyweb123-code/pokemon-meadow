@@ -278,7 +278,8 @@ function build() {
   const dlg = $g('.gy-dlg');
   dlg.addEventListener('click', e => { if (e.target.closest('button') || root.classList.contains('ded') || busy || root.classList.contains('dhide')) return; e.stopPropagation(); sfx('tap'); homeSay(); });
   // 도전자 명단 아이콘 → 새 화면 (도전자 / 체육관 일지)
-  $g('.gy-qbtn').onclick = () => { const g = st(); if (busy && bsReady(g)) return; qSeen0 = g?.qSeen | 0; if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
+  $g('.gy-qbtn').onclick = () => { const g = st(); if ((busy || lgStory) && bsReady(g)) return;   /* 심사·스토리 중엔 [승급 심사] 가 다시 안 눌림 (연습 배틀이 끝나며 busy 가 풀려 대사 뒤로 심사 화면이 뜨던 것, v23.78) */
+    qSeen0 = g?.qSeen | 0; if (g?.q?.length) { g.qSeen = Math.max(g.qSeen | 0, ...g.q.map(c => c.id)); setAt(); save(); $g('.gy-qdot').hidden = true; }   // 승급 심사로 가도 명단 점은 꺼짐 (경완 2026-10-30)
     if (bsReady(g)) { sfx('tap'); if (ded) ded.end?.(); return bsGo(); } if (!g?.q?.length) return; sfx('tap'); if (ded) ded.end?.(); const s0 = qSeen0 ?? (g.qSeen | 0); qSeen0 = null; qPop(s0); };
   [['.gy-deco', '꾸미기'], ['.gy-store', '창고'], ['.gy-jnl', '일지'], ['.gy-rk', '랭킹'], ['.gy-qbtn', '도전자 받기']].forEach(([c, n]) => $g(c).insertAdjacentHTML('beforeend', `<small class="ga-l">${n}</small>`));   // 홈 레이아웃 C: 메뉴 위 행동 줄 (경완 2026-10-29)
   // 빈 곳을 한 번 누르면 이름판·버튼을 다 숨겨 메뉴만 남김, 다시 누르면 다 펼침 (경완 2026-10-28, 필드 fview 와 같음)
@@ -1233,7 +1234,7 @@ function setAt(now = Date.now()) {
 }
 
 // ---------- 도전 받기: 도전자가 문으로 들어와 관장 앞까지 걸어오고, 한마디 → 배틀 → 결과 ----------
-let busy = false, meEnt = null, guyEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
+let busy = false, lgStory = false, meEnt = null, guyEnt = null;   // meEnt: 맵 위 내 캐릭터 (도전자 쪽을 보게)
 // 대화창 글자를 한 글자씩 드러냄 (이름표 .gy-who 는 바로). 다 보이면 ▼ 를 켬
 function dlgType(el) {
   const W = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement.closest('.gy-who, .gy-dnext') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
@@ -1451,7 +1452,7 @@ function rwPop() { const g = st(), i = g.grwN; if (i == null) return Promise.res
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`${ne ? `<div class="pp-hd rw-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="rw-stage${ne > 3 ? ' many' : ''}">${stage}</div></div>` : ''}
       <h4 class="pp-t"><small>승급 보상</small>${GRADES[i][1]}</h4>
-      <div class="pp-ben"><ul class="pk-ben">${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}${E0 ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${E0[1]}개</b></em></li>` : ''}${LT != null ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${legI}</span></i><span>${legNm}</span><em><b>1개</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
+      <div class="pp-ben"><ul class="pk-ben">${E0 ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${grEggI(i)}</span></i><span>${grEggN(i)}</span><em><b>${E0[1]}개</b></em></li>` : ''}${LT != null ? `<li class="eg"><i class="pk-ic"><span class="pk-le">${legI}</span></i><span>${legNm}</span><em><b>1개</b></em></li>` : ''}${n ? `<li class="gold"><i class="pk-ic"><i class="coin"></i></i><span>골드</span><em><b class="rw-gn">+0G</b></em></li>` : ''}</ul>${E ? '<p class="rw-note">알은 필드의 알 가방에 들어 있어요</p>' : ''}</div>
       <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('pp-pop', 'rw-pop');
     const gn = p.querySelector('.rw-gn'); if (gn) { const t0 = performance.now() + 350, T = 800, f = now => { const k = Math.max(0, Math.min(1, (now - t0) / T)); gn.textContent = `+${Math.round(n * (1 - (1 - k) ** 3)).toLocaleString()}G`; if (k < 1 && gn.isConnected) requestAnimationFrame(f); }; requestAnimationFrame(f); }   /* v19.38 경완 '승급 보상 알림창 딩동 없애줘': 알이 떨어질 때 DP_PINPON 뺌 */ }); }
 // 전설의 체육관 보상 알 받는 창 (경완 2026-10-29)
@@ -1587,10 +1588,11 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
   // v19.18 경완 '승급 순간부터, 노크 쿵쿵쿵! 화면 흔들림 → 같이 갈 데가 있다며 데리고 나가기 → 본가 전당 맵 → 등록 기계에 볼 하나씩 → 체육관 복귀·축하·안내원 티키타카 → 강박사 나간 뒤 승급창·보상창'
   const D = g.d && dzOf(g.d), main = $g('.gy-main'); if (!D || !meEnt || !main || !meEnt.el.isConnected) return legEggBox(t);
   const M = window.GymBGM, nm = trName() || '관장', ty = TYPE_KO[t], adj = GA.LT_ADJ?.[t] || '', KW = '<span class="gy-who">강박사</span>', GW = '<span class="gy-who">안내원</span>';
-  /* v23.69 경완 '강박사 인물 대사창하고 그냥 대사창 혼재, 인물 대사창으로 통합': 체육관 안 대사도 전당·튜토리얼과 같은 인물 대사창(storyTalk)으로 */ let TT = null; const h2t = h => String(h).replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'), tsay = (h, who) => { dlg(''); root.classList.add('dhide'); return (TT = TT || storyTalk()).say(h2t(h), { who }); };
+  /* v23.69 경완 '강박사 인물 대사창하고 그냥 대사창 혼재, 인물 대사창으로 통합': 체육관 안 대사도 전당·튜토리얼과 같은 인물 대사창(storyTalk)으로 */ let TT = null; const h2t = h => String(h).replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'), /* v23.78 경완 '여기 레이아웃 무너짐': 인물 대사창은 대사창보다 좁아 긴 줄이 넘쳤음 → 창 너비에 맞춰 띄어쓰기에서 줄을 나눔 (줄 수만큼 창이 커짐) */ kfit = s => { try { const bx = TT.el.querySelector('.gy-k-box'), cs = getComputedStyle(bx), W = Math.min(560, root.clientWidth - 24) - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 6, cx = (kfit.c = kfit.c || document.createElement('canvas').getContext('2d')); cx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; if (!(W > 80)) return s;
+      return s.split('\n').map(L => { const o = []; let cur = ''; for (const w of L.split(' ')) { const nx = cur ? cur + ' ' + w : w; if (cur && cx.measureText(nx).width > W) { o.push(cur); cur = w; } else cur = nx; } o.push(cur); return o.join('\n'); }).join('\n'); } catch (e) { return s; } }, tsay = (h, who) => { dlg(''); root.classList.add('dhide'); TT = TT || storyTalk(); return TT.say(kfit(h2t(h)), { who }); };
   const say = h => tsay(h, '강박사'), gsay = h => tsay(h, '안내원'), se = (n, v = 1) => gse(n, v), E = esc(nm), jo = jong(nm) ? '은' : '는', LN = X ? Object.keys(g.legE || {}).length + ((g.legE || {})[t] ? 0 : 1) : Object.keys(g.legE || {}).length || 1, TL = legLines(LN, E, ty), XL = X && legXLines(LN, E, ty, X.retry);
   let lost = false, CR = null; const mix = async L => { for (const [w, h] of L) { if (w === '...') { dlg(''); root.classList.add('dhide'); TT?.hide(true); if (h === 'g' ? gu : k) A.bub(h === 'g' ? gu : k, '...', 1200); await wait(1300); } else await (w === 'g' ? gsay(h) : say(h)); } };
-  busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
+  busy = true; lgStory = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   try { ['rgFollow', 'rgPallet', 'rgHof'].forEach(n => M?.prep?.(n)); M?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR', 'se_ball', 'HG_DOOR', 'DP_KIRAKIRA2', 'ME_FANFA5', 'DP_PINPON', 'DP_DECIDE']); } catch (e) {}
   let k = null, ov = null, F = null, A = null, gPath = null; const gu = guyEnt, gu0 = gu && [gu.x, gu.y, gu.f];
   try {
@@ -1737,7 +1739,7 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
   } finally { if (ov) ov.remove(); if (F) F.el.remove(); root.querySelectorAll('.ev-black,.gy-kang.tw-talk').forEach(x => x.remove()); if (ov || F) bgmPlay('gym'); root.classList.remove('lgOn', 'lgF');
     meEnt.el.style.visibility = ''; if (meEnt.x !== D.leader[0] || meEnt.y !== D.leader[1]) { meEnt.x = D.leader[0]; meEnt.y = D.leader[1]; } meEnt.f = 'd'; place(meEnt);
     if (gu && gu0) { gu.x = gu0[0]; gu.y = gu0[1]; gu.f = gu0[2]; gu.el.style.visibility = ''; place(gu); }
-    if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); TT?.hide(true); root.classList.remove('busy'); busy = false; }
+    if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } dlg(''); root.classList.add('dhide'); TT?.hide(true); root.classList.remove('busy'); lgStory = false; busy = false; }
 }
 /* ---------- 전설 승급 심사 = 강박사 (경완 2026-11-13 '전설 체육관 승급은 강박사가 하는 스토리도 재밌겠는데, 그럴라면 전설 알 연출도 바꿔야')
    평판이 가득 차 [승급 심사](곡이 포켓몬리그로) → 노크, 강박사 진지한 대화(개그 없음) → 훈련장 경기장 양 끝에 마주 서서 심사 배틀(서로 거다이맥스) →
@@ -3831,16 +3833,122 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-const trLineup = () => new Promise(ok => { const g = st(); g.lu = g.lu || [[], [], []];
-  openTab('battle', { title: '200층 수련탑 라인업', go: '수련탑 오르기', any: 1, cost: 1, rnd: i => { const old = (g.lu[i] || []).filter(id => GB().boxOf(id)?.gTst); g.lu[i] = trRollLu(); trDrop(old); save(); },
-    pick: i => { const L = (g.lu[i] || []).filter(id => GB().boxOf(id)); if (!L.length) { GA.toast?.('라인업에 포켓몬을 넣어 주세요'); return trLineup().then(ok); } g.luI = i; save(); openTab(null); ok(trClone(L)); } }); });
+/* v23.83 경완 '디자인 퀄 높여서 다시': 게임 픽셀 RPG 창 모양(네모 테두리·Galmuri·입체 버튼 눌림)에 맞춘 수련탑 대기 화면.
+   위 = 지금 시각 하늘(낮·저녁·밤 별) + 도트 돌탑(벽돌 무늬·층 처마·아치 창·현수막·횃불·지붕 깃발) + 탑 앞 관장·첫 번째 포켓몬, 왼쪽 층 눈금(50·100·150 큰 우두머리 왕관)
+   가운데 = '등반대' 창 6칸 + 코스트 칸 막대, 아래 = 내 포켓몬 카드(타입 색 띠), 맨 아래 = 게임 입체 버튼 */
+const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:#20222e;color:var(--win-ink);font-family:var(--px);overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
+#trLobby .tl-sky{position:relative;flex:none;height:min(40vh,330px);overflow:hidden;background:linear-gradient(var(--s1),var(--s2) 55%,var(--s3));image-rendering:pixelated}
+#trLobby.day{--s1:#5aa8e8;--s2:#9fd4f4;--s3:#dff2fa;--st:0}#trLobby.eve{--s1:#2c2f6e;--s2:#7a5a9e;--s3:#f2a878;--st:.35}#trLobby.night{--s1:#0c1030;--s2:#1c2456;--s3:#36407a;--st:1}
+#trLobby .tl-stars{position:absolute;inset:0;opacity:var(--st);background-image:radial-gradient(1.5px 1.5px at 12% 14%,#fff 99%,transparent),radial-gradient(1px 1px at 28% 32%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 72% 10%,#fff 99%,transparent),radial-gradient(1px 1px at 86% 28%,#fff 99%,transparent),radial-gradient(1px 1px at 44% 8%,#fff 99%,transparent),radial-gradient(1px 1px at 63% 40%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 92% 52%,#fff 99%,transparent),radial-gradient(1px 1px at 6% 48%,#fff 99%,transparent);animation:tlTw 3s steps(2) infinite}
+@keyframes tlTw{50%{opacity:calc(var(--st) * .6)}}
+#trLobby .tl-cl{position:absolute;width:48px;height:16px;animation:tlCl 60s linear infinite;opacity:.9}
+#trLobby .tl-cl::before,#trLobby .tl-cl::after{content:'';position:absolute;background:#fff}
+#trLobby .tl-cl::before{left:0;right:0;bottom:0;height:8px}#trLobby .tl-cl::after{left:12px;width:20px;bottom:6px;height:10px;box-shadow:12px 2px 0 -2px #fff}
+#trLobby.night .tl-cl{opacity:.25}
+@keyframes tlCl{from{transform:translateX(-80px)}to{transform:translateX(560px)}}
+#trLobby .tl-tw{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%)}
+#trLobby .tl-tw .fl{animation:tlFl .5s steps(2) infinite}#trLobby .tl-tw .fl2{animation-delay:-.25s}
+@keyframes tlFl{50%{transform:translateY(-1px);opacity:.75}}
+#trLobby .tl-tw .flag{transform-box:fill-box;transform-origin:0 50%;animation:tlFg 1.2s steps(3) infinite}
+@keyframes tlFg{50%{transform:scaleX(.8) skewY(6deg)}}
+#trLobby .tl-me{position:absolute;bottom:6px;left:calc(50% + 38px);height:68px;image-rendering:pixelated}
+#trLobby .tl-lead{position:absolute;bottom:6px;left:calc(50% + 92px);width:52px;height:52px;object-fit:contain;image-rendering:pixelated}
+#trLobby .tl-rail{position:absolute;left:10px;top:52px;bottom:16px;width:46px;white-space:nowrap;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font-size:10px;color:#fff;text-shadow:1px 1px 0 #000a}
+#trLobby .tl-rail::before{content:'';position:absolute;left:3px;top:4px;bottom:4px;width:3px;background:rgba(255,255,255,.35);box-shadow:1px 0 0 #0004}
+#trLobby .tl-rail span{position:relative;padding-left:11px;line-height:1}#trLobby .tl-rail span::before{content:'';position:absolute;left:1px;top:2px;width:7px;height:7px;background:#fff;box-shadow:0 0 0 1px #383848}
+#trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
+#trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:200px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:6px 14px 8px}
+#trLobby .tl-hd h2{margin:0;font-size:17px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
+#trLobby .tl-c img{max-width:52px;max-height:52px;object-fit:contain}#trLobby .tl-s img{max-width:40px;max-height:40px;object-fit:contain}
+#trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
+#trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
+#trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
+#trLobby .tl-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px 10px 0;background:#2b2b3c;border-top:3px solid #1c1c26;box-shadow:inset 0 3px 0 #4b4b66}
+#trLobby .tl-win{background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff;padding:6px 8px 8px}
+#trLobby .tl-win h3{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;font-size:13px;color:var(--win-ink)}#trLobby .tl-win h3 small{font-size:11px;opacity:.7}
+#trLobby .tl-party{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+#trLobby .tl-s{position:relative;aspect-ratio:1;min-width:0;padding:0;display:grid;place-items:center;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff;border:0}
+#trLobby .tl-s.on{background:#fff6d0;box-shadow:inset 0 0 0 2px #e0a020}
+#trLobby .tl-s .rk-fr{transform:scale(.62)}
+#trLobby .tl-s em{position:absolute;right:1px;bottom:1px;min-width:13px;height:13px;padding:0 2px;font-style:normal;font-size:9px;line-height:13px;text-align:center;color:#fff;background:#2f7cd0}
+#trLobby .tl-s .pb{width:22px;height:22px;opacity:.28}
+#trLobby .tl-pips{display:flex;gap:2px;margin-top:7px}#trLobby .tl-pips i{flex:1;height:9px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}
+#trLobby .tl-pips i.f{background:#5cc27a;box-shadow:inset 0 -2px 0 #2f9a52,inset 0 2px 0 #9ae8b0}#trLobby .tl-pips.ov i.f{background:#e05050;box-shadow:inset 0 -2px 0 #a82424,inset 0 2px 0 #ff9a9a}
+#trLobby .tl-ci{margin:4px 0 0;font-size:9px;opacity:.6}
+#trLobby .tl-lw{flex:1;min-height:0;display:flex;flex-direction:column}
+#trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+#trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
+#trLobby .tl-c::before{content:'';position:absolute;left:0;right:0;top:0;height:5px;background:var(--tc,#8890a8)}
+#trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
+#trLobby .tl-c.on::after{content:'✔';position:absolute;left:4px;top:7px;width:15px;height:15px;font-size:10px;line-height:15px;color:#fff;background:#e0a020}
+#trLobby .tl-c:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px #c8c8d8}
+#trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#trLobby .tl-c span{display:flex;gap:3px;font-size:9px}#trLobby .tl-c span em{font-style:normal;padding:1px 4px;color:#fff;background:#383848}#trLobby .tl-c span em.c{background:#2f7cd0}
+#trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 10px 10px;background:#2b2b3c}
+#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 1.6fr}
+#trLobby .tl-ft .gy-key{min-height:52px;font-size:14px;flex-direction:column}
+#trLobby .tl-ft .gy-key small{font-size:9px;opacity:.75}
+#trLobby .tl-ft .gy-key.main{font-size:16px}`;
+const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
+/* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
+function trTowerSvg(tod) {
+  const night = tod === 'night', st = night ? ['#5c6288', '#4c5278', '#7c82aa', '#363a5a'] : ['#a4a8c0', '#9094b0', '#cdd0e2', '#6a6e8c'];
+  const win = night ? '#ffd860' : tod === 'eve' ? '#ffcf70' : '#5a6a9a';
+  let s = `<defs><pattern id="tlBr" width="8" height="6" patternUnits="userSpaceOnUse"><rect width="8" height="6" fill="${st[0]}"/><rect y="2" width="8" height="1" fill="${st[1]}"/><rect y="5" width="8" height="1" fill="${st[1]}"/><rect x="3" width="1" height="2" fill="${st[1]}"/><rect x="7" y="3" width="1" height="2" fill="${st[1]}"/></pattern></defs>`;
+  s += `<rect x="0" y="296" width="160" height="14" fill="${night ? '#2c4a34' : '#5a9a48'}"/><rect x="0" y="296" width="160" height="2" fill="${night ? '#3c6a44' : '#7cc060'}"/><rect x="66" y="296" width="28" height="14" fill="${night ? '#5a4a3a' : '#b89a6a'}"/>`;
+  let y = 296; const T = [[96, 34], [86, 30], [78, 28], [70, 26], [62, 24], [54, 24], [46, 22], [38, 22]];
+  T.forEach(([w, h], i) => { const x = 80 - w / 2; y -= h;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#tlBr)"/><rect x="${x}" y="${y}" width="3" height="${h}" fill="${st[2]}" opacity=".5"/><rect x="${x + w - 3}" y="${y}" width="3" height="${h}" fill="${st[3]}" opacity=".6"/>`;
+    s += `<rect x="${x - 3}" y="${y}" width="${w + 6}" height="4" fill="${st[2]}"/><rect x="${x - 3}" y="${y + 4}" width="${w + 6}" height="1" fill="${st[3]}"/>`;
+    if (i === 0) { s += `<rect x="70" y="${y + 12}" width="20" height="${h - 12}" fill="#3a2a22"/><rect x="72" y="${y + 9}" width="16" height="3" fill="#3a2a22"/><rect x="74" y="${y + 7}" width="12" height="2" fill="#3a2a22"/><rect x="79" y="${y + 13}" width="2" height="${h - 13}" fill="#5a4032"/><rect x="74" y="${y + 20}" width="2" height="2" fill="#ffd84a"/><rect x="84" y="${y + 20}" width="2" height="2" fill="#ffd84a"/>`;
+      [60, 98].forEach((tx, k) => { s += `<rect x="${tx}" y="${y + 14}" width="2" height="8" fill="#5a4032"/><g class="fl${k ? ' fl2' : ''}"><rect x="${tx - 1}" y="${y + 9}" width="4" height="5" fill="#ff9a2a"/><rect x="${tx}" y="${y + 8}" width="2" height="4" fill="#ffe27a"/></g>`; }); }
+    else { const n = Math.max(1, Math.floor((w - 10) / 14)), gap = (w - n * 6) / (n + 1);
+      for (let k = 0; k < n; k++) { const wx = Math.round(x + gap + k * (6 + gap)), wy = y + 9; s += `<rect x="${wx}" y="${wy + 1}" width="6" height="${h - 14}" fill="${win}"/><rect x="${wx + 1}" y="${wy}" width="4" height="1" fill="${win}"/><rect x="${wx}" y="${wy + 1}" width="6" height="1" fill="#0003"/><rect x="${wx + 2}" y="${wy + 2}" width="2" height="${h - 15}" fill="#0002"/>`; }
+      if (i % 2) [x + 2, x + w - 8].forEach(bx => { s += `<rect x="${bx}" y="${y + 5}" width="6" height="12" fill="#c83a32"/><rect x="${bx}" y="${y + 5}" width="6" height="2" fill="#ffd84a"/><rect x="${bx + 2}" y="${y + 10}" width="2" height="2" fill="#fff"/><rect x="${bx}" y="${y + 17}" width="2" height="2" fill="#c83a32"/><rect x="${bx + 4}" y="${y + 17}" width="2" height="2" fill="#c83a32"/>`; }); } });
+  s += `<rect x="54" y="${y - 6}" width="52" height="6" fill="#b8322c"/><rect x="58" y="${y - 12}" width="44" height="6" fill="#d8443a"/><rect x="64" y="${y - 18}" width="32" height="6" fill="#b8322c"/><rect x="70" y="${y - 24}" width="20" height="6" fill="#d8443a"/><rect x="54" y="${y - 6}" width="52" height="1" fill="#ff8a78"/><rect x="58" y="${y - 12}" width="44" height="1" fill="#ff8a78"/><rect x="64" y="${y - 18}" width="32" height="1" fill="#ff8a78"/>`;
+  s += `<rect x="78" y="${y - 30}" width="4" height="6" fill="#ffd84a"/><rect x="79" y="${y - 44}" width="2" height="14" fill="#5a4032"/><rect class="flag" x="81" y="${y - 44}" width="14" height="8" fill="#e04838"/><rect class="flag" x="81" y="${y - 44}" width="14" height="2" fill="#ff8a78"/>`;
+  return `<svg class="tl-tw" viewBox="0 ${y - 50} 160 ${360 - y}" shape-rendering="crispEdges" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${s}</svg>`;
+}
+const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
+  const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (!P.gTst || P.rnd));
+  const nmOf = P => P.nm || SPECIES[P.sp]?.n || '', h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
+  if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; document.head.appendChild(st0); } document.getElementById('trlCss').textContent = TRL_CSS;
+  const el = document.createElement('div'); el.id = 'trLobby'; el.className = tod; let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
+  const fl = save?.floor | 0;
+  el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:46%;animation-delay:-34s;animation-duration:84s"></i><i class="tl-cl" style="top:12%;animation-delay:-50s;animation-duration:72s;transform:scale(.7)"></i>
+      ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}<img class="tl-lead" alt="" hidden>
+      <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
+      <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
+      <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
+    <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div><p class="tl-ci">코스트 = 종족값(1~8) + 레벨 25마다 1 · 잡은 동료는 코스트 없음</p></div>
+      <div class="tl-lw"><div class="tl-list"></div></div></div>
+    <div class="tl-ft${save ? ' two' : ''}"><button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
+  root.appendChild(el);
+  const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
+    el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<em>${cost(P)}</em></button>` : `<span class="tl-s">${TRL_PB}</span>`; }).join('');
+    el.querySelector('.tl-n').textContent = `${sel.length}/6 · 코스트 ${n}/${cap}`;
+    const pp = el.querySelector('.tl-pips'); pp.classList.toggle('ov', ov); pp.innerHTML = Array.from({ length: Math.max(cap, n) }, (_, i) => `<i class="${i < n ? 'f' : ''}"></i>`).join('');
+    const L = all().sort((a, b) => (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}" style="--tc:${GA.TYPE_C?.[(SPECIES[P.sp]?.t || [])[0]] || '#8890a8'}">${B.thumb(P)}<b>${esc(nmOf(P))}</b><span><em>Lv.${B.gm(P).lv}</em><em class="c">코스트 ${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
+    const ld = el.querySelector('.tl-lead'); if (sel[0]) { ld.hidden = false; ld.dataset.th = sel[0]; } else { ld.hidden = true; delete ld.dataset.th; }
+    list.scrollTop = sc; B.fillTh(el); };
+  const end = v => { el.remove(); ok(v); };
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
+    if (b.dataset.p) { const id = +b.dataset.p || b.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
+      if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); return; }
+    const a = b.dataset.a;
+    if (a === 'x') { trDrop(rnd); end(null); return; }
+    if (a === 'rnd') { trDrop(rnd); rnd = trRollLu(); rnd.forEach(id => { const P = B.boxOf(id); if (P) P.rnd = 1; }); sel = [...rnd]; draw(); return; }
+    if (a === 'cont') { trDrop(rnd); end('cont'); return; }
+    if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
+      trDrop(rnd.filter(id => !sel.includes(id))); end(trClone(sel)); } };
+  draw();
+});
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/bgm.js', 'GymBGM');
   let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
-  if (R) { const go = await new Promise(ok => pop(`<h4>200층 수련탑</h4><p class="gy-msg"><b>${R.floor}층</b>부터 이어 할 수 있어요.</p><p class="gy-msg" style="font-size:11px;opacity:.75">운영자 시험: 내 포켓몬·저장은 건드리지 않아요.</p><div class="gy-btns"><button data-a="new">새로 고르기</button><button class="main" data-a="go">이어 하기</button></div>`, (a, close) => { close(); ok(a); }));
-    if (go !== 'go') { trDrop(R.ids); R = null; } }
-  if (!R) { const ids = await trLineup(); if (!ids?.length) return; R = trNew(ids); }
+  { const v = await trLineup(R); if (!v) return; if (v === 'cont' && R) { /* 이어 오르기 */ } else { if (R) trDrop(R.ids); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
@@ -4106,16 +4214,24 @@ function mgCanShow(L) { const p = document.createElement('div'); p.className = '
   root.appendChild(p); p.querySelectorAll('.mgc-b').forEach((b, i) => pmdCell(L[i], b)); gse('DP_WIN_OPEN'); return () => p.remove(); }
 /* v23.66 경완 '테라스탈도 메가링처럼 본가에 필요한 도구 있지 않아?', '강박사가 드디어 마지막 비기를 알려줄 때가 온 것 같군! 하면서 테라스탈 설명, 메가진화처럼 네 아니오로 튜토리얼까지':
    전설 심사를 통과하고 체육관에 돌아오면 테라스탈오브(g.teraOrb, 중요한 물건) → 테라피스 → '알고 있니?' 아니요면 빌린 포켓몬(테라 타입 = 체육관 타입)으로 연구원 하람과 연습 배틀에서 직접 테라스탈 */
+/* 타입별 약점 (본가 상성표): 테라스탈 설명에서 '원래 약점이 사라지고 테라 타입의 약점이 생긴다'를 말할 때 씀 */
+const TY_WK = { 1: [2], 2: [3, 14, 18], 3: [13, 15, 6], 4: [5, 14], 5: [11, 12, 15], 6: [11, 12, 2, 5, 9], 7: [10, 3, 6], 8: [8, 17], 9: [10, 2, 5], 10: [11, 5, 6], 11: [12, 13], 12: [10, 15, 4, 3, 7], 13: [5], 14: [7, 8, 17], 15: [10, 2, 6, 9], 16: [15, 16, 18], 17: [2, 7, 18], 18: [4, 9] };
+/* 테라스탈 연습 포켓몬: 체육관 타입 → [종, '', 기술, 특성, 그 포켓몬 타입(체육관 타입의 천적)] */
+const TR_CT = { 1: [68, '', ['terablast', 'crosschop', 'bulkup', 'rockslide'], 'noguard', 2], 2: [65, '', ['terablast', 'psychic', 'recover', 'shadowball'], 'synchronize', 14], 3: [25, '', ['terablast', 'thunderbolt', 'quickattack', 'irontail'], 'static', 13], 4: [196, '', ['terablast', 'psychic', 'quickattack', 'swift'], 'synchronize', 14],
+  5: [134, '', ['terablast', 'surf', 'quickattack', 'bite'], 'waterabsorb', 11], 6: [470, '', ['terablast', 'leafblade', 'quickattack', 'swordsdance'], 'leafguard', 12], 7: [136, '', ['terablast', 'flamethrower', 'quickattack', 'bite'], 'flashfire', 10], 8: [197, '', ['terablast', 'darkpulse', 'quickattack', 'moonlight'], 'synchronize', 17],
+  9: [59, '', ['terablast', 'flamethrower', 'extremespeed', 'crunch'], 'intimidate', 10], 10: [134, '', ['terablast', 'surf', 'quickattack', 'bite'], 'waterabsorb', 11], 11: [135, '', ['terablast', 'thunderbolt', 'quickattack', 'pinmissile'], 'voltabsorb', 13], 12: [136, '', ['terablast', 'flamethrower', 'quickattack', 'bite'], 'flashfire', 10],
+  13: [51, '', ['terablast', 'earthquake', 'slash', 'suckerpunch'], 'arenatrap', 5], 14: [197, '', ['terablast', 'darkpulse', 'quickattack', 'moonlight'], 'synchronize', 17], 15: [59, '', ['terablast', 'flamethrower', 'extremespeed', 'crunch'], 'intimidate', 10], 16: [471, '', ['terablast', 'icebeam', 'quickattack', 'bite'], 'snowcloak', 15],
+  17: [68, '', ['terablast', 'crosschop', 'bulkup', 'rockslide'], 'noguard', 2], 18: [601, '', ['terablast', 'geargrind', 'thunderbolt', 'flashcannon'], 'plus', 9] };
 const TR_TID = 990012, teraTy = t => { const s = TERA_EN[t] || ''; return s ? s[0] + s.slice(1).toLowerCase() : ''; };
 function orbPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>테라스탈오브</h4><div class="le-get mr-get to-get"><img alt="" src="${IMG}dbk/it/TERAORB.png"></div><p class="gy-msg mr-d">테라스탈에 쓰는 구슬.<br>배틀 중에 포켓몬을 테라 타입으로<br>테라스탈시킬 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 async function teraTut({ k, gu, D, t }) {
-  const g = st(), ty = TYPE_KO[t], M = MG_TUT[t] || MG_TUT[10], B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null, k0 = null;
+  const g = st(), ty = TYPE_KO[t], /* 경완 '시험 포켓몬은 체육관 타입이랑 다른 타입으로' → v23.81 '천적 타입이어야 이해가 쉽다, 불 테라피스면 물 포켓몬': 체육관 타입의 천적 타입 포켓몬 + 테라버스트 */ M = TR_CT[t] || TR_CT[10], ty0 = TYPE_KO[M[4]], /* v23.82 경완 '물 타입이지만 불꽃으로 테라스탈하면 불꽃 타입이 되어서 약점이 없어진다고 설명': 원래 약점(테라 타입도 약한 건 뺌)·새로 생기는 약점 */ wk0 = (TY_WK[M[4]] || []).filter(x => !(TY_WK[t] || []).includes(x)).map(x => TYPE_KO[x]).join('·'), wk1 = (TY_WK[t] || []).map(x => TYPE_KO[x]).join('·'), B = GB(), GWo = { who: '안내원' }, RW = { who: '연구원 하람' }; let T = null, made = null, rs = null, k0 = null;
   try { try { window.GymBGM?.sePrep?.(['DP_DOOR', 'ME_FANFA3', 'DP_DECIDE']); } catch (e) {}
     T = storyTalk(); const say = (x, o) => T.say(x, o), duo = on => { if (!gu) return; if (on) { face(gu, k); face(k, gu); } else { face(k, meEnt); face(gu, meEnt); } };
     await say(`그리고 ${NK()}.\n드디어 마지막 비기를\n알려 줄 때가 온 것 같구먼!`);
     duo(1); await say('마, 마지막 비기요!?\n잠깐만요, 수첩 새 걸로\n바꿀게요!', GWo); await say('…지난번 수첩은\n어쨌나?'); await say('박사님 얼굴 그리다가\n다 써 버렸어요!', GWo); await say('에헴! 이번엔 글씨로\n적어 두게나.'); duo(0);
-    for (const x of ['전설의 체육관에만 전하는\n마지막 비기.\n바로 \'테라스탈\'이란다!', '포켓몬은 저마다 테라 타입을\n하나씩 품고 있지.\n배틀 중에 보석처럼 빛나며\n그 타입으로 변하는 힘이란다.', '테라스탈하면 테라 타입 기술이\n훨씬 강해지고, 약점도\n그 타입의 것으로 바뀐단다.', '테라스탈에는 두 가지가 필요해.\n트레이너의 테라스탈오브, 그리고\n테라 타입을 바꿔 주는 테라피스!', '자, 먼저 이걸 받으렴.']) { if (!open) return; await say(x); }
+    for (const x of ['전설의 체육관에만 전하는\n마지막 비기.\n바로 \'테라스탈\'이란다!', '포켓몬은 저마다 테라 타입을\n하나씩 품고 있지.\n배틀 중에 보석처럼 빛나며\n그 타입으로 변하는 힘이란다.', '테라스탈하면 약점과 버티는 타입이\n테라 타입의 것으로 바뀌고,\n테라 타입 기술이 훨씬 강해진단다.', /* v23.83 경완 '불 타입으로 바뀐단다 하면 물 타입 기술 약해지는 걸로 생각할 수도': 원래 타입 기술은 그대로 */ '그렇다고 원래 타입 기술이\n약해지는 건 아니란다.\n그쪽은 그대로 강하지!', '테라스탈에는 두 가지가 필요해.\n트레이너의 테라스탈오브, 그리고\n테라 타입을 바꿔 주는 테라피스!', '자, 먼저 이걸 받으렴.']) { if (!open) return; await say(x); }
     T.hide(true); await orbPop(); g.teraOrb = 1; save(); T.hide(false);
     await say(`그리고 이건 ${ty} 타입\n전설의 체육관이 된 기념,\n${ty} 테라피스란다!`); T.hide(true); await teraPop(t); T.hide(false);
     await say(`${ty} 테라피스가 있으면\n어떤 포켓몬이든 테라 타입을\n${ty} 타입으로 바꿀 수 있단다.\n몇 번이든!`); await say('다른 타입 체육관을 맡아도\n그대로 쓸 수 있지.\n전설을 늘릴수록 테라피스도\n하나씩 모이는 셈이야.'); await say('단, 테라스탈은 한 배틀에\n한 마리만 할 수 있단다.');
@@ -4123,7 +4239,7 @@ async function teraTut({ k, gu, D, t }) {
     const know = await T.ask(`그런데 ${NK()},\n테라스탈하는 방법은\n알고 있니?`, { hiNo: 1 }, '네', '아니요'); if (!open) return;
     if (know || !B) { await say(`오, 역시 ${NK()}${jong(NK()) ? '이' : ''}구나!\n그럼 짧게만 짚고 가자.`); await say('배틀에서 \'싸운다\'를 누르면\n테라스탈 버튼이 생긴단다.\n켜고 기술을 고르면 끝!'); }
     else { const sp = SPECIES[M[0]]?.n || '포켓몬';
-      await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.\n테라 타입은 ${ty} 타입이란다.`);
+      await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`); await say(`${sp}${pN(sp)} ${ty0} 타입이라\n${wk0} 타입 기술에\n약하단다.`); await say(`그런데 ${ty} 타입으로 테라스탈하면\n${ty} 타입이 되어서\n그 약점이 사라지지!`); await say('어떻게 되는지\n잘 지켜보렴!');
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: TR_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[2], lv: 50, it: '', ab: M[3], tera: teraTy(t) });
       gse('DP_DECIDE'); await say('연습 배틀 상대는\n내 연구소 연구원이\n맡아 줄 거란다.');
       { T.hide(true); const kx = Math.round(k.x), ky = Math.round(k.y); k0 = [kx, ky]; const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
@@ -4140,12 +4256,13 @@ async function teraTut({ k, gu, D, t }) {
       if (!done && open) await gtu([
         { c: '테라스탈', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .gkb') || done, after: 500, s: '먼저 \'싸운다\'를 눌러 보렴!' },
         { c: '테라스탈', when: () => gtEl('.bt .gkb') && !done, t: '.bt .gkb', tap: '.bt .gkb', until: () => gtEl('.bt .gkb.on') || done, after: 400, s: '테라스탈 버튼이 생겼지?\n눌러서 켜 보렴!' },
-        { c: '테라스탈', when: () => gtEl('.bt .gkb.on') && !done, t: gtAll('.bt .mvb'), tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: '이제 쓸 기술을 고르면\n그 턴에 테라스탈한단다!' }]);
+        { c: '테라스탈', when: () => gtEl('.bt .gkb.on') && !done, t: gtAll('.bt .mvb'), tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: '이제 테라버스트를 고르면\n그 턴에 테라스탈한단다!' }]);
       await run;
       document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); bgmPlay('gym');
       if (!open) return; T.hide(false); if (rs) { face(meEnt, rs); face(k, rs); }
+      busy = true; root.classList.add('busy');
       await say('우와… 보석처럼 빛나더니\n제 꼬렛이 날아갔어요!', RW); await say('눈이 부셔서 기술이\n오는 줄도 몰랐어요…', RW); face(k, meEnt); face(meEnt, k);
-      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
+      await say('어떠냐, 눈부시지?\n이게 바로 테라스탈이란다!'); /* v23.78 경완 '테라스탈하고 나서는 원래는 0타입이지만 0타입 적용을 받는다는 설명' */ await say(`방금 ${sp}${pN(sp)} ${ty0} 타입에서\n${ty} 타입이 되었단다.`); await say(`그래서 원래 약점이던\n${wk0} 타입 기술이\n더는 약점이 아니게 됐지!`); await say(`대신 이제는 ${ty} 타입의 약점인\n${wk1} 타입 기술을\n조심해야 한단다.`); await say(`헷갈리면 안 된다!\n바뀌는 건 기술을 맞을 때의\n상성뿐이란다.`); await say(`${sp}의 ${ty0} 타입 기술은\n약해지지 않고 그대로 강하지.\n거기에 ${ty} 타입 기술까지\n강해지는 거란다.`); await say(`테라버스트도\n${ty} 타입 기술이 됐지.`); await say('한번 테라스탈하면 쓰러지거나\n배틀이 끝날 때까지\n쭉 이어진단다.'); await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
       if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 먼저\n연구소로 돌아갈게요.\n샹들리에는 두고 갈게요!', RW); T.hide(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); /* v23.69 경완 '연구원 나가고 나서 강박사 다시 관장 앞으로 자리 잡기' */ if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); T.hide(false); }
     }
     if (!open) return;
