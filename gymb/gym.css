@@ -4480,5 +4480,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob[data-zt].gkbg-zmove .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
 /* 경완 2026-11-14: 위 상태 막대 자리 = 위 화면 맨 위를 거울처럼 비춤 → 배경 들어오는 방향·어두워짐·번쩍·날씨·기술 연출·메가 장면이 같이 바뀜 */
 .bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
-@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above}}
+@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선) */
 .bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
