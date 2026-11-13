@@ -2019,7 +2019,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
     (a, close) => { const c = curLu(), i = c.indexOf(P.id);
       if (a === 'ev') { close(); evPop(P, () => monPop(P.id, fromBox, null, lst)); return; }   // v20.45 노력치 박스 → 설정 창, 닫으면 카드 다시
       if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
-      if (a[0] === 'i' && a.length > 1) return mvInfo(a.slice(1));
+      if (a[0] === 'i' && a.length > 1) { const id = a.slice(1), k = m.mv.indexOf(id); return S.gym && k >= 0 ? mvInfo(id, () => movesPop(P, () => monPop(P.id, fromBox, p, lst), -1, k), '기술 바꾸기', () => {}) : mvInfo(id); }
       if (a === 'nat') { const rn = recNat(P, m), w1 = gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>${natRec(rn, m)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => {
         if (b2 === 'ngive') { c2(); mintUse(P, rn); close(); monPop(P.id, fromBox, null, lst); return; }
         if (b2 === 'nbuy') { c2(); close(); document.querySelectorAll('#gym .gy-boxw').forEach(x => x.remove()); window.gymShopMint = rn; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => { monPop(id, fromBox, undefined, lst); setTimeout(() => [...document.querySelectorAll('#gym .gy-pop')].pop()?.querySelector('[data-a=nat]')?.click(), 60); } })   /* v17.71 경완: ‹ 누르면 보던 성격 창까지 */; return; }
@@ -2393,9 +2393,11 @@ const mvSt = x => `<em class="mv-st"><i>위력 <b>${x[4] || '—'}</b></i><i>명
 const mvRow = (x, a) => `<button type="button" class="mp-mv" data-a="${a}" style="--tc:${GA.TYPE_C?.[x[2]] || '#888'}">${tyTag(x[2], x[3])}<b>${esc(x[1])}</b>${mvSt(x)}</button>`;
 // 기술 바꾸기: 잊을 기술(또는 빈 칸)을 고르고 → 배울 기술을 고른다. 잊은 기술은 '아는 기술'로 남아 다시 배울 수 있다
 // 기술 순서 (경완 2026-10-29): 기술 줄을 꾹 눌러 위아래로 끌면 순서가 바뀐다
-function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리가 한 번 빛나고, 창 안 다른 곳을 누르면 꺼진다 (경완 2026-10-31)
+function movesPop(P, done, hi = -1, go = -1) {   /* go: v23.46 경완 '상세카드에서 기술 누르면 기술 바꾸기 → 바로 그 기술 바꾸는 화면': 그 칸 배울 기술 고르기로 바로, 뒤로·바꾼 뒤엔 카드(done)로 */   // hi: 방금 바꾼 칸 — 테두리가 한 번 빛나고, 창 안 다른 곳을 누르면 꺼진다 (경완 2026-10-31)
   const m = gm(P), C = mvCands(P, m).map(id => [id, mvOf(id)]).filter(([, x]) => x).sort((a, b) => (a[1][2] - b[1][2]) || ((b[1][4] || 0) - (a[1][4] || 0))).map(([id]) => id);   // 배울 기술은 타입순 (경완 2026-10-29)
   let drag = 0, ord = false;
+  const back = h => go >= 0 ? done?.() : movesPop(P, done, h);
+  if (go >= 0) return pickNew(go, m.mv[go]);
   // 안내 줄 오른쪽 '순서 바꾸기' (경완 2026-10-30): 누르면 길게 누르지 않고 바로 끌어서 순서를 바꾸고, '완료'로 끝
   const p = gymPop(`<h4>${esc(nmOf(P))}의 기술</h4><div class="mv-hd"><p class="gy-msg">바꿀 기술을 고르세요</p></div>
     <div class="mp-moves mp-line pick mv-ord">${m.mv.map((id, i) => mvOf(id) ? mvRow(mvOf(id), 's' + i).replace('class="mp-mv"', `class="mp-mv${(Array.isArray(hi) ? hi.includes(i) : i === hi) ? ' just' : ''}"`) : '').join('')}${m.mv.length < 4 ? `<button class="mp-mv empty" data-a="s${m.mv.length}"><b>빈 칸</b></button>` : ''}</div>
@@ -2415,14 +2417,14 @@ function movesPop(P, done, hi = -1) {   // hi: 방금 바꾼 칸 — 테두리�
     close(); pickNew(k, old);
   });
   function pickNew(k, old) {
-    if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => movesPop(P, done), k); movesPop(P, done); }); return; }
+    if (!C.length) { gymPop(`<h4>기술 바꾸기</h4><p class="gy-msg">지금 배울 수 있는 다른 기술이 없어요. 레벨을 올리거나 기술머신·훈련장에서 익혀 보세요.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => { c2(); if (b === 'tm') return tmPop(P, () => back(), k); back(); }); return; }
     // 배울 기술을 누르면 바로 바뀌지 않고 상세 창 → '바꾸기' (경완 2026-10-29)
     const learn = () => recMark(oldCard(gymPop(`<span class="mv-tagl new">새로 배울 기술</span><div class="mp-moves mp-line pick mv-learn">${C.map(id => mvRow(mvOf(id), 'n' + id)).join('')}</div><div class="gy-btns"><button data-a="x">뒤로</button><button class="main" data-a="tm">기술 가르치기</button></div>`, (b, c2) => {
       if (b === 'o') return;   // 바뀔 기술 카드는 보기만 (v13.18 경완)
-      if (b === 'x') { c2(); return movesPop(P, done); }
-      if (b === 'tm') { c2(); return tmPop(P, () => movesPop(P, done, Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
+      if (b === 'x') { c2(); return back(); }
+      if (b === 'tm') { c2(); return tmPop(P, () => back(Math.min(k, gm(P).mv.length - 1)), k); }   // 기술머신으로 이 칸에 가르치기 (경완 2026-10-29)
       const id = b.slice(1);
-      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); movesPop(P, done, old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); })));
+      mvInfo(id, () => { c2(); m.kn = (m.kn || []).filter(x => x !== id); if (old) { m.mv[k] = id; if (!m.kn.includes(old)) m.kn.push(old); } else m.mv.push(id); GA.save(); learnFan(); back(old ? k : m.mv.length - 1); }, old ? '바꾸기' : '배우기', () => {}); })));
     // v17.59 경완 '기술 하나 바꿀 때도 다른 기술과의 조합으로 추천 기술 테두리 은은하게': 나머지 기술과 묶었을 때 가장 좋은 배울 기술 (지금보다 나을 때만)
     function recMark(p) { loadSim().then(() => { if (!p.isConnected) return; const r = recSlot(P, k, C); const b = r && p.querySelector(`.mv-learn [data-a="n${r}"]`); if (b) { b.classList.add('mv-recm'); b.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); b.scrollIntoView({ block: 'nearest' }); } }); return p; }
     // v13.19 경완: 바뀔 기술 = 창 위 바깥에 따로 뜨는 카드
