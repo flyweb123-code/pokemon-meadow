@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 72" width="120" height="72"><!-- Psychic -->
+<path d="M60 3L117 36 60 69 3 36z" fill="#ea5c9c"/>
+<path d="M60 3L117 36H3z" fill="#ff92c2" fill-opacity=".55"/><path d="M60 3L3 36l57 33z" fill="#fff" fill-opacity=".18"/>
+<path d="M3 36l57 33 57-33z" fill="#c23a78" fill-opacity=".35"/><path d="M60 3L117 36 60 69z" fill="#000" fill-opacity=".08"/>
+<path d="M60 9L20 32" stroke="#fff" stroke-opacity=".7" stroke-width="2.4" stroke-linecap="round"/>
+<g transform="translate(60 36) scale(1.3) translate(-60 -36)"><path d="M42 36q18-16 36 0q-18 16-36 0z" fill="rgba(20,16,20,.62)"/><circle cx="60" cy="36" r="5.5" fill="#fff" fill-opacity=".45"/><circle cx="60" cy="36" r="2.6" fill="rgba(20,16,20,.62)"/></g>
+<path d="M60 3L117 36 60 69 3 36z" fill="none" stroke="#231c1e" stroke-width="4.5" stroke-linejoin="round"/>
+</svg>
