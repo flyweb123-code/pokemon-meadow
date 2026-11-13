@@ -459,13 +459,12 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 .bd-evobtn:active{transform:translateY(3px);box-shadow:none}
 /* v23.21 이상한사탕: 짝꿍 칸 게이지 오른쪽 위 버튼 + 짝꿍 탭처럼 생긴 고르는 창 */
 .bd-evo{position:relative}.bd-cdy{position:absolute;right:0;bottom:calc(100% + 1px);display:flex;align-items:center;gap:2px;height:26px;padding:0 6px 0 2px;box-sizing:border-box;font:inherit;background:linear-gradient(#fff 50%,#ffe6ef 50%);border:2px solid #9a3462;box-shadow:0 2px 0 #9a3462;cursor:pointer;color:#9a3462}.bd-cdy:active{transform:translateY(2px);box-shadow:none}.bd-cdy img{width:22px;height:22px;margin:-2px 0;image-rendering:pixelated}.bd-cdy b{font-size:12px;line-height:1;font-variant-numeric:tabular-nums}
-.cdy-win{width:min(92vw,400px)}.cdy-own{display:flex;align-items:center;justify-content:center;gap:4px;margin:4px 0 10px;font-size:13px}.cdy-own img{width:28px;height:28px;image-rendering:pixelated}.cdy-own b{color:#9a3462}.cdy-l{display:grid;gap:10px;max-height:min(56vh,430px);overflow-y:auto;padding:0 4px 4px 0}
-.cdy-r{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff3f7;border:3px solid #9a3462;box-shadow:3px 3px 0 rgba(154,52,98,.25)}.cdy-r.ready{border-color:#e8a020}.cdy-r .prog{margin:4px 0 2px;border-color:#9a3462}.cdy-r .prog.evo i{background:#e8679a;transition:width .35s ease-out}.cdy-r.ready .prog{border-color:#e8a020}.cdy-r.ready .prog.evo i{background:#ffc840}
-.cdy-r .cdy-pic{flex:none;width:64px;height:64px;display:grid;place-items:center;background:#fcd9e6;border:3px solid #e9a3bf}.cdy-r .cdy-pic img{width:58px;height:58px;object-fit:contain;image-rendering:pixelated}.cdy-r .cdy-pic.shiny img{filter:hue-rotate(var(--shue)) saturate(1.25)}
-.cdy-m{flex:1;min-width:0;display:grid}.cdy-n{font-size:15px}.cdy-km{display:flex;justify-content:space-between;gap:6px;font-size:12px;color:#6a6a80}.cdy-km b{color:#2a58a8;font-size:13px}.cdy-r.ready .cdy-km>span:first-child{color:#c07c08;font-weight:700}
-.cdy-bs{display:flex;gap:6px;margin-top:6px}.cdy-b{flex:1;font:inherit;font-size:12px;font-weight:700;padding:4px 4px;background:#fff;color:#9a3462;border:2px solid #9a3462;box-shadow:0 2px 0 #9a3462;cursor:pointer;line-height:1.2;white-space:nowrap}.cdy-b.main{background:#e8679a;color:#fff;border-color:#9a3462}.cdy-b small{font-size:10px;font-weight:400;opacity:.9}.cdy-b:active:not(:disabled){transform:translateY(2px);box-shadow:none}.cdy-b:disabled{background:#f2f2f6;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
-.cdy-msg{margin:10px 0 2px;text-align:center;font-size:12px;color:#4a4a60;min-height:1.4em}.cdy-msg b{color:#9a3462}.cdy-r.hit .cdy-pic{animation:cdyHit .5s ease-out}@keyframes cdyHit{0%{transform:scale(1)}35%{transform:scale(1.12) translateY(-3px)}100%{transform:scale(1)}}
-@media (prefers-reduced-motion: reduce){.cdy-r.hit .cdy-pic{animation:none}}
+.cdy-q img{width:56px;height:56px;image-rendering:pixelated}.cdy-q .cdy-to{font-size:13px;color:var(--win-ink,#20202c)}.cdy-q .cdy-to b{color:#2a58a8}.cdy-q .cdy-to b.up{color:#d0487e}.cdy-q .bag-cnt .opt:disabled{opacity:.4}
+.pp-cdy{flex:none;height:40px;display:flex;align-items:center;gap:2px;padding:0 8px 0 3px;box-sizing:border-box;font:inherit;background:linear-gradient(#fff 50%,#ffe6ef 50%);border:3px solid #9a3462;box-shadow:0 3px 0 #9a3462;cursor:pointer;color:#9a3462}.pp-cdy[hidden]{display:none}.pp-cdy:active{transform:translateY(3px);box-shadow:none}.pp-cdy img{width:28px;height:28px;image-rendering:pixelated}.pp-cdy b{font-size:13px;font-variant-numeric:tabular-nums}
+.cdypick #boxGrid .cdy-no{opacity:.35;filter:grayscale(.8)}body:has(#mgr.cdypick:not([hidden])) #pokePop{z-index:6110}body:has(#mgr.cdypick:not([hidden])) #itemPop{z-index:6130}
+.cdy-fly{position:fixed;z-index:9000;width:36px;height:36px;image-rendering:pixelated;pointer-events:none;animation:cdyFly .5s cubic-bezier(.5,0,.75,0) forwards}@keyframes cdyFly{0%{transform:translateY(-26px) scale(1.3);opacity:0}25%{opacity:1}80%{transform:translateY(18px) scale(.9);opacity:1}100%{transform:translateY(26px) scale(.3);opacity:0}}
+.evobtn.cdy-run{filter:brightness(1.08)}.evobtn.cdy-pop{animation:cdyPop .6s ease-out}@keyframes cdyPop{0%{transform:scale(1)}30%{transform:scale(1.06)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion: reduce){.cdy-fly{animation:none;opacity:0}.evobtn.cdy-pop{animation:none}}
 .bd-evobtn:disabled{background:#e4e4ec;color:#a0a0b4;border-color:#c8c8d8;box-shadow:none;cursor:default}
 .bd-evobtn:not(:disabled){border-color:#ffd75e;animation:btnGlow 4s ease-in-out infinite}
 @keyframes btnGlow{0%,100%{box-shadow:0 3px 0 #9a6410,0 0 3px 0 rgba(255,200,60,.3)}50%{box-shadow:0 3px 0 #9a6410,0 0 10px 2px rgba(255,210,80,.55)}}
@@ -2778,7 +2777,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
     <i class="sw-h l" id="ppHl"></i><i class="sw-h r" id="ppHr"></i><div class="dp-head m-head"><span class="hd-rk" id="ppRk"></span><span class="bud-tag" id="ppBudTag" hidden>짝꿍</span><button class="pp-x" id="ppX" aria-label="닫기">✕</button></div>
     <div class="dp-pic" id="ppPic"><img alt="" id="ppImg"></div>
     <div class="pp-body" id="ppBody"></div>
-    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button><button class="boxbtn itembtn" id="ppItem" hidden>도구 쓰기</button></div>
+    <div class="pp-evo" id="ppEvo" hidden><button class="boxbtn evobtn" id="ppEvoBtn">진화하기</button><button class="pp-cdy" id="ppCdy" hidden aria-label="이상한사탕 주기"></button><button class="boxbtn itembtn" id="ppItem" hidden>도구 쓰기</button></div>
     <div class="pp-btns"><button class="boxbtn white" id="ppDex">도감</button><button class="boxbtn green" id="ppField"></button><button class="boxbtn pink" id="ppBud"></button></div>
     <button class="pp-free" id="ppFree">놓아주기</button>
   </div>
@@ -10328,7 +10327,7 @@ function renderIBag() {
   bar.innerHTML = `<img class="sb-pic" src="${ITEM_ART[o.a]}" alt=""><div class="sb-name"><b>${o.n} ×${I[o.id]}</b><span>${o.k === 'item' ? itemDesc(o) + (left ? ` · 남은 시간 ${Math.ceil(left / 60e3)}분` : '') : (o.d || '진화 도구예요')}</span></div>` + `<button class="ibag-toss" data-toss aria-label="버리기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#20202c" d="M4 0h4v1h3v2H1V1h3zM2 4h8v8H2z"/><path fill="#b8b8c8" d="M4 5h1v5H4zM7 5h1v5H7z"/></svg></button>` + (o.k === 'item' ? `<button class="lk-btn main" data-use>${o.tk != null ? '사용' : o.c === 'bud' ? '주기' : left ? '더 쓰기' : '쓰기'}</button>` : o.fm ? '<button class="lk-btn main" data-fuse>쓰기</button>' : '');
 }
 function ibagAsk(o) {
-  if (o.c === 'bud') return cdyPop();
+  if (o.c === 'bud') return cdyPickGo();
   const el = $('#itemPop'), left = fxLeft(o.id);
   if (o.tk != null) { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="${o.n} 사용"><img class="tkp" src="${ITEM_ART[o.a]}" alt=""><p><b>${o.n}</b>을 사용할까요?</p><span>알 뽑기 화면에서 이 뽑기권이 골라져요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>사용</button></div></div>`; el.hidden = false; sfx('open');   /* v19.74 경완: 가방에서 뽑기권 사용 → 알 뽑기 화면, 그 뽑기권이 골라진 채로 */
     el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (!e.target.closest('[data-yes]')) return; el.hidden = true; if (!(itemsOf()[o.id] > 0)) return; sfx('tap'); ibagSel = null; gaTk = o.tk; gaSt().t = o.tk; gaTyTk = true; save(); closeToggles(); hideSheets(); runTab = 'gacha'; openRun(); }; return; }   /* v19.87 경완: 넘어올 때 타입 박스 반짝임 없앰 */
@@ -10338,33 +10337,45 @@ function ibagAsk(o) {
     const I = itemsOf(); el.hidden = true; if (!(I[o.id] > 0)) return; I[o.id]--; if (!I[o.id]) delete I[o.id]; useFx(o.id); sfx('pickup');
     $('#ibagMsg').innerHTML = `${J({ name: o.n }, '을/를')} 썼다! ${Math.ceil(fxLeft(o.id) / 60e3)}분 동안 효과가 있어요.`; log(`${J({ name: o.n }, '을/를')} 썼다.`, [], true); ibagSel = null; save(); renderIBag(); closeToggles(); hideSheets(); renderFx(); };   /* v9.43 경완: 쓰면 아래 박스는 닫힘 */   /* v21.41 경완: 필드 아이콘이 생기는 아이템(향로·빛나는 부적)은 쓰고 나면 열린 창을 모두 닫고 필드로 */
 }
-/* v23.21 경완: 이상한사탕 — 짝꿍 진화 거리를 한 개에 CDY_KM 씩 채움, 한도 없음. 거리로 진화하는 짝꿍(게이지 있는 칸)만 */
+/* v23.21 경완: 이상한사탕 — 진화 거리를 한 개에 CDY_KM 씩 채움, 한도 없음. 거리로 진화하는 포켓몬(게이지 있는 것)만.
+   v23.21 경완 '다른 도구처럼 박스에서 골라서 주고, 상세카드에서 진화 거리 채워지는 연출': 가방 주기 → 박스 고르기(cdyPick) → 상세카드 + 수량 창(cdyQty) → 카드 게이지 채움(cdyAnim) */
 const CDY_KM = 1;
-const cdyEvo = (b, P) => !!P && evoKids(b.sp, P).length > 0;
-const cdyOk = b => { const P = boxOf(b.pid); return cdyEvo(b, P) && (b.km || 0) < evoNeed(b); };
-const cdyFill = b => Math.ceil((evoNeed(b) - (b.km || 0)) / CDY_KM - 1e-6);   /* 다 채우는 데 드는 개수 */
-function cdyUse(b, k) { const P = boxOf(b.pid), I = itemsOf(); k = Math.min(k || 1, I.rcandy || 0, cdyFill(b)); if (!cdyOk(b) || !(k > 0)) return 0; const need = evoNeed(b), add = Math.min(need - (b.km || 0), k * CDY_KM), r0 = budReady(b);
-  I.rcandy -= k; if (!I.rcandy) delete I.rcandy; b.km = Math.min(need, (b.km || 0) + add); P.km = b.km;
+const cdyKmOf = P => { const b = P && S.buds.find(x => x.pid === P.id); return Math.max(P?.km || 0, b?.km || 0); };
+const cdyOkP = P => !!P && evoKids(P.sp, P).length > 0 && cdyKmOf(P) < evoNeed(P);
+const cdyOk = b => cdyOkP(boxOf(b.pid));
+const cdyFill = P => Math.ceil((evoNeed(P) - cdyKmOf(P)) / CDY_KM - 1e-6);   /* 다 채우는 데 드는 개수 */
+function cdyUse(P, k) { const I = itemsOf(); if (!cdyOkP(P)) return 0; k = Math.min(k || 1, I.rcandy || 0, cdyFill(P)); if (!(k > 0)) return 0; const b = S.buds.find(x => x.pid === P.id), need = evoNeed(P), km0 = cdyKmOf(P), add = Math.min(need - km0, k * CDY_KM), r0 = b && budReady(b);
+  I.rcandy -= k; if (!I.rcandy) delete I.rcandy; P.km = Math.min(need, km0 + add); if (b) b.km = P.km;
   log(`<b>${esc(nameOf(P))}</b>에게 이상한사탕을 ${k > 1 ? k + '개 ' : ''}줬다! 진화 거리를 ${fmtKm(add)}km 채웠다.`, [], true);
-  if (!r0 && budReady(b)) { b.en = false; delete b.es; log('짝꿍이 진화할 준비가 됐다! 짝꿍 탭에서 진화시켜 보자.', [], true); }
+  if (b && !r0 && budReady(b)) { b.en = false; delete b.es; } if (P.km >= need) log(`${J({ name: nameOf(P) }, '이/가')} 진화할 준비가 됐다!`, [], true);
   save(); return add; }
-function cdyPop(pid) {
-  const el = $('#itemPop'); let msg = '', hit = null;
-  const draw = () => { const I = itemsOf(), n = I.rcandy || 0, o = ITEM.rcandy, L = [...S.buds].filter(b => cdyEvo(b, boxOf(b.pid))).sort((a, b) => a.slot - b.slot);   /* 거리 필요 없는 짝꿍은 안 띄움 */
-    if (pid != null) { const k = L.findIndex(b => String(b.pid) === String(pid)); if (k > 0) L.unshift(...L.splice(k, 1)); }
-    const rows = L.map(b => { const P = boxOf(b.pid), need = evoNeed(b), km = Math.min(b.km || 0, need), ok = km < need, f = ok ? cdyFill(b) : 0, m = Math.min(n, f);
-      return `<div class="cdy-r${ok ? '' : ' ready'}${hit === String(b.pid) ? ' hit' : ''}"><div class="cdy-pic bd-pic${pkCls(P)}${P.shiny ? ' shiny' : ''}" style="--shue:${shinyHue(b.sp)}deg"><img src="${thumbP(P) || thumbOf(b.sp) || ''}" alt=""></div><div class="cdy-m"><b class="cdy-n">${esc(nameOf(P))}</b>`
-        + `<div class="prog evo"><i style="width:${Math.min(100, km / need * 100)}%"></i></div><div class="cdy-km"><span>${ok ? `${f}개면 다 채워요` : '다 채웠어요!'}</span><span><b>${fmtKm(km)}</b> / ${need}km</span></div>`
-        + (ok ? `<div class="cdy-bs"><button class="cdy-b" data-pid="${b.pid}" data-n="1"${n ? '' : ' disabled'}>1개 주기</button>${f > 1 ? `<button class="cdy-b main" data-pid="${b.pid}" data-n="${m}"${m > 1 ? '' : ' disabled'}>${m >= f ? `다 채우기 <small>${f}개</small>` : `가진 만큼 <small>${m}개</small>`}</button>` : ''}</div>` : '') + `</div></div>`; }).join('');
-    el.innerHTML = `<div class="win ipwin cdy-win" role="dialog" aria-label="이상한사탕 주기"><div class="sheet-head"><h3>누구에게 줄까요?</h3><button class="opt" data-x>닫기</button></div><p class="cdy-own"><img src="${ITEM_ART[o.a]}" alt="">가진 이상한사탕 <b>${n}</b>개</p>`
-      + (L.length ? `<div class="cdy-l">${rows}</div>` : '<p class="bag-none">거리를 채워서 진화하는 짝꿍이 없어요</p>') + `<p class="cdy-msg">${msg || `한 개에 진화 거리를 ${CDY_KM}km 채워요.`}</p>`
-      + (n ? '' : `<div class="bag-yn"><button class="lk-btn main" data-buy>상점에서 사요</button></div>`) + `</div>`; };
+let cdyPick = false;
+function cdyPickGo() { closeToggles(); hideSheets(); sfx('open'); cdyPick = true; mgr.classList.add('mgpick', 'cdypick'); openMgr(); setMgrTab('box'); $('#mgrTitle').textContent = '이상한사탕을 줄 포켓몬 고르기'; cdyMark(); }
+function cdyMark() { const g = $('#boxGrid'); if (!g) return; g.querySelectorAll('[data-id]').forEach(el => el.classList.toggle('cdy-no', cdyPick && !cdyOkP(boxOf(+el.dataset.id)))); }
+function cdyGive(P) { if (!P) return; openPoke(P.id); requestAnimationFrame(() => cdyQty(P)); }
+function cdyQty(P) {   /* 몇 개 줄까요? 창 — 상세카드 위 */
+  const el = $('#itemPop'), o = ITEM.rcandy, need = evoNeed(P); let q = 1;
+  const draw = () => { const n = itemsOf().rcandy || 0, f = cdyFill(P), mx = Math.max(1, Math.min(n, f)), km0 = cdyKmOf(P), km1 = Math.min(need, km0 + q * CDY_KM); q = Math.min(q, mx);
+    el.innerHTML = `<div class="win ipwin bag-ask cdy-q" role="dialog" aria-label="이상한사탕 주기"><img src="${ITEM_ART[o.a]}" alt=""><p><b>${esc(nameOf(P))}</b>에게 이상한사탕을 줄까요?</p>`
+      + (n ? `<div class="bag-cnt"><button class="lk-btn" data-m${q <= 1 ? ' disabled' : ''}>−</button><b>${q}</b><button class="lk-btn" data-p${q >= mx ? ' disabled' : ''}>+</button><button class="opt" data-mx${q >= mx ? ' disabled' : ''}>${mx >= f ? '다 채우기' : '최대'}</button></div>`
+        + `<span class="cdy-to">진화 거리 <b>${fmtKm(km0)}</b> → <b class="up">${fmtKm(km1)}</b> / ${need}km</span><span>가진 개수 ${n} · 다 채우려면 ${f}개</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn main" data-yes>${q}개 주기</button></div>`
+        : `<span>가진 이상한사탕이 없어요. 한 개에 진화 거리를 ${CDY_KM}km 채워요.</span><div class="bag-yn"><button class="lk-btn" data-no>닫기</button><button class="lk-btn main" data-buy>상점에서 사요</button></div>`) + `</div>`; };
   draw(); el.hidden = false; sfx('open');
-  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } if (e.target.closest('[data-buy]')) { sfx('tap'); el.hidden = true; shopToItem('rcandy'); return; }
-    const r = e.target.closest('[data-pid]'); if (!r || r.disabled) return; const b = S.buds.find(x => String(x.pid) === r.dataset.pid); if (!b) return; const P = boxOf(b.pid), add = cdyUse(b, +r.dataset.n || 1); if (!add) return;
-    sfx(budReady(b) ? 'shiny' : 'pickup'); hit = r.dataset.pid; msg = budReady(b) ? `<b>${esc(nameOf(P))}</b>의 진화 거리를 다 채웠어요!` : `<b>${esc(nameOf(P))}</b>의 진화 거리를 <b>${fmtKm(add)}km</b> 채웠어요!`;
-    draw(); hit = null; try { renderRun(); } catch (er) {} if (!ibagEl.hidden) renderIBag(); };
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-no]')) { el.hidden = true; return; } if (e.target.closest('[data-buy]')) { sfx('tap'); el.hidden = true; shopToItem('rcandy'); return; }
+    const n = itemsOf().rcandy || 0, mx = Math.max(1, Math.min(n, cdyFill(P)));
+    if (e.target.closest('[data-m]:not([disabled]),[data-p]:not([disabled]),[data-mx]:not([disabled])')) { sfx('tap'); q = e.target.closest('[data-mx]') ? mx : Math.max(1, Math.min(mx, q + (e.target.closest('[data-p]') ? 1 : -1))); draw(); return; }
+    if (!e.target.closest('[data-yes]')) return; el.hidden = true; const km0 = cdyKmOf(P), add = cdyUse(P, q); if (!add) return; cdyAnim(P, km0); };
 }
+function cdyAnim(P, km0) {   /* 상세카드 진화하기 게이지가 차오름: 사탕이 위에서 쏙 → 막대·숫자 올라감 → 다 차면 진화하기 켜짐 */
+  const btn = $('#ppEvoBtn'), need = evoNeed(P), km1 = cdyKmOf(P), done = () => { setEvoBtn(btn, P); ppCdySet(P); try { renderRun(); } catch (er) {} if (km1 >= need) { sfx('shiny'); btn.classList.add('cdy-pop'); setTimeout(() => btn.classList.remove('cdy-pop'), 700); } };
+  ppCdySet(P); if ($('#pokePop').hidden || pokeId !== P.id || !btn.classList.contains('km')) return done();
+  const r = btn.getBoundingClientRect(), fly = document.createElement('img'); fly.className = 'cdy-fly'; fly.src = ITEM_ART.rcandy; fly.alt = ''; fly.style.left = (r.left + r.width * Math.min(.92, Math.max(.08, km0 / need)) - 18) + 'px'; fly.style.top = (r.top - 30) + 'px'; document.body.appendChild(fly); sfx('pickup');
+  const b = btn.querySelector('b'), t0 = performance.now() + 380, T = Math.min(1400, 500 + (km1 - km0) / need * 1400);
+  const step = now => { if (pokeId !== P.id) { fly.remove(); return done(); } const x = Math.max(0, Math.min(1, (now - t0) / T)), e = 1 - (1 - x) ** 3, v = km0 + (km1 - km0) * e;
+    btn.style.setProperty('--p', Math.min(100, v / need * 100).toFixed(1) + '%'); if (b) b.textContent = fmtKm(v); btn.classList.toggle('cdy-run', x > 0 && x < 1);
+    if (x < 1) requestAnimationFrame(step); else { fly.remove(); btn.classList.remove('cdy-run'); done(); } };
+  requestAnimationFrame(step); }
+function ppCdySet(P) { const c = $('#ppCdy'); if (!c) return; const on = !!P && cdyOkP(P) && !$('#pokePop').classList.contains('view') && !boxFromSlot; c.hidden = !on; if (on) c.innerHTML = `<img src="${ITEM_ART.rcandy}" alt=""><b>×${itemsOf().rcandy || 0}</b>`; }
 function ibagToss(ids) {   /* ids 하나면 개수 고르기, 여럿이면 고른 종류를 모두 버림 */
   const fld = ibagTab === 'field', FN = fld ? Object.fromEntries(fbagList().map(([k, n, src]) => [k, { id: k, n, src }])) : null, IT = fld ? FN : ITEM, I = fld ? { ...(S.fbag || {}) } : itemsOf(), el = $('#itemPop'), one = ids.length === 1 ? IT[ids[0]] : null;   /* v10.06: 필드 탭(가방 필드 소품)도 같은 창으로 버림 */ let n = one ? 1 : 0; const tot = ids.reduce((a, k) => a + (I[k] || 0), 0);
   const draw = () => { el.innerHTML = `<div class="win ipwin bag-ask" role="dialog" aria-label="버리기">${one ? `<img ${fld ? 'class="fpth" ' : ''}src="${fld ? one.src : ITEM_ART[one.a]}" alt=""><p>${J({ name: one.n }, '을/를')} 몇 개 버릴까요?</p><div class="bag-cnt"><button class="lk-btn" data-m>−</button><b>${n}</b><button class="lk-btn" data-p>+</button><button class="opt" data-mx>전부</button></div><span>가진 개수 ${I[one.id]}</span>` : `<p>고른 ${ids.length}종 ${tot}개를 버릴까요?</p><span>${ids.map(k => IT[k].n).join(', ')}</span>`}<span>버린 건 되돌릴 수 없어요</span><div class="bag-yn"><button class="lk-btn" data-no>아니요</button><button class="lk-btn warn" data-yes>버리기</button></div></div>`; };
@@ -13123,7 +13134,7 @@ $('#boxQ').addEventListener('input', () => { if (!$('#boxQ').value.trim() && box
   $('#boxGrid').addEventListener('pointermove', e => { if (pk && Math.hypot(e.clientX - x0, e.clientY - y0) > 8) off(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(k => $('#boxGrid').addEventListener(k, () => setTimeout(off, k === 'pointerup' ? 80 : 0)));
   $('#boxGrid').closest('.win, .sheet')?.addEventListener('scroll', off, true); }
-$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b && repPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); repSet(P); mgr.hidden = true; return; }   /* v12.20 경완: 대표 포켓몬 고르기 */ if (b && mgPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); mgr.hidden = true; mgMon = S.mons.find(o => o.pid === P.id) || { pid: P.id, sp: P.sp, form: P.sp, sk: fKey(P.sp, P.sex), name: nameOf(P) }; mgOpenG = ''; mgView('sel'); return; }   /* v7.57 경완: 게임 고르기에서 함께 놀 포켓몬을 박스 화면에서 골라 바꿈 */
+$('#boxGrid').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b && cdyPick) { const P = boxOf(+b.dataset.id); if (!P) return; if (!cdyOkP(P)) { sfx('wob'); return; } sfx('tap'); cdyGive(P); return; }   /* v23.21 이상한사탕 줄 포켓몬 */ if (b && repPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); repSet(P); mgr.hidden = true; return; }   /* v12.20 경완: 대표 포켓몬 고르기 */ if (b && mgPick) { const P = boxOf(+b.dataset.id); if (!P) return; sfx('tap'); mgr.hidden = true; mgMon = S.mons.find(o => o.pid === P.id) || { pid: P.id, sp: P.sp, form: P.sp, sk: fKey(P.sp, P.sex), name: nameOf(P) }; mgOpenG = ''; mgView('sel'); return; }   /* v7.57 경완: 게임 고르기에서 함께 놀 포켓몬을 박스 화면에서 골라 바꿈 */
   if (b) { ppBud = false; ppSolo = false; openPoke(+b.dataset.id); } });
 let pokeId = null;
 // v10.35 경완 '성격은 포켓몬 정보카드에서도', '특성, 숨겨진 특성': 체육관 배틀과 같은 규칙 (gym/abil.json, 체육관에서 이미 정해졌으면 그 값)
@@ -13176,7 +13187,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
   const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득' : boxFromSlot ? '필드에 내보내기' : '필드로';   /* v6.00 경완: 아래 버튼은 도감·필드로·짝꿍으로 */ $('#ppDex').hidden = pick; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
   const noRoom = budPick == null && S.buds.length >= MAX_BUDS;
-  { $('#ppEvo').hidden = boxFromSlot; /* v11.72 경완: 짝꿍 칸에서 포켓몬 고를 때도 진화하기 */ setEvoBtn($('#ppEvoBtn'), P); $('#ppItem').hidden = true; }   /* v16.17 경완 '도구 쓰기 버튼 왜 나오지': 진화하기가 도구를 묻는다 */   /* 특별한 진화 버튼이면 그 버튼이 도구 쓰기 */
+  { $('#ppEvo').hidden = boxFromSlot; /* v11.72 경완: 짝꿍 칸에서 포켓몬 고를 때도 진화하기 */ setEvoBtn($('#ppEvoBtn'), P); $('#ppItem').hidden = true; ppCdySet(P); }   /* v16.17 경완 '도구 쓰기 버튼 왜 나오지': 진화하기가 도구를 묻는다 */   /* 특별한 진화 버튼이면 그 버튼이 도구 쓰기 */
   const bb = $('#ppBud'); bb.hidden = boxFromSlot; bb.textContent = isBud ? '짝꿍 해제' : noRoom ? '짝꿍 가득' : '짝꿍으로'; bb.disabled = !isBud && noRoom; bb.classList.toggle('off', !isBud && noRoom); bb.classList.toggle('sunk', isBud);   // 짝꿍이면 눌린 버튼(누르면 해제)
 }
 // 진화하기 버튼 (정보 카드·필드 개체 정보 공용): 가로로 긴 버튼. 아직이면 꺼진 모양이고 누르면 버튼 가운데 말풍선(진화까지 쌓인 km / 필요 km, 또는 조건). 최종 진화는 같은 자리에 같이 움직인 거리
@@ -13190,6 +13201,7 @@ function setEvoBtn(btn, P) {
   btn.classList.remove('fin', 'dis', 'spc', 'km'); if (cls) btn.classList.add(...cls.split(' ')); if (btn.innerHTML !== html) btn.innerHTML = html;
   if (tip) { btn.dataset.tip = tip; btn.dataset.tipc = ''; } else { delete btn.dataset.tip; delete btn.dataset.tipc; }
 }
+$('#ppCdy').onclick = () => { const P = boxOf(pokeId); if (!P || !cdyOkP(P)) return; sfx('tap'); cdyQty(P); };
 $('#ppDex').onclick = () => { const P = boxOf(pokeId); if (!P) return; sfx('open'); $('#dexPop').classList.add('ovr'); openCard(P.sp); };   // v6.00 경완: 포켓몬 카드에서 도감 카드로 (카드 위에 뜬다)
 // v11.83 경완: 랭킹의 포켓몬 박스 → 그 포켓몬 상세 카드 (남의 포켓몬이라 보기만: 버튼·이름 바꾸기·넘기기 없음)
 function openPokeView(P) {
@@ -13292,6 +13304,8 @@ $('#ppBud').onclick = () => {
   renderBox(); if (slot != null) { closePoke(); setMgrTab('buddy'); } else openPoke(P.id);   // 짝꿍 칸에서 왔으면 짝꿍 탭으로, 아니면 카드에 남아 버튼만 눌린 모양으로
   evoNotice(P.sp, P);
 };
+new MutationObserver(() => { if (mgr.hidden && cdyPick) { cdyPick = false; mgr.classList.remove('mgpick', 'cdypick'); cdyMark(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
+new MutationObserver(() => { if (cdyPick) cdyMark(); }).observe($('#boxGrid'), { childList: true });
 new MutationObserver(() => { if (mgr.hidden && repPick) { repPick = false; mgr.classList.remove('mgpick'); setTimeout(openMyCard, 0); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 new MutationObserver(() => { if (mgr.hidden) { if (boxTy) setFilter('boxType', 0); if (mgPick) { mgPick = false; mgr.classList.remove('mgpick'); } closePoke(); budPick = null; clearBudFocus(); boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
@@ -15959,7 +15973,7 @@ dragClose(monPop, { can: () => true, skip: t => !!t.closest('#mPages'), close: (
 dragClose($('#dexPop'), { can: () => true, close: () => closeCard() });
 dragClose(infoEl, { can: () => !!S.sel, close: () => select(null) });
 dragClose(hatchEl, { can: () => !!eggClose, close: () => eggClose?.() });
-dragClose(mgr, { can: () => mgPick || repPick, close: () => { mgr.hidden = true; } });
+dragClose(mgr, { can: () => mgPick || repPick || cdyPick, close: () => { mgr.hidden = true; } });
 $('#mgPop').addEventListener('click', e => { const sm = e.target.closest('.mg-rks > summary'); if (!sm) return; e.preventDefault(); const d = sm.parentElement, B = d.querySelector('.mg-rkl');   /* v17.08: 랭킹 버튼(.mg-rkb)과 이름이 겹쳐 온라인일 때 40px 상자로 무너지던 것 → .mg-rkl */ if (!B || d._anim) return; sfx('tap'); haptic(0);   /* v7.86 경완: 랭크별 패시브 펼치고 접을 때 스르륵 · v7.96: 아이폰 사파리는 details 자체 높이 애니가 안 먹어서 안쪽 상자(.mg-rkb) 높이를 움직임 */
   const open = !d.open; if (open) { d.open = true; d.classList.add('on'); } else d.classList.remove('on'); const h = B.scrollHeight; B.style.overflow = 'hidden';
   d._anim = B.animate([{ height: (open ? 0 : h) + 'px', opacity: open ? .3 : 1 }, { height: (open ? h : 0) + 'px', opacity: open ? 1 : .3 }], { duration: open ? 320 : 220, easing: open ? 'cubic-bezier(.2,.9,.3,1)' : 'ease-in' });
@@ -16352,7 +16366,7 @@ $('#buddy').addEventListener('click', e => {
   if (!a) { const c = e.target.closest('.bd-card'), b = c && S.buds[+c.dataset.i]; if (b && boxOf(b.pid)) { sfx('tap'); budPick = null; if (b.nw) { delete b.nw; save(); renderBuddy(); } ppBud = true; openPoke(b.pid); } return; }   // 짝꿍 칸을 누르면 그 포켓몬 정보 카드
   const i = +e.target.closest('[data-i]').dataset.i;
   if (a === 'pick') { budPick = i; setMgrTab('box'); }
-  else if (a === 'cdy') { sfx('tap'); if (S.buds[i]) cdyPop(S.buds[i].pid); }
+  else if (a === 'cdy') { sfx('tap'); const P = boxOf(S.buds[i]?.pid); if (P) { ppBud = true; cdyGive(P); } }
   else if (a === 'evo') { const P = boxOf(S.buds[i]?.pid); if (evoMix(P)) { if (evoMixGo(P)) evoPick(P); } else if (toolEvos(P).length) toolGo(P); else if (budReady(S.buds[i])) evolvePoke(P); }
   else if (S.buds[i]) { log(`${J({ name: SPECIES[S.buds[i].sp].n },'과/와')} 짝꿍을 해제했다.`); S.buds.splice(i, 1); save(); renderRun(); }
 });
