@@ -1117,8 +1117,8 @@ const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) |
 const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
   /* v23.37 경완 '전설의 체육관 승급 혜택에 전설 알이 없네': 심사 화면(보상 보이는 쪽)에는 그 타입 전설 알도 한 줄. 이미 받은 타입이면 안 보임. 주는 건 그대로 전당 연출. v23.38 경완 '전설 알을 골드 위로' */
   { const t = g?.ty; if (i === GRADES.length - 1 && !noRw && t && !(g.legE || {})[t]) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(t) || ''}</span>`, `${GA.LT_ADJ?.[t] || TYPE_KO[t]} 전설 알`, '<b>1개</b>']); }
+  if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);   /* v23.39 경완 '다른 등급 혜택도 알 먼저, 그 밑에 골드' */
   if (GR_GOLD[i] && !noRw) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
-  if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);
   /* v18.87 경완 '전설 체육관은 전설 알 슬롯 없이 등급 혜택만': 전설 알은 강박사가 따로 들고 와서 준다 (legEggPop) */
   L.push(['big', '', '체육관 크기', ar(i, i + 1, '단계')]);
   if (SF_MAX[i] !== SF_MAX[i - 1]) L.push(['sf', '', '트레이너 고용', ar(SF_MAX[i - 1], SF_MAX[i], '명')]);
@@ -2053,7 +2053,7 @@ function homeSay() {
   // 도전자 받기 (경완 2026-10-29): 기다리는 도전자가 없으면 비활성, 있으면 'N명의 도전자가 기다리고 있어요' + 새로 온 도전자가 있으면 빨간 점 (누르면 사라짐)
   const n = g.q.length, qb = $g('.gy-qbtn'), cap = $g('.gy-qcap'), dot = $g('.gy-qdot'), nw = g.q.some(c => c.id > (g.qSeen | 0));
   const bs = bsReady(g), gl = qb?.querySelector('.ga-l');
-  if (bs) try { window.GymBGM?.prep('league'); } catch (e) {}   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
+  if (bs) try { window.GymBGM?.prep('league'); if ((LEGK_ON || window.legDemo) && (st().gmax | 0) === GRADES.length - 2) window.GymBGM?.prep('eyeChamp'); } catch (e) {}   /* 전설 심사: 강박사 등장 곡도 미리 */   /* 승급 심사 곡을 미리 만들어 두어 버튼 누르자마자 나오게 */
   if (qb) { qb.disabled = !n && !bs; qb.classList.toggle('has', !!n && !bs); qb.classList.toggle('bs', bs); qb.setAttribute('aria-label', bs ? '승급 심사' : '도전자 받기'); if (gl) gl.textContent = bs ? '승급 심사' : '도전자 받기'; }
   if (qb) { let qc = qb.querySelector('.gy-qcnt'); const on = !!n && !bs; if (on && !qc) { qc = document.createElement('b'); qc.className = 'gy-qcnt'; qb.appendChild(qc); } if (qc) { qc.hidden = !on; qc.textContent = n > 9 ? '9+' : n; } }   // 도전자 수 = 필드 체육관 아이콘과 같은 파란 딱지, 버튼 오른쪽 위 모서리 (경완 2026-11-03)
   if (cap) { cap.hidden = !!n && !bs; cap.classList.toggle('none', !n && !bs); cap.textContent = bs ? `${GRADES[(g.gmax | 0) + 1][1]} 승급 심사를 받을 수 있어요` : n ? `${n}명의 도전자가 기다리고 있어요` : '아직 도전자가 없어요'; }   // 없을 때도 안내 (경완 2026-10-29)
