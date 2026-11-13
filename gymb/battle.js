@@ -1995,7 +1995,7 @@ const boxPop = () => boxWin(false);
 // 정보 카드 html (넘기기 때 옆 카드도 같은 걸로 그린다)
 const inTr = id => !!S.gym?.tr?.some(e => e.id === id);
 /* v23.59 경완 '상세카드 기술 바꾸기 목록 창 버튼 없애고 그 자리에 순서 바꾸기·추천 기술, 기술 꾹 누르면 순서': 체육관·훈련장 상세카드 같이 */
-const mvHdTools = m => `<span class="mv-tools mp-mvt">${m.mv.length > 1 ? '<button type="button" class="mv-ordb" data-a="mvord">순서 바꾸기</button>' : ''}<button type="button" class="mv-ordb mv-recb" data-a="mvrec">추천 기술</button></span>`;
+const mvHdTools = m => /* v23.62 경완 '순서 바꾸기 버튼 없애자' — 순서는 꾹 눌러 끌기만 */ `<span class="mv-tools mp-mvt"><button type="button" class="mv-ordb mv-recb" data-a="mvrec">추천 기술</button></span>`;
 const mvEmpty = m => m.mv.length < 4 ? `<button type="button" class="mp-mv empty" data-a="mvs${m.mv.length}"><b>빈 칸</b></button>` : '';
 function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌려줌). 돌려주는 함수 h(a) = 처리했으면 true
   const m = gm(P), list = p.querySelector('.mp-moves.mp-line'); if (!list) return () => false;
