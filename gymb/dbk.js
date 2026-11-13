@@ -368,7 +368,7 @@
     const fx = mk(`left:${MX - MW}px;top:${MY - MH * 1.25}px;width:${MW * 2}px;height:${MH * 2}px;opacity:0`);
     const fl = Array.from({ length: 7 }, (_, i) => mk(`left:${MW * (.45 + i * .18) - MW * .25}px;bottom:${MH * .18}px;width:${MW * .5}px;height:${MH * (1.1 + (i % 3) * .18)}px;border-radius:50% 50% 45% 45% / 70% 70% 30% 30%;background:linear-gradient(to top,${rgba(tO, .0)},${rgba([255, 150, 40], .75)} 25%,${rgba([255, 230, 90], .9)} 55%,rgba(255,255,255,0));filter:blur(${Wd * .012}px);mix-blend-mode:screen;transform-origin:50% 100%`, 'div', fx));
     const core = mk(`left:${MW * .5}px;top:${MH * .55}px;width:${MW}px;height:${MH}px;border-radius:50%;background:radial-gradient(circle,${rgba([255, 255, 220], .9)} 0,${rgba(tO, .55)} 45%,rgba(0,0,0,0) 70%);filter:blur(${Wd * .02}px);mix-blend-mode:screen`, 'div', fx);
-    /* 불꽃 기운 위에 포켓몬을 한 번 더 그려 기운에 안 묻히게. v24.38 경완 '기술 이름 사라질 때 포켓몬 동작이 프레임 점프': 복제 그림(따로 놀고 장면 scale 1.06 만큼 커짐) 대신
+    /* 불꽃 기운 위에 포켓몬을 한 번 더 그려 기운에 안 묻히게. v24.40 경완 '기술 이름 사라질 때 포켓몬 동작이 프레임 점프': 복제 그림(따로 놀고 장면 scale 1.06 만큼 커짐) 대신
        캔버스에 진짜 포켓몬 그림을 매 프레임 그대로 베껴 그림 + 장면 확대만큼 되돌려서, 사라질 때 진짜 포켓몬과 딱 겹침 */
     const SC = 1.06, cX = Wd / 2, cY = Hd / 2, mw = c.monEl.closest('.bt-mw') || c.monEl, wR = rel(mw.getBoundingClientRect()), bx = { left: Math.max(mR.left, wR.left), top: Math.max(mR.top, wR.top) }; bx.width = Math.max(1, Math.min(mR.left + mR.width, wR.left + wR.width) - bx.left); bx.height = Math.max(1, Math.min(mR.top + mR.height, wR.top + wR.height) - bx.top);
     const mcl = mon ? mk(`left:${cX + (bx.left - cX) / SC}px;top:${cY + (bx.top - cY) / SC}px;width:${bx.width / SC}px;height:${bx.height / SC}px;opacity:0`) : null; let mcRaf = 0;
