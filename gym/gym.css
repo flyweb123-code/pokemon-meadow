@@ -3890,8 +3890,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .mec-wrap .win[data-ty] .mtf-bp{position:absolute;left:50%;top:-8px;width:64px;height:64px;margin-left:-32px;z-index:8;pointer-events:none;display:block}
 #gym .mec-wrap .win[data-ty] .mtf-bp img{display:block;width:100%;height:100%;image-rendering:pixelated;max-width:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.35))}
 #gym .mec-wrap .win[data-ty][data-g="5"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 6px var(--t2))}#gym .mec-wrap .win[data-ty][data-g="6"] .mtf-bp img{filter:drop-shadow(0 2px 0 rgba(0,0,0,.35)) drop-shadow(0 0 8px var(--t4)) drop-shadow(0 0 14px var(--t2))}
-/* 경완 11-11: 배틀 정보 칸 이름 옆 이로치 아이콘 (beta .shico 그림을 작게) */
-.bt-hb .shico{position:absolute;top:17px;width:9px;height:9px;margin:0;background-size:contain;image-rendering:pixelated}.bt-hb.p .shico{top:16px}
 
 /* v21.88 경완 '관장 카드에 체육관 등급이랑 이름도 표시' */
 #gym .mec-gn{display:flex;align-items:center;justify-content:center;gap:6px;margin:2px 0 1px;font-size:13px}#gym .mec-gn b{color:#2a2a3a}#gym .mec-gn em{font-style:normal;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff;background:var(--k3,#5a6a9a);box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
@@ -4426,5 +4424,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-bsw .gy-body{overflow:hidden}#gym .gy-bsw .bsw-mid{min-height:0}#gym .gy-bsw .bsw-top{flex:none}
 #gym .gy-bsw .bsw-ben{flex:0 1 auto;min-height:0;display:flex;flex-direction:column}#gym .gy-bsw .bsw-ben h5{flex:none}
 #gym .gy-bsw .bsw-ben .pk-ben{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}#gym .gy-bsw .bsw-ben .pk-ben li{flex:none}#gym .gy-bsw .bsw-go{flex:none}
-#gym .gy-bsw .bsw-ben .pk-ben li{transform-origin:50% 50%;will-change:opacity,transform}   /* 스크롤 페이드는 gym.js fd() 가 칸마다 (v24.36 mask 없앰) */
+#gym .gy-bsw .bsw-ben{position:relative}#gym .gy-bsw .bsw-ben::before,#gym .gy-bsw .bsw-ben::after{content:'';position:absolute;left:0;right:0;height:64px;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s}#gym .gy-bsw .bsw-ben::before{top:var(--lt,0);background:linear-gradient(180deg,#0c0a1c,rgba(12,10,28,.85) 25%,rgba(12,10,28,0))}#gym .gy-bsw .bsw-ben::after{bottom:0;background:linear-gradient(0deg,#0c0a1c,rgba(12,10,28,.85) 25%,rgba(12,10,28,0))}#gym .gy-bsw .bsw-ben.fT::before,#gym .gy-bsw .bsw-ben.fB::after{opacity:1}   /* v24.39 경완 '배경이랑 같은 색 그라데이션으로 덮어서 서서히 사라지게' (배경 끝색 #0c0a1c) */
 #gym .gy-bsw .gy-body{row-gap:0}#gym .gy-bsw .bsw-mid{justify-content:flex-start}#gym .gy-bsw .bsw-top{margin-block:auto 16px}#gym .gy-bsw .bsw-ben{flex:1 1 0}#gym .gy-bsw .bsw-ben .pk-ben{flex:1 1 auto;padding-bottom:8px}#gym .gy-bsw .gy-body>.bsw-go{margin-top:0}   /* v24.28 경완 '승급 혜택 영역이 심사 받기 버튼 위 테두리까지 닿게' */
