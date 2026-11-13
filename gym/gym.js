@@ -3846,10 +3846,10 @@ async function trainTest() {
   try {
     for (;;) {
       if (R.roll) { trDrop(R.ids); R = trNew(trRollLu()); }   /* 시험: 랜덤 라인업으로 1층부터 */
-      const ids = R.ids, f = R.floor, boss = f % 10 === 0, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
+      const ids = R.ids, f = R.floor, amb = R.amb && f % 10 !== 0, boss = f % 10 === 0 || !!amb, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
       const my = [R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)).map(GB().boxOf);
-      const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
-      const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
+      R.amb = 0; const lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + (boss ? (big ? 5 : amb ? 2 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
+      const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team: [e], appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
       R.balls = R.balls || { mon: 5 }; const T = { xp: TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss };   /* v23.68 동료 볼 (가방) */
       const intro = first && f === 1 ? async o => { await o.msgTap('동료 몬스터볼 5개를 받았다!'); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); await o.msgTap('도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'); } : null;
       const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music: big ? 'bossBig' : boss ? 'boss' : 'wild', win: 'winWild', meFrontUrl, meBackUrl,
@@ -3885,11 +3885,10 @@ async function trMyst(R, o) {
   await o.msgTap(`${R.floor}층에 수상한 상자가 놓여 있다…\n'강박사 것. 절대 열지 마시오'`);
   if (await o.choose('상자를 열어 볼까요?', [['열어 본다', '무슨 일이 생길지 몰라요', TR_RC[2]], ['그냥 지나간다', '', '#9aa0b4,#6c7288']])) { await o.msgTap('못 본 척 지나갔다.\n(멀리서) 강박사: "휴…"'); return; }
   const r = Math.random(), live = R.ids.filter(id => (R.hp[id] ?? 1) > 0);
-  if (r < .25) { R.balls = R.balls || {}; R.balls.ultra = (R.balls.ultra | 0) + 1; await o.msgTap('상자 안에 동료 하이퍼볼이 있었다!\n(쪽지: "비상용. 쓰지 마. -강박사")'); }
-  else if (r < .45) { R.coin = (R.coin | 0) + 50; await o.msgTap('상자 안에서 수련탑 코인 50개가 나왔다!\n강박사의 비상금인 것 같다…'); }
-  else if (r < .6) { R.ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap('상자에서 따뜻한 김이 났다!\n모두 기운을 되찾았다!'); }
-  else if (r < .8) { await o.msgTap('상자 안엔 강박사의 양말 한 짝뿐이었다.\n…냄새가 지독하다.'); await o.msgTap('아무 일도 없었다.'); }
-  else { live.forEach(id => { R.hp[id] = Math.max(.01, (R.hp[id] ?? 1) - .15); }); await o.msgTap('펑! 상자에서 연기가 터졌다!\n모두 HP가 조금 줄었다…'); await o.msgTap('(멀리서) 강박사: "그러게 열지 말랬잖니!"'); }
+  if (r < .25) { R.balls = R.balls || {}; R.balls.ultra = (R.balls.ultra | 0) + 2; await o.msgTap('상자 안에 동료 하이퍼볼 2개가 있었다!\n(쪽지: "비상용. 쓰지 마. -강박사")'); }
+  else if (r < .45) { R.coin = (R.coin | 0) + 80; await o.msgTap('상자 안에서 수련탑 코인 80개가 나왔다!\n강박사의 비상금인 것 같다…'); }
+  else if (r < .65) { R.ids.forEach(id => { R.hp[id] = 1; }); await o.msgTap('상자에서 따뜻한 김이 났다!\n쓰러진 포켓몬까지 모두 기운을 되찾았다!'); }
+  else { R.amb = 1; await o.msgTap('상자가 덜컹거린다…!\n안에서 화난 포켓몬이 튀어나왔다!'); await o.msgTap('(멀리서) 강박사: "그러게 열지 말랬잖니!\n이기면 귀한 걸 줄게!"'); }   /* 경완 '양말·연기 펑은 허무': 꽝 없이, 마지막은 우두머리급 배틀 (이기면 귀한 보상) */
 }
 /* v23.68 잡은 동료: 시험 포켓몬(gTst)으로 만들어 이번 판 팀에 넣음 → 훈련이 끝나면 trDrop 으로 사라짐. 6마리가 넘으면 하나를 쉬게 함 (이번 판에서 빠짐) */
 async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
