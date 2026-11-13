@@ -4347,4 +4347,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v23.36 경완 '지원서 배경·고용 관리 프로필 박스·고용 트레이너 상세카드도 트레이너 종류별 배틀 배경': --cbg/--cpl = 도전자 배틀과 같은 배경·발판 (manage.js cbgSt). 배경 파일 아래 32줄은 검은 띠라 위 160줄만 보이게 높이 120% */
 .cv-deck .cv-photo,#gym .sfc-pic,#gym .sd2-hero{background:var(--cbg,url(../gym/img/bt/bg_in1.png)) center 0/auto 120% no-repeat,#e8c070;image-rendering:pixelated}
 .cv-photo::after,#gym .sd2-hero::after{background-image:var(--cpl,url(../gym/img/bt/pl_e.png))}
-#gym .sfc-pic .sfc-base{left:-4px;right:-4px;bottom:-14px;height:38px;border-radius:0;box-shadow:none;background:var(--cpl,url(../gym/img/bt/pl_e.png)) 0 0/100% 100% no-repeat;image-rendering:pixelated}
+#gym .sfc-pic{overflow:hidden}   /* 발판이 프로필 박스 밖으로 안 나오게 (경완) */
+#gym .sfc-pic .sfc-base{left:0;right:0;bottom:-12px;height:36px;border-radius:0;box-shadow:none;background:var(--cpl,url(../gym/img/bt/pl_e.png)) 0 0/100% 100% no-repeat;image-rendering:pixelated}
