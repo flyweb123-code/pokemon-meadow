@@ -3833,7 +3833,7 @@ async function yaTest() {
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
   return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
-/* v23.77 경완 '수련탑 고르기는 창으로 뜨기보다 아예 새로운 대기 화면, 수련탑 컨셉으로': 화면 전체 대기실 (#trLobby).
+/* v23.80 경완 '수련탑 고르기는 창으로 뜨기보다 아예 새로운 대기 화면, 수련탑 컨셉으로': 화면 전체 대기실 (#trLobby).
    하늘·구름·200층 탑(10층마다 우두머리 깃발)·탑 아래 관장, 함께 오를 6칸 + 코스트 막대, 아래 내 포켓몬 상자 전체(타입 상관없이). 체육관 라인업은 안 건드림.
    이어 할 기록(trSave)이 있으면 'N층부터 이어 오르기'. 🎲 랜덤 = 시험 포켓몬(gTst·P.rnd) */
 const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;color:#20222c;background:#2b2f6e;font-family:inherit;overflow:hidden;padding-top:var(--si-top,env(safe-area-inset-top,0px));padding-bottom:var(--si-bottom,env(safe-area-inset-bottom,0px))}
