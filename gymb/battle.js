@@ -860,7 +860,7 @@ async function trBall() {
     T.caught = { sp: E.sp, lv: pk.level, hp: pk.hp / pk.maxhp, e: B.foe[B.o.e.indexOf(pk)] }; T.caught.shiny = !!(E.shiny || T.caught.e?.shiny);
     await msgTap(`신난다! ${eul(E.nm)} 동료로 맞이했다!`); bl.remove(); await msgTap(`${eun(E.nm)} 이번 도전 동안 함께 싸워 준다!`); return true; }
   ballPoof('e'); se('BOWA2'); bl.remove(); m.classList.remove('recall'); await wait(300);
-  await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return false;
+  await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return 'miss';
 }
 function yesNo(q) {
   return new Promise(res => { const p = panel(`<div class="bp-yn"><p>${q}</p><button class="bb yes" data-a="1"><span>네</span></button><button class="bb no" data-a="0"><span>아니요</span></button></div>`);
@@ -1127,6 +1127,7 @@ async function run(opts) {
   if (opts.foe.hold != null) try { foeItems(foeT, opts.foe.hold); } catch (e) {}   // 도전자 지닌 도구 (v16.89)
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   { const A0 = btl.actions.runMegaEvo.bind(btl.actions); btl.actions.runMegaEvo = pk => { const r = A0(pk); if (r && pk.species.id === 'zygardemega') { nihil(pk); for (const q of btl.queue.list) if (q.pokemon === pk && q.move?.id === 'coreenforcer') q.move = btl.dex.moves.get('nihillight'); } return r; }; }   /* 이번 턴에 고른 코어퍼니셔도 니힐레이저로 */   /* 경완 2026-11-12: 레전드 Z-A 처럼 메가지가르데가 되면 코어퍼니셔 → 니힐레이저 (메가진화한 동안 = 그 배틀 끝까지) */
+  { const RM = btl.actions.runMove.bind(btl.actions); btl.actions.runMove = (mv, pk, ...r) => { if (B?.passP && pk?.side === btl.p1) { B.passP = 0; return; } return RM(mv, pk, ...r); }; }   /* 수련탑 동료 볼을 놓친 턴: 내 포켓몬은 기술을 안 씀 */
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
@@ -1232,6 +1233,7 @@ async function shiftAsk(c2) {
 }
 async function choose(req) {
   const A = B.act.p;
+  B.passP = 0;
   if (req.forceSwitch) { await msg(`다음 포켓몬을 골라 주세요.`, 0); const i = await partyPanel(req, true); return 'switch ' + (i + 1); }
   { const M = req.active?.[0]?.moves || []; if (M.length === 1 && M[0].pp == null) return 'move 1'; }   // 꽃잎댄스·역린 같은 연속 공격, 반동으로 쉬기: 본가처럼 고르지 않고 바로 (경완 2026-11-02 'PP undefined')
   B.gkUsed = null;   /* 이번 턴에 고른 기믹: 그 턴 메시지 동안은 바탕색 유지, 다음 턴엔 지금 포켓몬 모습으로 (경완 2026-11-12) */
@@ -1240,7 +1242,7 @@ async function choose(req) {
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
-    if (a === 'bag') { if (B.train?.balls) { if (await trBall()) return 'caught'; continue; } await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
+    if (a === 'bag') { if (B.train?.balls) { const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = 1; const M = req.active[0].moves, k = M.findIndex(m => !m.disabled && m.pp > 0); return 'move ' + (k < 0 ? 1 : k + 1); } continue; }   /* 놓치면 본가처럼 턴이 넘어감 (상대만 움직임) */ await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
     if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
