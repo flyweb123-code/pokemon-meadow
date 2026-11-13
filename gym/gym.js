@@ -3868,24 +3868,26 @@ async function trPost(R, o, boss, ids) {
   R.floor++; return true;
 }
 /* v23.54 경완 '포켓로그처럼 층 끝날 때마다 아이템 선택': 이길 때마다 보상 3개 중 하나 (흔함 초록·좋음 파랑·귀함 금빛, 우두머리 층은 귀한 것이 더 자주).
-   v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자': 회복·부활·경험치 부적만 (모두 그 판에서만) */
+   v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자', v23.56 본가 도구 기준 (모두 그 판에서만) */
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
 async function trReward(R, o, ids, boss) {
-  const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .95).sort((a, b) => hp(a) - hp(b));
-  const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id)), lead = live.includes(R.lead) ? R.lead : live[0];
-  const U = boss ? 3 : 1, C = [   // [무게, 등급, 제목, 설명, 고르면]
-    [hurt.length ? 4 : 0, 0, '상처약', hurt.length ? `${nm(hurt[0])} HP 50% 회복` : '', async () => { R.hp[hurt[0]] = Math.min(1, hp(hurt[0]) + .5); return `${eun(nm(hurt[0]))} 기운을 차렸다!`; }],
-    [hurt.length > 1 ? 3 : 1, 0, '좋은상처약', '모두 HP 30% 회복', async () => { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '모두 HP가 회복됐다!'; }],
-    [down.length ? 5 : 0, 1, '기력의조각', down.length ? `${nm(down[0])} HP 절반으로 부활` : '', async () => { R.hp[down[0]] = .5; return `${eun(nm(down[0]))} 다시 일어섰다!`; }],
+  const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .999);
+  const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id));
+  const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] | 0); } catch (e) { return 100; } };
+  const cur = id => Math.round(hp(id) * mx(id));
+  /* v23.56 경완 '상처약은 본가처럼 절댓값으로 쓸 포켓몬 선택, 기력의덩어리도 한 마리만, 도구는 본가 기준': 상처약 20·좋은상처약 60·고급상처약 120·회복약 가득, 기력의조각 절반·기력의덩어리 가득 (한 마리) */
+  const who = async (L, q) => { const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };
+  const heal = n => async () => { const id = await who(hurt, '누구에게 쓸까요?'); if (id == null) return null; const a = cur(id), M = mx(id), b = Math.min(M, a + n); R.hp[id] = b / M; return `${nm(id)}의 HP가 ${b - a} 회복됐다!`; };
+  const rev = f => async () => { const id = await who(down, '누구를 살릴까요?'); if (id == null) return null; R.hp[id] = f; return `${eun(nm(id))} 기운을 차렸다!`; };
+  const U = boss ? 3 : 1, H = hurt.length ? 1 : 0, D = down.length ? 1 : 0, C = [   // [무게, 등급(0 흔함 1 좋음 2 귀함), 이름, 설명, 고르면]
+    [4 * H, 0, '상처약', 'HP를 20 회복', heal(20)], [3 * H, 0, '좋은상처약', 'HP를 60 회복', heal(60)], [2 * H, 1, '고급상처약', 'HP를 120 회복', heal(120)], [U * H, 2, '회복약', 'HP를 모두 회복', heal(1e9)],
+    [4 * D, 1, '기력의조각', '기절한 포켓몬 하나를 HP 절반으로', rev(.5)], [U * D, 2, '기력의덩어리', '기절한 포켓몬 하나를 HP 가득', rev(1)],
     [2, 1, '경험치 부적', '이번 훈련 경험치 +25%', async () => { R.xpM = (R.xpM || 1) + .25; return `이번 훈련 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }],
-    [down.length ? U : 0, 2, '기력의덩어리', '쓰러진 포켓몬 모두 HP 가득 부활', async () => { down.forEach(id => { R.hp[id] = 1; }); return '쓰러졌던 포켓몬이 모두 일어섰다!'; }],
-    [hurt.length ? U : 0, 2, '회복의 샘', '모두 HP 가득 회복', async () => { live.forEach(id => { R.hp[id] = 1; }); return '모두 HP가 가득 찼다!'; }],
     [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'; } return '상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'; }]];
   const L = []; let pool = C.filter(c => c[0] > 0);
   while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
   await o.msg(boss ? '우두머리가 귀한 보상을 떨어뜨렸다!\n하나만 가져가자.' : '보상을 찾았다!\n하나만 가져가자.', 400);
-  const i = await o.choose('보상을 하나 골라요', L.map(c => [c[2], c[3], TR_RC[c[1]]]));
-  const t = await L[i]?.[4]?.(); if (t) await o.msgTap(t);
+  for (;;) { const i = await o.choose('보상을 하나 골라요', L.map(c => [c[2], c[3], TR_RC[c[1]]])); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
