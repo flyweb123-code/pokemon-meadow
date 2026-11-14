@@ -1918,7 +1918,7 @@ async function moveFx(s, id, miss, fx, t) {
   const d = t && t[0] !== s[0] ? t : null, sw = [], o = self ? s : d || other(s);
   if (s[1]) sw.push(s[0]); if (d && d[1]) sw.push(d[0]);
   const flip = k => ['mw', 'mon'].forEach(n => el.querySelectorAll(`.bt-${n}.${k}`).forEach(x => x.classList.toggle('s2')));
-  const fxL = ['.bt-ptc', '.bt-fx', '.bt-essb', '.bt-essf'].map(q => $b(q)).filter(Boolean);
+  const fxL = ['.bt-ptc', '.bt-fx'].map(q => $b(q)).filter(Boolean);   /* 경완 '더블 배틀 중간에 포켓몬 바뀌고 나서 화면 전체 덮는 기술 연출 좌우 여백': 5세대 이후 연출 판(bt-essb·bt-essf)은 옮기지 않음 — 그 판은 포켓몬 실제 자리를 재서 그리므로(essfx center) 옮기면 판 가장자리가 비고 자리도 두 번 어긋남 */
   sw.forEach(flip); fxL.forEach(x => { x.style.translate = `${slx(o)}px ${sly(o)}px`; });
   try { return await moveFx1(s[0], id, miss, fx); } finally { if (el) { sw.forEach(flip); fxL.forEach(x => { x.style.translate = ''; }); } }
 }
