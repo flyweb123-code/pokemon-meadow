@@ -641,7 +641,7 @@ function showMon(side, A, on = true) {
     const k = (side[0] === 'p' ? (B?.dbl ? 1.1 : 1.4) : 1) * (so?.[2] || 1),   /* 더블은 내 쪽 두 마리가 덜 겹치게 조금 작게 */ fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
-    if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k, TF = B?.dbl ? (side === 'p2' ? 80 : 64) : GIF_TOP; let dy = 0; if (y < TF) { dy = Math.round(TF - y);   /* v24.98 더블: 내 쪽 큰 포켓몬(리자몽)이 상대 포켓몬을 가리지 않게 머리 높이를 낮춤 (오른쪽 p2 는 상대 왼쪽 포켓몬 발밑 아래까지) */ m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
+    if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k, TF = B?.dbl ? (side === 'p2' ? 80 : 64) : GIF_TOP; let dy = 0; if (y < TF) { dy = Math.round(TF - y);   /* v24.99 더블: 내 쪽 큰 포켓몬(리자몽)이 상대 포켓몬을 가리지 않게 머리 높이를 낮춤 (오른쪽 p2 는 상대 왼쪽 포켓몬 발밑 아래까지) */ m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
     else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
     m._gif = A.gif; }
   else if (A) {
@@ -1466,7 +1466,7 @@ async function chooseD(req) {
   return ch.join(', ');
 }
 /* v24.21 더블 상대 AI: 자리마다 기술 × 목표를 어림 점수로 (상성·자속·명중·남은 체력), 광역기는 상대 둘 합 ×0.75 · 같은 편까지 맞히는 기술(지진 등)은 같은 편 몫을 뺌 */
-/* v24.98 경완 '더블 배틀 난이도 정하는 것도 포켓로그나 외부 저장소 코드 참고해줘야할듯': 포켓로그 EnemyPokemon.getNextMove·getNextTargets(SMART) 규칙만 따옴 (코드는 안 가져옴).
+/* v24.99 경완 '더블 배틀 난이도 정하는 것도 포켓로그나 외부 저장소 코드 참고해줘야할듯': 포켓로그 EnemyPokemon.getNextMove·getNextTargets(SMART) 규칙만 따옴 (코드는 안 가져옴).
    ① 쓰러뜨릴 수 있는 공격이 있으면 그 기술들만 본다 ② 점수 = 어림 피해 비율 × (상성·자속은 피해식 안에), 모두 맞히는 기술은 상대 둘 합 ×.75 − 같은 편 피해 ×1.2
    ③ 대상은 1등 점수의 절반 이상인 대상들 중 점수 비례로 고름 ④ 기술 고르기: 쉬움 = 포켓로그 SMART_RANDOM(5/8 1등, 아니면 다음), 보통 = SMART(다음 기술 점수 비율×50% 확률로 넘어감), 어려움 = 늘 1등 */
 function aiD(btl, diff) {
