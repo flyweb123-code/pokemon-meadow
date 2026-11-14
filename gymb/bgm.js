@@ -22,6 +22,8 @@ const PART = {
   sLeague: [784384, 6912], bDungeon: [1635936, 3948], wDungeon: [7096288, 34312],   // SEQ_D_LEAGUE 포켓몬리그 (승급 심사 화면, 경완 2026-11-04 'bgm 웅장하게')
   sTsure: [1160800, 5228],   // SEQ_TSURETEKE 같이 걷는 곡 (친밀도 만점 창, 경완 2026-10-31)   // SEQ_KENKYUJO 연구소 (튜토리얼, 경완 2026-10-29)
   sWinTrain: [1084160, 4204], sWinGym: [1088384, 7584],
+  /* v24.87 경완 '웨이브랑 바이옴 기준도 반영, Bgm 코드도 같이 봐': 포켓로그처럼 수련탑 야생 층은 그 지역(10층마다) 필드 곡 — 플래티넘 도로·동굴·마을 곡 (낮 _D·밤 _N) */
+  fRoadAD: [290560, 4420], fRoadAN: [547744, 3324], fD02: [671232, 7796], fRoadBzaD: [362144, 10304], fRoadBzaN: [615712, 9840], fRoadDD: [317824, 6972], fRoadDN: [572192, 6248], fDMount1: [738400, 10852], fD04: [775808, 8564], fCity01D: [190080, 6060], fCity01N: [448128, 5668], fRoadSnowD: [347424, 14720], fRoadSnowN: [600992, 14720], fD03: [679040, 10708], fDSafari: [719392, 9160], fD05: [767104, 8692], fCity09D: [269920, 6232], fCity09N: [526624, 6084],
   sBaPoke: [979776, 7688], sWinPoke: [1081600, 2544], sBaSec1: [1076224, 3284], sBaDpoke1: [1001344, 11948],   // v23.10 훈련하기: SEQ_BA_POKE 야생 배틀, SEQ_WINPOKE 야생 승리, SEQ_BA_SECRET1 전설(우두머리), SEQ_BA_DPOKE1 디아루가·펄기아(큰 우두머리)
   sBaTenno: [1133088, 13836], sEyeTenno: [959232, 4864], sTheRiv: [1166048, 9000], sWinTenno: [1111328, 3036], sWinChamp: [1095968, 7220],   // v16.88 경완 '이름 있는 트레이너 시그니처 bgm': 사천왕 배틀·등장, 용식 테마, 사천왕·챔피언 승리
   // 효과음: 배틀·기본 효과음 악보 묶음(gym/se.json 의 block), 악기, 소리 묶음
@@ -57,7 +59,9 @@ const SONG = {
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다
   winGym: { s: 'sWinGym', bank: 'battle', vol: 120 },     // 관장에게 이겼다
   wild: { s: 'sBaPoke', bank: 'battle', vol: 88 },        // 야생 포켓몬 배틀 (훈련하기)
-  winWild: { s: 'sWinPoke', bank: 'battle', vol: 114 },   // 야생 포켓몬에게 이겼다
+  winWild: { s: 'sWinPoke', bank: 'battle', vol: 114 },
+  // v24.87 수련탑 지역 곡 (gym.js TR_BIOME): 201번도로·영원숲·228번도로(모래)·220번도로(바다)·천관산 바깥·무쇠섬·탄광·축복시티·216번도로(눈)·숲의 양옥집·대습원·천관산 안·선단시티
+  trRoadAD: { s: 'fRoadAD', bank: 'field', vol: 127 }, trRoadAN: { s: 'fRoadAN', bank: 'field', vol: 127 }, trD02: { s: 'fD02', bank: 'dungeon', vol: 88 }, trRoadBzaD: { s: 'fRoadBzaD', bank: 'field', vol: 90 }, trRoadBzaN: { s: 'fRoadBzaN', bank: 'field', vol: 90 }, trRoadDD: { s: 'fRoadDD', bank: 'field', vol: 108 }, trRoadDN: { s: 'fRoadDN', bank: 'field', vol: 108 }, trDMount1: { s: 'fDMount1', bank: 'dungeon', vol: 112 }, trD04: { s: 'fD04', bank: 'dungeon', vol: 120 }, trCity01D: { s: 'fCity01D', bank: 'field', vol: 96 }, trCity01N: { s: 'fCity01N', bank: 'field', vol: 104 }, trRoadSnowD: { s: 'fRoadSnowD', bank: 'field', vol: 100 }, trRoadSnowN: { s: 'fRoadSnowN', bank: 'field', vol: 100 }, trD03: { s: 'fD03', bank: 'dungeon', vol: 127 }, trDSafari: { s: 'fDSafari', bank: 'dungeon', vol: 84 }, trD05: { s: 'fD05', bank: 'dungeon', vol: 110 }, trCity09D: { s: 'fCity09D', bank: 'field', vol: 100 }, trCity09N: { s: 'fCity09N', bank: 'field', vol: 100 },   // 야생 포켓몬에게 이겼다
   boss: { s: 'sBaSec1', bank: 'battle', vol: 92 },        // 우두머리 (전설 배틀 곡)
   bossBig: { s: 'sBaDpoke1', bank: 'battle', vol: 78 },   // 큰 우두머리 (디아루가·펄기아 곡)
   eyeElite: { s: 'sEyeElite', bank: 'B', vol: 80 },       // 이름 있는 트레이너 등장 (시선 마주침, 엘리트)
