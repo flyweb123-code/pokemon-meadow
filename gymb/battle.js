@@ -394,6 +394,9 @@ function fit() {
 // 대화창: 글자를 하나씩. wait=true 면 다 쓰고 잠깐 멈춤(누르면 바로 다음)
 // 본가처럼 ▼ 가 깜빡이는 동안 대화창·빈 곳을 누르면 넘어간다. 안 눌러도 잠시 뒤 저절로 (경완 2026-10-28)
 async function msg(t, hold = 650) {
+  /* v24.65 경완 '대사창 3줄 돼서 벗어나는 일 없게': 본가처럼 두 줄씩 끊어서, 앞 장은 눌러야 다음 장 */
+  { const Ls = String(t ?? '').split('\n'); if (Ls.length > 2) { for (let i = 0; i + 2 < Ls.length; i += 2) { await msg(Ls.slice(i, i + 2).join('\n'), 0); if (!B) return; const cur = $b('.bt-msg .cur'); cur.hidden = false; await new Promise(r => { B.tapWake = r; }); if (!B) return; B.tapWake = null; cur.hidden = true; }
+    t = Ls.slice(Ls.length % 2 ? Ls.length - 1 : Ls.length - 2).join('\n'); } }
   if (!B) return; const box = $b('.bt-msg .t'), cur = $b('.bt-msg .cur'); B.fast = false; cur.hidden = true; box.textContent = ''; B.msgOn = true;
   for (const ch of [...t]) { if (!B) return; if (B.fast) { box.textContent = t.replace(/[\u23F8\u0007]/g, ''); break; } if (ch === '\u23F8') { await wait(330); continue; } if (ch === '\u0007') { se('KON'); continue; } box.textContent += ch; await wait(ch === ' ' ? 12 : 26); }   // ⏸ = 본가 {PAUSE 20} (20프레임 멈춤)
   // 저절로 넘어가지 않는다: 대화창·빈 곳을 눌러야 다음 (경완 2026-10-28)
