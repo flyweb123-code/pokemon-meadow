@@ -762,6 +762,7 @@ const nearest = (e, list, r = 9999) => { let b = null, bd = r; for (const o of l
 // 꾹 누르기 (경완 2026-11-13 '꾹 눌러서 쭈우우욱 나가는 느낌', 장애물 넘기 화염방사·파도타기처럼 누르는 동안 이어지고 연속 진동):
 // 기술은 누르는 동안 이어진다 — 줄기(화염방사·물대포)는 빔이 쭉 뻗어 계속 지지고, 탄은 연사, 번개는 연달아 떨어지고, 근접은 연타, 둘레는 파동이 이어지고, 돌진은 누르는 동안 달린다.
 // 짧게 누르면 첫 한 방(위력 60%)만, 끝까지 누르면 잔타(τ 마다 위력 CH.m)가 이어진다. 쿨타임은 누른 만큼(45~100%).
+const MELEE_R = 300;
 const CH = { vortex: { tau: .7, m: 0, max: 1.5, min: .05, mv: .5 }, stream: { tau: .2, m: .2, max: 1.5, min: .35, mv: .3 }, proj: { tau: .17, m: .25, max: 1.4, min: .05, mv: .55 }, col: { tau: .3, m: .4, max: 1.4, min: .05, mv: .5 }, melee: { tau: .17, m: .25, max: 1.3, min: .05, mv: 0 }, area: { tau: .3, m: .4, max: 1.4, min: .05, mv: .4 } };
 const BEAM = 250, rg = () => (R.G.me.buff > 0 ? RNG : 1), chMax = c => c.kind === 'stream' ? Math.max(1.1, Math.min(1.8, 1 + c.v.pw / 150)) : c.K.max;   // 줄기: 위력이 셀수록 오래 (1.1~1.8초), 끝까지 누르면 합계 한 방의 1.45배
 const cdBase = v => v.c ? .6 + v.pw / 70 : 6;
@@ -830,8 +831,10 @@ function chTick(c) {
     after(.12, () => { flash((first ? .09 : .05) * A); shake((first ? .3 : .16) * A); ring(px, py, col, 10, (first ? 64 : 46) * rg() * A, .3, 6 * A); if (first || c.amp) ring(px, py, '#fff', 6, 40 * A, .22, 4); if (c.amp) ring(px, py, col, 16, 96, .36, 4, .5, .05); dust(px, py, (first ? 6 : 3) * A, 110); });
     if (!first) snd(Rr?.snd?.find(x => x[0] === 'act')?.[1] || 'DUN_Shock_Wave', .05);
   } else if (kind === 'melee') {   // 연타: 가까운 상대에게 달라붙어 계속 친다
-    const tg = nearest(me, G.mobs, 140 * rg()), d = tg ? Math.hypot(tg.x - me.x, tg.y - me.y) : 0, go = tg ? Math.max(0, d - 30) : 0, tt = go / 640;
-    if (go > 4) { me.dash = { vx: dx * 640, vy: dy * 640, t: tt, step: true, gt: 0 }; ghost(me); }
+    /* 경완 2026-11-15 '번개펀치는 근접 공격인가? 가까운 적 공격하는게 아니고?' → '달려가서 치는쪽으로': 달라붙는 거리 140 → MELEE_R 300, 멀수록 빨리 달려 박자가 늘어지지 않게, 방향은 그 상대 쪽으로 바로 */
+    const tg = nearest(me, G.mobs, MELEE_R * rg()); if (tg) { c.ang = Math.atan2(tg.y - me.y, tg.x - me.x); me.face = Math.cos(c.ang) >= 0 ? 1 : -1; }
+    const dx = Math.cos(c.ang), dy = Math.sin(c.ang), d = tg ? Math.hypot(tg.x - me.x, tg.y - me.y) : 0, go = tg ? Math.max(0, d - 30) : 0, sp = go > 130 ? 900 : 640, tt = go / sp;
+    if (go > 4) { me.dash = { vx: dx * sp, vy: dy * sp, t: tt, step: true, gt: 0 }; ghost(me); if (go > 130) { dust(me.x, me.y, 4, 90); } }
     setAnim(me, anyAnim(me, ...(c.n % 2 ? ['Strike', 'Attack'] : ['Attack'])), true); c.tk = K.tau + tt; const flip = c.n % 2 ? 1 : -1;
     after(tt + .04, () => { if (me.hp <= 0) return; const hx = me.x + dx * 30, hy = me.y + dy * 20; let n = 0;
       slash(hx, hy - 20, flip > 0 ? c.ang : c.ang + .001, col, (first ? 36 : 30) * rg() * A); if (c.amp) { slash(hx, hy - 20, c.ang + .5 * flip, '#fff', (first ? 30 : 24) * rg()); ring(hx, hy - 20, col, 8, 50, .2, 5, 1); sparks(hx, hy - 20, dx, dy, col, 6, 320); } if (flip < 0) fxAdd(0, .001, () => {});
@@ -1027,7 +1030,7 @@ function step(dt) {
     else if (me.hide) hideStep(dt);
     else if (me.ch) { const c = me.ch, K = c.K; c.t += dt; hum(dt);
       // 겨눔은 가까운 상대를 천천히 따라간다 (줄기는 휘두르는 맛)
-      const tg = nearest(me, G.mobs, c.kind === 'melee' ? 150 : 300); if (tg) { const a1 = Math.atan2(tg.y - me.y, tg.x - me.x); let da = a1 - c.ang; while (da > Math.PI) da -= 6.283; while (da < -Math.PI) da += 6.283; const w = (c.kind === 'stream' ? 2 : 9) * dt; c.ang += Math.max(-w, Math.min(w, da)); }
+      const tg = nearest(me, G.mobs, c.kind === 'melee' ? MELEE_R * rg() : 300); if (tg) { const a1 = Math.atan2(tg.y - me.y, tg.x - me.x); let da = a1 - c.ang; while (da > Math.PI) da -= 6.283; while (da < -Math.PI) da += 6.283; const w = (c.kind === 'stream' ? 2 : 9) * dt; c.ang += Math.max(-w, Math.min(w, da)); }
       me.face = Math.cos(c.ang) >= 0 ? 1 : -1;
       if (K.mv) { const sp = (120 + me.st[5] * .5) * K.mv * (me.haste > 0 ? 1.6 : 1); if (Math.hypot(J.dx, J.dy) > .15) { me.x += J.dx * sp * dt; me.y += J.dy * sp * dt; keepIn(me); } }
       if (me.once && T - me.at > .32 && c.kind !== 'melee') setAnim(me, me.anim, true);
