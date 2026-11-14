@@ -4516,5 +4516,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .mvw .mvb b.l7{font-size:12px;letter-spacing:-.02em}.bt.mob .mvw .mvb b.l8{font-size:11px;letter-spacing:-.03em}
 .bt.mob .mvw .mvi{width:15px!important;height:15px!important;line-height:15px!important;font-size:9px!important;right:8px!important;top:8px!important}
 
-/* v24.41 경완: 중요한 물건 알림창·예/아니요는 뜬 직후 잠깐 잠금 — 그동안 버튼 흐리게, 풀리면 스르륵 */
+/* v24.42 경완: 중요한 물건 알림창·예/아니요는 뜬 직후 잠깐 잠금 — 그동안 버튼 흐리게, 풀리면 스르륵 */
 .gy-btns.gy-hold,.tw-yn.gy-hold{opacity:.5;filter:saturate(.6);transition:none}.gy-btns,.tw-yn{transition:opacity .25s ease,filter .25s ease}

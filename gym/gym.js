@@ -1660,7 +1660,7 @@ async function legEggPop(X) { const g = st(), t = X ? g.ty : g.legN; if (!t) ret
     dlg(''); root.classList.add('dhide'); TT?.hide(true); doorSe(); await wait(180);
     k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' });
     dlg('<b>강박사</b>가 헐레벌떡 뛰어 들어온다!');
-    await wait(450); CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 260);   /* v24.41 경완: 입구 카펫에 잠깐 섰다가 (헐레벌떡이라 조금 빠르게) */ k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
+    await wait(450); CR = chalRoute(D, [k]); if (CR?.path?.length) { await walk(k, CR.path, 260);   /* v24.42 경완: 입구 카펫에 잠깐 섰다가 (헐레벌떡이라 조금 빠르게) */ k.f = CR.cf; place(k); if (CR.mf) { meEnt.f = CR.mf; place(meEnt); } }
     for (const h of TL.in) await say(h);
     }
     // ---- 2. 강박사가 앞장서고 관장이 한 칸 뒤에서 따라 나간다 ----
@@ -2204,10 +2204,10 @@ function openTab(t, opt) {
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
 const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop';
-const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.41)
+const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.42)
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
-  if (p.querySelector('.le-get')) gyHold(p.querySelector('.gy-btns'), 1000);   /* v24.41 경완 '튜토리얼 막 누르다 넘어가지 않게 중요한 물건 알림창은 초반에 잠깐 잠금' (전설 알·메가링·테라·Z링·Z크리스탈·테라피스) */
+  if (p.querySelector('.le-get')) gyHold(p.querySelector('.gy-btns'), 1000);   /* v24.42 경완 '튜토리얼 막 누르다 넘어가지 않게 중요한 물건 알림창은 초반에 잠깐 잠금' (전설 알·메가링·테라·Z링·Z크리스탈·테라피스) */
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b && b.closest('.gy-hold')) return; if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
@@ -3375,7 +3375,7 @@ function storyTalk() {
     say: async (t, { who = '강박사', pic = null, wait = true } = {}) => { T.hide(false); if (pic != null) T.pic(pic); nmEl.textContent = who; k.style.setProperty('--kn', Math.max(3, String(t).split('\n').length)); await typer(t, wait); },
     // 묻기: 대사창에 물음 + 오른쪽 위에 예·아니요 단추 (경완 2026-11-08 '부탁하겠습니까? 창도 대사창으로, 예 아니오는 대사창 우상단에 버튼'). 예면 true
     ask: async (t, o = {}, yes = '예', no = '아니요') => { await T.say(t, { ...o, wait: false }); return new Promise(ok => { const m = document.createElement('div'); m.className = 'tw-ch tw-yn in-menu'; m.innerHTML = `<button class="win${o.hiNo ? '' : ' main'}" type="button" data-i="1">${esc(yes)}</button><button class="win${o.hiNo ? ' main' : ''}" type="button" data-i="0">${esc(no)}</button>`; box.appendChild(m);
-      gyHold(m, 800);   /* v24.41 경완 '예 아니오 나오는 대사에서도 잠깐 잠금' */
+      gyHold(m, 800);   /* v24.42 경완 '예 아니오 나오는 대사에서도 잠깐 잠금' */
       m.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); if (m.classList.contains('gy-hold')) return; sfx('tap'); m.remove(); ok(b.dataset.i === '1'); }; }); },
     pic: () => {},   // 경완 2026-11-01: 스토리 대사창엔 강박사 큰 그림을 띄우지 않는다
     hide: on => k.classList.toggle('off', on),
@@ -4415,7 +4415,7 @@ async function teraTut({ k, gu, D, t }) {
       { T.hide(true); const kx = Math.round(k.x), ky = Math.round(k.y); k0 = [kx, ky]; const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
         if (sx !== kx) await walk(k, [[sx, ky]], 300);
         face(k, { x: D.door[0], y: D.door[1] }); await wait(250); doorSe(); await wait(200);
-        rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); await wait(450);   /* v24.41 경완 '튜토리얼 NPC 가 입구 카펫부터 안 들어오는 것 같아': 카펫 위에 잠깐 섰다가 */
+        rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); await wait(450);   /* v24.42 경완 '튜토리얼 NPC 가 입구 카펫부터 안 들어오는 것 같아': 카펫 위에 잠깐 섰다가 */
         const rp = route(D, D.door, [kx, ky], occOf([rs])) || route(D, D.door, [kx, ky], []) || [];
         const wr = walk(rs, rp, 340); for (let i = 0; i < 80 && !(Math.abs(rs.x - kx) < 3 && Math.abs(rs.y - ky) < 3); i++) await wait(50); face(k, rs); await wr; face(rs, meEnt); face(meEnt, rs); face(k, rs); if (gu) face(gu, rs); await wait(300); T.hide(false);
         await say(`${NK()}, 안녕하세요!\n강박사님 연구소의\n연구원 하람이에요.`, RW); await say('박사님이 새벽에 전화로\n\'샹들리에가 안 빠지네!\' 하셔서\n떼어 드리러 온 김에…', RW); await say('연습 배틀도 맡았어요!\n잘 부탁드려요!', RW); await say(`저는 ${fnm}의 ${fty} 타입 기술로\n${sp}의 약점을\n찔러 볼게요!`, RW); await say('허허, 과연 통할까?\n테라스탈한 다음에 맞아 보렴!'); T.hide(true); }
@@ -4508,7 +4508,7 @@ async function megaTut(test) {
       { hideT(true); const kx = Math.round(k.x), ky = Math.round(k.y), fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
         if (sx !== kx) await walk(k, [[sx, ky]], 300);
         face(k, { x: D.door[0], y: D.door[1] }); await wait(250); doorSe(); await wait(200);
-        rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); await wait(450);   /* v24.41 경완 '튜토리얼 NPC 가 입구 카펫부터 안 들어오는 것 같아': 카펫 위에 잠깐 섰다가 */
+        rs = ent({ ow: 'scientist', x: D.door[0], y: D.door[1], f: 'u' }); await wait(450);   /* v24.42 경완 '튜토리얼 NPC 가 입구 카펫부터 안 들어오는 것 같아': 카펫 위에 잠깐 섰다가 */
         const rp = route(D, D.door, [kx, ky], occOf([rs])) || route(D, D.door, [kx, ky], []) || [];
         const wr = walk(rs, rp, 340); for (let i = 0; i < 80 && !(Math.abs(rs.x - kx) < 3 && Math.abs(rs.y - ky) < 3); i++) await wait(50); face(k, rs); await wr; face(rs, meEnt); face(meEnt, rs); face(k, rs); if (guyEnt) face(guyEnt, rs); await wait(300); hideT(false);
         const RW = { who: '연구원 하람' };
