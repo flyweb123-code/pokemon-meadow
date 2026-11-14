@@ -572,8 +572,9 @@ function spawn(sp, boss, ox = 0, bi = 0) {
   const G = R.G, A = R.A, W = R.W, H = R.H, SG = STAGES[G.wave - 1] || STAGES[0], lv = Math.max(2, boss === 2 ? G.M.lv + 5 : boss ? G.M.lv + SG.lv + 4 : G.M.lv + SG.lv - Math.floor(Math.random() * 2)), side = Math.floor(Math.random() * 3);
   let x = side === 0 ? A.x0 + 10 : side === 1 ? A.x1 - 10 : W * (.3 + Math.random() * .5), y = side === 2 ? A.y0 + 4 : A.y0 + 20 + Math.random() * (H * .45);
   if (boss) { x = W / 2 + ox; y = Math.max(A.y0 + 60, Math.min(H * .5, G.me.y - 120 < A.y0 + 60 ? G.me.y + 120 : G.me.y - 120)); }   // 대장은 한가운데로 하늘에서 떨어진다
-  const e = { sp, lv, st: GB().statsOf(sp, lv, [10, 10, 10, 10, 10, 10], '', []), x, y, face: x < W / 2 ? 1 : -1, anim: 'Idle', at: R.T, boss, k: boss === 2 ? 1.4 : boss ? 1.2 : 1, cd: .5 + Math.random() * .8, warn: 0, flash: 0, z: 0, enter: boss ? .7 : .35, drop: !!boss, sq: 0, sqv: 0, kx: 0, ky: 0, atkN: 0, bi };
-  const b = SP[sp]?.bs || [60, 60, 60, 60, 60, 60]; e.ranged = b[3] > b[1] + 10; e.spd = 48 + b[5] * .62;
+  const e = { sp, lv, st: GB().statsOf(sp, lv, [10, 10, 10, 10, 10, 10], '', []), x, y, face: x < W / 2 ? 1 : -1, anim: 'Idle', at: R.T, boss, k: boss === 2 ? 1.4 : boss ? 1.2 : 1, cd: .5 + Math.random() * .8, warn: 0, flash: 0, z: 0, enter: boss ? .7 : .35, drop: !!boss, sq: 0, sqv: 0, kx: 0, ky: 0, atkN: 0, bi, brk: 0, brkMax: 100, side: Math.random() < .5 ? 1 : -1, sideT: Math.random() * 2 };
+  const b = SP[sp]?.bs || [60, 60, 60, 60, 60, 60]; e.ranged = b[3] > b[1] + 10;
+  if (!boss) { const ag = tysOf(sp).some(t => t === 2 || t === 16 || t === 17) ? .5 : .22, r = Math.random(); e.temp = r < ag ? 'aggr' : r < ag + .18 ? 'timid' : ''; e.rush = !e.ranged && b[5] >= 70; }   /* 성격: 공격형(격투·드래곤·악은 절반) · 겁쟁이 · 보통, 빠른 근접형은 치고 빠진다 */ e.spd = 48 + b[5] * .62;
   e.mhp = e.hp = e.hpLag = Math.round(e.st[0] * (boss === 2 ? 8.5 : boss ? 4.4 : 2.7));
   keepIn(e); G.mobs.push(e);
   if (boss) e.z = 420; else ballIn(e, side);
@@ -601,6 +602,12 @@ function bossLand(o) {   // 대장 착지: 쿵 — 화면이 크게 흔들리고
 /* 경완 2026-11-14 '보스 패턴이 점프해서 착지밖에 없다': 원래 내려찍기·돌진·탄 쏘기가 있었는데 고르는 조건 때문에 거의 내려찍기만 나왔다. 대장마다 패턴 묶음을 두고 직전과 다른 것을 고른다.
    slam 내려찍기 · rush 세 번 연속 돌진 · ring 둥글게 퍼지는 탄막(두 겹) · fan 부채꼴 다섯 발 두 번 · wave 퍼져 나가는 충격파(대쉬로 뚫기) · rain 예고 동그라미 여러 곳 폭격. HP 40% 아래면 분노(더 자주·더 많이), 마지막 대장은 HP 55% 에 졸개 셋을 부른다. */
 const BOSS_PAT = [['slam', 'rush', 'ring'], ['slam', 'fan', 'wave'], ['slam', 'rush', 'ring', 'fan', 'wave', 'rain']];
+/* 경완 2026-11-14 '외부 코드에 있는데 반영 안 한 것': 레조넌스 레이드 보스의 브레이크 게이지를 구조만 참고. 대장을 때리면 게이지가 차고(상성이 좋을수록·패턴 중에 맞힐수록 빨리), 가득 차면 그로기 4초(패턴 끊김·받는 피해 1.5배).
+   풀리면 3초 동안 안 차고 다음 게이지는 1.3배. 잡몹은 성격(공격형·겁쟁이)과 움직임(비스듬히 접근·치고 빠지기·좌우로 돌며 쏘기)을 종마다 다르게. */
+const GROGGY = 4;
+function brkAdd(o, r) { if (o.groggy > 0 || o.brkLock > 0 || o.hp <= 0) return; const busy = o.act || o.slam || o.lunge || o.chain != null || o.warn > 0; o.brk += r.n / o.mhp * 100 * 2.2 * (r.e > 1 ? 1.5 : r.e < 1 ? .6 : 1) * (busy ? 1.5 : 1) * (r.crit ? 1.3 : 1); if (o.brk < o.brkMax) return;
+  o.groggy = GROGGY; o.brk = o.brkMax; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.dz = GROGGY; setAnim(o, 'Hurt', true); squash(o, .45);
+  pop(o.x, o.y - 96, '그로기!', '#ffe27a', true); R.HS = Math.max(R.HS, .14); slow(.5, .3); flash(.2, '255,240,170'); zoom(.08); shake(.6); rumble(3, 70); se('KON2', .3); se('KOUKA_H', .05); ring(o.x, o.y - 20, '#ffe27a', 10, 110, .4, 7, 1); ring(o.x, o.y - 20, '#fff', 6, 70, .3, 4, 1, .05); stars(o.x, o.y - 30, 14, '#ffe27a', 300); }
 const bossCd = o => (1.1 + Math.random() * .5) * (o.rage ? .55 : 1);
 function bossPick(o, d) { const G = R.G, me = G.me, L = (BOSS_PAT[o.bi] || BOSS_PAT[0]).filter(k => k !== o.lastK && !(k === 'slam' && d > 300) && !(k === 'rush' && d > 260)), k = L[Math.floor(Math.random() * L.length)] || 'ring'; o.lastK = k; o.atkN++; snd('DUN_Leer', .05);
   if (k === 'slam') { o.slam = { x0: o.x, y0: o.y, x: me.x, y: me.y, t: 0, d: o.rage ? .6 : .75, r: 62 }; setAnim(o, anyAnim(o, 'Hop', 'Attack'), true); squash(o, -.3); dust(o.x, o.y, 6, 110); return; }
@@ -880,12 +887,15 @@ function hitFx(Rr, o, delay, f, col, kx = 0, ky = 0, light) {
   ring(o.x, o.y - 20, col, 4, 24, .18, 4, 1, delay);
 }
 function hurt(o, r, kx, ky, light) {
-  const G = R?.G; if (!G || o.hp <= 0) return; const me = G.me; if (o.weak > 0) r = { ...r, n: Math.round(r.n * 1.4) };
+  const G = R?.G; if (!G || o.hp <= 0) return; const me = G.me; if (o.weak > 0) r = { ...r, n: Math.round(r.n * 1.4) }; if (o.groggy > 0) r = { ...r, n: Math.round(r.n * 1.5) };
   { const l = Math.hypot(kx, ky); if (l < .05) { const d = Math.hypot(o.x - me.x, o.y - me.y) || 1; kx = (o.x - me.x) / d; ky = (o.y - me.y) / d; } }
   const l = Math.hypot(kx, ky) || 1, ux = kx / l, uy = ky / l, big = r.e > 1 || r.crit, lt = !!light && !r.crit, col = r.crit ? '#ff9a3a' : r.e > 1 ? '#ffd84a' : r.e < 1 ? '#c8c8d8' : '#ffffff';
   o.hp -= r.n; o.flash = lt ? .07 : big ? .16 : .11; squash(o, lt ? .14 : big ? .36 : .26);
   const w = r.w ?? 1, kb = WT.kb[w] * (o.boss ? .35 : 1) * (lt ? .5 : 1) * (r.crit ? 1.3 : 1); o.kx = kx * kb; o.ky = ky * kb * .7; if (!o.boss || Math.random() < .4) setAnim(o, 'Hurt', !lt || o.anim !== 'Hurt'); o.stun = Math.max(o.stun || 0, o.boss ? (lt || o.act || o.slam || o.lunge || o.chain != null || o.warn > 0 ? 0 : .1) : (lt ? (o.warn > 0 || o.lunge ? 0 : .12) : .35));   /* 잡몹도 잔타로는 공격 준비가 안 멈춘다 (경완 2026-11-14 '코드에 있는데 반영 안 된 것': 계속 때리면 굳어서 공격을 못 했다) */   /* 대장은 잔타로는 안 멈추고, 패턴 중에는 아예 안 멈춘다 (빔을 대고 있으면 계속 굳어서 아무것도 못 했다) */
   if (o.boss && (o.warn > 0) && big && o.chain == null) { o.warn = 0; o.shoot = false; o.cd = .6; }
+  if (o.boss) brkAdd(o, r);
+  if (!o.boss && o.temp === 'aggr' && !o.rage && o.hp > 0 && o.hp < o.mhp * .4) { o.rage = 1; pop(o.x, o.y - 62, '화났다!', '#ff4a3a'); }
+  if (!o.boss && o.temp === 'timid' && !o.fled && o.hp > 0 && o.hp < o.mhp * .5) { o.fled = 1; o.flee = 2.2; o.warn = 0; pop(o.x, o.y - 62, '겁먹었다!', '#9fc4ff'); }
   if (o.boss && !o.rage && o.hp > 0 && o.hp < o.mhp * .4) { o.rage = 1; pop(o.x, o.y - 90, '분노!', '#ff4a3a', true); ring(o.x, o.y, '#ff4a3a', 14, 130, .45, 7); shake(.5); flash(.14, '255,90,70'); se('KON2', .3); rumble(2, 90, 1); }
   if (o.boss === 2 && !o.called && o.hp > 0 && o.hp < o.mhp * .55) { o.called = 1; pop(o.x, o.y - 106, '졸개를 불렀다!', '#ffe27a', true); for (let i = 0; i < 3; i++) { spawn(G.pool.sm[i % G.pool.sm.length]); G.mobs[G.mobs.length - 1].minion = 1; } }   // 대장도 급소·효과 굉장하면 준비 동작이 끊긴다
   // 손맛: 멈칫 + 흔들림 + 맞은 방향으로 화면 밀림 + 불똥 + 진동
@@ -999,8 +1009,10 @@ function step(dt) {
     if (o.enter > 0) { o.enter -= dt; if (o.ball) { o.ball.t += dt; if (o.ball.t >= BALL_FLY) ballPop(o); } if (o.drop) { o.z = 420 * Math.pow(Math.max(0, o.enter) / .7, 1.6); if (o.enter <= 0) bossLand(o); } continue; }
     if (o.kx || o.ky) { o.x += o.kx * dt; o.y += o.ky * dt; const k = Math.pow(.0015, dt); o.kx *= k; o.ky *= k; if (Math.abs(o.kx) + Math.abs(o.ky) < 4) o.kx = o.ky = 0; keepIn(o); }
     if (!live) { if (!o.slam && !o.lunge) setAnim(o, 'Idle'); o.warn = 0; continue; }
+    if (o.brkLock > 0) o.brkLock -= dt;
+    if (o.groggy > 0) { o.groggy -= dt; if (o.groggy <= 0) { o.brk = 0; o.brkMax *= 1.3; o.brkLock = 3; o.cd = .5; o.dz = 0; setAnim(o, 'Idle'); squash(o, -.3); ring(o.x, o.y, '#ff8a6a', 10, 80, .3, 5); } continue; }
     if (o.stun > 0) { o.stun -= dt; continue; }
-    const dx = me.x - o.x, dy = me.y - o.y, d = Math.hypot(dx, dy) || 1; if (!o.lunge && !o.slam && !(o.warn > 0 && o.warn < .15)) o.face = dx > 0 ? 1 : -1; o.cd -= dt;
+    const dx = me.x - o.x, dy = me.y - o.y, d = Math.hypot(dx, dy) || 1; if (!o.lunge && !o.slam && !(o.warn > 0 && o.warn < .15)) o.face = dx > 0 ? 1 : -1; o.cd -= dt * (o.boss || o.temp !== 'aggr' ? 1 : o.rage ? 1.9 : 1.4);
     const touch = (r, fn) => { if (me.hp <= 0) return false; if (!r) return false; if (me.inv <= 0) { fn(); return true; } if (me.roll > 0) justDodge(o); return true; };
     if (o.act) { bossAct(o, dt); continue; }
     if (o.slam) {   // 대장 내려찍기: 뛰어올라 예고한 동그라미로 떨어진다
@@ -1010,19 +1022,24 @@ function step(dt) {
       continue; }
     if (o.lunge) { const L = o.lunge; L.t -= dt; o.x += L.vx * dt; o.y += L.vy * dt; keepIn(o); if ((L.gt -= dt) <= 0) { L.gt = .05; ghost(o, .18); }
       if (!L.done && touch(Math.hypot(me.x - o.x, me.y - o.y) < 26 + (o.boss ? 12 : 0), () => hitMe(o, tysOf(o.sp)[0], 1, 50, L.vx, L.vy))) L.done = true;
-      if (L.t <= 0) { o.lunge = null; if (o.chain > 0) { o.chain--; o.warn = o.warn0 = .3; o.shoot = false; o.wa = Math.atan2(me.y - o.y, me.x - o.x); setAnim(o, 'Idle'); continue; } o.chain = null; o.cd = o.boss ? bossCd(o) : .9 + Math.random() * .6; setAnim(o, 'Walk'); } continue; }
+      if (L.t <= 0) { o.lunge = null; if (o.chain > 0) { o.chain--; o.warn = o.warn0 = .3; o.shoot = false; o.wa = Math.atan2(me.y - o.y, me.x - o.x); setAnim(o, 'Idle'); continue; } o.chain = null; o.cd = o.boss ? bossCd(o) : .9 + Math.random() * .6; if (o.rush) o.back = .8 + Math.random() * .6; setAnim(o, 'Walk'); } continue; }
     if (o.warn > 0) { if (o.warn > .15) o.wa = Math.atan2(dy, dx); o.warn -= dt; if (o.warn <= 0) { const cx = Math.cos(o.wa), cy = Math.sin(o.wa);
         if (o.shoot) { o.shoot = false; const sp = 220, t = tysOf(o.sp)[0]; for (const da of o.boss || G.wave >= 6 ? [-.3, 0, .3] : [0]) { const ex = Math.cos(o.wa + da), ey = Math.sin(o.wa + da); G.shots.push({ x: o.x + ex * 12, y: o.y - 20, vx: ex * sp, vy: ey * sp, life: 2.2, t0: T, mine: false, from: o, t, c: 2, pw: o.boss ? 75 : 50, pt: 0 }); } setAnim(o, anyAnim(o, 'Shoot', 'Attack'), true); o.cd = o.boss ? bossCd(o) : 1.6 + Math.random() * .8; snd('DUN_Move_Start', .03); squash(o, .2); o.kx -= cx * 70; o.ky -= cy * 50; }
         else { const ch = o.chain != null, v = ch ? 600 : o.boss ? 420 : 360; o.lunge = { vx: cx * v, vy: cy * v, t: ch ? .3 : .22, gt: 0 }; setAnim(o, 'Attack', true); snd('DUN_Tackle', .035); squash(o, -.2); dust(o.x, o.y, 3, 70); } } continue; }
-    if (o.cd <= 0 && me.hp > 0) {
+    if (o.cd <= 0 && me.hp > 0 && !(o.flee > 0)) {
       const begin = (w, shoot) => { o.warn = o.warn0 = w; o.shoot = !!shoot; o.wa = Math.atan2(dy, dx); o.atkN++; if (o.boss) snd('DUN_Leer', .04); };
       if (o.boss) { if (d < 340) { bossPick(o, d); continue; } }
       else {
       if (o.ranged && d > 70 && d < 260) { begin(.45, true); continue; }
       if (d < 80) { begin(.45); continue; } } }
-    const want = o.ranged ? 150 : 0, s = o.spd * (o.slowT > 0 ? .4 : 1) * (d > want ? 1 : -.6);
+    if ((o.sideT -= dt) <= 0) { o.sideT = 1.2 + Math.random() * 1.8; o.side = -o.side; }
+    const fl = o.flee > 0; if (fl) { o.flee -= dt; o.face = dx > 0 ? -1 : 1; } if (o.back > 0) o.back -= dt;
+    const want = fl ? 9999 : o.back > 0 ? 180 : o.ranged ? 150 : 0, sk = o.slowT > 0 ? .4 : 1, s = o.spd * sk * (fl ? 1.25 : 1) * (d > want ? 1 : -.6);
+    let ux = dx / d, uy = dy / d; if (!fl && !o.boss && d > want + 44) { const a = .5 * o.side, c = Math.cos(a), sn = Math.sin(a); [ux, uy] = [ux * c - uy * sn, ux * sn + uy * c]; }   /* 똑바로 말고 비스듬히 다가온다 */
     let px = 0, py = 0; for (const q of G.mobs) if (q !== o && q.hp > 0) { const ex = o.x - q.x, ey = o.y - q.y, ed = Math.hypot(ex, ey); if (ed < 34 && ed > 0) { px += ex / ed * (34 - ed); py += ey / ed * (34 - ed); } }
-    if (Math.abs(d - want) > 12) { o.x += (dx / d * s) * dt + px * dt * 3; o.y += (dy / d * s) * dt + py * dt * 3; setAnim(o, 'Walk'); } else setAnim(o, 'Idle'); keepIn(o);
+    if (Math.abs(d - want) > 12) { o.x += (ux * s) * dt + px * dt * 3; o.y += (uy * s) * dt + py * dt * 3; setAnim(o, 'Walk'); }
+    else if (o.ranged && !o.boss) { const v = o.spd * sk * .55 * o.side; o.x += -dy / d * v * dt + px * dt * 3; o.y += dx / d * v * dt + py * dt * 3; setAnim(o, 'Walk'); }   /* 거리를 둔 채 옆으로 돌며 쏜다 */
+    else setAnim(o, 'Idle'); keepIn(o);
   }
   G.mobs = G.mobs.filter(o => o.hp > 0 || T - o.dead < .44);
   for (const s of G.shots) { s.x += s.vx * dt; s.y += s.vy * dt;
@@ -1121,7 +1138,8 @@ function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx 
   g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, h + 2); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, h); const r = Math.max(0, e.hp / e.mhp), rl = Math.max(0, (e.hpLag ?? e.hp) / e.mhp);
   if (rl > r) { g.fillStyle = '#fff'; g.fillRect(x, y, Math.ceil(w * rl), h); }   // 방금 깎인 만큼은 하얗게 남았다가 줄어든다
   g.fillStyle = r > .5 ? '#58d050' : r > .2 ? '#f8c030' : '#f05038'; g.fillRect(x, y, Math.ceil(w * r), h);
-  if (e.boss) { const t = `대장 Lv.${e.lv}`; g.font = 'bold 11px Galmuri11'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(t, e.x, y + 18); g.fillStyle = '#ffd84a'; g.fillText(t, e.x, y + 18); } }
+  if (e.boss) { const by = y + h + 2, gr = e.groggy > 0, br = gr ? e.groggy / GROGGY : Math.min(1, e.brk / e.brkMax); g.fillStyle = '#20202c'; g.fillRect(x - 1, by, w + 2, 5); g.fillStyle = '#3a3a48'; g.fillRect(x, by + 1, w, 3); g.fillStyle = gr ? (Math.floor(R.RT * 10) % 2 ? '#fff' : '#ffe27a') : e.brkLock > 0 ? '#6a6a7a' : '#ffb830'; g.fillRect(x, by + 1, Math.ceil(w * br), 3);
+    const t = gr ? '그로기!' : `대장 Lv.${e.lv}`; g.font = 'bold 11px Galmuri11'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(t, e.x, y + 23); g.fillStyle = '#ffd84a'; g.fillText(t, e.x, y + 23); } }
 // 상대 공격 예고: 바닥에 빨간 길(돌진)·점선(원거리)·동그라미(내려찍기)가 차오른다
 function drawTele(o) { const g = R.g;
   if (o.slam) { const L = o.slam, p = Math.min(1, L.t / L.d); g.fillStyle = 'rgba(255,60,40,.16)'; g.beginPath(); g.ellipse(L.x, L.y, L.r, L.r * .5, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(255,60,40,.34)'; g.beginPath(); g.ellipse(L.x, L.y, L.r * p, L.r * .5 * p, 0, 0, 7); g.fill(); g.strokeStyle = p > .8 ? '#fff' : 'rgba(255,90,70,.9)'; g.lineWidth = 2; g.beginPath(); g.ellipse(L.x, L.y, L.r, L.r * .5, 0, 0, 7); g.stroke(); return; }
