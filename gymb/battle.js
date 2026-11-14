@@ -1437,8 +1437,8 @@ function tgtPick(tg, me) {
   /* v25.03 경완 '더블 배틀 누구에게 쓸까? 도 수련탑에서 도구 누구에게 쓸까? 화면처럼 버튼 구성' → trPickMon 과 같은 .pty 칸 (그림·이름·성별·타입·Lv·체력), 왼쪽 위 딱지 상대/같은 편/자기 자신 */
   return new Promise(async res => { await msg('누구에게 쓸까?', 0);
     const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k), P = k[0] === 'p' && X ? boxOf(X.pid) : null; if (!X) return `<button class="pty tg-p off" disabled><b>—</b></button>`;
-      const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '', lb = k[0] === 'e' ? '상대' : k === me ? '자기 자신' : '같은 편';
-      return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}><em class="pty-mt tg-l">${lb}</em>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
+      const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '';
+      return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
     const p = panel(`<div class="bp-party bp-tgp">${[L[0], L[1], L[2], L[3]].map(bt).join('')}<button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.n); }; });
 }
