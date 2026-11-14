@@ -41,6 +41,9 @@ let splP = null;   // 기술 파티클 엔진 (gymb/spl.js)
 let essP = null;   // 5세대 이후 기술 연출 재생기 (gymb/essfx.js)
 const loadEss = () => window.GymEss ? Promise.resolve() : essP || (essP = new Promise(ok => { const s = document.createElement('script'); s.src = `gymb/essfx.js?v=${VER}`; s.onload = ok; s.onerror = () => { essP = null; ok(); }; document.head.appendChild(s); }));
 // 경완 2026-11-12 '응 다 반영해줘': 플래티넘 원본 연출이 없는 5세대 이후 기술은 Gen 9 Move Animation Project(Essentials) 연출·효과음으로. 상대가 쓸 땐 상대용 연출이 있으면 그것(아래 포켓몬을 '쓰는 쪽' 자리로 그려 둠), 없으면 같은 연출을 방향만 뒤집음 (원본 pbAnimation 그대로)
+/* v24.59 경완 '기술 효과 상단바에 거울로 비치는 거 이상해, 그냥 연장시켜 잘린 부분 끝까지 나오게': 위 화면 위 상태 막대 자리 높이(위 화면 안 px) — 효과 판을 그만큼 위로 늘려 그대로 이어 그림 */
+const extUp = () => el?.classList.contains('mob') ? Math.round(parseFloat(el.style.getPropertyValue('--st')) / (parseFloat(el.style.getPropertyValue('--k')) || 1)) || 0 : 0;
+const extCv = (c, w, h, sc) => { const X = extUp(); if (c.height !== h + X * sc) { c.width = w; c.height = h + X * sc; } c.style.top = -X + 'px'; c.style.height = 192 + X + 'px'; c.dataset.ex = X * sc; return X * sc; };
 async function essFx(s, id, fl) {
   await Promise.race([loadEss(), wait(1500)]); const E = window.GymEss; if (!E || !B) return false;
   const k = await Promise.race([E.has(id), wait(1500).then(() => 0)]); if (!k) return false;
@@ -50,9 +53,10 @@ async function essFx(s, id, fl) {
   if (!bk) { bk = document.createElement('canvas'); bk.className = 'bt-essb'; bk.width = 512; bk.height = 384; top.insertBefore(bk, $b('.bt-mw.e')); }
   if (!fr) { fr = document.createElement('canvas'); fr.className = 'bt-essf'; fr.width = 512; fr.height = 384; $b(SEL('mw', 'p')).after(fr); }
   const side = sd => { const m = monEl(sd), c = m?.querySelector('.clip'); return { el: c || m, img: c?.querySelector('img'), pan: panOf(sd) }; };
+  const ex = extCv(bk, 512, 384, 2); extCv(fr, 512, 384, 2);
   const U = side(useO ? o : s), T = side(useO ? s : o), X = B.act[s];
   el.classList.add('essp'); bk.style.filter = fr.style.filter = fl || '';
-  try { await E.play({ top, back: bk, front: fr, user: U, target: T, A, speed: B.fast ? 1 / .6 : 1, alive: () => !!B, cry: () => { try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } }); }
+  try { await E.play({ top, back: bk, front: fr, user: U, target: T, A, speed: B.fast ? 1 / .6 : 1, alive: () => !!B, ext: ex, cry: () => { try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} } }); }
   catch (e) { console.error(e); }
   el.classList.remove('essp'); bk.style.filter = fr.style.filter = ''; return true;
 }
@@ -1831,7 +1835,7 @@ async function moveFx1(s, id, miss, fx) {
   let spl = null;
   if (A[1].some(e => e[0] === 'p')) {
     await Promise.race([loadSpl(), wait(1500)]);
-    if (window.GymSPL && B) { spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
+    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
     if (!B) { spl?.stop(); return; }
     spl?.go();
   }

@@ -253,13 +253,13 @@ function drawP(g, e, p, child) {
   const ti = p.tex, key = child ? `${ti}|${ch.tS}|${ch.tT}|${ch.fS}|${ch.fT}` : `${ti}|${r.tS}|${r.tT}|${r.fS}|${r.fT}`;
   const base = child ? texImg(e.d, ti, ch.tS, ch.tT, ch.fS, ch.fT) : texImg(e.d, ti, r.tS, r.tT, r.fS, r.fT); if (!base) return;
   const img = tinted(e.d, key, base, p.col);
-  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY + (e.cut ? cutDy(p.ep[1]) : 0);   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
+  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY + (e.cut ? cutDy(p.ep[1]) : 0) + EXT;   /* EXT: 판을 위(상태 막대 자리)로 늘린 만큼 */   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
   g.globalAlpha = a / 31;
   g.setTransform(KX * A[0], -KY * A[1], -KX * B[0], KY * B[1], X, Y);
   g.drawImage(img, px - 1, -py - 1, 2, 2);
 }
 function draw(S) {
-  const g = S.g; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.clearRect(0, 0, 256, 192); g.imageSmoothingEnabled = false;
+  const g = S.g; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.clearRect(0, 0, 256, 192 + EXT); g.imageSmoothingEnabled = false;
   for (const e of S.E) {
     const dp = () => { if (!e.r.hp) for (let i = e.P.length - 1; i >= 0; i--) drawP(g, e, e.P[i], false); };
     const dc = () => { if (e.r.ch) for (let i = e.C.length - 1; i >= 0; i--) drawP(g, e, e.C[i], true); };
@@ -381,7 +381,9 @@ function kill(S, e) { const i = S.E.indexOf(e); if (i >= 0) S.E.splice(i, 1); re
 
 // ---------- 한 번의 기술 연출 ----------
 // ev: mvfx.json 의 'p' 'pl' 'pq' 'pr' 'pu' 사건, atk: 공격하는 쪽 'p'|'e', F: 1프레임 ms
-function start(canvas, ev, atk, F, ver, self) {   // self: 자기에게 쓰는 기술 — 맞는 쪽 = 쓰는 쪽 (v19.18 달빛)
+let EXT = 0;
+function start(canvas, ev, atk, F, ver, self) {
+  EXT = +canvas.dataset.ex || 0;   // self: 자기에게 쓰는 기술 — 맞는 쪽 = 쓰는 쪽 (v19.18 달빛)
   const names = [...new Set(ev.filter(e => e[0] === 'p').map(e => e[3]))];
   const S = { E: [], T: [], slot: {}, atk: atk === 'p' ? 0 : 1, self: !!self, g: canvas.getContext('2d'), f: 0, dead: false, D: {} };
   S.count = ps => S.E.reduce((n, e) => n + (e.ps === ps ? e.P.length + e.C.length : 0), 0);
@@ -418,7 +420,7 @@ function start(canvas, ev, atk, F, ver, self) {   // self: 자기에게 쓰는 �
     if (qi >= Q.length && !S.E.length) { stop(); return; }
     raf = requestAnimationFrame(loop);
   };
-  const stop = () => { if (S.dead) return; S.dead = true; cancelAnimationFrame(raf); const g = S.g; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 256, 192); doneRes(); };
+  const stop = () => { if (S.dead) return; S.dead = true; cancelAnimationFrame(raf); const g = S.g; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 256, 192 + EXT); doneRes(); };
   S.stop = stop; S.step = () => { step(); draw(S); };   // step: 시험용 한 프레임씩
   S.ready = ready;
   S.go = () => { t0 = performance.now(); raf = requestAnimationFrame(loop); };
