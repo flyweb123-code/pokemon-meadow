@@ -647,7 +647,8 @@ function playAnim(side, A) {
 }
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A, quick) {
-  const pre0 = side[0] === 'e' && B.wild && monEl(side).classList.contains('wdk');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 */
+  const pre0 = side[0] === 'e' && B.wild && monEl(side).classList.contains('wdk'), preP = side[0] === 'p' && !!B.pG?.[side] && monEl(side).classList.contains('pre');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 / 이어지는 층: 내 포켓몬이 그대로 서 있음 */
+  if (preP) { A.gif = B.pG[side]; delete B.pG[side]; const m = monEl(side); m.classList.remove('pre'); playAnim(side, A); paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); return; }
   if (pre0) A.gif = B.wG || A.gif; else { A.gif = await pickGif(side, A); if (!B) return;
   } const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); if (!pre0) showMon(side, A, false);
   if (quick && side[0] === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.20 경완 '오른쪽에서 들어오게': 본가 Intro 움직임(어둡게 0.9초 → 제 색·울음 → HP 박스)은 그대로, 들어오는 방향만 오른쪽 화면 밖에서 (첫 층도) · v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
@@ -667,12 +668,14 @@ async function shinyFx(side) {
 // 대타: 인형으로 바뀐다 / 공중날기·구멍파기 등 숨는 기술: 다음 기술까지 사라진다 (본가)
 function subFx(s, on) { const m = monEl(s); if (!m) return; let d = m.querySelector('.bt-sub'); if (!d) { d = document.createElement('i'); d.className = 'bt-sub'; m.appendChild(d); } m.classList.toggle('sub', on); }
 const HIDE_MV = /^(fly|dig|dive|bounce|phantomforce|shadowforce|skydrop)$/;
-function throwBall(side) {
-  const fx = $b('.bt-fx'), b = document.createElement('i'); b.className = 'ball'; fx.appendChild(b);
-  const dx = slx(side), [x0, y0, x1, y1] = (side[0] === 'e' ? [190, 40, 176, 66] : [40, 120, 80, 112]).map((v, i) => i % 2 ? v + sly(side) : v + dx);
-  const mid = side[0] === 'e' ? 30 : 70;
-  const an = b.animate([{ transform: `translate(${x0}px,${y0}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${mid}px) rotate(360deg)`, offset: .5 }, { transform: `translate(${x1}px,${y1}px) rotate(720deg)` }], { duration: 420, easing: 'linear' });
-  return an.finished.catch(() => {}).then(() => b.remove());
+/* v24.54 경완 '내 포켓몬 나올 때 던져지는 몬스터볼 그래픽 본가 기준': 플래티넘 ball_throws 그림(gym/img/ball, 32칸 10장: 0~7 도는 모습·8 옆·9 열림) */
+const pbEl = (k = 'mon') => { const b = document.createElement('i'); b.className = 'ball pb spin'; b.style.setProperty('--bi', `url(${new URL(`${IMG}ball/${k}.png`, location.href).href})`);   /* CSS 변수 속 주소는 gym.css 기준으로 풀려서 절대 주소로 */ return b; };
+function throwBall(side, k) {
+  const fx = $b('.bt-fx'), b = pbEl(k); fx.appendChild(b);
+  const dx = slx(side), [x0, y0, x1, y1] = (side[0] === 'e' ? [190, 40, 176, 66] : [-10, 150, 80, 112]).map((v, i) => i % 2 ? v + sly(side) : v + dx);
+  const mid = side[0] === 'e' ? 30 : 62;   /* v24.54 내 볼은 본가처럼 왼쪽 아래 트레이너 손에서 높이 포물선 */
+  const c = 2 * mid - (y0 + y1) / 2, an = b.animate(Array.from({ length: 11 }, (_, i) => { const t = i / 10; return { transform: `translate(${x0 + (x1 - x0) * t}px,${(1 - t) ** 2 * y0 + 2 * (1 - t) * t * c + t * t * y1}px)` }; }), {   /* 포물선 */ duration: side[0] === 'e' ? 420 : 560, easing: 'linear', fill: 'forwards' });
+  return an.finished.catch(() => {}).then(async () => { b.classList.remove('spin'); b.classList.add('open'); await wait(90); b.remove(); });
 }
 function ballPoof(side) {
   const fx = $b('.bt-fx'), x = (side[0] === 'e' ? 176 : 80) + slx(side), y = (side[0] === 'e' ? 66 : 112) + sly(side);
@@ -864,6 +867,14 @@ function partyPanel(req, forced, ban = []) {
     list();
   });
 }
+/* v24.54 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
+function trPickMon(q, L) {
+  return new Promise(async res => { if (q) await msg(q, 0);
+    const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.g;
+      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
+      <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
+}
 /* v23.10 훈련하기 보급 고르기: 아래 화면에 고를 것 여러 개 (L = [[제목, 설명, 'c1,c2']]) → 고른 번호 */
 function trChoose(q, L) {
   return new Promise(res => { const p = panel(`<div class="bp-yn bp-tr"><p>${q}</p>${L.map(([t, d, c], i) => `<button class="bb" data-a="${i}"${c ? ` style="--c1:${c.split(',')[0]};--c2:${c.split(',')[1]}"` : ''}><span>${t}${d ? `<small>${d}</small>` : ''}</span></button>`).join('')}</div>`);
@@ -883,9 +894,9 @@ async function trBall() {
   const a = bm >= 255 ? 255 : Math.min(255, (3 * M - 2 * H) * cr * bm / (3 * M) * sb * (T.boss ? .5 : 1)), b = a >= 255 ? 1 : (a / 255) ** .25;
   let sh = 0; while (sh < 4 && Math.random() < b) sh++; const ok = sh >= 4;
   await msg(`관장은 ${eul(nm)} 던졌다!`, 0);
-  const fx = $b('.bt-fx'), bl = document.createElement('i'); bl.className = 'ball'; bl.style.background = `linear-gradient(${col} 0 45%,#202020 45% 55%,#f8f8f8 55%)`; bl.style.marginLeft = slx(es) + 'px'; fx.appendChild(bl);
-  se('NAGERU'); await bl.animate([{ transform: 'translate(40px,150px) rotate(0)' }, { transform: 'translate(110px,10px) rotate(360deg)', offset: .5 }, { transform: 'translate(176px,58px) rotate(720deg)' }], { duration: 520, easing: 'linear', fill: 'forwards' }).finished.catch(() => {});
-  const m = monEl(es); se('SUIKOMU'); m.classList.add('recall'); await wait(480);
+  const fx = $b('.bt-fx'), bl = pbEl(k); bl.style.marginLeft = slx(es) + 'px'; fx.appendChild(bl);
+  se('NAGERU'); await bl.animate([{ transform: 'translate(40px,150px)' }, { transform: 'translate(110px,10px)', offset: .5 }, { transform: 'translate(176px,58px)' }], { duration: 520, easing: 'linear', fill: 'forwards' }).finished.catch(() => {});
+  bl.classList.remove('spin'); bl.classList.add('open'); const m = monEl(es); se('SUIKOMU'); m.classList.add('recall'); await wait(480); bl.classList.remove('open'); bl.classList.add('f0');
   await bl.animate([{ transform: 'translate(176px,58px)' }, { transform: 'translate(176px,86px)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {});
   for (let j = 0; j < Math.min(3, sh); j++) { await wait(520); se('KON'); await bl.animate([{ transform: 'translate(176px,86px) rotate(0)' }, { transform: 'translate(176px,86px) rotate(-24deg)', offset: .3 }, { transform: 'translate(176px,86px) rotate(20deg)', offset: .7 }, { transform: 'translate(176px,86px) rotate(0)' }], { duration: 360, fill: 'forwards' }).finished.catch(() => {}); }
   await wait(560);
@@ -893,7 +904,7 @@ async function trBall() {
     $b(SEL('hb', es))?.classList.remove('on'); await wait(500);
     T.caught = { sp: E.sp, lv: pk.level, hp: pk.hp / pk.maxhp, e: B.foe[B.o.e.indexOf(pk)] }; T.caught.shiny = !!(E.shiny || T.caught.e?.shiny);
     await msgTap(`신난다! ${eul(E.nm)} 동료로 맞이했다!`); bl.remove(); await msgTap(`${eun(E.nm)} 이번 도전 동안 함께 싸워 준다!`); return true; }
-  ballPoof(es); se('BOWA2'); bl.remove(); m.classList.remove('recall'); await wait(300);
+  bl.classList.replace('f0', 'open'); ballPoof(es); se('BOWA2'); await wait(90); bl.remove(); m.classList.remove('recall'); await wait(300);
   await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return 'miss';
 }
 function yesNo(q) {
@@ -1223,15 +1234,17 @@ async function run(opts) {
   trE.style.cssText = ''; trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`; const trA = opts.wild ? null : trAni(trE, opts.foe.tr), uEp = trA ? `${IMG}dbk/tr/${trA[2]}.png` : uE; if (opts.wild) trE.style.visibility = 'hidden'; if (opts.chain) trP.style.visibility = 'hidden';   /* 야생은 상대 트레이너 없음 */
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
-  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
-  ['e2', 'p2'].forEach(s => { $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
+  /* v24.54 경완 '포켓몬 바뀔 때 내 포켓몬 사라지지 않게': 이어지는 층에서 같은 포켓몬이 그대로 나오면 발판 위에 둔 채로 (B.pG 그림, sendOut 이 다시 안 그림) */
+  B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._gif || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; const u = gifUrl(A.sp, true, A.shiny, A.g === 'F', A.fm); if (u !== m._gif) return false; B.pG[s] = u; return true; };
+  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); const kp = s === 'p' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = kp ? 'bt-mon p gf on pre' : `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; if (!kp) setSt(s, ''); });
+  ['e2', 'p2'].forEach(s => { const kp = s === 'p2' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = kp ? 'bt-mon p s2 gf on pre' : `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; if (!kp) setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
   if (opts.wild && !opts.chain && foeT[0]) try { const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
   M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); } else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro'); await trPlay(trE, trA); }
   const foeNm = B.foeNm = opts.wild ? opts.foe.nm : `${opts.foe.cls} ${opts.foe.nm}`;
-  if (opts.pre && B) try { await opts.pre({ msg, msgTap, choose: trChoose }); } catch (e) { console.error(e); }
+  if (opts.pre && B) try { await opts.pre({ msg, msgTap, choose: trChoose, pickMon: trPickMon, se }); } catch (e) { console.error(e); }
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
@@ -1262,7 +1275,7 @@ async function run(opts) {
   if (monSnap) S.gym.mon = JSON.parse(monSnap);
   /* v23.10 훈련하기: 끝난 뒤 남은 체력(hp)·보급 고르기(opts.post). post 가 true 면 배틀 화면을 닫지 않고 다음 층으로 */
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
-  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose })); } catch (e) { console.error(e); }
+  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
   if (keep && B) { const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
@@ -1504,10 +1517,10 @@ async function handle(a) {
       if (s[0] === 'e') { B.vs = new Set(['p', 'p2'].map(k => B.act[k]).filter(P0 => P0 && !P0.fnt).map(P0 => P0.pid)); }   // v14.94 경완: 경험치는 이 상대와 마주친 포켓몬만 다 받고, 나머지는 학습장치 (본가처럼 상대마다 새로)
       if (s[0] === 'e' && B.wild && B.dbl && !B.eOut2) { if (s === 'e') { B.eOut = 1; B.eOutP = sendOut(s, X, 1); break; } B.eOut2 = 1; await wait(140); await Promise.all([B.eOutP, sendOut(s, X, 1)]); if (!B) break; await msg(B.wildSay || `앗! 야생 ${wa(B.act.e?.nm || '')} ${iga(X.nm)} 튀어나왔다!`, 900); await wait(200); break; }   /* v24.21 더블: 야생 두 마리가 같이 들어옴 */
       if (s[0] === 'e' && B.wild && !B.eOut) { B.eOut = 1; await sendOut(s, X, 1); if (!B) break; await msg(B.wildSay || `앗! 야생 ${iga(X.nm)} 튀어나왔다!`, 900); await wait(200); break; }   /* v23.10 야생 배틀 (훈련하기) */
-      if (s[0] === 'p' && B.chain && !(B.pO = B.pO || {})[s]) { B.pO[s] = 1; B.pOut = 1; await sendOut(s, X, 1); await wait(200); break; }   /* 이어지는 배틀: 내 포켓몬은 나와 있던 그대로 */
-      if (s[0] === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
-      else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); $b('.bt-pty.p').classList.remove('on'); } await msg(`가랏! ${X.nm}!`, 0); }
-      await sendOut(s, X); await wait(200);
+      if (s[0] === 'p' && B.chain && !(B.pO = B.pO || {})[s]) { B.pO[s] = 1; B.pOut = 1; if (B.pG?.[s]) { await sendOut(s, X, 1); await wait(200); break; } }   /* 이어지는 배틀: 내 포켓몬은 나와 있던 그대로, 새로 나오는 포켓몬(더블 두 번째 자리 등)은 '가랏!' 볼 던지기 */
+      let sm; if (s[0] === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } sm = msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
+      else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); $b('.bt-pty.p').classList.remove('on'); } sm = msg(`가랏! ${X.nm}!`, 0); }
+      await wait(260); await sendOut(s, X); await sm; await wait(200);   /* v24.54 본가처럼 '가랏!' 글자가 나오는 동안 볼을 던짐 (예전엔 글자 다 나온 뒤 빈 발판에서 기다렸음) */
       break;
     }
     case 'move': {
@@ -1533,7 +1546,7 @@ async function handle(a) {
       else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false, undefined, s); await hitFx(s, effAhead(a[2])); }
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
-    case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
+    case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (T && T[1] !== 'x') se('KAIFUKU');   /* v24.54 경완 '도구 쓸 때 효과음 본가 기준': 회복·부활·상태 고침 = SE_DP_KAIFUKU */ if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
     case '-dxrevive': { hbBalls('e'); tray(); await msg(`${eun(nmIn(a[2]))} 기운을 되찾았다!`); break; }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
