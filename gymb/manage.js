@@ -257,7 +257,7 @@ function yardBg0(c) {
 // 훈련장 다시 꾸미기 (경완 2026-10-29): 6마리가 서로 다른 기구에서 — 샌드백 둘·과녁(기술 쏘기)·트램펄린·허들 달리기·후프링(나는 포켓몬)·수영장(물)·가운데 코트 대련 둘·벤치 쉬기
 async function drawTrain() {
   const g = st(); g.tr = g.tr || []; tickTrain(Date.now()); K.save();
-  const yk = g.tr.map(e => e.id).join() + '|' + (g.sf || []).filter(x => x.yard).map(x => x.id).join() + '|' + CK_O.map(k => coachX(k)).join();
+  const yk = g.tr.map(e => e.id).join() + '|' + ydOrd(g.sf || []).map(x => x.id).join() + '|' + CK_O.map(k => coachX(k)).join();
   if (Y && !Y.el.isConnected && Y.yk === yk && !sh.classList.contains('lk')) {   // v20.91 경완 '다른 메뉴 갔다 오면 순간이동 → 꾸미기 필드처럼': 다른 메뉴에 있는 동안에도 움직임은 계속 계산했으니 그 훈련장을 그대로 다시 붙임
     cancelAnimationFrame(Y.raf); clearTimeout(Y.pz); sh.classList.add('ty-on'); sh.scrollTop = 0; Y.el.querySelectorAll('.wob,.swing').forEach(q => q.classList.remove('wob', 'swing')); sh.innerHTML = ''; sh.append(Y.el); sh.onclick = yardTap;   /* v21.03 경완 '다른 메뉴 갔다 오면 소품이 한 번 흔들림': 다시 붙이면 남아 있던 흔들림 애니메이션이 다시 돌아서 지움 */
     if (Math.abs((Y.el.clientWidth || 360) - Y.W) < 3 || Y.W === 280) { Y.last = 0; Y.mons.forEach(m => { m.fk = null; }); Y.raf = requestAnimationFrame(yardLoop); return; } }
@@ -281,7 +281,7 @@ async function drawTrain() {
   { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
-  Y.co = g.sf.filter(x => x.yard).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * [.1, .9, .5][i], cy = H * (i === 2 ? .68 : .6); q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
+  Y.co = ydOrd(g.sf).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * [.1, .9, .5][i], cy = H * (i === 2 ? .68 : .6); q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
     q.style.cssText = `left:${cx}px;top:${cy}px;z-index:${Math.round(cy)};background-image:url(${K.owSrc(x.ow)})`; Y.L.append(q); return { s: x, el: q, x: cx, y: cy, nx: performance.now() / 1000 + 1 + i * 1.7, fw: K.owW(x.ow) * 2, i, tg: null, tn: 0, d: 'd', fx: 1, snap: 1, hx: cx, hy: cy }; });   // v17.69 경완 '켤 때마다 같은 자리에서 걸어감': 처음엔 고른 포켓몬 옆에 바로 서 있음
   // v17.77 경완 '훈련장에도 필드처럼 날씨·시간, 어두워지면 조명': 필드와 같은 곱하기 색(GA.light) + 가로등 3개 + 비·눈
   Y.lp = [[14, H * .42], [W - 14, H * .42], [Y.pond.x1 + 14, Y.pond.y0 - 6]].map(([x, y]) => { const q = document.createElement('i'); q.className = 'ty-lp'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)}`; Y.L.append(q); return { x, y, el: q, dx: x < W / 2 ? 1 : -1 }; });
@@ -299,7 +299,9 @@ async function drawTrain() {
 }
 /* v23.36 경완 '훈련장 코치 슬롯 창과 버튼, 오른쪽 아래 두 칸(위 코치 · 아래 포켓몬), 가로로 긴 버튼, 몬스터볼 / 맡긴 코치 걸음 그림, 슬롯 수는 네모 점(포켓몬은 전체 칸, 잠긴 칸 회색)' */
 const yDots = (n, open, all) => `<span class="ty-dd">${Array.from({ length: all }, (_, i) => `<i class="${i < n ? 'on' : i < open ? '' : 'lk'}"></i>`).join('')}</span>`;
-const yCoaches = () => (st().sf || []).filter(x => x.yard).slice(0, YARD_SF);
+/* 경완 '훈련장 코치는 슬롯 뺐다가 다시 넣으면 순번 밑으로 들어가게 체육관 번호와 상관없이': yard = 맡긴 순번(1, 2, 3…), 고용 순서(sf) 말고 이 순서로 */
+const ydOrd = L => L.filter(x => x.yard).sort((a, b) => (a.yard | 0) - (b.yard | 0)), ydNext = () => Math.max(0, ...(st().sf || []).map(x => x.yard | 0)) + 1;
+const yCoaches = () => ydOrd(st().sf || []).slice(0, YARD_SF);
 function yBtns() {
   const g = st(), C = yCoaches(), f = C[0] || (g.sf || [])[0], w = f ? K.owW(f.ow) : 0;
   const face = f ? `<i class="ty-bic ty-cof${C.length ? '' : ' none'}" style="width:${Math.round(w * 36 / 32)}px;background-image:url(${K.owSrc(f.ow)})"></i>` : '<i class="ty-bic ty-cof empty"></i>';
@@ -330,7 +332,7 @@ function coWin() {
     </div>`;
   w.querySelectorAll('.co-trs').forEach(footFix);
   const re = () => { if (w.isConnected) coWin(); };
-  const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? 1 : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
+  const setYd = (s, on) => { tickTrain(Date.now()); s.yard = on ? ydNext() : 0; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${on ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); redraw(); K.renderHome(); re(); };
   w.onclick = e => {
     if (e.target.closest('[data-x]')) { sfx('tap'); w.remove(); return; }
     const o = e.target.closest('[data-cout]'); if (o) { sfx('tap'); const s = g.sf[+o.dataset.cout]; if (s) setYd(s, 0); return; }
@@ -898,7 +900,7 @@ function sfDetail(s, home) {
     (a, close) => {
       if (a === 'x') return close();
       if (a === 'gym') { close(); return K.sfPlace(s, home ? () => {} : () => { K.openTab?.('staff'); }); }   // 홈에서 연 카드는 자리 바꾼 뒤 홈 그대로
-      if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : 1; K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s, home); }
+      if (a === 'yd') { tickTrain(Date.now()); s.yard = s.yard ? 0 : ydNext(); K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} ${s.yard ? '훈련장 코치로 배치했다.' : '훈련장 코치에서 뺐다.'}`); K.save(); close(); redraw(); K.renderHome(); return sfDetail(s, home); }
       if (a === 'up') { const k = g.sf.indexOf(s); if (k > 0) { [g.sf[k - 1], g.sf[k]] = [g.sf[k], g.sf[k - 1]]; K.save(); } close(); redraw(); K.renderHome(); return sfDetail(s); }
       if (a === 'fire') { close();   /* v16.41 경완 '해고할 때는 지금까지 일한 수당은 챙겨줘야 함': 이번 주급 주기에서 일한 날만큼 (쉬는 중이면 일 안 했으니 없음) */
         const wd = s.rest ? 0 : Math.max(1, Math.min(7, Math.ceil((now - (s.pay - 7 * K.DAY)) / K.DAY - .01))), amt = s.rest ? 0 : Math.round(s.wage * wd / 7);
