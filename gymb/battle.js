@@ -896,8 +896,8 @@ function trBag(T) {
   return new Promise(res => { const have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0); let sel = (TR_BALL.find(([k]) => k === B.trBagK && (T.balls[k] | 0) > 0) || have[0])[0];
     const ic = k => `<img class="bg-ic" alt="" src="${IMG}item/${TR_BALL_IC[k]}.png">`;
     const draw = () => { const X = TR_BALL.find(([k]) => k === sel);
-      const p = panel(`<div class="bp-bag"><div class="bg-l">${TR_BALL.map(([k, n]) => { const c = T.balls[k] | 0; return `<button class="bg-r${k === sel ? ' on' : ''}${c ? '' : ' off'}" data-k="${k}" ${c ? '' : 'disabled'}>${ic(k)}<span>${n}</span><em>×${c}</em></button>`; }).join('')}</div>
-        <div class="bg-d">${ic(sel)}<div><b>${X[1]}</b>${TR_BALL_D[sel]}<br>잡은 포켓몬은 이번 도전에만 동료로 함께해요</div></div>
+      const p = panel(`<div class="bp-bag"><div class="bg-l">${TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0).map(([k, n]) => {   /* v24.60 경완 '아직 안 받은 도구는 안 나오게' */ const c = T.balls[k] | 0; return `<button class="bg-r${k === sel ? ' on' : ''}${c ? '' : ' off'}" data-k="${k}" ${c ? '' : 'disabled'}>${ic(k)}<span>${n}</span><em>×${c}</em></button>`; }).join('')}</div>
+        <div class="bg-d">${ic(sel)}<div><b>${X[1]}</b>${TR_BALL_D[sel]}</div></div>
         <div class="bg-b"><button class="bb cancel" data-x><span>그만두기</span></button><button class="bb go" data-go><span>던지기</span></button></div></div>`);
       p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.k) { sel = b.dataset.k; return draw(); } if (b.hasAttribute('data-x')) { panel(''); return res(null); } if (b.hasAttribute('data-go')) { B.trBagK = sel; panel(''); res(have.findIndex(([k]) => k === sel)); } }; };
     draw(); });
