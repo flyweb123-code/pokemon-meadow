@@ -692,6 +692,20 @@ function ballPoof(side) {
   const fx = $b('.bt-fx'), x = (side[0] === 'e' ? 176 : 80) + slx(side), y = (side[0] === 'e' ? 66 : 112) + sly(side);
   for (let k = 0; k < 10; k++) { const i = document.createElement('i'); i.className = 'poof'; const a = k / 10 * Math.PI * 2; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--dx', Math.cos(a) * 30 + 'px'); i.style.setProperty('--dy', Math.sin(a) * 22 + 'px'); fx.appendChild(i); setTimeout(() => i.remove(), 600); }
 }
+/* v24.63 EBS4 Ballburst (Essentials 플러그인 그림, 볼 색별): 가운데 빛(shine)이 커지며 사라지고, 빛줄기(ray) 8개가 돌며 퍼지고, 알갱이(particle·eff)가 튀어 나감. 그림은 512폭 화면 기준이라 반으로 */
+const bbImg = (n, k) => new URL(`${IMG}ball/burst/${n}_${k in { mon: 1, great: 1, ultra: 1, master: 1 } ? k : 'mon'}.png`, location.href).href;
+function bbEl(fx, n, k, x, y, w, h) { const i = document.createElement('i'); i.className = 'bb-fx'; Object.assign(i.style, { left: x + slx0 + 'px', top: y + 'px', width: w + 'px', height: h + 'px', backgroundImage: `url(${bbImg(n, k)})` }); fx.appendChild(i); return i; }
+let slx0 = 0;
+function ballBurst(side, k, x, y) { const fx = $b('.bt-fx'); if (!fx) return; slx0 = slx(side); const L = [], A = (el, kf, d, dl = 0) => { L.push(el); el.animate(kf, { duration: d, delay: dl, easing: 'ease-out', fill: 'both' }); };
+  const sh = bbEl(fx, 'shine', k, x - 16, y - 16, 32, 32); A(sh, [{ transform: 'scale(.2)', opacity: 1 }, { transform: 'scale(1.3)', opacity: .9, offset: .5 }, { transform: 'scale(1.7)', opacity: 0 }], 520);
+  for (let j = 0; j < 8; j++) { const a = j * 45 + 22, r = bbEl(fx, 'ray', k, x, y - 8, 91, 16); r.style.transformOrigin = '0 50%'; A(r, [{ transform: `rotate(${a}deg) scaleX(.1)`, opacity: 0 }, { transform: `rotate(${a + 20}deg) scaleX(.6)`, opacity: 1, offset: .4 }, { transform: `rotate(${a + 45}deg) scaleX(.9)`, opacity: 0 }], 560); }
+  for (let j = 0; j < 10; j++) { const a = j / 10 * Math.PI * 2 + .3, d = 26 + (j % 3) * 8, n = j % 2 ? 'eff' : 'particle', w = n === 'eff' ? 8 : 10, p = bbEl(fx, n, k, x - w / 2, y - w / 2, w, w);
+    A(p, [{ transform: 'translate(0,0) scale(.4)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d * .8}px) scale(1)`, opacity: 1, offset: .6 }, { transform: `translate(${Math.cos(a) * d * 1.2}px,${Math.sin(a) * d}px) scale(.6)`, opacity: 0 }], 600, 60); }
+  setTimeout(() => L.forEach(e => e.remove()), 800); }
+/* 잡혔을 때: 볼 위로 별(eff)이 셋 포물선으로 튀어 오름 (본가 4세대 잡힘 별) */
+function ballStars(side, k, x, y) { const fx = $b('.bt-fx'); if (!fx) return; slx0 = slx(side);
+  [-1, 0, 1].forEach((d, j) => { const s = bbEl(fx, 'eff', k, x - 4, y - 8, 8, 8); s.animate(Array.from({ length: 9 }, (_, i) => { const t = i / 8; return { transform: `translate(${d * 22 * t}px,${-34 * t + 40 * t * t * (j === 1 ? .6 : 1)}px) rotate(${t * 180}deg)`, opacity: t > .8 ? (1 - t) * 5 : 1 }; }), { duration: 700, delay: j * 40, fill: 'both' }); setTimeout(() => s.remove(), 900); });
+  const sh = bbEl(fx, 'shine', k, x - 10, y - 12, 20, 20); sh.animate([{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(1.2)', opacity: 0 }], { duration: 420, fill: 'both' }); setTimeout(() => sh.remove(), 500); }
 async function recall(side) { zAura(side, false); const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(SEL('hb', side)).classList.remove('on'); }
 // 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
 async function faint(side, A) { zAura(side, false);
@@ -916,17 +930,29 @@ async function trBall() {
   const a = bm >= 255 ? 255 : Math.min(255, (3 * M - 2 * H) * cr * bm / (3 * M) * sb * (T.boss ? .5 : 1)), b = a >= 255 ? 1 : (a / 255) ** .25;
   let sh = 0; while (sh < 4 && Math.random() < b) sh++; const ok = sh >= 4;
   await msg(`관장은 ${eul(nm)} 던졌다!`, 0);
-  const fx = $b('.bt-fx'), bl = pbEl(k); bl.style.marginLeft = slx(es) + 'px'; fx.appendChild(bl);
-  se('NAGERU'); await bl.animate([{ transform: 'translate(40px,150px)' }, { transform: 'translate(110px,10px)', offset: .5 }, { transform: 'translate(176px,58px)' }], { duration: 520, easing: 'linear', fill: 'forwards' }).finished.catch(() => {});
-  bl.classList.remove('spin'); bl.classList.add('open'); const m = monEl(es); se('SUIKOMU'); m.classList.add('recall'); await wait(480); bl.classList.remove('open'); bl.classList.add('f0');
-  await bl.animate([{ transform: 'translate(176px,58px)' }, { transform: 'translate(176px,86px)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {});
-  for (let j = 0; j < Math.min(3, sh); j++) { await wait(520); se('KON'); await bl.animate([{ transform: 'translate(176px,86px) rotate(0)' }, { transform: 'translate(176px,86px) rotate(-24deg)', offset: .3 }, { transform: 'translate(176px,86px) rotate(20deg)', offset: .7 }, { transform: 'translate(176px,86px) rotate(0)' }], { duration: 360, fill: 'forwards' }).finished.catch(() => {}); }
-  await wait(560);
-  if (ok) { se('GETTING'); bl.style.filter = 'brightness(.6)'; for (let j = 0; j < 3; j++) { const t = document.createElement('i'); t.className = 'poof'; t.style.left = (176 + slx(es)) + 'px'; t.style.top = '82px'; t.style.setProperty('--dx', (j - 1) * 18 + 'px'); t.style.setProperty('--dy', '-22px'); fx.appendChild(t); setTimeout(() => t.remove(), 600); }
-    $b(SEL('hb', es))?.classList.remove('on'); await wait(500);
+  /* v24.63 경완 '몬스터볼 던져서 잡는 효과 본가 엔진으로': Essentials PokeballThrowCapture 움직임(포물선 16프레임 → 열림·볼 터짐·빨려 들어감 → 닫히며 번쩍 → 4번 튕김·찌그러짐 → 흔들기 3번 → 잡힘 별/풀려남)
+     + 플래티넘 볼 그림 + EBS4 Ballburst 그림(gym/img/ball/burst: shine·ray·particle·eff, 볼 색별) */
+  const F = 34, fx = $b('.bt-fx'), bl = pbEl(k), X = 176, Y0 = 58, YG = 86, m = monEl(es); bl.style.marginLeft = slx(es) + 'px'; fx.appendChild(bl);
+  const at = (y, o = '') => `translate(${X}px,${y}px)${o}`, go = (kf, n, ease = 'linear') => bl.animate(kf, { duration: n * F, easing: ease, fill: 'forwards' }).finished.catch(() => {});
+  se('NAGERU'); const x0 = 40, y0 = 150, c = 2 * 6 - (y0 + Y0) / 2;
+  await go(Array.from({ length: 13 }, (_, i) => { const t = i / 12; return { transform: `translate(${x0 + (X - x0) * t}px,${(1 - t) ** 2 * y0 + 2 * (1 - t) * t * c + t * t * Y0}px)` }; }), 16);
+  bl.classList.remove('spin'); bl.classList.add('open'); ballBurst(es, k, X, Y0); se('BOWA'); await wait(2 * F);
+  se('SUIKOMU'); m.classList.add('recall'); await wait(14 * F);
+  bl.classList.remove('open'); bl.classList.add('f0'); bl.style.filter = 'brightness(1.9) sepia(.5) hue-rotate(-20deg)'; await wait(3 * F); bl.style.filter = ''; await wait(4 * F);
+  /* 땅으로 떨어지며 4번 튕김: 높이 1·1/2·1/4·1/8, 프레임 4·4·3·2, 닿을 때 찌그러짐 100±5×(5-i) */
+  const DH = YG - Y0, T4 = [4, 4, 3, 2]; await go([{ transform: at(Y0) }, { transform: at(YG) }], 4, 'cubic-bezier(.5,0,1,1)');
+  for (let i = 0; i < 4; i++) { const q = 5 * (4 - i) / 100; se(i ? 'KON2' : 'KON', { gain: 1 - i * .2 });
+    await go([{ transform: at(YG + 2, ` scale(${1 + q},${1 - q})`) }, { transform: at(YG) }], 2);
+    if (i < 3) { const h = DH / 2 ** (i + 1); await go([{ transform: at(YG) }, { transform: at(YG - h) }], T4[i + 1], 'cubic-bezier(0,0,.5,1)'); await go([{ transform: at(YG - h) }, { transform: at(YG) }], T4[i + 1], 'cubic-bezier(.5,0,1,1)'); } }
+  await wait(16 * F);
+  for (let j = 0; j < Math.min(3, sh); j++) { const dx = 2 * (4 - j), r = 5 * (4 - j); se('KON');
+    await go([{ transform: at(YG) }, { transform: `translate(${X - dx}px,${YG}px) rotate(${-r}deg)`, offset: .25 }, { transform: `translate(${X + dx}px,${YG}px) rotate(${r}deg)`, offset: .75 }, { transform: at(YG) }], 8, 'ease-in-out');
+    await wait(16 * F); }
+  if (ok) { se('GETTING'); bl.style.filter = 'brightness(.55)'; ballStars(es, k, X, YG);
+    $b(SEL('hb', es))?.classList.remove('on'); await wait(700);
     T.caught = { sp: E.sp, lv: pk.level, hp: pk.hp / pk.maxhp, e: B.foe[B.o.e.indexOf(pk)] }; T.caught.shiny = !!(E.shiny || T.caught.e?.shiny);
     await msgTap(`신난다! ${eul(E.nm)} 동료로 맞이했다!`); bl.remove(); await msgTap(`${eun(E.nm)} 이번 도전 동안 함께 싸워 준다!`); return true; }
-  bl.classList.replace('f0', 'open'); ballPoof(es); se('BOWA2'); await wait(90); bl.remove(); m.classList.remove('recall'); await wait(300);
+  bl.classList.replace('f0', 'open'); ballBurst(es, k, X, YG); se('BOWA2'); await wait(3 * F); bl.remove(); m.classList.remove('recall'); await wait(300);
   await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return 'miss';
 }
 function yesNo(q) {
