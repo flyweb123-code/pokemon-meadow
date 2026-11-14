@@ -641,7 +641,7 @@ function showMon(side, A, on = true) {
     const k = (side[0] === 'p' ? (B?.dbl ? 1.1 : 1.4) : 1) * (so?.[2] || 1),   /* 더블은 내 쪽 두 마리가 덜 겹치게 조금 작게 */ fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
-    if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; let dy = 0; if (y < GIF_TOP) { dy = Math.round(GIF_TOP - y); m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
+    if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k, TF = B?.dbl ? (side === 'p2' ? 80 : 64) : GIF_TOP; let dy = 0; if (y < TF) { dy = Math.round(TF - y);   /* v24.99 더블: 내 쪽 큰 포켓몬(리자몽)이 상대 포켓몬을 가리지 않게 머리 높이를 낮춤 (오른쪽 p2 는 상대 왼쪽 포켓몬 발밑 아래까지) */ m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
     else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
     m._gif = A.gif; }
   else if (A) {
@@ -1466,23 +1466,47 @@ async function chooseD(req) {
   return ch.join(', ');
 }
 /* v24.21 더블 상대 AI: 자리마다 기술 × 목표를 어림 점수로 (상성·자속·명중·남은 체력), 광역기는 상대 둘 합 ×0.75 · 같은 편까지 맞히는 기술(지진 등)은 같은 편 몫을 뺌 */
+/* v24.99 경완 '더블 배틀 난이도 정하는 것도 포켓로그나 외부 저장소 코드 참고해줘야할듯': 포켓로그 EnemyPokemon.getNextMove·getNextTargets(SMART) 규칙만 따옴 (코드는 안 가져옴).
+   ① 쓰러뜨릴 수 있는 공격이 있으면 그 기술들만 본다 ② 점수 = 어림 피해 비율 × (상성·자속은 피해식 안에), 모두 맞히는 기술은 상대 둘 합 ×.75 − 같은 편 피해 ×1.2
+   ③ 대상은 1등 점수의 절반 이상인 대상들 중 점수 비례로 고름 ④ 기술 고르기: 쉬움 = 포켓로그 SMART_RANDOM(5/8 1등, 아니면 다음), 보통 = SMART(다음 기술 점수 비율×50% 확률로 넘어감), 어려움 = 늘 1등 */
 function aiD(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
-  if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass'; const x = pick(o); used.push(x.i); return 'switch ' + (x.i + 1); }).join(', '); }
+  const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
+  const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
+  const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
+    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
+    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
+  if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
+    const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
+    const x = o.sort((a, b) => fit(b) - fit(a))[0]; used.push(x.i); return 'switch ' + (x.i + 1); }).join(', '); }
   return req.active.map((R, k) => { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
     if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
     const mv = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
-    const C = [], add = (o, v, n) => C.push({ o, v: v * rnd(.85, 1.15), n });
-    const sc = (m, f) => { if (!f || f.fainted || !btl.dex.getImmunity(m.type, f)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, f), stab = (me.types || me.species?.types || []).includes(m.type) ? 1.5 : 1;
-      return (m.basePower || 40) * eff * stab * ((m.accuracy === true ? 100 : m.accuracy) / 100) / 100 * (f.hp / f.maxhp < .3 ? 1.3 : 1); };
+    const al = side.active[1 - k], alOk = al && !al.fainted, mHp = me.hp / me.maxhp, foeHit = Math.max(0, ...foes.map(F => Math.max(0, ...(F.q.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(F.q, me, btl.dex.moves.get(y.id)))))) / Math.max(1, me.hp);
+    const opts = [];   /* { o: 기술, T: [대상 번호, 점수][], ko } */
     for (const o of mv) { const m = btl.dex.moves.get(o.m.id), tg = o.m.target || m.target;
-      if (m.category === 'Status') { if (tg === 'adjacentAlly') continue; add(o, .25 + Math.random() * .2, NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n : ''); continue; }
-      if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, x) => a + sc(m, x.q), 0) * .75; if (tg === 'allAdjacent') { const al = side.active[1 - k]; if (al && !al.fainted) v -= sc(m, al) * 1.2; } add(o, v, ''); }
-      else if (NEED_T.has(tg)) foes.forEach(x => add(o, sc(m, x.q), x.n)); else add(o, sc(m, foes[0]?.q), ''); }
-    if (!C.length) return 'move ' + (mv[0].i + 1);
-    const b = diff === 0 && Math.random() < .5 ? pick(C) : C.sort((a, b) => b.v - a.v)[0];
-    return 'move ' + (b.o.i + 1) + (b.n ? ' ' + b.n : '');
+      if (m.category === 'Status') { if (tg === 'adjacentAlly') { if (m.id === 'helpinghand' && alOk) opts.push({ o, T: [[-(2 - k), .35]] }); continue; }   /* 같은 편 자리 = 쇼다운 음수 대상 */
+        let v = .08; const sb = m.boosts && m.target === 'self' ? m.boosts : null, F0 = foes[0]?.q;
+        if (sb) { const up = Object.entries(sb).filter(([, x]) => x > 0), cur = Math.max(...up.map(([q]) => me.boosts?.[q] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .4) v = .55 - cur * .2; }
+        else if (m.id === 'protect' || m.id === 'detect') v = foeHit > .6 ? .3 : .05;
+        else if (m.id === 'followme' || m.id === 'ragepowder') v = alOk && mHp > .5 ? .3 : 0;
+        else if (m.heal || /^(roost|synthesis|moonlight|morningsun)$/.test(m.id)) v = mHp < .45 ? .65 : 0;
+        else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && btl.dex.getImmunity(m.type, F.q)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
+        if (m.accuracy !== true) v *= m.accuracy / 100; opts.push({ o, T: [[NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n || '' : '', v]] }); continue; }
+      const r = F => Math.min(1, dmg(me, F.q, m) / Math.max(1, F.q.hp)) + (dmg(me, F.q, m) >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : 0);
+      if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, F) => a + r(F), 0) * .75; if (tg === 'allAdjacent' && alOk) v -= Math.min(1, dmg(me, al, m) / Math.max(1, al.hp)) * 1.2 + (dmg(me, al, m) >= al.hp ? 1 : 0); opts.push({ o, T: [['', v]], ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) }); }
+      else if (NEED_T.has(tg)) opts.push({ o, T: foes.map(F => [F.n, r(F)]), ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) });
+      else opts.push({ o, T: [['', foes[0] ? r(foes[0]) : 0]] }); }
+    if (!opts.length) return 'move ' + (mv[0].i + 1);
+    const pool = diff && opts.some(x => x.ko) ? opts.filter(x => x.ko) : opts;   /* ① 쓰러뜨릴 기술이 있으면 그것만 */
+    const sc = pool.map(x => { const T = x.T.slice().sort((a, b) => b[1] - a[1]), top = T[0][1]; let C = T.filter(t => t[1] >= top / 2); if (!C.length) C = [T[0]];   /* ③ 1등 절반 이상만, 점수 비례 */
+      let u = Math.random() * C.reduce((a, t) => a + Math.max(.01, t[1]), 0), t = C[0]; for (const c of C) { u -= Math.max(.01, c[1]); if (u <= 0) { t = c; break; } }
+      return { o: x.o, n: t[0], s: top * rnd(.95, 1.05) }; }).sort((a, b) => b.s - a.s);
+    let c = 0;   /* ④ */
+    if (diff === 0) while (c < sc.length - 1 && Math.random() >= 5 / 8) c++;
+    else if (diff === 1) while (c < sc.length - 1 && sc[c].s > 0 && sc[c + 1].s > 0 && Math.random() < sc[c + 1].s / sc[c].s * .5) c++;
+    return 'move ' + (sc[c].o.i + 1) + (sc[c].n ? ' ' + sc[c].n : '');
   }).join(', ');
 }
 // 이름표 "p1a: 피카츄" → 편
