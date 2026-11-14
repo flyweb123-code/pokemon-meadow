@@ -957,7 +957,7 @@ function ko(o, ux, uy) {
   stop(o.boss ? .2 : .1); shake(o.boss ? .9 : .32); kick(ux, uy, o.boss ? 12 : 7); zoom(o.boss ? .1 : .035);
   se('POKE_DEAD', .12); if (o.boss) { rumble(4, 65); snd('DUN_Explosion', .09); flash(.3); } else buzz(1);
   if (last) { slow(fin ? .95 : .5, fin ? .22 : .35); if (!o.boss) flash(.12); }   // 마지막 한 마리는 느리게 날아간다
-  const cr = Math.random(), coins = o.boss ? [1, 1, 1] : o.minion ? [] : Math.random() < .5 ? [cr < .03 ? 3 : cr < .18 ? 2 : 1] : [];   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
+  const cr = Math.random(), coins = o.boss ? [1, 1, 1] : o.minion ? [] : [cr < .01 ? 3 : cr < .07 ? 2 : 1];   /* 경완 '잡몹은 동전 다 떨구긴 했으면': 모두 하나씩, 대신 은·금은 드물게 */   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
   const ex = o.minion ? 0 : Math.round(G.xpB * (o.boss === 2 ? XW.fin : o.boss ? XW.mid : XW.mob(G.wave - 1)) / XW_ALL); G.exp += ex;
   const y = EVY()[o.sp] || '', evAdd = +y[G.stat] || 0, before = G.ev; G.evRaw += evAdd / 6; G.ev = Math.min(EV_CAP, G.M.evRoom, Math.floor(G.evRaw + 1e-6));
   const evUp = G.ev - before, egLeft = G.M.eg ? Math.min(EG_CAP, 99 - G.egg0) - G.shard - G.drops.reduce((a, p) => a + (p.sh ? EGV[p.sh] : 0), 0) : 0;
@@ -1152,10 +1152,12 @@ function shardFx() {   // 먹는 순간 화면 효과 (판 시간이 멈춰 있�
 // ---------- 그리기 ----------
 function coinSq(g, x, y, s, C) { g.fillStyle = C[0]; g.fillRect(x - s / 2 - 2, y - s / 2 - 2, s + 4, s + 4); g.fillStyle = C[1]; g.fillRect(x - s / 2, y - s / 2, s, s); g.fillStyle = C[3]; g.fillRect(x - s / 2, y - s / 2, s, 3); g.fillRect(x - s / 2, y - s / 2, 3, s); g.fillStyle = C[2]; g.fillRect(x - s / 2, y + s / 2 - 3, s, 3); g.fillRect(x + s / 2 - 3, y - s / 2, 3, s); }
 function bagDrop(x, y, val) { const G = R.G, a = Math.random() * 6.28; G.drops.push({ coin: 3, bag: 1, val, x, y, t0: R.T, vy: -230, z: 14, vx: Math.cos(a) * 30, gy: Math.sin(a) * 18 }); }
-function drawBag(p) { const g = R.g, t = R.T - p.t0, k = p.val >= 40 ? 3 : p.val >= 15 ? 2.5 : 2, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2)), px = (c, a, b, w, h) => { g.fillStyle = c; g.fillRect(Math.round(x + a * k), Math.round(y + b * k), Math.ceil(w * k), Math.ceil(h * k)); };
-  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, 7 * k, 2.5 * k, 0, 0, 7); g.fill();
-  px('#20202c', -6, -10, 12, 10); px('#20202c', -5, -11, 10, 12); px('#20202c', -3, -14, 6, 4); px('#c8843c', -5, -9, 10, 8); px('#c8843c', -4, -10, 8, 10); px('#8a5220', -5, -3, 10, 2); px('#8a5220', 2, -9, 3, 8); px('#f0b870', -4, -9, 2, 4); px('#e8c890', -2, -13, 4, 2); px('#ffc830', -3, -11, 6, 1); px('#6a4400', -1, -7, 3, 5); px('#ffc830', 0, -6, 1, 3);
-  if ((t * 1.3 + p.x * .37) % 1 < .3) { g.fillStyle = '#fff'; g.fillRect(x + 5 * k, y - 15 * k, 2, 8); g.fillRect(x + 5 * k - 3, y - 15 * k + 3, 8, 2); } }
+/* 경완 2026-11-14 '보따리 디자인 구림, 최소 스칼렛 수준': 스칼렛 소품 기준(바깥 테두리 한 줄, 천 4단계 명암, 빛은 왼쪽 위, 끈·동전 무늬)으로 손으로 다시 그림 */
+const BAG_PX = ['......oo..oo..oo.....', '.....o11oo12oo23o....', '.....o12212231233o...', '......o222332334o....', '.......orrrrrRRo.....', '......oo1rwrRR3oo....', '.....o112o33o3334o...', '....o11222222223344o.', '...o1112222222223344o', '..o111222oooo2223334o', '..o11222oywyYo222334o', '..o1222oywyyyYo22334o', '..o1222oyyooyYo22334o', '..o1222oyywyyYo23344o', '..o2222oYyyyYYo23344o', '..o22222oYYYYo223344o', '..o322222oooo2233444o', '...o3322222222333444o', '....o33333333334444o.', '.....oooooooooooooo..'], BAG_C = {'o': '#20202c', '1': '#f4d4a0', '2': '#d8a868', '3': '#b07c44', '4': '#7e5028', 'r': '#d04434', 'R': '#8e2618', 'w': '#fff6c8', 'y': '#ffd23c', 'Y': '#d8940c'};
+let BAG_IM = null; function bagIm() { if (!BAG_IM) { const c = BAG_IM = document.createElement('canvas'); c.width = BAG_PX[0].length; c.height = BAG_PX.length; const x = c.getContext('2d'); BAG_PX.forEach((r, j) => [...r].forEach((ch, i) => { if (ch !== '.') { x.fillStyle = BAG_C[ch]; x.fillRect(i, j, 1, 1); } })); } return BAG_IM; }
+function drawBag(p) { const g = R.g, t = R.T - p.t0, k = p.val >= 40 ? 3 : 2, im = bagIm(), w = im.width * k, h = im.height * k, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));
+  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, w * .42, w * .14, 0, 0, 7); g.fill(); g.imageSmoothingEnabled = false; g.drawImage(im, Math.round(x - w / 2), y - h, w, h);
+  if ((t * 1.3 + p.x * .37) % 1 < .3) { g.fillStyle = '#fff'; g.fillRect(x + w / 2 - 2, y - h - 4, 2, 8); g.fillRect(x + w / 2 - 5, y - h - 1, 8, 2); } }
 function drawCoin(p) { if (p.bag) return drawBag(p); const g = R.g, t = R.T - p.t0, C = CPAL[p.coin] || CPAL[1], s = p.coin === 3 ? 15 : 12, x = Math.round(p.x), y = Math.round(p.y - p.z - s / 2 - 3 + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));   /* 경완 '골드는 다 네모 아이콘으로': 점수판 동전과 같은 네모, 색만 다름 */
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, s * .6, s * .25, 0, 0, 7); g.fill(); coinSq(g, x, y, s, C);
   if (p.coin > 1 && (t * 1.3 + p.x * .37) % 1 < (p.coin > 2 ? .3 : .16)) { g.fillStyle = '#fff'; g.fillRect(x + s / 2, y - s / 2 - 8, 2, 8); g.fillRect(x + s / 2 - 3, y - s / 2 - 5, 8, 2); } }
