@@ -4541,8 +4541,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}   /* v25.14 경완 '이상해씨 하단 잘림선': 뒷모습 그림은 아래가 반듯하게 잘려 있어 화면 아래(144)에 숨겨야 함 — 첫 자리는 올리지 않음 */
 .bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:4px;height:148px}   /* v25.11 경완 '내 포켓몬 두번째에 나온 애 스프라이트가 처음 나온 애보다 앞쪽에': 두 번째 자리(오른쪽)가 앞 — 그리는 차례(battle.js 판 순서)도 뒤로, 조금 아래 */
 .bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
-.bt.dbl .bt-hb.e:not(.s2){left:0;top:-7px}
-.bt.dbl .bt-hb.e.s2{left:0;top:20px}
+.bt.dbl .bt-hb.e:not(.s2){left:0;top:3px}
+.bt.dbl .bt-hb.e.s2{left:0;top:28px}   /* v25.16 볼 줄은 위 박스에만 → 화면 위에 안 잘리게 두 박스 조금 아래로 */
 .bt.dbl .bt-hb.p.s2{left:160px;top:74px}
 .bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
 .bt .pty.tg-p.off{opacity:.4;filter:grayscale(1)}.bt .bp-tgp.tg-all .cancel{grid-column:1!important}.bt .bp-tgp.tg-all .tg-go{grid-column:2;--c1:#f4706a;--c2:#d93a3c}   /* v25.11 쓰기 버튼 (그만두기 오른쪽) */
