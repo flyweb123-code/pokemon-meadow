@@ -4649,3 +4649,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bb.gkb.gkfl{animation:gkFlB .75s ease-out}
 @keyframes gkFl{0%{opacity:1;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
 @keyframes gkFlB{0%{filter:brightness(2.2) saturate(.5)}100%{filter:none}}
+/* 경완 2026-11-15 '다이맥스 아이콘인데 메가진화랑 z기술처럼 하단 배경에 마크': 다이맥스 고르면·다이맥스 중엔 아래 화면 = 분홍빨강 바탕 + 경완이 준 다이맥스 마크(Dynamax/mark.png) */
+.bt.mob.gkbg-dynamax .bt-bot{background-image:linear-gradient(#ffeef3,#ffc4d4 55%,#ffe4ec);background-blend-mode:normal}
+.bt.mob.gkbg-dynamax .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff0f4,#ffa8c0 55%,#ffe2ea);animation:none}
+.bt.mob.gkbg-dynamax .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(255,40,100,.95))}
+.bt.mob.gkbg-dynamax .gk-mark{opacity:.88;background-image:url(../gym/img/dbk/Dynamax/mark.png);width:112px;height:84px;margin:-42px 0 0 -56px;filter:drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(255,30,90,.65));animation:gkMark 4.5s linear infinite}
+.bt-hb .gkd-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_dynamax.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkd .nm{max-width:74px}
