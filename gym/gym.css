@@ -4535,3 +4535,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
 .bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}
+#gym .gy-pop .mp-head .rk-fr{overflow:visible}#gym .gy-pop .mp-head .rk-fr>img.th-it{left:auto!important;top:auto!important;right:-22%!important;bottom:-20%!important;width:66%!important;height:66%!important;max-width:none!important;max-height:none!important;z-index:4!important;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 2px rgba(255,236,150,.95)) drop-shadow(0 0 3px rgba(255,214,90,.7))!important}   /* v24.77 경완 '상세카드 도구 그림도 라인업 칸 비율로 키우고 테두리 빛' */
