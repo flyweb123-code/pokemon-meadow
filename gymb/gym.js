@@ -628,6 +628,7 @@ const PAIR = {
   sis_bro: { ow2: 'swimmer_m_land', f2: 0, b: ['누나, 내가 도와줄게!', '우리 남매 호흡 한번 보세요!', '누나랑 맞춰 온 작전이 있어요!'], y: [['누나, 다음엔 더 잘할게…', '남매 특훈 다시 해야겠다!'], ['누나, 우리 해냈어!', '남매 콤비 최고!']] },
   interviewers: { ow2: 'cameraman', f2: 0, b: ['(카메라맨) 저도 같이 찍으면서 싸웁니다!', '(카메라맨) 둘이서 생중계 배틀 갑니다!', '(카메라맨) 이 장면, 특종 각이에요!'], y: [['(카메라맨) 오늘 방송은 여기까지…', '(카메라맨) 편집으로 살려 볼게요.'], ['(카메라맨) 특종이다!', '(카메라맨) 시청률 대박이겠어요!']] },
   double_team: { ow2: 'ace_trainer_f', f2: 1, b: ['(파트너) 우리 콤비, 아직 안 끝났어!', '(파트너) 둘이 맞춰 온 작전이 있어요!', '(파트너) 호흡 한번 보여 드리죠!'], y: [['(파트너) 다음엔 호흡 더 맞춰 올게요.', '(파트너) 콤비 연습 다시 하자.'], ['(파트너) 완벽한 콤비네이션!', '(파트너) 역시 우리 둘이야!']] },
+  belle_pa: { ow2: 'rancher', f2: 0, b: ['(아빠) 우리 딸 앞에서 질 순 없지!', '(아빠) 목장 일로 다져진 팀워크요!', '(아빠) 딸아, 아빠만 믿어라!'], y: [['(아빠) 허허… 딸 앞에서 체면이 말이 아니구먼.', '(아빠) 목장 돌아가서 다시 단련하자꾸나.'], ['(아빠) 우리 딸 최고다!', '(아빠) 목장 부녀 팀의 승리다!']] },   /* 경완 '아가씨와 아빠 배틀 그림도 있는데 필드 그림이 없어?': 아빠 = 플래티넘 목장 아저씨(rancher) */
   old_couple: { ow2: 'old_woman', f2: 1, b: ['(할머니) 영감, 무리하지 말아요. 내가 같이 싸울게요!', '(할머니) 우리 둘이 함께한 세월이 몇 년인데요!', '(할머니) 젊은 관장님, 살살 부탁해요. 호호!'], y: [['(할머니) 영감, 그래도 재밌었죠?', '(할머니) 다음엔 차 한 잔 하고 다시 와요.'], ['(할머니) 영감, 우리 아직 쌩쌩하네요!', '(할머니) 세월의 호흡이에요. 호호!']] },
   cool_couple: { ow2: 'cooltrainer_f', f2: 1, b: ['(여자 친구) 우리 둘, 실력도 잘 어울리거든요!', '(여자 친구) 둘이 맞춰 온 콤비 보여 줄게요!', '(여자 친구) 데이트 겸 진지하게 이기러 왔어요!'], y: [['(여자 친구) 다음엔 더 멋지게 이길 거야.', '(여자 친구) 괜찮아, 다시 맞춰 보자.'], ['(여자 친구) 역시 우리 최고의 커플!', '(여자 친구) 완벽한 데이트였어!']] },
   crush_kin: { ow2: 'battle_girl', f2: 1, b: ['(누나) 동생아, 수련한 대로만 하자!', '(누나) 격투 남매의 합동 공격, 받아라!', '(누나) 하앗! 둘이 함께라면 무섭지 않아!'], y: [['(누나) 동생아, 폭포 수련 다시 가자!', '(누나) 아직 수련이 모자랐어…'], ['(누나) 동생아, 우리 해냈어! 하앗!', '(누나) 남매 합동 수련의 성과다!']] },
@@ -1197,7 +1198,7 @@ const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, 
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
 /* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
-const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team', 'old_couple', 'cool_couple', 'crush_kin']), SOLO_OF = { old_couple: 'gentleman', cool_couple: 'cool_trainer_m', crush_kin: 'black_belt', twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team', 'old_couple', 'cool_couple', 'crush_kin', 'belle_pa']), SOLO_OF = { belle_pa: 'cowgirl', old_couple: 'gentleman', cool_couple: 'cool_trainer_m', crush_kin: 'black_belt', twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
 function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
@@ -1299,7 +1300,7 @@ function tick0(now) {
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   /* v21.82 경완 '잠금일 때 보이는 지원서는 예시일 뿐인데 그 지원자가 잠금 풀리며 그대로 나타나 포켓몬 Lv 3~5': 잠금 중 생긴 지원서는 예시(demo) 표시, 트레이너 메뉴가 열리면 지금 라인업 레벨로 새로 받음 */
-  if (!g.sfSolo) { g.sfSolo = 1; [...(g.sf || []), ...(g.cands || [])].forEach(sfSolo); }
+  if ((g.sfSolo | 0) < 2) { g.sfSolo = 2; /* 2 = 아가씨와 아빠도 */ [...(g.sf || []), ...(g.cands || [])].forEach(sfSolo); }
   if (!g.sfFix && !lockedT('staff')) { g.sfFix = 1; const av = myAvg(); (g.sf || []).forEach(s => { if (teamLv(s.team) < av - 10) { const lv = Math.max(5, av + rndI(-6, 3)); s.team = s.team.map(m => { const l = Math.max(m[1], Math.min(100, lv + rndI(-2, 2))); return [pickSp(g.ty ? [g.ty] : SPECIES[m[0]]?.t || [], l), l]; }); glog('sf', `${sfName(s)}의 포켓몬이 체육관 수준에 맞게 강해졌다.`, now); } }); }   /* v21.85 경완 '불꽃 체육관 고용 트레이너 포켓몬 레벨 패치한 버전으로': 예시 지원서로 이미 고용된 낮은 트레이너도 한 번 지원자 레벨로 올림 */
   if (lockedT('staff')) g.cands.forEach(c => { c.demo = 1; }); else { const av = myAvg(), old = c => c.demo || teamLv(c.team) < av - 10 || (c.trait === 'effort' && !evOnG()); if (g.cands.some(old)) { g.cands = g.cands.map(c => old(c) ? mkCand(now) : c); g.candSeen = 0; } }   // 이미 열린 체육관에 남아 있던 예시 지원서(라인업보다 10 넘게 낮음)도 새로
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
