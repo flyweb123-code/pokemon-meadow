@@ -9,6 +9,8 @@ const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
 const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
+/* v25.08 경완 '더블 배틀 시연 얼굴 띠에서 npc 하단 잘림': 얼굴 띠 .mug 는 허리 아래를 띠 밖으로 잘라 보여 주는데(margin-bottom -42px), 쌍둥이처럼 키 작은 그림(위 빈칸 20줄 넘음)은 잘리지 않게 아래까지 */
+function mugFit(el, u) { if (!el) return; const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, im.width, im.height).data; let y0 = 0; find: for (; y0 < im.height; y0++) for (let i = 0; i < im.width; i++) if (d[(y0 * im.width + i) * 4 + 3] > 8) break find; if (y0 > im.height * .25) el.style.marginBottom = '0px'; } catch (e) {} }; im.src = u; }
 /* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
 const TR_ANI = {"champion_cynthia":[22,79,"CHAMPION_Cynthia"],"champion_steven":[11,76,"CHAMPION_Steven"],"champion_wallace":[13,75,"LEADER_Wallace"],"elite_four_aaron":[11,88,"ELITEFOUR_Aaron"],"elite_four_bertha":[3,80,"ELITEFOUR_Bertha"],"elite_four_bruno":[19,80,"ELITEFOUR_Bruno"],"elite_four_flint":[11,80,"ELITEFOUR_Flint"],"elite_four_lance":[9,78,"ELITEFOUR_Lance"],"elite_four_lucian":[6,80,"ELITEFOUR_Lucian"],"hg_blaine":[7,82,"LEADER_Blaine"],"hg_brock":[7,59,"LEADER_Brock"],"hg_bruno2":[19,80,"ELITEFOUR_Bruno"],"hg_erika":[10,72,"LEADER_Erika"],"hg_koga2":[9,86,"LEADER_Koga"],"hg_lance":[9,78,"ELITEFOUR_Lance"],"hg_misty":[11,84,"LEADER_Misty"],"hg_sabrina":[20,84,"LEADER_Sabrina"],"hg_surge":[15,81,"LEADER_Surge"],"leader_blaine":[7,82,"LEADER_Blaine"],"leader_brawly":[11,77,"LEADER_Brawly"],"leader_brock":[7,59,"LEADER_Brock"],"leader_byron":[14,81,"LEADER_Byron"],"leader_candice":[8,90,"LEADER_Candice"],"leader_erika":[10,72,"LEADER_Erika"],"leader_fantina":[17,89,"LEADER_Fantina"],"leader_flannery":[14,87,"LEADER_Flannery"],"leader_gardenia":[14,75,"LEADER_Gardenia"],"leader_giovanni":[5,80,"LEADER_Giovanni"],"leader_juan":[14,75,"LEADER_Juan"],"leader_koga":[9,86,"LEADER_Koga"],"leader_lt_surge":[15,81,"LEADER_Surge"],"leader_maylene":[14,75,"LEADER_Maylene"],"leader_misty":[11,84,"LEADER_Misty"],"leader_norman":[8,74,"LEADER_Norman"],"leader_roark":[12,76,"LEADER_Roark"],"leader_roxanne":[11,68,"LEADER_Roxanne"],"leader_sabrina":[20,84,"LEADER_Sabrina"],"leader_volkner":[8,78,"LEADER_Volkner"],"leader_wake":[16,79,"LEADER_Wake"],"leader_wallace":[13,75,"LEADER_Wallace"],"leader_wattson":[17,73,"LEADER_Wattson"],"leader_winona":[17,78,"LEADER_Winona"],"red":[7,69,"POKEMONTRAINER_Red"]};   /* 필드 그림(걷기)이 있는 43명만 (경완 2026-11-12) */
 function trAni(el, k) { const a = TR_ANI[k]; if (!a) return null; const [n, h, f] = a; Object.assign(el.style, { backgroundImage: `url(${IMG}dbk/tr/${f}.png)`, width: h + 'px', height: h + 'px', backgroundSize: `${n * h}px ${h}px`, backgroundPosition: '0 0', marginLeft: (80 - h) / 2 + 'px', marginTop: (80 - h) + 'px' }); return a; }
@@ -355,8 +357,8 @@ function buildUI() {
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e s2" data-sl="1"><div class="bt-mon e s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw e" data-sl="0"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
-      <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p" data-sl="0"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
       <i class="bt-wx"></i><div class="bt-lvw" hidden></div><div class="bt-shw" hidden></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
@@ -415,8 +417,7 @@ function hpCol(r) { return r > .5 ? 'g' : r > .2 ? 'y' : 'r'; }
 const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp * 48));
 function paintHb(side, A) {
   const hb = $b(SEL('hb', side)); if (!A) { hb.classList.remove('on'); return; }
-  { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let si = hb.querySelector('.shico'); if (A.shiny) { if (!si) { si = document.createElement('i'); si.className = 'shico'; hb.appendChild(si); } const nm = hb.querySelector('.nm'); si.style.left = (nm.offsetLeft + Math.min(nm.scrollWidth, nm.offsetWidth) + 1) + 'px'; } else si?.remove(); }   // 경완 11-11 '포켓몬 이름 옆에 우리 게임 이로치 아이콘'
+  { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } { const dx = !!B?.gmx?.[side]; hb.classList.toggle('gkd', dx); if (dx) { const i = document.createElement('i'); i.className = 'gkd-ic'; nm.appendChild(i); } }   /* 경완 2026-11-15 '다이맥스 도트 아이콘 포켓몬 이름 옆에도' (DBK icon_dynamax) */ /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
@@ -430,7 +431,7 @@ function setHp(side, hp, mhp, px = hpPx(hp, mhp)) {
   hbBalls(side);
 }
 // 체력 상자 안 HP 띠 왼쪽에 남은 포켓몬 수 몬스터볼 (경완 2026-10-28 '각자의 포켓몬 정보 박스 내에')
-function hbBalls(side) { const b = el?.querySelector(SEL('hb', side) + ' .hbb'); if (b && B) b.innerHTML = side[0] === 'e' && B.wild || side[0] === 'p' && B.train ? '' : balls(side[0]); }   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
+function hbBalls(side) { const b = el?.querySelector(SEL('hb', side) + ' .hbb'); if (b && B) b.innerHTML = side[0] === 'e' && B.wild || side[0] === 'p' && B.train || B.dbl && (side === 'e2' || side === 'p') ? '' : balls(side[0]); }   /* v25.16 경완 '상대 배틀박스 두개 다 포켓몬 목록 볼 그래픽 붙어있는데': 더블은 한쪽에 한 줄만 — 위에 있는 박스(상대 e·내 p2)에만 */   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
 async function drainHp(side, A, to) {
   const from = A.hp, p0 = hpPx(from, A.mhp), p1 = hpPx(to, A.mhp), n = Math.abs(p1 - p0);
   for (let i = 1; i <= n; i++) { if (!B) return; setHp(side, from + (to - from) * i / n, A.mhp, p0 + Math.sign(p1 - p0) * i); await wait(B.fast ? 8 : 17); }
@@ -541,12 +542,17 @@ function gxOn(s) { const m = monEl(s), mw = m?.closest('.bt-mw'); if (!mw || !wi
   const ring = GymDBK.gxRing(16, s[0] === 'e' ? 7 : 3), st = GX[s] = { cb, cf, live: 1, a: 0, to: 1 }, t0 = performance.now(), gb = cb.getContext('2d'), gf = cf.getContext('2d');
   const loop = now => { if (!st.live) return; requestAnimationFrame(loop); if (document.hidden) return; st.a += (st.to - st.a) * .06; if (st.to === 0 && st.a < .02) { st.live = 0; cb.remove(); cf.remove(); return; }
     const img = m.querySelector('.clip img'), R = mw.getBoundingClientRect(), q = R.width / (mw.offsetWidth || 256) || 1; [gb, gf].forEach(g => { g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 256, cb.height / 2); g.translate(0, GXC_UP); }); if (!img || !img.offsetWidth || m.classList.contains('faint')) return;
-    const r = img.getBoundingClientRect(), w = r.width / q, cx = (r.left - R.left) / q + w / 2, top = (r.top - R.top) / q, rx = Math.max(22, Math.min(54, w * .4)), cy = top + r.height / q * gxTop(img) - rx * (s[0] === 'p' ? .3 : -.1), t = (now - t0) / 1000;   /* 경완 2026-11-15 '커졌을 때 상단 모습 잘리지 않게': 구름 고리를 그림 맨 위(투명 빼고 실제 머리)보다 위에 띄움 */
+    const r = img.getBoundingClientRect(), w = r.width / q, G = gxTop(img), cx = (r.left - R.left) / q + w * G.x, top = (r.top - R.top) / q, rx = Math.max(22, Math.min(54, w * .4)) * (G.s || 1), cy = top + r.height / q * G.y - (G.o ? 0 : rx * (s[0] === 'p' ? .05 : -.1)), t = (now - t0) / 1000;   /* 경완 2026-11-15 '커졌을 때 상단 모습 잘리지 않게': 구름 고리를 그림 맨 위(투명 빼고 실제 머리)보다 위에 띄움 */
     ring(gb, t, cx, cy, rx, rx * .22, 'b', st.a); ring(gf, t, cx, cy, rx, rx * .22, 'f', st.a); };
   requestAnimationFrame(loop); }
+const GXC = {pikachu: [[.35,.3], [.5,.3]], eevee: [[.25,.12,.8], [.3,.1,.8]], alcremie: [[.5,.12,.8], [.5,.12,.8]], meowth: [[.3,.3,.8], [.8,.2,.8]], venusaur: [[.5,.02], [.5,.02]], charizard: [[.82,.45,.8], [.15,.45,.8]], blastoise: [[.2,.1,.8], [.75,.06,.8]], gengar: [[.55,.02], [.5,.02]], butterfree: [[.5,.45,.5], [.5,.45,.5]], machamp: [[.5,.52,.9], [.5,.55,.9]], kingler: [[.45,.2,.8], [.45,.25,.8]], lapras: [[.65,.08,.8], [.45,.05,.8]], snorlax: [[.4,.02,.8], [.45,.02,.8]], garbodor: [[.4,.05], [.55,.05]], melmetal: [[.5,.08,.7], [.5,.08,.7]], rillaboom: [[.45,.3,.7], [.5,.3,.7]], cinderace: [[.4,.05,.7], [.45,.05,.7]], inteleon: [[.5,.4,.8], [.5,.4,.8]], corviknight: [[.5,.35,.8], [.5,.35,.8]], orbeetle: [[.6,.5,.8], [.45,.5,.8]], drednaw: [[.45,.12,.8], [.8,.15,.8]], coalossal: [[.45,.02], [.45,.02]], flapple: [[.5,.25,.7], [.5,.25,.7]], appletun: [[.5,.25,.7], [.5,.25,.7]], sandaconda: [[.5,.05,.8], [.5,.05,.8]], centiskorch: [[.92,.6,.7], [.08,.6,.7]], hatterene: [[.3,.1,.8], [.6,.1,.8]], grimmsnarl: [[.45,.05,.8], [.5,.05,.8]], copperajah: [[.75,.02,.8], [.35,.02,.8]], duraludon: [[.45,.3,.8], [.5,.3,.8]], toxtricity: [[.65,.08,.8], [.2,.05,.8]], toxtricitylowkey: [[.65,.08,.8], [.2,.05,.8]], urshifu: [[.5,.08,.8], [.5,.08,.8]], urshifurapidstrike: [[.55,.08,.8], [.5,.05,.8]]};   /* 경완 2026-11-15 '거다이 폼마다 구름 위치가 다를텐데' + 본가 거다이맥스 그림 34장: 폼별 구름 자리 [앞 그림, 뒷모습] = [가로, 세로(실제 그림 테두리 안 비율), 크기] */
 const GXC_UP = 80, GXT = {};   /* 구름 캔버스를 위로 늘린 길이, 그림별 실제 맨 위 줄(비율) */
-function gxTop(img) { const u = img.currentSrc || img.src; if (u in GXT) return GXT[u]; GXT[u] = .07; try { const w = img.naturalWidth, h = img.naturalHeight; if (!w || !h) return .07; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(img, 0, 0); const d = x.getImageData(0, 0, w, h).data;
-  for (let y = 0; y < h; y++) { for (let i = 0; i < w; i++) if (d[(y * w + i) * 4 + 3] > 40) return (GXT[u] = y / h); } } catch (e) {} return GXT[u]; }
+function gxTop(img) { const u = img.currentSrc || img.src; if (u in GXT) return GXT[u]; GXT[u] = { y: .07, x: .5 }; try { const w = img.naturalWidth, h = img.naturalHeight; if (!w || !h) return GXT[u]; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(img, 0, 0); const d = x.getImageData(0, 0, w, h).data, A = (i, y) => d[(y * w + i) * 4 + 3] > 40;
+  let y0 = -1, y1 = -1; for (let y = 0; y < h && y0 < 0; y++) for (let i = 0; i < w; i++) if (A(i, y)) { y0 = y; break; } for (let y = h - 1; y >= 0 && y1 < 0; y--) for (let i = 0; i < w; i++) if (A(i, y)) { y1 = y; break; } if (y0 < 0) return GXT[u];
+  const band = y0 + Math.max(3, Math.round((y1 - y0) * .18)); let sx = 0, n = 0; for (let y = y0; y <= band; y++) for (let i = 0; i < w; i++) if (A(i, y)) { sx += i; n++; }   /* 경완 2026-11-15 '구름 위치는 본가 거다이맥스 폼 이미지 보고': 맨 위 18% 줄(머리·볏)의 가운데 위에 구름 */
+  GXT[u] = { y: y0 / h, x: n ? sx / n / w : .5 };
+  const nm = (u.match(/([a-z]+)gmax\.gif/) || [])[1] || '', [k, bk] = GXC[nm] ? [nm, 0] : nm[0] === 'b' && GXC[nm.slice(1)] ? [nm.slice(1), 1] : nm.slice(0, 2) === 'bs' && GXC[nm.slice(2)] ? [nm.slice(2), 1] : nm[0] === 's' && GXC[nm.slice(1)] ? [nm.slice(1), 0] : ['', 0], o = k && GXC[k][bk];
+  if (o) { let x0 = w, x1 = -1; for (let y = y0; y <= y1; y++) for (let i = 0; i < w; i++) if (A(i, y)) { if (i < x0) x0 = i; if (i > x1) x1 = i; } GXT[u] = { x: (x0 + (x1 - x0) * o[0]) / w, y: (y0 + (y1 - y0) * o[1]) / h, s: o[2] || 1, o: 1 }; } } catch (e) {} return GXT[u]; }
 function gxOff(s, now) { const st = GX[s]; if (st) { if (now) { st.live = 0; st.cb.remove(); st.cf.remove(); } else st.to = 0; delete GX[s]; } if (!now) setTimeout(gxLay, 0); }
 const DBK_ON = false;   /* v21.89 기믹·상태 무늬·상대 가방·배틀 정보는 경완 확인 전까지 꺼 둠 (트레이너 등장만 켬) */
 function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySelector('img'); if (!img) return; if (B?.gmx?.[side] || monEl(side).classList.contains('tera')) img.style.filter = monEl(side)._patF || ''; else if (ST_PAT[st]) { stPatDefs(); img.style.filter = `url(#btSt_${st})`; } else img.style.filter = ''; }   /* 다이맥스 중엔 붉은 무늬 (DBK 도 다이맥스·테라 중엔 상태 무늬 안 함) */
@@ -556,7 +562,7 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
 const SEL = (k, s) => `.bt-${k}.${s[0]}${s[1] ? '.s2' : ':not(.s2)'}`;   /* v24.21 더블 배틀: 자리 p·p2·e·e2 (두 번째 자리 = .s2, 화면 자리는 data-sl) */
-const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: -6, e: 2, e2: -6 }, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
+const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: 4, e: -6, e2: -14 }, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
 function monEl(side) { return $b(SEL('mon', side)); }
 /* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
 /* v24.51 경완 'Z파워 두를 때 불꽃 효과 타입별로': 원본(Gen 9 팩 zpower·기운 불꽃)은 주황 → 타입별 색 필터 (그림 자체엔 안 걸고 효과 칸에만) */
@@ -746,9 +752,9 @@ async function flash(n = 1) { const f = $b('.bt-flash'); for (let i = 0; i < n; 
 // ---------- 아래 화면 ----------
 function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; gkBg(); return p; }
 // 경완 2026-11-12: 메가진화(기믹) 버튼을 켜면 아래 화면 바탕색이 그 색으로, 메가진화한 포켓몬이 나와 있는 동안 계속, 다른 포켓몬으로 바꾸면 원래 색
-function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || B.gkUsed || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || '');
+function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || B.gkUsed || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || ''), dx = Object.keys(B.gmx || {}).some(k => k[0] === 'p' && B.gmx[k]);   /* 경완 2026-11-15 '다이맥스 아이콘 메가진화·Z기술처럼 하단 배경에 마크': 다이맥스 중엔 계속 */
   const zw = el.classList.contains('gkbg-zmove');
-  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg));
+  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg || k === 'dynamax' && dx));
   if (zw && !el.classList.contains('gkbg-zmove')) { el.classList.add('gkz-out'); clearTimeout(gkBg.t); gkBg.t = setTimeout(() => el?.classList.remove('gkz-out'), 900); } else if (el.classList.contains('gkbg-zmove')) el.classList.remove('gkz-out'); }   /* Z 바탕이 꺼질 땐 Z 그림 그대로 흐려지며 사라지게 */
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
@@ -1208,7 +1214,7 @@ async function smEnc(w, opts, kind) {
   const glowIn = t => Math.min(1, t / .35);   /* 새 배경들: 처음 0.35초에 확 밝아짐 */
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
   // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
-  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${opts.exam ? '심사관 · ' : ''}${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${opts.exam ? '심사관 · ' : ''}${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); mugFit(w.querySelector('.band:last-child .mug'), trSrc(opts.foe.tr)); }); if (t > T0 + .55) once('vs', () => se('KON')); };
   const D = {
     evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
       for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
@@ -1266,7 +1272,7 @@ async function encounter(opts) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
     await wait(760);
   } else {
-    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); mugFit(w.querySelector('.band .mug'), trSrc(opts.foe.tr));
     await wait(1900);
   }
   return () => { w.classList.add('out'); setTimeout(() => w.remove(), 520); };
@@ -1431,13 +1437,19 @@ async function choose(req) {
 }
 /* v24.21 경완 '수련탑 더블 배틀': 내 두 마리를 차례로 고르기 (기술 → 목표), 쓰러지면 빈 자리마다 다음 포켓몬 */
 const NEED_T = new Set(['normal', 'any', 'adjacentFoe', 'adjacentAlly', 'adjacentAllyOrSelf']);
+/* v25.05 경완 '응 그렇게 해줘' (범위 기술도 본가처럼): 상대 전체·자기 말고 전부 맞히는 기술은 같은 화면에 맞을 칸을 다 켜서 보여 주고, 켜진 칸 아무거나 누르면 씀 */
+const SPREAD_T = new Set(['allAdjacentFoes', 'allAdjacent']);
 function tgtPick(tg, me) {
-  const L = [['e', 1], ['e2', 2], ['p', -1], ['p2', -2]], alive = s => B.act[s] && !B.act[s].fnt;
-  const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' ? k[0] === 'e' : k !== me);
-  const C = L.filter(ok); if (C.length <= 1) return Promise.resolve(C[0] ? C[0][1] : '');
-  return new Promise(res => { const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k); return `<button class="bb tg-b ${k[0]}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}><small>${k[0] === 'e' ? '상대' : k === me ? '자기 자신' : '같은 편'}</small><span>${esc(X?.nm || '—')}</span></button>`; };
-    const p = panel(`<div class="bp-tgt"><p>누구에게 쓸까?</p><div class="tg-g">${[L[0], L[1], L[2], L[3]].map(bt).join('')}</div><button class="bb cancel" data-x><span>취소</span></button></div>`);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.n); }; });
+  const L = [['e', 1], ['e2', 2], ['p', -1], ['p2', -2]], alive = s => B.act[s] && !B.act[s].fnt, sp = SPREAD_T.has(tg);
+  const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' || tg === 'allAdjacentFoes' ? k[0] === 'e' : k !== me);
+  const C = L.filter(ok); if (sp ? !C.length : C.length <= 1) return Promise.resolve(sp ? '' : C[0] ? C[0][1] : '');
+  /* v25.03 경완 '더블 배틀 누구에게 쓸까? 도 수련탑에서 도구 누구에게 쓸까? 화면처럼 버튼 구성' → trPickMon 과 같은 .pty 칸 (그림·이름·성별·타입·Lv·체력), 왼쪽 위 딱지 상대/같은 편/자기 자신 */
+  return new Promise(async res => { await msg(sp ? (C.length < 2 ? '쓸까?' : tg === 'allAdjacentFoes' ? '상대 모두에게 쓸까?' : '모두에게 쓸까?') : '누구에게 쓸까?', 0);   /* v25.07 경완 '상대방 둘 한테만 쓰는 기술은 상대 모두에게 쓸까?' */
+    const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k), P = k[0] === 'p' && X ? boxOf(X.pid) : null; if (!X) return `<button class="pty tg-p off" disabled><b>—</b></button>`;
+      const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '';
+      return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
+    const p = panel(`<div class="bp-party bp-tgp${sp ? ' tg-all' : ''}">${[L[0], L[1], L[2], L[3]].map(bt).join('')}<button class="bb cancel" data-x><span>그만두기</span></button>${sp ? '<button class="bb tg-go" data-go><span>쓰기</span></button>' : ''}</div>`); fillTh(p);   /* v25.11 경완 '모두에게 쓸까? 화면에서 그만두기 버튼 오른쪽에 쓰기 버튼' */
+        p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(sp ? '' : +b.dataset.n); }; });   /* 쓰기(data-go)·켜진 칸 모두 = 씀 */
 }
 async function chooseD(req) {
   B.passP = 0;
@@ -1453,8 +1465,9 @@ async function chooseD(req) {
     if (R.moves.length === 1 && R.moves[0].pp == null) { ch.push('move 1'); continue; }
     for (;;) {
       const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
-      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } const i = await movePanel(req, k); if (i == null) continue;
-        const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target, n = NEED_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n === null) continue;
+      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { i = await movePanel(req, k); if (i == null) break;
+          const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
+        if (i == null) continue;
         ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
@@ -1678,7 +1691,7 @@ async function handle(a) {
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); if (a.includes('[from] move: Pain Split') && !a.includes('[silent]')) await msg('서로의 체력을 나눠 가졌다!'); break; }   /* v21.30 고통나누기 문장 */
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); } X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); } X.fntS = true; (B.dbl ? [s[0], s[0] + '2'] : [s]).forEach(hbBalls); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
     case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); if (a.some(x => /^\[from\] ability: /.test(x))) { await msg(a[3] === 'unboost' ? `${who(a[2])}의 능력은 떨어지지 않는다!` : `${who(a[2])}에게는 효과가 없는 것 같다…`); break; } if (a.includes('[weak]')) { await msg('그러나 대타를 만들기에는 체력이 부족했다!'); break; } { const fw = (a.find(x => /^\[from\] /.test(x)) || '').slice(7); const T = { 'Primordial Sea': '강한 비 때문에 불꽃 타입 공격이 사라져 버렸다!', 'Desolate Land': '강한 햇살 때문에 물 타입 공격이 증발해 버렸다!' }; if (T[fw]) { await msg(T[fw]); break; } } await msg('그러나 실패했다!'); break;   /* v21.30: 체력 부족한 대타·시작의바다·끝의대지 문장 */   /* v20.75: 클리어바디·정신력 등 특성으로 막으면 그 문장 */   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')

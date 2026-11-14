@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1171,8 +1168,11 @@ function sfEV(rel, n, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), 
 const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .9 - .2 * v : 1) * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
+/* v25.03 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team']), SOLO_OF = { twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
-  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
+  const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
@@ -1271,6 +1271,7 @@ function tick0(now) {
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   /* v21.82 경완 '잠금일 때 보이는 지원서는 예시일 뿐인데 그 지원자가 잠금 풀리며 그대로 나타나 포켓몬 Lv 3~5': 잠금 중 생긴 지원서는 예시(demo) 표시, 트레이너 메뉴가 열리면 지금 라인업 레벨로 새로 받음 */
+  if (!g.sfSolo) { g.sfSolo = 1; [...(g.sf || []), ...(g.cands || [])].forEach(sfSolo); }
   if (!g.sfFix && !lockedT('staff')) { g.sfFix = 1; const av = myAvg(); (g.sf || []).forEach(s => { if (teamLv(s.team) < av - 10) { const lv = Math.max(5, av + rndI(-6, 3)); s.team = s.team.map(m => { const l = Math.max(m[1], Math.min(100, lv + rndI(-2, 2))); return [pickSp(g.ty ? [g.ty] : SPECIES[m[0]]?.t || [], l), l]; }); glog('sf', `${sfName(s)}의 포켓몬이 체육관 수준에 맞게 강해졌다.`, now); } }); }   /* v21.85 경완 '불꽃 체육관 고용 트레이너 포켓몬 레벨 패치한 버전으로': 예시 지원서로 이미 고용된 낮은 트레이너도 한 번 지원자 레벨로 올림 */
   if (lockedT('staff')) g.cands.forEach(c => { c.demo = 1; }); else { const av = myAvg(), old = c => c.demo || teamLv(c.team) < av - 10 || (c.trait === 'effort' && !evOnG()); if (g.cands.some(old)) { g.cands = g.cands.map(c => old(c) ? mkCand(now) : c); g.candSeen = 0; } }   // 이미 열린 체육관에 남아 있던 예시 지원서(라인업보다 10 넘게 낮음)도 새로
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
@@ -1342,7 +1343,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my); const fz = foeZ(c, team, 0, my);   /* v24.51 경완 "메가 쓰는 배틀에선 왜 Z 안 써?": 본가 7세대처럼 한 배틀에 메가 1번·Z 1번 둘 다 (메가스톤 든 포켓몬은 도구가 있어 Z크리스탈 안 받음) */   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
