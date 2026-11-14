@@ -4460,9 +4460,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* Z파워 두른 포켓몬: 발밑부터 금빛 불꽃 기운 + 올라가는 반짝이 (Z기술을 쓸 때까지) */
 .bt-mon .zaur{position:absolute;left:-18%;right:-18%;bottom:-6%;height:115%;pointer-events:none;z-index:0}
 .bt-mon.zon .clip{animation:zOnGlow .9s ease-in-out infinite alternate}
-@keyframes zOnGlow{from{filter:drop-shadow(0 0 2px #fff7b0) drop-shadow(0 0 5px #ffb81e) drop-shadow(0 0 1px #ff9a00)}to{filter:drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 11px #ffc830) drop-shadow(0 0 4px #ff9a00)}}
+@keyframes zOnGlow{from{filter:drop-shadow(0 0 2px #fff7b0) drop-shadow(0 0 5px var(--zg1,#ffb81e)) drop-shadow(0 0 1px var(--zg2,#ff9a00))}to{filter:drop-shadow(0 0 3px #fffbe0) drop-shadow(0 0 11px var(--zg1,#ffc830)) drop-shadow(0 0 4px var(--zg2,#ff9a00))}}   /* v24.51 타입별 색 (zAura 가 --zg1·--zg2) */
 .bt-mon:has(> .zaur){isolation:isolate}.bt-mon:has(> .zaur) .clip{z-index:1}   /* v24.40 경완 "화염방사 효과가 잠만보 뒤로": z-index 를 Z 기운 있을 때만, 포켓몬 안에서만 (전엔 두 포켓몬이 기술 효과 캔버스 위로 올라옴) */
-.bt-mon .zaur b{position:absolute;bottom:0;width:34%;height:80%;border-radius:50% 50% 45% 45%/70% 70% 30% 30%;background:linear-gradient(to top,rgba(255,140,20,.2),rgba(255,160,30,.85) 25%,rgba(255,225,90,.9) 55%,rgba(255,250,200,0));filter:blur(2.5px);transform-origin:50% 100%;animation:zAurF .5s ease-in-out infinite alternate}
+.bt-mon .zaur b{position:absolute;bottom:0;width:34%;height:80%;border-radius:50% 50% 45% 45%/70% 70% 30% 30%;background:linear-gradient(to top,rgba(255,140,20,.2),rgba(255,160,30,.85) 25%,rgba(255,225,90,.9) 55%,rgba(255,250,200,0));filter:blur(2.5px) var(--zf);transform-origin:50% 100%;animation:zAurF .5s ease-in-out infinite alternate}
 .bt-mon .zaur b:nth-child(1){left:2%;height:58%;animation-delay:-.1s}.bt-mon .zaur b:nth-child(2){left:18%;height:80%;animation-delay:-.3s}.bt-mon .zaur b:nth-child(3){left:33%;height:96%;animation-delay:-.2s}.bt-mon .zaur b:nth-child(4){left:48%;height:78%;animation-delay:-.4s}.bt-mon .zaur b:nth-child(5){left:64%;height:60%;animation-delay:0s}
 @keyframes zAurF{from{transform:scale(.9,.85) translateX(-1px);opacity:.75}to{transform:scale(1.08,1.12) translateX(1px);opacity:1}}
 .bt-mon .zaur s{position:absolute;left:var(--x);bottom:6%;width:4px;height:4px;border-radius:50%;background:#fff6c0;box-shadow:0 0 4px 1px #ffc830;opacity:0;animation:zAurS 1.4s ease-out var(--d) infinite}
@@ -4482,7 +4482,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob[data-zt].gkbg-zmove .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
 /* 경완 2026-11-14: 위 상태 막대 자리 = 위 화면 맨 위를 거울처럼 비춤 → 배경 들어오는 방향·어두워짐·번쩍·날씨·기술 연출·메가 장면이 같이 바뀜 */
 .bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
-@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선) */
+@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.bt-essf,.bt-ptc,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선). v24.56 경완 "화면 전체 덮는 기술 연출이 상단바에 안 비침": 4세대 기술 파티클·배경(bt-ptc)·5세대 이후 앞 칸(bt-essf)도 */
 .bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
 /* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
 .bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}
@@ -4519,6 +4519,15 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.42 경완: 중요한 물건 알림창·예/아니요는 뜬 직후 잠깐 잠금 — 그동안 버튼 흐리게, 풀리면 스르륵 */
 .gy-btns.gy-hold,.tw-yn.gy-hold{opacity:.5;filter:saturate(.6);transition:none}.gy-btns,.tw-yn{transition:opacity .25s ease,filter .25s ease}
 
+/* v24.51 경완 '도전자 Z기술 연출 메가처럼 간단하게': 메가 간단 연출 틀 + 금빛 실루엣·기운 + 타입 Z크리스탈 마크 */
+.bt-mon.gm-zf .clip{isolation:isolate}
+.bt-mon .gm-au.gz{background:radial-gradient(closest-side,rgba(255,250,210,.95),rgba(255,200,60,.6) 45%,rgba(255,140,20,.25) 70%,rgba(255,200,60,0))}
+.bt-top .gm-mark.gm-zm{width:28px;height:28px;margin-left:-14px;image-rendering:auto;filter:drop-shadow(0 0 3px rgba(255,255,255,.9))}
+
+/* v24.51 경완 'Z파워 기운 타입별로': 불꽃·반짝이는 --zf 색 필터, 위로 오르는 입자는 Z기술 버튼의 타입 입자 그대로 */
+.bt-mon .zaur s{filter:var(--zf)}
+.bt .zaur>.zpt{position:absolute;left:12%;right:12%;top:0;bottom:4%;overflow:visible;pointer-events:none;background:none!important;animation:none!important}
+.bt .zaur>.zpt>i{opacity:0}
 /* v24.21 더블 배틀 (수련탑): 한 쪽 두 자리 — 첫 자리 data-sl=0, 두 번째 data-sl=1 (.s2 는 역할 이름표라 기술 연출 동안 바뀔 수 있음) */
 .bt:not(.dbl) .bt-mw[data-sl="1"],.bt:not(.dbl) .bt-hb.s2{display:none}
 .bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:2px}
