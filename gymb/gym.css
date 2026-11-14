@@ -4585,3 +4585,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bt .bt-wx,.bt.mob .bt-wx{top:calc(var(--st,0px) / var(--k,1) * -1);height:calc(192px + var(--st,0px) / var(--k,1))}
 /* v24.63 EBS4 볼 터짐 그림 */
 .bt-fx .bb-fx{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;pointer-events:none;will-change:transform,opacity}
+/* v24.64 경완 '가방은 설명·버튼 하단 고정, 도구는 위에서부터': 목록은 위부터 채우고 남는 칸을 차지(넘치면 스크롤), 설명·버튼은 맨 아래 */
+.bt .bp-bag{justify-content:flex-start}
+.bt .bp-bag .bg-l{flex:1 1 0;justify-content:flex-start}
+.bt .bp-bag .bg-d,.bt .bp-bag .bg-b{flex:none}
+.bt .bp-bag .bg-d{min-height:44px;box-sizing:border-box}
