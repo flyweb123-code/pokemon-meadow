@@ -4547,3 +4547,18 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-fx .ball.pb.spin{animation:pbSpin .4s step-end infinite}
 .bt-fx .ball.pb.open{background-position-x:-288px}.bt-fx .ball.pb.f0{background-position-x:0}
 @keyframes pbSpin{0%{background-position-x:0}8.33%{background-position-x:-32px}16.67%{background-position-x:-64px}41.67%{background-position-x:-96px}50%{background-position-x:-128px}58.33%{background-position-x:-160px}66.67%{background-position-x:-192px}91.67%{background-position-x:-224px}}
+
+/* v24.56 경완 '가방은 B로': 수련탑 배틀 가방 = 본가 목록 + 설명 + 던지기 */
+.bt .bp-bag{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;padding:12px 12px calc(12px + var(--pb,0px));box-sizing:border-box;justify-content:center}
+.bt .bp-bag .bg-l{display:flex;flex-direction:column;gap:6px}
+.bt .bp-bag .bg-r{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px 0 8px;border:0;border-radius:12px;background:#fff;box-shadow:0 0 0 1.5px #c8c8d8,0 2px 0 #b0b0c0;font:inherit;font-weight:800;font-size:14px;color:#2a3040;text-shadow:none}
+.bt .bp-bag .bg-r span{flex:1;text-align:left}.bt .bp-bag .bg-r em{font-style:normal;font-size:13px;color:#5a6070}
+.bt .bp-bag .bg-r.on{background:#fff8e4;box-shadow:0 0 0 2.5px #f0b020,0 2px 0 #c08810}
+.bt .bp-bag .bg-r.off{opacity:.4}
+.bt .bp-bag .bg-r:active:not(.off){transform:translateY(2px);box-shadow:0 0 0 1.5px #c8c8d8}
+.bt .bp-bag .bg-ic{width:30px;height:30px;image-rendering:pixelated;flex:none}
+.bt .bp-bag .bg-d{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;background:#fff;box-shadow:0 0 0 1.5px #c8c8d8;font-size:12px;line-height:1.45;color:#3a4252;text-shadow:none}
+.bt .bp-bag .bg-d .bg-ic{width:40px;height:40px}.bt .bp-bag .bg-d b{display:block;font-size:13px;color:#2a3040}
+.bt .bp-bag .bg-b{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.bt .bp-bag .bb{position:relative;left:auto!important;top:auto!important;width:auto!important;height:44px!important;margin:0}
+.bt .bp-bag .bb.go{--c1:#f4706a;--c2:#d93a3c}.bt .bp-bag .bb.go span{font-size:16px}
