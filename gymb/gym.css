@@ -4538,7 +4538,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:-6px}
 .bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-14px;height:104px}
 .bt.dbl .bt-pl.e{top:48px}.bt.dbl .bt-tr.e{margin-top:-8px}   /* v25.13 경완 '배틀 박스 두개된만큼 상대 포켓몬 가려지지 않게 발판 살짝 올려': 더블은 상대 발판·포켓몬·트레이너 8px 위 (battle.js DBL_Y 도) + 내 두 번째 체력 박스 4px 아래 (아래 박스는 대화창에 걸려 그대로) */
-.bt.dbl .bt-mw.p[data-sl="0"]{left:-36px;top:-6px}
+.bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}   /* v25.14 경완 '이상해씨 하단 잘림선': 뒷모습 그림은 아래가 반듯하게 잘려 있어 화면 아래(144)에 숨겨야 함 — 첫 자리는 올리지 않음 */
 .bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:4px;height:148px}   /* v25.11 경완 '내 포켓몬 두번째에 나온 애 스프라이트가 처음 나온 애보다 앞쪽에': 두 번째 자리(오른쪽)가 앞 — 그리는 차례(battle.js 판 순서)도 뒤로, 조금 아래 */
 .bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
 .bt.dbl .bt-hb.e:not(.s2){left:0;top:-7px}
