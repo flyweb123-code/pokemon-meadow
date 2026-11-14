@@ -301,7 +301,8 @@ const CSS = `
 #yact .ya-win h3{font-size:11.5px;margin:0 0 6px;color:var(--ink);display:flex;align-items:baseline;gap:6px}
 #yact .ya-win h3 small{font-size:10px;color:#7a7a8a;font-weight:400}
 #yact .ya-stt{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;background:var(--ink);border:3px solid var(--ink);box-shadow:0 3px 0 rgba(32,32,44,.25)}
-#yact .stc{font-family:var(--px);font-size:11px;padding:7px 0;border:0;background:#fff;color:var(--ink);cursor:pointer}
+#yact .stc{font-family:var(--px);font-size:11px;padding:3px 0 5px;border:0;background:#fff;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0}
+#yact .stc img{width:26px;height:26px;image-rendering:pixelated;pointer-events:none}#yact .stc span{white-space:nowrap}#yact .stc.on img{filter:drop-shadow(0 0 2px #fff)}
 #yact .stc:active{background:#e9e4d8}
 #yact .stc.on{background:#b48cf0;color:#fff;text-shadow:0 1px 0 var(--ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
 #yact .ya-road{display:flex;align-items:center;padding:7px 8px;background:#fff;border:3px solid var(--ink);box-shadow:0 3px 0 rgba(32,32,44,.25)}
@@ -1365,7 +1366,8 @@ function startUi() {
   q('.ya-pk').classList.toggle('many', R.mons.length > 3); q('.ya-pk').innerHTML = R.mons.length > 1 ? R.mons.map((m, i) => `<button class="pkc${i === R.pick ? ' on' : ''}" data-i="${i}"><img alt="" data-i="${i}"><b>${nmOf(m.P)}</b></button>`).join('') : '';
   q('.ya-pk').style.display = R.mons.length > 1 ? '' : 'none'; q('.ya-bd').style.paddingTop = R.mons.length > 1 ? '' : '0';
   if (R.mons.length > 1) R.mons.forEach((m, i) => th(m.P, u => { const im = R.q(`.ya-pk img[data-i="${i}"]`); if (im) im.src = u; }));
-  q('.ya-stt').innerHTML = STAT_KO.map((s, i) => `<button class="stc${i === R.stat ? ' on' : ''}" data-s="${i}">${s}</button>`).join('');
+  /* 경완 2026-11-15 '시작창 노력치 정하는거 훈련장에서 훈련할 노력치 정할 때처럼 팔찌 아이콘들 넣어놔줘': 훈련장 .ev-tk 와 같은 파워 도구 그림(EV_PW) */
+  q('.ya-stt').innerHTML = STAT_KO.map((s, i) => `<button class="stc${i === R.stat ? ' on' : ''}" data-s="${i}"><img alt="" src="${GB().itImg(GB().EV_PW[i])}"><span>${s}</span></button>`).join('');
   if (!R.pool) R.pool = foePool(R.stat); const pool = R.pool; [...pool.sm, ...pool.big].forEach(sp => spr(sp));
   // 스테이지 길: 숫자 칸, 중간 대장·대장 칸에는 그 포켓몬 얼굴
   q('.ya-road').innerHTML = STAGES.map((S, i) => `${i ? '<i></i>' : ''}<b class="${S.boss ? (S.boss.includes(2) ? 'm f' : 'm') : ''}" data-b="${S.boss ? S.boss[0] : ''}">${S.boss ? '?' : i + 1}</b>`).join('');   // 대장 칸은 실루엣만 (경완 '대장은 실루엣으로 가려놓자')
