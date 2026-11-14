@@ -1736,7 +1736,7 @@ async function moveFx(s, id, miss, fx) {
   let spl = null;
   if (A[1].some(e => e[0] === 'p')) {
     await Promise.race([loadSpl(), wait(1500)]);
-    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); $b('.bt-ptc').style.translate = id === 'sunnyday' ? '160px 0' : '';   /* v24.91 경완 '쾌청 빛 효과 빛줄기에 맞춰서 오른쪽으로': 햇빛 파티클을 빛줄기 나오는 오른쪽 위로 */
+    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); { const pc = $b('.bt-ptc'), sun = id === 'sunnyday'; pc.style.translate = sun ? '48px 0' : ''; pc.style.scale = sun ? '-1 1' : ''; }   /* v24.91 경완 '쾌청 빛 효과 빛줄기에 맞춰서 오른쪽으로': 햇빛 파티클을 빛줄기 나오는 오른쪽 위로 · v24.92 경완 '쾌청 알갱이 좌우 반전도': 좌우 뒤집고 자리 다시 맞춤 */
       spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
     if (!B) { spl?.stop(); return; }
     spl?.go();

@@ -2711,6 +2711,8 @@ function perkPop() {
     if (a === 'tg' || a === 'ts') { const s = a === 'ts'; p.querySelector('.pk-gl').hidden = s; p.querySelector('.pk-sl').hidden = !s; p.querySelectorAll('.pk-tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String((b.dataset.a === 'ts') === s))); return; }
     const sk = /^sk(\d)$/.exec(a || ''); if (sk) { close(); setTimeout(() => tipPop(+sk[1], 1), 250); return; }   /* 경완 2026-11-13 '다시 보기는 스토리 전체 말고' → 비기 알림창(캡처 장면)만 다시 */
     close(); });
+  const ctr = () => { const c = p.querySelector('.pk-gl li.cur'); let sc = c?.parentElement; while (sc && !(sc.scrollHeight > sc.clientHeight + 2 && /auto|scroll/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement; if (!c || !sc) return; const cr = c.getBoundingClientRect(), sr = sc.getBoundingClientRect(); sc.scrollTop += cr.top + cr.height / 2 - (sr.top + sr.height / 2); };   /* v24.92 경완 '체육관 등급표 열었을 때 창에서 내 등급이 가운데로 스크롤 되어있게' */
+  requestAnimationFrame(ctr); setTimeout(ctr, 120);
 }
 // 체육관 넓히기: 한 단계씩, 평판 등급까지 (공짜)
 // 넓히기 (경완 2026-10-28 '팝업이 아니고 홈 화면에서 넓어지는 연출, 효과음·bgm 같이 > 그 다음 축하 메시지')

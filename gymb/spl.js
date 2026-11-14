@@ -253,7 +253,7 @@ function drawP(g, e, p, child) {
   const ti = p.tex, key = child ? `${ti}|${ch.tS}|${ch.tT}|${ch.fS}|${ch.fT}` : `${ti}|${r.tS}|${r.tT}|${r.fS}|${r.fT}`;
   const base = child ? texImg(e.d, ti, ch.tS, ch.tT, ch.fS, ch.fT) : texImg(e.d, ti, r.tS, r.tT, r.fS, r.fT); if (!base) return;
   const img = tinted(e.d, key, base, p.col);
-  const X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = POY + DSY(p.ep[1]) * PMY - p.pos[1] * KY + (e.cut ? cutDy(p.ep[1]) : 0) + EXT;   /* EXT: 판을 위(상태 막대 자리)로 늘린 만큼 */   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
+  const ey0 = POY + DSY(p.ep[1]) * PMY, X = OX + DSX(p.ep[0] + p.pos[0]) * MX, Y = ey0 + (EUP && ey0 < EUP_Y ? EUP_Y - ey0 : 0) - p.pos[1] * KY + (e.cut ? cutDy(p.ep[1]) : 0) + EXT;   /* EXT: 판을 위(상태 막대 자리)로 늘린 만큼 */   // 방출기 자리만 PMY, 퍼지는 거리는 원래 비율(KY)
   g.globalAlpha = a / 31;
   g.setTransform(KX * A[0], -KY * A[1], -KX * B[0], KY * B[1], X, Y);
   g.drawImage(img, px - 1, -py - 1, 2, 2);
@@ -381,9 +381,10 @@ function kill(S, e) { const i = S.E.indexOf(e); if (i >= 0) S.E.splice(i, 1); re
 
 // ---------- 한 번의 기술 연출 ----------
 // ev: mvfx.json 의 'p' 'pl' 'pq' 'pr' 'pu' 사건, atk: 공격하는 쪽 'p'|'e', F: 1프레임 ms
-let EXT = 0;
+let EXT = 0, EUP = 0;   /* v24.92 경완 '체육관 배틀 상대편 효과에서 안 보임'(나쁜음모): 상대가 자기에게 쓰는 기술은 머리 위 방출기가 화면 위로 잘려 안 보임 → 방출기 자리를 EUP_Y 줄까지만 올라가게 */
+const EUP_Y = 30;
 function start(canvas, ev, atk, F, ver, self) {
-  EXT = +canvas.dataset.ex || 0;   // self: 자기에게 쓰는 기술 — 맞는 쪽 = 쓰는 쪽 (v19.18 달빛)
+  EXT = +canvas.dataset.ex || 0; EUP = self && atk !== 'p' ? 1 : 0;   // self: 자기에게 쓰는 기술 — 맞는 쪽 = 쓰는 쪽 (v19.18 달빛)
   const names = [...new Set(ev.filter(e => e[0] === 'p').map(e => e[3]))];
   const S = { E: [], T: [], slot: {}, atk: atk === 'p' ? 0 : 1, self: !!self, g: canvas.getContext('2d'), f: 0, dead: false, D: {} };
   S.count = ps => S.E.reduce((n, e) => n + (e.ps === ps ? e.P.length + e.C.length : 0), 0);
