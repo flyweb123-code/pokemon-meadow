@@ -898,8 +898,8 @@ function partyPanel(req, forced, ban = []) {
 /* v24.55 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
 function trPickMon(q, L) {
   return new Promise(async res => { if (q) await msg(q, 0);
-    const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.g;
-      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : ''}${P.mate ? '<em class="pty-mt">동료</em>' : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
+    const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
+      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}${P.mate ? '<em class="pty-mt">동료</em>' : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
 }
@@ -912,13 +912,13 @@ function trChoose(q, L) {
    잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
 const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
 /* v24.56 경완 '가방은 B로' (시안 https://claude.ai/artifact/Wyo9ePDpvmehGtx3CsAad8): 본가 가방처럼 볼 4줄 목록(없는 볼은 흐리게) → 고르면 아래 설명 → '던지기'. 고른 볼은 have 안 번호로 */
-const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼', great: '몬스터볼보다 잘 잡혀요', ultra: '슈퍼볼보다 더 잘 잡혀요', master: '반드시 잡혀요' };   /* v24.66 '잡힘 ×1' 이 무슨 뜻인지 몰라서 말로 */
+const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '', great: '', ultra: '', master: '반드시 잡혀요' };   /* v24.68 경완 '잘 잡혀요 설명도 없어도 돼' */   /* v24.66 '잡힘 ×1' 이 무슨 뜻인지 몰라서 말로 */
 function trBag(T) {
   return new Promise(res => { const have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0); let sel = (TR_BALL.find(([k]) => k === B.trBagK && (T.balls[k] | 0) > 0) || have[0])[0];
     const ic = k => `<img class="bg-ic" alt="" src="${IMG}item/${TR_BALL_IC[k]}.png">`;
     const draw = () => { const X = TR_BALL.find(([k]) => k === sel);
       const p = panel(`<div class="bp-bag"><div class="bg-l">${TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0).map(([k, n]) => {   /* v24.60 경완 '아직 안 받은 도구는 안 나오게' */ const c = T.balls[k] | 0; return `<button class="bg-r${k === sel ? ' on' : ''}${c ? '' : ' off'}" data-k="${k}" ${c ? '' : 'disabled'}>${ic(k)}<span>${n}</span><em>×${c}</em></button>`; }).join('')}</div>
-        <div class="bg-d">${ic(sel)}<div><b>${X[1]}</b>${TR_BALL_D[sel]}</div></div>
+        <div class="bg-d">${ic(sel)}<div><b>${X[1]}</b>${TR_BALL_D[sel] || `가방에 ${T.balls[sel] | 0}개`}</div></div>
         <div class="bg-b"><button class="bb cancel" data-x><span>그만두기</span></button><button class="bb go" data-go><span>던지기</span></button></div></div>`);
       p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.k) { sel = b.dataset.k; return draw(); } if (b.hasAttribute('data-x')) { panel(''); return res(null); } if (b.hasAttribute('data-go')) { B.trBagK = sel; panel(''); res(have.findIndex(([k]) => k === sel)); } }; };
     draw(); });
