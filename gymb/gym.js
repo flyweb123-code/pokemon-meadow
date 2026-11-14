@@ -626,7 +626,7 @@ const PAIR = {
   double_team: { ow2: 'ace_trainer_f', f2: 1, b: ['(파트너) 우리 콤비, 아직 안 끝났어!', '(파트너) 둘이 맞춰 온 작전이 있어요!', '(파트너) 호흡 한번 보여 드리죠!'], y: [['(파트너) 다음엔 호흡 더 맞춰 올게요.', '(파트너) 콤비 연습 다시 하자.'], ['(파트너) 완벽한 콤비네이션!', '(파트너) 역시 우리 둘이야!']] },
   young_couple: { ow2: 'gentleman', f2: 0, b: ['(남편) 여보, 내가 지켜 줄게!', '(남편) 둘이라면 문제없지!', '(남편) 우리 호흡 보여 드립시다!'], y: [['(남편) 여보, 다음엔 꼭 이기자.', '(남편) 그래도 즐거운 데이트였어.'], ['(남편) 여보, 우리 대단하다!', '(남편) 오늘 데이트 대성공이야!']] },
 };
-/* v25.03 경완 '더블 배틀은 짝 지은 배틀 그림 있는 종만 오게 해주고 배포해' + '보상도 2배', '더블배틀 도전자 오는 빈도 비중도 조절': 짝 직업은 보통 뽑기에서 빼고 더블 확률을 따로 굴림 (등급별 DBL_P, 새내기 0 · 동네 10% · 떠오르는~이름난 15% · 인기 이상 20% → 하루 2~3명).
+/* v25.20 경완 '더블 배틀은 짝 지은 배틀 그림 있는 종만 오게 해주고 배포해' + '보상도 2배', '더블배틀 도전자 오는 빈도 비중도 조절': 짝 직업은 보통 뽑기에서 빼고 더블 확률을 따로 굴림 (등급별 DBL_P, 새내기 0 · 동네 10% · 떠오르는~이름난 15% · 인기 이상 20% → 하루 2~3명).
    마리 수 = 한 사람 몫 2마리(쉬움) · 2~3마리(보통·어려움)씩 둘 (pairN), 레벨 +PAIR_LV, 골드·평판 ×2 (rewOf). 짝 그림(pt/tr)이 있는 쌍둥이·남매·젊은 부부·인터뷰어·더블팀만 */
 const DBL_P = [0, .1, .15, .15, .2, .2, .2], PAIR_LV = 1, pairN = diff => diff ? rndI(2, 3) * 2 : 4;
 const pairOf = c => !c.boss && !c.named && PAIR[c.tr] && (c.team || []).length >= 2 ? PAIR[c.tr] : null;
@@ -1186,7 +1186,7 @@ function sfEV(rel, n, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), 
 const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .9 - .2 * v : 1) * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
-/* v25.03 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
+/* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
 const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team']), SOLO_OF = { twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
 function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
