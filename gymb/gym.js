@@ -4649,7 +4649,7 @@ async function zTut(test) {
         const rp = route(D, D.door, [kx, ky], occOf([rs])) || route(D, D.door, [kx, ky], []) || [];
         const wr = walk(rs, rp, 340); for (let i = 0; i < 80 && !(Math.abs(rs.x - kx) < 3 && Math.abs(rs.y - ky) < 3); i++) await wait(50); face(k, rs); await wr; face(rs, meEnt); face(meEnt, rs); face(k, rs); if (gu()) face(gu(), rs); await wait(300); hideT(false);
         await say(`${NK()}, 안녕하세요!\n강박사님 연구소의\n연구원 하람이에요.`, RW); await say('박사님이 전화로\n\'허리에 붙일 파스 좀\n사 오게!\' 하셔서…', RW); await say('…박사님, 또 포즈\n하셨죠?', RW); await say('에헴! 그, 그건 됐고\n연습 배틀이나 부탁하네!'); await say('네! 연습 배틀,\n잘 부탁드려요!', RW); hideT(true); }
-      /* 경완 2026-11-14 '먼저 화염방사 쓰고 데미지 보고, Z기술 쓰고 데미지 비교': 상대 = 튼튼한 포켓몬 한 마리(몸통박치기만 — v24.43 경완 '울음소리 헷갈림 → 몸통박치기'. 그냥 기술 맞힌 뒤 상대 기술 앞에서 배틀을 멈추고(battle.js onFoeMove) 강박사가 데미지 얘기), 레벨은 일반 기술 한 번에 체력 약 40%, Z기술로 남은 체력 한 방에 (zFoeLv 'z', v24.28 경완 '일반 한 번 쓰고 Z로 마무리').
+      /* 경완 2026-11-14 '먼저 화염방사 쓰고 데미지 보고, Z기술 쓰고 데미지 비교': 상대 = 튼튼한 포켓몬 한 마리(몸통박치기만 — v24.46 경완 '울음소리 헷갈림 → 몸통박치기'. 그냥 기술 맞힌 뒤 상대 기술 앞에서 배틀을 멈추고(battle.js onFoeMove) 강박사가 데미지 얘기), 레벨은 일반 기술 한 번에 체력 약 40%, Z기술로 남은 체력 한 방에 (zFoeLv 'z', v24.28 경완 '일반 한 번 쓰고 Z로 마무리').
          1턴 그냥 기술 → 줄어든 만큼 짚기 → 2턴 Z기술 → 두 번을 비교 → 3턴 마무리. 고스트·격투 체육관은 노말 잠만보가 안 맞거나 약점이라 샤미드 */
       try { await B.loadSim?.(); } catch (e) {}
       const fSp = T0 === 2 || T0 === 8 ? 134 : 143, fNm = SPECIES[fSp]?.n || '포켓몬', m0 = B.gm(P), fLv = B.zFoeLv ? B.zFoeLv({ sp: P.sp, lv: m0.lv || 50, iv: P.iv, nat: m0.nat }, M[1][0], fSp, 'z') : 40;

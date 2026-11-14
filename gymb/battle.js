@@ -1445,7 +1445,7 @@ async function handle(a) {
       break;
     }
     case 'move': {
-      if (sideOf(a[2]) === 'e' && B.onFoeMove) { try { await B.onFoeMove(); } catch (e) {} if (!B) return; }   /* v24.43 경완 '화염방사 쓰자마자 상대 턴 오기 전에 강박사가 데미지 얘기': 튜토리얼이 상대 기술 앞에서 잠깐 멈춤 */
+      if (sideOf(a[2]) === 'e' && B.onFoeMove) { try { await B.onFoeMove(); } catch (e) {} if (!B) return; }   /* v24.46 경완 '화염방사 쓰자마자 상대 턴 오기 전에 강박사가 데미지 얘기': 튜토리얼이 상대 기술 앞에서 잠깐 멈춤 */
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
       { const mv = PSim.Dex.moves.get(id); B.mh = mv?.multihit || id === 'dragondarts' ? { s, id, n: 0 } : null; }   /* v21.85 경완 '연속기는 본가처럼 맞을 때마다 기술 효과': 두 번째 맞는 것부터 그 기술 연출을 다시 */
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
