@@ -2458,10 +2458,11 @@ function itInfo(id, lab, act, foot = '', own) {
 function giveIt(P, id) {
   const g = S.gym, m = gm(P); g.itm = g.itm || {}; if (!(g.itm[id] > 0)) return;
   g.itm[id]--; if (!g.itm[id]) delete g.itm[id];
-  const old = m.it; if (old) g.itm[old] = (g.itm[old] || 0) + 1; m.it = id; GA.save(); se('DECIDE');
+  const old = m.it; if (old) g.itm[old] = (g.itm[old] || 0) + 1; m.it = id; GA.save(); se('DECIDE'); itRef();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}에게 ${esc(HOLD[id][0])}${jong(HOLD[id][0]) ? '을' : '를'} 지니게 했다!${old ? `<br><small>${esc(HOLD[old]?.[0] || '')}${jong(HOLD[old]?.[0] || '') ? '은' : '는'} 창고로 돌아갔어요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c());
 }
-function takeIt(P) { const g = S.gym, m = gm(P), id = m.it; if (!id) return; g.itm = g.itm || {}; g.itm[id] = (g.itm[id] || 0) + 1; delete m.it; GA.save(); }
+function takeIt(P) { const g = S.gym, m = gm(P), id = m.it; if (!id) return; g.itm = g.itm || {}; g.itm[id] = (g.itm[id] || 0) + 1; delete m.it; GA.save(); itRef(); }
+function itRef() { try { if (tabEl?.isConnected && !tabEl.hidden && tabEl.querySelector('.lu-grid')) drawTab(); bxRefresh?.(); } catch (e) {} }   /* v24.80 경완 '샹델라한테 도구 지니게 했는데 바로 슬롯에 반영 안 되고 나갔다 들어오니까 생김': 뒤의 라인업 칸·박스도 바로 다시 그림 */
 // 민트 (경완 2026-10-30 '성격 바꾸는 본가 도구'): 먹으면 성격이 바뀐다. 지니는 도구와 달리 먹으면 없어지고 여러 개 살 수 있음. g.mint = {성격: 개수}
 const MINT_P = 3000, MINT = ['lonely', 'adamant', 'naughty', 'brave', 'bold', 'impish', 'lax', 'relaxed', 'modest', 'mild', 'rash', 'quiet', 'calm', 'gentle', 'careful', 'sassy', 'timid', 'hasty', 'jolly', 'naive', 'serious'];
 const ro = w => { const j = jong(w); return j && j !== 8 ? '으로' : '로'; };
