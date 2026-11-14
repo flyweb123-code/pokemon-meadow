@@ -4518,26 +4518,3 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v24.42 경완: 중요한 물건 알림창·예/아니요는 뜬 직후 잠깐 잠금 — 그동안 버튼 흐리게, 풀리면 스르륵 */
 .gy-btns.gy-hold,.tw-yn.gy-hold{opacity:.5;filter:saturate(.6);transition:none}.gy-btns,.tw-yn{transition:opacity .25s ease,filter .25s ease}
-
-/* v24.21 더블 배틀 (수련탑): 한 쪽 두 자리 — 첫 자리 data-sl=0, 두 번째 data-sl=1 (.s2 는 역할 이름표라 기술 연출 동안 바뀔 수 있음) */
-.bt:not(.dbl) .bt-mw[data-sl="1"],.bt:not(.dbl) .bt-hb.s2{display:none}
-.bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:2px}
-.bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-6px;height:104px}
-.bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}
-.bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:-4px;height:148px}
-.bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
-.bt.dbl .bt-hb.e:not(.s2){left:0;top:-7px}
-.bt.dbl .bt-hb.e.s2{left:0;top:20px}
-.bt.dbl .bt-hb.p.s2{left:160px;top:70px}
-.bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
-.bt .bp-tgt{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;padding:14px 12px calc(14px + var(--pb,0px));box-sizing:border-box;justify-content:center}
-.bt .bp-tgt p{margin:0;text-align:center;font-size:12px;font-weight:700;color:#3a4252}
-.bt .bp-tgt .tg-g{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(44px,64px);gap:8px}
-.bt .bp-tgt .tg-b{height:auto!important;flex-direction:column;gap:2px;--c1:#f4706a;--c2:#d93a3c}
-.bt .bp-tgt .tg-b.p{--c1:#5aa0f0;--c2:#3a6fd0}
-.bt .bp-tgt .tg-b.off{opacity:.35;filter:grayscale(1)}
-.bt .bp-tgt .tg-b small{font-size:9px;opacity:.85}
-.bt .bp-tgt .tg-b span{font-size:13px}
-.bt .bp-tgt .tg-b:active:not(.off){transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 1.5px rgba(0,0,0,.28),0 1px 0 rgba(0,0,0,.18)}
-.bt .bp-tgt .cancel{height:36px!important}
-.bt .bp-tgt .bb{position:relative;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;margin:0}.bt .bp-tgt .tg-g .bb{height:100%!important}
