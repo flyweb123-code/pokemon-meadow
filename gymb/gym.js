@@ -4400,6 +4400,9 @@ async function dblTest() {
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
   const snap = JSON.stringify(S.gym), src = (g.lu?.[g.luI | 0] || []).filter(id => GB().boxOf(id)), ids = trClone(src);
   if (ids.length < 2) { trDrop(ids); S.gym = JSON.parse(snap); pop('<h4>더블 배틀 시험</h4><p>라인업에 포켓몬을 두 마리 이상 넣어 주세요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>', (a, c) => c()); return; }
+  /* v25.06 경완 '더블 배틀 시연에 그 기술들도 다 해볼 수 있게': 사본 앞 두 마리 기술을 목표 종류별로 (옆 모두·상대 모두·같은 편·같은 편이나 나·하나·아무나) — 사본이라 본 계정 기술은 그대로 */
+  const DBL_MV = [['surf', 'rockslide', 'helpinghand', 'acupressure'], ['earthquake', 'heatwave', 'tackle', 'aurasphere']];
+  ids.slice(0, 2).forEach((id, k) => { const m = GB().gm(GB().boxOf(id)); if (m) { m.mv = DBL_MV[k].slice(); m.kn = []; } });
   const my = ids.map(id => GB().boxOf(id)), L = my.map(P => GB().gm(P)?.lv | 0).filter(Boolean), lv = Math.max(5, Math.round(L.reduce((a, b) => a + b, 0) / (L.length || 1)));
   const fe = (sp, nm, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'modest', iv: [24, 24, 24, 24, 24, 24], g: sp === 312 ? 'F' : 'M' });
   const team = [fe(311, '플러시', ['thunderbolt', 'helpinghand', 'nastyplot', 'encore'], 'plus'), fe(312, '마이농', ['thunderbolt', 'helpinghand', 'nastyplot', 'protect'], 'minus'), fe(184, '마릴리', ['surf', 'icebeam', 'helpinghand', 'playrough'], 'thickfat'), fe(36, '픽시', ['moonblast', 'followme', 'flamethrower', 'calmmind'], 'friendguard')];
