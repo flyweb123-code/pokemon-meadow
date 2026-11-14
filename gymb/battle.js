@@ -881,7 +881,7 @@ function partyPanel(req, forced, ban = []) {
     const tys = (A, pk) => (fmd(pk) ? pk.species.types.map(t => TY_EN.indexOf(t)) : SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join('');
     // 포켓몬 버튼: 정사각형 프로필 + 이름·성별 + 타입 (경완 2026-10-29)
     const list = () => { const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
-      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid), mgOf(pkOf(i))) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
+      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}${boxOf(A.pid)?.mate ? ' mate' : ''}" data-i="${i}">${boxOf(A.pid) ? thumb(boxOf(A.pid), mgOf(pkOf(i))) : ''}<b>${esc(A.nm)}${sx(A.g)}${boxOf(A.pid)?.mate ? '<em class="pty-mt">동료</em>' : ''}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
       p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); card(+b.dataset.i); }; };
     // 누르면 바로 바뀌지 않고 상세 카드 → '바꾸기' (경완 2026-10-29)
@@ -899,7 +899,7 @@ function partyPanel(req, forced, ban = []) {
 function trPickMon(q, L) {
   return new Promise(async res => { if (q) await msg(q, 0);
     const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.g;
-      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
+      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : ''}${P.mate ? '<em class="pty-mt">동료</em>' : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
 }
@@ -912,7 +912,7 @@ function trChoose(q, L) {
    잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
 const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
 /* v24.56 경완 '가방은 B로' (시안 https://claude.ai/artifact/Wyo9ePDpvmehGtx3CsAad8): 본가 가방처럼 볼 4줄 목록(없는 볼은 흐리게) → 고르면 아래 설명 → '던지기'. 고른 볼은 have 안 번호로 */
-const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼', great: '몬스터볼보다 1.5배 잘 잡혀요', ultra: '몬스터볼보다 2배 잘 잡혀요', master: '반드시 잡혀요' };   /* v24.66 '잡힘 ×1' 이 무슨 뜻인지 몰라서 말로 */
+const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼', great: '몬스터볼보다 잘 잡혀요', ultra: '슈퍼볼보다 더 잘 잡혀요', master: '반드시 잡혀요' };   /* v24.66 '잡힘 ×1' 이 무슨 뜻인지 몰라서 말로 */
 function trBag(T) {
   return new Promise(res => { const have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0); let sel = (TR_BALL.find(([k]) => k === B.trBagK && (T.balls[k] | 0) > 0) || have[0])[0];
     const ic = k => `<img class="bg-ic" alt="" src="${IMG}item/${TR_BALL_IC[k]}.png">`;

@@ -4590,3 +4590,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bp-bag .bg-l{flex:1 1 0;justify-content:flex-start}
 .bt .bp-bag .bg-d,.bt .bp-bag .bg-b{flex:none}
 .bt .bp-bag .bg-d{min-height:44px;box-sizing:border-box}
+/* v24.67 경완 '동료 포켓몬은 교체 화면 슬롯 색 다르게 + 동료 딱지': 보라 칸 + 오른쪽 위 딱지 (기절·나와 있음 색이 먼저) */
+.bt .pty.mate:not(.fnt):not(.act){background:linear-gradient(#a888e0,#7458b8);box-shadow:inset 0 0 0 1px #e0d0ff,0 0 0 1px #2c1c58}
+.bt .pty .pty-mt{position:static;flex:none;margin-left:4px;font-style:normal;font-size:8px;line-height:1;padding:2px 4px 1px;border-radius:4px;background:#fff;color:#6040a8;text-shadow:none;font-weight:800;box-shadow:0 0 0 1px #6040a8;pointer-events:none}
+.bt.mob .pty .pty-mt{font-size:9px}
