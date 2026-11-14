@@ -4597,3 +4597,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
 .bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}
+/* v24.73 수련탑 얻은 도구 아이콘 줄 (좌상단, 포켓로그처럼 개수는 오른쪽 아래) */
+.bt .bt-its{position:absolute;left:6px;top:calc(var(--st,0px) + 4px);z-index:40;display:flex;flex-wrap:wrap;gap:3px;max-width:46%;pointer-events:none}
+.bt .bt-its:empty{display:none}
+.bt .bt-its i{position:relative;width:26px;height:26px;border-radius:7px;background:rgba(20,22,34,.62);display:flex;align-items:center;justify-content:center}
+.bt .bt-its img{width:24px;height:24px;image-rendering:pixelated}
+.bt .bt-its b{position:absolute;right:-2px;bottom:-3px;font-size:10px;line-height:1;color:#fff;text-shadow:1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000;font-style:normal}
