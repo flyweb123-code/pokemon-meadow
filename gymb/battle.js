@@ -1106,7 +1106,7 @@ function aiChoice(btl, diff) {
   if (req.forceSwitch) { const o = bench(); if (!o.length) return 'pass'; return 'switch ' + (o.map(x => ({ x, s: matchup(x.mon) + Math.random() * .1 })).sort((a, b) => b.s - a.s)[0].x.i + 1); }
   const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
   if (!mv.length) return 'move 1';
-  if (diff === 1 && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수
+  if (diff === 1 && !B?.train && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수 (수련탑은 아래 점수 고르기)
   const fHp = Math.max(1, foe?.hp || 1), mHp = me.hp / me.maxhp, inDanger = best(foe, me) >= me.hp, foeHit = best(foe, me) / Math.max(1, me.hp), bo = me.boosts || {};
   const sc = mv.map(o => { const m = btl.dex.moves.get(o.m.id); let v;
     if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25; if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; }
@@ -1126,6 +1126,8 @@ function aiChoice(btl, diff) {
     const b = bench().map(x => ({ x, s: matchup(x.mon) })).sort((a, b) => b.s - a.s)[0];
     if (b && b.s > matchup(me) + .35 && Math.random() < (diff === 2 ? .75 : .4)) return 'switch ' + (b.x.i + 1);
   }
+  /* v24.82 수련탑 상대 (포켓로그 '똑똑한' 고르기를 참고해 다시 짬): 엉뚱한 기술은 안 쓰고, 다음 기술 점수가 1등과 비슷할수록(비율×50%) 그 기술도 섞음. 쓰러뜨릴 기술은 위 점수에서 이미 1등. 우두머리(diff 2)는 늘 1등 */
+  if (B?.train && diff === 1) { let k = 0; while (k < sc.length - 1 && sc[k].s > 0 && sc[k + 1].s > 0 && Math.random() < sc[k + 1].s / sc[k].s * .5) k++; return 'move ' + (sc[k].o.i + 1); }
   return 'move ' + (sc[0].o.i + 1);
 }
 
