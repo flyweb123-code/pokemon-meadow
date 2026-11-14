@@ -2,6 +2,7 @@
    좌표는 Essentials 512×384 = 우리 위 화면 256×192 의 2배. 20fps. 데이터는 tools/gym/mkess.py 가 gym/img/ess/a/<기술>.json 으로 뽑음
    칸: [칸 번호, 무늬, x, y, 가로%, 세로%, 각도, 뒤집기, 섞기, 불투명, 초점, 앞뒤, 색r,g,b,a]   타이밍: [0 소리, 프레임, 소리, 볼륨, 피치] [1·3 배경·앞 판 놓기, 프레임, 그림, x, y, 불투명, 색] [2·4 옮기기, 프레임, 길이, x, y, 불투명, 색] */
 window.GymEss = (() => {
+  let EX = 0;   /* 판을 위(상태 막대 자리)로 늘린 높이 (512 기준 px): 그리기를 그만큼 내림 */
   const W = 512, H = 384, FU = [128, 224], FT = [384, 96], CELL = 192;
   const imgC = {}, jsC = {}, seC = new Map();
   const img = src => imgC[src] || (imgC[src] = new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => { delete imgC[src]; r(null); }; i.src = src; }));
@@ -23,9 +24,9 @@ window.GymEss = (() => {
   const plane = () => ({ img: null, ox: 0, oy: 0, op: 0, col: [0, 0, 0, 0], old: null });
   function drawPlane(c, P) {
     if (P.op <= 0) return; c.save(); c.globalAlpha = Math.min(1, P.op / 255);
-    if (P.img) { const iw = P.img.width, ih = P.img.height, sx = ((P.ox % iw) + iw) % iw, sy = ((P.oy % ih) + ih) % ih; for (let y = -sy; y < H; y += ih) for (let x = -sx; x < W; x += iw) c.drawImage(P.img, x, y);
-      if (P.col[3] > 0) { c.globalCompositeOperation = 'source-atop'; c.fillStyle = `rgba(${P.col[0] | 0},${P.col[1] | 0},${P.col[2] | 0},${P.col[3] / 255})`; c.fillRect(0, 0, W, H); } }
-    else { c.fillStyle = `rgb(${P.col[0] | 0},${P.col[1] | 0},${P.col[2] | 0})`; c.fillRect(0, 0, W, H); }
+    if (P.img) { const iw = P.img.width, ih = P.img.height, sx = ((P.ox % iw) + iw) % iw, sy = ((P.oy % ih) + ih) % ih; for (let y = -sy - Math.ceil(EX / ih) * ih; y < H; y += ih) for (let x = -sx; x < W; x += iw) c.drawImage(P.img, x, y);
+      if (P.col[3] > 0) { c.globalCompositeOperation = 'source-atop'; c.fillStyle = `rgba(${P.col[0] | 0},${P.col[1] | 0},${P.col[2] | 0},${P.col[3] / 255})`; c.fillRect(0, -EX, W, H + EX); } }
+    else { c.fillStyle = `rgb(${P.col[0] | 0},${P.col[1] | 0},${P.col[2] | 0})`; c.fillRect(0, -EX, W, H + EX); }
     c.restore();
   }
   let idx = null;
@@ -44,6 +45,7 @@ window.GymEss = (() => {
   async function has(id) { const I = await index(); return I[id] || 0; }
   /* o: { top, back, front(캔버스 512×384), user/target: {el(움직일 그림 칸), img, pan}, A(연출), cry(), speed, alive() } */
   async function play(o) {
+    EX = o.ext || 0;
     const A = o.A, gp = n => n ? img(base() + `g/${n}.png?v=1`) : Promise.resolve(null);
     const sheet = await gp(A.g), pre = {};
     for (const t of A.t) if ((t[0] === 1 || t[0] === 3) && t[2] && !pre[t[2]]) pre[t[2]] = await gp(t[2]);
@@ -66,7 +68,7 @@ window.GymEss = (() => {
         else { const P = t[0] === 2 ? bg : fg; P.old = { ox: P.ox, oy: P.oy, op: P.op, col: P.col.slice() }; } }
     }
     function frame(f) {
-      bk.clearRect(0, 0, W, H); fr.clearRect(0, 0, W, H); drawPlane(bk, bg);
+      for (const c of [bk, fr]) { c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H + EX); c.setTransform(1, 0, 0, 1, 0, EX); } drawPlane(bk, bg);
       const F = A.f[f] || [], seen = new Set();
       for (const C of F) {
         const i = C[0], pat = C[1], cx = C[2], cy = C[3], zx = cv(C, 4, 100), zy = cv(C, 5, 100), ang = cv(C, 6, 0), op = cv(C, 9, 255), foc = cv(C, 10, 4), pri = cv(C, 11, 1);
@@ -90,7 +92,7 @@ window.GymEss = (() => {
     }
     let last = -1;
     await new Promise(res => { const tick = () => { if (o.alive && !o.alive()) return res(); const f = Math.floor((performance.now() - t0) / 50 * sp); if (f >= N) return res(); if (f !== last) { for (let k = last + 1; k < f; k++) timing(k); timing(f); last = f; frame(f); } requestAnimationFrame(tick); }; tick(); });
-    bk.clearRect(0, 0, W, H); fr.clearRect(0, 0, W, H);
+    for (const c of [bk, fr]) { c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H + EX); }
     [U.el, T.el].forEach((e, i) => { [e.style.transform, e.style.opacity, e.style.visibility] = keep[i]; requestAnimationFrame(() => { e.style.transition = keep[i][3]; }); });
   }
   return { has, get, play, snd };
