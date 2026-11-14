@@ -3943,7 +3943,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-rail span.b::before{background:#ffd84a}#trLobby .tl-rail span.me::before{background:#e04838;animation:tlTw 1s steps(2) infinite}
 #trLobby .tl-hd{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;min-width:170px;text-align:center;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:4px 12px 6px}
 #trLobby .tl-hd h2{margin:0;font-size:15px;letter-spacing:.06em;color:var(--win-ink)}#trLobby .tl-hd h2 b{color:#e04838}
-#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s .rk-fr>img[data-th]{width:84%!important;height:84%!important;max-width:none;max-height:none;object-fit:contain}
+#trLobby .tl-c .rk-fr{width:50px;height:50px;--mw:40px;--mh:40px}#trLobby .tl-c .rk-fr>img[data-th]{width:40px!important;height:40px!important;max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-s .rk-fr>img[data-th]{left:13%!important;top:13%!important;width:74%!important;height:74%!important;max-width:74%!important;max-height:74%!important;object-fit:contain}#trLobby .tl-s,#trLobby .tl-s .rk-fr{overflow:hidden}   /* v24.59 경완 '등반대 칸 스프라이트 삐져나옴': 틀 안쪽에 맞게 줄이고 칸 밖은 자름 */
 #trLobby .tl-hd small{display:block;font-size:10px;opacity:.7;margin-top:2px;white-space:nowrap}
 #trLobby .tl-x{position:absolute;right:10px;top:12px;z-index:3;min-height:0!important;padding:6px 9px!important;font-size:12px!important}
 #trLobby .tl-tag{position:absolute;right:10px;bottom:10px;z-index:2;background:var(--frame);color:var(--gy-gold);font-size:11px;padding:4px 7px;box-shadow:0 2px 0 #0006}
@@ -3971,6 +3971,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-fb .tl-cnt{margin-left:auto;font-size:11px;opacity:.7;white-space:nowrap}
 #trLobby .tl-list{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;align-content:start;padding:1px 1px 8px;-webkit-overflow-scrolling:touch;touch-action:pan-y}
 #trLobby .tl-c{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;height:114px;padding:4px 3px 6px;min-width:0;border:0;font:inherit;color:var(--win-ink);background:#f0f0f6;box-shadow:inset 0 0 0 2px #c8c8d8,0 2px 0 #b0b0c0}
+#trLobby .tl-c .st em:not(.c){background:none;color:var(--win-ink);padding:0;font-weight:800}   /* v24.59 경완 '레벨은 박스 없이' */
 #trLobby .tl-c .st em.c{position:absolute;right:3px;bottom:3px;min-width:15px;text-align:center}   /* v24.35 경완 '코스트는 박스 우하단 고정' */
 #trLobby .tl-c .ty{display:flex;gap:1px;flex:none;margin-left:auto}#trLobby .tl-c .ty .tyi{width:15px;height:15px;display:block}
 #trLobby .tl-c.on{background:#fff6d0;box-shadow:inset 0 0 0 3px #e0a020,0 2px 0 #b88a18}
@@ -4015,8 +4016,8 @@ function trTowerSvg(tod) {
   return `<svg class="tl-tw" viewBox="0 ${y - 50} 160 ${360 - y}" shape-rendering="crispEdges" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${s}</svg>`;
 }
 /* v24.02 경완 '탑 정상까지 안 보여도 되니 포켓몬 목록을 더 늘리고, 포켓몬 박스처럼 필터, 타입은 테두리 말고 타입 아이콘': 하늘 낮게(탑 위는 잘림), 목록 = 박스 창(정렬 레벨·코스트·종족값·날짜, 다시 누르면 ▲▼ / 타입·넣을 수 있는·이로치 / 마리 수), 카드 오른쪽 위 타입 아이콘 */
-const TRL_SORT = [['lv', '레벨'], ['cost', '코스트'], ['bs', '종족값'], ['new', '날짜']]; let trlSo = 'lv', trlDir = 1, trlTy = 0, trlFit = false, trlSh = false;
-const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
+const TRL_SORT = [['lv', '레벨'], ['cost', '코스트'], ['bs', '종족값'], ['new', '날짜']]; let trlSo = 'lv', trlDir = 1, trlTy = 0, trlFit = false, trlSh = false, trlLu = true;
+const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu = true;   /* v24.59 경완 '라인업 필터, 처음엔 켜진 채로' */
   const B = GB(), cost = P => B.trCost(P), sum = () => sel.reduce((a, id) => a + (B.boxOf(id) ? cost(B.boxOf(id)) : 0), 0), all = () => S.box.filter(P => P && !P.egg && B.D.sp[P.sp] && (P.gTst ? P.rnd : (SPECIES[P.sp]?.t || []).includes(S.gym?.ty)));   /* v24.35 경완 '목록엔 이 체육관 박스(체육관 타입) 포켓몬만' */
   const nmOf = P => P.nm || SPECIES[P.sp]?.n || '', h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
   if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; document.head.appendChild(st0); } document.getElementById('trlCss').textContent = TRL_CSS;
@@ -4028,7 +4029,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
       <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
       <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
     <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
-      <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
+      <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="lu">라인업</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
     <div class="tl-ft${save ? ' two' : ''}"><button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
   root.appendChild(el);
   const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
@@ -4038,11 +4039,11 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
     const A0 = all(), bs = P => (SPECIES[P.sp]?.bs || []).reduce((a, b) => a + b, 0), ix = new Map(S.box.map((P, i) => [P, i])), K = { lv: P => B.gm(P).lv, cost, bs, new: P => ix.get(P) };
     const q = (el.querySelector('.tl-q input')?.value || '').trim(), qh = P => !q || (window.pkNameHit ? window.pkNameHit(nmOf(P), q) || window.pkNameHit(SPECIES[P.sp]?.n || '', q) : nmOf(P).includes(q)) || String(P.sp) === q.replace(/^0+/, '');   /* v24.06 경완 '검색 기능도': 박스처럼 이름·초성·번호 */
     const luS = new Set((S.gym?.lu || []).flat()), trS = new Set((S.gym?.tr || []).map(e => e.id)), budS = new Set((S.buds || []).map(b => b.pid)), tags = P => [luS.has(P.id) && ['lu', '라인업']].filter(Boolean);   /* v24.35 경완 '훈련장이랑 짝꿍 딱지는 빼자' */   /* v24.06 경완 '라인업·훈련장·짝꿍 딱지' */
-    if (trlTy && !A0.some(P => (SPECIES[P.sp]?.t || []).includes(trlTy))) trlTy = 0;
-    const L = A0.filter(P => (sel.includes(P.id) && !q) || (qh(P) && (!trlTy || (SPECIES[P.sp]?.t || []).includes(trlTy)) && (!trlSh || P.shiny) && sel.length < 6 && n + cost(P) <= cap)) /* v24.35 경완 '넣을 수 있는 필터 빼고 고를 때마다 넣을 수 있는 포켓몬만' */.sort((a, b) => trlDir * (K[trlSo](b) - K[trlSo](a)) || (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
+    if (trlTy && !A0.some(P => (SPECIES[P.sp]?.t || []).includes(trlTy))) trlTy = 0; if (trlLu && !A0.some(P => luS.has(P.id))) trlLu = false;
+    const L = A0.filter(P => (sel.includes(P.id) && !q) || (qh(P) && (!trlTy || (SPECIES[P.sp]?.t || []).includes(trlTy)) && (!trlSh || P.shiny) && (!trlLu || luS.has(P.id)) && sel.length < 6 && n + cost(P) <= cap)) /* v24.35 경완 '넣을 수 있는 필터 빼고 고를 때마다 넣을 수 있는 포켓몬만' */.sort((a, b) => trlDir * (K[trlSo](b) - K[trlSo](a)) || (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
     el.querySelectorAll('[data-so]').forEach(b => { const on = b.dataset.so === trlSo; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (trlDir > 0 ? '▼' : '▲') : ''; });
     const tb = el.querySelector('[data-f=ty]'); tb.innerHTML = trlTy ? `${tyI0(trlTy)}${TYPE_KO[trlTy]}` : '모든 타입'; tb.setAttribute('aria-pressed', !!trlTy);
-    el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
+    el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('[data-f=lu]').setAttribute('aria-pressed', trlLu); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
     list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="tl-top"><span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><span class="ty">${(SPECIES[P.sp]?.t || []).map(tyI0).join('')}</span></span>${B.thumb(P)}<b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c" title="코스트">${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
     list.scrollTop = sc; B.fillTh(el); };
   const end = v => { el.remove(); ok(v); };
@@ -4050,7 +4051,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
     if (b.dataset.q) { const i = el.querySelector('.tl-q input'); i.value = ''; i.blur(); draw(); return; }
     if (b.dataset.so) { const k = b.dataset.so; if (k === trlSo) trlDir = -trlDir; else { trlSo = k; trlDir = 1; } draw(); el.querySelector('.tl-list').scrollTop = 0; return; }
     if (b.dataset.f === 'ty') { const T = [...new Set(all().flatMap(P => SPECIES[P.sp]?.t || []))].sort((a, c) => a - c); fPop('타입', [[0, '모든 타입'], ...T.map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], trlTy, v => { trlTy = v; draw(); el.querySelector('.tl-list').scrollTop = 0; }); return; }
-    if (b.dataset.f === 'sh') { trlSh = !trlSh; draw(); return; }
+    if (b.dataset.f === 'sh') { trlSh = !trlSh; draw(); return; } if (b.dataset.f === 'lu') { trlLu = !trlLu; draw(); return; }
     if (b.dataset.p) { const id = +b.dataset.p || b.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
       if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); return; }
     const a = b.dataset.a;
