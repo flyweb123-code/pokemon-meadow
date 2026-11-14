@@ -4256,10 +4256,13 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
   const P = { id: ++trTid, sp: c.sp, iv: c.e?.iv || Array.from({ length: 6 }, () => Math.floor(Math.random() * 32)), fr: 70, gTst: 1, mate: 1, ...(c.shiny ? { shiny: true } : {}) }; S.box.push(P); GB().gm(P);
   const e = c.e?.mv ? c.e : GB().foeEntry(c.sp, c.lv); Object.assign(g.mon[P.id], { lv: c.lv, xp: GB().xpAt(GB().growth(c.sp), c.lv), mv: [...(e.mv || [])], ab: e.ab, nat: e.nat });
   R.ids.push(P.id); R.hp[P.id] = Math.max(.01, Math.min(1, c.hp || 1));
-  if (R.ids.length > 6) { const nm = id => GB().boxOf(id)?.nm || SPECIES[GB().boxOf(id)?.sp]?.n || '';
-    const i = await o.choose('팀이 가득 찼어요. 누가 쉴까요?<small style="display:block;font-size:10px;opacity:.8">쉬는 포켓몬은 이번 도전에서 빠져요</small>', R.ids.map(id => [nm(id) + (GB().boxOf(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(GB().boxOf(id)).lv}`, id === P.id ? '#f0b040,#c88418' : '']));
-    const out = R.ids[i] ?? P.id; R.ids.splice(R.ids.indexOf(out), 1); delete R.hp[out]; if (R.lead === out) R.lead = R.ids[0];
-    await o.msgTap(out === P.id ? `${nm(out)}${jong(nm(out)) ? '과' : '와'} 헤어졌다…` : `${eun(nm(out))} 이번 도전에서 쉬기로 했다.`); }
+  if (R.ids.length > 6) { const B_ = id => GB().boxOf(id), nm = id => B_(id)?.nm || SPECIES[B_(id)?.sp]?.n || '';
+    /* v25.17 경완 '포켓몬 꽉 찼을 때 동료 포켓몬 잡으면 쉬게 할 포켓몬 고를 수 있게 해줘 포켓몬 교체창이랑 동일하게. 텍스트는 쉬게 할 포켓몬을 고르라는 말 뜨고 내 포켓몬 누르면 박스로 돌아갔다 하고 동료 포켓몬 누르면 야생으로 돌아갔다고 하기' */
+    const mx = id => { const p = B_(id), mm = GB().gm(p); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };
+    const q = '포켓몬이 가득 찼다!\n쉬게 할 포켓몬을 골라 주세요.';
+    const out = (o.pickMon ? await o.pickMon(q, R.ids.map(id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; }), 1) : R.ids[await o.choose(q, R.ids.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']))]) ?? P.id;
+    const wild = !!B_(out)?.mate; R.ids.splice(R.ids.indexOf(out), 1); delete R.hp[out]; if (R.lead === out) R.lead = R.ids[0];
+    await o.msgTap(`${eun(nm(out))} ${wild ? '야생으로' : '박스로'} 돌아갔다!`); }
 }
 /* v23.54 경완 '포켓로그처럼 층 끝날 때마다 아이템 선택': 이길 때마다 보상 3개 중 하나 (흔함 초록·좋음 파랑·귀함 금빛, 우두머리 층은 귀한 것이 더 자주).
    v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자', v23.56 본가 도구 기준 (모두 그 판에서만) */
