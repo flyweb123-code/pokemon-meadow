@@ -58,6 +58,9 @@
       this.ovC.style.background = rgba(cl, 1); this.ovC.style.opacity = cl[3] / 255;
     }
   }
+  /* v24.56 경완 "화면 전체 덮는 기술 연출이 여전히 상단바에 안 비침": 전체 화면 장면(메가·Z)은 상태 막대까지 덮는 판이라 원래 거울(위로 반사)이 화면 밖에 그려짐 → 위 화면 윗줄(bt-top 위쪽 S px)을 상태 막대 자리에 거울처럼 (반사 기준선을 bt-top 윗변으로, 그 줄만 보이게 마스크) */
+  function topMirror(root, top) { try { if (!top || !root.parentNode?.classList?.contains('mob') || !('webkitBoxReflect' in root.style || CSS.supports?.('-webkit-box-reflect', 'above 0'))) return; const R = root.getBoundingClientRect(), T = top.getBoundingClientRect(), k = R.height / (root.offsetHeight || R.height), S = Math.round((T.top - R.top) / k); if (S < 2) return;
+    root.style.setProperty('-webkit-box-reflect', `above ${1 - 2 * S}px linear-gradient(transparent ${S - 1}px, #000 ${S - 1}px ${2 * S}px, transparent ${2 * S}px)`); } catch (e) {} }
   function scene(host) {
     const root = document.createElement('div'); root.className = 'dx-scene';
     root.style.cssText = 'position:absolute;inset:0;z-index:60;overflow:hidden;pointer-events:auto';
@@ -174,7 +177,7 @@
     const ds = top.parentNode, bgF = document.createElement('div'); bgF.className = 'mgf-bg'; bgF.style.cssText = `position:absolute;inset:-6%;z-index:0;pointer-events:none;background:url(${c.bg.url}) ${-(256 * Hd * 1.12 / 150 - Wd * 1.12) / 2}px 0/${512 * Hd * 1.12 / 150}px ${192 * Hd * 1.12 / 150}px no-repeat;image-rendering:pixelated;filter:blur(3px) brightness(.55) saturate(1.2);opacity:0`; ds.insertBefore(bgF, ds.firstChild);
     const MK = 'linear-gradient(to bottom,transparent,#000 14%,#000 84%,transparent),linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)';   // 키운 위 화면 가장자리가 뒤 배경판에 스며들게
     top.style.webkitMaskImage = top.style.maskImage = MK; top.style.webkitMaskComposite = 'source-in'; top.style.maskComposite = 'intersect';
-    bt.appendChild(root);
+    bt.appendChild(root); topMirror(root, c.top);
     const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
     // 경완 2026-11-12 '메가진화 할 때 진동 좀 더 빡세게': 진동은 늘 가장 센 단계(2)로, 단계가 클수록 여러 번 연달아 + 화면이 흔들리는 동안 계속 우르르
     const hz = () => { try { window.GA?.haptic?.(2); } catch (e) {} };
@@ -394,7 +397,7 @@
     const ttl = mk(`left:0;right:0;top:${Hd * .5 - fs * .62}px;text-align:center;font:900 ${fs}px/1.2 ${FONT};letter-spacing:.02em;white-space:nowrap;color:#fff;-webkit-text-stroke:${fs * .07}px ${TYD};paint-order:stroke fill;text-shadow:0 ${fs * .06}px 0 ${TYD},0 0 ${fs * .4}px ${rgba(tO, 1)},0 0 ${fs * .15}px ${GOLD};opacity:0`); ttl.textContent = nm;
     const shine = mk(`left:0;right:0;top:${Hd * .5 - fs * .62}px;height:${fs * 1.24}px;background:linear-gradient(100deg,rgba(255,255,255,0) 40%,rgba(255,255,255,.85) 50%,rgba(255,255,255,0) 60%);mix-blend-mode:overlay;opacity:0`);
     const flash = mk('inset:0;background:#fff;opacity:0');
-    bt.appendChild(root);
+    bt.appendChild(root); topMirror(root, c.top);
     // ── 시간표 ──
     const zStop = zBgm(7300); const zse = (n, v = 100) => { try { window.GymEss?.snd?.(n, v, 100); } catch (e) {} };   /* 팩 Z파워 효과음 PRSFX- ZPower1~3 (ess se 730~732) */
     at(3650, () => zse('730', 90)); at(4250, () => zse('731', 100)); at(5550, () => zse('732', 80));

@@ -800,11 +800,13 @@ const LEG_TOP = 3000;
 const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !tutSeen('arc') && !!GA.arcScene && !GA.arcGot?.() && !window.gymSimOn; };
 async function arcGo(test) {
   const g = st(); if (busy || !open) return; busy = true; root.classList.add('busy'); const GW = '<span class="gy-who">안내원</span>';
-  try { openTab(null); try { window.GymBGM?.stop(1.2); } catch (e) {}
+  /* v24.54 경완 '쿠구궁 할 때 테두리 빈틈으로 뒷 화면 안 보이게, 효과음도': 흔들 때 화면을 살짝 키워(1.05배) 가장자리가 안 드러나게 + 플래티넘 지진 소리. 아르세우스 연출은 개그 없이 */
+  const quake = (k = 1) => { try { GA.rumble?.(2, 3); window.GymBGM?.se('DP_W089', { gain: .7 + .3 * k }); const a = 4 * k, F = [[0, 0], [-a, a / 2], [a, -a / 2], [-a * .7, -a / 3], [a * .8, a / 2], [-a / 2, a / 3], [a / 2, -a / 4], [0, 0]].map(([x, y], i, A) => ({ translate: `${x}px ${y}px`, scale: i && i < A.length - 1 ? '1.05' : '1' })); root.animate(F, { duration: 1300, easing: 'linear' }); } catch (e) {} };
+  try { openTab(null); try { window.GymBGM?.stop(1.2); window.GymBGM?.sePrep?.(['DP_W089']); } catch (e) {}
     await talk(`<b>${esc(g.nm || '체육관')}</b>의 평판이<br><b>3,000</b>에 닿았다!`);
-    for (let r = 0; r < 2; r++) { dlg(`<b>쿠구구구구…!${r ? '!' : ''}</b>`); try { GA.rumble?.(2, 3); root.animate([{ translate: '0 0' }, { translate: '-4px 2px' }, { translate: '5px -2px' }, { translate: '-3px -1px' }, { translate: '0 0' }], { duration: 260, iterations: 4 }); } catch (e) {} await wait(1250); }
-    await talk(GW + '관, 관장님! 밖이…<br>필드 쪽 하늘이 갈라지고 있어요!');
-    await talk(GW + '어서 가 보세요!<br>저는 여기서 체육관을 지킬게요.<br>…무서워서 그런 건 아니에요!');
+    await wait(500); quake(.8); dlg('<b>쿠구구구구…</b>'); await wait(1900); quake(1.25); dlg('<b>쿠구구구구구…!!</b>'); await wait(1900);
+    await talk(GW + '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!');
+    await talk(GW + '어서 가 보세요.<br>체육관은 제가 지키고 있을게요.');
   } catch (e) { console.error(e); } finally { busy = false; root.classList.remove('busy'); }
   await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0 });
   if (ok && !test && S.gym) { S.gym.arc = 1; GA.save?.(); }
@@ -1336,7 +1338,7 @@ async function challenge(picked) {
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
     const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
-    const fmg = foeMega(c, team, 0, my);   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
+    const fmg = foeMega(c, team, 0, my); const fz = foeZ(c, team, 0, my);   /* v24.51 경완 "메가 쓰는 배틀에선 왜 Z 안 써?": 본가 7세대처럼 한 배틀에 메가 1번·Z 1번 둘 다 (메가스톤 든 포켓몬은 도구가 있어 Z크리스탈 안 받음) */   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
     let res;
@@ -1344,6 +1346,7 @@ async function challenge(picked) {
     try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
+    if (res?.zu && !res.cut && !g.zUse) { g.zUse = 1; g.zN = 0; } if (res && !res.cut && g.zUse && (g.gmax | 0) >= 4) g.zN = (g.zN | 0) + 1;   /* v24.51 도전자 Z기술 판 수 (Z_FOE, 체육관마다) */
     if (res && !res.cut && g.mgUse && (g.gmax | 0) >= 3) g.mgN = (g.mgN | 0) + 1;   // 이 체육관이 이름난 체육관이 된 뒤(메가링도 있음) 직접 싸운 판 수 (도전자 메가진화 MG_FOE, 체육관마다 따로)
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4 class="gy-lock">배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
@@ -4287,6 +4290,15 @@ function mgNeed(my) { const g = st(), B = GB(); if (!my?.length || (g.lstk | 0) 
   return clampN((sb - spTgt(sl)) / 60 + Math.min(.4, (g.stk | 0) * .08), 0, 1); }
 function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c) * mgNeed(my))) return false;
   for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; return true; } } return false; }   // 경완 2026-11-13: 레벨 −2 보정 뺌 (유저가 먼저 메가진화를 써야 도전자도 쓰니 같은 조건)
+/* v24.51 경완 'Z도 메가처럼 처음 Z기술 쓴 이후로 도전자들도 쓰게': 이 체육관에서 내가 처음 Z기술을 쓴 배틀(g.zUse)부터 직접 싸운 도전자 배틀 수(g.zN)로 MG_FOE 와 같은 틀.
+   인기 체육관(gmax 4) 이상 + Z링. 라인업이 셀수록(zNeed, Z크리스탈 지님 = 1) 더 자주. 뒤쪽 포켓몬부터 도구 없고 공격 기술이 있는 포켓몬에게 그 기술 타입 Z크리스탈 */
+const Z_FOE = { wait: 1, ramp: 10, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
+function foeZP(c) { const g = st(); if (!Z_ON || !tutSeen('zRing') || !g?.zUse || (g?.gmax | 0) < 4) return 0; const d = (g.zN | 0) - Z_FOE.wait; if (d < 0) return 0;
+  const M = Z_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / Z_FOE.ramp); }
+function zNeed(my) { const g = st(), B = GB(); if (!my?.length || (g.lstk | 0) >= 2) return 0; if (my.some(P => { const it = (B?.gm?.(P) || g.mon?.[P.id])?.it; return it && B?.ZC_T?.[it]; })) return 1; return mgNeed(my); }
+function foeZ(c, team, force, my) { const B = GB(); if (!B?.ZC_ST || !(force || Math.random() < foeZP(c) * zNeed(my))) return false;
+  for (let i = team.length - 1; i >= 0; i--) { const o = team[i]; if (o.it) continue; const ts = (o.mv || []).map(id => B.mvOf?.(id)).filter(x => x && x[3] !== 2 && x[4] && B.ZC_ST[x[2]]).map(x => x[2]); if (!ts.length) continue;
+    const st0 = SPECIES[o.sp]?.t || [], t = ts.find(x => st0.includes(x)) || ts[0]; o.it = B.ZC_ST[t]; return true; } return false; }
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';
 // 내 포켓몬 중 메가진화할 수 있는 종 (체육관 타입 먼저, 같은 종은 한 번). 레쿠쟈는 화룡점정으로
 function mgCan(luOnly) { const B = GB(), ty = st()?.ty, seen = new Set(), L = [], lu = new Set((st()?.lu || []).flat());   /* 경완 2026-11-13 luOnly: 이 체육관 라인업에 있는 포켓몬만 */

@@ -4482,7 +4482,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob[data-zt].gkbg-zmove .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
 /* 경완 2026-11-14: 위 상태 막대 자리 = 위 화면 맨 위를 거울처럼 비춤 → 배경 들어오는 방향·어두워짐·번쩍·날씨·기술 연출·메가 장면이 같이 바뀜 */
 .bt.mob .bt-top{overflow:visible;clip-path:polygon(0 calc(var(--st,0px) / var(--k,1) * -1),100% calc(var(--st,0px) / var(--k,1) * -1),100% 100%,0 100%)}
-@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선) */
+@supports (-webkit-box-reflect:above){.bt.mob :is(.bt-bg,.bt-dim,.bt-flash,.bt-wx,.bt-essb,.bt-essf,.bt-ptc,.dx-scene){-webkit-box-reflect:above -1px}}   /* 1px 겹쳐 이음매 줄 없앰 (경완 11-14 경계선). v24.56 경완 "화면 전체 덮는 기술 연출이 상단바에 안 비침": 4세대 기술 파티클·배경(bt-ptc)·5세대 이후 앞 칸(bt-essf)도 */
 .bt.mob::before{transition:background-position 1s ease-out}.bt.mob.intro::before{background-position:calc(-256px * var(--k,1.5)) 0}.bt.mob.now::before{transition:none}   /* 거울이 안 되는 브라우저: 막대 배경도 같은 방향으로 */
 /* v23.78 배틀 체력 박스 이름 옆 테라 타입 아이콘 */
 .bt-hb .tera-ic{display:inline-block;width:12px;height:12px;margin:0 0 0 2px;vertical-align:-2px;background:center/contain no-repeat}
@@ -4528,3 +4528,31 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-mon .zaur s{filter:var(--zf)}
 .bt .zaur>.zpt{position:absolute;left:12%;right:12%;top:0;bottom:4%;overflow:visible;pointer-events:none;background:none!important;animation:none!important}
 .bt .zaur>.zpt>i{opacity:0}
+/* v24.21 더블 배틀 (수련탑): 한 쪽 두 자리 — 첫 자리 data-sl=0, 두 번째 data-sl=1 (.s2 는 역할 이름표라 기술 연출 동안 바뀔 수 있음) */
+.bt:not(.dbl) .bt-mw[data-sl="1"],.bt:not(.dbl) .bt-hb.s2{display:none}
+.bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:2px}
+.bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-6px;height:104px}
+.bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}
+.bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:-4px;height:148px}
+.bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
+.bt.dbl .bt-hb.e:not(.s2){left:0;top:-7px}
+.bt.dbl .bt-hb.e.s2{left:0;top:20px}
+.bt.dbl .bt-hb.p.s2{left:160px;top:70px}
+.bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
+.bt .bp-tgt{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;padding:14px 12px calc(14px + var(--pb,0px));box-sizing:border-box;justify-content:center}
+.bt .bp-tgt p{margin:0;text-align:center;font-size:12px;font-weight:700;color:#3a4252}
+.bt .bp-tgt .tg-g{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(44px,64px);gap:8px}
+.bt .bp-tgt .tg-b{height:auto!important;flex-direction:column;gap:2px;--c1:#f4706a;--c2:#d93a3c}
+.bt .bp-tgt .tg-b.p{--c1:#5aa0f0;--c2:#3a6fd0}
+.bt .bp-tgt .tg-b.off{opacity:.35;filter:grayscale(1)}
+.bt .bp-tgt .tg-b small{font-size:9px;opacity:.85}
+.bt .bp-tgt .tg-b span{font-size:13px}
+.bt .bp-tgt .tg-b:active:not(.off){transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 1.5px rgba(0,0,0,.28),0 1px 0 rgba(0,0,0,.18)}
+.bt .bp-tgt .cancel{height:36px!important}
+.bt .bp-tgt .bb{position:relative;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;margin:0}.bt .bp-tgt .tg-g .bb{height:100%!important}
+
+/* v24.55 경완 '몬스터볼 그래픽 본가 기준': 플래티넘 던지는 볼 그림 (gym/img/ball/*.png, 32칸 10장) */
+.bt-fx .ball.pb{left:-16px;top:-16px;width:32px;height:32px;border-radius:0;box-shadow:none;background:var(--bi) 0 0/320px 32px no-repeat;image-rendering:pixelated}
+.bt-fx .ball.pb.spin{animation:pbSpin .4s step-end infinite}
+.bt-fx .ball.pb.open{background-position-x:-288px}.bt-fx .ball.pb.f0{background-position-x:0}
+@keyframes pbSpin{0%{background-position-x:0}8.33%{background-position-x:-32px}16.67%{background-position-x:-64px}41.67%{background-position-x:-96px}50%{background-position-x:-128px}58.33%{background-position-x:-160px}66.67%{background-position-x:-192px}91.67%{background-position-x:-224px}}

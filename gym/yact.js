@@ -27,7 +27,8 @@ const STAGES = [{ n: 5, lv: -2 }, { n: 6, lv: -2 }, { n: 8, lv: -1 }, { n: 3, lv
 const MOB_MAX = w => Math.min(10, 5 + Math.floor(w / 2)), BOSS_BGM = { 4: 'gymBattle', 7: 'tenno', 9: 'boss' };   /* 대장 스테이지마다 다른 곡 (관장 → 사천왕 → 전설 → 마지막은 디아루가·펄기아 곡) */
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
-const CV = [0, 1, 3, 10], CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
+const CV = [0, 1, 3, 10], GM = [2, 2, 2.5, 3, 3, 3.5, 4.5, 5.5, 6.5, 7], cval = (cv, w) => Math.round(CV[cv] * (GM[w - 1] || 2)),   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
+  CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
 const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
 /* 경완 2026-11-14: 아이템 = 본가 도구 그림(자석·연막탄·자뭉열매·플러스파워) + 테두리 빛만 */
@@ -676,8 +677,9 @@ function stageClear() {   // 스테이지를 깨면 HP 8% 회복
 // ---------- 필드 아이템 (경완 '중간중간 자석·폭탄 등 아이템이 필드에 나와서 먹으면 발동') ----------
 function itemSpawn() {
   const G = R.G, A = R.A, me = G.me; let x, y, n = 0; do { x = A.x0 + 30 + Math.random() * (A.x1 - A.x0 - 60); y = A.y0 + 40 + Math.random() * (A.y1 - A.y0 - 80); } while (++n < 30 && (inPond(x, y, 16) || Math.hypot(x - me.x, y - me.y) < 90));
-  const L = ['magnet', 'bomb', 'power', 'berry']; if (me.hp / me.mhp < .5) L.push('berry', 'berry'); if (G.mobs.filter(o => o.hp > 0).length >= 4) L.push('bomb');
-  G.items.push({ k: L[Math.floor(Math.random() * L.length)], x, y, t0: R.T }); ring(x, y, '#fff', 30, 6, .3, 3); snd('DUN_Wonder_Tile', .025); se('KON', .2, { gain: 1.4 });
+  if (!G.itBag?.length) { G.itBag = ['magnet', 'bomb', 'power', 'berry'].sort(() => Math.random() - .5); if (!G.itN) { G.itBag = G.itBag.filter(k => k !== 'bomb'); G.itBag.splice(2, 0, 'bomb'); } } G.itN = (G.itN || 0) + 1;   /* 경완 '맹독구슬 안 나오는데?': 무작위라 한 판 내내 안 나올 수 있었다 → 네 가지가 한 번씩 돌아가며, 첫 바퀴는 두 번째가 폭탄 */
+  let k = G.itBag.pop(); if (me.hp / me.mhp < .35 && k !== 'berry' && Math.random() < .5) { G.itBag.push(k); k = 'berry'; }
+  G.items.push({ k, x, y, t0: R.T }); ring(x, y, '#fff', 30, 6, .3, 3); snd('DUN_Wonder_Tile', .025); se('KON', .2, { gain: 1.4 });
 }
 function itemUse(it) {
   const G = R.G, me = G.me, I = ITEMS[it.k]; stars(it.x, it.y - 12, 8, '#fff', 200); ring(me.x, me.y, I.c, 8, 70, .35, 6); buzz(1); snd('DUN_Wonder_Tile', .06); se('PIRORIRO', .1, { gain: .6 });
@@ -962,7 +964,7 @@ function ko(o, ux, uy) {
     fxOnce(PX()?.s.Smoke_White ? 'Smoke_White' : 'Wood_Hammer_Smoke', 2, 0, x, yy - 14, 1, { s: o.boss ? 1.3 : .9 }); stars(x, yy - 16, o.boss ? 14 : 6, '#fff', o.boss ? 300 : 200); dust(x, yy, o.boss ? 12 : 5, 120); ring(x, yy, '#fff', 6, o.boss ? 90 : 44, .3, 5);
     if (o.boss) { shake(.5); rumble(2, 80, 1); } else buzz(0); snd('DUN_Rock_Smash', o.boss ? .07 : .035);
     if (ex) pop(x, yy - 34, `+${ex} 경험치`, '#bfe6ff'); if (evUp > 0) pop(x, yy - 54, `${STAT_KO[G.stat]} 노력치 +${evUp}`, '#d6b4ff', true);
-    coins.forEach(cv => { const a = Math.random() * 6.28, v = coins.length > 1 ? 50 + Math.random() * 80 : 15 + Math.random() * 35; G.drops.push({ coin: cv, x, y: yy - 4, t0: R.T, vy: -170 - Math.random() * 90, z: 12, vx: Math.cos(a) * v, gy: Math.sin(a) * v * .6 }); });
+    coins.forEach(cv => { const a = Math.random() * 6.28, v = coins.length > 1 ? 50 + Math.random() * 80 : 15 + Math.random() * 35; G.drops.push({ coin: cv, val: cval(cv, G.wave), x, y: yy - 4, t0: R.T, vy: -170 - Math.random() * 90, z: 12, vx: Math.cos(a) * v, gy: Math.sin(a) * v * .6 }); });
     for (let i = 0; i < (o.boss ? 8 : 3); i++) fly('xp', x, yy - 14, () => ({ x: me.x, y: me.y - 22 }), null, '#8fd0ff');
     if (shard) G.drops.push({ sh: shard, x, y: yy - 4, t0: R.T, vy: -150, z: 10, vx: (Math.random() - .5) * 60 });
     hud(); });
@@ -1115,7 +1117,7 @@ function hitMe(o, t, c, pw, vx, vy) {
   if (me.hp <= 0) { G.fainted = true; me.dead = R.T; setAnim(me, anyAnim(me, 'Faint', 'Hurt'), true); slow(.7, .3); rumble(3, 90); flash(.2, '255,120,100'); }
 }
 function gotCoin(p) {
-  const G = R.G, cv = p.coin, v = CV[cv]; G.gold += v; snd('DUN_Money', cv > 1 ? .12 : .09); se('REGI', .09, { gain: cv > 2 ? 1.5 : cv > 1 ? 1.2 : 1 });   /* 경완 '골드 먹는 효과음 없음': 0.1초짜리 작은 소리라 안 들렸다 → 본가 계산대 소리 + PMD 동전 소리 크게 */ buzz(cv > 2 ? 1 : 0); stars(p.x, p.y - 10, cv > 1 ? 6 : 3, CPAL[cv][1], cv > 1 ? 160 : 110);
+  const G = R.G, cv = p.coin, v = p.val || CV[cv]; G.gold += v; snd('DUN_Money', cv > 1 ? .12 : .09); se('REGI', .09, { gain: cv > 2 ? 1.5 : cv > 1 ? 1.2 : 1 });   /* 경완 '골드 먹는 효과음 없음': 0.1초짜리 작은 소리라 안 들렸다 → 본가 계산대 소리 + PMD 동전 소리 크게 */ buzz(cv > 2 ? 1 : 0); stars(p.x, p.y - 10, cv > 1 ? 6 : 3, CPAL[cv][1], cv > 1 ? 160 : 110);
   if (cv > 1) pop(p.x, p.y - 26, `+${v}G`, cv > 2 ? '#ffe27a' : '#e4ecf8', cv > 2);
   fly('coin', p.x, p.y - 12, hudPt('.mg-hg .coin'), () => { if (R?.G !== G) return; G.goldShown = Math.min(G.gold, G.goldShown + v); hgUp(); }); R.PT[R.PT.length - 1].cv = cv;
 }
@@ -1166,7 +1168,7 @@ function meBar(me) { const g = R.g, G = R.G, RT = R.RT, w = 46, x = Math.round(m
   // 체력 밑 게이지 = 기술 남은 시간 (경완 2026-11-14 '빈 게이지를 기술 남은 시간 게이지로'): 꾹 누르는 기술은 버틸 수 있는 시간, 아니면 걸어 둔 효과가 남은 시간. 보여 줄 게 없으면 안 그림
   let yy = y + 10; const H = me.hide, C = me.ch, D = me.dash?.hold != null ? me.dash : null, ef = [[me.buff, BUFF_T, '#bff59a'], [me.shrink, 8, '#ffd0f0'], [me.clone, 8, '#c8c8ff'], [me.haste, 8, '#9fe4ff'], [me.guard, 8, '#8cc8ff'], [me.prot, 2.5, '#7af0a0']].filter(e => e[0] > 0);
   const hold = H ? [H.max - H.t, H.max, H.col] : C ? [C.max - C.t, C.max, C.col] : D ? [D.max - D.el, D.max, TYPE_C[D.v?.t]] : null, main = hold || ef.shift();
-  if (main) { const q = Math.max(0, Math.min(1, main[0] / main[1])), h = 5, low = hold && q < .25 && Math.floor(RT * 14) % 2; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#4a4a5a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = low ? '#fff' : (main[2] || '#ffe27a'); g.fillRect(x, yy + 1, Math.round(w * q), h); g.fillStyle = 'rgba(255,255,255,.4)'; g.fillRect(x, yy + 1, Math.round(w * q), 1); yy += h + 4; }
+  if (main) { const yy = y - 11, q = Math.max(0, Math.min(1, main[0] / main[1])), h = 5, low = hold && q < .25 && Math.floor(RT * 14) % 2; g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, h + 3); g.fillStyle = '#4a4a5a'; g.fillRect(x, yy + 1, w, h); g.fillStyle = low ? '#fff' : (main[2] || '#ffe27a'); g.fillRect(x, yy + 1, Math.round(w * q), h); g.fillStyle = 'rgba(255,255,255,.4)'; g.fillRect(x, yy + 1, Math.round(w * q), 1); }
   for (const [v, mx, c] of ef) { g.fillStyle = '#20202c'; g.fillRect(x - 2, yy - 1, w + 4, 5); g.fillStyle = c; g.fillRect(x, yy + 1, Math.round(w * v / mx), 2); yy += 5; } }
 function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx = e.flash > 0 ? Math.sin(R.RT * 90) * 2 : 0, x = Math.round(e.x - w / 2 + jx), y = Math.round(e.y + 6);
   g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, h + 2); g.fillStyle = '#4a4a5a'; g.fillRect(x, y, w, h); const r = Math.max(0, e.hp / e.mhp), rl = Math.max(0, (e.hpLag ?? e.hp) / e.mhp);
@@ -1241,7 +1243,7 @@ function drawCh(me) { const g = R.g, c = me.ch, T = R.T, K = c.K, dx = Math.cos(
     g.globalAlpha = .9 * end; g.fillStyle = '#fff'; const tr = (10 + Math.sin(RT * 40) * 3) * (c.amp ? 1.6 : 1); g.fillRect(len - tr / 2, -tr, tr, tr * 2); g.fillRect(len - tr, -tr / 2, tr * 2, tr); g.fillStyle = c.col; g.globalAlpha = .6 * end; g.fillRect(-8, -12, 14, 24);
     g.restore(); g.globalAlpha = 1;
     const E = (c.v.Rr?.e || []).filter(e => e[0] === 'stream'); for (const [, kk, ft] of E) { const n = PX().s[kk]?.[2] || 1; for (let d = 26 + ((T * 300) % 34); d < len - 6; d += 34) pfxDraw(kk, ((T * 60 / ft) + d / 9) % n, x0 + dx * d, y0 + dy * d, c.f, { rot: c.f > 0 ? c.ang : c.ang - Math.PI, a: end }); } }
-  const w = 30, p = Math.max(0, 1 - c.t / c.max), x = Math.round(me.x - w / 2), y = Math.round(me.y - 72 - (GA.lift?.(me.sp) || 0)); g.fillStyle = '#20202c'; g.fillRect(x - 1, y - 1, w + 2, 5); g.fillStyle = c.col; g.fillRect(x, y, Math.ceil(w * p), 3); }
+}
 function orb(x, y, c, r) { const g = R.g; g.fillStyle = 'rgba(255,255,255,.25)'; g.beginPath(); g.arc(x, y, r + 4, 0, 7); g.fill(); g.fillStyle = c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); g.fillStyle = 'rgba(255,255,255,.8)'; g.beginPath(); g.arc(x - 2, y - 2, r * .4, 0, 7); g.fill(); g.strokeStyle = '#20202c'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, r + 1, 0, 7); g.stroke(); }
 function loop(ms) {
   if (!R) return; const now = ms / 1000, rdt = Math.min(.05, R.last ? now - R.last : 0); R.last = now; R.RT += rdt;
@@ -1311,7 +1313,7 @@ function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>$
 // ---------- 끝: 보상은 계산해서 보여 주기만 (저장 안 함) ----------
 function end(clear, faint, quit) {
   const G = R.G; if (G.over) return; G.over = true; bgm(clear ? 'winWild' : null); chEnd(); dashEnd(); hideEnd(); R.run = false; R.JOY.dx = R.JOY.dy = 0; R.HELD = {}; R.BUF = null; R.el.classList.remove('play'); R.q('.ya-cb').classList.remove('on');
-  const bonus = 0; const picked = G.gold + (clear ? G.drops.reduce((a, p) => a + (p.coin ? CV[p.coin] : 0), 0) : 0); G.items = []; G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
+  const bonus = 0; const picked = G.gold + (clear ? G.drops.reduce((a, p) => a + (p.coin ? (p.val || CV[p.coin]) : 0), 0) : 0); G.items = []; G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
   const fr = (clear ? 2 : G.wave >= 4 ? 1 : 0) + (G.fainted ? 0 : 1), B = GB(), P = G.o.P, gr = B.growth(P.sp), lv0 = G.M.lv, x1 = G.M.xp + G.exp; let lv1 = lv0;
   while (lv1 < B.LV_MAX && x1 >= B.xpAt(gr, lv1 + 1)) lv1++;
   const a = B.xpAt(gr, lv1), b = B.xpAt(gr, lv1 + 1), prog = lv1 >= B.LV_MAX ? 1 : Math.max(0, Math.min(1, (x1 - a) / (b - a || 1))), nm = nmOf(P), eg = G.M.eg;
