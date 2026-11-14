@@ -1969,7 +1969,7 @@ async function badgeGet(ty) {
   if (st()?.legN && open) await legEggPop();   // v19.18 경완: 전설은 승급 순간 바로 강박사 연출 → 끝나고 승급창·보상창
   return new Promise(ok => { const p = pop(`<div class="pp-hd"><i class="bsa-ray"></i><i class="pp-halo"></i><div class="bsa-bd">${bdHtml(ty, gi + 1)}</div></div>
       <h4 class="pp-t"><small>체육관 등급이 올랐어요!</small>${GRADES[gi][1]}</h4><div class="pp-ben"><h5>등급 혜택</h5>${perkHtml(gi, 1)}</div>
-      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); rwPop().then(legEggPop).then(() => { if (!window.gymSimOn) return promoTut(gi); }).then(ok); });
+      <div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); rwPop().then(legEggPop).then(() => { if (window.gymSimOn) return; if (!busy) return promoTut(gi); (async () => { for (let i = 0; busy && i < 1800; i++) await wait(100); if (open && !busy) promoTut(gi); })(); }).then(ok); });   /* v25.02 경완 '승급 완료 되고 체육관 넓히기 눌러도 아무 일도': 도전자(승급 심사) 배틀 안에서 승급하면 busy 인 채로 메가 튜토리얼이 60초 기다리느라 그동안 아무것도 안 눌렸음 → 배틀이 끝나 손이 풀린 뒤에 튜토리얼 */
     p.classList.add('pp-pop'); });
 }
 async function promoFx(gi) {
@@ -3753,20 +3753,26 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
       if (k === 'w') return { won: true }; if (k === 'l') return { won: false }; }
     let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
     if (!my.length) return { won: true, none: 1 };
-    const team = o.team.map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
+    const team = evLvBand(o.team).map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
     try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', noRun: true, meBackUrl: await fitSrc('trb') }); }   // 이벤트 배틀은 기권 못 함 (경완 2026-11-08)
     finally { document.body.classList.remove('gymBattle'); }
     if (res?.won && o.g && !window.gymEvTest) addG(o.g, 'event');
     return res || {}; } };
 /* 실제 발동 (경완 2026-11-07 '유저별로 반복 X, 특정 층마다'): 이벤트마다 정해진 체육관 등급(g.gmax)에 처음 닿은 뒤 들어올 때 한 번.
    승급 축하·배지 창이 남아 있으면 그게 먼저 (다음 입장 때 시작). 점거 중(g.ev.cur)엔 도전자·주급·면접·훈련장 시계가 멈추고, 끝나면 그만큼 민다 */
-function evDue() { const g = st(); if (!g?.d || tutEnd) return null; return GA.evDue?.(g) || null; }   // 켜기·평판 문턱·다음 실행부터 = beta.html gymEvDue (필드 체육관 아이콘 R 딱지와 같은 조건)
+function evDue() { const g = st(); if (!g?.d || tutEnd || promoPend()) return null; return GA.evDue?.(g) || null; }
+/* v25.02 경완 '로켓단 이벤트 안 보고 쭉 이름난 승급까지 하면 승급 완료 되고 체육관 넓히기 눌러도 아무 일도 일어나지 않는 오류 … 승급 완료 > 강박사 메가진화 튜토리얼까지 완료되고 나중에 체육관 나갔다 들어왔을 때 로켓단 이벤트 발동되게': 승급 튜토리얼(강박사 방문·메가·Z)이 남았으면 이벤트보다 튜토리얼 먼저 (들어올 때 따라잡기 promoTut 와 같은 조건) */
+function promoPend() { const g = st(); if (!g?.d) return false; const gm = g.gmax | 0; try { return (PROMO_ON && ((gm >= 1 && !tutSeen('trTut')) || (gm >= 2 && !tutSeen('evTB') && !!GB()?.evOn?.()))) || (MEGA_ON && gm >= 3 && !tutSeen('mgTut')) || (Z_ON && gm >= 4 && tutSeen('mgTut') && !tutSeen('zTut')); } catch (e) { return false; } }   // 켜기·평판 문턱·다음 실행부터 = beta.html gymEvDue (필드 체육관 아이콘 R 딱지와 같은 조건)
 function evDone(id) { const g = st(), now = Date.now(); if (window.gymEvTest) return; const dt = Math.max(0, now - (g.ev?.t0 || now)); delete g.ev; g.evd = g.evd || {}; g.evd[id] = now; g.evAft = { id, n: 3 };
   g.day = 0; g.sch = []; g.pull = 0; g.q = (g.q || []).filter(c => c.named && !c.boss);
   (g.sf || []).forEach(x => { if (x.pay) x.pay += dt; if (x.gt) x.gt += dt; }); (g.cands || []).forEach(c => { c.exp += dt; c.t += dt; }); if (g.candN) g.candN += dt; (g.tr || []).forEach(e => { if (e.t) e.t = now; });
   g.vis = now; glog('in', `로켓단을 물리치고 <b>${esc(g.nm)}</b>${jong(g.nm) ? '을' : '를'} 되찾았다!`, now); tick(now); setAt(now); save(); }
+/* v25.02 경완 '로켓단 이벤트 1 평판 180에 발동되는거니까 이때 나오는 로켓단 라인업도 해당 평판 천장 바닥 맞춰서': 이벤트 배틀 상대 팀을 그 이벤트 평판(GA.evRep)이 든 등급의 LV_FLOOR~LV_CEIL 안으로 (lvCeil 처럼 팀 전체를 같이 밀어 올림·내림) */
+let evLvId = null;
+function evLvBand(T) { const r = evLvId && GA.evRep?.[evLvId]; if (r == null || !T?.length) return T; const gi = gradeOf(r, 99).i, cap = LV_CEIL[gi], fl = LV_FLOOR[gi] | 0, hi = Math.max(...T.map(m => m[1] | 0));
+  const d = hi > cap ? cap - hi : fl > 0 && hi < fl ? fl - hi : 0; return d ? T.map(m => [m[0], clampN((m[1] | 0) + d, 2, 100), ...m.slice(2)]) : T; }
 async function evGo(id0) {
-  const test = !!window.gymEvTest, id = test ? window.gymEvTest : id0; busy = true; root.classList.add('pre'); let r = null;
+  const test = !!window.gymEvTest, id = test ? window.gymEvTest : id0; evLvId = id; busy = true; root.classList.add('pre'); let r = null;
   const snap = test ? JSON.stringify(S.gym) : null, boxSnap = test ? JSON.stringify(S.box) : null;   // v19.61: 이벤트 안 라인업 화면에서 기술·도구를 바꿀 수 있어 포켓몬 상자도 떠 둠 if (test && S.gym) S.gym.ev = { cur: id, ch: 0, t0: Date.now(), test: 1 };   // test: 시험 도중 앱이 꺼져도 다음에 진짜 점거로 이어지지 않게   // 운영자 시험은 본 계정에 아무것도 안 남긴다: 시작 전 체육관 저장을 통째로 떠 뒀다가 끝나면 되돌림 (경완 2026-11-07)
   try { await loadJs('gymb/ev.js', 'GymEv'); r = await window.GymEv?.run(EV_API, id, test ? (window.gymEvCh | 0) : null); if (!open) return;
     if (r === 'wip') await kang(['이 이벤트의 다음 장은 아직 만드는 중이에요.\n(운영자 시험이라 체육관은 그대로예요)'], { lit: true, nm: '안내원', pic: owSrc(GUY_OW), ow: 1, skip: false });
@@ -4891,7 +4897,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf, warmImgs, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
+  k: { promoPend, trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf, warmImgs, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
