@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -620,6 +617,19 @@ const CLS = {
   young_couple: { ow: 'lady', f: 1, t: [1, 18, 12] },
   worker: { ow: 'worker', f: 0, t: [9, 6, 5, 2] },
 };
+/* v24.98 경완 '더블 배틀 할 때는 도전자 npc 두명 들어와야 할 것 같고 겹치지 않게 들어와서 서야할듯. 대사도 한명씩' (베타):
+   둘이 오는 트레이너(쌍둥이·남매·젊은 부부)는 두 사람이 나란히 들어와 2대2. ow2 = 두 번째 사람 그림, f2 = 두 번째 사람 성별(이름), b = 두 번째 사람 첫마디, y = 나갈 때 두 번째 사람 한마디 [도전자가 졌을 때, 이겼을 때] */
+const PAIR = {
+  twins: { ow2: 'twin', f2: 1, b: ['저도요! 저도 같이 싸울 거예요!', '둘이 같이 하면 두 배로 세요!', '언니, 이번엔 내가 먼저 할래!'], y: [['다음엔 둘이서 더 맞춰 올게요!', '언니, 집에 가서 작전 다시 짜자…'], ['역시 우리 둘이 최고야!', '쌍둥이 텔레파시 대성공!']] },
+  sis_bro: { ow2: 'swimmer_m_land', f2: 0, b: ['누나, 내가 도와줄게!', '우리 남매 호흡 한번 보세요!', '누나랑 맞춰 온 작전이 있어요!'], y: [['누나, 다음엔 더 잘할게…', '남매 특훈 다시 해야겠다!'], ['누나, 우리 해냈어!', '남매 콤비 최고!']] },
+  young_couple: { ow2: 'gentleman', f2: 0, b: ['(남편) 여보, 내가 지켜 줄게!', '(남편) 둘이라면 문제없지!', '(남편) 우리 호흡 보여 드립시다!'], y: [['(남편) 여보, 다음엔 꼭 이기자.', '(남편) 그래도 즐거운 데이트였어.'], ['(남편) 여보, 우리 대단하다!', '(남편) 오늘 데이트 대성공이야!']] },
+};
+const pairOf = c => !c.boss && !c.named && PAIR[c.tr] && (c.team || []).length >= 2 ? PAIR[c.tr] : null;
+// 두 번째 사람이 설 칸: 첫 사람이 관장 앞이면 그 옆(왼·오), 관장 옆이면 그 아래. 소품·사람 칸은 건너뜀
+function pairSpot(D, e1, tx, ty, cf) { const L = D.leader, fr = (x, y) => (!D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y))) && !(x === L[0] && y === L[1]);
+  const occ = occOf([e1]), C = cf === 'u' ? [[tx - 1, ty, 'u'], [tx + 1, ty, 'u'], [tx, ty + 1, 'u']] : [[tx, ty + 1, 'u'], [tx, ty - 1, cf]];
+  for (const [thru, O] of [[0, [...occ, [tx, ty]]], [1, occ], [0, [[tx, ty]]], [1, []]]) for (const [x, y, f] of C) { if (!fr(x, y) || occ.some(q => q[0] === x && q[1] === y)) continue; const P = route(D, D.door, [x, y], O); if (P?.length) return { path: P, f, first: thru };   /* chalRoute 처럼 사람에 막히면 사람은 무시하고라도 */   /* first: 첫 사람 자리를 지나야만 갈 수 있으면 두 번째 사람이 먼저 들어가 옆에 서고 첫 사람이 뒤따라 (겹치지 않게) */ }
+  return null; }
 const N3 = new Set();   // v17.47 경완 '마티스가 걷는 모션이 없네': 3칸뿐이던 관장·사천왕 21명 그림에 걸음 6칸을 만들어 9칸으로 (tools/gym/owwalk.py, 다리 4줄 들기·보폭). 이제 3칸 그림 없음
 const CHAL_LINES = [
   ['관장님! 저랑 배틀해 주세요!', '오늘은 꼭 배지를 받아 갈 거예요!', '제 포켓몬도 많이 컸어요. 봐 주세요!', '떨리지만… 승부예요!'],
@@ -1325,29 +1335,38 @@ async function challenge(picked) {
     const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.88 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
     try { window.GymBGM?.prep(bm); if (c.named) { const ey = ((!c.boss || c.named === 'red') && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
-    const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) });
-    dlg(`${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
-    const CR = chalRoute(D, [e]); await walk(e, CR.path); e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
+    const PR = pairOf(c); if (PR && !c.nm2) { const NS = (PR.f2 ? GB()?.NAMES_F : GB()?.NAMES_M) || ['미아']; c.nm2 = pick(NS.filter(n => n !== c.nm)) || NS[0]; }
+    const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) }); let e2 = null;
+    dlg(PR ? `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '과' : '와'} <b>${esc(c.nm2)}</b>${jong(c.nm2) ? '이' : '가'} 들어온다!` : `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
+    const CR = chalRoute(D, [e]);
+    if (PR) { const dst = CR.path[CR.path.length - 1] || D.door, SP = pairSpot(D, e, dst[0], dst[1], CR.cf);   /* 두 번째 사람은 두 칸 뒤에서 따라 들어와 옆 칸에 선다 (같은 칸에 겹치지 않게) */
+      if (SP?.first) { e.el.style.visibility = 'hidden'; e2 = ent({ ow: PR.ow2, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(PR.ow2) }); await Promise.all([walk(e2, SP.path).then(() => { e2.f = SP.f; place(e2); }), (async () => { await wait(560); e.el.style.visibility = ''; await walk(e, CR.path); })()]); }
+      else await Promise.all([walk(e, CR.path), SP ? (async () => { await wait(560); e2 = ent({ ow: PR.ow2, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(PR.ow2) }); await walk(e2, SP.path); e2.f = SP.f; place(e2); })() : null]); }
+    else await walk(e, CR.path);
+    e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
+    const goOut = async () => { await Promise.all([walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()), e2 ? (async () => { await wait(520); await walk(e2, outRoute(D, e2) || D.path.slice(0, -1).reverse()); })() : null]); await wait(250); doorSe(); await wait(120); e.el.remove(); e2?.el.remove(); ents = ents.filter(x => x !== e && x !== e2); };   /* 둘이면 한 명씩 차례로 나감 */
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     const RF = c.boss && c.named !== 'red' ? (g.bsF?.[c.boss] | 0) : 0, RS = RF ? RE_SAY[Math.min(RF, RE_SAY.length) - 1] : null;   /* v24.63 경완 '승급 재심사 받을 때 전용 대사': 그 등급 심사에서 진 횟수(g.bsF)에 따라 */
     if (c.boss) await talk(RF ? `<span class="gy-who">승급 재심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 다시 심사하러 왔다!<br><small>${RF + 1}번째 도전</small>` : `<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
     const L = RS ? RS.i.map(t => t.replace('{me}', me)) : [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
-    for (const t of L.slice(0, -1)) await talk(who + esc(t));
-    do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
+    const who2 = PR ? `<span class="gy-who">${esc(c.cls)} ${esc(c.nm2)}</span>` : who; if (PR) L.splice(1, 0, pick(PR.b));   /* 둘이 오면 한 명씩 번갈아 말함 */
+    const whoAt = i => PR && i % 2 ? who2 : who;
+    for (let i = 0; i < L.length - 1; i++) await talk(whoAt(i) + esc(L[i]));
+    do await talk(whoAt(L.length - 1) + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my); const fz = foeZ(c, team, 0, my);   /* v24.51 경완 "메가 쓰는 배틀에선 왜 Z 안 써?": 본가 7세대처럼 한 배틀에 메가 1번·Z 1번 둘 다 (메가스톤 든 포켓몬은 도구가 있어 Z크리스탈 안 받음) */   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, foe: { tr: c.tr, cls: c.cls, nm: PR ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res?.zu && !res.cut && !g.zUse) { g.zUse = 1; g.zN = 0; } if (res && !res.cut && g.zUse && (g.gmax | 0) >= 4) g.zN = (g.zN | 0) + 1;   /* v24.51 도전자 Z기술 판 수 (Z_FOE, 체육관마다) */
@@ -1355,7 +1374,7 @@ async function challenge(picked) {
     if (res?.cut) {   /* 오류로 멈춘 배틀: 승패·평판·연승 그대로, 도전자는 명단에 남아 다시 도전 (경완 2026-11-04) */
       await new Promise(ok => { const p = pop(`<h4 class="gy-lock">배틀 중 오류가 났어요</h4><p class="gy-msg" style="text-align:center">오류 내용은 자동으로 보내졌어요.<br>곧 고쳐서 업데이트할게요.<br><small>이번 배틀은 없던 걸로 해서 평판·연승은 그대로예요.</small></p><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }); const par = p.parentElement, o = new MutationObserver(() => { if (!p.isConnected) { o.disconnect(); ok(); } }); if (par) o.observe(par, { childList: true }); });   /* 오류 창 (경완 2026-11-04) */
       root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc('어라, 배틀이 중간에 멈춰 버렸네요. 다음에 다시 붙어요!'));
-      dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e); return;
+      dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut(); return;
     }
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
@@ -1374,11 +1393,11 @@ async function challenge(picked) {
     for (const u of res?.eg || []) try { await window.GymManage?.egGainPop?.(u); } catch (er) { console.error(er); }   // v20.85 경완: 번뜩였으면 기록창 뒤 특별한 기술 카드에서 게이지가 오르는 걸
     if (g.stk && (bsReady(g) || (c.boss && won))) { g.stk = 0; save(); renderTop(); }   /* v15.42 경완: 연승은 등급 안에서만. 결과창 뒤 승급 심사가 열리면(또는 심사 통과) 연승 끊김 */
     // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
-    { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (RS ? (won ? RS.w : RS.l).replace('{me}', me) : won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
+    { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (RS ? (won ? RS.w : RS.l).replace('{me}', me) : won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); if (PR && !res?.quit) await talk(who2 + esc(pick(PR.y[won ? 0 : 1]))); }
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
-    dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
+    dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut();
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
   finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); if (open && arcDue()) setTimeout(() => arcGo(), 500); if (fbNext && open) { const L = fbNext; fbNext = null; setTimeout(() => tutTalk(L), 300); } }
 }
