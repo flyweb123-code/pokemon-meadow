@@ -3891,7 +3891,7 @@ const MEGA_T = [[6, 'charizarditex', ['flareblitz', 'dragonclaw', 'earthquake', 
 const TR_BGM = ['wild', 'train', 'rival', 'hgRival', 'emRival', 'hgGymK', 'gymBattle', 'hgGymJ', 'emGym', 'tenno', 'emTenno', 'hgChamp', 'champ', 'emChamp'];   /* v24.14 10층마다 바뀌는 곡 (우두머리 층은 우두머리 곡) */
 /* v24.21 경완 '층 올라가면 더블 배틀 빈도 높아지게': 10층 10% → 층마다 +2% → 35층부터 60% (우두머리·색 다른 포켓몬 층은 싱글) */
 const trDblP = f => f < 10 ? 0 : Math.min(.6, .1 + (f - 10) * .02);
-const TR = { xp: .3, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 40, myst: .1 };
+const TR = { xp: 1 /* v24.82 경완 '체육관 배틀할 때 레벨 오르는 속도랑 비슷하게': 체육관 등급별 경험치 배율 xpM() × 이 값 (예전 고정 .3) */, lvUp: 12 /* 100층 뒤 12층마다 +1 더 (4층마다 +1 과 합쳐 3층마다, 포켓로그처럼 뒤가 가팔라짐) */, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 40, myst: .1 };
 const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
   [40, [398, 405, 407, 424, 429, 430, 450, 452, 454, 457, 460, 461, 462, 464, 466, 467, 469, 470, 471, 473, 475, 477, 478, 3, 6, 9, 59, 62, 65, 68, 76, 94, 112, 121, 130, 131, 134, 135, 136, 142, 143, 196, 197, 212, 229, 232, 248, 282, 306, 330, 334, 350, 365, 373, 376]]];
@@ -4124,10 +4124,10 @@ async function trainTest() {
       if (R.roll) { trDrop(R.ids); R = trNew(trRollLu()); }   /* 시험: 랜덤 라인업으로 1층부터 */
       const ids = R.ids, f = R.floor, amb = R.amb && f % 10 !== 0, boss = f % 10 === 0 || !!amb, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
       const my = [R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)).map(GB().boxOf);
-      R.amb = 0; const myT = f < 20 && !big ? trMyTy(ids) : null, lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + trLvOff(f) + (boss ? (big ? 5 : amb ? 2 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big, myT), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
+      R.amb = 0; const myT = f < 20 && !big ? trMyTy(ids) : null, lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + Math.max(0, Math.floor((f - 100) / TR.lvUp)) + trLvOff(f) + (boss ? (big ? 5 : amb ? 2 : 3) : 0), 2, 100), e = GB().foeEntry(trPickSp(lv, boss, big, myT), lv, boss ? 2 : 0); if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
       const dbl = !boss && !e.shiny && alive.length >= 2 && (R.dblNext || Math.random() < trDblP(f)), team = [e]; R.dblNext = 0; if (dbl) { const e2 = GB().foeEntry(trPickSp(lv, false, false, myT), lv, 0); team.push(e2); }
       const foe = { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team, appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : dbl ? '' : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
-      R.balls = R.balls || {}; const T = { xp: TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss, dbl };   /* v23.68 동료 볼 (가방) */
+      R.balls = R.balls || {}; const T = { xp: xpM() * TR.xp * (R.xpM || 1), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss, dbl };   /* v23.68 동료 볼 (가방) */
       const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await trReward(R, o, ids, false, false, true); }   /* v24.35 경완 '동료 몬스터볼 처음 5개 없애고 출발 보상에서 고르기' */ : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
       const music = big ? 'bossBig' : boss ? 'boss' : TR_BGM[Math.floor((f - 1) / 10) % TR_BGM.length], keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
       const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, dbl, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: true, win: 'winWild', meFrontUrl, meBackUrl,
