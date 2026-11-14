@@ -9,6 +9,8 @@ const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
 const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
+/* v25.08 경완 '더블 배틀 시연 얼굴 띠에서 npc 하단 잘림': 얼굴 띠 .mug 는 허리 아래를 띠 밖으로 잘라 보여 주는데(margin-bottom -42px), 쌍둥이처럼 키 작은 그림(위 빈칸 20줄 넘음)은 잘리지 않게 아래까지 */
+function mugFit(el, u) { if (!el) return; const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, im.width, im.height).data; let y0 = 0; find: for (; y0 < im.height; y0++) for (let i = 0; i < im.width; i++) if (d[(y0 * im.width + i) * 4 + 3] > 8) break find; if (y0 > im.height * .25) el.style.marginBottom = '0px'; } catch (e) {} }; im.src = u; }
 /* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
 const TR_ANI = {"champion_cynthia":[22,79,"CHAMPION_Cynthia"],"champion_steven":[11,76,"CHAMPION_Steven"],"champion_wallace":[13,75,"LEADER_Wallace"],"elite_four_aaron":[11,88,"ELITEFOUR_Aaron"],"elite_four_bertha":[3,80,"ELITEFOUR_Bertha"],"elite_four_bruno":[19,80,"ELITEFOUR_Bruno"],"elite_four_flint":[11,80,"ELITEFOUR_Flint"],"elite_four_lance":[9,78,"ELITEFOUR_Lance"],"elite_four_lucian":[6,80,"ELITEFOUR_Lucian"],"hg_blaine":[7,82,"LEADER_Blaine"],"hg_brock":[7,59,"LEADER_Brock"],"hg_bruno2":[19,80,"ELITEFOUR_Bruno"],"hg_erika":[10,72,"LEADER_Erika"],"hg_koga2":[9,86,"LEADER_Koga"],"hg_lance":[9,78,"ELITEFOUR_Lance"],"hg_misty":[11,84,"LEADER_Misty"],"hg_sabrina":[20,84,"LEADER_Sabrina"],"hg_surge":[15,81,"LEADER_Surge"],"leader_blaine":[7,82,"LEADER_Blaine"],"leader_brawly":[11,77,"LEADER_Brawly"],"leader_brock":[7,59,"LEADER_Brock"],"leader_byron":[14,81,"LEADER_Byron"],"leader_candice":[8,90,"LEADER_Candice"],"leader_erika":[10,72,"LEADER_Erika"],"leader_fantina":[17,89,"LEADER_Fantina"],"leader_flannery":[14,87,"LEADER_Flannery"],"leader_gardenia":[14,75,"LEADER_Gardenia"],"leader_giovanni":[5,80,"LEADER_Giovanni"],"leader_juan":[14,75,"LEADER_Juan"],"leader_koga":[9,86,"LEADER_Koga"],"leader_lt_surge":[15,81,"LEADER_Surge"],"leader_maylene":[14,75,"LEADER_Maylene"],"leader_misty":[11,84,"LEADER_Misty"],"leader_norman":[8,74,"LEADER_Norman"],"leader_roark":[12,76,"LEADER_Roark"],"leader_roxanne":[11,68,"LEADER_Roxanne"],"leader_sabrina":[20,84,"LEADER_Sabrina"],"leader_volkner":[8,78,"LEADER_Volkner"],"leader_wake":[16,79,"LEADER_Wake"],"leader_wallace":[13,75,"LEADER_Wallace"],"leader_wattson":[17,73,"LEADER_Wattson"],"leader_winona":[17,78,"LEADER_Winona"],"red":[7,69,"POKEMONTRAINER_Red"]};   /* 필드 그림(걷기)이 있는 43명만 (경완 2026-11-12) */
 function trAni(el, k) { const a = TR_ANI[k]; if (!a) return null; const [n, h, f] = a; Object.assign(el.style, { backgroundImage: `url(${IMG}dbk/tr/${f}.png)`, width: h + 'px', height: h + 'px', backgroundSize: `${n * h}px ${h}px`, backgroundPosition: '0 0', marginLeft: (80 - h) / 2 + 'px', marginTop: (80 - h) + 'px' }); return a; }
@@ -1207,7 +1209,7 @@ async function smEnc(w, opts, kind) {
   const glowIn = t => Math.min(1, t / .35);   /* 새 배경들: 처음 0.35초에 확 밝아짐 */
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
   // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
-  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${opts.exam ? '심사관 · ' : ''}${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${opts.exam ? '심사관 · ' : ''}${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); mugFit(w.querySelector('.band:last-child .mug'), trSrc(opts.foe.tr)); }); if (t > T0 + .55) once('vs', () => se('KON')); };
   const D = {
     evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
       for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
@@ -1265,7 +1267,7 @@ async function encounter(opts) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
     await wait(760);
   } else {
-    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
+    w.insertAdjacentHTML('beforeend', `<i class="bk"></i><div class="band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); mugFit(w.querySelector('.band .mug'), trSrc(opts.foe.tr));
     await wait(1900);
   }
   return () => { w.classList.add('out'); setTimeout(() => w.remove(), 520); };

@@ -1321,7 +1321,7 @@ const gse = (n, g = 1) => { try { window.GymBGM?.se(n, { gain: g }); } catch (e)
 const doorSe = () => { try { window.GymBGM?.se('DP_DOOR', { gain: 2.4 }); } catch (e) {} };   // 도전자가 드나들 때 철컥 문 소리 (플래티넘 SEQ_SE_DP_DOOR, 경완 2026-10-28 '자동문 말고 철컥')
 async function challenge(picked) {
   const g = st(), c = g.q[0]; if (!c || busy) return;
-  if (![0, 1, 2].some(i => luOf(i).length)) {
+  if (!c.test && ![0, 1, 2].some(i => luOf(i).length)) {
     // v13.98 경완: 튜토리얼 뒤 첫 도전자 = 라인업 화면에서 안내원(그림 있는 대사창)이 설명 → 정하면 홈 대사창 3줄 → 도전자 입장·배틀
     const tut = !g.luTut && !((g.w | 0) + (g.l | 0)) && !gList().some(x => x.luTut);   // v14.75 경완 '휴업하고 새로 세웠을 때 라인업 안내원 대사창 X': 이미 배틀해 봤거나 다른 체육관에서 봤으면 튜토리얼 아님
     if (!tut) say('라인업이 비어 있어요.', '라인업을 짜고 "이 라인업으로 결정"을 눌러 주세요');
@@ -1358,7 +1358,7 @@ async function challenge(picked) {
     for (let i = 0; i < L.length - 1; i++) await talk(whoAt(i) + esc(L[i]));
     do await talk(whoAt(L.length - 1) + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
-    const my = luNow();
+    const my = c.test ? c.test.map(id => GB().boxOf(id)).filter(Boolean) : luNow();   /* v25.08 운영자 더블 배틀 시험: 라인업 사본 */
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
     const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
@@ -1368,7 +1368,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, foe: { tr: c.tr, cls: c.cls, nm: PR ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, ...(c.test ? { practice: true } : {}), foe: { tr: c.tr, cls: c.cls, nm: PR ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res?.zu && !res.cut && !g.zUse) { g.zUse = 1; g.zN = 0; } if (res && !res.cut && g.zUse && (g.gmax | 0) >= 4) g.zN = (g.zN | 0) + 1;   /* v24.51 도전자 Z기술 판 수 (Z_FOE, 체육관마다) */
@@ -1378,6 +1378,7 @@ async function challenge(picked) {
       root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc('어라, 배틀이 중간에 멈춰 버렸네요. 다음에 다시 붙어요!'));
       dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut(); return;
     }
+    if (c.test) { g.q.shift(); root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc(res?.won ? sayEnd.lose : sayEnd.win)); dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut(); return; }   /* v25.08 시험: 결과·골드·평판·기록 없이 한마디 하고 나감 */
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
@@ -3692,7 +3693,8 @@ function enter() {
   if (window.gymSimOn && window.gymMegaTut) { const k = window.gymMegaTut, g0 = S.gym || {}, ty = g0.ty || 10; S.gym = { d: (DESIGNS.find(d => d.ty === ty) || DESIGNS[0]).id, ty, nm: '연습 체육관', rep: GRADES[k][0], gmax: k, ...(k > 1 ? { unl: 1 } : {}), rv: 6, lu: [[], [], []], tr: [], mon: {}, itm: {}, tms: {}, own: {}, dp: [], vis: Date.now(), fit: g0.fit }; }
   open = true; tab = null; root.hidden = false; root.classList.remove('gview'); root.classList.toggle('sim', !!window.gymSimOn); GA.gymIn(); openTab(null); if (!window.gymEvTest) bgmPlay(st()?.d ? 'gym' : 'lab');   // 처음 연출·튜토리얼은 연구소 곡 (경완 2026-10-29)   // 체육관 곡: 처음이면 플래티넘 원본 소리를 받아 오는 동안 잠깐 조용하다
   requestAnimationFrame(() => root.classList.add('on'));
-  if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
+  if (st()?.ev?.test && !window.gymEvTest) { delete st().ev; save(); }
+  if (st()?.q?.some(x => x.test)) { st().q = st().q.filter(x => !x.test); save(); }   /* v25.08 더블 배틀 시험 도중 꺼졌던 쌍둥이는 줄에서 뺌 */   // 운영자 시험 도중 꺼졌던 것: 본 계정엔 남기지 않음
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }
@@ -4403,13 +4405,13 @@ async function dblTest() {
   /* v25.06 경완 '더블 배틀 시연에 그 기술들도 다 해볼 수 있게': 사본 앞 두 마리 기술을 목표 종류별로 (옆 모두·상대 모두·같은 편·같은 편이나 나·하나·아무나) — 사본이라 본 계정 기술은 그대로 */
   const DBL_MV = [['surf', 'rockslide', 'helpinghand', 'acupressure'], ['earthquake', 'heatwave', 'tackle', 'aurasphere']];
   ids.slice(0, 2).forEach((id, k) => { const m = GB().gm(GB().boxOf(id)); if (m) { m.mv = DBL_MV[k].slice(); m.kn = []; } });
+  /* v25.08 경완 '더블 배틀 시연 도전자 들어오는 것부터 볼 수 있게': 쌍둥이를 줄 맨 앞에 세우고 진짜 도전자 입장(challenge)부터. c.test 면 사본 라인업·연습 배틀·보상 없음, 끝나면 S.gym 되돌림 */
   const my = ids.map(id => GB().boxOf(id)), L = my.map(P => GB().gm(P)?.lv | 0).filter(Boolean), lv = Math.max(5, Math.round(L.reduce((a, b) => a + b, 0) / (L.length || 1)));
-  const fe = (sp, nm, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'modest', iv: [24, 24, 24, 24, 24, 24], g: sp === 312 ? 'F' : 'M' });
-  const team = [fe(311, '플러시', ['thunderbolt', 'helpinghand', 'nastyplot', 'encore'], 'plus'), fe(312, '마이농', ['thunderbolt', 'helpinghand', 'nastyplot', 'protect'], 'minus'), fe(184, '마릴리', ['surf', 'icebeam', 'helpinghand', 'playrough'], 'thickfat'), fe(36, '픽시', ['moonblast', 'followme', 'flamethrower', 'calmmind'], 'friendguard')];
-  document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
-  try { await GB().run({ meFrontUrl: await fitSrc('tr'), meBackUrl: await fitSrc('trb'), my, foe: { tr: 'twins', cls: '쌍둥이', nm: '미나와 미아', team, hold: 2, say: { win: '둘이 힘을 합쳤는데도 졌어!', lose: '쌍둥이의 텔레파시야!' } }, dbl: true, practice: true, diff: 1, bg: 'in1', music: 'gymBattle' }); }
+  const team = [[311, lv, ['thunderbolt', 'helpinghand', 'nastyplot', 'encore']], [312, lv, ['thunderbolt', 'helpinghand', 'nastyplot', 'protect']], [184, lv, ['surf', 'icebeam', 'helpinghand', 'playrough']], [36, lv, ['moonblast', 'followme', 'flamethrower', 'calmmind']]];
+  g.q = g.q || []; g.q.unshift({ tr: 'twins', ow: 'twin', cls: '쌍둥이', nm: '미나', team, diff: 1, t: Date.now(), test: ids });
+  try { await challenge(true); }
   catch (e) { console.error(e); }
-  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); trDrop(ids); try { S.gym = JSON.parse(snap); } catch (e) {} dropMgT(); save(); bgmPlay('gym'); }
+  finally { trDrop(ids); try { S.gym = JSON.parse(snap); } catch (e) {} dropMgT(); save(); if (open) renderHome(); }
 }
 async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
