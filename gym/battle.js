@@ -45,10 +45,10 @@ async function essFx(s, id) {
   await Promise.race([loadEss(), wait(1500)]); const E = window.GymEss; if (!E || !B) return false;
   const k = await Promise.race([E.has(id), wait(1500).then(() => 0)]); if (!k) return false;
   const J = await Promise.race([E.get(id), wait(2500).then(() => null)]); if (!J || !B) return false;
-  const o = other(s), opp = s === 'e', useO = opp && J.o, A = useO ? J.o : J.m; if (!A) return false;
+  const o = other(s), opp = s[0] === 'e', useO = opp && J.o, A = useO ? J.o : J.m; if (!A) return false;
   const top = $b('.bt-top'); let bk = $b('.bt-essb'), fr = $b('.bt-essf');
   if (!bk) { bk = document.createElement('canvas'); bk.className = 'bt-essb'; bk.width = 512; bk.height = 384; top.insertBefore(bk, $b('.bt-mw.e')); }
-  if (!fr) { fr = document.createElement('canvas'); fr.className = 'bt-essf'; fr.width = 512; fr.height = 384; $b('.bt-mw.p').after(fr); }
+  if (!fr) { fr = document.createElement('canvas'); fr.className = 'bt-essf'; fr.width = 512; fr.height = 384; $b(SEL('mw', 'p')).after(fr); }
   const side = sd => { const m = monEl(sd), c = m?.querySelector('.clip'); return { el: c || m, img: c?.querySelector('img'), pan: panOf(sd) }; };
   const U = side(useO ? o : s), T = side(useO ? s : o), X = B.act[s];
   el.classList.add('essp');
@@ -340,7 +340,7 @@ const vibBig = (st = 2, g = 2) => { try { GA.rumble?.(st, g); } catch (e) {} };
 const SE_BASE = ['DECIDE', 'SELECT', 'KOUKA_M', 'KOUKA_H', 'KOUKA_L', 'POKE_DEAD', 'BOWA2', 'SUIKOMU', 'SLIDEIN', 'HINSI', 'NAGERU'];
 const tapSe = (nm = 'DECIDE') => { try { GA.quietTap?.(); } catch (e) {} se(nm); };
 // 화면 x(0~256) → 소리 좌우
-const panOf = side => side === 'e' ? .5 : -.5;
+const panOf = side => side[0] === 'e' ? .5 : -.5;
 
 function buildUI() {
   el = document.createElement('div'); el.className = 'bt'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', '배틀');
@@ -349,12 +349,15 @@ function buildUI() {
       <div class="bt-bg"></div><i class="bt-terr"></i><i class="bt-dim"></i>
       <i class="bt-pl e"></i><i class="bt-pl p"></i>
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
-      <div class="bt-mw e"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
-      <div class="bt-mw p"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw e s2" data-sl="1"><div class="bt-mon e s2"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw e" data-sl="0"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw p" data-sl="0"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
       <i class="bt-wx"></i><div class="bt-lvw" hidden></div><div class="bt-shw" hidden></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
       <div class="bt-hb p"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
+      <div class="bt-hb e s2"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div><div class="bt-hb p s2"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i><span class="hpn"><b class="c"></b><b class="m"></b></span><i class="xp"><i></i></i></div>
       <div class="bt-pty e"></div><div class="bt-pty p"></div>
       <div class="bt-fx"></div>
       <div class="bt-msg"><span class="t"></span><b class="cur" hidden>▼</b></div>
@@ -404,22 +407,22 @@ async function msgTap(t) { await msg(t, 0); if (!B) return; $b('.bt-msg .cur').h
 function hpCol(r) { return r > .5 ? 'g' : r > .2 ? 'y' : 'r'; }
 const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp * 48));
 function paintHb(side, A) {
-  const hb = $b(`.bt-hb.${side}`); if (!A) { hb.classList.remove('on'); return; }
+  const hb = $b(SEL('hb', side)); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
-  if (side === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
+  if (side[0] === 'p') { const g = A.xpg; hb.querySelector('.xp>i').style.width = (g ? clampN(g, 0, 1) * 96 : 0) + 'px'; }
 }
 function setHp(side, hp, mhp, px = hpPx(hp, mhp)) {
-  const hb = $b(`.bt-hb.${side}`), f = hb.querySelector('.hp>i');
+  const hb = $b(SEL('hb', side)), f = hb.querySelector('.hp>i');
   f.style.width = px + 'px'; f.className = hpCol(px / 48);
-  if (side === 'p') { hb.querySelector('.hpn .c').textContent = Math.max(0, Math.round(hp)); hb.querySelector('.hpn .m').textContent = mhp; }
-  if (side === 'p') lowHp(px > 0 && px / 48 <= .2);
+  if (side[0] === 'p') { hb.querySelector('.hpn .c').textContent = Math.max(0, Math.round(hp)); hb.querySelector('.hpn .m').textContent = mhp; }
+  if (side[0] === 'p') lowHp(px > 0 && px / 48 <= .2);
   hbBalls(side);
 }
 // 체력 상자 안 HP 띠 왼쪽에 남은 포켓몬 수 몬스터볼 (경완 2026-10-28 '각자의 포켓몬 정보 박스 내에')
-function hbBalls(side) { const b = el?.querySelector(`.bt-hb.${side} .hbb`); if (b && B) b.innerHTML = side === 'e' && B.wild ? '' : balls(side); }   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
+function hbBalls(side) { const b = el?.querySelector(SEL('hb', side) + ' .hbb'); if (b && B) b.innerHTML = side[0] === 'e' && B.wild ? '' : balls(side[0]); }   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
 async function drainHp(side, A, to) {
   const from = A.hp, p0 = hpPx(from, A.mhp), p1 = hpPx(to, A.mhp), n = Math.abs(p1 - p0);
   for (let i = 1; i <= n; i++) { if (!B) return; setHp(side, from + (to - from) * i / n, A.mhp, p0 + Math.sign(p1 - p0) * i); await wait(B.fast ? 8 : 17); }
@@ -431,7 +434,7 @@ function lowHp(on) {
   if (on) { const f = () => { if (B && !B.btl.ended) se('HINSI'); }; f(); B.lowT = setInterval(f, 700); } else { clearInterval(B.lowT); B.lowT = 0; }
 }
 const ST_X = { par: 0, frz: 1, slp: 2, psn: 3, tox: 3, brn: 4 };
-function setSt(side, st) { const i = $b(`.bt-hb.${side} .st`); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); hbBalls(side); stPat(side, st); }
+function setSt(side, st) { const i = $b(SEL('hb', side) + ' .st'); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); hbBalls(side); stPat(side, st); }
 // v21.89 [DBK] Animated Pokémon System 상태이상 무늬: 화상 빨강·마비 노랑·독 보라·얼음 하늘색이 몸 위에 짙어졌다 옅어짐 (불투명도 16~128/255, 0.05초마다 1씩, 60에서 시작)
 const ST_PAT = { brn: '#ff0000', par: '#ffd800', psn: '#b200ff', tox: '#b200ff', frz: '#00ffff' };
 function stPatDefs() { if (document.getElementById('btStPat')?.isConnected && (!el || el.contains(document.getElementById('btStPat')))) return; document.getElementById('btStPat')?.remove(); const lo = 16 / 255, hi = 128 / 255, half = 112 * .05;
@@ -454,7 +457,7 @@ async function dxCtx(s, X, from, to, item) {
   const bg = $b('.bt-bg'), cs = getComputedStyle(bg), bu = (bg.style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1] || `${IMG}bt/bg_in1.png`, bp = cs.backgroundPosition.split(' ').map(v => parseFloat(v) * 2 + 'px').join(' ');
   let [mon, too, tr, it] = await Promise.all([dxMon(from), dxMon(to), dxImg(B.trU?.[s]), dxImg(item)]);
   if (!mon && from !== to) mon = await dxMon(pkSrc(X.sp, { s: X.shiny }));   // 움직이는 그림을 못 받으면 원래 모습 그림으로 (메가 모습으로 대신하면 진화 전부터 메가로 보임)
-  return { host: $b('.bt-top'), path: `${IMG}dbk/`, opp: s === 'e', wild: false, bg: { url: bu, pos: bp, size: '1024px 384px' }, base: { url: `${IMG}bt/pl_e.png`, w: 256, h: 128 },
+  return { host: $b('.bt-top'), path: `${IMG}dbk/`, opp: s[0] === 'e', wild: false, bg: { url: bu, pos: bp, size: '1024px 384px' }, base: { url: `${IMG}bt/pl_e.png`, w: 256, h: 128 },
     tr: { url: B.trU?.[s] || `${IMG}tr/pt_m.png`, w: (tr?.w || 80) * 2, h: (tr?.h || 80) * 2 }, item: it ? { url: item, w: it.w > 40 ? it.w : it.w * 1.6, h: it.w > 40 ? it.h : it.h * 1.6 } : null,
     mon: mon || too, to: too || mon, se: n => dxSe(n, panOf(s)), cry: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }, cryBig: () => { try { GA.cry?.(X.sp, 0, 1, CRY_K * 1.8, .5); GA.cry?.(X.sp, 0, .82, CRY_K * .9); } catch (e) {} vibBig(3, 3); } };   /* 메가진화 뒤 울음소리: 크게 + 메아리 + 낮은 겹소리 + 큰 진동 (경완 2026-11-12) */
 }
@@ -462,7 +465,7 @@ const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
   const m = monEl(s); if (!m || !B) return; const pan = panOf(s), DBK = await dbkLoad();
   const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); paintHb(s, X); gkBg(); };
-  if (DBK && X && !(kind === 'mega' && s === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
+  if (DBK && X && !(kind === 'mega' && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
       if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-bracelet.png`)   /* 경완 '키스톤은 메가링' → 경완이 준 메가바클 그림 (2026-11-12) */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
@@ -483,7 +486,7 @@ async function gmFx(s, X, kind, ty) {
   // 경완 2026-11-12 '도전자 메가진화 간단 연출에도 효과음, 메가 마크가 한 번 돌면서 상대 포켓몬 위에': 기운 모음(SUIKOMU) → 바뀔 때 반짝·쾅 → 위에 메가 마크
   const mgMark = () => { if (kind !== 'mega') return; const k = document.createElement('i'); k.className = 'gm-mark'; k.style.backgroundImage = `url(${IMG}dbk/Mega/mark.png)`; const top = $b('.bt-top'), r = m.querySelector('img')?.getBoundingClientRect() || m.getBoundingClientRect(), t0 = top.getBoundingClientRect(), z = t0.width / (top.offsetWidth || t0.width); k.style.left = (r.left + r.width / 2 - t0.left) / z + 'px'; k.style.top = Math.max(2, (r.top - t0.top) / z - 4) + 'px'; top.appendChild(k); setTimeout(() => k.remove(), 1700); };   // 포켓몬 칸 밖(위 화면)에 붙임: 그림이 바뀌며 칸을 다시 그려도 안 지워지게
   // 경완 2026-11-12 '빛나기 전에 도전자 포켓몬 뒤로 트레이너가 잠깐 들어왔다가 진화시키고 나감'
-  const trE = s === 'e' && kind === 'mega' ? $b('.bt-tr.e') : null, trWas = trE?.className;
+  const trE = s[0] === 'e' && kind === 'mega' ? $b('.bt-tr.e') : null, trWas = trE?.className;
   if (trE) { trE.classList.remove('away'); trE.classList.add('mgin'); await wait(B.fast ? 250 : 600); }
   if (kind === 'mega' || kind === 'primal') { se(kind === 'mega' ? 'SUIKOMU' : 'KOUKA_M', { pan });
     // 경완 2026-11-12 '여전히 빛 효과로 스프라이트 주변 박스 경계선 보임': 아이폰은 그림에 filter 를 걸면 네모 칸이 비침 → filter 없이 하얀 판(그림 모양 mask)·둥근 빛(그라데이션)만 씀
@@ -517,7 +520,9 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 // 1~649: 블랙·화이트 움직이는 gif (못 받으면 1~493 은 플래티넘 2장 그림+움직임, 494~649 는 한 장), 650~: 팬게임(pokeemerald-expansion) 2장 그림을 같은 판으로 (gym/img/pk/anim.json)
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
-function monEl(side) { return $b(`.bt-mon.${side}`); }
+const SEL = (k, s) => `.bt-${k}.${s[0]}${s[1] ? '.s2' : ':not(.s2)'}`;   /* v24.21 더블 배틀: 자리 p·p2·e·e2 (두 번째 자리 = .s2, 화면 자리는 data-sl) */
+const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: -6, e: 2, e2: -6 }, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
+function monEl(side) { return $b(SEL('mon', side)); }
 /* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
 function zAura(side, on, fade) { const m = monEl(side); if (!m) return; const z0 = m.querySelector('.zaur');
   if (!on && fade && z0 && m.classList.contains('zon')) { m.classList.remove('zon'); m.classList.add('zoff'); z0.classList.add('out'); setTimeout(() => { z0.remove(); m.classList.remove('zoff'); }, 750); return; }   /* 경완 2026-11-14: Z기술 끝나면 기운이 디졸브로 사라짐 */
@@ -562,7 +567,7 @@ function gifLoad(u) {
   return gifOk.get(u);
 }
 /* 경완 2026-11-12 '리자몽 얼굴이 체력 박스랑 가까움, 다른 포켓몬도 체력 박스에 너무 가깝거나 가려지는지': 그림이 체력 박스(내 쪽 x≥128·y 95~137, 상대 쪽 x≤122·y 20~53)와 겹치면 그 줄들만큼 옆으로 비킴 (반대쪽 화면 끝은 넘지 않게) */
-function hbAvoid(m, g, k, so, side, dy) { if (!g?.L) return; const p = side === 'p', cx = p ? 80 : 176, bot = (p ? 144 : 92) + (so?.[1] || 0) * k + dy, top = bot - g.h * k, x0 = cx - g.w * k / 2 - (so?.[0] || 0) * k, gap = 4;
+function hbAvoid(m, g, k, so, side, dy) { if (!g?.L || B?.dbl) return; const p = side[0] === 'p', cx = p ? 80 : 176, bot = (p ? 144 : 92) + (so?.[1] || 0) * k + dy, top = bot - g.h * k, x0 = cx - g.w * k / 2 - (so?.[0] || 0) * k, gap = 4;
   let need = 0, room = 1e9;
   for (let y = 0; y < g.h; y++) { if (g.L[y] < 0) continue; const sy = top + (y + .5) * k, l = x0 + g.L[y] * k, r = x0 + (g.R[y] + 1) * k;
     room = Math.min(room, p ? l - 2 : 254 - r);
@@ -581,7 +586,7 @@ function gifTop(u) {
 }
 // 나올 그림 고르기: gif 가 1.5초 안에 오면 gif, 아니면 저장소 그림 (늦게라도 오면 다음 번엔 gif)
 async function pickGif(side, A) {
-  const u = gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F', A.fm); if (!u) return null;
+  const u = gifUrl(A.sp, side[0] === 'p', A.shiny, A.g === 'F', A.fm); if (!u) return null;
   return (await Promise.race([gifLoad(u), wait(1500).then(() => false)])) ? u : null;
 }
 // 새 그림이 다 올 때까지 숨긴다: 아이폰은 새 주소를 받는 동안 앞 포켓몬 그림을 그대로 보여 줘서 이름과 그림이 어긋났다 (경완 2026-10-27 '모래두지인데 깨비참')
@@ -595,26 +600,26 @@ function showMon(side, A, on = true) {
   if (A && A.gif) { m._fa = null; m.classList.remove('fa'); img.style.height = ''; img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
     // 블랙·화이트 뒷모습 gif 는 앞모습과 거의 같은 크기라 모두 같은 배율로 키운다: 종끼리 크기 비율은 그대로, 플래티나 뒷모습(2장 그림)과 비슷한 크기 (경완 2026-10-31 '밀탱크 뒷모습 너무 작아')
     /* v21.80 경완 '스프라이트 상하좌우 불필요한 여백·앞뒤 크기 다른 것': gif 의 아래 빈 줄·좌우 치우침만큼 옮기고(SOFF [가로, 아래 빈 줄, 뒷모습 배율]), 앞모습과 크기가 많이 다른 뒷모습은 앞모습 크기에 맞춤 (gym/img/pk/off.json, 기본 폼 그림만) */
-    const so = A.gif === gifUrl(A.sp, side === 'p', A.shiny, A.g === 'F') ? SOFF[A.sp]?.[side === 'p' ? 'b' : 'f'] : null, cl = m.querySelector('.clip');
-    const k = (side === 'p' ? 1.4 : 1) * (so?.[2] || 1), fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
+    const so = A.gif === gifUrl(A.sp, side[0] === 'p', A.shiny, A.g === 'F') ? SOFF[A.sp]?.[side[0] === 'p' ? 'b' : 'f'] : null, cl = m.querySelector('.clip');
+    const k = (side[0] === 'p' ? (B?.dbl ? 1.1 : 1.4) : 1) * (so?.[2] || 1),   /* 더블은 내 쪽 두 마리가 덜 겹치게 조금 작게 */ fw = () => { if (img.naturalWidth) img.style.width = img.naturalWidth * k + 'px'; };
     if (k !== 1) { if (img.complete && img.naturalWidth && img.style.visibility !== 'hidden') fw(); else img.addEventListener('load', fw, { once: true }); }
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
-    if (side === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; let dy = 0; if (y < GIF_TOP) { dy = Math.round(GIF_TOP - y); m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
+    if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k; let dy = 0; if (y < GIF_TOP) { dy = Math.round(GIF_TOP - y); m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
     else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
     m._gif = A.gif; }
   else if (A) {
-    m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
+    m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side[0] === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side[0] === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side[0] === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
-    const fa = side === 'e' && !fm && (!A.shiny || (BWA.fs || []).includes(+A.sp)) && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
+    const fa = side[0] === 'e' && !fm && (!A.shiny || (BWA.fs || []).includes(+A.sp)) && !rfKey(A.sp) && FA[A.sp], clip = m.querySelector('.clip');
     m._fa = fa ? (Array.isArray(fa) ? { n: fa[0], w: fa[1] } : { n: fa, w: 80 }) : null; m.classList.toggle('fa', !!fa);
     if (clip) clip.style.width = clip.style.height = fa && m._fa.w !== 80 ? m._fa.w + 'px' : '';
     if (fa) { img.onerror = () => { img.onerror = null; m._fa = null; m.classList.remove('fa'); img.style.width = img.style.height = ''; setSrc(img, pkSrc(A.sp, {})); }; setSrc(img, `${IMG}pk/fa/${A.sp}${A.shiny ? 's' : ''}.png?v=${VER}`);   /* v21.76 경완: 이로치 = 색만 입힌 그림 */ img.style.width = m._fa.n * m._fa.w + 'px'; img.style.height = m._fa.w + 'px'; m.classList.add('pl2'); }
     else if (sheet) img.style.width = img.style.height = '';
-    if (sheet || fa) { m.style.left = (side === 'e' ? 136 : 40) + 'px'; m.style.top = (side === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
+    if (sheet || fa) { m.style.left = (side[0] === 'e' ? 136 : 40) + 'px'; m.style.top = (side[0] === 'e' ? E_Y + a[0] : P_Y + a[1]) + 'px'; }
     else { m.style.left = m.style.top = ''; }
   }
   // 한 장짜리 그림(650~ 뒷모습 등)은 bw: 고르는 동안 스프라이트는 가만히, 정보 박스만 까딱 (경완 2026-10-28)
-  const an = A && !A.gif && anOf(A); m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side === 'p' || !an || !(an[3] || []).length));
+  const an = A && !A.gif && anOf(A); m.classList.toggle('bw', !!A && !A.gif && A.sp >= 494 && (side[0] === 'p' || !an || !(an[3] || []).length));
   m.classList.toggle('on', on);
 }
 // 본가 움직임: [장, 지연(1/30초), x, y], 장이 -2 보다 작으면 그 칸으로 지연 횟수만큼 되돌아가기
@@ -626,8 +631,8 @@ function playAnim(side, A) {
     return;
   }
   const a = anOf(A); if (!a || A.gif) return;
-  const fr = side === 'e' ? a[3] : a[5], st = side === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
-  const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side === 'p' ? -x : x)}px,${y}px)`; };
+  const fr = side[0] === 'e' ? a[3] : a[5], st = side[0] === 'e' ? a[2] : a[4], img = m.querySelector('img'), tok = (m._tok = (m._tok || 0) + 1);
+  const set = (f, x, y) => { img.style.transform = `translate(${-80 * f + (side[0] === 'p' ? -x : x)}px,${y}px)`; };
   (async () => {
     await wait(st * 1000 / 30); const cnt = {}; let i = 0, g = 0;
     while (i < fr.length && g++ < 80) {
@@ -642,17 +647,17 @@ function playAnim(side, A) {
 }
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A, quick) {
-  const pre0 = side === 'e' && B.wild && monEl(side).classList.contains('wdk');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 */
+  const pre0 = side[0] === 'e' && B.wild && monEl(side).classList.contains('wdk');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 */
   if (pre0) A.gif = B.wG || A.gif; else { A.gif = await pickGif(side, A); if (!B) return;
   } const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); if (!pre0) showMon(side, A, false);
-  if (quick && side === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.20 경완 '오른쪽에서 들어오게': 본가 Intro 움직임(어둡게 0.9초 → 제 색·울음 → HP 박스)은 그대로, 들어오는 방향만 오른쪽 화면 밖에서 (첫 층도) · v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
+  if (quick && side[0] === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.20 경완 '오른쪽에서 들어오게': 본가 Intro 움직임(어둡게 0.9초 → 제 색·울음 → HP 박스)은 그대로, 들어오는 방향만 오른쪽 화면 밖에서 (첫 층도) · v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
   else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
   m.classList.remove('ball'); await wait(260); } try { GA.cry?.(A.sp, 0, 1, CRY_K); } catch (e) {} playAnim(side, A);
   if (A.shiny) await shinyFx(side);   // 색이 다른 포켓몬은 나올 때 반짝반짝 (본가)
-  paintHb(side, A); $b(`.bt-hb.${side}`).classList.add('on'); await wait(450);
+  paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); await wait(450);
 }
 async function shinyFx(side) {
   const m = monEl(side); se('REAPOKE', { pan: panOf(side) });
@@ -664,22 +669,22 @@ function subFx(s, on) { const m = monEl(s); if (!m) return; let d = m.querySelec
 const HIDE_MV = /^(fly|dig|dive|bounce|phantomforce|shadowforce|skydrop)$/;
 function throwBall(side) {
   const fx = $b('.bt-fx'), b = document.createElement('i'); b.className = 'ball'; fx.appendChild(b);
-  const [x0, y0, x1, y1] = side === 'e' ? [190, 40, 176, 66] : [40, 120, 80, 112];
-  const mid = side === 'e' ? 30 : 70;
+  const dx = slx(side), [x0, y0, x1, y1] = (side[0] === 'e' ? [190, 40, 176, 66] : [40, 120, 80, 112]).map((v, i) => i % 2 ? v + sly(side) : v + dx);
+  const mid = side[0] === 'e' ? 30 : 70;
   const an = b.animate([{ transform: `translate(${x0}px,${y0}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${mid}px) rotate(360deg)`, offset: .5 }, { transform: `translate(${x1}px,${y1}px) rotate(720deg)` }], { duration: 420, easing: 'linear' });
   return an.finished.catch(() => {}).then(() => b.remove());
 }
 function ballPoof(side) {
-  const fx = $b('.bt-fx'), x = side === 'e' ? 176 : 80, y = side === 'e' ? 66 : 112;
+  const fx = $b('.bt-fx'), x = (side[0] === 'e' ? 176 : 80) + slx(side), y = (side[0] === 'e' ? 66 : 112) + sly(side);
   for (let k = 0; k < 10; k++) { const i = document.createElement('i'); i.className = 'poof'; const a = k / 10 * Math.PI * 2; i.style.left = x + 'px'; i.style.top = y + 'px'; i.style.setProperty('--dx', Math.cos(a) * 30 + 'px'); i.style.setProperty('--dy', Math.sin(a) * 22 + 'px'); fx.appendChild(i); setTimeout(() => i.remove(), 600); }
 }
-async function recall(side) { zAura(side, false); const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(`.bt-hb.${side}`).classList.remove('on'); }
+async function recall(side) { zAura(side, false); const m = monEl(side); se('SUIKOMU', { pan: panOf(side) }); m.classList.add('recall'); await wait(420); m.classList.remove('on', 'recall'); $b(SEL('hb', side)).classList.remove('on'); }
 // 쓰러짐: 울음소리 → 발판 아래로 쑥 내려감 (4세대)
 async function faint(side, A) { zAura(side, false);
   // 본가처럼 낮은 울음소리를 다 낸 뒤 쓰러진다 (경완 2026-10-28)
-  let d = 0; try { d = await GA.cry?.(A.sp, 0, .8, CRY_K) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400)); vibBig(side === 'p' ? 3 : 2, 2);
+  let d = 0; try { d = await GA.cry?.(A.sp, 0, .8, CRY_K) || 0; } catch (e) {} await wait(B?.fast ? 200 : clampN(d * 1000 - 120, 520, 1400)); vibBig(side[0] === 'p' ? 3 : 2, 2);
   se('POKE_DEAD', { pan: panOf(side) }); monEl(side).classList.add('faint'); await wait(420);
-  $b(`.bt-hb.${side}`).classList.remove('on'); if (side === 'p') lowHp(false);
+  $b(SEL('hb', side)).classList.remove('on'); if (side[0] === 'p') lowHp(false);
 }
 async function flash(n = 1) { const f = $b('.bt-flash'); for (let i = 0; i < n; i++) { f.classList.add('on'); await wait(70); f.classList.remove('on'); await wait(70); } }
 
@@ -709,7 +714,7 @@ function mainPanel(A) {
 }
 // 상대에게 얼마나 잘 듣는지 (본가 이후 세대의 '효과가 굉장함' 표시처럼)
 function effOf(type) {
-  const foe = B?.btl.p2.active[0]; if (!foe || foe.fainted) return null;
+  const fs = (B?.btl.p2.active || []).filter(p => p && !p.fainted); if (fs.length !== 1) return null; const foe = fs[0];   /* 더블: 상대가 둘이면 표시 안 함 */
   const dex = B.btl.dex, T = dex.types.get(type); if (!T?.exists) return null;
   if (!dex.getImmunity(T.name, foe)) return 0;
   return 2 ** dex.getEffectiveness(T.name, foe);
@@ -739,9 +744,9 @@ function gkMove(R, i, m, d, gk) {
   if (gk === 'zmove') { const z = R.canZMove?.[i]; if (!z) return [d, true]; const zid = toID(z.move), zm = PSim.Dex.moves.get(zid); return [[zid, bm.category === 'Status' ? 'Z' + d[1] : mvKo(zid), d[2], d[3], bm.category === 'Status' ? 0 : bm.zMove?.basePower || zm.basePower || d[4], '—', ...d.slice(6)], false]; }
   if (dx) { const mid = toID(dx.move), mm = PSim.Dex.moves.get(mid); return [[mid, mvKo(mid), mid === 'maxguard' ? 1 : d[2], mid === 'maxguard' ? 2 : d[3], mid === 'maxguard' ? 0 : bm.maxMove?.basePower || mm.basePower || d[4], '—', ...d.slice(6)], !!dx.disabled]; }
   return [d, false]; }
-function movePanel(req) {
+function movePanel(req, ak = 0) {
   return new Promise(res => {
-    const R = req.active[0], mv = R.moves, go = gkOpts(R), gk = go.includes(B.gkSel) ? B.gkSel : null; if (!gk) B.gkSel = null;
+    const R = req.active[ak], mv = R.moves, go = gkOpts(R), gk = go.includes(B.gkSel) ? B.gkSel : null; if (!gk) B.gkSel = null;
     const tera = R.canTerastallize && TYK[R.canTerastallize] || '', gmx = R.maxMoves?.gigantamax && !R.maxMoves.maxMoves?.every(x => !/^gmax/.test(toID(x.move)));
     const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k];
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
@@ -754,8 +759,8 @@ function movePanel(req) {
       if (b.dataset.gk) { B.gkSel = B.gkSel === b.dataset.gk ? null : b.dataset.gk; vib(1); if (B.gkSel && /^mega/.test(B.gkSel)) { se('SUIKOMU'); setTimeout(() => se('KIRAN'), 260); vib(2); }   /* 경완 2026-11-12 '메가진화 버튼 누를 때 뭔가 변하는 듯한 효과음': 켤 때 기운 빨아들이는 소리 → 반짝 */
         if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
         if (/^(mega|terastallize)/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
-        return movePanel(req).then(res); }
-      if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req).then(res));
+        return movePanel(req, ak).then(res); }
+      if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req, ak).then(res));
       res(+b.dataset.i);
     };
   });
@@ -837,7 +842,7 @@ function moveInfo(m) {
 }
 // 쇼다운은 교체할 때마다 side.pokemon 순서를 바꾼다: 지금 i번째 → 처음 순서(B.my) 번호. 울부짖기·날려버리기로 바뀐 뒤 이름·그림이 어긋나 원래 포켓몬이 '나와 있음'으로 잠겼다 (경완 2026-10-28)
 const myIx = i => { const P = B.btl.p1.pokemon[i], j = B.o.p.indexOf(P); return j >= 0 ? j : i; };
-function partyPanel(req, forced) {
+function partyPanel(req, forced, ban = []) {
   return new Promise(res => {
     const L = req.side.pokemon, sx = g => g === 'M' || g === 'F' ? `<i class="sx ${g}"></i>` : '';
     const hpOfM = m => { const [hp, mhp] = (m.condition.split(' ')[0] || '0/0').split('/').map(Number); return [hp, mhp, mhp ? hp / mhp : 0, /fnt/.test(m.condition)]; };
@@ -849,7 +854,7 @@ function partyPanel(req, forced) {
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
       p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); card(+b.dataset.i); }; };
     // 누르면 바로 바뀌지 않고 상세 카드 → '바꾸기' (경완 2026-10-29)
-    const card = i => { const m = L[i], A = B.my[myIx(i)], pk = pkOf(i), ab = fmd(pk) ? toID(pk.ability) : A.ab, P = boxOf(A.pid), [hp, mhp, r, fnt] = hpOfM(m), can = !m.active && !fnt;
+    const card = i => { const m = L[i], A = B.my[myIx(i)], pk = pkOf(i), ab = fmd(pk) ? toID(pk.ability) : A.ab, P = boxOf(A.pid), [hp, mhp, r, fnt] = hpOfM(m), can = !m.active && !fnt && !ban.includes(i);
       const sl = B.btl.p1.pokemon[i]?.moveSlots || [], mv = (m.moves || A.mv || []).map(id => { const d = mvOf(toID(id)); if (!d) return null; const s0 = sl.find(x => x.id === toID(id)); return { d, id: toID(id), move: d[1], pp: s0?.pp ?? d[6], maxpp: s0?.maxpp ?? d[6] }; }).filter(Boolean);   // 기술마다 위력·명중·PP, 누르면 기술 설명 (v12.20 경완)
       const p = panel(`<div class="bp-card"><div class="bc-hd">${P ? thumb(P, mgOf(pk)) : ''}<div class="bc-tx"><b>${esc(A.nm)}${sx(A.g)}</b><span class="bc-lv">Lv.${A.lv}<span class="pty-ty">${tys(A, pk)}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `HP ${hp}/${mhp}`}</span></div></div>
         <button type="button" class="bc-ab" data-ab><small>특성</small><b>${esc(abKo(ab))}</b>${AB_D[ab] ? `<span class="bc-abd">${esc(AB_D[ab])}</span>` : ''}</button>
@@ -872,23 +877,23 @@ async function trBall() {
   if (!have.length) { await msg('동료 볼이 하나도 없다!'); return false; }
   const i = await trChoose('어떤 볼을 던질까요?<small style="display:block;font-size:10px;opacity:.8">잡은 포켓몬은 이번 도전에만 동료로 함께해요</small>', [...have.map(([k, n]) => [`${n} ×${T.balls[k]}`, '', '']), ['그만두기', '', '#9aa0b4,#6c7288']]);
   if (i >= have.length) return false;
-  const [k, nm, bm, col] = have[i], pk = B.btl.p2.active[0], E = B.act.e; if (!pk || pk.fainted) return false;
+  const es = B.dbl && !(B.act.e && !B.act.e.fnt) ? 'e2' : 'e', [k, nm, bm, col] = have[i], pk = B.btl.p2.active[es === 'e2' ? 1 : 0], E = B.act[es]; if (!pk || pk.fainted) return false;   /* 더블: 남은 한 마리에게 */
   T.balls[k]--; idlePanel();
   const cr = SPECIES[E?.sp]?.cr ?? 45, st = pk.status, sb = st === 'slp' || st === 'frz' ? 2 : st ? 1.5 : 1, M = pk.maxhp, H = Math.max(1, pk.hp);
   const a = bm >= 255 ? 255 : Math.min(255, (3 * M - 2 * H) * cr * bm / (3 * M) * sb * (T.boss ? .5 : 1)), b = a >= 255 ? 1 : (a / 255) ** .25;
   let sh = 0; while (sh < 4 && Math.random() < b) sh++; const ok = sh >= 4;
   await msg(`관장은 ${eul(nm)} 던졌다!`, 0);
-  const fx = $b('.bt-fx'), bl = document.createElement('i'); bl.className = 'ball'; bl.style.background = `linear-gradient(${col} 0 45%,#202020 45% 55%,#f8f8f8 55%)`; fx.appendChild(bl);
+  const fx = $b('.bt-fx'), bl = document.createElement('i'); bl.className = 'ball'; bl.style.background = `linear-gradient(${col} 0 45%,#202020 45% 55%,#f8f8f8 55%)`; bl.style.marginLeft = slx(es) + 'px'; fx.appendChild(bl);
   se('NAGERU'); await bl.animate([{ transform: 'translate(40px,150px) rotate(0)' }, { transform: 'translate(110px,10px) rotate(360deg)', offset: .5 }, { transform: 'translate(176px,58px) rotate(720deg)' }], { duration: 520, easing: 'linear', fill: 'forwards' }).finished.catch(() => {});
-  const m = monEl('e'); se('SUIKOMU'); m.classList.add('recall'); await wait(480);
+  const m = monEl(es); se('SUIKOMU'); m.classList.add('recall'); await wait(480);
   await bl.animate([{ transform: 'translate(176px,58px)' }, { transform: 'translate(176px,86px)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {});
   for (let j = 0; j < Math.min(3, sh); j++) { await wait(520); se('KON'); await bl.animate([{ transform: 'translate(176px,86px) rotate(0)' }, { transform: 'translate(176px,86px) rotate(-24deg)', offset: .3 }, { transform: 'translate(176px,86px) rotate(20deg)', offset: .7 }, { transform: 'translate(176px,86px) rotate(0)' }], { duration: 360, fill: 'forwards' }).finished.catch(() => {}); }
   await wait(560);
-  if (ok) { se('GETTING'); bl.style.filter = 'brightness(.6)'; for (let j = 0; j < 3; j++) { const t = document.createElement('i'); t.className = 'poof'; t.style.left = '176px'; t.style.top = '82px'; t.style.setProperty('--dx', (j - 1) * 18 + 'px'); t.style.setProperty('--dy', '-22px'); fx.appendChild(t); setTimeout(() => t.remove(), 600); }
-    $b('.bt-hb.e')?.classList.remove('on'); await wait(500);
+  if (ok) { se('GETTING'); bl.style.filter = 'brightness(.6)'; for (let j = 0; j < 3; j++) { const t = document.createElement('i'); t.className = 'poof'; t.style.left = (176 + slx(es)) + 'px'; t.style.top = '82px'; t.style.setProperty('--dx', (j - 1) * 18 + 'px'); t.style.setProperty('--dy', '-22px'); fx.appendChild(t); setTimeout(() => t.remove(), 600); }
+    $b(SEL('hb', es))?.classList.remove('on'); await wait(500);
     T.caught = { sp: E.sp, lv: pk.level, hp: pk.hp / pk.maxhp, e: B.foe[B.o.e.indexOf(pk)] }; T.caught.shiny = !!(E.shiny || T.caught.e?.shiny);
     await msgTap(`신난다! ${eul(E.nm)} 동료로 맞이했다!`); bl.remove(); await msgTap(`${eun(E.nm)} 이번 도전 동안 함께 싸워 준다!`); return true; }
-  ballPoof('e'); se('BOWA2'); bl.remove(); m.classList.remove('recall'); await wait(300);
+  ballPoof(es); se('BOWA2'); bl.remove(); m.classList.remove('recall'); await wait(300);
   await msg(['아앗! 포켓몬이 볼에서\n나와 버렸다!', '아아! 잡았다고 생각했는데!', '아쉽다! 조금만 더 하면\n잡을 수 있었는데!', '아깝다! 조금만 더 하면\n잡을 수 있었는데!'][sh]); return 'miss';
 }
 function yesNo(q) {
@@ -1162,8 +1167,8 @@ const M = (f, ...a) => { try { window.GymBGM?.[f](...a); } catch (e) {} };   // 
 function tray() { ['e', 'p'].forEach(s => { const L = B.o[s] || [], t = $b(`.bt-pty.${s}`);
   t.innerHTML = balls(s); t.classList.add('on'); }); }
 // 포켓몬 수 몬스터볼 (도트, gym/img/bt/pball8.png: 보통·상태 이상·기절·빈 칸)
-const balls = s => { const L = B.o[s] || [], live = B.btl?.[s === 'p' ? 'p1' : 'p2']?.pokemon || [];
-  return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P), D = X && B.act?.[s]?.pk === X ? B.act[s] : null;
+const balls = s => { const L = B.o[s] || [], live = B.btl?.[s[0] === 'p' ? 'p1' : 'p2']?.pokemon || [];
+  return Array.from({ length: 6 }, (_, i) => { const P = L[i], X = P && (live.find(q => q === P) || P), D = X && [s, s + '2'].map(k => B.act?.[k]).find(a => a?.pk === X) || null;
     // 나와 있는 포켓몬은 화면에 보인 상태로: 쓰러지는 연출이 끝나기 전엔 볼이 안 꺼진다 (경완 2026-10-28 '스포')
     return `<i class="${!X ? 'x' : D ? (D.fntS ? 'f' : D.st ? 's' : 'o') : X.fainted || X.hp <= 0 ? 'f' : X.status ? 's' : 'o'}"></i>`; }).join(''); };
 // 배틀 기록 (경완 2026-10-31 '내 배틀로그 못 보나?'): 최근 5판을 저장(S.gym.blog)에 남긴다. 서버 저장(V_ 레코드)에도 같이 올라가서 나중에 그 판을 그대로 읽어 볼 수 있다
@@ -1186,9 +1191,9 @@ async function run(opts) {
   if (!el) buildUI(); fit();
   const my = opts.my.map(myEntry), foeT = opts.foe.team;
   if (opts.foe.hold != null) try { foeItems(foeT, opts.foe.hold); } catch (e) {}   // 도전자 지닌 도구 (v16.89)
-  const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
+  const btl = new PSim.Battle({ formatid: opts.dbl ? 'gen9doublescustomgame' : 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   { const A0 = btl.actions.runMegaEvo.bind(btl.actions); btl.actions.runMegaEvo = pk => { const r = A0(pk); if (r && pk.species.id === 'zygardemega') { nihil(pk); for (const q of btl.queue.list) if (q.pokemon === pk && q.move?.id === 'coreenforcer') q.move = btl.dex.moves.get('nihillight'); } return r; }; }   /* 이번 턴에 고른 코어퍼니셔도 니힐레이저로 */   /* 경완 2026-11-12: 레전드 Z-A 처럼 메가지가르데가 되면 코어퍼니셔 → 니힐레이저 (메가진화한 동안 = 그 배틀 끝까지) */
-  { const RM = btl.actions.runMove.bind(btl.actions); btl.actions.runMove = (mv, pk, ...r) => { if (B?.passP && pk?.side === btl.p1) { B.passP = 0; return; } return RM(mv, pk, ...r); }; }   /* 수련탑 동료 볼을 놓친 턴: 내 포켓몬은 기술을 안 씀 */
+  { const RM = btl.actions.runMove.bind(btl.actions); btl.actions.runMove = (mv, pk, ...r) => { if (B?.passP && pk?.side === btl.p1 && (B.passP === 1 || B.passP === pk)) { B.passP = 0; return; } return RM(mv, pk, ...r); }; }   /* 수련탑 동료 볼을 놓친 턴: 내 포켓몬은 기술을 안 씀 */
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
@@ -1200,14 +1205,14 @@ async function run(opts) {
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   if (!opts.bgmKeep) await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);   /* v24.14 수련탑: 같은 곡이면 이어지는 배틀에서 곡을 다시 틀지 않음 */
   const encDone = opts.chain ? () => {} : await encounter(opts);   /* v23.10 훈련하기: 다음 층은 배틀 화면 그대로 상대만 바뀜 */
-  el.classList.remove('off'); el.hidden = false; el.className = opts.chain ? 'bt open' : 'bt intro now'; fit();
+  el.classList.remove('off'); el.hidden = false; el.className = (opts.chain ? 'bt open' : 'bt intro now') + (opts.dbl ? ' dbl' : ''); fit();
   ['e', 'p'].forEach(k => { if (opts.pl) el.style.setProperty('--pl' + k, `url(${new URL(`${IMG}bt/pl_${k}_${opts.pl}.png`, location.href).href})`); else el.style.removeProperty('--pl' + k); });   /* v23.16 지형별 발판 (플래티넘, tools/gym/mkbattlebg.py) */
   { let tb = $b('.bt-tools'); if (opts.tools) { if (!tb) { tb = document.createElement('div'); tb.className = 'bt-tools'; el.appendChild(tb); } tb.innerHTML = opts.tools.map(([t], i) => `<button type="button" data-i="${i}">${t}</button>`).join(''); tb.hidden = false; tb.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); tapSe(); opts.tools[+b.dataset.i]?.[1]?.(); }; } else if (tb) tb.hidden = true; }   /* v23.10 경완: 시험용 버튼은 배틀 화면 위 반투명 오버레이 */
   { let fb = $b('.bt-fl'); if (opts.badge) { if (!fb) { fb = document.createElement('div'); fb.className = 'bt-fl'; el.appendChild(fb); } fb.innerHTML = opts.badge; fb.hidden = false; } else if (fb) fb.hidden = true; }   /* 훈련하기 층 표시 */   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
@@ -1218,7 +1223,8 @@ async function run(opts) {
   trE.style.cssText = ''; trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`; const trA = opts.wild ? null : trAni(trE, opts.foe.tr), uEp = trA ? `${IMG}dbk/tr/${trA[2]}.png` : uE; if (opts.wild) trE.style.visibility = 'hidden'; if (opts.chain) trP.style.visibility = 'hidden';   /* 야생은 상대 트레이너 없음 */
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
-  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(`.bt-hb.${s}`).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
+  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; setSt(s, ''); });
+  ['e2', 'p2'].forEach(s => { $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
   if (opts.wild && !opts.chain && foeT[0]) try { const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
@@ -1256,7 +1262,7 @@ async function run(opts) {
   if (monSnap) S.gym.mon = JSON.parse(monSnap);
   /* v23.10 훈련하기: 끝난 뒤 남은 체력(hp)·보급 고르기(opts.post). post 가 true 면 배틀 화면을 닫지 않고 다음 층으로 */
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
-  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: B.act.p && !B.act.p.fnt ? B.act.p.pid : null, msg, msgTap, choose: trChoose })); } catch (e) { console.error(e); }
+  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
   if (keep && B) { const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
@@ -1273,9 +1279,9 @@ async function play() {
     if (!B || btl.ended) return;
     const r1 = btl.p1.activeRequest, r2 = btl.p2.activeRequest;
     let c1 = null;
-    if (r1 && !r1.wait) { c1 = await choose(r1); if (!B) return; if (c1 === 'skip' || c1 === 'caught') { B.skipNow = 0; idlePanel(); btl.win('p1'); await readLog(); return; } if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
-    let c2 = null; if (r2 && !r2.wait) { const it = aiItem(btl); if (it) { foeUseItem(btl, it); btl.p2.__ip = 1; c2 = 'pass'; } else c2 = aiGmk(btl, aiChoice(btl, B.diff)); }
-    if (c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
+    if (r1 && !r1.wait) { c1 = await (B.dbl ? chooseD(r1) : choose(r1)); if (!B) return; if (c1 === 'skip' || c1 === 'caught') { B.skipNow = 0; idlePanel(); btl.win('p1'); await readLog(); return; } if (c1 === 'quit') { B.out = 'quit'; btl.choose('p1', 'forfeit'); await readLog(); return; } }
+    let c2 = null; if (r2 && !r2.wait) { const it = !B.dbl && aiItem(btl); if (it) { foeUseItem(btl, it); btl.p2.__ip = 1; c2 = 'pass'; } else c2 = B.dbl ? aiD(btl, B.diff) : aiGmk(btl, aiChoice(btl, B.diff)); }
+    if (!B.dbl && c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
     if (B.picks) B.picks.push([btl.turn, c1 || '', c2 || '']);   // 배틀 기록: 이 턴에 관장이 고른 것·상대 AI 가 고른 것
     if (c1 && c2) btl.makeChoices(c1, c2); else if (c1) btl.choose('p1', c1); else if (c2) btl.choose('p2', c2); else return;
@@ -1308,13 +1314,70 @@ async function choose(req) {
     if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>여기까지 보상은 받고,<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
+/* v24.21 경완 '수련탑 더블 배틀': 내 두 마리를 차례로 고르기 (기술 → 목표), 쓰러지면 빈 자리마다 다음 포켓몬 */
+const NEED_T = new Set(['normal', 'any', 'adjacentFoe', 'adjacentAlly', 'adjacentAllyOrSelf']);
+function tgtPick(tg, me) {
+  const L = [['e', 1], ['e2', 2], ['p', -1], ['p2', -2]], alive = s => B.act[s] && !B.act[s].fnt;
+  const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' ? k[0] === 'e' : k !== me);
+  const C = L.filter(ok); if (C.length <= 1) return Promise.resolve(C[0] ? C[0][1] : '');
+  return new Promise(res => { const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k); return `<button class="bb tg-b ${k[0]}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}><small>${k[0] === 'e' ? '상대' : k === me ? '자기 자신' : '같은 편'}</small><span>${esc(X?.nm || '—')}</span></button>`; };
+    const p = panel(`<div class="bp-tgt"><p>누구에게 쓸까?</p><div class="tg-g">${[L[0], L[1], L[2], L[3]].map(bt).join('')}</div><button class="bb cancel" data-x><span>취소</span></button></div>`);
+    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.n); }; });
+}
+async function chooseD(req) {
+  B.passP = 0;
+  if (req.forceSwitch) { const out = [], used = [];
+    for (let k = 0; k < req.forceSwitch.length; k++) { if (!req.forceSwitch[k]) { out.push('pass'); continue; }
+      if (!req.side.pokemon.some((m, i) => !m.active && !/fnt/.test(m.condition) && !used.includes(i))) { out.push('pass'); continue; }
+      await msg('다음 포켓몬을 골라 주세요.', 0); const i = await partyPanel(req, true, used); used.push(i); out.push('switch ' + (i + 1)); }
+    return out.join(', '); }
+  const S2 = ['p', 'p2'], ch = [], used = [];
+  for (let k = 0; k < req.active.length; k++) {
+    const R = req.active[k], X = B.act[S2[k]];
+    if (!X || X.fnt || /fnt/.test(req.side.pokemon[k]?.condition || '')) { ch.push('pass'); continue; }
+    if (R.moves.length === 1 && R.moves[0].pp == null) { ch.push('move 1'); continue; }
+    for (;;) {
+      const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
+      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } const i = await movePanel(req, k); if (i == null) continue;
+        const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target, n = NEED_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n === null) continue;
+        ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
+      if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
+      if (a === 'info') { await battlerInfo(); continue; }
+      if (a === 'bag') { if (B.train?.balls) { const two = ['e', 'e2'].filter(q => B.act[q] && !B.act[q].fnt).length > 1; if (two) { await msg('야생 포켓몬이 둘이라\n볼을 던질 틈이 없다!'); continue; }
+          const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = B.btl.p1.active[k]; const k2 = R.moves.findIndex(m => !m.disabled && m.pp > 0); ch.push('move ' + (k2 < 0 ? 1 : k2 + 1)); break; } continue; }
+        await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
+      if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>여기까지 보상은 받고,<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
+    }
+  }
+  return ch.join(', ');
+}
+/* v24.21 더블 상대 AI: 자리마다 기술 × 목표를 어림 점수로 (상성·자속·명중·남은 체력), 광역기는 상대 둘 합 ×0.75 · 같은 편까지 맞히는 기술(지진 등)은 같은 편 몫을 뺌 */
+function aiD(btl, diff) {
+  const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
+  if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass'; const x = pick(o); used.push(x.i); return 'switch ' + (x.i + 1); }).join(', '); }
+  const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
+  return req.active.map((R, k) => { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
+    if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
+    const mv = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    const C = [], add = (o, v, n) => C.push({ o, v: v * rnd(.85, 1.15), n });
+    const sc = (m, f) => { if (!f || f.fainted || !btl.dex.getImmunity(m.type, f)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, f), stab = (me.types || me.species?.types || []).includes(m.type) ? 1.5 : 1;
+      return (m.basePower || 40) * eff * stab * ((m.accuracy === true ? 100 : m.accuracy) / 100) / 100 * (f.hp / f.maxhp < .3 ? 1.3 : 1); };
+    for (const o of mv) { const m = btl.dex.moves.get(o.m.id), tg = o.m.target || m.target;
+      if (m.category === 'Status') { if (tg === 'adjacentAlly') continue; add(o, .25 + Math.random() * .2, NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n : ''); continue; }
+      if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, x) => a + sc(m, x.q), 0) * .75; if (tg === 'allAdjacent') { const al = side.active[1 - k]; if (al && !al.fainted) v -= sc(m, al) * 1.2; } add(o, v, ''); }
+      else if (NEED_T.has(tg)) foes.forEach(x => add(o, sc(m, x.q), x.n)); else add(o, sc(m, foes[0]?.q), ''); }
+    if (!C.length) return 'move ' + (mv[0].i + 1);
+    const b = diff === 0 && Math.random() < .5 ? pick(C) : C.sort((a, b) => b.v - a.v)[0];
+    return 'move ' + (b.o.i + 1) + (b.n ? ' ' + b.n : '');
+  }).join(', ');
+}
 // 이름표 "p1a: 피카츄" → 편
-const sideOf = id => id.startsWith('p1') ? 'p' : 'e';
-const nmIn = (id) => id.replace(/^p\da?: /, '');
-const who = id => (sideOf(id) === 'e' ? '상대 ' : '') + nmIn(id);
+const sideOf = id => (id.startsWith('p1') ? 'p' : 'e') + (id[2] === 'b' ? '2' : '');   /* v24.21 더블: p1b·p2b = 두 번째 자리 */
+const nmIn = (id) => id.replace(/^p\d[ab]?: /, '');
+const who = id => (sideOf(id)[0] === 'e' ? '상대 ' : '') + nmIn(id);
 function partyIdx(side, line) {
-  const L = B.o[side], nm = nmIn(line[2]), spn = line[3].split(',')[0];
-  const k = L.findIndex(p => p.name === nm && p.species.name === spn && !p.fainted && p !== (side === 'p' ? B.act.p?.pk : B.act.e?.pk));
+  const L = B.o[side[0]], nm = nmIn(line[2]), spn = line[3].split(',')[0], on = [side[0], side[0] + '2'].map(k => B.act[k]?.pk);
+  const k = L.findIndex(p => p.name === nm && p.species.name === spn && !p.fainted && !on.includes(p));
   return k >= 0 ? k : L.findIndex(p => p.name === nm);
 }
 // 맞는 소리는 효과(굉장/별로)에 따라 다르다: 이어지는 줄을 미리 본다
@@ -1375,10 +1438,12 @@ async function frFx(s) { const m = monEl(s); if (!m) return; const im = m.queryS
 const frTr = () => { let n = ''; try { n = (GA.trOf?.().n || '').trim(); } catch (e) {} return n || '관장'; };
 async function readLog() {
   const L = B.btl.log;
-  if (B.wild && !B.eOut && !B.swp) {   /* v24.18 본가 순서: 야생은 '앗! 야생 ~ 튀어나왔다!' 가 먼저, 그다음 '가랏!' → 첫 내 포켓몬·상대 포켓몬 나오는 줄 순서를 바꿈 */
-    const blk = pl => { for (let j = B.li; j < L.length; j++) { if (/^\|turn\|/.test(L[j])) return null; if (L[j] === `|split|${pl}` && L[j + 1]?.startsWith(`|switch|${pl}a`)) return [j, 3]; if (L[j].startsWith(`|switch|${pl}a`)) return [j, 1]; } return null; };
-    const a = blk('p1'), b = blk('p2'); if (a && b) { B.swp = 1; if (a[0] < b[0]) { const mv = L.splice(b[0], b[1]); L.splice(a[0], 0, ...mv); } }
+  if (B.wild && !B.eOut && !B.swp) {   /* v24.18 본가 순서: 야생은 '앗! 야생 ~ 튀어나왔다!' 가 먼저, 그다음 '가랏!' → 처음 나오는 상대 줄들을 내 줄들 앞으로 (v24.21 더블은 두 줄씩) */
+    let t = L.length; for (let j = B.li; j < L.length; j++) if (/^\|turn\|/.test(L[j])) { t = j; break; }
+    const bk = pl => { const Q = []; for (let j = B.li; j < t; j++) { if (L[j] === `|split|${pl}` && L[j + 1]?.startsWith(`|switch|${pl}`)) { Q.push([j, 3]); j += 2; } else if (L[j].startsWith(`|switch|${pl}`)) Q.push([j, 1]); } return Q; };
+    const a = bk('p1'), b = bk('p2'); if (a.length && b.length) { B.swp = 1; if (a[0][0] < b[0][0]) { const mv = []; for (const [j, n] of [...b].reverse()) mv.unshift(...L.splice(j, n)); L.splice(a[0][0], 0, ...mv); } }
   }
+
   while (B && B.li < L.length) {
     let line = L[B.li++];
     if (line === '|split|p1' || line === '|split|p2') { line = L[B.li]; B.li += 2; }   // 정확한 체력 줄만 쓴다
@@ -1428,31 +1493,32 @@ async function handle(a) {
   switch (k) {
     case 'switch': case 'drag': {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);
-      const src = s === 'p' ? B.my[i] : B.foe[i], pk = B.o[s][i];
+      const src = s[0] === 'p' ? B.my[i] : B.foe[i], pk = B.o[s[0]][i];
       const old = A(s);
-      if (old && !old.fnt) { await msg(s === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
+      if (old && !old.fnt) { await msg(s[0] === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
       monEl(s).classList.remove('dmx', 'tera'); patOff(s); B.gmx[s] = 0;   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
-      if (s === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); B.vs.add(src.pid); }
-      if (s === 'e') { const P0 = B.act.p; B.vs = new Set(P0 && !P0.fnt ? [P0.pid] : []); }   // v14.94 경완: 경험치는 이 상대와 마주친 포켓몬만 다 받고, 나머지는 학습장치 (본가처럼 상대마다 새로)
-      if (s === 'e' && B.wild && !B.eOut) { B.eOut = 1; await sendOut(s, X, 1); if (!B) break; await msg(B.wildSay || `앗! 야생 ${iga(X.nm)} 튀어나왔다!`, 900); await wait(200); break; }   /* v23.10 야생 배틀 (훈련하기) */
-      if (s === 'p' && B.chain && !B.pOut) { B.pOut = 1; await sendOut(s, X, 1); await wait(200); break; }   /* 이어지는 배틀: 내 포켓몬은 나와 있던 그대로 */
-      if (s === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
+      if (s[0] === 'p') { X.xpg = xpGauge(src); X.pid = src.pid; B.used.add(src.pid); B.vs.add(src.pid); }
+      if (s[0] === 'e') { B.vs = new Set(['p', 'p2'].map(k => B.act[k]).filter(P0 => P0 && !P0.fnt).map(P0 => P0.pid)); }   // v14.94 경완: 경험치는 이 상대와 마주친 포켓몬만 다 받고, 나머지는 학습장치 (본가처럼 상대마다 새로)
+      if (s[0] === 'e' && B.wild && B.dbl && !B.eOut2) { if (s === 'e') { B.eOut = 1; B.eOutP = sendOut(s, X, 1); break; } B.eOut2 = 1; await wait(140); await Promise.all([B.eOutP, sendOut(s, X, 1)]); if (!B) break; await msg(B.wildSay || `앗! 야생 ${wa(B.act.e?.nm || '')} ${iga(X.nm)} 튀어나왔다!`, 900); await wait(200); break; }   /* v24.21 더블: 야생 두 마리가 같이 들어옴 */
+      if (s[0] === 'e' && B.wild && !B.eOut) { B.eOut = 1; await sendOut(s, X, 1); if (!B) break; await msg(B.wildSay || `앗! 야생 ${iga(X.nm)} 튀어나왔다!`, 900); await wait(200); break; }   /* v23.10 야생 배틀 (훈련하기) */
+      if (s[0] === 'p' && B.chain && !(B.pO = B.pO || {})[s]) { B.pO[s] = 1; B.pOut = 1; await sendOut(s, X, 1); await wait(200); break; }   /* 이어지는 배틀: 내 포켓몬은 나와 있던 그대로 */
+      if (s[0] === 'e') { if (!B.eOut) { B.eOut = 1; $b('.bt-tr.e').classList.add('away'); $b('.bt-pty.e').classList.remove('on'); } await msg(`${eun(B.foeNm)} ${eul(X.nm)} 내보냈다!`, 0); }
       else { if (!B.pOut) { B.pOut = 1; $b('.bt-tr.p').classList.add('throw'); $b('.bt-pty.p').classList.remove('on'); } await msg(`가랏! ${X.nm}!`, 0); }
       await sendOut(s, X); await wait(200);
       break;
     }
     case 'move': {
       if (sideOf(a[2]) === 'e' && B.onFoeMove) { try { await B.onFoeMove(); } catch (e) {} if (!B) return; }   /* v24.46 경완 '화염방사 쓰자마자 상대 턴 오기 전에 강박사가 데미지 얘기': 튜토리얼이 상대 기술 앞에서 잠깐 멈춤 */
-      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
+      const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s[0] === 'p' && X) B.egMv = X.pid;
       { const mv = PSim.Dex.moves.get(id); B.mh = mv?.multihit || id === 'dragondarts' ? { s, id, n: 0 } : null; }   /* v21.85 경완 '연속기는 본가처럼 맞을 때마다 기술 효과': 두 번째 맞는 것부터 그 기술 연출을 다시 */
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]')); if (dm.isZ) { zAura(s, false, true); if (s === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1462,9 +1528,9 @@ async function handle(a) {
       else if (from) await resFx(s, from, a);   // 씨뿌리기·스텔스록·압정·조이기·모래바람 등 (경완 2026-10-29 '지속 데미지·패시브 기술 모션')
       const hz = /^(move: )?(Stealth Rock|Spikes)$/.test(from);   // 스텔스록·압정은 HP 먼저, 말은 뒤 (본가)
       if (from && !hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); }
-      if (from === 'confusion') { await moveFx(other(s), 'pound'); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
+      if (from === 'confusion') { await moveFx(other(s), 'pound', false, undefined, s); await hitFx(s, 'M'); }   // 혼란 자해: 본가처럼 막치기 연출·소리 → 깜빡 → HP (경완 2026-10-28)
       if (!from && B.noHit === s) B.noHit = null;   /* v21.30 경완 '탈은 특성 카드 먼저': 탈이 대신 맞은 0 데미지 줄은 본가처럼 맞아 깜빡이지 않음 */
-      else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false); await hitFx(s, effAhead(a[2])); }
+      else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false, undefined, s); await hitFx(s, effAhead(a[2])); }
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
     case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
@@ -1473,7 +1539,7 @@ async function handle(a) {
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); if (a.includes('[from] move: Pain Split') && !a.includes('[silent]')) await msg('서로의 체력을 나눠 가졌다!'); break; }   /* v21.30 고통나누기 문장 */
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s === 'e') await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
     case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); if (a.some(x => /^\[from\] ability: /.test(x))) { await msg(a[3] === 'unboost' ? `${who(a[2])}의 능력은 떨어지지 않는다!` : `${who(a[2])}에게는 효과가 없는 것 같다…`); break; } if (a.includes('[weak]')) { await msg('그러나 대타를 만들기에는 체력이 부족했다!'); break; } { const fw = (a.find(x => /^\[from\] /.test(x)) || '').slice(7); const T = { 'Primordial Sea': '강한 비 때문에 불꽃 타입 공격이 사라져 버렸다!', 'Desolate Land': '강한 햇살 때문에 물 타입 공격이 증발해 버렸다!' }; if (T[fw]) { await msg(T[fw]); break; } } await msg('그러나 실패했다!'); break;   /* v21.30: 체력 부족한 대타·시작의바다·끝의대지 문장 */   /* v20.75: 클리어바디·정신력 등 특성으로 막으면 그 문장 */   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
@@ -1485,12 +1551,12 @@ async function handle(a) {
     case '-boost': case '-unboost': { const n = +a[4] || 0, up = k === '-boost', s = sideOf(a[2]); await statFx(s, up); await msg(`${who(a[2])}의 ${iga(STAT_KO[a[3]] || a[3])} ${n >= 3 ? '매우 크게 ' : n === 2 ? '크게 ' : n === 0 ? '더 이상 ' : ''}${n === 0 ? (up ? '올라가지 않는다!' : '떨어지지 않는다!') : up ? '올라갔다!' : '떨어졌다!'}`); break; }
     case '-weather': { const w = a[2]; wxSet(w); if (a.includes('[upkeep]')) { const u = { Sandstorm: ['sandstorm', '모래바람이 세차게 분다'], Hail: ['hail', '싸라기눈이 계속 내리고 있다'], Snow: ['hail', '눈이 계속 내리고 있다'], Snowscape: ['hail', '눈이 계속 내리고 있다'], RainDance: ['raindance', '비가 계속 내리고 있다'], SunnyDay: ['sunnyday', '햇살이 강하다'] }[w];   // 턴 끝마다 본가처럼 날씨 연출 (경완 2026-10-29)
         if (u) { await moveFx('p', u[0]); await msg(u[1], 300); } break; } const T = { RainDance: '비가 내리기 시작했다!', SunnyDay: '햇살이 강해졌다!', Sandstorm: '모래바람이 불기 시작했다!', Hail: '싸라기눈이 내리기 시작했다!', Snow: '눈이 내리기 시작했다!', Snowscape: '눈이 내리기 시작했다!', DesolateLand: '햇살이 아주 강해졌다!', PrimordialSea: '강한 비가 내리기 시작했다!', DeltaStream: '수수께끼의 난기류가 비행 포켓몬을 지킨다!', none: '날씨가 원래대로 돌아왔다!' };   /* v21.30: 설경·끝의대지·시작의바다·델타스트림 문장 */ if (T[w]) await msg(T[w]); break; }
-    case '-mega': case '-primal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const n = who(a[2]), tr = s === 'p' ? frTr() : B.foeNm;
+    case '-mega': case '-primal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const n = who(a[2]), tr = s[0] === 'p' ? frTr() : B.foeNm;
       if (k === '-mega') { const st = PSim.Dex.items.get(a[4] || ''), stKo = gmStone(st), sfx = /Mega-([XYZ])$/.exec(PSim.Dex.species.get(msOf(st)).name || '')?.[1] || '';
         await msg(`${n}의 ${wa(stKo)} ${tr}의 메가링이 반응했다!`); await gmFx(s, X, 'mega', a[4]); const mn = `메가${SPECIES[X.sp]?.n || X.nm}${sfx}`; await msg(`${eun(n)} ${mn}${ro(mn)} 메가진화했다!`); }
       else { await gmFx(s, X, 'primal'); await msg(`${n}의 원시회귀! 원시의 모습으로 돌아왔다!`); }
       break; }
-    case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
+    case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s[0] === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
       await gmFx(s, A(s), 'z', zi); zAura(s, true); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower')]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
     case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
@@ -1551,7 +1617,7 @@ async function handle(a) {
       se('KOUKA_M', { pan: panOf(s) }); m.classList.remove('fmc'); void m.offsetWidth; m.classList.add('fmc'); await wait(260);
       m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); await wait(420); m.classList.remove('fmc');
       await msg(/busted/.test(fm) ? `${who(a[2])}의 탈이 벗겨졌다!` : `${who(a[2])}의 모습이 바뀌었다!`); break; }
-    case '-pkevo': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X || s !== 'p') break; const to = +a[3], from = X.sp, P = GA.boxOf?.(X.pid), SP = GA.SPECIES, toN = SP[to]?.n || '', oldNm = X.nm;
+    case '-pkevo': { const s = sideOf(a[2]), X = A(s), m = monEl(s); if (!X || s[0] !== 'p') break; const to = +a[3], from = X.sp, P = GA.boxOf?.(X.pid), SP = GA.SPECIES, toN = SP[to]?.n || '', oldNm = X.nm;
       await msg(`어라…? ${oldNm}의 모습이…!`, 500); if (!B) break;
       const N = { ...X, sp: to, tsp: to, fm: toID(D.sp[to]?.id || ''), gif: null }; N.gif = await pickGif(s, N); if (!B) break;
       /* v21.52 경완 '한번 뜨고 우리 진화하는 화면으로 넘어가고 배틀로 돌아오는게 낫겠는데': 대사 뒤 본 게임 진화 화면(evolveWin, 진화 곡·확인·도감 카드) → 끝나면 배틀 곡이 다시 흐르고 새 모습으로 */
@@ -1619,7 +1685,7 @@ const TY_FX = { 10: '#ff7a30', 11: '#48a0ff', 13: '#ffe040', 15: '#a8f0ff', 4: '
 // 파티클은 원본 방출기 그대로 gym/spl.js 가 그린다 ('p' 사건). 대본이 없는 기술만 타입 색 불꽃('e').
 const FR = 1000 / 30;
 const CTR = { e: [176, 56], p: [80, 104] };
-const other = s => s === 'p' ? 'e' : 'p';
+const other = s => s[0] === 'p' ? 'e' : 'p';
 function tintOf(side) {   // 포켓몬 색 덮기용 SVG 필터 (한 번 만든다)
   let f = el.querySelector(`#btTint${side}`);
   if (!f) {
@@ -1691,15 +1757,26 @@ const CRY_MV = new Set(['growl', 'roar', 'howl', 'hypervoice', 'chatter', 'noble
 // 2턴 기술 모으는 턴 연출 (mvfx.json 의 기술id_c). 플래티넘에 없는 기술은 비슷한 기술 것으로
 const CHG_LIKE = { solarblade: 'solarbeam', phantomforce: 'shadowforce', skydrop: 'fly', meteorbeam: 'skullbash', electroshot: 'skullbash', geomancy: 'solarbeam', freezeshock: 'skyattack', iceburn: 'skyattack' };
 const chgOf = id => MFX[id + '_c'] ? id + '_c' : CHG_LIKE[id] && MFX[CHG_LIKE[id] + '_c'] ? CHG_LIKE[id] + '_c' : null;
-async function moveFx(s, id, miss, fx) {
+/* v24.21 더블: 쓰는 자리·맞는 자리가 두 번째 자리면 연출 동안 그 칸을 첫 자리 이름표로 바꿔 끼움 (칸 위치는 data-sl 그대로), 파티클 판은 맞는 자리만큼 옮김 */
+async function moveFx(s, id, miss, fx, t) {
+  if (!B?.dbl || !el) return moveFx1(s, id, miss, fx);
+  const tg = window.PSim?.Dex.moves.get(id)?.target, self = tg === 'self' || tg === 'adjacentAllyOrSelf' || tg === 'allySide' || tg === 'allies';
+  const d = t && t[0] !== s[0] ? t : null, sw = [], o = self ? s : d || other(s);
+  if (s[1]) sw.push(s[0]); if (d && d[1]) sw.push(d[0]);
+  const flip = k => ['mw', 'mon'].forEach(n => el.querySelectorAll(`.bt-${n}.${k}`).forEach(x => x.classList.toggle('s2')));
+  const fxL = ['.bt-ptc', '.bt-fx', '.bt-essb', '.bt-essf'].map(q => $b(q)).filter(Boolean);
+  sw.forEach(flip); fxL.forEach(x => { x.style.translate = `${slx(o)}px ${sly(o)}px`; });
+  try { return await moveFx1(s[0], id, miss, fx); } finally { if (el) { sw.forEach(flip); fxL.forEach(x => { x.style.translate = ''; }); } }
+}
+async function moveFx1(s, id, miss, fx) {
   const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
-  let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1];
+  let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1];
   if (!A && !fx && await essFx(s, id)) return;
   // 5세대 이후 주먹 기술은 비슷한 4세대 주먹 연출로 (경완 2026-10-29 '그로우펀치가 당수 모션')
-  if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
+  if (!A && MV_LIKE[id]) { A = MFX[MV_LIKE[id]]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1]; }
   // 5세대 이후 기술: 같은 타입·분류의 4세대 기술 연출을 빌린다
-  if (!A) { const r = MV_REP[ty]?.[cat]; A = r && MFX[r]; if (A && Array.isArray(A[0])) A = A[s === 'p' ? 0 : 1]; }
+  if (!A) { const r = MV_REP[ty]?.[cat]; A = r && MFX[r]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1]; }
   if (!A) {   // 그래도 없으면 분류에 따라 간단히
     A = cat === 0 ? [14, [['s', 0, '050', 'd'], ['m', 0, 'a', 14, -8, 2], ['e', 2, 'd', 12], ['k', 2, 'd', 2, 0, 1, 2], ['m', 4, 'a', -14, 8, 2]]]
       : cat === 1 ? [26, [['s', 0, 'W207', 'm'], ['e', 0, 'ad', 18], ['e', 14, 'd', 12], ['k', 16, 'd', 2, 0, 1, 2]]]
@@ -1713,7 +1790,7 @@ async function moveFx(s, id, miss, fx) {
   }
   // 자기에게 쓰는 기술(달빛·HP회복 등): 본가처럼 맞는 쪽 = 쓰는 쪽 (v19.18 경완 '달빛 회복 효과는 내 포켓몬 위에')
   const tg = window.PSim?.Dex.moves.get(id)?.target, me = tg === 'self' || tg === 'adjacentAllyOrSelf' || tg === 'allySide' || tg === 'allies';
-  const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' || me ? s : other(s), mw = w => $b(`.bt-mw.${side(w)}`);
+  const sp = B.fast ? .6 : 1, F = FR * sp, side = w => w === 'a' || me ? s : other(s), mw = w => $b(SEL('mw', side(w)));
   const pan = w => w === 'a' ? panOf(s) : w === 'd' ? panOf(side('d')) : 0;
   // 원본 파티클: 그림을 다 받은 뒤 다른 연출과 같은 박자로 시작
   let spl = null;
@@ -1723,7 +1800,7 @@ async function moveFx(s, id, miss, fx) {
     if (!B) { spl?.stop(); return; }
     spl?.go();
   }
-  const pos = { p: [0, 0], e: [0, 0] }, setPos = sd => { $b(`.bt-mw.${sd}`).style.translate = `${pos[sd][0]}px ${pos[sd][1]}px`; };
+  const pos = { p: [0, 0], e: [0, 0] }, setPos = sd => { $b(SEL('mw', sd)).style.translate = `${pos[sd][0]}px ${pos[sd][1]}px`; };
   const job = [];
   for (const e of A[1]) {
     const t = e[1] * F, k = e[0];
@@ -1735,7 +1812,7 @@ async function moveFx(s, id, miss, fx) {
       } else if (k === 'm') {
         const sd = side(e[2]), fl = sd === 'e' ? -1 : 1, fr = Math.max(1, e[5]); const p0 = [...pos[sd]];
         pos[sd] = [p0[0] + e[3] * fl, p0[1] + e[4] * fl];
-        $b(`.bt-mw.${sd}`).animate([{ translate: `${p0[0]}px ${p0[1]}px` }, { translate: `${pos[sd][0]}px ${pos[sd][1]}px` }], { duration: fr * F, easing: `steps(${fr})`, fill: 'forwards' }); setPos(sd);
+        $b(SEL('mw', sd)).animate([{ translate: `${p0[0]}px ${p0[1]}px` }, { translate: `${pos[sd][0]}px ${pos[sd][1]}px` }], { duration: fr * F, easing: `steps(${fr})`, fill: 'forwards' }); setPos(sd);
       } else if (k === 'b') {
         const d = $b('.bt-dim'); d.style.background = e[4]; d.style.setProperty('--fd', e[5] * F + 'ms'); d.style.opacity = e[3] / 16 * .75;
       } else if (k === 'f') {
@@ -1754,7 +1831,7 @@ async function moveFx(s, id, miss, fx) {
   await wait(A[0] * F + 30);
   if (spl) { await Promise.race([spl.done, wait(1500)]); spl.stop(); }
   // 원래 자리로
-  ['p', 'e'].forEach(sd => { const x = $b(`.bt-mw.${sd}`); x.getAnimations().forEach(a => a.cancel()); x.style.translate = ''; monEl(sd).style.visibility = ''; });
+  ['p', 'e'].forEach(sd => { const x = $b(SEL('mw', sd)); x.getAnimations().forEach(a => a.cancel()); x.style.translate = ''; monEl(sd).style.visibility = ''; });
   const d = $b('.bt-dim'); d.style.setProperty('--fd', '.2s'); d.style.opacity = 0;
 }
 // 맞음: 본가 효과음(굉장 H / 보통 M / 별로 L) + 4번 깜빡
@@ -1835,10 +1912,10 @@ async function expGain(X) {
       if (r.lv > r.lv0) { const L = lvWin(P, r.lv0, r.lv); lvApply(pk, null, r.lv, L.a, L.b); B.my[i].lv = r.lv; }
       SH.push({ i, P, r, g0 }); continue; }
     const x = B.xr[pid] = B.xr[pid] || { n: 0, lv0: r.lv0, lv: r.lv0, learned: [] }; x.n += r.n; x.lv = r.lv; x.learned.push(...r.learned);
-    const nm = B.my[i].nm, A = B.act.p, on = A && A.pid === pid && !A.fnt;
+    const nm = B.my[i].nm, sl = ['p', 'p2'].find(k => B.act[k]?.pid === pid && !B.act[k].fnt), A = sl ? B.act[sl] : null, on = !!A;
     await msg(`${eun(nm)} 경험치 ${eul(r.n.toLocaleString())} 얻었다!`, on ? 0 : 500);
-    if (on) { const hb = $b('.bt-hb.p .xp>i'), g = growth(P.sp); let lv = r.lv0;
-      for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b('.bt-hb.p .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
+    if (on) { const hb = $b(SEL('hb', sl || 'p') + ' .xp>i'), g = growth(P.sp); let lv = r.lv0;
+      for (;;) { const goal = lv < r.lv ? 1 : xpGauge(B.my[i]); se('EXP', { dur: B.fast ? .25 : .6 }); hb.style.transition = 'width .6s linear'; hb.style.width = clampN(goal, 0, 1) * 96 + 'px'; await wait(B.fast ? 250 : 620); if (lv >= r.lv) break; lv++; A.lv = lv; $b(SEL('hb', sl || 'p') + ' .lvn').textContent = lv; se('EXPMAX');   /* 경완 2026-10-28: 경험치 막대 차는 본가 소리(SEQ_SE_DP_EXP), 꽉 차면 EXPMAX */ hb.style.transition = 'none'; hb.style.width = '0px'; await wait(30); }
       hb.style.transition = ''; A.xpg = xpGauge(B.my[i]); }
     if (r.lv > r.lv0) { await msg(`${nm}의 레벨이 ${r.lv}${/[036]$/.test(String(r.lv)) ? '으로' : '로'} 올랐다!`, 0); if (B) try { await window.GymBGM?.fan?.('ME_FANFA1'); } catch (e) {}   /* 본가 {WAIT 5}{WAIT 2}: 레벨 업 팡파르가 끝난 뒤 능력치 창 */ if (!B) return; const L = lvWin(P, r.lv0, r.lv); lvApply(pk, on ? A : null, r.lv, L.a, L.b); if (B) await L.run(); }
     for (const [id, f] of r.learned) await msgFan(f ? `${eun(nm)} ${eul(mvKo(f))} 잊고 ${eul(mvKo(id))} 배웠다!` : `${eun(nm)} 새로 ${eul(mvKo(id))} 배웠다!`);
@@ -1853,9 +1930,9 @@ async function expGain(X) {
 /* v22.19 경완 '상 번뜩임은 파칭 그대로 + 머리를 스치는 번개': 파칭과 함께 머리 위를 가로지르는 번개 두 줄기 (0.12초·0.38초), 레어는 무지갯빛 */
 /* v22.19 경완 '번개는 포켓몬 한쪽에서 반대편으로 뚫고 들어가는 느낌', '스프라이트 뒤로 지나가게': 번개가 몸 바깥 한쪽에서 그어지며 몸을 꿰뚫고 반대편으로 빠져나감 (들어간 자리·나간 자리 불꽃), 왼→오 · 오→왼 두 번, 칠 때 화면 번쩍 + 천둥 DP_KAMI */
 const egZp = () => { let p = 'M0 18'; for (let i = 1; i <= 10; i++) p += ` L${i * 17.6} ${(18 + (i === 10 ? 0 : (Math.random() * 2 - 1) * (i % 2 ? 14 : 9))).toFixed(1)}`; return p; };
-function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy; const mw = $b('.bt-mw.p'); if (c && mw) { mw.classList.add('egzr'); setTimeout(() => mw.classList.remove('egzr'), 1500); }   /* 레어: 어두운 판(z 4) 위로 번개(z 5)·포켓몬(z 6) — 경완 '검은 그림자 뒤로 간 거 같아' */
+function egZap(add, hx, hy, c, cx, cy) { setTimeout(() => { try { B && window.GymBGM?.se?.('DP_KAMI', { gain: 1.3 }); } catch (e) {} }, 260); const X = cx ?? hx, Y = cy ?? hy; const mw = $b(SEL('mw', 'p')); if (c && mw) { mw.classList.add('egzr'); setTimeout(() => mw.classList.remove('egzr'), 1500); }   /* 레어: 어두운 판(z 4) 위로 번개(z 5)·포켓몬(z 6) — 경완 '검은 그림자 뒤로 간 거 같아' */
   [[1, -14, -8, 280], [-1, 6, 7, 640]].forEach(([dr, dy, r, ms]) => setTimeout(() => { if (!B) return; const p = egZp(), y = Y + dy;
-    const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`, $b('.bt-mw.p')); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
+    const e = add('bt-egz' + c, X - 88, y - 18, `<svg viewBox="0 0 176 36"><path pathLength="100" d="${p}"/><path class="c" pathLength="100" d="${p}"/></svg>`, $b(SEL('mw', 'p'))); e.style.setProperty('--r', r + 'deg'); e.style.setProperty('--s', dr);
     add('bt-egzb' + c, X - 88 * dr, y, '<i></i>'); setTimeout(() => B && add('bt-egzb o' + c, X + 88 * dr, y, '<i></i>'), 150); add('bt-egzf' + c, 0, 0); try { GA.haptic?.(2); } catch (e) {} }, ms)); }   /* v22.19 경완: 번개 칠 때 진동 */
 /* v22.19 경완 '번뜩일 때 배경 곡 줄이기': 보통 중·상, 레어는 모두 — 곡을 ¼ 로 줄였다가 ms 뒤 다시 */
 const egDuck = ms => { try { window.GymBGM?.duck?.(.25, .15); setTimeout(() => { try { window.GymBGM?.duck?.(1, .5); } catch (e) {} }, ms); } catch (e) {} };
@@ -1863,7 +1940,7 @@ function egFx(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.query
   const T = t.getBoundingClientRect(), R = im.getBoundingClientRect(), k = T.width / 256 || 1, cx = (R.left + R.width / 2 - T.left) / k, cy = (R.top + R.height * .55 - T.top) / k, hy = (R.top + R.height * .12 - T.top) / k, hx = (R.left + R.width * .58 - T.left) / k;
   me.classList.remove('egk'); void me.offsetWidth; me.classList.add('egk'); setTimeout(() => me.classList.remove('egk'), 2200);
   const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 2400); return e; };
-  add('bt-egv' + (tr < 2 ? ' t1' : ''), 0, 0); if (tr > 1) { add('bt-egr' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b('.bt-mw.p')); add('bt-egf' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>'); if (tr > 2) egZap(add, hx, hy, '', cx, hy + 10); } add('bt-egc', cx, cy); if (tr > 1) setTimeout(() => B && add('bt-egc', cx, cy), 220);   /* v22.07 하 = 빛 고리·반짝이만, 중 = 예전 그대로, 상 = 더 크게 + 흔들림·세 번째 고리·금빛 섬광 */
+  add('bt-egv' + (tr < 2 ? ' t1' : ''), 0, 0); if (tr > 1) { add('bt-egr' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b(SEL('mw', 'p'))); add('bt-egf' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>'); if (tr > 2) egZap(add, hx, hy, '', cx, hy + 10); } add('bt-egc', cx, cy); if (tr > 1) setTimeout(() => B && add('bt-egc', cx, cy), 220);   /* v22.07 하 = 빛 고리·반짝이만, 중 = 예전 그대로, 상 = 더 크게 + 흔들림·세 번째 고리·금빛 섬광 */
   if (tr > 2) { t.classList.remove('ershk'); void t.offsetWidth; t.classList.add('ershk'); setTimeout(() => t.classList.remove('ershk'), 1400); setTimeout(() => B && add('bt-egc', cx, cy), 460); setTimeout(() => { if (!B) return; const w = add('bt-egw', 0, 0); w.style.setProperty('--x', (cx / 2.56).toFixed(1) + '%'); w.style.setProperty('--y', (cy / 1.92).toFixed(1) + '%'); }, 900); }
   [[-30, -6, .1], [34, 4, .3], [-22, 30, .45], [26, -34, .2], [6, 44, .6], [-40, -38, .38], [44, -12, .7], [-48, 12, .52], [50, 26, .25], [-10, -52, .66], [16, 56, .8], [-56, -20, .9]].slice(0, [0, 4, 7, 12][tr]).forEach(([x, y, dl]) => { const e = add('bt-egt', cx, cy - 8); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--y', y + 'px'); e.style.setProperty('--d', dl + 's'); }); }
 function egFxR(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.querySelector('img'); if (!me || !t || !im) return;   /* v22.07 경완 '레어는 적은 확률로 배틀에서 번뜩, 기존이랑 다른 색·부가 효과·다른 문장': 무지개 각성 — 시간 멈춤(어두운 화면)·흔들림·발밑 마법진·빛기둥·무지개 빛줄기·충격파·프리즘 조각·마지막 섬광 */
@@ -1872,7 +1949,7 @@ function egFxR(tr = 2) { const me = monEl('p'), t = $b('.bt-top'), im = me?.quer
   if (tr > 1) on(t, 'ershk', 1400); on(me, 'erk', 3300);   /* v22.07 하 = 어둠·마법진·고리·조각 조금, 중 = 빛기둥·빛줄기·십자 더함, 상 = 고리 세 번·조각 두 배·마지막 섬광 */
   const add = (cls, x, y, html = '', before) => { const e = document.createElement('i'); e.className = cls; e.innerHTML = html; e.style.left = x + 'px'; e.style.top = y + 'px'; before ? t.insertBefore(e, before) : t.appendChild(e); setTimeout(() => e.remove(), 3400); return e; };
   const at = (ms, f) => setTimeout(() => B && f(), ms), pc = e => { e.style.setProperty('--x', (cx / 2.56).toFixed(1) + '%'); e.style.setProperty('--y', (cy / 1.92).toFixed(1) + '%'); return e; };
-  pc(add('bt-erv', 0, 0)); add('bt-erm', cx, fy, '', $b('.bt-mw.p')); if (tr > 1) { add('bt-err' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b('.bt-mw.p')); at(120, () => add('bt-erp', cx, fy)); at(380, () => { add('bt-egf er' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>'); if (tr > 2) egZap(add, hx, hy, ' er', cx, hy + 10); }); }
+  pc(add('bt-erv', 0, 0)); add('bt-erm', cx, fy, '', $b(SEL('mw', 'p'))); if (tr > 1) { add('bt-err' + (tr > 2 ? ' t3' : ''), cx, cy, '', $b(SEL('mw', 'p'))); at(120, () => add('bt-erp', cx, fy)); at(380, () => { add('bt-egf er' + (tr > 2 ? ' t3' : ''), hx, hy, '<i></i><b></b><b class="v"></b>'); if (tr > 2) egZap(add, hx, hy, ' er', cx, hy + 10); }); }
   at(300, () => add('bt-erc', cx, cy)); if (tr > 1) at(650, () => add('bt-erc', cx, cy)); if (tr > 2) at(1000, () => add('bt-erc', cx, cy));
   [[-26, .25, 300], [18, .35, 200], [-8, .5, 40], [30, .6, 120], [-34, .7, 260], [10, .8, 320], [-18, .95, 80], [24, 1.05, 180], [-2, 1.15, 0], [36, 1.25, 240], [-30, 1.35, 140], [14, 1.45, 60], [-40, .3, 280], [40, .45, 100], [-14, .6, 220], [6, .75, 20], [-24, .9, 330], [28, 1.0, 160], [-36, 1.1, 50], [20, 1.2, 260], [-4, 1.3, 120], [32, 1.4, 300], [-20, 1.5, 0], [12, 1.6, 200]].slice(0, [0, 6, 12, 24][tr]).forEach(([x, d, h]) => { const e = add('bt-ers', cx + x * .5, fy - 6); e.style.setProperty('--x', x + 'px'); e.style.setProperty('--d', d + 's'); e.style.setProperty('--h', h); });
   if (tr > 2) at(1300, () => pc(add('bt-erw', 0, 0))); }
