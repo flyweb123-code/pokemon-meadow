@@ -1371,7 +1371,9 @@ async function challenge(picked) {
       else await Promise.all([walk(e, CR.path), SP ? (async () => { await wait(560); e2 = ent({ ow: PR.ow2, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(PR.ow2) }); await walk(e2, SP.path); e2.f = SP.f; place(e2); })() : null]); }
     else await walk(e, CR.path);
     e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
-    const goOut = async () => { for (const x of [e, e2].filter(Boolean)) { await walk(x, outRoute(D, x) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); x.el.remove(); ents = ents.filter(y => y !== x); } };   /* 경완 '더블 배틀 체육관 나갈 때 카펫 위에서 겹치지 않고 한명씩 나가게': 첫 사람이 문 밖으로 나간 뒤 두 번째 사람이 나감 */
+    const goOut = async () => { const xs = [e, e2].filter(Boolean), R = xs.map(x => outRoute(D, x) || D.path.slice(0, -1).reverse()), L = xs.length > 1 && R[1].length < R[0].length ? 1 : 0, a = xs[L], b = xs[1 - L];   /* 경완 '아니 나갈 때는 줄지어서 나가게 해줘': 문에 가까운 사람이 앞장서고, 다른 사람은 그 사람이 서 있던 칸으로 와서 같은 길을 한 칸 뒤에서 따라감 */
+      const out = async x => { await wait(250); doorSe(); await wait(120); x.el.remove(); ents = ents.filter(y => y !== x); }, s0 = [Math.round(a.x), Math.round(a.y)];
+      const ja = walk(a, R[L]).then(() => out(a)); if (b) { await wait(240); await walk(b, [...(route(D, [Math.round(b.x), Math.round(b.y)], s0, []) || []), ...R[L]]); await out(b); } await ja; };
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     const RF = c.boss && c.named !== 'red' ? (g.bsF?.[c.boss] | 0) : 0, RS = RF ? RE_SAY[Math.min(RF, RE_SAY.length) - 1] : null;   /* v24.63 경완 '승급 재심사 받을 때 전용 대사': 그 등급 심사에서 진 횟수(g.bsF)에 따라 */
