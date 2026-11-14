@@ -1430,17 +1430,20 @@ async function choose(req) {
 }
 /* v24.21 경완 '수련탑 더블 배틀': 내 두 마리를 차례로 고르기 (기술 → 목표), 쓰러지면 빈 자리마다 다음 포켓몬 */
 const NEED_T = new Set(['normal', 'any', 'adjacentFoe', 'adjacentAlly', 'adjacentAllyOrSelf']);
+/* v25.05 경완 '응 그렇게 해줘' (범위 기술도 본가처럼): 상대 전체·자기 말고 전부 맞히는 기술은 같은 화면에 맞을 칸을 다 켜서 보여 주고, 켜진 칸 아무거나 누르면 씀 */
+const SPREAD_T = new Set(['allAdjacentFoes', 'allAdjacent']);
 function tgtPick(tg, me) {
-  const L = [['e', 1], ['e2', 2], ['p', -1], ['p2', -2]], alive = s => B.act[s] && !B.act[s].fnt;
-  const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' ? k[0] === 'e' : k !== me);
-  const C = L.filter(ok); if (C.length <= 1) return Promise.resolve(C[0] ? C[0][1] : '');
+  const L = [['e', 1], ['e2', 2], ['p', -1], ['p2', -2]], alive = s => B.act[s] && !B.act[s].fnt, sp = SPREAD_T.has(tg);
+  const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' || tg === 'allAdjacentFoes' ? k[0] === 'e' : k !== me);
+  const C = L.filter(ok); if (sp ? !C.length : C.length <= 1) return Promise.resolve(sp ? '' : C[0] ? C[0][1] : '');
   /* v25.03 경완 '더블 배틀 누구에게 쓸까? 도 수련탑에서 도구 누구에게 쓸까? 화면처럼 버튼 구성' → trPickMon 과 같은 .pty 칸 (그림·이름·성별·타입·Lv·체력), 왼쪽 위 딱지 상대/같은 편/자기 자신 */
-  return new Promise(async res => { await msg('누구에게 쓸까?', 0);
+  return new Promise(async res => { await msg(sp ? (C.length > 1 ? '모두에게 쓸까?' : '쓸까?') : '누구에게 쓸까?', 0);
     const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k), P = k[0] === 'p' && X ? boxOf(X.pid) : null; if (!X) return `<button class="pty tg-p off" disabled><b>—</b></button>`;
       const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '';
       return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
     const p = panel(`<div class="bp-party bp-tgp">${[L[0], L[1], L[2], L[3]].map(bt).join('')}<button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(+b.dataset.n); }; });
+    if (sp) p.querySelector('.bp-tgp')?.classList.add('tg-all');
+    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(sp ? '' : +b.dataset.n); }; });
 }
 async function chooseD(req) {
   B.passP = 0;
@@ -1457,7 +1460,7 @@ async function chooseD(req) {
     for (;;) {
       const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
       if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } const i = await movePanel(req, k); if (i == null) continue;
-        const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target, n = NEED_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n === null) continue;
+        const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target, n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n === null) continue;
         ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
