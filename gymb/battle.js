@@ -487,6 +487,9 @@ async function gmFx(s, X, kind, ty) {
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
         await GymDBK.tera(c); teraOn(s, ty); return; }
       if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
+        if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
+          c.bgImg = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = c.bg.url; setTimeout(() => r(i.complete && i.naturalWidth ? i : null), 1500); }); c.bgX = -parseFloat(getComputedStyle($b('.bt-bg')).backgroundPosition) || 0;
+          await GymDBK.dmaxFull(c); await wait(B.fast ? 300 : 1300); return; }
         await GymDBK.dynamax(c); swap(); dmaxOn(s, X); return; }
     } catch (e) { console.error(e); }
   }
@@ -511,7 +514,7 @@ async function gmFx(s, X, kind, ty) {
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
   if (kind === 'dmax') { se('KOUKA_M', { pan }); m.classList.add('fmc'); await wait(260); swap(); m.classList.remove('fmc'); dmaxOn(s, X); await wait(B.fast ? 400 : 900); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
-  if (kind === 'undmax') { m.classList.add('fmc'); await wait(260); dmaxOff(s); swap(); await wait(420); m.classList.remove('fmc'); }
+  if (kind === 'undmax') { se('BOWA2', { pan }); m.classList.add('gxout'); await wait(B.fast ? 300 : 650); dmaxOff(s); swap(); se('KOUKA_L', { pan }); await wait(B.fast ? 400 : 1300); m.classList.remove('gxout'); }   /* 본가처럼 붉은 기운이 빠져나가며 원래 크기로 (화면도 다시 가까이) */
 }
 // 배틀 중 무늬 ([DBK] Dynamax [003] UI.rb / Terastallization [002] UI.rb): 그림 위에 무늬를 불투명도 150 으로 겹쳐 흘림. 다이맥스는 1.5배
 /* v23.78 경완 '테라스탈 오버레이 효과랑 포켓몬 스프라이트 움직임이랑 안 맞아': 무늬를 따로 겹친 칸(그림을 가면으로)으로 두면 움직이는 gif·공격 모션을 못 따라감 → 그림 자체에 SVG 필터로 입힘 (그림이 움직이는 대로 같이 감) */
@@ -522,8 +525,25 @@ function patOn(s, cls, url, size) { const m = monEl(s), img = m?.querySelector('
   host.appendChild(f); m._patF = `url(#${id})`; img.style.filter = m._patF; }
 const patOff = s => { const m = monEl(s), img = m?.querySelector('.clip img'); if (!m) return; m.querySelector('.dpat')?.remove(); if (m._patF && img) img.style.filter = ''; m._patF = null; };
 function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px'); stPat(s, ''); }
-function dmaxOn(s, X) { const m = monEl(s); m.classList.add('dmx'); patOn(s, 'dp', `${IMG}dbk/pat/${X?.sp === 898 ? 'CALYREX' : 'dynamax'}.png`, '400px 96px'); stPat(s, ''); }
-function dmaxOff(s) { const m = monEl(s); m.classList.remove('dmx'); patOff(s); }
+function dmaxOn(s, X) { const m = monEl(s); m.classList.add('dmx'); patOn(s, 'dp', `${IMG}dbk/pat/${X?.sp === 898 ? 'CALYREX' : 'dynamax'}.png`, '400px 96px'); stPat(s, ''); gxOn(s); }
+function dmaxOff(s) { const m = monEl(s); m.classList.remove('dmx'); patOff(s); gxOff(s); }
+/* 경완 2026-11-14 '거다이맥스 후 배틀화면: 내 포켓몬은 커지고 거다이맥스처럼 빨간 구름 드리운 상태, 상대 포켓몬은 커진만큼 작아져있고, 배경이 하늘 혹은 실내일 경우 천장까지 보이는 배경으로'
+   → 카메라가 뒤로 물러난 듯: 배경을 줄이고 잘린 위쪽을 하늘·천장으로 이어 그린 캔버스(GymDBK.gxBg), 다이맥스한 쪽은 크게·다른 쪽은 작게(.bt.gx-p / .gx-e), 머리 위 붉은 구름 고리(GymDBK.gxRing, 포켓몬 뒤·앞 두 캔버스) */
+const GX = {};
+function gxLay() { if (!el || !B) return; const on = k => Object.keys(B.gmx || {}).some(s => s[0] === k && B.gmx[s]); el.classList.toggle('gx-p', on('p')); el.classList.toggle('gx-e', on('e'));
+  const any = on('p') || on('e'), cur = el.querySelector('.bt-gxbg');
+  if (!any) { if (cur) { cur.classList.remove('on'); setTimeout(() => { if (!el?.classList.contains('gx-p') && !el?.classList.contains('gx-e')) cur.remove(); }, 1500); } return; }
+  if (cur) { cur.classList.add('on'); return; } const bg = $b('.bt-bg'), u = (bg?.style.backgroundImage.match(/url\("?([^")]+)"?\)/) || [])[1]; if (!u || !window.GymDBK?.gxBg) return;
+  const im = new Image(); im.onload = () => { if (!el || el.querySelector('.bt-gxbg') || !(el.classList.contains('gx-p') || el.classList.contains('gx-e'))) return; const E = 96, cv = GymDBK.gxBg(im, -parseFloat(getComputedStyle(bg).backgroundPosition) || 0, u, { z: .7, ext: E, py: 150, red: .8 }); cv.className = 'bt-gxbg'; cv.style.top = -E + 'px'; cv.style.height = 192 + E + 'px'; cv.style.transformOrigin = `128px ${150 + E}px`; bg.after(cv); requestAnimationFrame(() => requestAnimationFrame(() => cv.classList.add('on'))); }; im.src = u; }
+function gxOn(s) { const m = monEl(s), mw = m?.closest('.bt-mw'); if (!mw || !window.GymDBK?.gxRing) return; gxOff(s, 1); gxLay();
+  const mk = k => { const c = document.createElement('canvas'); c.className = 'bt-gxc ' + k; c.width = 512; c.height = Math.max(200, mw.offsetHeight * 2); return c; }, cb = mk('b'), cf = mk('f'); mw.insertBefore(cb, mw.firstChild); mw.appendChild(cf);
+  const ring = GymDBK.gxRing(16, s[0] === 'e' ? 7 : 3), st = GX[s] = { cb, cf, live: 1, a: 0, to: 1 }, t0 = performance.now(), gb = cb.getContext('2d'), gf = cf.getContext('2d');
+  const loop = now => { if (!st.live) return; requestAnimationFrame(loop); if (document.hidden) return; st.a += (st.to - st.a) * .06; if (st.to === 0 && st.a < .02) { st.live = 0; cb.remove(); cf.remove(); return; }
+    const img = m.querySelector('.clip img'), R = mw.getBoundingClientRect(), q = R.width / (mw.offsetWidth || 256) || 1; [gb, gf].forEach(g => { g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 256, cb.height / 2); }); if (!img || !img.offsetWidth || m.classList.contains('faint')) return;
+    const r = img.getBoundingClientRect(), w = r.width / q, cx = (r.left - R.left) / q + w / 2, top = (r.top - R.top) / q, rx = Math.max(22, Math.min(54, w * .4)), cy = top + r.height / q * .07, t = (now - t0) / 1000;
+    ring(gb, t, cx, cy, rx, rx * .22, 'b', st.a); ring(gf, t, cx, cy, rx, rx * .22, 'f', st.a); };
+  requestAnimationFrame(loop); }
+function gxOff(s, now) { const st = GX[s]; if (st) { if (now) { st.live = 0; st.cb.remove(); st.cf.remove(); } else st.to = 0; delete GX[s]; } if (!now) setTimeout(gxLay, 0); }
 const DBK_ON = false;   /* v21.89 기믹·상태 무늬·상대 가방·배틀 정보는 경완 확인 전까지 꺼 둠 (트레이너 등장만 켬) */
 function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySelector('img'); if (!img) return; if (B?.gmx?.[side] || monEl(side).classList.contains('tera')) img.style.filter = monEl(side)._patF || ''; else if (ST_PAT[st]) { stPatDefs(); img.style.filter = `url(#btSt_${st})`; } else img.style.filter = ''; }   /* 다이맥스 중엔 붉은 무늬 (DBK 도 다이맥스·테라 중엔 상태 무늬 안 함) */
 
@@ -781,14 +801,15 @@ function movePanel(req, ak = 0) {
     const tera = R.canTerastallize && TYK[R.canTerastallize] || '', gmx = R.maxMoves?.gigantamax && !R.maxMoves.maxMoves?.every(x => !/^gmax/.test(toID(x.move)));
     const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k];
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
-      const h = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); return gk === 'zmove' && R.canZMove?.[i] ? h.replace('class="mvw"', `class="mvw zon zty${d[2] || 1}"`).replace('</b>', '</b>' + zPtH()) : h; }).join('')}
+      const h = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); return gk === 'zmove' && R.canZMove?.[i] ? h.replace('class="mvw"', `class="mvw zon zty${d[2] || 1}"`).replace('</b>', '</b>' + zPtH()) : gk === 'dynamax' ? h.replace('class="mvw"', 'class="mvw don"') : h; }).join('')}
       ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}">${k === 'terastallize' && tera && TERA_I[R.canTerastallize] ? `<i class="gk-ti" style="background-image:url(${IMG}dbk/Tera/ty/${TERA_I[R.canTerastallize]}.png)"></i>` : ''}<span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
     if (gk === 'zmove') zTySet(R, mv);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
       if (b.hasAttribute('data-x')) { B.gkSel = null; return res(null); }
       if (b.dataset.gk) { B.gkSel = B.gkSel === b.dataset.gk ? null : b.dataset.gk; vib(1); if (B.gkSel && /^mega/.test(B.gkSel)) { se('SUIKOMU'); setTimeout(() => se('KIRAN'), 260); vib(2); }   /* 경완 2026-11-12 '메가진화 버튼 누를 때 뭔가 변하는 듯한 효과음': 켤 때 기운 빨아들이는 소리 → 반짝 */
-        if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
+        if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }
+        if (b.dataset.gk === 'dynamax') { dSwap(p, R, mv, b); return; }   /* 경완 2026-11-15 '거다이맥스도 버튼 눌렀을 때 들썩이는 거 없이, 버튼이 빛나면서 소리 나면서 바뀌게' */   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
         if (/^(mega|terastallize)/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
         return movePanel(req, ak).then(res); }
       if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req, ak).then(res));
@@ -810,6 +831,16 @@ function zSwap(p, R, mv) {
     nw.classList.add('zsw'); setTimeout(() => nw.classList.remove('zsw'), 700); w.replaceWith(nw); n++; });
   p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg();
   if (on && n) { se('SUIKOMU'); setTimeout(() => se('KIRAKIRA2'), 180); vib(2); } }
+/* 경완 2026-11-15: 다이맥스(거다이맥스) 버튼 → 판을 다시 그리지 않고 기술 칸만 붉게 번쩍이며 다이맥스 기술로 바뀜, 버튼은 붉은 빛이 퍼지며 켜짐 */
+function dSwap(p, R, mv, btn) {
+  const on = B.gkSel === 'dynamax', ws = p.querySelectorAll('.bp-moves > .mvw, .bp-moves > .mvb.empty');
+  [0, 1, 2, 3].forEach(i => { const m = mv[i], w = ws[i]; if (!m || !w || !w.classList.contains('mvw')) return;
+    const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, on ? 'dynamax' : null);
+    const t = document.createElement('div'); t.innerHTML = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); const nw = t.firstElementChild;
+    if (on) { nw.classList.add('don', 'dsw'); nw.style.setProperty('--dd', i * 70 + 'ms'); setTimeout(() => nw.classList.remove('dsw'), 760 + i * 70); } w.replaceWith(nw); });
+  p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg();
+  if (btn && on) { btn.classList.remove('gkfl'); void btn.offsetWidth; btn.classList.add('gkfl'); setTimeout(() => btn.classList.remove('gkfl'), 800); }
+  if (on) { se('SUIKOMU'); setTimeout(() => se('KOUKA_M'), 200); setTimeout(() => se('KIRAKIRA2'), 380); vib(2); } }
 // 기술 설명: 타입·분류·위력·명중·PP·설명 (아래 화면)
 /* v21.89 [DBK] Enhanced Battle UI '배틀러 정보': 싸우기 메뉴의 정보 버튼 → 지금 나와 있는 포켓몬(내 쪽·상대)의 레벨·타입·테라·능력 변화(▲▼)·급소·특성/도구(내 포켓몬만)·마지막 기술·턴·걸린 효과와 남은 턴. ◀▶로 넘김 */
 const BI_FX = { sunnyday: ['쾌청', '불꽃 기술 위력 1.5배, 물 기술 위력 반감.'], desolateland: ['아주 강한 햇살', '불꽃 기술 위력 1.5배, 물 기술이 사라진다.'], raindance: ['비', '물 기술 위력 1.5배, 불꽃 기술 위력 반감.'], primordialsea: ['강한 비', '물 기술 위력 1.5배, 불꽃 기술이 사라진다.'], sandstorm: ['모래바람', '매 턴 HP가 줄 수 있다. 바위 타입 특수방어 1.5배.'], hail: ['싸라기눈', '매 턴 HP가 줄 수 있다. 눈보라가 반드시 맞는다.'], snow: ['설경', '얼음 타입 방어 1.5배. 눈보라가 반드시 맞는다.'], deltastream: ['난기류', '비행 타입의 약점이 없어진다.'],
@@ -980,7 +1011,7 @@ function psSet(o) {
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
-function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, evs: evSet(m), fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...(m.tera ? { tera: m.tera } : {}), ...((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})() }; }
+function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, evs: evSet(m), fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...(m.tera ? { tera: m.tera } : {}), ...(m.gmax ? { gmax: 1 } : {}), ...((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})() }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
 function foeEntry(sp, lv, tier = 0) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
@@ -1299,7 +1330,7 @@ async function run(opts) {
   const trE = $b('.bt-tr.e'), trP = $b('.bt-tr.p'), uE = opts.wild ? '' : trSrc(opts.foe.tr), uP = opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`;
   trE.className = opts.chain && !opts.wild ? 'bt-tr e rin' : 'bt-tr e'; trP.className = 'bt-tr p';   /* v24.90 경완 '트레이너는 원래대로 왼쪽에서': 이어지는 층 트레이너는 처음부터 왼쪽 화면 밖(본가 등장과 같은 -256px)에 두고 미끄러져 들어옴 (제자리에 먼저 보였다가 튀던 것) */
   trE.style.cssText = ''; trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`; const trA = opts.wild ? null : trAni(trE, opts.foe.tr), uEp = trA ? `${IMG}dbk/tr/${trA[2]}.png` : uE; if (opts.wild) trE.style.visibility = 'hidden'; if (opts.chain) trP.style.visibility = 'hidden';   /* 야생은 상대 트레이너 없음 */
-  B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
+  B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` }; B.trBU = uP;   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   /* v24.55 경완 '포켓몬 바뀔 때 내 포켓몬 사라지지 않게': 이어지는 층에서 같은 포켓몬이 그대로 나오면 발판 위에 둔 채로 (B.pG 그림, sendOut 이 다시 안 그림) */
   B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._gif || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; const u = gifUrl(A.sp, true, A.shiny, A.g === 'F', A.fm); if (u !== m._gif) return false; B.pG[s] = u; return true; };
@@ -1576,7 +1607,7 @@ async function handle(a) {
       const src = s[0] === 'p' ? B.my[i] : B.foe[i], pk = B.o[s[0]][i];
       const old = A(s);
       if (old && !old.fnt) { await msg(s[0] === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
-      monEl(s).classList.remove('dmx', 'tera'); patOff(s); B.gmx[s] = 0;   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
+      monEl(s).classList.remove('dmx', 'tera'); patOff(s); B.gmx[s] = 0; gxOff(s, 1); gxLay();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
@@ -1619,7 +1650,7 @@ async function handle(a) {
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); if (a.includes('[from] move: Pain Split') && !a.includes('[silent]')) await msg('서로의 체력을 나눠 가졌다!'); break; }   /* v21.30 고통나누기 문장 */
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); } X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
     case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); if (a.some(x => /^\[from\] ability: /.test(x))) { await msg(a[3] === 'unboost' ? `${who(a[2])}의 능력은 떨어지지 않는다!` : `${who(a[2])}에게는 효과가 없는 것 같다…`); break; } if (a.includes('[weak]')) { await msg('그러나 대타를 만들기에는 체력이 부족했다!'); break; } { const fw = (a.find(x => /^\[from\] /.test(x)) || '').slice(7); const T = { 'Primordial Sea': '강한 비 때문에 불꽃 타입 공격이 사라져 버렸다!', 'Desolate Land': '강한 햇살 때문에 물 타입 공격이 증발해 버렸다!' }; if (T[fw]) { await msg(T[fw]); break; } } await msg('그러나 실패했다!'); break;   /* v21.30: 체력 부족한 대타·시작의바다·끝의대지 문장 */   /* v20.75: 클리어바디·정신력 등 특성으로 막으면 그 문장 */   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
