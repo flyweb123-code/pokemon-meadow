@@ -4622,8 +4622,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-pl{transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s,scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1),translate 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"],.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{overflow:visible}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{scale:1.25;transform-origin:80px 144px}   /* v25.31 경완 '25.26 버전이 괜찮아보이네 다 돌려줘': 내 포켓몬만 바닥(144)·발판 가운데 기준 1.25배, 발판은 원래 크기·자리 */
-.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.7;transform-origin:249.3px -17.3px}
-.bt.gx-p:not(.dbl) .bt-pl.e{scale:.7;transform-origin:137.3px -73.3px}
+.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.45;transform-origin:216px 34.2px}   /* v25.34 경완 '0.45배로 가자': 내가 거다이맥스일 때 상대 포켓몬·발판 .45배 */
+.bt.gx-p:not(.dbl) .bt-pl.e{scale:.45;transform-origin:104px -21.8px}
 .bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.3;transform-origin:222.7px 142.7px}
 .bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.e{scale:.85;transform-origin:-29.3px -53.3px}
 .bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.p[data-sl="0"]{scale:.78;transform-origin:80px 144px}
