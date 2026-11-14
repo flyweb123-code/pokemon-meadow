@@ -1371,7 +1371,7 @@ async function challenge(picked) {
       else await Promise.all([walk(e, CR.path), SP ? (async () => { await wait(560); e2 = ent({ ow: PR.ow2, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(PR.ow2) }); await walk(e2, SP.path); e2.f = SP.f; place(e2); })() : null]); }
     else await walk(e, CR.path);
     e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
-    const goOut = async () => { await Promise.all([walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()), e2 ? (async () => { await wait(520); await walk(e2, outRoute(D, e2) || D.path.slice(0, -1).reverse()); })() : null]); await wait(250); doorSe(); await wait(120); e.el.remove(); e2?.el.remove(); ents = ents.filter(x => x !== e && x !== e2); };   /* 둘이면 한 명씩 차례로 나감 */
+    const goOut = async () => { for (const x of [e, e2].filter(Boolean)) { await walk(x, outRoute(D, x) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); x.el.remove(); ents = ents.filter(y => y !== x); } };   /* 경완 '더블 배틀 체육관 나갈 때 카펫 위에서 겹치지 않고 한명씩 나가게': 첫 사람이 문 밖으로 나간 뒤 두 번째 사람이 나감 */
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
     const RF = c.boss && c.named !== 'red' ? (g.bsF?.[c.boss] | 0) : 0, RS = RF ? RE_SAY[Math.min(RF, RE_SAY.length) - 1] : null;   /* v24.63 경완 '승급 재심사 받을 때 전용 대사': 그 등급 심사에서 진 횟수(g.bsF)에 따라 */
