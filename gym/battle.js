@@ -1108,7 +1108,7 @@ async function smEnc(w, opts, kind) {
   const glowIn = t => Math.min(1, t / .35);   /* 새 배경들: 처음 0.35초에 확 밝아짐 */
   const once = (k, f) => { if (!snd[k]) { snd[k] = 1; f(); } };
   // 우리 원래 연출과 섞기 (경완 2026-11-12): 뒤 배경만 썬문식 캔버스, 트레이너는 원래 얼굴 띠(.band·.mug·이름)가 그 위로 들어온다
-  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
+  const trainer = t => { if (t < T0) return; once('tr', () => { se('SLIDEIN'); w.insertAdjacentHTML('beforeend', `<div class="band sm-${kind}"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>${opts.exam ? '심사관 · ' : ''}${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`); }); if (t > T0 + .55) once('vs', () => se('KON')); };
   const D = {
     evil(t) { cover(I.background); rot(I.swirl, C.x, C.y, t * 2, 1.2, .8);
       for (let k = 0; k < 3; k++) { const q = (t * 1.3 + k / 3) % 1; rot(I.ring0, C.x, C.y, 0, .2 + q * 2, 1 - q); }
@@ -1159,7 +1159,9 @@ async function encounter(opts) {
     w.classList.add('ex'); if (opts.exam.kang) w.classList.add('kg');   /* v23.61 경완 '강박사 얼굴 띠 나올 때 뒷 배경·띠 배경': 심사관 띠가 들어올 때 금빛 빛살 배경(.kg-bg) + 띠 무늬 */
     // 줄무늬·빛줄기 없이 (경완 2026-10-31 '구려'): 암전 → 금빛 실선이 가로로 그어지고 → 위아래로 열리는 어두운 무대 → 배지가 떠오름 → '승급 심사' → 심사관 띠
     w.insertAdjacentHTML('beforeend', `<i class="bk"></i>${opts.exam.kang ? '<i class="kg-bg"><i></i></i>' : ''}<i class="ex-ln"></i><div class="ex-pn"><i class="ex-glow"></i><div class="ex-bd">${opts.exam.bd}</div><b class="ex-t"><small>${esc(opts.exam.g)}</small>승급 심사</b></div><i class="ex-fl"></i><div class="band ex-band"><i class="mug" style="background-image:url(${trSrc(opts.foe.tr)})"></i><b><small>심사관 · ${esc(opts.foe.cls)}</small>${esc(opts.foe.nm)}</b></div>`);
-    await wait(500); se('KIRAKIRA2'); await wait(1000); w.classList.add('hit'); se('KON'); await wait(1500); w.classList.add('foe'); se('SLIDEIN'); await wait(1600);
+    const smx = !opts.exam.kang && smKind({ ...opts, exam: null });   /* v24.63 경완 '이슬 승급 심사 등장 때 얼굴 띠·뒤 배경 효과가 하나도 없네': 이름 있는 심사관은 '승급 심사' 제목 뒤에 평소 등장처럼 그 사람 썬문식 배경 + 얼굴 띠 */
+    await wait(500); se('KIRAKIRA2'); await wait(1000); w.classList.add('hit'); se('KON'); await wait(1500);
+    if (smx) { w.classList.add('smx'); await wait(250); await smEnc(w, opts, smx); } else { w.classList.add('foe'); se('SLIDEIN'); await wait(1600); }
   } else if (!big) {
     w.insertAdjacentHTML('beforeend', Array.from({ length: 12 }, (_, i) => `<i class="st ${i % 2 ? 'r' : 'l'}" style="top:${(i * 100 / 12).toFixed(3)}%;animation-delay:${i * 28}ms"></i>`).join(''));
     await wait(760);
@@ -1383,7 +1385,7 @@ function frHooks(btl) {
 }
 const FR_ST = { slp: '잠', frz: '얼음', par: '마비', brn: '화상', psn: '독', tox: '독' };
 // v21.85 경완 '친밀도 효과 나올 때 포켓몬 한번 꿀렁하고 하트 표시 나온 후에 멘트': 꿀렁 → 하트·소리 → (하트가 다 보인 뒤) 멘트
-async function frFx(s) { const m = monEl(s); if (!m) return; const im = m.querySelector('img');
+async function frFx(s) { const m = monEl(s); if (!m) return; const im = m.querySelector('.clip') || m.querySelector('img'); if (im) im.style.transformOrigin = '50% 100%';   /* v24.63 경완 '친밀도로 회피할 때도 꿀렁 + 하트, 친밀도 효과는 전부': 꿀렁은 그림 칸(.clip)에 — 그림 자체의 움직임(2장 그림·팬 도트 줄)과 안 겹치게 */
   if (im) { await im.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1.12,.86)', offset: .3 }, { transform: 'scale(.94,1.08)', offset: .6 }, { transform: 'scale(1.03,.97)', offset: .82 }, { transform: 'scale(1,1)' }], { duration: 480, easing: 'ease-in-out', composite: 'add' }).finished.catch(() => {}); if (!B) return; }
   const h = document.createElement('i'); h.className = 'bt-hrt'; h.textContent = '♥'; m.appendChild(h); setTimeout(() => h.remove(), 1400); try { window.GymBGM?.se?.('DP_PINPON'); } catch (e) {} await wait(B?.fast ? 500 : 950); }
 // v21.85 경완 '친밀도 멘트 관장 말고 트레이너 닉네임으로'
