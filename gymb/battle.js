@@ -1301,7 +1301,7 @@ async function run(opts) {
   if (opts.wild && !opts.chain && !opts.pre && foeT[0]) try {   /* v24.64 경완 '포켓몬 나오기 전에 보상 까고': 출발 선물(opts.pre)이 있으면 빈 발판에서 고르고, 야생은 그 뒤 오른쪽에서 들어옴 */ const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
-  M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); } else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
+  M('sePrep', SE_BASE.map(n => 'DP_' + n)); if (opts.chain) { encDone(); await wait(350); if (!opts.wild && B) { trE.style.transition = 'none'; trE.classList.add('away'); void trE.offsetWidth; trE.style.transition = ''; trE.classList.remove('away'); se('SLIDEIN'); await wait(900); await trPlay(trE, trA); } }   /* v24.87 수련탑 트레이너 층: 화면 그대로 트레이너만 오른쪽에서 걸어 들어옴 */ else {   /* 이어지는 배틀은 여는 연출 없이 */ await wait(40); el.classList.add('now', 'open'); void el.offsetWidth; el.classList.remove('now'); encDone(); se('SLIDEIN');   // 배틀 화면은 바로 불투명하게 (서서히 나타나면 걷히는 전환 화면 사이로 체육관이 비쳤다, 경완 2026-10-28)
   await wait(900); el.classList.remove('intro'); await trPlay(trE, trA); }
   const foeNm = B.foeNm = opts.wild ? opts.foe.nm : `${opts.foe.cls} ${opts.foe.nm}`;
   if (opts.pre && B) try { await opts.pre({ msg, msgTap, choose: trChoose, pickMon: trPickMon, se }); } catch (e) { console.error(e); }
@@ -1383,7 +1383,7 @@ async function choose(req) {
     if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
-    if (a === 'bag') { if (B.train?.balls) { const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = 1; const M = req.active[0].moves, k = M.findIndex(m => !m.disabled && m.pp > 0); return 'move ' + (k < 0 ? 1 : k + 1); } continue; }   /* 놓치면 본가처럼 턴이 넘어감 (상대만 움직임) */ await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
+    if (a === 'bag') { if (B.train && !B.wild) { await msg('안 돼! 남의 포켓몬을 뺏으면\n도둑이야!'); continue; }   /* v24.87 수련탑 트레이너 층 */ if (B.train?.balls) { const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = 1; const M = req.active[0].moves, k = M.findIndex(m => !m.disabled && m.pp > 0); return 'move ' + (k < 0 ? 1 : k + 1); } continue; }   /* 놓치면 본가처럼 턴이 넘어감 (상대만 움직임) */ await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
     if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>여기까지 보상은 받고,<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
   }
 }
@@ -1416,7 +1416,7 @@ async function chooseD(req) {
         ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
-      if (a === 'bag') { if (B.train?.balls) { const two = ['e', 'e2'].filter(q => B.act[q] && !B.act[q].fnt).length > 1; if (two) { await msg('야생 포켓몬이 둘이라\n볼을 던질 틈이 없다!'); continue; }
+      if (a === 'bag') { if (B.train && !B.wild) { await msg('안 돼! 남의 포켓몬을 뺏으면\n도둑이야!'); continue; }   /* v24.87 수련탑 트레이너 층 */ if (B.train?.balls) { const two = ['e', 'e2'].filter(q => B.act[q] && !B.act[q].fnt).length > 1; if (two) { await msg('야생 포켓몬이 둘이라\n볼을 던질 틈이 없다!'); continue; }
           const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = B.btl.p1.active[k]; const k2 = R.moves.findIndex(m => !m.disabled && m.pp > 0); ch.push('move ' + (k2 < 0 ? 1 : k2 + 1)); break; } continue; }
         await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
       if (a === 'run') { if (B.noRun) { await msg('안 돼! 승부 도중에\n상대에게 등을 보일 수는 없어!'); continue; } if (await yesNo(B.train ? '수련탑 도전을 그만두고 나갈까요?<br>여기까지 보상은 받고,<br>다음에 이 층부터 이어 할 수 있어요.' : B.practice ? '연습 배틀을 그만둘까요?' : '기권할까요? 진 것으로 처리돼요.')) return 'quit'; continue; }
