@@ -1437,7 +1437,7 @@ function tgtPick(tg, me) {
   const ok = ([k]) => alive(k) && (tg === 'adjacentAlly' ? k[0] === 'p' && k !== me : tg === 'adjacentAllyOrSelf' ? k[0] === 'p' : tg === 'adjacentFoe' || tg === 'allAdjacentFoes' ? k[0] === 'e' : k !== me);
   const C = L.filter(ok); if (sp ? !C.length : C.length <= 1) return Promise.resolve(sp ? '' : C[0] ? C[0][1] : '');
   /* v25.03 경완 '더블 배틀 누구에게 쓸까? 도 수련탑에서 도구 누구에게 쓸까? 화면처럼 버튼 구성' → trPickMon 과 같은 .pty 칸 (그림·이름·성별·타입·Lv·체력), 왼쪽 위 딱지 상대/같은 편/자기 자신 */
-  return new Promise(async res => { await msg(sp ? (C.length > 1 ? '모두에게 쓸까?' : '쓸까?') : '누구에게 쓸까?', 0);
+  return new Promise(async res => { await msg(sp ? (C.length < 2 ? '쓸까?' : tg === 'allAdjacentFoes' ? '상대 모두에게 쓸까?' : '모두에게 쓸까?') : '누구에게 쓸까?', 0);   /* v25.07 경완 '상대방 둘 한테만 쓰는 기술은 상대 모두에게 쓸까?' */
     const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k), P = k[0] === 'p' && X ? boxOf(X.pid) : null; if (!X) return `<button class="pty tg-p off" disabled><b>—</b></button>`;
       const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '';
       return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
@@ -1459,8 +1459,9 @@ async function chooseD(req) {
     if (R.moves.length === 1 && R.moves[0].pp == null) { ch.push('move 1'); continue; }
     for (;;) {
       const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
-      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } const i = await movePanel(req, k); if (i == null) continue;
-        const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target, n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n === null) continue;
+      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { i = await movePanel(req, k); if (i == null) break;
+          const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
+        if (i == null) continue;
         ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
