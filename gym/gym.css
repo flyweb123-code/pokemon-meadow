@@ -167,7 +167,8 @@ body.gymMode{overflow:hidden}
 .bt-tr.p{left:32px;top:64px;width:80px;height:80px;background:0 0/80px 80px no-repeat}
 .bt.intro .bt-pl.e,.bt.intro .bt-tr.e{transform:translateX(-256px)}
 .bt.intro .bt-pl.p,.bt.intro .bt-tr.p{transform:translateX(256px)}
-.bt-tr.e.away{transform:translateX(120px);opacity:0}.bt-tr.e.away.back{transform:none;opacity:1}
+.bt-tr.e.away{transform:translateX(120px);opacity:0}
+.bt-tr.e.rin{transform:translateX(-256px);transition:none}.bt-tr.e.away.back{transform:none;opacity:1}
 .bt-tr.p.throw{transform:translateX(-130px);opacity:0;transition-duration:.6s}
 /* 포켓몬: 1~493 은 플래티넘 2장 그림(80x80 칸, JS 가 위치), 그 밖은 그림 아래 가운데를 발판에 맞춘다.
    .bt-mw 는 쓰러질 때 발판 아래로 잘리는 선 */
@@ -3915,7 +3916,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes gmZ{0%,100%{filter:none}30%,70%{filter:drop-shadow(0 0 3px #fff4a0) drop-shadow(0 0 8px #ffb000) drop-shadow(0 0 14px #ff8000) brightness(1.25)}}
 .bt-mon.gm-tera .clip{animation:gmTera 1.1s ease-out}
 @keyframes gmTera{0%{filter:none}35%{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--tc)) brightness(2.4) saturate(.3)}100%{filter:drop-shadow(0 0 2px var(--tc))}}
-.bt-mon.dmx .clip{transform:scale(1.5);transform-origin:50% 100%;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 .bt-mon .clip{transition:transform .4s ease-out}
 @keyframes dmxCl{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6px,-4px) scale(1.15)}}
 
@@ -4264,14 +4264,19 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-pop p.ev-toast{color:#fff!important;font-size:13px;font-weight:700;padding:8px 14px;background:rgba(40,38,58,.94);box-shadow:0 3px 0 rgba(0,0,0,.25)}   /* v23.09 경완 '노력치 저장 알림 글자 거의 안 보임': .gy-pop p 글자색이 덮었음 */
 
 /* v23.10 훈련하기: 층 표시·보급 고르기 */
-.bt .bt-fl{position:absolute;right:6px;top:calc(var(--st,0px) + 4px);z-index:40;padding:2px 9px;border-radius:11px;background:rgba(20,22,34,.78);color:#fff;font-size:12px;line-height:1.45;pointer-events:none;font-weight:700}
-.bt .bt-fl b{font-size:15px;color:#ffd84a;margin-right:1px}
+.bt .bt-fl{position:absolute;right:4px;top:3px;z-index:4;pointer-events:none;font-family:var(--px);font-weight:400;font-size:10px;line-height:10px;white-space:nowrap;color:#f8f8f8;text-shadow:1px 1px 0 #303830}   /* v24.81 경완 '우상단, 박스 없이' — 체력 박스 이름·레벨 글씨 그대로 */
+.bt .bt-fl .bfl{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.bt .bt-fl b{display:flex;align-items:center;gap:3px;font-weight:400}
+.bt .bt-fl .f em{font-style:normal;font-size:8px;margin-left:1px}
+.bt .bt-fl .bs .f{color:#f89880}
+.bt .bt-fl .c span{color:#f8d850;text-shadow:1px 1px 0 #5a3a00}   /* 경완 '코인 숫자 색상이랑 층 색상이랑 구분' */
+.bt .bt-fl .c img{width:13px;height:9px;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(48,56,48,.5))}
 .bt .bp-tr{display:grid;grid-template-columns:1fr;gap:6px;padding:24px 8px 8px;box-sizing:border-box;align-content:center;height:100%}
 .bt .bp-tr .bb{position:relative;left:auto;top:auto;width:auto;min-height:36px}
 .bt.mob .bp-yn.bp-tr{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:minmax(40px,58px);gap:7px;padding:14px 14px}
 .bt .bp-tr .bb span{display:flex;flex-direction:column;align-items:center;gap:1px}
 .bt .bp-tr .bb small{font-size:10.5px;font-weight:500;opacity:.92;letter-spacing:0}
-.bt .bt-tools{position:absolute;right:6px;top:calc(var(--st,0px) + 30px);z-index:41;display:flex;gap:5px;white-space:nowrap}
+.bt .bt-tools{position:absolute;right:6px;top:calc(var(--st,0px) + var(--k,1.5) * 30px);z-index:41;display:flex;gap:5px;white-space:nowrap}
 .bt .bt-tools button{padding:3px 8px;white-space:nowrap;border:1px solid rgba(255,255,255,.5);border-radius:12px;background:rgba(20,22,34,.45);color:#fff;font:inherit;font-size:11px;font-weight:700;opacity:.8;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
 .bt .bt-tools button:active{transform:translateY(2px);box-shadow:none;opacity:1}
 /* 전설 심사 (강박사): 테라피스 받는 창 — DBK 팩 테라피스 그림 + 타입 색 빛 */
@@ -4528,11 +4533,128 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-mon .zaur s{filter:var(--zf)}
 .bt .zaur>.zpt{position:absolute;left:12%;right:12%;top:0;bottom:4%;overflow:visible;pointer-events:none;background:none!important;animation:none!important}
 .bt .zaur>.zpt>i{opacity:0}
+/* v24.21 더블 배틀 (수련탑): 한 쪽 두 자리 — 첫 자리 data-sl=0, 두 번째 data-sl=1 (.s2 는 역할 이름표라 기술 연출 동안 바뀔 수 있음) */
+.bt:not(.dbl) .bt-mw[data-sl="1"],.bt:not(.dbl) .bt-hb.s2{display:none}
+.bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:-6px}
+.bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-14px;height:104px}
+.bt.dbl .bt-pl.e{top:48px}.bt.dbl .bt-tr.e{margin-top:-8px}   /* v25.13 경완 '배틀 박스 두개된만큼 상대 포켓몬 가려지지 않게 발판 살짝 올려': 더블은 상대 발판·포켓몬·트레이너 8px 위 (battle.js DBL_Y 도) + 내 두 번째 체력 박스 4px 아래 (아래 박스는 대화창에 걸려 그대로) */
+.bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}   /* v25.14 경완 '이상해씨 하단 잘림선': 뒷모습 그림은 아래가 반듯하게 잘려 있어 화면 아래(144)에 숨겨야 함 — 첫 자리는 올리지 않음 */
+.bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:4px;height:148px}   /* v25.11 경완 '내 포켓몬 두번째에 나온 애 스프라이트가 처음 나온 애보다 앞쪽에': 두 번째 자리(오른쪽)가 앞 — 그리는 차례(battle.js 판 순서)도 뒤로, 조금 아래 */
+.bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
+.bt.dbl .bt-hb.e:not(.s2){left:0;top:3px}
+.bt.dbl .bt-hb.e.s2{left:0;top:28px}   /* v25.16 볼 줄은 위 박스에만 → 화면 위에 안 잘리게 두 박스 조금 아래로 */
+.bt.dbl .bt-hb.p.s2{left:160px;top:74px}
+.bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
+.bt .pty.tg-p.off{opacity:.4;filter:grayscale(1)}.bt .bp-tgp.tg-all .cancel{grid-column:1!important}.bt .bp-tgp.tg-all .tg-go{grid-column:2;--c1:#f4706a;--c2:#d93a3c}   /* v25.11 쓰기 버튼 (그만두기 오른쪽) */
+.bt .bp-tgp.tg-all .pty.tg-p:not(.off){animation:tgAll 1s steps(2,end) infinite}@keyframes tgAll{50%{filter:brightness(1.25)}}   /* v25.05 범위 기술: 맞을 칸 다 같이 깜빡 */
+.bt .pty.tg-p.e{background:linear-gradient(#f07868,#c8403c);box-shadow:inset 0 0 0 1px #f8c0b0,0 0 0 1px #581c1c}   /* v25.03 더블 배틀 목표 고르기 = 도구 대상 목록과 같은 칸 */
+.bt .bp-tgt{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;padding:14px 12px calc(14px + var(--pb,0px));box-sizing:border-box;justify-content:center}
+.bt .bp-tgt p{margin:0;text-align:center;font-size:12px;font-weight:700;color:#3a4252}
+.bt .bp-tgt .tg-g{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:minmax(44px,64px);gap:8px}
+.bt .bp-tgt .tg-b{height:auto!important;flex-direction:column;gap:2px;--c1:#f4706a;--c2:#d93a3c}
+.bt .bp-tgt .tg-b.p{--c1:#5aa0f0;--c2:#3a6fd0}
+.bt .bp-tgt .tg-b.off{opacity:.35;filter:grayscale(1)}
+.bt .bp-tgt .tg-b small{font-size:9px;opacity:.85}
+.bt .bp-tgt .tg-b span{font-size:13px}
+.bt .bp-tgt .tg-b:active:not(.off){transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 0 1.5px rgba(0,0,0,.28),0 1px 0 rgba(0,0,0,.18)}
+.bt .bp-tgt .cancel{height:36px!important}
+.bt .bp-tgt .bb{position:relative;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;margin:0}.bt .bp-tgt .tg-g .bb{height:100%!important}
+
+/* v24.55 경완 '몬스터볼 그래픽 본가 기준': 플래티넘 던지는 볼 그림 (gym/img/ball/*.png, 32칸 10장) */
+.bt-fx .ball.pb{left:-16px;top:-16px;width:32px;height:32px;border-radius:0;box-shadow:none;background:var(--bi) 0 0/320px 32px no-repeat;image-rendering:pixelated}
+.bt-fx .ball.pb.spin{animation:pbSpin .4s step-end infinite}
+.bt-fx .ball.pb.open{background-position-x:-288px}.bt-fx .ball.pb.f0{background-position-x:0}
+@keyframes pbSpin{0%{background-position-x:0}8.33%{background-position-x:-32px}16.67%{background-position-x:-64px}41.67%{background-position-x:-96px}50%{background-position-x:-128px}58.33%{background-position-x:-160px}66.67%{background-position-x:-192px}91.67%{background-position-x:-224px}}
+
+/* v24.56 경완 '가방은 B로': 수련탑 배틀 가방 = 본가 목록 + 설명 + 던지기 */
+.bt .bp-bag{position:absolute;inset:0;display:flex;flex-direction:column;gap:8px;padding:12px 12px calc(12px + var(--pb,0px));box-sizing:border-box;justify-content:center}
+.bt .bp-bag .bg-l{display:flex;flex-direction:column;gap:6px}
+.bt .bp-bag .bg-r{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px 0 8px;border:0;border-radius:12px;background:#fff;box-shadow:0 0 0 1.5px #c8c8d8,0 2px 0 #b0b0c0;font:inherit;font-weight:800;font-size:14px;color:#2a3040;text-shadow:none}
+.bt .bp-bag .bg-r span{flex:1;text-align:left}.bt .bp-bag .bg-r em{font-style:normal;font-size:13px;color:#5a6070}
+.bt .bp-bag .bg-r.on{background:#fff8e4;box-shadow:0 0 0 2.5px #f0b020,0 2px 0 #c08810}
+.bt .bp-bag .bg-r.off{opacity:.4}
+.bt .bp-bag .bg-r:active:not(.off){transform:translateY(2px);box-shadow:0 0 0 1.5px #c8c8d8}
+.bt .bp-bag .bg-ic{width:30px;height:30px;image-rendering:pixelated;flex:none}
+.bt .bp-bag .bg-d{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;background:#fff;box-shadow:0 0 0 1.5px #c8c8d8;font-size:12px;line-height:1.45;color:#3a4252;text-shadow:none}
+.bt .bp-bag .bg-d .bg-ic{width:40px;height:40px}.bt .bp-bag .bg-d b{display:block;font-size:13px;color:#2a3040}
+.bt .bp-bag .bg-b{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.bt .bp-bag .bb{position:relative;left:auto!important;top:auto!important;width:auto!important;height:44px!important;margin:0}
+.bt .bp-bag .bb.go{--c1:#f4706a;--c2:#d93a3c}.bt .bp-bag .bb.go span{font-size:16px}
+
+/* v24.60 경완 '가방 너무 크게 나옴': 줄·글자·단추 작게, 목록이 길면 그 안에서 스크롤 */
+.bt .bp-bag{gap:6px;padding:10px 12px calc(10px + var(--pb,0px))}
+.bt .bp-bag .bg-l{gap:5px;min-height:0;overflow-y:auto;flex:0 1 auto;padding:3px;margin:-3px}
+.bt .bp-bag .bg-r{height:34px;flex:none;font-size:12px;padding:0 10px 0 6px;border-radius:10px}.bt .bp-bag .bg-r em{font-size:11px}
+.bt .bp-bag .bg-ic{width:22px;height:22px}
+.bt .bp-bag .bg-d{padding:6px 8px;font-size:11px;border-radius:10px}.bt .bp-bag .bg-d .bg-ic{width:28px;height:28px}.bt .bp-bag .bg-d b{font-size:12px}
+.bt .bp-bag .bb{height:36px!important}.bt .bp-bag .bb span{font-size:13px}.bt .bp-bag .bb.go span{font-size:14px}
 
 /* v24.59 경완 '기술 효과 상단바에 거울로 비치는 거 이상해, 그냥 연장시켜 잘린 부분 끝까지 나오게': 배경만 거울, 어두워짐·번쩍·날씨는 판을 상태 막대 자리까지 늘림 (효과 캔버스는 battle.js extCv) */
 .bt.mob .bt-top>:is(.bt-dim,.bt-flash){top:calc(var(--st,0px) / var(--k,1) * -1)}
 .bt.mob .bt .bt-wx,.bt.mob .bt-wx{top:calc(var(--st,0px) / var(--k,1) * -1);height:calc(192px + var(--st,0px) / var(--k,1))}
+/* v24.63 EBS4 볼 터짐 그림 */
+.bt-fx .bb-fx{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;pointer-events:none;will-change:transform,opacity}
+/* v24.64 경완 '가방은 설명·버튼 하단 고정, 도구는 위에서부터': 목록은 위부터 채우고 남는 칸을 차지(넘치면 스크롤), 설명·버튼은 맨 아래 */
+.bt .bp-bag{justify-content:flex-start}
+.bt .bp-bag .bg-l{flex:1 1 0;justify-content:flex-start}
+.bt .bp-bag .bg-d,.bt .bp-bag .bg-b{flex:none}
+.bt .bp-bag .bg-d{min-height:44px;box-sizing:border-box}
+/* v24.67 경완 '동료 포켓몬은 교체 화면 슬롯 색 다르게 + 동료 딱지': 보라 칸 + 오른쪽 위 딱지 (기절·나와 있음 색이 먼저) */
+.bt .pty.mate:not(.fnt):not(.act){background:linear-gradient(#a888e0,#7458b8);box-shadow:inset 0 0 0 1px #e0d0ff,0 0 0 1px #2c1c58}
+/* v24.90 경완 '교체화면 동료 딱지는 버튼 좌상단에 붙여줘봐' */.bt .pty .pty-mt{position:absolute;left:0;top:0;z-index:3;font-style:normal;font-size:8px;line-height:1;padding:2px 4px 2px 3px;border-radius:6px 0 5px 0;background:#6040a8;color:#fff;text-shadow:none;font-weight:800;box-shadow:none;pointer-events:none}
+.bt.mob .pty .pty-mt{font-size:9px}
 
 /* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
 .bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}
+/* v24.73 수련탑 얻은 도구 아이콘 줄 (좌상단, 포켓로그처럼 개수는 오른쪽 아래) */
+.bt .bt-its{position:absolute;left:3px;top:2px;z-index:4;display:flex;flex-wrap:wrap;gap:2px;max-width:46%;pointer-events:none}   /* v24.81 배틀 무대(.bt-top) 안, 무대 도트 크기 */
+.bt .bt-its:empty{display:none}
+.bt .bt-its i{position:relative;width:15px;height:15px;display:flex;align-items:center;justify-content:center}   /* v24.74 경완 '아이템은 뒤 박스 없이' */
+.bt .bt-its img{width:15px;height:15px;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4))}
+.bt .bt-its i.pm{width:22px;justify-content:flex-end;margin-left:2px}.bt .bt-its img.pmi{position:absolute;left:0;bottom:-2px;width:10px;height:10px;object-fit:contain;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}   /* v24.95 영양제 먹은 포켓몬 얼굴 (포켓로그 지닌 도구처럼) */
+.bt .bt-its b{position:absolute;right:-2px;bottom:-2px;font-size:8px;line-height:8px;font-weight:400;color:#f8f8f8;text-shadow:1px 1px 0 #303830;font-style:normal}
 #gym .gy-pop .mp-head .rk-fr{overflow:visible}#gym .gy-pop .mp-head .rk-fr>img.th-it{left:auto!important;top:auto!important;right:-22%!important;bottom:-20%!important;width:66%!important;height:66%!important;max-width:none!important;max-height:none!important;z-index:4!important;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 2px rgba(255,236,150,.95)) drop-shadow(0 0 3px rgba(255,214,90,.7))!important}   /* v24.77 경완 '상세카드 도구 그림도 라인업 칸 비율로 키우고 테두리 빛' */
+
+/* 경완 2026-11-14 거다이맥스 뒤 배틀 화면: 카메라가 뒤로 물러난 듯 (battle.js gxLay·gxOn) */
+.bt-gxbg{position:absolute;left:0;width:256px;pointer-events:none;opacity:0;transform:scale(1.4286);transition:opacity .35s,transform 1.4s cubic-bezier(.3,.7,.3,1)}
+.bt-gxbg.on{opacity:1;transform:none}
+.bt .bt-mw{transition:scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1)}
+.bt .bt-pl{transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s,scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1),translate 1.4s cubic-bezier(.3,.7,.3,1)}
+.bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"],.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{overflow:visible}
+.bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{scale:1.25;transform-origin:-80.0px 144.0px}   /* v25.22 경완 '내 포켓몬 판 아래 잘림선 안 보이게 내려줘': 뒷모습 아래 잘린 줄이 화면 아래(144)에 그대로 숨게 위로 안 올림 */
+.bt.gx-p:not(.dbl) .bt-pl.p{translate:40px -2px}
+.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.7;transform-origin:249.3px -17.3px}
+.bt.gx-p:not(.dbl) .bt-pl.e{scale:.7;transform-origin:137.3px -73.3px}
+.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.3;transform-origin:222.7px 142.7px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.e{scale:.85;transform-origin:-29.3px -53.3px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.p[data-sl="0"]{scale:.78;transform-origin:80px 144px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.p{scale:.8;transform-origin:128px 24px}
+.bt.gx-p.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:.85;transform-origin:322.7px -130.7px}
+.bt .bt-hb{transition:transform .35s ease-out,opacity .2s,translate .6s cubic-bezier(.3,.7,.3,1)}
+.bt-gxc{position:absolute;left:0;top:0;width:256px;pointer-events:none}
+.bt-gxc.b{z-index:0}.bt-gxc.f{z-index:2}
+.bt-mon.dmx .clip{transform:none}
+.bt.dbl .bt-mon.dmx .clip{transform:scale(1.3)}
+.bt-mon.gxout .clip{animation:gxOut 1.6s ease-out}
+@keyframes gxOut{0%{filter:none}25%{filter:drop-shadow(0 0 3px #ff4d8a) drop-shadow(0 0 8px #ff0050) brightness(1.6) saturate(.6)}45%{filter:drop-shadow(0 0 2px #ff4d8a) brightness(2.2) saturate(0)}100%{filter:none}}
+
+/* 경완 2026-11-15 다이맥스 버튼: 판 다시 안 그림, 기술 칸이 붉게 번쩍이며 차례로 바뀜(dsw) + 켜진 동안 붉은 테두리 맥박(don), 버튼은 붉은 빛 고리가 퍼짐(gkfl) */
+.bt .mvw.dsw .mvb{animation:dSw .7s ease-out var(--dd,0ms) both}
+@keyframes dSw{0%{filter:brightness(2.6) saturate(.2) hue-rotate(-20deg)}40%{filter:brightness(1.7) saturate(1.6)}100%{filter:none}}
+.bt .mvw.dsw::after{content:'';position:absolute;inset:-4px;border-radius:14px;pointer-events:none;background:radial-gradient(closest-side,rgba(255,220,235,.95),rgba(255,40,110,.55) 60%,transparent);opacity:0;animation:dSwR .7s ease-out var(--dd,0ms) forwards}
+@keyframes dSwR{0%{opacity:1;transform:scale(.7)}100%{opacity:0;transform:scale(1.25)}}
+.bt .mvw.don .mvb{box-shadow:0 0 0 2px #ff6a9a,0 0 9px 2px rgba(255,30,100,.7),inset 0 0 10px rgba(255,120,170,.4);animation:dOn 1.6s ease-in-out infinite}
+.bt .mvw.don.dsw .mvb{animation:dSw .7s ease-out var(--dd,0ms) both,dOn 1.6s ease-in-out .9s infinite}
+@keyframes dOn{0%,100%{box-shadow:0 0 0 2px #ff6a9a,0 0 7px 1px rgba(255,30,100,.6),inset 0 0 8px rgba(255,120,170,.3)}50%{box-shadow:0 0 0 2px #ffc0d6,0 0 15px 4px rgba(255,30,100,.85),inset 0 0 14px rgba(255,120,170,.55)}}
+.bt .bb.gkb{position:relative}
+.bt .bb.gkb.gkfl::after{content:'';position:absolute;inset:-6px;border-radius:inherit;pointer-events:none;border:3px solid #ff7aa8;box-shadow:0 0 14px 4px rgba(255,40,110,.8);animation:gkFl .75s ease-out forwards}
+.bt .bb.gkb.gkfl{animation:gkFlB .75s ease-out}
+@keyframes gkFl{0%{opacity:1;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
+@keyframes gkFlB{0%{filter:brightness(2.2) saturate(.5)}100%{filter:none}}
+/* 경완 2026-11-15 '다이맥스 아이콘인데 메가진화랑 z기술처럼 하단 배경에 마크': 다이맥스 고르면·다이맥스 중엔 아래 화면 = 분홍빨강 바탕 + 경완이 준 다이맥스 마크(Dynamax/mark.png) */
+.bt.mob.gkbg-dynamax .bt-bot{background-image:linear-gradient(#ffeef3,#ffc4d4 55%,#ffe4ec);background-blend-mode:normal}
+.bt.mob.gkbg-dynamax .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#fff0f4,#ffa8c0 55%,#ffe2ea);animation:none}
+.bt.mob.gkbg-dynamax .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(255,40,100,.95))}
+.bt.mob.gkbg-dynamax .gk-mark{opacity:.88;background-image:url(../gym/img/dbk/Dynamax/mark.png);width:112px;height:84px;margin:-42px 0 0 -56px;filter:drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(255,30,90,.65));animation:gkMark 4.5s linear infinite}
+.bt-hb .gkd-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_dynamax.png) center/contain no-repeat;image-rendering:pixelated}
+.bt-hb.gkd .nm{max-width:74px}
