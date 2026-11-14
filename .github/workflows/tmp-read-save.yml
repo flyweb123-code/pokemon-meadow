@@ -27,8 +27,6 @@ jobs:
         run: |
           npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT acct, code, i, data FROM save_part WHERE code = '2X392NYD' ORDER BY i" > /tmp/save.json
           ls -la /tmp/save.json
-      - uses: actions/upload-artifact@v4
-        with:
-          name: save
-          path: /tmp/save.json
-          retention-days: 1
+      - name: Print field part
+        run: |
+          node -e "const d=JSON.parse(require('fs').readFileSync('/tmp/save.json','utf8'))[0].results.sort((a,b)=>a.i-b.i).map(r=>r.data).join('');const S=JSON.parse(d);const o=JSON.stringify({lay:S.lay,layAdd:S.layAdd,fbag:S.fbag,clock:S.clock,base:S.base,mons:S.mons});for(let i=0;i<o.length;i+=4000)console.log('FLD'+String(i/4000).padStart(4,'0')+' '+o.slice(i,i+4000));"
