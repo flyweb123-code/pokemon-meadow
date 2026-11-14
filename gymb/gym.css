@@ -4583,3 +4583,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.59 경완 '기술 효과 상단바에 거울로 비치는 거 이상해, 그냥 연장시켜 잘린 부분 끝까지 나오게': 배경만 거울, 어두워짐·번쩍·날씨는 판을 상태 막대 자리까지 늘림 (효과 캔버스는 battle.js extCv) */
 .bt.mob .bt-top>:is(.bt-dim,.bt-flash){top:calc(var(--st,0px) / var(--k,1) * -1)}
 .bt.mob .bt .bt-wx,.bt.mob .bt-wx{top:calc(var(--st,0px) / var(--k,1) * -1);height:calc(192px + var(--st,0px) / var(--k,1))}
+/* v24.63 EBS4 볼 터짐 그림 */
+.bt-fx .bb-fx{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;pointer-events:none;will-change:transform,opacity}
