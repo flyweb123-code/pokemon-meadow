@@ -357,8 +357,8 @@ function buildUI() {
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
       <div class="bt-mw e s2" data-sl="1"><div class="bt-mon e s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw e" data-sl="0"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
-      <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p" data-sl="0"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
       <i class="bt-wx"></i><div class="bt-lvw" hidden></div><div class="bt-shw" hidden></div>
       <canvas class="bt-ptc" width="256" height="192"></canvas>
       <div class="bt-hb e"><span class="hbb"></span><b class="nm"></b><span class="lv"><i class="sx"></i><em class="lvn"></em></span><i class="st"></i><i class="hp"><i></i></i></div>
@@ -1445,9 +1445,8 @@ function tgtPick(tg, me) {
     const bt = ([k, n]) => { const X = B.act[k], on = C.some(c => c[0] === k), P = k[0] === 'p' && X ? boxOf(X.pid) : null; if (!X) return `<button class="pty tg-p off" disabled><b>—</b></button>`;
       const r = X.mhp ? X.hp / X.mhp : 0, g = X.g === 'M' || X.g === 'F' ? X.g : '';
       return `<button class="pty tg-p ${k[0]}${X.fnt ? ' fnt' : ''}${on ? '' : ' off'}" data-n="${n}" ${on ? '' : 'disabled'}>${P ? thumb(P) : `<img alt="" data-sp="${X.tsp || X.sp}">`}<b>${esc(X.nm || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[X.tsp || X.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${X.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${X.fnt ? '기절' : k[0] === 'p' ? `${X.hp}/${X.mhp}` : Math.ceil(r * 100) + '%'}</span></button>`; };
-    const p = panel(`<div class="bp-party bp-tgp">${[L[0], L[1], L[2], L[3]].map(bt).join('')}<button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
-    if (sp) p.querySelector('.bp-tgp')?.classList.add('tg-all');
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(sp ? '' : +b.dataset.n); }; });
+    const p = panel(`<div class="bp-party bp-tgp${sp ? ' tg-all' : ''}">${[L[0], L[1], L[2], L[3]].map(bt).join('')}<button class="bb cancel" data-x><span>그만두기</span></button>${sp ? '<button class="bb tg-go" data-go><span>쓰기</span></button>' : ''}</div>`); fillTh(p);   /* v25.11 경완 '모두에게 쓸까? 화면에서 그만두기 버튼 오른쪽에 쓰기 버튼' */
+        p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); res(sp ? '' : +b.dataset.n); }; });   /* 쓰기(data-go)·켜진 칸 모두 = 씀 */
 }
 async function chooseD(req) {
   B.passP = 0;
