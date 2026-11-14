@@ -1736,7 +1736,8 @@ async function moveFx(s, id, miss, fx) {
   let spl = null;
   if (A[1].some(e => e[0] === 'p')) {
     await Promise.race([loadSpl(), wait(1500)]);
-    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
+    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); $b('.bt-ptc').style.translate = id === 'sunnyday' ? '160px 0' : '';   /* v24.91 경완 '쾌청 빛 효과 빛줄기에 맞춰서 오른쪽으로': 햇빛 파티클을 빛줄기 나오는 오른쪽 위로 */
+      spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
     if (!B) { spl?.stop(); return; }
     spl?.go();
   }
@@ -1820,7 +1821,9 @@ async function stFx(s, st, hurt = false) {
   await wait(P ? (P[0] === 'z' ? 1100 : 900) : 520); m.classList.remove('glow'); w?.remove(); }
 // 날씨가 이어지는 동안 위 화면에 비·모래바람·싸라기눈·눈이 계속 흩날리고, 쾌청이면 햇살이 비친다 (경완 2026-10-30)
 const WX_C = { RainDance: 'rain', PrimordialSea: 'rain', SunnyDay: 'sun', DesolateLand: 'sun', Sandstorm: 'sand', Hail: 'hail', Snow: 'snow' };
-function wxSet(w) { const f = $b('.bt-wx'); if (f) f.className = 'bt-wx' + (WX_C[w] ? ' on ' + WX_C[w] : ''); }
+function wxSet(w) { const f = $b('.bt-wx:not(.wx-old)'); if (!f) return; const c = WX_C[w] || ''; if ((f.dataset.w || '') === c) return; f.dataset.w = c;   /* v24.91 경완 '날씨 바뀔 땐 디졸브로': 옛 날씨 사본은 서서히 사라지고 새 날씨는 서서히 나타남 */
+  const T = 'opacity 1.2s ease'; if (f.classList.contains('on')) { const o = f.cloneNode(true); o.classList.add('wx-old'); o.style.transition = T; f.after(o); requestAnimationFrame(() => { o.classList.remove('on'); }); setTimeout(() => o.remove(), 1400); }
+  f.style.transition = 'none'; f.className = 'bt-wx' + (c ? ' ' + c : ''); void f.offsetWidth; f.style.transition = T; if (c) f.classList.add('on'); }
 // 레벨업 능력치 창 (본가처럼): 먼저 오른 만큼(+N), 누르면 새 능력치. 다시 누르면 닫힘 (경완 2026-10-30)
 const LV_ST = ['최대HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
 function lvWin(P, lv0, lv) {
