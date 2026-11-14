@@ -3915,7 +3915,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes gmZ{0%,100%{filter:none}30%,70%{filter:drop-shadow(0 0 3px #fff4a0) drop-shadow(0 0 8px #ffb000) drop-shadow(0 0 14px #ff8000) brightness(1.25)}}
 .bt-mon.gm-tera .clip{animation:gmTera 1.1s ease-out}
 @keyframes gmTera{0%{filter:none}35%{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--tc)) brightness(2.4) saturate(.3)}100%{filter:drop-shadow(0 0 2px var(--tc))}}
-.bt-mon.dmx .clip{transform:scale(1.5);transform-origin:50% 100%;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 .bt-mon .clip{transition:transform .4s ease-out}
 @keyframes dmxCl{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6px,-4px) scale(1.15)}}
 
@@ -4536,3 +4535,23 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
 .bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}
 #gym .gy-pop .mp-head .rk-fr{overflow:visible}#gym .gy-pop .mp-head .rk-fr>img.th-it{left:auto!important;top:auto!important;right:-22%!important;bottom:-20%!important;width:66%!important;height:66%!important;max-width:none!important;max-height:none!important;z-index:4!important;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 2px rgba(255,236,150,.95)) drop-shadow(0 0 3px rgba(255,214,90,.7))!important}   /* v24.77 경완 '상세카드 도구 그림도 라인업 칸 비율로 키우고 테두리 빛' */
+
+/* 경완 2026-11-14 거다이맥스 뒤 배틀 화면: 카메라가 뒤로 물러난 듯 (battle.js gxLay·gxOn) */
+.bt-gxbg{position:absolute;left:0;width:256px;pointer-events:none;opacity:0;transform:scale(1.4286);transition:opacity .35s,transform 1.4s cubic-bezier(.3,.7,.3,1)}
+.bt-gxbg.on{opacity:1;transform:none}
+.bt .bt-mw{transition:transform 1.4s cubic-bezier(.3,.7,.3,1)}
+.bt-gxc{position:absolute;left:0;top:0;width:256px;pointer-events:none}
+.bt-gxc.b{z-index:0}.bt-gxc.f{z-index:2}
+.bt-mon.dmx .clip{transform:none}
+.bt.dbl .bt-mon.dmx .clip{transform:scale(1.3)}
+.bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{transform:translateX(-12px) scale(1.7);transform-origin:80px 144px}
+.bt.gx-p:not(.dbl) .bt-pl.p{transform:scale(1.2);transform-origin:128px 24px}
+.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{transform:translate(-14px,11px) scale(.7);transform-origin:176px 96px}
+.bt.gx-p:not(.dbl) .bt-pl.e{transform:translate(-14px,11px) scale(.7);transform-origin:64px 40px}
+.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{transform:translate(-14px,11px) scale(1.3);transform-origin:176px 96px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.e{transform:translate(-14px,11px) scale(.85);transform-origin:64px 40px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.p[data-sl="0"]{transform:scale(.78);transform-origin:80px 144px}
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.p{transform:scale(.8);transform-origin:128px 24px}
+.bt.gx-p.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{transform:translate(-14px,11px) scale(1.05)}
+.bt-mon.gxout .clip{animation:gxOut 1.6s ease-out}
+@keyframes gxOut{0%{filter:none}25%{filter:drop-shadow(0 0 3px #ff4d8a) drop-shadow(0 0 8px #ff0050) brightness(1.6) saturate(.6)}45%{filter:drop-shadow(0 0 2px #ff4d8a) brightness(2.2) saturate(0)}100%{filter:none}}
