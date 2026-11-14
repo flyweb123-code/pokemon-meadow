@@ -4264,11 +4264,12 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-sh{width:min(100%,380px);display:flex;flex-direction:column;gap:8px;padding:10px;background:var(--win);border:3px solid #4a5068;box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff;color:var(--win-ink);opacity:0;transform:translateY(10px);transition:opacity .25s .2s,transform .25s .2s}
 .trbx.ready .trb-sh{opacity:1;transform:none}.trbx.out .trb-sh{opacity:0;transition:opacity .2s}
 .trbx .trb-sh-hd{display:flex;justify-content:space-between;align-items:center;font-size:13px}.trbx .trb-sh-hd span{display:flex;align-items:center;gap:4px;font-weight:700}
-.trbx .trb-co{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6b0,#f0c030 45%,#b07818);box-shadow:0 0 0 1px #6a4808}
+.trbx .trb-co{width:20px;height:14px;image-rendering:pixelated;object-fit:contain}   /* v24.90 경완 '상점 코인 아이콘 금화로 통일' (배틀 위 코인과 같은 고대의 금화) */
 .trbx .trb-sh-l{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .trbx .trb-s{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;border:0;border-radius:8px;background:#fff;box-shadow:0 0 0 2px #c8c8d8,0 3px 0 #a8a8b8;font:inherit;color:var(--win-ink)}
+.trbx .trb-s{position:relative}.trbx .trb-s .trb-hv{position:absolute;right:4px;top:3px;font-size:10px;font-weight:700;color:#5a6078}   /* v24.90 가진 볼 개수 */
 .trbx .trb-s img{width:30px;height:30px;image-rendering:pixelated}.trbx .trb-s b{font-size:10px;line-height:1.2;text-align:center;word-break:keep-all}
-.trbx .trb-s em{font-style:normal;font-size:11px;font-weight:700;color:#a87010}.trbx .trb-s em::before{content:'';display:inline-block;width:9px;height:9px;margin-right:3px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6b0,#f0c030 45%,#b07818);vertical-align:-1px}
+.trbx .trb-s em{font-style:normal;font-size:11px;font-weight:700;color:#a87010}.trbx .trb-s em::before{content:'';display:inline-block;width:13px;height:9px;margin-right:3px;background:url(${IMG}item/relicgold.png) center/contain no-repeat;image-rendering:pixelated;vertical-align:0}
 .trbx .trb-s:active:not([disabled]){transform:translateY(3px);box-shadow:0 0 0 2px #c8c8d8}.trbx .trb-s[disabled]{opacity:.4}
 .trbx .trb-rr{height:36px;border:0;border-radius:8px;font:inherit;font-size:13px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#8a7ae0,#5a48b8);box-shadow:inset 0 1px 0 #fff6,0 3px 0 #2c2068}
 .trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}`;
@@ -4276,7 +4277,7 @@ const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
   const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['흔함', '좋음', '귀함'];
   const el = document.createElement('div'); el.className = 'trbx';
-  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em><img alt="" src="${IMG}item/${c[5] || trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">${esc(tip)}</p>${X ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><i class="trb-co"></i>${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}><img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n.replace('동료 ', ''))}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em><img alt="" src="${IMG}item/${c[5] || trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">${esc(tip)}</p>${X ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicgold.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
   let ready = !!again; if (again) el.classList.add('ready');
   else (async () => { await wait(500);   /* v24.64 경완 '보상 나오는 연출 속도 좀만 더 빠르게': 떨어짐·흔들림·터짐 모두 약 1/3 빠르게 */ const C = [...el.querySelectorAll('.trb-c')];
@@ -4314,14 +4315,24 @@ async function trReward(R, o, ids, boss, shop, first) {
   /* v24.70 경완 '매층 보상 창이 상점, 코인으로 구매' (포켓로그식): 위 카드 3장 중 하나는 공짜, 아래 줄은 코인으로 몇 번이든 사고, 코인 내고 카드 다시 뽑기 (층마다 10·20·30…) */
   const L = []; let pool0 = C.filter(c => c[0] > 0);
   if (first) { L.push([1, 1, '동료 몬스터볼 ×5', '야생 포켓몬에게 던지면 이번 도전에만 함께할 동료가 돼요', async () => { trBallAdd(R, 'mon', 5, '동료 몬스터볼'); return ''; }]); pool0 = pool0.filter(c => !/동료/.test(c[2])); }   /* v24.35 출발 선물 하나는 늘 동료 몬스터볼 ×5 */
-  const draw3 = () => { let pool = pool0.slice(); L.length = first ? 1 : 0; while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); } };
+  /* v24.90 경완 '보상 나오는 것도 포켓로그는 웨이브에 따라 다를 텐데, 지금은 2층부터 하이퍼볼이 나와버리네': 포켓로그처럼 카드마다 등급을 먼저 뽑고(흔함 75%·좋음 19%·귀함 6%, 1024 중 >255·>60) 그 등급 안에서 무게로.
+     층 문턱: 귀함은 10층부터(우두머리·정해진 트레이너 층은 보장), 하이퍼볼 20층부터, 마스터볼은 50층부터 우두머리 층만. 정해진 트레이너 층 = 포켓로그 고정 배틀처럼 등급 보장(귀함1·좋음2, 100층부터 귀함2·좋음1), 우두머리 층 = 귀함 1장 보장 */
+  const fl = R.floor | 0, fx = TR_FIX(fl), GU = first ? [] : fx ? (fl >= 100 ? [2, 2, 1] : [2, 1, 1]) : boss ? [2] : [];
+  const gate = c => !(c[1] === 2 && fl < 10 && !GU.length) && !(/하이퍼볼/.test(c[2]) && fl < 20) && !(/마스터볼/.test(c[2]) && !(boss && fl >= 50));
+  const tier = () => { const r = Math.random() * 1024; return r > 255 ? 0 : r > 60 ? 1 : 2; };
+  const draw3 = () => { let pool = pool0.filter(gate); L.length = first ? 1 : 0; for (let i = 0; L.length < 3 && pool.length; i++) { let tq = GU[i] ?? tier(), C2 = [];
+      for (; tq >= 0 && !(C2 = pool.filter(c => c[1] === tq)).length; tq--);   /* 그 등급이 비면 한 단계 아래 */ if (!C2.length) C2 = pool;
+      const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k]); } };
   draw3();
   const f = R.floor | 0, hl = f < 20 ? ['상처약', 15, 20] : f < 50 ? ['좋은상처약', 30, 60] : ['고급상처약', 50, 120];
   const SH = first ? null : [[hl[0], hl[1], 0, () => live.some(id => hp(id) > 0 && hp(id) < .999), heal(hl[2])], ['기력의조각', 40, 0, () => ids.some(id => hp(id) <= 0), rev(.5)],
     ...(f < 10 ? [['mon', 15]] : f < 30 ? [['mon', 15], ['great', 30]] : [['great', 30], ['ultra', 60]]).map(([k, pr]) => { const nm = { mon: '동료 몬스터볼', great: '동료 슈퍼볼', ultra: '동료 하이퍼볼' }[k]; return [nm, pr, 0, () => true, async () => { trBallAdd(R, k, 1, nm); return ''; }]; })];
+  /* v24.90 경완 '보상 고를 때 내가 몬스터볼 몇 개 가졌는지도 포켓로그처럼': 포켓로그는 볼 보상 설명에 '(가방: N)' → 볼 카드 설명·상점 볼 칸에 지금 가진 개수 */
+  const BK = n => /몬스터볼/.test(n) ? 'mon' : /슈퍼볼/.test(n) ? 'great' : /하이퍼볼/.test(n) ? 'ultra' : /마스터볼/.test(n) ? 'master' : '', bagN = k => (R.balls || {})[k] | 0;
+  const balLive = () => L.forEach(c => { const k = BK(c[2]); if (!k) return; if (c.d0 == null) c.d0 = c[3]; c[3] = `${c.d0} (가방에 ${bagN(k)}개)`; });
   let rr = 0;
-  for (let again = 0; ; again = again < 0 ? 0 : 1) {   /* 다시 뽑기(-1) 는 떨어지는 연출부터 */
-    const X = SH && { coin: R.coin | 0, rr: 10 * (rr + 1), shop: SH.map(([n, pr, , ok]) => [n, pr, ok()]) };
+  for (let again = 0; ; again = again < 0 ? 0 : 1) { balLive();   /* 다시 뽑기(-1) 는 떨어지는 연출부터 */
+    const X = SH && { coin: R.coin | 0, rr: 10 * (rr + 1), shop: SH.map(([n, pr, , ok]) => [n, pr, ok(), BK(n) ? bagN(BK(n)) : null]) };
     const a = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again, X ? '위 카드 하나는 공짜 · 아래는 코인으로' : undefined, X);
     if (a && a.t === 'rr') { const c = 10 * (rr + 1); if ((R.coin | 0) < c) continue; R.coin -= c; rr++; draw3(); again = -1; continue; }
     if (a && a.t === 'buy') { const S0 = SH[a.i]; if (!S0 || (R.coin | 0) < S0[1] || !S0[3]()) continue; const t = await S0[4](); if (t === null) continue; R.coin -= S0[1]; o.se?.('KAIFUKU'); continue; }
