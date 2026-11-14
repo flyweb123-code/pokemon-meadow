@@ -4594,3 +4594,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .pty.mate:not(.fnt):not(.act){background:linear-gradient(#a888e0,#7458b8);box-shadow:inset 0 0 0 1px #e0d0ff,0 0 0 1px #2c1c58}
 .bt .pty .pty-mt{position:static;flex:none;margin-left:4px;font-style:normal;font-size:8px;line-height:1;padding:2px 4px 1px;border-radius:4px;background:#fff;color:#6040a8;text-shadow:none;font-weight:800;box-shadow:0 0 0 1px #6040a8;pointer-events:none}
 .bt.mob .pty .pty-mt{font-size:9px}
+
+/* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
+.bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}

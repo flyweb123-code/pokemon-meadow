@@ -1064,7 +1064,7 @@ function blocked(c, sf) {
   const g = st(), ty = g.ty; g.blk++; if (g.wk) g.wk.b++; g.bk[ty] = (g.bk[ty] || 0) + 1;
   if (c && !c.named && !c.boss && !sf) g.nc = (g.nc | 0) + 1;   /* v15.85 경완: 고용 트레이너가 막은 건 안 셈 */   // 보통 도전자를 막은 수 → 9명이면 다음은 이름 있는 트레이너 (v12.23)
   if (!c?.boss) return;
-  const gi = c.boss, r0 = g.rep || 0; if (g.bsL) delete g.bsL[gi]; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
+  const gi = c.boss, r0 = g.rep || 0; if (g.bsL) delete g.bsL[gi]; if (g.bsF) delete g.bsF[gi]; g.gmax = Math.max(g.gmax | 0, gi); g.rep = Math.max(r0, GRADES[gi][0]); if (g.wk) g.wk.r += g.rep - r0;
   g.bdl[ty] = Math.max(bdLv(g, ty), gi + 1); g.bdg[ty] = g.bdg[ty] || Date.now(); g.newBdg = ty; g.newG = gi;
   glog('bdg', `승급 심사 통과! <b>${GRADES[gi][1]}</b> 배지를 받았다!`);
   if (!(g.grw = g.grw || {})[gi]) { g.grw[gi] = 1; g.grwN = gi; const n = GR_GOLD[gi] || 0, E = GR_EGG[gi]; if (n) addG(n, 'promo'); if (E) GA.tyEggs?.(ty, E[0], E[1], g.nm || '체육관'); }   // v18.17 경완: 등급 처음 오를 때 골드 + 체육관 타입 알 (등급마다 한 번)
@@ -1327,9 +1327,10 @@ async function challenge(picked) {
     const CR = chalRoute(D, [e]); await walk(e, CR.path); e.f = CR.cf; place(e); if (CR.mf && meEnt) { meEnt.f = CR.mf; place(meEnt); }   // 옆에 서면 서로 마주 봄 (v13.81 꺾임 적은 길)
     const N = c.named && NAMED.find(n => n.id === c.named), me = trName() || '관장';
     const CS = N ? null : chalSay(c, g), EA = g.evAft?.n > 0 && EV_SAY[g.evAft.id], line = N ? (EA ? pick(EA.i) : N.ln[0].replace('{me}', me)) : CS.i[0]; if (EA && !--g.evAft.n) delete g.evAft;   /* 이벤트 직후 3명은 승급 심사·이름 있는 트레이너도 첫 마디가 이벤트 이야기 (경완 2026-11-09) */   // v18.42 경완: 도전자 대사 다양하게 (chalSay)
-    if (c.boss) await talk(`<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
+    const RF = c.boss && c.named !== 'red' ? (g.bsF?.[c.boss] | 0) : 0, RS = RF ? RE_SAY[Math.min(RF, RE_SAY.length) - 1] : null;   /* v24.63 경완 '승급 재심사 받을 때 전용 대사': 그 등급 심사에서 진 횟수(g.bsF)에 따라 */
+    if (c.boss) await talk(RF ? `<span class="gy-who">승급 재심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 다시 심사하러 왔다!<br><small>${RF + 1}번째 도전</small>` : `<span class="gy-who">승급 심사</span><b>${GRADES[c.boss][1]}</b> 승급을 걸고<br>${esc(c.cls)} ${esc(c.nm)}${jong(c.nm) ? '이' : '가'} 심사하러 왔다!<br>이기면 등급이 오르고 배지를 받는다.`);   // 등급 문턱마다 (경완 2026-10-29)
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
-    const L = [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
+    const L = RS ? RS.i.map(t => t.replace('{me}', me)) : [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
     for (const t of L.slice(0, -1)) await talk(who + esc(t));
     do await talk(who + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
@@ -1357,7 +1358,7 @@ async function challenge(picked) {
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
     if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
-    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
+    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } else { g.bsF = g.bsF || {}; g.bsF[c.boss] = (g.bsF[c.boss] | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0; if (!res?.quit && !res?.cut) g.sfT = Date.now();   /* v23.52: 직접 배틀하면 트레이너 평판이 SF_ON_H 시간 동안 켜짐 */
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
@@ -1370,7 +1371,7 @@ async function challenge(picked) {
     for (const u of res?.eg || []) try { await window.GymManage?.egGainPop?.(u); } catch (er) { console.error(er); }   // v20.85 경완: 번뜩였으면 기록창 뒤 특별한 기술 카드에서 게이지가 오르는 걸
     if (g.stk && (bsReady(g) || (c.boss && won))) { g.stk = 0; save(); renderTop(); }   /* v15.42 경완: 연승은 등급 안에서만. 결과창 뒤 승급 심사가 열리면(또는 심사 통과) 연승 끊김 */
     // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
-    { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
+    { root.classList.remove('dhide'); const bye = res?.quit ? sayEnd.lose : c.named === 'red' ? '…………' : c.boss ? (RS ? (won ? RS.w : RS.l).replace('{me}', me) : won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); }
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
@@ -1413,6 +1414,14 @@ function bsScreen() {
     if (b.dataset.a === 'go') { el.remove(); 
       openTab('battle', { title: '승급 심사 라인업', pick: i => { const g2 = st(); g2.luI = i; save(); bsStart(gi); } }); } };   // 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (12.95: 고른 라인업으로 나감)
 }
+/* v24.63 경완 '승급 재심사 받을 때 전용 대사': 진 횟수별 (1번 진 뒤, 2번, 3번 이상). i = 배틀 전 대사들, w = 이겼을 때, l = 또 졌을 때 */
+const RE_SAY = [
+  { i: ['또 만났네요, {me}! 지난 심사 뒤로 얼마나 강해졌는지 볼까요?', '지난번 배틀, 저도 계속 생각났어요. 이번엔 어떤 라인업일지 기대돼요!'],
+    w: '그래요, 이게 보고 싶었어요! 지난번 그 관장이 맞나 싶을 정도네요. 축하해요!', l: '아쉽네요… 그래도 지난번보다 훨씬 끈질겼어요. 다음 심사에서 기다릴게요.' },
+  { i: ['벌써 세 번째 심사네요. 포기하지 않는 관장님은 좋아해요.', '그렇다고 봐주진 않아요. 그게 심사관의 예의니까!'],
+    w: '세 번 만에 해냈네요! 이 끈기라면 새 등급도 금방 익숙해질 거예요.', l: '으음, 아직이에요. 라인업이나 기술을 한 번 바꿔 보는 건 어때요?' },
+  { i: ['{me}… 우리 이제 거의 단짝이네요. 협회에서 저더러 전담 심사관이래요.', '심사관 명찰 반납하고 응원단 하고 싶을 정도지만… 그래도 봐주는 건 없어요!'],
+    w: '드디어!! 저 사실 지금 울컥했어요. 정말 축하해요, {me}!', l: '…다음에도 제가 올게요. 아니, 꼭 저여야 해요. 이제 정이 들어 버렸거든요.' }];
 async function bsStart(gi) {
   const g = st();
   if (legKang() && gi === GRADES.length - 1 && bsReady(g)) { bsMus = false; try { window.GymBGM?.stop(.5); } catch (e) {}   /* v23.61 경완 '이 라인업으로 결정 눌렀을 때 bgm 끊기게, 그 전까진 나오고' (v23.45 는 [심사 받기] 에서 껐음) */ openTab(null); return legExam(gi); }   // 전설 심사는 강박사가 직접. [이 라인업으로 결정] 때 챔피언 등장 곡으로 바뀌어 배틀 전까지 이어짐 (v23.42 경완)
