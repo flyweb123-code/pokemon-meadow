@@ -16,6 +16,7 @@ const PART = {
   bField: [1628096, 3984], bBattle: [1632096, 3820],
   sGym: [829664, 8876], sBaGym: [987488, 13836], sBaTrain: [1013312, 8996], sBaRival: [1067936, 8272], sBaChamp: [1048928, 11672], sEyeElite: [941696, 6000], sEyeChamp: [964096, 6632],
   sLab: [838560, 3556],
+  sAus: [892160, 4016], sEvLegend: [1218880, 1680],   // v24.54 SEQ_AUS 시작의 방·SEQ_EV_LEGEND 전설 등장 (평판 3,000 아르세우스 강림, 경완 2026-11-14)
   sShinka: [1178144, 4504],   // SEQ_SHINKA 진화 곡 (메가진화 연출, 경완 2026-11-12 '메가진화 할 때 배틀 bgm 끊기고 메가진화 bgm')
   sDendo: [791296, 5100],   // v18.93 SEQ_BLD_DENDO 전당 (전설 알 지급 전당 등록 연출, 경완 '전당 등록처럼 웅장하게')
   sLeague: [784384, 6912], bDungeon: [1635936, 3948], wDungeon: [7096288, 34312],   // SEQ_D_LEAGUE 포켓몬리그 (승급 심사 화면, 경완 2026-11-04 'bgm 웅장하게')
@@ -44,6 +45,7 @@ const BANK = { hF: { b: 'hbSeF', w: ['hwBasic', 'hwSeF'] }, hB2: { b: 'hbSeB', w
 const SONG = {
   gym: { s: 'sGym', bank: 'field', vol: 118 },            // 체육관
   lab: { s: 'sLab', bank: 'field', vol: 127 },
+  aus: { s: 'sAus', bank: 'dungeon', vol: 127 }, evLegend: { s: 'sEvLegend', bank: 'B', vol: 105 },   // 아르세우스 강림
   shinka: { s: 'sShinka', bank: 'B', vol: 90 },          // 진화 곡 (메가진화 장면)
   league: { s: 'sLeague', bank: 'dungeon', vol: 100 },
   dendo: { s: 'sDendo', bank: 'dungeon', vol: 112 },     // 전당 (전설의 체육관 전당 등록)   // 승급 심사 화면 (포켓몬리그)

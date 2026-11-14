@@ -800,11 +800,13 @@ const LEG_TOP = 3000;
 const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !tutSeen('arc') && !!GA.arcScene && !GA.arcGot?.() && !window.gymSimOn; };
 async function arcGo(test) {
   const g = st(); if (busy || !open) return; busy = true; root.classList.add('busy'); const GW = '<span class="gy-who">안내원</span>';
-  try { openTab(null); try { window.GymBGM?.stop(1.2); } catch (e) {}
+  /* v24.54 경완 '쿠구궁 할 때 테두리 빈틈으로 뒷 화면 안 보이게, 효과음도': 흔들 때 화면을 살짝 키워(1.05배) 가장자리가 안 드러나게 + 플래티넘 지진 소리. 아르세우스 연출은 개그 없이 */
+  const quake = (k = 1) => { try { GA.rumble?.(2, 3); window.GymBGM?.se('DP_W089', { gain: .7 + .3 * k }); const a = 4 * k, F = [[0, 0], [-a, a / 2], [a, -a / 2], [-a * .7, -a / 3], [a * .8, a / 2], [-a / 2, a / 3], [a / 2, -a / 4], [0, 0]].map(([x, y], i, A) => ({ translate: `${x}px ${y}px`, scale: i && i < A.length - 1 ? '1.05' : '1' })); root.animate(F, { duration: 1300, easing: 'linear' }); } catch (e) {} };
+  try { openTab(null); try { window.GymBGM?.stop(1.2); window.GymBGM?.sePrep?.(['DP_W089']); } catch (e) {}
     await talk(`<b>${esc(g.nm || '체육관')}</b>의 평판이<br><b>3,000</b>에 닿았다!`);
-    for (let r = 0; r < 2; r++) { dlg(`<b>쿠구구구구…!${r ? '!' : ''}</b>`); try { GA.rumble?.(2, 3); root.animate([{ translate: '0 0' }, { translate: '-4px 2px' }, { translate: '5px -2px' }, { translate: '-3px -1px' }, { translate: '0 0' }], { duration: 260, iterations: 4 }); } catch (e) {} await wait(1250); }
-    await talk(GW + '관, 관장님! 밖이…<br>필드 쪽 하늘이 갈라지고 있어요!');
-    await talk(GW + '어서 가 보세요!<br>저는 여기서 체육관을 지킬게요.<br>…무서워서 그런 건 아니에요!');
+    await wait(500); quake(.8); dlg('<b>쿠구구구구…</b>'); await wait(1900); quake(1.25); dlg('<b>쿠구구구구구…!!</b>'); await wait(1900);
+    await talk(GW + '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!');
+    await talk(GW + '어서 가 보세요.<br>체육관은 제가 지키고 있을게요.');
   } catch (e) { console.error(e); } finally { busy = false; root.classList.remove('busy'); }
   await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0 });
   if (ok && !test && S.gym) { S.gym.arc = 1; GA.save?.(); }
