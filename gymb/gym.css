@@ -708,7 +708,6 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .bt.mob .mvw .mvi{position:absolute;right:6px;top:6px;background:rgba(255,255,255,.85)}
 .bt.mob .mvb.empty{background:rgba(120,130,150,.18);border-radius:12px;box-shadow:inset 0 0 0 1.5px rgba(120,130,150,.35);opacity:1}
 .bt.mob .bp-party{grid-auto-rows:auto;grid-template-rows:repeat(3,minmax(40px,54px)) minmax(32px,44px)}
-/* v25.17 그만두기 없이 7마리(쉬게 할 포켓몬 고르기): 네 줄 모두 같은 높이 */.bt.mob .bp-party.nx{grid-template-rows:repeat(4,minmax(0,1fr))}
 .bt.mob .pty{border-radius:10px}
 .bt.mob .bp-yn{grid-template-columns:1fr;grid-template-rows:auto minmax(40px,60px) minmax(40px,60px)}
 .bt.mob .bp-yn .yes{--c1:#62aef0;--c2:#2f7cd0}.bt.mob .bp-yn .no{--c1:#9aa3b2;--c2:#6c7586}
