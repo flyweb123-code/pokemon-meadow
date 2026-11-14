@@ -4261,7 +4261,9 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
     const mx = id => { const p = B_(id), mm = GB().gm(p); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };
     /* v25.18 경완 '왜 칸이 7개지' → 본가처럼 원래 6마리만 칸에, 새로 잡은 포켓몬은 대사창에. 그만두기 = 새 포켓몬을 놓아줌 */
     const T6 = R.ids.filter(id => id !== P.id), q = `${eul(nm(P.id))} 데려가려면\n쉬게 할 포켓몬을 골라 주세요.`; await o.msgTap('포켓몬이 가득 찼다!');   /* 세 줄은 대사창을 넘쳐서 둘로 나눔 */
-    const out = (o.pickMon ? await o.pickMon(q, T6.map(id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; })) : T6[await o.choose(q, [...T6.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']), ['그만두기', `${nm(P.id)}${jong(nm(P.id)) ? '을' : '를'} 놓아줘요`, '#9aa0b4,#6c7288']])]) ?? P.id;
+    const hpE = id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; };
+    /* v25.18 경완 '6칸 위에 잡은 포켓몬 행 전체로·딱지·둥둥': 맨 윗줄 = 새로 잡은 포켓몬 (누르면 놓아줌), 그만두기 없음 */
+    const out = (o.pickMon ? await o.pickMon(q, T6.map(hpE), hpE(P.id)) : T6[await o.choose(q, [...T6.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']), ['그만두기', `${nm(P.id)}${jong(nm(P.id)) ? '을' : '를'} 놓아줘요`, '#9aa0b4,#6c7288']])]) ?? P.id;
     const wild = !!B_(out)?.mate; R.ids.splice(R.ids.indexOf(out), 1); delete R.hp[out]; if (R.lead === out) R.lead = R.ids[0];
     await o.msgTap(`${eun(nm(out))} ${wild ? '야생으로' : '박스로'} 돌아갔다!`); }
 }

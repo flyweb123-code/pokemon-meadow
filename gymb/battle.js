@@ -937,11 +937,11 @@ function partyPanel(req, forced, ban = []) {
   });
 }
 /* v24.55 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
-function trPickMon(q, L) {
-  return new Promise(async res => { if (q) await msg(q, 0);
-    const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
-      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
-      <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
+function trPickMon(q, L, top) {   /* top = 맨 윗줄 한 칸 (수련탑 새로 잡은 포켓몬, 누르면 그 포켓몬 → 고른 id) */
+  return new Promise(async res => { if (q) await msg(q, 0); if (top) L = [top, ...L];
+    const p = panel(`<div class="bp-party${top ? ' has-new' : ''}">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
+      const nw = top && i === 0; return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate && !nw ? ' mate' : ''}${nw ? ' pty-nw' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${nw ? '<em class="pty-mt nw">잡은 포켓몬</em>' : P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
+      ${top ? '' : '<button class="bb cancel" data-x><span>그만두기</span></button>'}</div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
 }
 /* v23.10 훈련하기 보급 고르기: 아래 화면에 고를 것 여러 개 (L = [[제목, 설명, 'c1,c2']]) → 고른 번호 */
