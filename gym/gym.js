@@ -1168,8 +1168,11 @@ function sfEV(rel, n, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), 
 const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .9 - .2 * v : 1) * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
+/* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team']), SOLO_OF = { twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
-  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
+  const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
@@ -1268,6 +1271,7 @@ function tick0(now) {
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   /* v21.82 경완 '잠금일 때 보이는 지원서는 예시일 뿐인데 그 지원자가 잠금 풀리며 그대로 나타나 포켓몬 Lv 3~5': 잠금 중 생긴 지원서는 예시(demo) 표시, 트레이너 메뉴가 열리면 지금 라인업 레벨로 새로 받음 */
+  if (!g.sfSolo) { g.sfSolo = 1; [...(g.sf || []), ...(g.cands || [])].forEach(sfSolo); }
   if (!g.sfFix && !lockedT('staff')) { g.sfFix = 1; const av = myAvg(); (g.sf || []).forEach(s => { if (teamLv(s.team) < av - 10) { const lv = Math.max(5, av + rndI(-6, 3)); s.team = s.team.map(m => { const l = Math.max(m[1], Math.min(100, lv + rndI(-2, 2))); return [pickSp(g.ty ? [g.ty] : SPECIES[m[0]]?.t || [], l), l]; }); glog('sf', `${sfName(s)}의 포켓몬이 체육관 수준에 맞게 강해졌다.`, now); } }); }   /* v21.85 경완 '불꽃 체육관 고용 트레이너 포켓몬 레벨 패치한 버전으로': 예시 지원서로 이미 고용된 낮은 트레이너도 한 번 지원자 레벨로 올림 */
   if (lockedT('staff')) g.cands.forEach(c => { c.demo = 1; }); else { const av = myAvg(), old = c => c.demo || teamLv(c.team) < av - 10 || (c.trait === 'effort' && !evOnG()); if (g.cands.some(old)) { g.cands = g.cands.map(c => old(c) ? mkCand(now) : c); g.candSeen = 0; } }   // 이미 열린 체육관에 남아 있던 예시 지원서(라인업보다 10 넘게 낮음)도 새로
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }

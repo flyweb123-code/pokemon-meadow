@@ -622,8 +622,13 @@ const CLS = {
 const PAIR = {
   twins: { ow2: 'twin', f2: 1, b: ['저도요! 저도 같이 싸울 거예요!', '둘이 같이 하면 두 배로 세요!', '언니, 이번엔 내가 먼저 할래!'], y: [['다음엔 둘이서 더 맞춰 올게요!', '언니, 집에 가서 작전 다시 짜자…'], ['역시 우리 둘이 최고야!', '쌍둥이 텔레파시 대성공!']] },
   sis_bro: { ow2: 'swimmer_m_land', f2: 0, b: ['누나, 내가 도와줄게!', '우리 남매 호흡 한번 보세요!', '누나랑 맞춰 온 작전이 있어요!'], y: [['누나, 다음엔 더 잘할게…', '남매 특훈 다시 해야겠다!'], ['누나, 우리 해냈어!', '남매 콤비 최고!']] },
+  interviewers: { ow2: 'cameraman', f2: 0, b: ['(카메라맨) 저도 같이 찍으면서 싸웁니다!', '(카메라맨) 둘이서 생중계 배틀 갑니다!', '(카메라맨) 이 장면, 특종 각이에요!'], y: [['(카메라맨) 오늘 방송은 여기까지…', '(카메라맨) 편집으로 살려 볼게요.'], ['(카메라맨) 특종이다!', '(카메라맨) 시청률 대박이겠어요!']] },
+  double_team: { ow2: 'ace_trainer_f', f2: 1, b: ['(파트너) 우리 콤비, 아직 안 끝났어!', '(파트너) 둘이 맞춰 온 작전이 있어요!', '(파트너) 호흡 한번 보여 드리죠!'], y: [['(파트너) 다음엔 호흡 더 맞춰 올게요.', '(파트너) 콤비 연습 다시 하자.'], ['(파트너) 완벽한 콤비네이션!', '(파트너) 역시 우리 둘이야!']] },
   young_couple: { ow2: 'gentleman', f2: 0, b: ['(남편) 여보, 내가 지켜 줄게!', '(남편) 둘이라면 문제없지!', '(남편) 우리 호흡 보여 드립시다!'], y: [['(남편) 여보, 다음엔 꼭 이기자.', '(남편) 그래도 즐거운 데이트였어.'], ['(남편) 여보, 우리 대단하다!', '(남편) 오늘 데이트 대성공이야!']] },
 };
+/* v25.20 경완 '더블 배틀은 짝 지은 배틀 그림 있는 종만 오게 해주고 배포해' + '보상도 2배', '더블배틀 도전자 오는 빈도 비중도 조절': 짝 직업은 보통 뽑기에서 빼고 더블 확률을 따로 굴림 (등급별 DBL_P, 새내기 0 · 동네 10% · 떠오르는~이름난 15% · 인기 이상 20% → 하루 2~3명).
+   마리 수 = 한 사람 몫 2마리(쉬움) · 2~3마리(보통·어려움)씩 둘 (pairN), 레벨 +PAIR_LV, 골드·평판 ×2 (rewOf). 짝 그림(pt/tr)이 있는 쌍둥이·남매·젊은 부부·인터뷰어·더블팀만 */
+const DBL_P = [0, .1, .15, .15, .2, .2, .2], PAIR_LV = 1, pairN = diff => diff ? rndI(2, 3) * 2 : 4;
 const pairOf = c => !c.boss && !c.named && PAIR[c.tr] && (c.team || []).length >= 2 ? PAIR[c.tr] : null;
 // 두 번째 사람이 설 칸: 첫 사람이 관장 앞이면 그 옆(왼·오), 관장 옆이면 그 아래. 소품·사람 칸은 건너뜀
 function pairSpot(D, e1, tx, ty, cf) { const L = D.leader, fr = (x, y) => (!D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y))) && !(x === L[0] && y === L[1]);
@@ -786,7 +791,7 @@ const trV = s => (s.tv ?? ((Math.imul((s.id | 0) ^ 0x5bd1e995, 2654435761) >>> 7
 const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? trX(s) : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
 const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
-const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : R; };
+const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : pairOf(c) ? { ...R, g: R.g * 2, r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
@@ -945,11 +950,11 @@ function refit0(c, my) {
   }
   const C = CLS[c.k]; if (!C) return;
   const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff, S3 = strOf(my);
-  const lx = legX(g), n = Math.max(diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
+  const lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
   if (isLeg(g)) { if (lx >= 1) c.ivm = 31; if (lx >= 2) c.ai = 2; else delete c.ai; }
   const ls = lsOf(g), base = S3 ? Math.max(avg, S3.sl + stkLv(g.stk) - ls) + (ls ? 0 : S3.lvB) : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
   const ct = CT_OF(g.ty), q = c.cq ?? 0;
-  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2), n, ls ? 0 : isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, 540 + Math.round(lx * 20))) : S3?.sb, ct, q, c.tw);
+  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2) + (PR ? PAIR_LV : 0), n, ls ? 0 : isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, 540 + Math.round(lx * 20))) : S3?.sb, ct, q, c.tw);
   // v17.32: 상성 좋은 포켓몬을 데려온 만큼 강함 보정 레벨을 덜 준다 (상성 포켓몬 비율만큼 lvB 빼기)
   const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 && !ls ? Math.round(S3.lvB * cs) : 0;
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
@@ -967,10 +972,10 @@ function mkChal(t) {
   // 보통 도전자: 막은 수가 늘수록 어려운 도전자가 많고, 레벨·마리 수·개체값이 오른다
   // v14.31 경완: 처음 5명은 무조건 쉬운 도전자(g.ez = 만든 보통 도전자 수), 첫 등급의 어려운 도전자 확률 30% → 15%
   const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
-  const ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = Object.keys(CLS).filter(x => !!CLS[x].e === !diff), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
+  const dbl = Math.random() < (DBL_P[G.i] || 0), ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = dbl ? Object.keys(PAIR).filter(x => CLS[x]) : Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
-  const n = diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f), n, 0, ct, cq, tw) }; }
+  const n = dbl ? pairN(diff) : diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
+  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -1181,8 +1186,11 @@ function sfEV(rel, n, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), 
 const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v); return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * (trait === 'thrift' ? .9 - .2 * v : 1) * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
+/* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team']), SOLO_OF = { twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
-  const ty = st().ty, KS = Object.keys(CLS).filter(x => ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS)), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
+  const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
@@ -1281,6 +1289,7 @@ function tick0(now) {
   g.cands = g.cands.filter(c => { if (now <= c.exp) return true; glog('sf', `면접 지원자 ${c.cls} <b>${esc(c.nm)}</b>${jong(c.nm) ? '은' : '는'} 다른 체육관으로 갔다.`, c.exp); return false; });
   if (g.cands.length < 3 && now >= (g.candN || 0) && g.sf.length < 5) { g.cands.push(mkCand(now)); g.candSeen = 0; g.candN = now + rnd(14, 30) * H; }
   /* v21.82 경완 '잠금일 때 보이는 지원서는 예시일 뿐인데 그 지원자가 잠금 풀리며 그대로 나타나 포켓몬 Lv 3~5': 잠금 중 생긴 지원서는 예시(demo) 표시, 트레이너 메뉴가 열리면 지금 라인업 레벨로 새로 받음 */
+  if (!g.sfSolo) { g.sfSolo = 1; [...(g.sf || []), ...(g.cands || [])].forEach(sfSolo); }
   if (!g.sfFix && !lockedT('staff')) { g.sfFix = 1; const av = myAvg(); (g.sf || []).forEach(s => { if (teamLv(s.team) < av - 10) { const lv = Math.max(5, av + rndI(-6, 3)); s.team = s.team.map(m => { const l = Math.max(m[1], Math.min(100, lv + rndI(-2, 2))); return [pickSp(g.ty ? [g.ty] : SPECIES[m[0]]?.t || [], l), l]; }); glog('sf', `${sfName(s)}의 포켓몬이 체육관 수준에 맞게 강해졌다.`, now); } }); }   /* v21.85 경완 '불꽃 체육관 고용 트레이너 포켓몬 레벨 패치한 버전으로': 예시 지원서로 이미 고용된 낮은 트레이너도 한 번 지원자 레벨로 올림 */
   if (lockedT('staff')) g.cands.forEach(c => { c.demo = 1; }); else { const av = myAvg(), old = c => c.demo || teamLv(c.team) < av - 10 || (c.trait === 'effort' && !evOnG()); if (g.cands.some(old)) { g.cands = g.cands.map(c => old(c) ? mkCand(now) : c); g.candSeen = 0; } }   // 이미 열린 체육관에 남아 있던 예시 지원서(라인업보다 10 넘게 낮음)도 새로
   try { window.GymManage?.tickTrain(now); } catch (e) { console.error(e); }
