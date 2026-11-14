@@ -669,8 +669,8 @@ async function sendOut(side, A, quick) {
   else if (quick) { m.classList.add('on'); await wait(240); }   /* v23.10 훈련하기: 야생 포켓몬·이어지는 배틀의 내 포켓몬은 볼 없이 바로 */
   else { m.classList.add('ball');
   await throwBall(side);
-  ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(60);
-  m.classList.remove('ball'); await wait(260); } try { GA.cry?.(A.sp, 0, 1, CRY_K); } catch (e) {} playAnim(side, A);
+  ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(16);
+  m.classList.remove('ball'); await wait(200); } try { GA.cry?.(A.sp, 0, 1, CRY_K); } catch (e) {} playAnim(side, A);
   if (A.shiny) await shinyFx(side);   // 색이 다른 포켓몬은 나올 때 반짝반짝 (본가)
   paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); await wait(450);
 }
@@ -689,7 +689,7 @@ function throwBall(side, k) {
   const dx = slx(side), [x0, y0, x1, y1] = (side[0] === 'e' ? [190, 40, 176, 66] : [-10, 150, 80, 112]).map((v, i) => i % 2 ? v + sly(side) : v + dx);
   const mid = side[0] === 'e' ? 30 : 62;   /* v24.55 내 볼은 본가처럼 왼쪽 아래 트레이너 손에서 높이 포물선 */
   const c = 2 * mid - (y0 + y1) / 2, an = b.animate(Array.from({ length: 11 }, (_, i) => { const t = i / 10; return { transform: `translate(${x0 + (x1 - x0) * t}px,${(1 - t) ** 2 * y0 + 2 * (1 - t) * t * c + t * t * y1}px)` }; }), {   /* 포물선 */ duration: side[0] === 'e' ? 420 : 560, easing: 'linear', fill: 'forwards' });
-  return an.finished.catch(() => {}).then(async () => { b.classList.remove('spin'); b.classList.add('open'); await wait(90); b.remove(); });
+  return an.finished.catch(() => {}).then(() => { b.classList.remove('spin'); b.classList.add('open'); setTimeout(() => b.remove(), 90); });   /* v24.66 경완 '볼에서 나올 때 살짝 지연': 열리는 순간 바로 터지며 나옴 (열린 볼은 뒤에서 사라짐) */
 }
 function ballPoof(side) {
   const fx = $b('.bt-fx'), x = (side[0] === 'e' ? 176 : 80) + slx(side), y = (side[0] === 'e' ? 66 : 112) + sly(side);
@@ -912,7 +912,7 @@ function trChoose(q, L) {
    잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
 const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
 /* v24.56 경완 '가방은 B로' (시안 https://claude.ai/artifact/Wyo9ePDpvmehGtx3CsAad8): 본가 가방처럼 볼 4줄 목록(없는 볼은 흐리게) → 고르면 아래 설명 → '던지기'. 고른 볼은 have 안 번호로 */
-const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼 · 잡힘 ×1', great: '몬스터볼보다 잘 잡혀요 · 잡힘 ×1.5', ultra: '아주 잘 잡혀요 · 잡힘 ×2', master: '반드시 잡혀요' };
+const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼', great: '몬스터볼보다 1.5배 잘 잡혀요', ultra: '몬스터볼보다 2배 잘 잡혀요', master: '반드시 잡혀요' };   /* v24.66 '잡힘 ×1' 이 무슨 뜻인지 몰라서 말로 */
 function trBag(T) {
   return new Promise(res => { const have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0); let sel = (TR_BALL.find(([k]) => k === B.trBagK && (T.balls[k] | 0) > 0) || have[0])[0];
     const ic = k => `<img class="bg-ic" alt="" src="${IMG}item/${TR_BALL_IC[k]}.png">`;
