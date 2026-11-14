@@ -566,7 +566,7 @@ function newGame() {
   Object.assign(R, { HS: 0, SLOW: 0, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, VIG: 0, BUF: null, HELD: {} }); R.Q.length = 0; R.PT.length = 0; R.GH.length = 0; R.SH = null;
   R.G = { o, M, me, stat: R.stat, pool: R.pool || foePool(R.stat), mobs: [], shots: [], drops: [], wave: 0, ko: 0, gold: 0, goldShown: 0, exp: 0, ev: 0, evRaw: 0, shard: 0, fainted: false, time: 0, start: R.T, over: false, egg0: M.eg?.p ?? 0, egg: M.eg?.p ?? 0, eggShown: M.eg?.p ?? 0,
     combo: 0, comboT: 0, best: 0, just: 0, pend: 0, clearT: 0, sec: 0, queue: [], zones: [], waves: [], blasts: [], cracks: [], crT: 4, traps: [], fields: [], wx: null, qT: 0, bossPend: 0, items: [], itT: 9, mag: 0, hits: 0, egT: -9,
-    xpB: Math.max(0, GB().xpAt(GB().growth(P.sp), Math.min(GB().LV_MAX, M.lv + 5)) - GB().xpAt(GB().growth(P.sp), M.lv)) };
+    xpB: Math.max(0, GB().xpAt(GB().growth(P.sp), Math.min(GB().LV_MAX, M.lv + 3)) - GB().xpAt(GB().growth(P.sp), M.lv)) };
   [...R.G.pool.sm, ...R.G.pool.big].forEach(sp => spr(sp)); R.pool = null; M.mv.forEach(v => { me.cd[v.name] = 0; });
   buildButtons(); hud(); cbUi(); nextWave();
 }
@@ -624,7 +624,7 @@ function crackBreak(c) { const G = R.G, me = G.me; if (c.pit) return; c.pit = R.
   if (me.hp > 0 && !me.hide && me.inv <= 0 && inCr(c, me)) { const n = Math.min(me.hp - 1, Math.round(me.mhp * .12)); if (n > 0) { me.hp -= n; pop(me.x, me.y - 56, n, '#ff7a6a', true); } me.busy = Math.max(me.busy, .45); me.flash = .16; squash(me, .4); chEnd(); dashEnd(); R.VIG = 1; buzz(2); hud(); }
   for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0 || o.z > 30 || !inCr(c, o, o.boss ? 14 : 0)) continue; if (o.boss) brkAdd(o, { n: o.mhp * .2, e: 1 }); hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .06 : .3))), e: 1, crit: false, w: 3 }, 0.01, 0); o.stun = Math.max(o.stun || 0, o.boss ? .6 : 1.2); o.warn = 0; } }
 function crackStep(dt) { const G = R.G, me = G.me, T = R.T, A = R.A;
-  if (G.wave >= 3 && !G.clearT && (G.crT -= dt) <= 0) { G.crT = 9 + Math.random() * 6; if (G.cracks.filter(c => !c.pit).length < 3) { let x, y, n = 0; do { x = A.x0 + 50 + Math.random() * (A.x1 - A.x0 - 100); y = A.y0 + 50 + Math.random() * (A.y1 - A.y0 - 90); } while (++n < 30 && (inPond(x, y, 40) || Math.hypot(x - me.x, y - me.y) < 80 || G.cracks.some(c => Math.hypot(c.x - x, c.y - y) < 110)));
+  if (false && (G.crT -= dt) <= 0) { G.crT = 9 + Math.random() * 6; if (G.cracks.filter(c => !c.pit).length < 3) { let x, y, n = 0; do { x = A.x0 + 50 + Math.random() * (A.x1 - A.x0 - 100); y = A.y0 + 50 + Math.random() * (A.y1 - A.y0 - 90); } while (++n < 30 && (inPond(x, y, 40) || Math.hypot(x - me.x, y - me.y) < 80 || G.cracks.some(c => Math.hypot(c.x - x, c.y - y) < 110)));
       if (n < 30) G.cracks.push({ x, y, r: 38, w: 0, t0: T, pit: 0, ln: Array.from({ length: 9 }, (_, i) => [i / 9 * 6.28 + Math.random() * .5, .45 + Math.random() * .55, (Math.random() - .5) * .9]) }); } }
   for (const c of G.cracks) { if (c.pit) continue; let on = me.hp > 0 && !me.hide && !(me.z > 10) && inCr(c, me) ? 1 : 0; for (const o of G.mobs) if (o.hp > 0 && o.enter <= 0 && !(o.z > 10) && inCr(c, o)) on += o.boss ? 2 : 1;
     if (on) { c.w += dt * Math.min(2, .7 + on * .3); if (Math.random() < dt * 10) dust(c.x + (Math.random() - .5) * c.r, c.y + (Math.random() - .5) * c.r * .5, 1, 40); if (c.w >= .9) crackBreak(c); } else c.w = Math.max(0, c.w - dt * .25); }
@@ -670,7 +670,7 @@ function nextWave() {
 }
 const mmss = t => { t = Math.floor(t); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
 function stageClear() {   // 스테이지를 깨면 HP 8% 회복
-  const G = R.G, me = G.me, h = Math.min(me.mhp - me.hp, Math.round(me.mhp * .08)); me.hp += h;
+  const G = R.G, me = G.me, h = Math.min(me.mhp - me.hp, Math.round(me.mhp * .1)); me.hp += h;
   pop(me.x, me.y - 82, `스테이지 ${G.wave} 클리어!`, '#ffe27a', true); if (h) pop(me.x, me.y - 62, `HP +${h}`, '#bff59a'); ring(me.x, me.y, '#bff59a', 8, 64, .4, 5); snd('DUN_Stat_Up', .05); se('PINPON'); if (h) se('KAIFUKU'); buzz(1); hud();
 }
 // ---------- 필드 아이템 (경완 '중간중간 자석·폭탄 등 아이템이 필드에 나와서 먹으면 발동') ----------
@@ -692,7 +692,7 @@ function itemUse(it) {
   hud();
 }
 function drawItem(it) { const g = R.g, T = R.T, t = T - it.t0, left = 14 - t, I = ITEMS[it.k], o = itemIm(it.k); if (left < 3 && Math.floor(R.RT * 8) % 2) return;
-  const x = Math.round(it.x), y = Math.round(it.y - 20 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), sz = Math.round(52 * ap), pu = .55 + .45 * Math.sin(R.RT * 6);
+  const x = Math.round(it.x), y = Math.round(it.y - 20 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), sz = Math.round((it.k === 'bomb' ? 38 : 52) * ap), pu = .55 + .45 * Math.sin(R.RT * 6);
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, it.y, 13, 4.5, 0, 0, 7); g.fill();
   if (sz < 6 || !o.wh) return;
   g.globalAlpha = pu; for (const [ox, oy] of [[-3, 0], [3, 0], [0, -3], [0, 3], [-2, -2], [2, -2], [-2, 2], [2, 2]]) g.drawImage(o.wh, x - sz / 2 + ox, y - sz / 2 + oy, sz, sz);   /* 테두리 빛 */
@@ -949,7 +949,7 @@ function ko(o, ux, uy) {
   stop(o.boss ? .2 : .1); shake(o.boss ? .9 : .32); kick(ux, uy, o.boss ? 12 : 7); zoom(o.boss ? .1 : .035);
   se('POKE_DEAD', .12); if (o.boss) { rumble(4, 65); snd('DUN_Explosion', .09); flash(.3); } else buzz(1);
   if (last) { slow(fin ? .95 : .5, fin ? .22 : .35); if (!o.boss) flash(.12); }   // 마지막 한 마리는 느리게 날아간다
-  const cr = Math.random(), coins = o.boss === 2 ? [3, 2, 2, 2, 1, 1, 1, 1] : o.boss ? [2, 2, 1, 1, 1] : Math.random() < .6 ? [cr < .03 ? 3 : cr < .2 ? 2 : 1] : [];   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
+  const cr = Math.random(), coins = o.boss === 2 ? [3, 3, 2, 2, 2, 2, 1, 1, 1, 1] : o.boss ? [3, 2, 2, 1, 1, 1] : Math.random() < .85 ? [cr < .05 ? 3 : cr < .3 ? 2 : 1] : [];   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
   const ex = o.minion ? 0 : Math.round(G.xpB * (o.boss === 2 ? XW.fin : o.boss ? XW.mid : XW.mob(G.wave - 1)) / XW_ALL); G.exp += ex;
   const y = EVY()[o.sp] || '', evAdd = +y[G.stat] || 0, before = G.ev; G.evRaw += evAdd / 6; G.ev = Math.min(EV_CAP, G.M.evRoom, Math.floor(G.evRaw + 1e-6));
   const evUp = G.ev - before, egLeft = G.M.eg ? Math.min(EG_CAP, 99 - G.egg0) - G.shard - G.drops.reduce((a, p) => a + (p.sh ? EGV[p.sh] : 0), 0) : 0;
@@ -1103,7 +1103,7 @@ function hitMe(o, t, c, pw, vx, vy) {
   const G = R.G, me = G.me;
   if (me.prot > 0) { me.inv = Math.max(me.inv, .3); pop(me.x, me.y - 56, '막았다!', '#7af0a0', true); ring(me.x, me.y - 18, '#7af0a0', 20, 44, .25, 5, 1); snd('DUN_Miss', .04); buzz(0); return; }
   if ((me.shrink > 0 && Math.random() < .7) || (me.clone > 0 && Math.random() < .5)) { me.inv = Math.max(me.inv, .4); pop(me.x, me.y - 56, '빗나갔다!', '#e4ecf8', true); snd('DUN_Miss', .04); if (me.clone > 0) ghost(me, .3); return; }
-  const r = dmg(o, me, t, c, pw); r.n = Math.round(r.n * 1.45); if (me.guard > 0) r.n = Math.max(1, Math.round(r.n * .4)); me.hp = Math.max(0, me.hp - r.n); me.inv = .5; me.flash = .16; setAnim(me, 'Hurt', true); chEnd(); dashEnd(); me.busy = .22; me.dash = null; R.BUF = null; squash(me, .32);
+  const r = dmg(o, me, t, c, pw); r.n = Math.round(r.n * 1.3); if (me.guard > 0) r.n = Math.max(1, Math.round(r.n * .4)); me.hp = Math.max(0, me.hp - r.n); me.inv = .5; me.flash = .16; setAnim(me, 'Hurt', true); chEnd(); dashEnd(); me.busy = .22; me.dash = null; R.BUF = null; squash(me, .32);
   const l = Math.hypot(vx, vy) || 1, ux = vx / l, uy = vy / l; me.kx = ux * 300; me.ky = uy * 200;
   pop(me.x, me.y - 56, r.n, '#ff7a6a', true, ux * 20, uy * 10); stop(.09); shake(.55); kick(ux, uy, 10); R.VIG = 1; buzz(2); se('KOUKA_M', .05); snd('DUN_Tackle', .04); if (me.hp > 0 && me.hp / me.mhp <= .2 && !me.lowSe) { me.lowSe = 1; se('HINSI', 1, { dur: 1.6 }); } else if (me.hp / me.mhp > .2) me.lowSe = 0; sparks(me.x, me.y - 20, ux, uy, '#ff7a6a', 8, 300);
   if (G.combo) { G.combo = 0; cbUi(); }
@@ -1309,7 +1309,7 @@ function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>$
 function end(clear, faint, quit) {
   const G = R.G; if (G.over) return; G.over = true; bgm(clear ? 'winWild' : null); chEnd(); dashEnd(); hideEnd(); R.run = false; R.JOY.dx = R.JOY.dy = 0; R.HELD = {}; R.BUF = null; R.el.classList.remove('play'); R.q('.ya-cb').classList.remove('on');
   const bonus = 0; const picked = G.gold + (clear ? G.drops.reduce((a, p) => a + (p.coin ? CV[p.coin] : 0), 0) : 0); G.items = []; G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
-  const fr = (clear ? 1 : 0) + (G.fainted ? 0 : 1), B = GB(), P = G.o.P, gr = B.growth(P.sp), lv0 = G.M.lv, x1 = G.M.xp + G.exp; let lv1 = lv0;
+  const fr = (clear ? 2 : G.wave >= 4 ? 1 : 0) + (G.fainted ? 0 : 1), B = GB(), P = G.o.P, gr = B.growth(P.sp), lv0 = G.M.lv, x1 = G.M.xp + G.exp; let lv1 = lv0;
   while (lv1 < B.LV_MAX && x1 >= B.xpAt(gr, lv1 + 1)) lv1++;
   const a = B.xpAt(gr, lv1), b = B.xpAt(gr, lv1 + 1), prog = lv1 >= B.LV_MAX ? 1 : Math.max(0, Math.min(1, (x1 - a) / (b - a || 1))), nm = nmOf(P), eg = G.M.eg;
   setTimeout(() => { if (!R || R.G !== G) return; se('WIN_OPEN'); if (lv1 > lv0) setTimeout(() => se('EXPMAX'), 500); const q = R.q, r = q('.ya-res'), N = (n, pre = '+', suf = '') => `data-n="${n}" data-pre="${pre}" data-suf="${suf}">${pre}0${suf}`;
@@ -1323,7 +1323,7 @@ function end(clear, faint, quit) {
     q('.ya-rl').innerHTML = `
       <li class="one">${ic('경험치', '#3a98e8')}<span class="k">${lv1 > lv0 ? `레벨 ${lv1 - lv0} 올랐어요` : '쓰러뜨린 만큼 받아요'}</span><b ${N(G.exp)}</b></li>
       <li>${ic(STAT_KO[G.stat], '#8a4ae0')}<span class="k">노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}`}</em></li>
-      <li class="one">${ic('친밀도', '#e0507a')}<span class="k">${clear ? '특훈 완료 +1' : ''}${clear && !G.fainted ? ' · ' : ''}${G.fainted ? (clear ? '' : '지쳐서 못 받음') : '안 지침 +1'}</span><b class="fr" ${N(fr)}</b></li>
+      <li class="one">${ic('친밀도', '#e0507a')}<span class="k">${clear ? '특훈 완료 +2' : G.wave >= 4 ? '열심히 했다 +1' : ''}${(clear || G.wave >= 4) && !G.fainted ? ' · ' : ''}${G.fainted ? (clear || G.wave >= 4 ? '' : '조금 더 버텨 보자') : '안 지침 +1'}</span><b class="fr" ${N(fr)}</b></li>
       ${eg ? `<li><svg class="ic sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><span class="k">번뜩임</span><b class="eg" ${N(G.shard, '+', '%')}</b><em><i class="egq" style="--tc:${TYPE_C[eg.t] || '#888'}">${TYPE_KO[eg.t] || ''}</i>??? ${G.egg0}% → ${G.egg}%</em></li>` : ''}
       <li class="ya-gold one"><i class="coin" aria-hidden="true"></i><span class="k">골드</span><b ${N(G.gold, '+', 'G')}</b></li>`;
     q('.ya-ov').hidden = false; r.hidden = false; r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); snd('DUN_Stat_Up', .07); buzz(1);
