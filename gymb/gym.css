@@ -4622,6 +4622,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-pl{transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s,scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1),translate 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"],.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{overflow:visible}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{scale:1.25;transform-origin:-80.0px 344.0px}   /* v25.27 경완 '25.21 버전 수준으로 키워달라니깐 발판에서 벗어나도 돼': 내 포켓몬은 v25.21 그대로(1.25배, 오른쪽 40·위 50), 발판은 원래 크기·자리 */
+.bt.gx-p:not(.dbl) .bt-pl.p{translate:40px 0}   /* v25.29 경완 '발판 위치만 중앙 맞게 우측으로 옮겨줘': 커진 내 포켓몬 가운데(오른쪽 40)에 맞게 옆으로만, 크기·높이 그대로 */
 .bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.7;transform-origin:249.3px -17.3px}
 .bt.gx-p:not(.dbl) .bt-pl.e{scale:.7;transform-origin:137.3px -73.3px}
 .bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.3;transform-origin:222.7px 142.7px}
