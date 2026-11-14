@@ -620,6 +620,7 @@ const CLS = {
   young_couple: { ow: 'lady', f: 1, t: [1, 18, 12] },
   /* 경완 'gba 도 괜찮네 넣어줘': 짝 그림이 GBA(gym/img/tr 64칸)뿐인 노부부·멋진 커플·격투 남매도 더블 짝 도전자로 */
   old_couple: { ow: 'old_man_1', f: 0, t: [1, 11, 12] },
+  sr_and_jr: { ow: 'lass', f: 1, t: [1, 18, 12] },   /* 경완 '언니동생 콤비 필드 이미지는 짧은치마 학원생 여 플래티넘 이미지로' */
   cool_couple: { ow: 'cooltrainer_m', f: 0, t: [] },
   crush_kin: { ow: 'black_belt', f: 0, t: [2] },
   worker: { ow: 'worker', f: 0, t: [9, 6, 5, 2] },
@@ -631,6 +632,7 @@ const PAIR = {
   sis_bro: { ow2: 'swimmer_m_land', f2: 0, b: ['누나, 내가 도와줄게!', '우리 남매 호흡 한번 보세요!', '누나랑 맞춰 온 작전이 있어요!'], y: [['누나, 다음엔 더 잘할게…', '남매 특훈 다시 해야겠다!'], ['누나, 우리 해냈어!', '남매 콤비 최고!']] },
   interviewers: { ow2: 'cameraman', f2: 0, b: ['(카메라맨) 저도 같이 찍으면서 싸웁니다!', '(카메라맨) 둘이서 생중계 배틀 갑니다!', '(카메라맨) 이 장면, 특종 각이에요!'], y: [['(카메라맨) 오늘 방송은 여기까지…', '(카메라맨) 편집으로 살려 볼게요.'], ['(카메라맨) 특종이다!', '(카메라맨) 시청률 대박이겠어요!']] },
   double_team: { ow2: 'ace_trainer_f', f2: 1, b: ['(파트너) 우리 콤비, 아직 안 끝났어!', '(파트너) 둘이 맞춰 온 작전이 있어요!', '(파트너) 호흡 한번 보여 드리죠!'], y: [['(파트너) 다음엔 호흡 더 맞춰 올게요.', '(파트너) 콤비 연습 다시 하자.'], ['(파트너) 완벽한 콤비네이션!', '(파트너) 역시 우리 둘이야!']] },
+  sr_and_jr: { ow2: 'school_kid_f', f2: 1, b: ['(동생) 언니, 나도 할래! 나도!', '(동생) 언니랑 연습한 거 보여 줄게요!', '(동생) 언니만 믿고 따라왔어요!'], y: [['(동생) 언니, 다음엔 꼭 이기자…', '(동생) 집에 가서 언니랑 또 연습할래.'], ['(동생) 언니, 우리 이겼어!', '(동생) 역시 우리 언니 최고!']] },
   belle_pa: { ow2: 'rancher', f2: 0, b: ['(아빠) 우리 딸 앞에서 질 순 없지!', '(아빠) 목장 일로 다져진 팀워크요!', '(아빠) 딸아, 아빠만 믿어라!'], y: [['(아빠) 허허… 딸 앞에서 체면이 말이 아니구먼.', '(아빠) 목장 돌아가서 다시 단련하자꾸나.'], ['(아빠) 우리 딸 최고다!', '(아빠) 목장 부녀 팀의 승리다!']] },   /* 경완 '아가씨와 아빠 배틀 그림도 있는데 필드 그림이 없어?': 아빠 = 플래티넘 목장 아저씨(rancher) */
   old_couple: { ow2: 'old_woman', f2: 1, b: ['(할머니) 영감, 무리하지 말아요. 내가 같이 싸울게요!', '(할머니) 우리 둘이 함께한 세월이 몇 년인데요!', '(할머니) 젊은 관장님, 살살 부탁해요. 호호!'], y: [['(할머니) 영감, 그래도 재밌었죠?', '(할머니) 다음엔 차 한 잔 하고 다시 와요.'], ['(할머니) 영감, 우리 아직 쌩쌩하네요!', '(할머니) 세월의 호흡이에요. 호호!']] },
   cool_couple: { ow2: 'cooltrainer_f', f2: 1, b: ['(여자 친구) 우리 둘, 실력도 잘 어울리거든요!', '(여자 친구) 둘이 맞춰 온 콤비 보여 줄게요!', '(여자 친구) 데이트 겸 진지하게 이기러 왔어요!'], y: [['(여자 친구) 다음엔 더 멋지게 이길 거야.', '(여자 친구) 괜찮아, 다시 맞춰 보자.'], ['(여자 친구) 역시 우리 최고의 커플!', '(여자 친구) 완벽한 데이트였어!']] },
@@ -640,7 +642,9 @@ const PAIR = {
 /* v25.20 경완 '더블 배틀은 짝 지은 배틀 그림 있는 종만 오게 해주고 배포해' + '보상도 2배', '더블배틀 도전자 오는 빈도 비중도 조절': 짝 직업은 보통 뽑기에서 빼고 더블 확률을 따로 굴림 (등급별 DBL_P, 새내기 0 · 동네 10% · 떠오르는~이름난 15% · 인기 이상 20% → 하루 2~3명).
    마리 수 = 한 사람 몫 2마리(쉬움) · 2~3마리(보통·어려움)씩 둘 (pairN), 레벨 +PAIR_LV, 골드·평판 ×2 (rewOf). 짝 그림(pt/tr)이 있는 쌍둥이·남매·젊은 부부·인터뷰어·더블팀만 */
 const DBL_P = [0, .1, .15, .15, .2, .2, .2], PAIR_LV = 1, pairN = diff => diff ? rndI(2, 3) * 2 : 4;
-const pairOf = c => !c.boss && !c.named && PAIR[c.tr] && (c.team || []).length >= 2 ? PAIR[c.tr] : null;
+/* 경완 '둘 다 넣고' (풍&란): 이름 있는 트레이너 중 둘인 관장은 NPAIR 로 둘이 들어와 더블. nm2 = 두 번째 사람 이름(고정), 대사·이름은 named.json 그대로 */
+const NPAIR = { tateliza: { ow2: 'liza', f2: 1, nm2: '란', b: ['란: 풍, 오늘도 호흡 맞춰 가자!', '란: 풍이 생각하는 건 나도 다 알아!', '란: 둘이서 하나! 하나라서 둘!'], y: [['란: 풍, 다음엔 마음을 더 맞추자…', '란: 우리보다 마음이 더 하나였구나.'], ['란: 풍, 우리 마음이 통했어!', '란: 역시 우리 둘이 최강이야!']] } };
+const pairOf = c => !c.boss && (c.named ? NPAIR[c.named] : PAIR[c.tr]) && (c.team || []).length >= 2 ? (c.named ? NPAIR[c.named] : PAIR[c.tr]) : null;
 // 두 번째 사람이 설 칸: 첫 사람이 관장 앞이면 그 옆(왼·오), 관장 옆이면 그 아래. 소품·사람 칸은 건너뜀
 function pairSpot(D, e1, tx, ty, cf) { const L = D.leader, fr = (x, y) => (!D.free || (D.free[y]?.[x] === '1' && !(D.stat || []).some(q => q[0] === x && q[1] === y))) && !(x === L[0] && y === L[1]);
   const occ = occOf([e1]), C = cf === 'u' ? [[tx - 1, ty, 'u'], [tx + 1, ty, 'u'], [tx, ty + 1, 'u']] : [[tx, ty + 1, 'u'], [tx, ty - 1, cf]];
@@ -723,6 +727,7 @@ const SAY_CLS = {
   tuber_f: { i: ['튜브 들고 놀러 왔어요!', '해변에서 연습 많이 했어요!', '튜브는 못 놓지만 배틀은 자신 있어요!'], w: ['튜브랑 같이 둥둥 떠내려갈래요…', '다음엔 더 잘할게요!'], l: ['와아! 이겼다!', '해변 친구들한테 자랑해야지!'] },
   sis_bro: { i: ['누나랑 같이 왔어요! / 동생 잘 따라와!', '남매의 팀워크를 보여 드릴게요!', '(동생) 누나가 다 해 준대요!'], w: ['(누나) 동생 탓이야! (동생) 아니거든!', '집에 가서 같이 연습하자…'], l: ['남매 최고!', '(동생) 누나 덕분이야!'] },
   twins: { i: ['저희 둘은 똑같아요! 실력도 똑같이 세요!', '누가 언니게요? 맞혀 보세요!', '둘이서 하나! 하나라서 둘!'], w: ['둘 다 졌어요…', '둘이 같이 더 연습할게요!'], l: ['둘이라서 이겼어요!', '쌍둥이 파워!'] },
+  sr_and_jr: { i: ['언니랑 동생, 둘이서 도전하러 왔어요!', '동생 앞이니까 멋지게 이길 거예요!', '저희 자매 콤비, 만만치 않아요!'], w: ['동생아, 미안… 언니가 부족했어.', '둘이서 더 연습하고 올게요!'], l: ['동생아, 우리 해냈어!', '자매 콤비 승리!'] },
   old_couple: { i: ['영감이랑 산책 나왔다가 들렀소!', '우리 부부, 배틀 경력만 오십 년이오.', '늙었다고 얕보면 큰코다치오!'], w: ['허허, 오늘은 우리가 졌구먼.', '젊은이, 아주 잘 키웠소.'], l: ['허허, 아직 녹슬지 않았구먼!', '오십 년 호흡을 이길 순 없지!'] },
   cool_couple: { i: ['저희 커플, 배틀도 잘 어울리거든요!', '둘이서 연습한 콤비, 보여 드리죠!', '멋지게 이기고 데이트하러 갈 거예요!'], w: ['데이트 망쳤다…', '둘이서 다시 연습하자.'], l: ['역시 우리 커플 최고!', '멋진 승리였지?'] },
   crush_kin: { i: ['격투 남매, 도장 깨기 왔다! 하앗!', '누나랑 같이 폭포 수련 하고 왔어요!', '주먹과 주먹! 남매 합동 수련의 성과다!'], w: ['크윽… 수련이 모자랐다!', '누나, 다시 수련하러 가자!'], l: ['하앗! 남매 승리!', '합동 수련은 배신하지 않는다!'] },
@@ -805,7 +810,7 @@ const trV = s => (s.tv ?? ((Math.imul((s.id | 0) ^ 0x5bd1e995, 2654435761) >>> 7
 const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? trX(s) : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
 const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
-const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : pairOf(c) ? { ...R, g: R.g * 2, r: R.r * 2 } : R; };
+const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : pairOf(c) && !c.named ? { ...R, g: R.g * 2, r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
 // g.gmax = 심사를 통과한 가장 높은 등급 (그 아래로 떨어졌다 다시 오를 땐 심사 없음), g.bdl[타입] = 그 타입으로 올라 본 가장 높은 등급 + 1 (= 배지 그림 번호, 0 = 아직)
@@ -1201,7 +1206,7 @@ const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, 
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
 /* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
-const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team', 'old_couple', 'cool_couple', 'crush_kin', 'belle_pa']), SOLO_OF = { belle_pa: 'cowgirl', old_couple: 'gentleman', cool_couple: 'cool_trainer_m', crush_kin: 'black_belt', twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team', 'old_couple', 'cool_couple', 'crush_kin', 'belle_pa', 'sr_and_jr']), SOLO_OF = { sr_and_jr: 'lass', belle_pa: 'cowgirl', old_couple: 'gentleman', cool_couple: 'cool_trainer_m', crush_kin: 'black_belt', twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
 function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
@@ -1360,9 +1365,9 @@ async function challenge(picked) {
     const D = dzOf(g.d), NM = c.named && NAMED.find(n => n.id === c.named), bm = (!c.boss && NM?.music) || c.music || (c.named ? 'gymBattle' : 'train');   /* v16.88 경완: 이름 있는 트레이너는 지금 named.json 의 곡 (예전에 줄 선 도전자도) */
     try { window.GymBGM?.prep(bm); if (c.named) { const ey = ((!c.boss || c.named === 'red') && NM?.eye) || (/champ/i.test(bm) ? 'eyeChamp' : bm === 'tenno' ? 'eyeTenno' : 'eyeElite'); if (ey === 'none') window.GymBGM?.stop(.8); else window.GymBGM?.play(ey, { fade: .1 }); } } catch (e) {}   /* v16.89: 레드는 원작처럼 말없이 다가온다 (등장 곡 없음) */   // 이름 있는 트레이너는 들어올 때부터 등장 곡 (배틀 곡과 다름, 경완 2026-10-28)
     doorSe(); await wait(180);
-    const PR = pairOf(c); if (PR && !c.nm2) { const NS = (PR.f2 ? GB()?.NAMES_F : GB()?.NAMES_M) || ['미아']; c.nm2 = pick(NS.filter(n => n !== c.nm)) || NS[0]; }
+    const PR = pairOf(c); if (PR?.nm2) c.nm2 = PR.nm2; if (PR && !c.nm2) { const NS = (PR.f2 ? GB()?.NAMES_F : GB()?.NAMES_M) || ['미아']; c.nm2 = pick(NS.filter(n => n !== c.nm)) || NS[0]; }
     const e = ent({ ow: c.ow, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(c.ow) }); let e2 = null;
-    dlg(PR ? `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '과' : '와'} <b>${esc(c.nm2)}</b>${jong(c.nm2) ? '이' : '가'} 들어온다!` : `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
+    dlg(PR && !c.named ? `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '과' : '와'} <b>${esc(c.nm2)}</b>${jong(c.nm2) ? '이' : '가'} 들어온다!` : `${esc(c.cls)} <b>${esc(c.nm)}</b>${jong(c.nm) ? '이' : '가'} 들어온다!`); await wait(650);
     const CR = chalRoute(D, [e]);
     if (PR) { const dst = CR.path[CR.path.length - 1] || D.door, SP = pairSpot(D, e, dst[0], dst[1], CR.cf);   /* 두 번째 사람은 두 칸 뒤에서 따라 들어와 옆 칸에 선다 (같은 칸에 겹치지 않게) */
       if (SP?.first) { e.el.style.visibility = 'hidden'; e2 = ent({ ow: PR.ow2, x: D.door[0], y: D.door[1], f: 'u', n3: N3.has(PR.ow2) }); await Promise.all([walk(e2, SP.path).then(() => { e2.f = SP.f; place(e2); }), (async () => { await wait(560); e.el.style.visibility = ''; await walk(e, CR.path); })()]); }
@@ -1377,7 +1382,7 @@ async function challenge(picked) {
     // 이름 있는 트레이너는 몇 마디 더 (경완 2026-10-29): 첫 마디 → ex 줄들 → 마지막 줄에 '배틀 시작'
     const L = RS ? RS.i.map(t => t.replace('{me}', me)) : [line, ...(N?.ex || []).map(t => t.replace('{me}', me)), ...(c.nv && !EA ? [N?.id === 'red' ? '…………!' : pick(NV_SAY)] : []), ...(CS ? CS.i.slice(1) : [])], who = `<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>`;
     const who2 = PR ? `<span class="gy-who">${esc(c.cls)} ${esc(c.nm2)}</span>` : who; if (PR) L.splice(1, 0, pick(PR.b));   /* 둘이 오면 한 명씩 번갈아 말함 */
-    const whoAt = i => PR && i % 2 ? who2 : who;
+    const whoAt = i => PR && (c.named ? i === 1 : i % 2) ? who2 : who;   /* 풍&란 named.json 대사는 둘이 같이 말함 → 란 혼자 말은 끼운 한 줄만 */
     for (let i = 0; i < L.length - 1; i++) await talk(whoAt(i) + esc(L[i]));
     do await talk(whoAt(L.length - 1) + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
@@ -1391,7 +1396,7 @@ async function challenge(picked) {
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, ...(c.test ? { practice: true } : {}), foe: { tr: c.tr, cls: c.cls, nm: PR ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, ...(c.test ? { practice: true } : {}), foe: { tr: c.tr, cls: c.cls, nm: PR && !c.named ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res?.zu && !res.cut && !g.zUse) { g.zUse = 1; g.zN = 0; } if (res && !res.cut && g.zUse && (g.gmax | 0) >= 4) g.zN = (g.zN | 0) + 1;   /* v24.51 도전자 Z기술 판 수 (Z_FOE, 체육관마다) */
@@ -4306,7 +4311,7 @@ async function trReward(R, o, ids, boss, shop, first) {
    노말·비행 = 배틀타워, 물·얼음·드래곤 = 배틀스테이지). 사천왕·챔피언 본인은 자기 방, 승급 심사는 챔피언 난천 방 */
 const CBG_TY = { 7: 'aaron', 12: 'aaron', 4: 'aaron', 5: 'bertha', 6: 'bertha', 9: 'bertha', 2: 'bertha', 10: 'flint', 13: 'flint', 14: 'lucian', 8: 'lucian', 17: 'lucian', 18: 'lucian', 1: 'tower', 3: 'tower', 11: 'hall', 15: 'hall', 16: 'hall' };
 /* v23.22 경완 '난이도로 차이 주는 건 이름 있는 트레이너만, 일반 도전자는 도전자 종류로': 트레이너 종류 → 방 */
-const CBG_CLS = { old_couple: 'castle', cool_couple: 'tower', crush_kin: 'bertha', youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
+const CBG_CLS = { sr_and_jr: 'in1', old_couple: 'castle', cool_couple: 'tower', crush_kin: 'bertha', youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
   camper: 'aaron', picnicker: 'aaron', bug_catcher: 'aaron', aroma_lady: 'aaron', artist: 'aaron',
   hiker: 'bertha', ruin_maniac: 'bertha', black_belt: 'bertha', battle_girl: 'bertha',
   fisherman: 'in2', swimmer_m: 'in2', swimmer_f: 'in2', sailor: 'in2', skier_f: 'hall',
