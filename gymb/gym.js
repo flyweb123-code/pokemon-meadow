@@ -4131,7 +4131,7 @@ async function trainTest() {
       const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await trReward(R, o, ids, false, false, true); }   /* v24.35 경완 '동료 몬스터볼 처음 5개 없애고 출발 보상에서 고르기' */ : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
       const music = big ? 'bossBig' : boss ? 'boss' : TR_BGM[Math.floor((f - 1) / 10) % TR_BGM.length], keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
       const env = trEnv(f, big), res = await GB().run({ my, foe, wild: true, dbl, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: true, win: 'winWild', meFrontUrl, meBackUrl,
-        badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : dbl ? ' · 더블' : ''} · 코인 ${R.coin | 0}`, post: o => trPost(R, o, boss, ids, T),
+        items: trItHtml(R), badge: `<b>${f}</b>층${boss ? (big ? ' · 큰 우두머리' : ' · 우두머리') : dbl ? ' · 더블' : ''} · 코인 ${R.coin | 0}`, post: o => trPost(R, o, boss, ids, T),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
       first = false; if (!res?.keep) break;
@@ -4187,6 +4187,10 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
 }
 /* v23.54 경완 '포켓로그처럼 층 끝날 때마다 아이템 선택': 이길 때마다 보상 3개 중 하나 (흔함 초록·좋음 파랑·귀함 금빛, 우두머리 층은 귀한 것이 더 자주).
    v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자', v23.56 본가 도구 기준 (모두 그 판에서만) */
+/* v24.73 경완 '학습장치·경험치 부적처럼 얻은 도구는 포켓로그처럼 좌상단 아이콘': 이번 도전에 쌓인 도구 아이콘 + 개수 (영양제는 종류별 합) */
+const trItHtml = R => { const L = []; if (R.sh) L.push(['expshare', R.sh, '학습장치']); const xc = Math.round(((R.xpM || 1) - 1) / .25); if (xc > 0) L.push(['expcharm', xc, '경험치 부적']);
+  TR_VIT.forEach(([n], k) => { const c = Object.values(R.vit || {}).reduce((a, V) => a + ((V || [])[k] | 0), 0); if (c) L.push([trIc(n), c, n]); });
+  return L.map(([ic, c, n]) => `<i title="${n}"><img alt="" src="${IMG}item/${ic}.png">${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
