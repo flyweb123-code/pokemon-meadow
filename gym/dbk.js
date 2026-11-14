@@ -539,6 +539,180 @@
     return sc.run();
   }
 
-  { const st = document.createElement('style'); st.textContent = '@keyframes dxPatL{to{background-position:-800px 0}}@keyframes dxPatT{25%{background-position:200px 6px}50%{background-position:400px -4px}75%{background-position:600px 5px}to{background-position:800px 0}}'; document.head.appendChild(st); }
-  window.GymDBK = { mega, megaFull, zmove, zFull, tera, dynamax, tyCol };
+  // ---------- 거다이맥스 (경완 2026-11-14 '메가·Z기술처럼 전체 화면, 본가 소드실드 연출 비슷하게') ----------
+  // 본가 순서: 포켓몬을 볼로 회수 → 다이맥스 밴드의 붉은 기운이 볼로 → 볼이 커짐 → 어깨 너머 뒤로 던짐 → 볼이 땅에 쿵 →
+  // 붉은 기운 속에서 거대한 모습이 솟고 머리 위에 붉은 구름 → 포효. 끝나면 3턴 뒤 붉은 기운이 빠지며 줄어듦
+  const GX_KIND = u => /cave/.test(u) ? 'cave' : /plain|forest|mountain|snow|water|city/.test(u) ? 'out' : 'in';
+  const mixC = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+  const rowAvg = (d, w, y) => { let r = 0, g = 0, b = 0; for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; r += d[i]; g += d[i + 1]; b += d[i + 2]; } return [r / w, g / w, b / w]; };
+  const cs = c => `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`;
+  // 배틀 배경을 뒤로 물러난 듯 줄이고(z), 잘린 위쪽은 하늘(바깥)·천장(실내)·바위 천장(동굴)으로 이어 그림 → 캔버스 (256 x 192+E, 2배 해상도)
+  // o: { z 줄이는 배율, ext 위로 더 그릴 높이, py 줄이는 기준 줄, red 붉은 기운 0~1 }
+  function gxBg(img, sx, url, o = {}) {
+    const z = o.z ?? .7, E = o.ext ?? 80, PY = o.py ?? 150, S = 2, kind = GX_KIND(url || ''), cv = document.createElement('canvas'); cv.width = 256 * S; cv.height = (192 + E) * S;
+    const g = cv.getContext('2d'); g.imageSmoothingEnabled = true; g.scale(S, S); g.translate(0, E);
+    const iw = img.naturalWidth || img.width || 512, sw = Math.min(iw, 256 / z), x0 = Math.max(0, Math.min(iw - sw, (sx || 0) + 128 - sw / 2)), top = PY - PY * z, bot = PY + (160 - PY) * z;
+    const sm = document.createElement('canvas'); sm.width = Math.round(sw); sm.height = 24; const sg = sm.getContext('2d'); sg.drawImage(img, x0, 0, sw, 24, 0, 0, sm.width, 24); const sd = sg.getImageData(0, 0, sm.width, 24).data;
+    const c0 = rowAvg(sd, sm.width, 0), c8 = rowAvg(sd, sm.width, 8);
+    // 아래 바닥: 맨 아래 줄을 늘려 채움
+    g.drawImage(img, x0, 156, sw, 3, 0, bot - 2, 256, 192 - bot + 3);
+    g.drawImage(img, x0, 0, sw, 160, 0, top, 256, 160 * z);
+    const H = top + E;   // 새로 그릴 위쪽 높이
+    if (kind === 'out') {   // 하늘: 맨 윗줄 색 → 위로 갈수록 짙은 하늘색, 원래 배경 윗줄을 뒤집어 늘린 결(본가 DP 배경처럼 가로 줄무늬)
+      const deep = mixC(c0, [Math.min(c0[0], 60) * .6, Math.min(c0[1], 120) * .7, Math.max(c0[2] * .9, 120)], .6), gr = g.createLinearGradient(0, top, 0, -E);
+      gr.addColorStop(0, cs(c0)); gr.addColorStop(.35, cs(mixC(c0, deep, .45))); gr.addColorStop(1, cs(deep)); g.fillStyle = gr; g.fillRect(0, -E, 256, H + 1);
+      g.save(); g.globalAlpha = .45; g.translate(0, top); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
+      g.save(); g.globalAlpha = .18; g.translate(0, top - H * .45); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
+      const cl = mixC(c0, [255, 255, 255], .7); for (let i = 0; i < 7; i++) { const y = top - H * (.15 + i * .12), x = (i * 97 + 30) % 256, w = 60 + (i * 37) % 70; const rg = g.createRadialGradient(x, y, 1, x, y, w); rg.addColorStop(0, `rgba(${cl[0]},${cl[1]},${cl[2]},${.32 - i * .03})`); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.save(); g.translate(x, y); g.scale(1, .12); g.translate(-x, -y); g.fillStyle = rg; g.beginPath(); g.arc(x, y, w, 0, 7); g.fill(); g.restore(); }
+    } else {   // 실내: 벽이 조금 더 이어지고 → 몰딩 → 원근 천장(보·조명). 동굴: 어두운 바위 천장 + 고드름 바위
+      const wallH = Math.min(H * .32, 26), yc = top - wallH;
+      g.save(); g.translate(0, top); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 12, 0, 0, 256, wallH + 1); g.restore();
+      const cave = kind === 'cave', cb = cave ? mixC(c0, [8, 6, 14], .72) : mixC(c8, [20, 18, 30], .45), cf = cave ? mixC(c0, [0, 0, 0], .9) : mixC(c0, [12, 10, 22], .7);
+      const gr = g.createLinearGradient(0, yc, 0, -E); gr.addColorStop(0, cs(cb)); gr.addColorStop(1, cs(cf)); g.fillStyle = gr; g.fillRect(0, -E, 256, yc + E + .5);
+      if (!cave) {
+        g.fillStyle = cs(mixC(c0, [255, 255, 255], .35)); g.fillRect(0, yc - 1.5, 256, 2); g.fillStyle = cs(mixC(cb, [0, 0, 0], .35)); g.fillRect(0, yc + .5, 256, 1.2);
+        const ln = cs(mixC(cb, [0, 0, 0], .3)), hl = mixC(c0, [255, 250, 235], .6); g.strokeStyle = ln; g.lineWidth = 1;
+        for (let i = -6; i <= 6; i++) { g.beginPath(); g.moveTo(128 + i * 24, yc); g.lineTo(128 + i * 24 * 3.2, -E); g.stroke(); }   // 위로 갈수록 벌어지는 원근 보
+        for (let j = 1; j < 6; j++) { const y = yc - (yc + E) * (1 - Math.pow(.62, j)); g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke();
+          for (let i = -2; i <= 2; i++) { const x = 128 + i * 52 * (1 + (yc - y) / 60), r = 5 + j * 2.2, lg = g.createRadialGradient(x, y - r * .3, .5, x, y - r * .3, r * 2.2); lg.addColorStop(0, `rgba(${hl[0]},${hl[1]},${hl[2]},.95)`); lg.addColorStop(.3, `rgba(${hl[0]},${hl[1]},${hl[2]},.4)`); lg.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = lg; g.beginPath(); g.ellipse(x, y - r * .3, r * 2.2, r * .9, 0, 0, 7); g.fill(); } }
+      } else {
+        g.fillStyle = cs(mixC(cb, [0, 0, 0], .4)); for (let i = 0; i < 26; i++) { const x = (i * 53) % 260, w = 6 + (i * 7) % 12, h = 8 + (i * 13) % 22, y = yc - (i % 3) * 8; g.beginPath(); g.moveTo(x - w / 2, y - 2); g.lineTo(x + w / 2, y - 2); g.lineTo(x + (i % 2 ? 2 : -2), y + h * .6); g.closePath(); g.fill(); }
+        for (let i = 0; i < 18; i++) { const x = (i * 71) % 256, y = yc - 10 - (i * 29) % Math.max(10, yc + E - 12), r = 10 + (i * 11) % 18, rg = g.createRadialGradient(x, y, 1, x, y, r); rg.addColorStop(0, 'rgba(0,0,0,.35)'); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+      }
+    }
+    const rd = o.red ?? 0; if (rd) { const rg = g.createLinearGradient(0, -E, 0, bot); rg.addColorStop(0, `rgba(90,0,30,${.62 * rd})`); rg.addColorStop(.6, `rgba(150,10,60,${.3 * rd})`); rg.addColorStop(1, `rgba(120,0,40,${.12 * rd})`); g.fillStyle = rg; g.fillRect(0, -E, 256, 192 + E); }
+    cv.gx = { top, bot, E, z, PY, kind }; return cv;
+  }
+  // 머리 위 붉은 구름 고리 (본가 다이맥스 포켓몬 머리 위에 도는 붉은 구름) — half: 'b' 뒤쪽 반만(포켓몬 뒤), 'f' 앞쪽 반만(포켓몬 앞), '' 전부
+  function gxRing(n = 16, seed = 1) { let s = seed * 9301 + 49297; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    const P = Array.from({ length: n }, (_, i) => ({ a: i / n * Math.PI * 2 + r() * .35, k: .75 + r() * .5, w: r() * 6.28, dy: (r() - .5) * .6 })); let bolt = 1, bS = -9, bA = 0, bB = 0;
+    return (g, t, cx, cy, rx, ry, half = '', al = 1) => { const pts = P.map(p => { const a = p.a + t * .32, d = (Math.sin(a) + 1) / 2; return { x: cx + Math.cos(a) * rx, y: cy + Math.sin(a) * ry + p.dy * ry, d, r: rx * .17 * p.k * (.8 + d * .35), w: p.w + t * .8 }; }).sort((a, b) => a.d - b.d);
+      if (half !== 'f') { const gl = g.createRadialGradient(cx, cy, 1, cx, cy, rx * 1.15); gl.addColorStop(0, `rgba(255,40,110,${.35 * al})`); gl.addColorStop(1, 'rgba(255,0,80,0)'); g.fillStyle = gl; g.beginPath(); g.ellipse(cx, cy, rx * 1.15, ry * 2.4, 0, 0, 7); g.fill(); }
+      for (const p of pts) { if (half === 'b' && p.d > .5 || half === 'f' && p.d <= .5) continue; const L = .5 + p.d * .5;
+        for (let j = 0; j < 4; j++) { const ox = Math.cos(p.w + j * 1.6) * p.r * .55, oy = Math.sin(p.w + j * 1.6) * p.r * .25 - (j === 1 ? p.r * .22 : 0), rr = p.r * (j === 1 ? 1 : .78), x = p.x + ox, y = p.y + oy;
+          const gr = g.createRadialGradient(x - rr * .3, y - rr * .4, rr * .05, x, y, rr); gr.addColorStop(0, `rgba(${230 * L | 0},${78 * L | 0},${118 * L | 0},${.7 * al})`); gr.addColorStop(.4, `rgba(${150 * L | 0},${14 * L | 0},${52 * L | 0},${.6 * al})`); gr.addColorStop(.75, `rgba(${95 * L | 0},${4 * L | 0},${32 * L | 0},${.3 * al})`); gr.addColorStop(1, `rgba(${70 * L | 0},0,${24 * L | 0},0)`);
+          g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill(); } }
+      // 구름 속 붉은 번개 (가끔)
+      if (half !== 'b') { if (t > bolt) { bS = t; bolt = t + 1.1 + Math.random() * 1.7; bA = Math.random() * 6.28; bB = bA + 1 + Math.random() * 2; }
+        if (t - bS < .14) { g.save(); g.globalCompositeOperation = 'lighter'; const p0 = [cx + Math.cos(bA) * rx, cy + Math.sin(bA) * ry], p1 = [cx + Math.cos(bB) * rx * .8, cy + Math.sin(bB) * ry + ry];
+          g.beginPath(); g.moveTo(...p0); for (let i = 1; i <= 6; i++) { const u = i / 6; g.lineTo(p0[0] + (p1[0] - p0[0]) * u + (Math.random() - .5) * rx * .18, p0[1] + (p1[1] - p0[1]) * u + (Math.random() - .5) * ry * .6); }
+          g.strokeStyle = `rgba(255,90,160,${.5 * al})`; g.lineWidth = Math.max(2, rx * .05); g.stroke(); g.strokeStyle = `rgba(255,235,245,${al})`; g.lineWidth = Math.max(.8, rx * .016); g.stroke(); g.restore(); } } };
+  }
+  const gxBall = id => `<svg viewBox="0 0 100 100" width="100%" height="100%"><defs><radialGradient id="gr${id}" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#ff9ab8"/><stop offset=".45" stop-color="#e8174a"/><stop offset="1" stop-color="#6a0420"/></radialGradient><radialGradient id="gw${id}" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#cfc2d6"/></radialGradient><clipPath id="gc${id}"><circle cx="50" cy="50" r="46"/></clipPath></defs><g clip-path="url(#gc${id})"><rect width="100" height="50" fill="url(#gr${id})"/><rect y="50" width="100" height="50" fill="url(#gw${id})"/><rect y="45" width="100" height="10" fill="#1d1020"/></g><circle cx="50" cy="50" r="46" fill="none" stroke="#1d1020" stroke-width="4"/><circle cx="50" cy="50" r="13" fill="#1d1020"/><circle cx="50" cy="50" r="8.5" fill="#fff" stroke="#ff4d8a" stroke-width="2.5"/></svg>`;
+
+  // c: dxCtx + { bt, top, monEl, gmax(거다이맥스면 1), trB(뒷모습 그림 주소), bgImg(배틀 배경 Image), bgX(배경 가로 자리), name(포켓몬 이름) }
+  async function dmaxFull(c) {
+    const P = c.path, pat = c.pat; await preload({ ...c, extra: [pat, c.trB] });
+    const bt = c.bt, Wd = bt.offsetWidth, Hd = bt.offsetHeight, opp = c.opp, side = opp ? 1 : -1, timers = [], A = (el, kf, o) => el.animate(kf, { fill: 'forwards', easing: 'ease-out', ...o });
+    const hide = [...bt.querySelectorAll('.bt-hb,.bt-pty,.bt-bot,.bt-mid,.bt-msg')];
+    const root = document.createElement('div'); root.className = 'dx-scene gxf'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;background:#000;pointer-events:auto;contain:strict;opacity:0;transform:scale(1.06)';
+    const mk = (css, tag = 'div', par = root) => { const e = document.createElement(tag); e.style.cssText = 'position:absolute;pointer-events:none;' + css; par.appendChild(e); return e; };
+    const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
+    const hz = () => { try { window.GA?.haptic?.(2); } catch (e) {} }, vib = n => { for (let i = 0; i < ([1, 2, 4, 7][n] || 2); i++) timers.push(setTimeout(hz, i * 70)); };
+    const shake = (t, d, amp) => at(t, () => { A(root, Array.from({ length: 10 }, (_, i) => ({ transform: i === 9 ? 'scale(1.06)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.06)` })), { duration: d, easing: 'linear', fill: 'none' }); for (let q = 0; q < d; q += 90) timers.push(setTimeout(hz, q)); });
+    const raw = n => { try { c.raw?.(n); } catch (e) {} };
+    // ── 1막: 트레이너 무대 (어두운 붉은 빛, 다이맥스 밴드 → 볼이 커짐) ──
+    const stA = mk(`inset:0;background:radial-gradient(ellipse 80% 60% at 50% 62%,#7a0d33 0,#3a0518 45%,#12020a 100%)`);
+    const hexA = mk(`inset:-20%;background:url(${pat}) 0 0/${Wd * .9}px auto repeat;opacity:.16;mix-blend-mode:screen;animation:gxPan 9s linear infinite`, 'div', stA);
+    const cv = mk('inset:0', 'canvas'); cv.width = Wd * 2; cv.height = Hd * 2; cv.style.width = Wd + 'px'; cv.style.height = Hd + 'px'; const g = cv.getContext('2d'); g.scale(2, 2);
+    const th = Hd * .5, tw = th * (c.tr.w / c.tr.h), trX = Wd / 2 - tw / 2 + side * Wd * .12, trY = Hd * .9 - th;
+    const trn = mk(`left:${trX}px;top:${trY}px;width:${tw}px;height:${th}px;background:url(${c.tr.url}) left top/${tw}px ${th}px no-repeat;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}opacity:0;transform-origin:50% 100%`);
+    const band = c.item ? mk(`left:${trX + tw * (opp ? .18 : .58)}px;top:${trY + th * .38}px;width:${Wd * .14}px;height:${Wd * .14}px;background:url(${c.item.url}) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px #ff2a6a);opacity:0`) : null;
+    const BS = Wd * .44, bx = Wd / 2 - side * Wd * .02, by = trY - BS * .18;   // 커진 볼은 트레이너 머리 위로 든 자리
+    const ballW = mk(`left:${bx - BS / 2}px;top:${by - BS / 2}px;width:${BS}px;height:${BS}px;opacity:0;transform:scale(.12)`), ballG = mk(`inset:-18%;border-radius:50%;background:radial-gradient(circle,rgba(255,60,130,.9) 0 38%,rgba(255,20,90,.35) 52%,rgba(255,0,80,0) 70%)`, 'div', ballW);
+    const ballS = mk('inset:0', 'div', ballW); ballS.innerHTML = gxBall('a'); const ballP = mk(`inset:4%;border-radius:50%;background:url(${pat}) 0 0/${BS * 1.6}px auto repeat;mix-blend-mode:screen;opacity:0;animation:gxPan 3s linear infinite`, 'div', ballW);
+    // ── 2막: 들판 (배틀 배경을 뒤로 물리고 하늘·천장까지, 붉은 기운) ──
+    const stB = mk('inset:0;opacity:0;overflow:hidden'); let bgc = null;
+    if (c.bgImg) { bgc = gxBg(c.bgImg, c.bgX || 0, c.bg?.url, { z: .62, ext: 192, py: 150, red: .9 }); const k = Math.max(Wd / 256, Hd / (192 + 192)) * 1.04; bgc.style.cssText = `position:absolute;left:${(Wd - 256 * k) / 2}px;top:${Hd - (192 + 192) * k + Hd * .06}px;width:${256 * k}px;height:${(384) * k}px`; stB.appendChild(bgc); }
+    else stB.style.background = 'linear-gradient(#2a0412,#7a1030 60%,#3a0a18)';
+    const sky = mk('inset:0;background:radial-gradient(ellipse 90% 45% at 50% 18%,rgba(255,30,100,.45),rgba(120,0,40,0) 70%)', 'div', stB);
+    const gY = Hd * .8, MH = Math.min(Hd * .56, Wd * .92 * c.to.h / c.to.w), MW = MH * (c.to.w / c.to.h), mX = Wd / 2 - MW / 2;
+    const pil = mk(`left:${Wd / 2 - Wd * .2}px;top:-10%;width:${Wd * .4}px;height:${gY + Hd * .1}px;background:linear-gradient(90deg,rgba(255,0,90,0),rgba(255,80,150,.85) 35%,#fff 50%,rgba(255,80,150,.85) 65%,rgba(255,0,90,0));filter:blur(${Wd * .01}px);opacity:0;transform-origin:50% 100%;transform:scaleX(.05);mix-blend-mode:screen`, 'div', stB);
+    const ballB = mk(`left:${Wd / 2 - Wd * .06}px;top:${-Wd * .2}px;width:${Wd * .12}px;height:${Wd * .12}px`, 'div', stB); ballB.innerHTML = gxBall('b');
+    const shd = mk(`left:${Wd / 2 - MW * .45}px;top:${gY - Hd * .025}px;width:${MW * .9}px;height:${Hd * .05}px;border-radius:50%;background:radial-gradient(closest-side,rgba(40,0,15,.65),rgba(40,0,15,0));opacity:0;transform:scale(.1)`, 'div', stB);
+    const ringB = mk('inset:0', 'canvas', stB); ringB.width = Wd * 2; ringB.height = Hd * 2; ringB.style.width = Wd + 'px'; ringB.style.height = Hd + 'px';
+    const gm = mk(`left:${mX}px;top:${gY - MH}px;width:${MW}px;height:${MH}px;opacity:0;transform-origin:50% 100%;transform:scale(.06)`, 'div', stB), gmI = document.createElement('img'); gmI.src = c.to.url; gmI.alt = ''; gmI.style.cssText = `width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}`; gm.appendChild(gmI);
+    const SIL = `brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(6000%) hue-rotate(330deg) brightness(1.15) drop-shadow(0 0 ${Wd * .02}px #ff4d8a) drop-shadow(0 0 ${Wd * .05}px #ff0050)`, NRM = `brightness(1) saturate(100%) invert(0) sepia(0) saturate(100%) hue-rotate(0deg) brightness(1) drop-shadow(0 0 ${Wd * .012}px #ff4d8a) drop-shadow(0 0 ${Wd * .035}px rgba(255,0,80,.75))`; gmI.style.filter = SIL;
+    const gpat = mk(`inset:0;background:url(${pat}) 0 0/${MW * 1.4}px auto repeat;-webkit-mask:url("${c.to.url}") center/100% 100%;mask:url("${c.to.url}") center/100% 100%;${opp ? '' : 'transform:scaleX(-1);'}opacity:0;mix-blend-mode:screen;animation:gxPan 6s linear infinite`, 'div', gm);
+    const ringF = mk('inset:0', 'canvas', stB); ringF.width = Wd * 2; ringF.height = Hd * 2; ringF.style.width = Wd + 'px'; ringF.style.height = Hd + 'px';
+    const trS = c.trB && !opp ? mk(`left:${Wd * .04}px;top:${Hd - Wd * .5}px;width:${Wd * .5}px;height:${Wd * .5}px;background:url(${c.trB}) left top/auto 100% no-repeat;image-rendering:pixelated;opacity:0`, 'div', stB) : null;   // 본가처럼 앞에 작게 올려다보는 내 트레이너 뒷모습
+    const ttl = mk(`left:0;right:0;top:${Hd * .1}px;text-align:center;font:900 ${Wd * .1}px/1 var(--px,"Galmuri11"),system-ui,sans-serif;color:#fff;letter-spacing:.06em;-webkit-text-stroke:${Wd * .006}px #7a0024;text-shadow:0 0 ${Wd * .02}px #ff2a6a,0 0 ${Wd * .05}px #ff0050,0 ${Wd * .008}px 0 #5a001a;opacity:0`, 'div', stB); ttl.textContent = c.gmax ? '거다이맥스' : '다이맥스';
+    const flash = mk('inset:0;background:#fff;opacity:0'), flR = mk('inset:0;background:radial-gradient(circle at 50% 70%,#fff 0,#ff7aa8 35%,#ff0050 80%);opacity:0;mix-blend-mode:screen');
+    bt.appendChild(root);
+    // 기운 입자 (1막: 밴드 → 볼로 빨려 들어감 / 2막: 땅에서 솟아오름)
+    const parts = []; let mode = 0, live = 1; const t0 = performance.now(), ring = gxRing(18, 3); let ringA = 0;
+    const loop = now => { if (!live || !root.isConnected) return; const t = (now - t0) / 1000; g.clearRect(0, 0, Wd, Hd); g.globalCompositeOperation = 'lighter';
+      if (mode === 1 && band) { const ax = parseFloat(band.style.left) + Wd * .07, ay = parseFloat(band.style.top) + Wd * .07; for (let i = 0; i < 3; i++) parts.push({ x: ax, y: ay, tx: bx, ty: by, a: Math.random() * 6.28, s: 0, sp: .9 + Math.random() * .8, r: 2 + Math.random() * 4, c: Math.random() < .5 ? '255,60,140' : '255,170,210' }); }
+      if (mode === 2) for (let i = 0; i < 3; i++) parts.push({ x: Wd / 2 + (Math.random() - .5) * MW, y: gY + Math.random() * 10, vy: -(1.5 + Math.random() * 3), vx: (Math.random() - .5) * .6, r: 1.5 + Math.random() * 3.5, l: 1, c: Math.random() < .6 ? '255,50,120' : '255,190,220' });
+      for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i];
+        if (p.tx != null) { p.s += .016 * p.sp; const u = Math.min(1, p.s), sw = Math.sin(u * Math.PI) * Wd * .12; p.cx = p.x + (p.tx - p.x) * u + Math.cos(p.a + u * 7) * sw; p.cy = p.y + (p.ty - p.y) * u + Math.sin(p.a + u * 7) * sw * .6; if (u >= 1) { parts.splice(i, 1); continue; } }
+        else { p.x += p.vx; p.y += p.vy; p.l -= .012; p.cx = p.x; p.cy = p.y; if (p.l <= 0) { parts.splice(i, 1); continue; } }
+        const al = p.l ?? 1, rg = g.createRadialGradient(p.cx, p.cy, 0, p.cx, p.cy, p.r * 2.4); rg.addColorStop(0, `rgba(${p.c},${al})`); rg.addColorStop(1, `rgba(${p.c},0)`); g.fillStyle = rg; g.beginPath(); g.arc(p.cx, p.cy, p.r * 2.4, 0, 7); g.fill(); }
+      if (ringA > 0) { const rx = Math.min(MW * .62, Wd * .46), ry = rx * .2, hy = gY - MH * parseFloat(gm.dataset.k || 1) * .96, gb = ringB.getContext('2d'), gf = ringF.getContext('2d'); [gb, gf].forEach(q => { q.setTransform(2, 0, 0, 2, 0, 0); q.clearRect(0, 0, Wd, Hd); });
+        ring(gb, t, Wd / 2, hy, rx, ry, 'b', ringA); ring(gf, t, Wd / 2, hy, rx, ry, 'f', ringA); }
+      requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+    // 0) 포켓몬을 볼로 회수 (0~700)
+    hide.forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 }));
+    at(0, () => { c.monEl.classList.add('recall'); c.se('Battle recall'); });
+    A(root, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: 350 });
+    // 1) 트레이너 + 다이맥스 밴드 (800~)
+    A(trn, [{ opacity: 0, transform: `${opp ? '' : 'scaleX(-1) '}translateX(${side * 60}px)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}translateX(0)` }], { duration: 500, delay: 700 });
+    at(1300, () => { c.se('DX Action'); vib(1); });
+    if (band) { A(band, [{ opacity: 0, transform: 'scale(.3)' }, { opacity: 1, transform: 'scale(1.5)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 500, delay: 1300 }); at(1800, () => band.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1.1)' }], { duration: 360, iterations: 5 })); }
+    // 2) 붉은 기운이 볼로 → 볼이 점점 커짐 (1700~3500)
+    A(ballW, [{ opacity: 0, transform: 'scale(.05)' }, { opacity: 1, transform: 'scale(.14)' }], { duration: 250, delay: 1700 });
+    at(1800, () => { mode = 1; c.se('Psych Up'); });
+    A(ballW, [{ opacity: 1, transform: 'scale(.14)' }, { opacity: 1, transform: 'scale(.4)', offset: .35 }, { opacity: 1, transform: 'scale(.62)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 1500, delay: 2000, easing: 'cubic-bezier(.5,0,.6,1.4)' });
+    A(ballP, [{ opacity: 0 }, { opacity: .7 }], { duration: 1200, delay: 2200 }); A(ballG, [{ transform: 'scale(.8)' }, { transform: 'scale(1.15)' }, { transform: 'scale(.95)' }], { duration: 500, delay: 2000, iterations: 4, fill: 'none' });
+    [2050, 2550, 3050].forEach((t, j) => at(t, () => { c.se(j < 2 ? 'Ice5' : 'Charge'); vib(1); })); shake(2600, 900, 3); A(stA, [{ filter: 'brightness(1)' }, { filter: 'brightness(1.5) saturate(1.3)' }], { duration: 1500, delay: 2000 });
+    at(3400, () => { mode = 0; });
+    // 3) 어깨 너머 뒤로 던짐: 트레이너는 확 커지며 화면 아래로 빠지고(카메라가 앞으로), 볼은 위로 멀어짐 (3700~4400)
+    A(trn, [{ transform: `${opp ? '' : 'scaleX(-1) '}rotate(0)` }, { transform: `${opp ? '' : 'scaleX(-1) '}rotate(${side * 8}deg) translateY(4%)` }], { duration: 300, delay: 3500, easing: 'ease-in' });
+    A(ballW, [{ transform: 'scale(1)' }, { transform: `translate(${side * Wd * .04}px,${Hd * .03}px) scale(1.05)` }], { duration: 300, delay: 3500, easing: 'ease-in' });
+    at(3820, () => { c.se('Battle throw'); vib(2); });
+    A(ballW, [{ opacity: 1, transform: `translate(${side * Wd * .04}px,${Hd * .03}px) scale(1.05) rotate(0)` }, { opacity: 1, transform: `translate(${-side * Wd * .05}px,${-Hd * .5}px) scale(.18) rotate(${side * -720}deg)` }], { duration: 650, delay: 3820, easing: 'cubic-bezier(.3,.6,.5,1)' });
+    A(trn, [{ opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}rotate(${side * 8}deg) translateY(4%) scale(1)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}rotate(${-side * 6}deg) translateY(70%) scale(3.2)` }], { duration: 650, delay: 3820, easing: 'cubic-bezier(.5,0,.9,.6)' });
+    if (band) A(band, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: 3820 });
+    A(stA, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: 500, delay: 4100, easing: 'ease-in' });
+    // 4) 들판: 볼이 하늘에서 떨어져 땅에 쿵 (4300~5400)
+    A(stB, [{ opacity: 0, transform: 'translateY(-12%) scale(1.1)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }], { duration: 650, delay: 4250, easing: 'cubic-bezier(.2,.8,.3,1)' });
+    at(4300, () => c.se('fog2'));
+    A(ballB, [{ transform: 'translateY(0) rotate(0)' }, { transform: `translateY(${gY - Wd * .12 + Wd * .2}px) rotate(${side * 360}deg)` }], { duration: 520, delay: 4600, easing: 'cubic-bezier(.55,0,1,.45)' });
+    at(5120, () => { c.se('Earth1'); raw('W089'); vib(3); }); shake(5120, 420, 9);
+    A(ballB, [{ transform: `translateY(${gY + Wd * .08}px) rotate(${side * 360}deg)` }, { transform: `translateY(${gY + Wd * .08 - Hd * .06}px) rotate(${side * 400}deg)`, offset: .5 }, { transform: `translateY(${gY + Wd * .08}px) rotate(${side * 420}deg)` }], { duration: 380, delay: 5130, easing: 'ease-in-out' });
+    at(5520, () => { c.se('Earth1'); vib(1); }); shake(5520, 200, 4);
+    // 5) 볼이 열리며 붉은 기둥 → 붉은 실루엣이 거대하게 솟음, 머리 위에 붉은 구름이 모임 (5700~7600)
+    at(5750, () => { c.se('Battle recall'); raw('W087'); vib(2); });
+    A(ballB, [{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 5750 });
+    A(flR, [{ opacity: 0 }, { opacity: .85 }, { opacity: 0 }], { duration: 500, delay: 5750 });
+    A(pil, [{ opacity: 0, transform: 'scaleX(.05)' }, { opacity: 1, transform: 'scaleX(1)', offset: .25 }, { opacity: 1, transform: 'scaleX(1.4)', offset: .7 }, { opacity: 0, transform: 'scaleX(2.4)' }], { duration: 1700, delay: 5750, easing: 'ease-out' });
+    at(5800, () => { mode = 2; });
+    A(shd, [{ opacity: 0, transform: 'scale(.1)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 1300, delay: 5900 });
+    const grow = A(gm, [{ opacity: 0, transform: 'scale(.06)' }, { opacity: 1, transform: 'scale(.3)', offset: .2 }, { opacity: 1, transform: 'scale(.8)', offset: .75 }, { opacity: 1, transform: 'scale(1)' }], { duration: 1500, delay: 5900, easing: 'cubic-bezier(.3,.7,.4,1)' });
+    at(5900, () => { const ks = performance.now(); const tk = () => { if (!live) return; const u = Math.min(1, (performance.now() - ks) / 1500); gm.dataset.k = Math.max(.06, 1 - Math.pow(1 - u, 2.2)); if (u < 1) requestAnimationFrame(tk); }; tk(); c.se('Psych Up'); });
+    [6100, 6500, 6900].forEach(t => at(t, () => { raw('W087'); vib(1); })); shake(6000, 1500, 5);
+    at(6500, () => { const s0 = performance.now(); const fa = () => { if (!live) return; ringA = Math.min(1, (performance.now() - s0) / 900); if (ringA < 1) requestAnimationFrame(fa); }; fa(); });
+    A(sky, [{ opacity: 1 }, { opacity: .5 }, { opacity: 1 }], { duration: 1600, delay: 6400, iterations: 3, fill: 'none' });
+    // 6) 번쩍 → 색이 돌아오며 포효 (7500~)
+    A(flash, [{ opacity: 0 }, { opacity: .9 }, { opacity: 0 }], { duration: 520, delay: 7450, easing: 'linear' });
+    at(7520, () => { gmI.style.transition = 'filter .9s ease-out'; gmI.style.filter = NRM; A(gpat, [{ opacity: 0 }, { opacity: .55 }], { duration: 900 }); c.se('Explosion3'); vib(3); });
+    at(7800, () => { (c.cryBig || c.cry)(); }); shake(7800, 900, 11);
+    at(7800, () => { for (let i = 0; i < 3; i++) { const r = mk(`left:50%;top:${gY - MH * .55}px;width:${Wd * .5}px;height:${Wd * .5}px;margin:${-Wd * .25}px 0 0 ${-Wd * .25}px;border-radius:50%;border:${Wd * .02}px solid rgba(255,90,150,.9);box-shadow:0 0 18px #ff2a6a,inset 0 0 18px #ff2a6a`, 'div', stB); A(r, [{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: `scale(${4 + i * 1.5})` }], { duration: 900 + i * 200, delay: i * 160, easing: 'cubic-bezier(.1,.7,.3,1)' }); } });
+    A(gm, [{ transform: 'scale(1)' }, { transform: 'scale(1.05) translateY(-1%)' }, { transform: 'scale(1)' }], { duration: 700, delay: 7800, easing: 'ease-out', composite: 'replace' });
+    if (trS) A(trS, [{ opacity: 0, transform: 'translateY(20%)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500, delay: 8100 });
+    A(ttl, [{ opacity: 0, transform: 'scale(1.8)', letterSpacing: '.5em' }, { opacity: 1, transform: 'scale(1)', letterSpacing: '.06em', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 600, delay: 8200, easing: 'cubic-bezier(.2,1.3,.4,1)' });
+    at(8200, () => c.se('Saint7'));
+    // 7) 원래 화면으로 (10400~)
+    const END = 10600;
+    return new Promise(res => { let done = false;
+      const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => clearTimeout(t)); c.monEl.classList.remove('recall');
+        const back = [...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 450 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 450 })];
+        Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { live = 0; back.forEach(a => a.cancel()); root.remove(); res(); }); };
+      const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
+      setTimeout(() => { lk.remove(); fin(); }, END - 450); });
+  }
+
+  { const st = document.createElement('style'); st.textContent = '@keyframes dxPatL{to{background-position:-800px 0}}@keyframes gxPan{to{background-position:-2400px 0}}@keyframes dxPatT{25%{background-position:200px 6px}50%{background-position:400px -4px}75%{background-position:600px 5px}to{background-position:800px 0}}'; document.head.appendChild(st); }
+  window.GymDBK = { mega, megaFull, zmove, zFull, tera, dynamax, dmaxFull, gxBg, gxRing, tyCol };
 })();
