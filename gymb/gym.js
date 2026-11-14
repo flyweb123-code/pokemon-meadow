@@ -4188,20 +4188,20 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(100%,380px)}
 .trbx .trb-c{position:relative;height:190px;display:flex;align-items:center;justify-content:center;border:0;padding:0;background:none;font:inherit;color:var(--win-ink)}
 .trbx .trb-b{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;image-rendering:pixelated;transform:translateY(-120vh);filter:drop-shadow(0 4px 0 #0006)}
-.trbx.on .trb-b{animation:trbDrop .62s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:var(--d)}
+.trbx.on .trb-b{animation:trbDrop .42s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:var(--d)}
 @keyframes trbDrop{from{transform:translateY(-120vh)}to{transform:none}}
-.trbx .trb-c.wob .trb-b{transform:none;animation:trbWob .42s ease-in-out}
+.trbx .trb-c.wob .trb-b{transform:none;animation:trbWob .3s ease-in-out}
 @keyframes trbWob{25%{transform:rotate(-14deg)}75%{transform:rotate(14deg)}}
 .trbx .trb-c.op .trb-b{transform:none;animation:trbPop .26s ease-in forwards}
 @keyframes trbPop{to{transform:scale(1.7);opacity:0}}
 .trbx .trb-c i.fl{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#fff;opacity:0;pointer-events:none}
-.trbx .trb-c.op i.fl{animation:trbFl .45s ease-out}
+.trbx .trb-c.op i.fl{animation:trbFl .34s ease-out}
 @keyframes trbFl{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(9)}}
 .trbx .trb-k{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;padding:12px 6px 8px;background:var(--win);border:3px solid var(--g2);box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1);opacity:0;transform:scale(.3)}
-.trbx .trb-c.op .trb-k{animation:trbIn .34s cubic-bezier(.3,1.6,.5,1) .12s forwards}.trbx .trb-c.now .trb-k{opacity:1;transform:none}
+.trbx .trb-c.op .trb-k{animation:trbIn .26s cubic-bezier(.3,1.6,.5,1) .06s forwards}.trbx .trb-c.now .trb-k{opacity:1;transform:none}
 @keyframes trbIn{to{opacity:1;transform:none}}
 .trbx .trb-k img{width:56px;height:56px;margin-top:6px;image-rendering:pixelated;object-fit:contain}
-.trbx .trb-k b{font-size:13px;text-align:center;line-height:1.25;word-break:keep-all}.trbx .trb-k small{font-size:10px;line-height:1.4;text-align:center;opacity:.75;word-break:keep-all}
+.trbx .trb-k b{font-size:13px;text-align:center;line-height:1.25;word-break:keep-all;min-height:2.5em;display:flex;align-items:center;justify-content:center;flex:none}.trbx .trb-k small{font-size:10px;line-height:1.4;text-align:center;opacity:.75;word-break:keep-all}
 .trbx .trb-k em{position:absolute;top:-3px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#fff;background:var(--g2);padding:1px 6px}
 .trbx.ready .trb-c:active .trb-k{transform:translateY(3px);box-shadow:0 1px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1)}
 .trbx .trb-tip{color:#fff;font-size:12px;opacity:0;transition:opacity .3s}.trbx.ready .trb-tip{opacity:.8}`;
@@ -4209,13 +4209,13 @@ const trBoxPick = (L, title, again) => new Promise(ok => {
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
   const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['흔함', '좋음', '귀함'];
   const el = document.createElement('div'); el.className = 'trbx';
-  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .14}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${G[c[1]]}</em><img alt="" src="${IMG}item/${trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">하나만 가져갈 수 있어요</p>`;
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${G[c[1]]}</em><img alt="" src="${IMG}item/${trIc(c[2])}.png"><b>${esc(c[2])}</b><small>${esc(c[3])}</small></span></button>`; }).join('')}</div><p class="trb-tip">하나만 가져갈 수 있어요</p>`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
   let ready = !!again; if (again) el.classList.add('ready');
-  else (async () => { await wait(780); const C = [...el.querySelectorAll('.trb-c')];
-    C.forEach(c => c.classList.add('wob')); se('KON'); await wait(460);
-    for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(170); }
-    await wait(380); ready = true; el.classList.add('ready'); })();
+  else (async () => { await wait(500);   /* v24.64 경완 '보상 나오는 연출 속도 좀만 더 빠르게': 떨어짐·흔들림·터짐 모두 약 1/3 빠르게 */ const C = [...el.querySelectorAll('.trb-c')];
+    C.forEach(c => c.classList.add('wob')); se('KON'); await wait(310);
+    for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(110); }
+    await wait(240); ready = true; el.classList.add('ready'); })();
   el.onclick = e => { const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
 });
 async function trReward(R, o, ids, boss, shop, first) {
@@ -4238,15 +4238,15 @@ async function trReward(R, o, ids, boss, shop, first) {
     [2, 1, '동료 슈퍼볼 ×2', '동료 몬스터볼보다 잘 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
     [boss ? 2 : .6, 2, '동료 하이퍼볼', '아주 잘 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'ultra', 1, '동료 하이퍼볼')],
     [boss ? .4 : 0, 2, '동료 마스터볼', '반드시 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'master', 1, '동료 마스터볼')],
-    [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); return '강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'; } return '상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'; }]];
+    [.6, 0, '강박사 야식', '뭐가 들었을까?', async () => { if (Math.random() < .5) { live.forEach(id => { R.hp[id] = Math.min(1, hp(id) + .3); }); await o.msgTap('강박사의 야식은 따끈한 주먹밥이었다!\n모두 HP가 조금 회복됐다!'); return ''; } await o.msgTap('상자 안엔 쪽지 한 장뿐이었다.\n"배고파서 먼저 먹었단다. -강박사"'); return ''; }   /* 야식은 개그라 대사 남김 */]];
   if (shop) { const PR = [30, 60, 120], L = C.filter(c => c[0] > 0 && !/야식|경험치 부적/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
     for (;;) { const i = await o.choose(`수련탑 상점 · 코인 ${R.coin | 0}`, [...L.map(c => [c[2], `${c[3]} · ${PR[c[1]]}코인`, TR_RC[c[1]]]), ['나가기', '', '#9aa0b4,#6c7288']]); const c = L[i]; if (!c) break;
       if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; L.splice(i, 1); if (t) await o.msgTap(t); }
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
   const L = []; let pool = C.filter(c => c[0] > 0);
-  if (first) { L.push([1, 1, '동료 몬스터볼 ×5', '야생 포켓몬에게 던지면 이번 도전에만 함께할 동료가 돼요', async () => { await o.msgTap(trBallAdd(R, 'mon', 5, '동료 몬스터볼')); await o.msgTap('가방에서 야생 포켓몬에게 던지면\n이번 도전에만 함께할 동료가 된다!'); return '도전이 끝나면 동료는 떠나간다.\n(내 포켓몬 상자에는 안 들어가요)'; }]); pool = pool.filter(c => !/동료/.test(c[2])); }   /* v24.35 출발 선물 하나는 늘 동료 몬스터볼 ×5 */
+  if (first) { L.push([1, 1, '동료 몬스터볼 ×5', '야생 포켓몬에게 던지면 이번 도전에만 함께할 동료가 돼요', async () => { trBallAdd(R, 'mon', 5, '동료 몬스터볼'); return ''; }]); pool = pool.filter(c => !/동료/.test(c[2])); }   /* v24.35 출발 선물 하나는 늘 동료 몬스터볼 ×5 */
   while (L.length < 3 && pool.length) { const t = pool.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > pool[k][0] && k < pool.length - 1) r -= pool[k++][0]; L.push(pool[k]); pool = pool.filter((_, j) => j !== k); }
-  for (let again = 0; ; again = 1) { const i = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again); const t = await L[i]?.[4]?.(); if (t === null) continue; if (t) await o.msgTap(t); break; }   /* v24.14 경완 '보상은 하단 메뉴 말고 화면이 어두워지며 몬스터볼 3개가 터지며 등장, 본가 도구 그림' */   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
+  for (let again = 0; ; again = 1) { const i = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again); const t = await L[i]?.[4]?.(); if (t === null) continue; break; }   /* v24.64 경완 '보상 받고 배틀 대사창에 따로 표시 안 해도 돼' */   /* v24.14 경완 '보상은 하단 메뉴 말고 화면이 어두워지며 몬스터볼 3개가 터지며 등장, 본가 도구 그림' */   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
    보통 도전자 = 실내 1~3. 센 도전자·이름 있는 트레이너 = 팀에서 가장 많은 타입의 방 (벌레·풀·독 = 사천왕 충호 방, 땅·바위·강철·격투 = 국화 방, 불꽃·전기 = 대엽 방, 에스퍼·고스트·악·페어리 = 오엽 방,
