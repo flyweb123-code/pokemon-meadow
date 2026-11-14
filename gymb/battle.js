@@ -416,7 +416,6 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(SEL('hb', side)); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let si = hb.querySelector('.shico'); if (A.shiny) { if (!si) { si = document.createElement('i'); si.className = 'shico'; hb.appendChild(si); } const nm = hb.querySelector('.nm'); si.style.left = (nm.offsetLeft + Math.min(nm.scrollWidth, nm.offsetWidth) + 1) + 'px'; } else si?.remove(); }   // 경완 11-11 '포켓몬 이름 옆에 우리 게임 이로치 아이콘'
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
@@ -2361,11 +2360,11 @@ function hitPop(P, close, reopen, reHit) { const m = gm(P), it = m.it, x = HOLD[
         // v17.57 경완: 추천 도구 하나 — 창고에 있으면 바로 지니게, 없으면 상점 도구 탭으로 넘어가 그 도구 사기 창
         // v17.59 경완: 추천할 게 없거나(이미 지닌 도구가 추천) 고를 수 없으면 추천 칸 자체를 안 띄움 — 추천을 먼저 고른 다음 창을 연다
   return recIt(P).then(r => { if (r === m.it) r = null; const inSt = r && S.gym?.itm?.[r] > 0;
-        const recBox = !r || (!inSt && window.gymEvLu) ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
+        const recBox = !r || (!inSt && window.gymEvLu) ? '' : `<div class="it-rec"><span class="it-recl">추천 도구</span><div class="it-recb" data-it="${r}">${itRow(r, 0, inSt ? '창고에 있어요 · 누르면 지니게 해요' : '').replace('<button type="button" class="sp-tm sp-it"', `<button type="button" class="sp-tm sp-it it-recgo" data-a="${inSt ? 'rgive' : 'rbuy'}"`).replace(/<\/button>$/, `${inSt ? '' : `<em class="it-recp"><i class="coin"></i>${HOLD[r][1].toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`)}</div></div>`;
         const recFill = () => {};
         const recAct = (b, c2, w) => { const r = w.querySelector('.it-recb')?.dataset.it; if (!r) return false;
-          if (b === 'rgive') { c2(); giveIt(P, r); close(); reopen(); return true; }
-          if (b === 'rbuy') { c2(); close(); document.querySelectorAll('#gym .gy-boxw').forEach(x => x.remove()); window.gymShopIt = r; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => { (reHit || reopen)(); setTimeout(() => [...document.querySelectorAll('#gym .gy-pop')].pop()?.querySelector('[data-a=hit]')?.click(), 60); } }); return true; } return false; };
+          if (b === 'rgive') { c2(); msgTop(() => giveIt(P, r), () => { close(); reopen(); }); return true; }
+          if (b === 'rbuy') { c2(); recBuyIt(P, r, () => { close(); reopen(); }); return true; } return false; };
         let w0;
         if (!x) { w0 = gymPop(`<h4>지닌 도구 없음</h4><p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 아무것도 지니고 있지 않아요.</p>${recBox}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="use">도구 사용</button></div>`, (b, c2) => { if (recAct(b, c2, w0)) return; if (b !== 'x' && b !== 'use') return; c2(); if (b === 'use') { close(); usePop(P, reopen); } }); recFill(w0); return; }
         w0 = gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(it)}">${esc(x[0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</p><p class="gy-msg mi-d">${esc(x[2])}</p>${recBox}<div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="take">돌려받기</button></div>`, (b, c2) => { if (recAct(b, c2, w0)) return; if (b !== 'x' && b !== 'take') return; c2(); if (b !== 'take') return; takeIt(P); se('DECIDE'); close(); reopen(); }); recFill(w0); }); }
@@ -2383,8 +2382,8 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
       if (a === 'x') return close();   // ✕ 는 그냥 닫기 (아래 fin 으로 빠져 카드를 다시 열던 것, 경완 2026-10-31)
       if (a[0] === 'i' && a.length > 1) { const id = a.slice(1), k = m.mv.indexOf(id); return S.gym && k >= 0 ? mvInfo(id, () => movesPop(P, () => monPop(P.id, fromBox, p, lst), -1, k), '기술 바꾸기', () => {}) : mvInfo(id); }
       if (a === 'nat') { const rn = recNat(P, m), w1 = gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${natKo(m.nat)}</h4><p class="gy-msg nat-d">${nt[1] ? `<span class="nat-c up">${STAT_KO[nt[1]]} ▲</span><span class="nat-c dn">${STAT_KO[nt[2]]} ▼</span>` : '<span class="nat-c">능력 변화 없음</span>'}</p><p class="gy-msg ab-d">${nt[1] ? `${STAT_KO[nt[1]]}${jong(STAT_KO[nt[1]]) ? '이' : '가'} 잘 오르고, ${STAT_KO[nt[2]]}${jong(STAT_KO[nt[2]]) ? '이' : '가'} 덜 오르는 성격이에요.` : '모든 능력이 고르게 오르는 성격이에요.'}</p>${natRec(rn, m)}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b2, c2) => {
-        if (b2 === 'ngive') { c2(); mintUse(P, rn); close(); monPop(P.id, fromBox, null, lst); return; }
-        if (b2 === 'nbuy') { c2(); close(); document.querySelectorAll('#gym .gy-boxw').forEach(x => x.remove()); window.gymShopMint = rn; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => { monPop(id, fromBox, undefined, lst); setTimeout(() => [...document.querySelectorAll('#gym .gy-pop')].pop()?.querySelector('[data-a=nat]')?.click(), 60); } })   /* v17.71 경완: ‹ 누르면 보던 성격 창까지 */; return; }
+        if (b2 === 'ngive') { c2(); msgTop(() => mintUse(P, rn), () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
+        if (b2 === 'nbuy') { c2(); recBuyMint(P, rn, () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
         if (b2 === 'x') c2(); }); return; }   // 성격 효과도 눌러서 (경완 2026-10-29)
       if (a === 'ab') return abShow(m.ab, m.ha, null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
       if (a === 'mv') { movesPop(P, () => monPop(P.id, fromBox, p, lst)); return; }   // v14.42 경완: 기술 창이 떠 있는 동안 뒤에 상세 카드는 그대로, 닫으면 바뀐 기술로 카드만 바꿔 끼움
@@ -2665,6 +2664,17 @@ function giveIt(P, id) {
 }
 function takeIt(P) { const g = S.gym, m = gm(P), id = m.it; if (!id) return; g.itm = g.itm || {}; g.itm[id] = (g.itm[id] || 0) + 1; delete m.it; GA.save(); itRef(); }
 function itRef() { try { if (tabEl?.isConnected && !tabEl.hidden && tabEl.querySelector('.lu-grid')) drawTab(); bxRefresh?.(); } catch (e) {} }   /* v24.80 경완 '샹델라한테 도구 지니게 했는데 바로 슬롯에 반영 안 되고 나갔다 들어오니까 생김': 뒤의 라인업 칸·박스도 바로 다시 그림 */
+/* v25.02 경완 '추천 성격에 민트 뜨잖아 누르면 상점으로 넘어가지 않고 그냥 그 창에서 살건지 말건지 물어보고 사면 바로 성격 바뀌고 추천 성격 슬롯 없어지게', '추천 도구도 마찬가지 살건지 물어보고 사면 바로 지녀지게, 기존에 가지고 있던 도구는 창고로' */
+/* 알림(먹었다·지니게 했다)을 띄운 뒤 카드를 다시 그리면 카드가 알림을 덮었음 → 알림을 맨 위로 다시 붙임 */
+const msgTop = (act, ok) => { act(); const w = [...document.querySelectorAll('#gym .gy-pop')].pop(); ok?.(); if (w?.isConnected) w.parentNode.appendChild(w); };
+const recPay = (n, nm) => { if (!evSpend(n)) { gymPop(`<p class="gy-msg" style="text-align:center">골드가 모자라요.<br><small>${n.toLocaleString()}G가 필요해요.</small></p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c) => c()); return false; }
+  try { window.GymBGM?.se('DP_REGI'); } catch (e) {} try { window.Gym.k.glog?.('tr', `도구 <b>${esc(nm)}</b>${jong(nm) ? '을' : '를'} 샀다.`); } catch (e) {} return true; };
+function recBuyIt(P, r, ok) { const x = HOLD[r]; if (!x) return; const old = gm(P).it, on = old && HOLD[old]?.[0];
+  itInfo(r, `<i class="coin"></i>${x[1].toLocaleString()}G 사기`, () => { if (!recPay(x[1], x[0])) return; const g = S.gym; g.itm = g.itm || {}; g.itm[r] = (g.itm[r] | 0) + 1; msgTop(() => giveIt(P, r), ok); },
+    `<p class="gy-msg it-own">사면 ${esc(nmOf(P))}에게 바로 지니게 해요${on ? `<br><small>지금 지닌 ${esc(on)}${jong(on) ? '은' : '는'} 창고로 가요</small>` : ''}</p>`); }
+function recBuyMint(P, k, ok) { const nm = mintNm(k);
+  mintInfo(k, `<i class="coin"></i>${MINT_P.toLocaleString()}G 사기`, () => { if (!recPay(MINT_P, nm)) return; const g = S.gym; g.mint = g.mint || {}; g.mint[k] = (g.mint[k] | 0) + 1; msgTop(() => mintUse(P, k), ok); },
+    `<p class="gy-msg it-own">사면 ${esc(nmOf(P))}에게 바로 먹여요</p>`); }
 // 민트 (경완 2026-10-30 '성격 바꾸는 본가 도구'): 먹으면 성격이 바뀐다. 지니는 도구와 달리 먹으면 없어지고 여러 개 살 수 있음. g.mint = {성격: 개수}
 const MINT_P = 3000, MINT = ['lonely', 'adamant', 'naughty', 'brave', 'bold', 'impish', 'lax', 'relaxed', 'modest', 'mild', 'rash', 'quiet', 'calm', 'gentle', 'careful', 'sassy', 'timid', 'hasty', 'jolly', 'naive', 'serious'];
 const ro = w => { const j = jong(w); return j && j !== 8 ? '으로' : '로'; };
@@ -2726,8 +2736,7 @@ function usePop(P, done) {
   const recGo = () => recIt(P).then(r => { if (!el.isConnected) return; const m = gm(P);
     if (!r || r === m.it) return gymPop(`<h4>추천 도구</h4><p class="gy-msg" style="text-align:center">${r ? `지금 지닌 ${esc(HOLD[r][0])}${jong(HOLD[r][0]) ? '이' : '가'} 가장 잘 맞아요.` : '지금은 추천할 도구가 없어요.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c2) => c2());
     if ((g.itm[r] | 0) > 0 || itWho(r)) return itInfo(r, '지니게 하기', () => { giveIt(P, r); draw(); });
-    gymPop(`<h4 class="mi-h"><img class="tm-ic it-ic" alt="" src="${itImg(r)}">${esc(HOLD[r][0])}</h4><p class="gy-msg it-own">${esc(nmOf(P))}에게 추천하는 도구예요</p><p class="gy-msg mi-d">${esc(HOLD[r][2])}</p><p class="gy-msg" style="text-align:center"><small>창고에 없어요. 상점에서 살 수 있어요.</small></p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">상점에서 보기</button></div>`, (a, c2) => { c2(); if (a !== 'buy') return;
-      el.remove(); window.gymShopIt = r; window.Gym?.k?.openTab?.('shop', { back: 1, re: () => usePop(P, done) }); }); });
+    recBuyIt(P, r, () => draw()); });
   // v20.66 경완 '기술머신·기술레코드 탭에선 추천 도구 버튼이 추천 기술로': 가진 것 중 가장 좋은 기술이면 바로 그 기술 창(가르치기), 없으면 상점에서 보기
   const recGoTm = () => { const k = useT, tr = k === 'tr', nm = tr ? '기술레코드' : '기술머신'; loadSim().then(() => { if (!el.isConnected) return; const L = recT[k] || (recT[k] = recTms(P, tr)), r = L.find(id => (g.tms[id] | 0) > 0 && tmCan(P, id));
     if (r) return mvInfo(r, () => teachTm(P, r, draw));
