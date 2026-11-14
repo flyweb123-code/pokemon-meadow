@@ -794,7 +794,22 @@ const isLeg = g => (g?.gmax | 0) >= GRADES.length - 1;
 const LEG_STEP = 250, legX = g => isLeg(g) ? Math.max(0, ((g.rep || 0) - GRADES[GRADES.length - 1][0]) / LEG_STEP) : 0, lsOf = g => isLeg(g) ? 0 : lsLv(g.lstk);
 /* 전설의 체육관에 오는 보통 도전자 = 본가 후반(챔피언로드·리그 앞) 트레이너 종류만. 이름 있는 트레이너도 더 자주 (보통 도전자 LEG_NC 명마다, 다른 등급은 9명) */
 const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_trainer_f', 'dragon_tamer', 'veteran', 'black_belt', 'psychic_m', 'psychic_f', 'ranger_m', 'ranger_f', 'pokemaniac'], LEG_NC = 4;
-const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : Infinity; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
+/* v24.51 경완 '3,000에서 멈추게 해주고 3,000에 닿으면 필드에 아르세우스가 내려오는 스토리 연출 후 내 포켓몬 박스에 아르세우스': 전설의 체육관 평판 꼭대기 LEG_TOP.
+   닿으면(계정에 한 번: 박스에 그 아르세우스가 있거나 어느 체육관이든 g.arc) 체육관에서 땅울림·안내원 → 필드로 나가 GA.arcScene (index/beta.html). test = 운영자 시뮬 버튼 (아무것도 안 남김) */
+const LEG_TOP = 3000;
+const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !tutSeen('arc') && !!GA.arcScene && !GA.arcGot?.() && !window.gymSimOn; };
+async function arcGo(test) {
+  const g = st(); if (busy || !open) return; busy = true; root.classList.add('busy'); const GW = '<span class="gy-who">안내원</span>';
+  try { openTab(null); try { window.GymBGM?.stop(1.2); } catch (e) {}
+    await talk(`<b>${esc(g.nm || '체육관')}</b>의 평판이<br><b>3,000</b>에 닿았다!`);
+    for (let r = 0; r < 2; r++) { dlg(`<b>쿠구구구구…!${r ? '!' : ''}</b>`); try { GA.rumble?.(2, 3); root.animate([{ translate: '0 0' }, { translate: '-4px 2px' }, { translate: '5px -2px' }, { translate: '-3px -1px' }, { translate: '0 0' }], { duration: 260, iterations: 4 }); } catch (e) {} await wait(1250); }
+    await talk(GW + '관, 관장님! 밖이…<br>필드 쪽 하늘이 갈라지고 있어요!');
+    await talk(GW + '어서 가 보세요!<br>저는 여기서 체육관을 지킬게요.<br>…무서워서 그런 건 아니에요!');
+  } catch (e) { console.error(e); } finally { busy = false; root.classList.remove('busy'); }
+  await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0 });
+  if (ok && !test && S.gym) { S.gym.arc = 1; GA.save?.(); }
+}
+const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : LEG_TOP; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
 let NAMED = [];
 const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gym/named.json?v=${VER}`).then(r => r.ok ? r.json() : []).then(j => { NAMED = j || []; }).catch(() => {});
@@ -1358,7 +1373,7 @@ async function challenge(picked) {
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
     dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await walk(e, outRoute(D, e) || D.path.slice(0, -1).reverse()); await wait(250); doorSe(); await wait(120); e.el.remove(); ents = ents.filter(x => x !== e);
   } catch (err) { console.error(err); GA.toast?.('배틀을 시작하지 못했어요'); }
-  finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); if (fbNext && open) { const L = fbNext; fbNext = null; setTimeout(() => tutTalk(L), 300); } }
+  finally { busy = false; root.classList.remove('busy'); if (g.q.some(x => x.boss)) g.q = g.q.filter(x => !x.boss); if (open) renderHome(); if (open && arcDue()) setTimeout(() => arcGo(), 500); if (fbNext && open) { const L = fbNext; fbNext = null; setTimeout(() => tutTalk(L), 300); } }
 }
 let fbNext = null;
 // ---------- 승급 심사 (경완 2026-10-30) ----------
@@ -2856,9 +2871,10 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['arc', '평판 3,000 연출 (아르세우스)'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
+    if (a === 'arc') return arcGo(1);   /* 운영자: 평판 3,000 연출만 (박스·저장 안 건드림) */
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
     if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.31 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
