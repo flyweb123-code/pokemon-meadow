@@ -29,4 +29,4 @@ jobs:
           ls -la /tmp/save.json
       - name: Print field part
         run: |
-          node -e "const d=JSON.parse(require('fs').readFileSync('/tmp/save.json','utf8'))[0].results.sort((a,b)=>a.i-b.i).map(r=>r.data).join('');const S=JSON.parse(d);const o=JSON.stringify({lay:S.lay,layAdd:S.layAdd,fbag:S.fbag,clock:S.clock,base:S.base,mons:S.mons});for(let i=0;i<o.length;i+=4000)console.log('FLD'+String(i/4000).padStart(4,'0')+' '+o.slice(i,i+4000));"
+          node -e "const R=JSON.parse(require('fs').readFileSync('/tmp/save.json','utf8'))[0].results;const A={};for(const r of R)(A[r.acct]=A[r.acct]||[]).push(r);let best=null;for(const k in A){try{const S=JSON.parse(A[k].sort((a,b)=>a.i-b.i).map(r=>r.data).join(''));console.log('ACCT',k,S.savedAt,(S.mons||[]).length);if(!best||(S.savedAt||0)>(best.savedAt||0))best=S}catch(e){console.log('ACCT',k,'bad')}}const S=best;const o=JSON.stringify({lay:S.lay,layAdd:S.layAdd,fbag:S.fbag,clock:S.clock,base:S.base,mons:S.mons});for(let i=0;i<o.length;i+=4000)console.log('FLD'+String(i/4000).padStart(4,'0')+' '+o.slice(i,i+4000));"
