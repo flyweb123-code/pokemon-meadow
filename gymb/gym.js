@@ -836,6 +836,8 @@ const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.jso
    필드에서 입은 옷이 체육관에 안 넘어오거나 체육관에서 바꾼 옷이 필드에 안 넘어갔다 → 들어올 때 맞추고, 체육관에서 바꿀 때 둘 다 바꾼다 */
 function fitSync(g) { g.fits = g.fits || {}; if (Array.isArray(S.fits)) S.fits.forEach(k => { if (OUTFITS[k]) g.fits[k] = 1; });
   if (S.fit && OUTFITS[S.fit]) g.fit = S.fit; else if (g.fit && OUTFITS[g.fit] && !S.fit) { S.fit = g.fit; if (Array.isArray(S.fits) && !S.fits.includes(g.fit)) S.fits.push(g.fit); } }
+/* 경완 2026-11-15 '체육관 옷장이랑 필드 옷장이랑 통일': 가진 옷 = 필드 옷장(S.fits)과 체육관(g.fits)을 합친 한 목록, 순서는 의상 목록 순서 (필드 renderFitBag 과 같게) */
+function fitList() { const g = st() || {}; g.fits = g.fits || {}; const F = new Set([...Object.keys(g.fits).filter(k => g.fits[k]), ...(Array.isArray(S.fits) ? S.fits : [])]); return Object.keys(OUTFITS).filter(k => F.has(k) && fitOf(k)); }
 function fitSet(k) { const g = st(); g.fits = g.fits || {}; g.fit = k; S.fit = k; if (k) { g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); } }
 function gInit() {
   const g = st(); if (!g) return null;
@@ -2371,7 +2373,7 @@ function mecLay(stg) {
   return true;
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
-function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
+function fitPick() { const g = st(); g.fits = g.fits || {}; const cf = fitOf(g.fit) ? g.fit : '', fk = fitList();
   const p = pop(`<h4>옷 갈아입기</h4><div class="ft-grid mec-fts">${['', ...fk].map(k => `<button type="button" data-a="f:${k}" class="${cf === k ? 'on' : ''}"><i class="ft-pic"><img alt="" data-fk="${k}"></i><b>${k ? OUTFITS[k].n : '기본 옷'}</b><em>${cf === k ? '입는 중' : '입기'}</em></button>`).join('')}</div><div class="gy-btns one"><button data-a="x">닫기</button></div>`,
     (a, close) => { if (a === 'x') { close(); return meCard(); } if (!a.startsWith('f:')) return; const k = a.slice(2); close(); if (k !== cf) { fitSet(k); save(); renderHome(true); } meCard(); });
   p.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; })); }
@@ -2870,7 +2872,7 @@ function storePop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew'; $g('.gy-main').appendChild(el);   // 아래 메뉴는 가리지 않게 (경완 2026-10-29)
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
-    const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = Object.keys(g.fits).filter(k => g.fits[k] && fitOf(k));
+    const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = fitList();
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [];   // v20.80 영양제도 창고에   // 민트 (경완 2026-10-30)
     const KY = KEY_IT.filter(k => tutSeen(k.k));   // 다른 체육관에서 받았어도 (관장 것)   // 경완 2026-11-12 '창고 도구에 중요한 물건 항목, 메가링은 버리지도 못하게'
     const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', KY.length + IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
