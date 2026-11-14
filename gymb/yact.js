@@ -27,7 +27,7 @@ const STAGES = [{ n: 5, lv: -2 }, { n: 6, lv: -2 }, { n: 8, lv: -1 }, { n: 3, lv
 const MOB_MAX = w => Math.min(10, 5 + Math.floor(w / 2)), BOSS_BGM = { 4: 'gymBattle', 7: 'tenno', 9: 'boss' };   /* 대장 스테이지마다 다른 곡 (관장 → 사천왕 → 전설 → 마지막은 디아루가·펄기아 곡) */
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
-const CV = [0, 1, 3, 10], GM = [2, 2, 2.5, 3, 3, 3.5, 4.5, 5.5, 6.5, 7], cval = (cv, w) => Math.round(CV[cv] * (GM[w - 1] || 2)),   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
+const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 8, CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
   CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
 const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
@@ -946,7 +946,7 @@ function hurt(o, r, kx, ky, light) {
   else se(r.e < 1 ? 'KOUKA_L' : 'KOUKA_M', lt ? .16 : .07, { gain: lt ? .6 : 1 });
   // 콤보: 이어 맞힐수록 기술이 빨리 다시 찬다 (맞으면 끊김)
   G.combo++; G.comboT = 2.5; G.best = Math.max(G.best, G.combo); cbUi(true);
-  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); }
+  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); if (G.combo % 20 === 0) bagDrop(me.x + (Math.random() - .5) * 60, me.y - 10, BAG_COMBO); }
   if (o.hp <= 0) ko(o, ux, uy);
 }
 function ko(o, ux, uy) {
@@ -957,7 +957,7 @@ function ko(o, ux, uy) {
   stop(o.boss ? .2 : .1); shake(o.boss ? .9 : .32); kick(ux, uy, o.boss ? 12 : 7); zoom(o.boss ? .1 : .035);
   se('POKE_DEAD', .12); if (o.boss) { rumble(4, 65); snd('DUN_Explosion', .09); flash(.3); } else buzz(1);
   if (last) { slow(fin ? .95 : .5, fin ? .22 : .35); if (!o.boss) flash(.12); }   // 마지막 한 마리는 느리게 날아간다
-  const cr = Math.random(), coins = o.boss === 2 ? [3, 3, 2, 2, 2, 2, 1, 1, 1, 1] : o.boss ? [3, 2, 2, 1, 1, 1] : Math.random() < .85 ? [cr < .05 ? 3 : cr < .3 ? 2 : 1] : [];   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
+  const cr = Math.random(), coins = o.boss ? [1, 1, 1] : o.minion ? [] : Math.random() < .5 ? [cr < .03 ? 3 : cr < .18 ? 2 : 1] : [];   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
   const ex = o.minion ? 0 : Math.round(G.xpB * (o.boss === 2 ? XW.fin : o.boss ? XW.mid : XW.mob(G.wave - 1)) / XW_ALL); G.exp += ex;
   const y = EVY()[o.sp] || '', evAdd = +y[G.stat] || 0, before = G.ev; G.evRaw += evAdd / 6; G.ev = Math.min(EV_CAP, G.M.evRoom, Math.floor(G.evRaw + 1e-6));
   const evUp = G.ev - before, egLeft = G.M.eg ? Math.min(EG_CAP, 99 - G.egg0) - G.shard - G.drops.reduce((a, p) => a + (p.sh ? EGV[p.sh] : 0), 0) : 0;
@@ -967,6 +967,7 @@ function ko(o, ux, uy) {
     fxOnce(PX()?.s.Smoke_White ? 'Smoke_White' : 'Wood_Hammer_Smoke', 2, 0, x, yy - 14, 1, { s: o.boss ? 1.3 : .9 }); stars(x, yy - 16, o.boss ? 14 : 6, '#fff', o.boss ? 300 : 200); dust(x, yy, o.boss ? 12 : 5, 120); ring(x, yy, '#fff', 6, o.boss ? 90 : 44, .3, 5);
     if (o.boss) { shake(.5); rumble(2, 80, 1); } else buzz(0); snd('DUN_Rock_Smash', o.boss ? .07 : .035);
     if (ex) pop(x, yy - 34, `+${ex} 경험치`, '#bfe6ff'); if (evUp > 0) pop(x, yy - 54, `${STAT_KO[G.stat]} 노력치 +${evUp}`, '#d6b4ff', true);
+    if (o.boss) bagDrop(x, yy - 4, BAG_B[G.wave] || 12);
     coins.forEach(cv => { const a = Math.random() * 6.28, v = coins.length > 1 ? 50 + Math.random() * 80 : 15 + Math.random() * 35; G.drops.push({ coin: cv, val: cval(cv, G.wave), x, y: yy - 4, t0: R.T, vy: -170 - Math.random() * 90, z: 12, vx: Math.cos(a) * v, gy: Math.sin(a) * v * .6 }); });
     for (let i = 0; i < (o.boss ? 8 : 3); i++) fly('xp', x, yy - 14, () => ({ x: me.x, y: me.y - 22 }), null, '#8fd0ff');
     if (shard) G.drops.push({ sh: shard, x, y: yy - 4, t0: R.T, vy: -150, z: 10, vx: (Math.random() - .5) * 60 });
@@ -985,7 +986,7 @@ function justDodge(o) {
   const G = R.G, me = G.me; if (me.just) return; me.just = true; G.just++; se('KIRAN');
   slow(.6, .28); flash(.14, '170,220,255'); zoom(.05); buzz(1); setTimeout(() => R && buzz(0), 110); snd('DUN_Double_Team', .07);
   me.inv = Math.max(me.inv, .7); me.crit = 3; me.dcd = 0; for (const k in me.cd) me.cd[k] *= .35;
-  pop(me.x, me.y - 76, '아슬아슬 회피!', '#9fe4ff', true); ring(me.x, me.y, '#9fe4ff', 10, 90, .4, 6); stars(me.x, me.y - 24, 8, '#9fe4ff');
+  pop(me.x, me.y - 76, '아슬아슬 회피!', '#9fe4ff', true); G.drops.push({ coin: 1, val: 2, x: me.x, y: me.y - 6, t0: R.T, vy: -200, z: 12, vx: (Math.random() - .5) * 60, gy: (Math.random() - .5) * 30 }); ring(me.x, me.y, '#9fe4ff', 10, 90, .4, 6); stars(me.x, me.y - 24, 8, '#9fe4ff');
   for (let i = 0; i < 3; i++) after(i * .03, () => ghost(me, .5));
 }
 
@@ -1150,7 +1151,12 @@ function shardFx() {   // 먹는 순간 화면 효과 (판 시간이 멈춰 있�
 
 // ---------- 그리기 ----------
 function coinSq(g, x, y, s, C) { g.fillStyle = C[0]; g.fillRect(x - s / 2 - 2, y - s / 2 - 2, s + 4, s + 4); g.fillStyle = C[1]; g.fillRect(x - s / 2, y - s / 2, s, s); g.fillStyle = C[3]; g.fillRect(x - s / 2, y - s / 2, s, 3); g.fillRect(x - s / 2, y - s / 2, 3, s); g.fillStyle = C[2]; g.fillRect(x - s / 2, y + s / 2 - 3, s, 3); g.fillRect(x + s / 2 - 3, y - s / 2, 3, s); }
-function drawCoin(p) { const g = R.g, t = R.T - p.t0, C = CPAL[p.coin] || CPAL[1], s = p.coin === 3 ? 15 : 12, x = Math.round(p.x), y = Math.round(p.y - p.z - s / 2 - 3 + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));   /* 경완 '골드는 다 네모 아이콘으로': 점수판 동전과 같은 네모, 색만 다름 */
+function bagDrop(x, y, val) { const G = R.G, a = Math.random() * 6.28; G.drops.push({ coin: 3, bag: 1, val, x, y, t0: R.T, vy: -230, z: 14, vx: Math.cos(a) * 30, gy: Math.sin(a) * 18 }); }
+function drawBag(p) { const g = R.g, t = R.T - p.t0, k = p.val >= 40 ? 3 : p.val >= 15 ? 2.5 : 2, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2)), px = (c, a, b, w, h) => { g.fillStyle = c; g.fillRect(Math.round(x + a * k), Math.round(y + b * k), Math.ceil(w * k), Math.ceil(h * k)); };
+  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, 7 * k, 2.5 * k, 0, 0, 7); g.fill();
+  px('#20202c', -6, -10, 12, 10); px('#20202c', -5, -11, 10, 12); px('#20202c', -3, -14, 6, 4); px('#c8843c', -5, -9, 10, 8); px('#c8843c', -4, -10, 8, 10); px('#8a5220', -5, -3, 10, 2); px('#8a5220', 2, -9, 3, 8); px('#f0b870', -4, -9, 2, 4); px('#e8c890', -2, -13, 4, 2); px('#ffc830', -3, -11, 6, 1); px('#6a4400', -1, -7, 3, 5); px('#ffc830', 0, -6, 1, 3);
+  if ((t * 1.3 + p.x * .37) % 1 < .3) { g.fillStyle = '#fff'; g.fillRect(x + 5 * k, y - 15 * k, 2, 8); g.fillRect(x + 5 * k - 3, y - 15 * k + 3, 8, 2); } }
+function drawCoin(p) { if (p.bag) return drawBag(p); const g = R.g, t = R.T - p.t0, C = CPAL[p.coin] || CPAL[1], s = p.coin === 3 ? 15 : 12, x = Math.round(p.x), y = Math.round(p.y - p.z - s / 2 - 3 + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));   /* 경완 '골드는 다 네모 아이콘으로': 점수판 동전과 같은 네모, 색만 다름 */
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, s * .6, s * .25, 0, 0, 7); g.fill(); coinSq(g, x, y, s, C);
   if (p.coin > 1 && (t * 1.3 + p.x * .37) % 1 < (p.coin > 2 ? .3 : .16)) { g.fillStyle = '#fff'; g.fillRect(x + s / 2, y - s / 2 - 8, 2, 8); g.fillRect(x + s / 2 - 3, y - s / 2 - 5, 8, 2); } }
 // 번뜩임 조각 = 네 갈래 별 (동전과 헷갈리지 않게, 경완 2026-11-13). 색 = 등급: 하늘 +1% · 보라 +3% · 무지개 +5%
@@ -1316,13 +1322,13 @@ function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>$
 // ---------- 끝: 보상은 계산해서 보여 주기만 (저장 안 함) ----------
 function end(clear, faint, quit) {
   const G = R.G; if (G.over) return; G.over = true; bgm(clear ? 'winWild' : null); chEnd(); dashEnd(); hideEnd(); R.run = false; R.JOY.dx = R.JOY.dy = 0; R.HELD = {}; R.BUF = null; R.el.classList.remove('play'); R.q('.ya-cb').classList.remove('on');
-  const bonus = 0; const picked = G.gold + (clear ? G.drops.reduce((a, p) => a + (p.coin ? (p.val || CV[p.coin]) : 0), 0) : 0); G.items = []; G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
+  const rk0 = clear ? (G.hits <= S_HITS ? 'S' : 'A') : '', bonus = CLEAR_G[rk0] || 0; G.bonus = bonus; const picked = G.gold + (clear ? G.drops.reduce((a, p) => a + (p.coin ? (p.val || CV[p.coin]) : 0), 0) : 0); G.items = []; G.gold = picked + bonus; G.goldShown = G.gold; G.eggShown = G.egg;
   const fr = (clear ? 2 : G.wave >= 4 ? 1 : 0) + (G.fainted ? 0 : 1), B = GB(), P = G.o.P, gr = B.growth(P.sp), lv0 = G.M.lv, x1 = G.M.xp + G.exp; let lv1 = lv0;
   while (lv1 < B.LV_MAX && x1 >= B.xpAt(gr, lv1 + 1)) lv1++;
   const a = B.xpAt(gr, lv1), b = B.xpAt(gr, lv1 + 1), prog = lv1 >= B.LV_MAX ? 1 : Math.max(0, Math.min(1, (x1 - a) / (b - a || 1))), nm = nmOf(P), eg = G.M.eg;
   setTimeout(() => { if (!R || R.G !== G) return; se('WIN_OPEN'); if (lv1 > lv0) setTimeout(() => se('EXPMAX'), 500); const q = R.q, r = q('.ya-res'), N = (n, pre = '+', suf = '') => `data-n="${n}" data-pre="${pre}" data-suf="${suf}">${pre}0${suf}`;
     q('.rs-h').textContent = clear ? '특훈 완료!' : faint ? `${josa(nm, '이', '가')} 지쳐 버렸다…` : '여기까지!';
-    const rk = clear ? (G.hits <= 3 ? 'S' : 'A') : G.wave >= 7 ? 'B' : G.wave >= 4 ? 'C' : 'D', ic = (t, c) => `<i class="ic" style="--c:${c}">${t}</i>`;
+    const rk = clear ? rk0 : G.wave >= 7 ? 'B' : G.wave >= 4 ? 'C' : 'D', ic = (t, c) => `<i class="ic" style="--c:${c}">${t}</i>`;
     q('.rs-hero').classList.toggle('win', !!clear); q('.rs-stg').textContent = clear ? `스테이지 ${STAGES.length}/${STAGES.length} · ${mmss(G.time)}` : `스테이지 ${G.wave}/${STAGES.length} 에서 끝 · ${mmss(G.time)}`;
     { const k = q('.rs-rk'); k.textContent = rk; k.style.color = rk === 'S' ? '#e0402a' : rk === 'A' ? '#e08a00' : '#6a6a7a'; k.style.animation = 'none'; void k.offsetWidth; k.style.animation = ''; }
     q('.rs-nm').textContent = nm; q('.rs-lv').innerHTML = lv1 > lv0 ? `Lv.${lv0} → <i class="lvup">Lv.${lv1}</i>` : `Lv.${lv1}`; q('.rs-mi .xb i').style.setProperty('--w', (prog * 100).toFixed(0) + '%');
@@ -1333,7 +1339,7 @@ function end(clear, faint, quit) {
       <li>${ic(STAT_KO[G.stat], '#8a4ae0')}<span class="k">노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}`}</em></li>
       <li class="one">${ic('친밀도', '#e0507a')}<span class="k">${clear ? '특훈 완료 +2' : G.wave >= 4 ? '열심히 했다 +1' : ''}${(clear || G.wave >= 4) && !G.fainted ? ' · ' : ''}${G.fainted ? (clear || G.wave >= 4 ? '' : '조금 더 버텨 보자') : '안 지침 +1'}</span><b class="fr" ${N(fr)}</b></li>
       ${eg ? `<li><svg class="ic sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><span class="k">번뜩임</span><b class="eg" ${N(G.shard, '+', '%')}</b><em><i class="egq" style="--tc:${TYPE_C[eg.t] || '#888'}">${TYPE_KO[eg.t] || ''}</i>??? ${G.egg0}% → ${G.egg}%</em></li>` : ''}
-      <li class="ya-gold one"><i class="coin" aria-hidden="true"></i><span class="k">골드</span><b ${N(G.gold, '+', 'G')}</b></li>`;
+      <li class="ya-gold${bonus ? '' : ' one'}"><i class="coin" aria-hidden="true"></i><span class="k">골드</span><b ${N(G.gold, '+', 'G')}</b>${bonus ? `<em>${rk0} 등급 완주 보너스 +${bonus}G 포함</em>` : ''}</li>`;
     q('.ya-ov').hidden = false; r.hidden = false; r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); snd('DUN_Stat_Up', .07); buzz(1);
     // 줄이 하나씩 톡톡 나오면서 숫자가 올라간다
     [...q('.ya-rl').children].forEach((li, i) => { li.style.setProperty('--i', i); const bEl = li.querySelector('b[data-n]'), n = +bEl.dataset.n, t0 = 250 + i * 150;
