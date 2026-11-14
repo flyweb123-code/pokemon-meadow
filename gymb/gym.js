@@ -219,9 +219,6 @@ const GRADES = [[0, '새내기 체육관'], [50, '동네 체육관'], [125, '떠
 const STAGE = [0, 1, 1, 2, 3, 4, 5], STAGES = 7;   // STAGE = 트레이너·훈련장 단계. 체육관 크기는 등급마다 한 단계씩 7단계 (경완 2026-10-29 '체육관 크기 7단계')
 const GRADES_OLD = [0, 100, 250, 450, 700, 1000];   // 10.87 까지의 평판 문턱 (예전 저장 옮기기)
 // 체육관 크기 단계: 평판으로 등급이 오르면 체육관 정보에서 넓힌다 (경완 2026-10-28 '돈 내고 넓히는 것보다 평판 오르면'). g.big 없으면 예전 저장 = 등급 그대로
-/* 경완 11-11 '도전자들도 난이도 높아질수록 일정 확률로 이로치': 포켓몬 한 마리마다, 체육관 등급(새내기 0.5% … 7단계 5%) × 어려운 도전자 1.2배·이름 있는 트레이너 1.5배 (승급 심사 제외) */
-const SH_RATE = [.005, .01, .015, .02, .03, .04, .05];
-const shRate = (c, g = st()) => (SH_RATE[Math.min(6, gradeOf(g?.rep || 0).i)] || .005) * (c.named ? 1.5 : c.diff ? 1.2 : 1);
 const bigOf = (g = st()) => { const gi = gradeOf(g?.rep || 0).i; return g?.big == null ? gi : Math.min(g.big, gi); };
 const canBig = (g = st()) => !!g?.d && gradeOf(g.rep || 0).i > bigOf(g);
 // 등급 배지 = 지금 체육관 타입의 그 등급 배지 그림 (경완 2026-10-29 '이 배지를 체육관 등급 배지로')
@@ -1340,7 +1337,7 @@ async function challenge(picked) {
     const my = luNow();
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (!c.boss && Math.random() < shRate(c, g)) o.shiny = true; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my); const fz = foeZ(c, team, 0, my);   /* v24.51 경완 "메가 쓰는 배틀에선 왜 Z 안 써?": 본가 7세대처럼 한 배틀에 메가 1번·Z 1번 둘 다 (메가스톤 든 포켓몬은 도구가 있어 Z크리스탈 안 받음) */   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
@@ -3677,6 +3674,7 @@ function enter() {
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }
   { const k = window.gymSimOn ? window.gymYaTest : null; window.gymYaTest = null; if (k) setTimeout(() => yaTest(), 900); }   // 운영자 직접 훈련 시연 (시뮬 안, 저장 안 건드림)   // v23.10 운영자 훈련하기 시연 (시뮬 안)
   { const k = window.gymSimOn ? window.gymLegExam : null; window.gymLegExam = null; if (k) setTimeout(() => legExamTest(k === 2), 900); }   // 운영자 전설 심사 (강박사) 시험
+  { const k = window.gymSimOn ? window.gymDblTest : null; window.gymDblTest = null; if (k) setTimeout(() => dblTest(), 900); }   /* v24.94 운영자 더블 배틀 시험 */
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymDmaxTest : null, f = !!window.gymDmaxFoe, bg = window.gymDmaxBg; window.gymDmaxTest = null; window.gymDmaxFoe = 0; if (k != null) setTimeout(() => dmaxTest(k, f, bg), 900); }   /* 경완 2026-11-15 '거다이맥스 연출 시연 볼 수 있는 거 운영자 모드에, 우리 배틀 엔진으로' */
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
@@ -4364,6 +4362,21 @@ function chalEnv(c, team) { const of = bg => ({ bg, pl: CBG_PL[bg] || '' });
   if (!c.named) return of(CBG_CLS[c.tr] || pick(['in1', 'in2', 'in3']));   // 일반 도전자 = 트레이너 종류
   const n = {}; team.forEach(o => (SPECIES[o.sp]?.t || []).forEach((t, i) => { n[t] = (n[t] || 0) + (i ? 1 : 2); }));
   const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0]; return of(CBG_TY[top] || pick(['in1', 'in2', 'in3'])); }
+/* v24.94 경완 '일단 지금 더블 배틀 우리 엔진 써서 해볼 수 있게 운영자모드에 만들어놔줘. 라인업 앞 두마리가 같이 나가게': 지금 라인업 사본(gTst)으로 쌍둥이와 2대2.
+   본 계정 영향 없게 체육관 저장을 떠 두고 끝나면 되돌림, 사본은 상자에서 뺌 */
+async function dblTest() {
+  const g = st(); if (!open || !g?.d) return;
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  const snap = JSON.stringify(S.gym), src = (g.lu?.[g.luI | 0] || []).filter(id => GB().boxOf(id)), ids = trClone(src);
+  if (ids.length < 2) { trDrop(ids); S.gym = JSON.parse(snap); pop('<h4>더블 배틀 시험</h4><p>라인업에 포켓몬을 두 마리 이상 넣어 주세요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>', (a, c) => c()); return; }
+  const my = ids.map(id => GB().boxOf(id)), L = my.map(P => GB().gm(P)?.lv | 0).filter(Boolean), lv = Math.max(5, Math.round(L.reduce((a, b) => a + b, 0) / (L.length || 1)));
+  const fe = (sp, nm, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'modest', iv: [24, 24, 24, 24, 24, 24], g: sp === 312 ? 'F' : 'M' });
+  const team = [fe(311, '플러시', ['thunderbolt', 'helpinghand', 'nastyplot', 'encore'], 'plus'), fe(312, '마이농', ['thunderbolt', 'helpinghand', 'nastyplot', 'protect'], 'minus'), fe(184, '마릴리', ['surf', 'icebeam', 'helpinghand', 'playrough'], 'thickfat'), fe(36, '픽시', ['moonblast', 'followme', 'flamethrower', 'calmmind'], 'friendguard')];
+  document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  try { await GB().run({ meFrontUrl: await fitSrc('tr'), meBackUrl: await fitSrc('trb'), my, foe: { tr: 'twins', cls: '쌍둥이', nm: '미나와 미아', team, hold: 2, say: { win: '둘이 힘을 합쳤는데도 졌어!', lose: '쌍둥이의 텔레파시야!' } }, dbl: true, practice: true, diff: 1, bg: 'in1', music: 'gymBattle' }); }
+  catch (e) { console.error(e); }
+  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); trDrop(ids); try { S.gym = JSON.parse(snap); } catch (e) {} dropMgT(); save(); bgmPlay('gym'); }
+}
 async function megaTest(k, foe) {
   const M = MEGA_T[k | 0] || MEGA_T[0]; if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
