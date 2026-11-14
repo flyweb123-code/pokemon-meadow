@@ -29,11 +29,11 @@ const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
 const CV = [0, 1, 3, 10], CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
-const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#3a3a4a', im: 'smokeball' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
+const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
 /* 경완 2026-11-14: 아이템 = 본가 도구 그림(자석·연막탄·자뭉열매·플러스파워) + 테두리 빛만 */
 /* 경완 2026-11-14 '폭탄은 폭탄다운 아이콘으로, 아이템에 글자는 안 써도': 본가 도구 그림에 폭탄이 없어 16칸 도트로 직접 그림 (검은 공 + 심지 불꽃) */
 const BOMB_PX = ['................', '..........R.....', '.........ROY....', '........bYR.....', '.......bb.......', '.....kkkbkk.....', '...kkKKKKKKkk...', '..kKKWWKKKKKKk..', '..kKWWKKKKKKKk..', '.kKKWKKKKKKKKKk.', '.kKKKKKKKKKKKKk.', '.kKKKKKKKKKKKDk.', '..kKKKKKKKKKDk..', '..kKKKKKKKKDDk..', '...kkKKKKDDkk...', '.....kkkkkk.....'], BOMB_C = { k: '#16161e', K: '#3c3c4e', W: '#b8b8cc', D: '#262632', b: '#b08040', Y: '#ffe27a', O: '#ff8a30', R: '#ff4a3a' };
-const ITIM = {}; function itemIm(k) { let o = ITIM[k]; if (!o && k === 'bomb') { const mk = wh => { const c = document.createElement('canvas'); c.width = c.height = 48; const x = c.getContext('2d'); BOMB_PX.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = wh ? '#fff' : BOMB_C[ch]; x.fillRect(i * 3, j * 3, 3, 3); })); return c; }; return (ITIM[k] = { im: mk(false), wh: mk(true) }); }
+const ITIM = {}; function itemIm(k) { let o = ITIM[k]; if (!o && k === 'bomb_px') { const mk = wh => { const c = document.createElement('canvas'); c.width = c.height = 48; const x = c.getContext('2d'); BOMB_PX.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = wh ? '#fff' : BOMB_C[ch]; x.fillRect(i * 3, j * 3, 3, 3); })); return c; }; return (ITIM[k] = { im: mk(false), wh: mk(true) }); }
   if (!o) { o = ITIM[k] = { im: new Image(), wh: null }; o.im.onload = () => { const c = document.createElement('canvas'); c.width = o.im.width; c.height = o.im.height; const x = c.getContext('2d'); x.drawImage(o.im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); o.wh = c; }; o.im.src = `gym/img/item/${ITEMS[k].im}.png`; } return o; }
 /* 경완 2026-11-13 '회오리불꽃·병상첨병·불꽃세례가 다 똑같은 탄': 필드 기술 효과 자료(PMD)가 258개뿐이라 없는 기술은 전부 둥근 탄이었다.
    레조넌스처럼 기술마다 갈래를 정한다 (기술 id 로): 소용돌이 장판·지점 낙하·빔·여러 발·흡수, 탄 모양은 타입별. */
@@ -434,7 +434,7 @@ const bgm = n => { if (!R || R.bgmNow === n) return; R.bgmNow = n; try { if (!n)
 const BGM_K = 1.8;   /* 경완 2026-11-14 'bgm 음량 더 키워야': 효과음이 많이 겹쳐 곡이 묻혀서 이 화면에서만 곡을 1.8배로 (GymBGM.duck = 지금 곡 크기 배율) */
 let MVFX = null; const mvSe = (id, gap = .3) => { const sc = MVFX?.[id]?.[1]; if (!sc) return false; const L = []; for (const e of sc) if (e[0] === 's' && !L.some(x => x[2] === e[2]) && L.length < 2) L.push(e); if (!L.length) return false; const t0 = L[0][1];
   for (const e of L) { const d = Math.min(.4, (e[1] - t0) / 30); if (d > 0) setTimeout(() => se(e[2], gap), d * 1000); else se(e[2], gap); } return true; };
-const SE_PRE = ['NAGERU', 'BOWA2', 'KOUKA_M', 'KOUKA_H', 'KOUKA_L', 'POKE_DEAD', 'HINSI', 'DECIDE', 'SELECT', 'KAIFUKU', 'KIRAKIRA2', 'KIRAN', 'KON2', 'DODON', 'PINPON', 'EXPMAX', 'WIN_OPEN', 'HURU', 'KATI', 'REGI', 'GETTING', 'PIRORIRO', 'SUIKOMU', 'W153', 'W120', 'W014', 'KON', 'SLIDEIN', 'VSDEMO04', 'W053'];
+const SE_PRE = ['W092', 'NAGERU', 'BOWA2', 'KOUKA_M', 'KOUKA_H', 'KOUKA_L', 'POKE_DEAD', 'HINSI', 'DECIDE', 'SELECT', 'KAIFUKU', 'KIRAKIRA2', 'KIRAN', 'KON2', 'DODON', 'PINPON', 'EXPMAX', 'WIN_OPEN', 'HURU', 'KATI', 'REGI', 'GETTING', 'PIRORIRO', 'SUIKOMU', 'W153', 'W120', 'W014', 'KON', 'SLIDEIN', 'VSDEMO04', 'W053'];
 // 한꺼번에 여러 번 맞히면 진동이 뭉개지니, 짧은 사이엔 더 센 것만 다시 울린다
 function buzz(n) { const r = R; if (!r) return; if (r.RT - r.hapT < .06 && n <= r.hapN) return; r.hapT = r.RT; r.hapN = n; try { GA.haptic?.(n); } catch (e) {} }
 const rumble = (n, gap = 70, lv = 2) => { for (let i = 0; i < n; i++) setTimeout(() => { if (R) { R.hapN = -1; buzz(lv); } }, i * gap); };
@@ -686,13 +686,16 @@ function itemUse(it) {
   else if (it.k === 'berry') { const h = Math.min(me.mhp - me.hp, Math.round(me.mhp * .25)); me.hp += h; se('KAIFUKU'); me.lowSe = 0; pop(me.x, me.y - 70, `열매! HP +${h}`, '#9fe4ff', true); for (let j = 0; j < 10; j++) part({ x: me.x + (Math.random() - .5) * 34, y: me.y - Math.random() * 10, vy: -70 - Math.random() * 70, life: .5 + Math.random() * .3, col: j % 2 ? '#9fe4ff' : '#fff', sz: 3 }); snd('DUN_Stat_Up', .05); }
   else if (it.k === 'power') { me.crit = Math.max(me.crit, 6); for (const k in me.cd) if (me.cd[k] < 90) me.cd[k] = 0; pop(me.x, me.y - 70, '기합! 6초 동안 급소 확정', '#ffb04a', true); flash(.12, '255,200,120'); snd('DUN_Stat_Up', .05); se('W014', .1, { gain: 1.8 }); }
   else {   // 폭탄: 화면 안 상대 모두에게 큰 피해
-    pop(me.x, me.y - 70, '폭탄!', '#ffe27a', true); R.HS = Math.max(R.HS, .12); flash(.4); shake(1); zoom(.08); rumble(4, 60); snd('DUN_Explosion', .1); se('W153', .1); se('W120', .1);
-    ring(it.x, it.y, '#fff', 20, 420, .5, 10); ring(it.x, it.y, '#ffb04a', 10, 300, .45, 8, .5, .05); dust(it.x, it.y, 18, 260); stars(it.x, it.y - 10, 16, '#ffb04a', 340);
-    for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - it.x, o.y - it.y) || 1; hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .18 : .6))), e: 1, crit: false, w: 3 }, (o.x - it.x) / l * 1.4, (o.y - it.y) / l * 1.4); } }
+    /* 경완 2026-11-14 '6번(맹독구슬)으로, 독 터지는 느낌 효과도': 보라 독 폭발 + 독 방울·연기, 살아남은 상대는 독 */
+    pop(me.x, me.y - 70, '맹독 폭탄!', '#d9a0ff', true); R.HS = Math.max(R.HS, .12); flash(.4, '190,110,255'); shake(1); zoom(.08); rumble(4, 60); snd('DUN_Explosion', .1); se('W092', .1, { gain: 1.6 }); se('W120', .1);
+    ring(it.x, it.y, '#f0d8ff', 20, 420, .5, 10); ring(it.x, it.y, '#a040e0', 10, 300, .45, 8, .5, .05); ring(it.x, it.y, '#5a1a90', 8, 220, .55, 6, .5, .12); stars(it.x, it.y - 10, 16, '#c070ff', 340);
+    for (let i = 0; i < 26; i++) { const a = Math.random() * 6.28, v = 60 + Math.random() * 260; part({ x: it.x, y: it.y - 8, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .55 - 40, ay: -60, dr: 3, life: .7 + Math.random() * .6, sz: 5 + (i % 3) * 3, col: ['#a040e0', '#c070ff', '#6a2aa8', '#e8c8ff'][i % 4] }); }
+    { const G0 = G, A = R.A; for (let i = 0; i < 14; i++) after(.08 + i * .07, () => { if (R?.G !== G0) return; const x = A.x0 + Math.random() * (A.x1 - A.x0), y = A.y0 + Math.random() * (A.y1 - A.y0); for (let j = 0; j < 3; j++) part({ x: x + (Math.random() - .5) * 20, y, vy: -50 - Math.random() * 60, life: .6 + Math.random() * .4, sz: 4 + j * 2, col: j % 2 ? '#c070ff' : '#8a3ad0' }); }); }
+    for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - it.x, o.y - it.y) || 1; hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .18 : .6))), e: 1, crit: false, w: 3 }, (o.x - it.x) / l * 1.4, (o.y - it.y) / l * 1.4); if (o.hp > 0) o.dot = { t: 5, tk: .5, leech: false }; } }
   hud();
 }
 function drawItem(it) { const g = R.g, T = R.T, t = T - it.t0, left = 14 - t, I = ITEMS[it.k], o = itemIm(it.k); if (left < 3 && Math.floor(R.RT * 8) % 2) return;
-  const x = Math.round(it.x), y = Math.round(it.y - 20 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), sz = Math.round((it.k === 'bomb' ? 38 : 52) * ap), pu = .55 + .45 * Math.sin(R.RT * 6);
+  const x = Math.round(it.x), y = Math.round(it.y - 20 + Math.sin(t * 3.5) * 3), ap = Math.min(1, t * 5), sz = Math.round(52 * ap), pu = .55 + .45 * Math.sin(R.RT * 6);
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, it.y, 13, 4.5, 0, 0, 7); g.fill();
   if (sz < 6 || !o.wh) return;
   g.globalAlpha = pu; for (const [ox, oy] of [[-3, 0], [3, 0], [0, -3], [0, 3], [-2, -2], [2, -2], [-2, 2], [2, 2]]) g.drawImage(o.wh, x - sz / 2 + ox, y - sz / 2 + oy, sz, sz);   /* 테두리 빛 */
