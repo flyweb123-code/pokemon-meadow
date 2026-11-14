@@ -1200,7 +1200,7 @@ async function run(opts) {
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null }, li: 0, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
@@ -1445,6 +1445,7 @@ async function handle(a) {
       break;
     }
     case 'move': {
+      if (sideOf(a[2]) === 'e' && B.onFoeMove) { try { await B.onFoeMove(); } catch (e) {} if (!B) return; }   /* v24.43 경완 '화염방사 쓰자마자 상대 턴 오기 전에 강박사가 데미지 얘기': 튜토리얼이 상대 기술 앞에서 잠깐 멈춤 */
       const s = sideOf(a[2]), X = A(s); const id = toID(a[3]); B.lastMove = { s, id }; if (s === 'p' && X) B.egMv = X.pid;
       { const mv = PSim.Dex.moves.get(id); B.mh = mv?.multihit || id === 'dragondarts' ? { s, id, n: 0 } : null; }   /* v21.85 경완 '연속기는 본가처럼 맞을 때마다 기술 효과': 두 번째 맞는 것부터 그 기술 연출을 다시 */
       monEl(s).classList.remove('hid');   // 공중날기·구멍파기 2턴째: 다시 나타나며 공격
