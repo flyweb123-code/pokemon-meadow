@@ -4571,7 +4571,7 @@ async function megaTut(test) {
 }
 /* 경완 2026-11-14 '이제 z기술 비기 전수하는 인기 체육관 승급 튜토리얼도': 인기 체육관(등급 4)이 되면 강박사가 와서 Z링 + 체육관 타입 Z크리스탈 → '알고 있니?' 아니요면
    빌린 포켓몬(체육관 타입 기술을 앎)에게 직접 Z크리스탈을 지니게 하고 연구원 하람과 연습 배틀에서 Z기술. 개그 = 번호표 줄 서기, Z 포즈 하다 허리 삐끗(파스). 배포 전이라 Z_ON 꺼짐, 운영자 '승급 튜토리얼 › 인기'로 확인 */
-const Z_ON = false;
+const Z_ON = true;
 /* 체육관 타입 → 연습 포켓몬 [종, 기술(첫 번째 = 체육관 타입 공격 기술), 특성] */
 const ZC_TUT = { 1: [143, ['bodyslam', 'crunch', 'earthquake', 'rest'], 'thickfat'], 2: [68, ['crosschop', 'rockslide', 'bulletpunch', 'bulkup'], 'noguard'], 3: [18, ['bravebird', 'quickattack', 'uturn', 'roost'], 'keeneye'], 4: [110, ['sludgebomb', 'fireblast', 'willowisp', 'painsplit'], 'levitate'],
   5: [51, ['earthquake', 'stoneedge', 'suckerpunch', 'aerialace'], 'arenatrap'], 6: [76, ['stoneedge', 'earthquake', 'ironhead', 'rockpolish'], 'sturdy'], 7: [212, ['xscissor', 'bulletpunch', 'swordsdance', 'roost'], 'technician'], 8: [94, ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'],
