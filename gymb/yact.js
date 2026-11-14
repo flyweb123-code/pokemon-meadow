@@ -677,19 +677,22 @@ function stageClear() {   // 스테이지를 깨면 HP 8% 회복
 // ---------- 필드 아이템 (경완 '중간중간 자석·폭탄 등 아이템이 필드에 나와서 먹으면 발동') ----------
 function itemSpawn() {
   const G = R.G, A = R.A, me = G.me; let x, y, n = 0; do { x = A.x0 + 30 + Math.random() * (A.x1 - A.x0 - 60); y = A.y0 + 40 + Math.random() * (A.y1 - A.y0 - 80); } while (++n < 30 && (inPond(x, y, 16) || Math.hypot(x - me.x, y - me.y) < 90));
-  if (!G.itBag?.length) { G.itBag = ['magnet', 'bomb', 'power', 'berry'].sort(() => Math.random() - .5); if (!G.itN) { G.itBag = G.itBag.filter(k => k !== 'bomb'); G.itBag.splice(2, 0, 'bomb'); } } G.itN = (G.itN || 0) + 1;   /* 경완 '맹독구슬 안 나오는데?': 무작위라 한 판 내내 안 나올 수 있었다 → 네 가지가 한 번씩 돌아가며, 첫 바퀴는 두 번째가 폭탄 */
-  let k = G.itBag.pop(); if (me.hp / me.mhp < .35 && k !== 'berry' && Math.random() < .5) { G.itBag.push(k); k = 'berry'; }
+  /* 경완 2026-11-14 '돌아가며 나오는 건 별로, ai 반영': 지금 상황에 필요한 것일수록 잘 나온다 (HP 낮음 → 열매, 상대 많음 → 폭탄, 바닥에 골드 많음 → 자석, 대장전 → 기합). 바로 전에 나온 것은 덜 나옴 */
+  const hr = me.hp / me.mhp, live = G.mobs.filter(o => o.hp > 0 && o.enter <= 0), boss = live.some(o => o.boss), coins = G.drops.filter(p => p.coin).length;
+  const W = { berry: hr < .3 ? 7 : hr < .55 ? 3.5 : hr < .8 ? 1 : .15, bomb: 1 + Math.max(0, live.length - 2) * .9 + (boss ? .5 : 0), magnet: coins >= 8 ? 4 : coins >= 4 ? 2 : coins ? .7 : .1, power: boss ? 3.5 : 1 };
+  if (G.itLast) W[G.itLast] *= .3; if (G.items[0]) W[G.items[0].k] = 0;
+  let k = 'bomb', r = Math.random() * Object.values(W).reduce((a, v) => a + v, 0); for (const n in W) { if ((r -= W[n]) <= 0) { k = n; break; } } G.itLast = k;
   G.items.push({ k, x, y, t0: R.T }); ring(x, y, '#fff', 30, 6, .3, 3); snd('DUN_Wonder_Tile', .025); se('KON', .2, { gain: 1.4 });
 }
 function itemUse(it) {
   const G = R.G, me = G.me, I = ITEMS[it.k]; stars(it.x, it.y - 12, 8, '#fff', 200); ring(me.x, me.y, I.c, 8, 70, .35, 6); buzz(1); snd('DUN_Wonder_Tile', .06); se('PIRORIRO', .1, { gain: .6 });
   if (it.k === 'magnet') {   /* 경완 2026-11-14: 먹는 순간 필드의 골드를 전부 빨아들인다 */
-    const n = G.drops.filter(p => p.coin).length; G.mag = 1; for (const p of G.drops) if (p.coin) p.mag = 1; se('SUIKOMU', .1, { gain: 1.8 }); pop(me.x, me.y - 70, n ? '자석! 골드를 전부 끌어왔다' : '자석! 끌어올 골드가 없다…', '#ff9a9a', true); ring(me.x, me.y, '#ff9a9a', 260, 14, .4, 6); ring(me.x, me.y, '#fff', 180, 10, .34, 3, .5, .08); }
-  else if (it.k === 'berry') { const h = Math.min(me.mhp - me.hp, Math.round(me.mhp * .25)); me.hp += h; se('KAIFUKU'); me.lowSe = 0; pop(me.x, me.y - 70, `열매! HP +${h}`, '#9fe4ff', true); for (let j = 0; j < 10; j++) part({ x: me.x + (Math.random() - .5) * 34, y: me.y - Math.random() * 10, vy: -70 - Math.random() * 70, life: .5 + Math.random() * .3, col: j % 2 ? '#9fe4ff' : '#fff', sz: 3 }); snd('DUN_Stat_Up', .05); }
-  else if (it.k === 'power') { me.crit = Math.max(me.crit, 6); for (const k in me.cd) if (me.cd[k] < 90) me.cd[k] = 0; pop(me.x, me.y - 70, '기합! 6초 동안 급소 확정', '#ffb04a', true); flash(.12, '255,200,120'); snd('DUN_Stat_Up', .05); se('W014', .1, { gain: 1.8 }); }
+    const n = G.drops.filter(p => p.coin).length; G.mag = 1; for (const p of G.drops) if (p.coin) p.mag = 1; se('SUIKOMU', .1, { gain: 1.8 }); ring(me.x, me.y, '#ff9a9a', 260, 14, .4, 6); ring(me.x, me.y, '#fff', 180, 10, .34, 3, .5, .08); }
+  else if (it.k === 'berry') { const h = Math.min(me.mhp - me.hp, Math.round(me.mhp * .25)); me.hp += h; se('KAIFUKU'); me.lowSe = 0; for (let j = 0; j < 10; j++) part({ x: me.x + (Math.random() - .5) * 34, y: me.y - Math.random() * 10, vy: -70 - Math.random() * 70, life: .5 + Math.random() * .3, col: j % 2 ? '#9fe4ff' : '#fff', sz: 3 }); snd('DUN_Stat_Up', .05); }
+  else if (it.k === 'power') { me.crit = Math.max(me.crit, 6); for (const k in me.cd) if (me.cd[k] < 90) me.cd[k] = 0; flash(.12, '255,200,120'); snd('DUN_Stat_Up', .05); se('W014', .1, { gain: 1.8 }); }
   else {   // 폭탄: 화면 안 상대 모두에게 큰 피해
     /* 경완 2026-11-14 '6번(맹독구슬)으로, 독 터지는 느낌 효과도': 보라 독 폭발 + 독 방울·연기, 살아남은 상대는 독 */
-    pop(me.x, me.y - 70, '맹독 폭탄!', '#d9a0ff', true); R.HS = Math.max(R.HS, .12); flash(.4, '190,110,255'); shake(1); zoom(.08); rumble(4, 60); snd('DUN_Explosion', .1); se('W092', .1, { gain: 1.6 }); se('W120', .1);
+    R.HS = Math.max(R.HS, .12); flash(.4, '190,110,255'); shake(1); zoom(.08); rumble(4, 60); snd('DUN_Explosion', .1); se('W092', .1, { gain: 1.6 }); se('W120', .1);
     ring(it.x, it.y, '#f0d8ff', 20, 420, .5, 10); ring(it.x, it.y, '#a040e0', 10, 300, .45, 8, .5, .05); ring(it.x, it.y, '#5a1a90', 8, 220, .55, 6, .5, .12); stars(it.x, it.y - 10, 16, '#c070ff', 340);
     for (let i = 0; i < 26; i++) { const a = Math.random() * 6.28, v = 60 + Math.random() * 260; part({ x: it.x, y: it.y - 8, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .55 - 40, ay: -60, dr: 3, life: .7 + Math.random() * .6, sz: 5 + (i % 3) * 3, col: ['#a040e0', '#c070ff', '#6a2aa8', '#e8c8ff'][i % 4] }); }
     { const G0 = G, A = R.A; for (let i = 0; i < 14; i++) after(.08 + i * .07, () => { if (R?.G !== G0) return; const x = A.x0 + Math.random() * (A.x1 - A.x0), y = A.y0 + Math.random() * (A.y1 - A.y0); for (let j = 0; j < 3; j++) part({ x: x + (Math.random() - .5) * 20, y, vy: -50 - Math.random() * 60, life: .6 + Math.random() * .4, sz: 4 + j * 2, col: j % 2 ? '#c070ff' : '#8a3ad0' }); }); }

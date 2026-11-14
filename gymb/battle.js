@@ -890,11 +890,22 @@ function trChoose(q, L) {
 /* v23.68 경완 '이번 훈련에만 동료로 함께할 포켓몬을 잡는 볼, 이름 앞에 동료': 훈련하기 야생 배틀 가방 = 동료 볼 (B.train.balls = {k: 개수}, 훈련 데이터라 계정엔 안 들어감).
    잡힐 확률 = 본가 3·4세대 식 (최대 HP·남은 HP·포획률·볼·상태 이상), 흔들림 판정 4번 (b = 65536/(255/a)^¼). 우두머리는 ×0.5. 놓쳐도 턴은 안 넘어감 */
 const TR_BALL = [['mon', '동료 몬스터볼', 1, '#f04830'], ['great', '동료 슈퍼볼', 1.5, '#3a78e0'], ['ultra', '동료 하이퍼볼', 2, '#f0c030'], ['master', '동료 마스터볼', 255, '#9a48d8']];
+/* v24.56 경완 '가방은 B로' (시안 https://claude.ai/artifact/Wyo9ePDpvmehGtx3CsAad8): 본가 가방처럼 볼 4줄 목록(없는 볼은 흐리게) → 고르면 아래 설명 → '던지기'. 고른 볼은 have 안 번호로 */
+const TR_BALL_IC = { mon: 'pokeball', great: 'greatball', ultra: 'ultraball', master: 'masterball' }, TR_BALL_D = { mon: '가장 기본 볼 · 잡힘 ×1', great: '몬스터볼보다 잘 잡혀요 · 잡힘 ×1.5', ultra: '아주 잘 잡혀요 · 잡힘 ×2', master: '반드시 잡혀요' };
+function trBag(T) {
+  return new Promise(res => { const have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0); let sel = (TR_BALL.find(([k]) => k === B.trBagK && (T.balls[k] | 0) > 0) || have[0])[0];
+    const ic = k => `<img class="bg-ic" alt="" src="${IMG}item/${TR_BALL_IC[k]}.png">`;
+    const draw = () => { const X = TR_BALL.find(([k]) => k === sel);
+      const p = panel(`<div class="bp-bag"><div class="bg-l">${TR_BALL.map(([k, n]) => { const c = T.balls[k] | 0; return `<button class="bg-r${k === sel ? ' on' : ''}${c ? '' : ' off'}" data-k="${k}" ${c ? '' : 'disabled'}>${ic(k)}<span>${n}</span><em>×${c}</em></button>`; }).join('')}</div>
+        <div class="bg-d">${ic(sel)}<div><b>${X[1]}</b>${TR_BALL_D[sel]}<br>잡은 포켓몬은 이번 도전에만 동료로 함께해요</div></div>
+        <div class="bg-b"><button class="bb cancel" data-x><span>그만두기</span></button><button class="bb go" data-go><span>던지기</span></button></div></div>`);
+      p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); if (b.dataset.k) { sel = b.dataset.k; return draw(); } if (b.hasAttribute('data-x')) { panel(''); return res(null); } if (b.hasAttribute('data-go')) { B.trBagK = sel; panel(''); res(have.findIndex(([k]) => k === sel)); } }; };
+    draw(); });
+}
 async function trBall() {
   const T = B.train, have = TR_BALL.filter(([k]) => (T.balls[k] | 0) > 0);
   if (!have.length) { await msg('동료 볼이 하나도 없다!'); return false; }
-  const i = await trChoose('어떤 볼을 던질까요?<small style="display:block;font-size:10px;opacity:.8">잡은 포켓몬은 이번 도전에만 동료로 함께해요</small>', [...have.map(([k, n]) => [`${n} ×${T.balls[k]}`, '', '']), ['그만두기', '', '#9aa0b4,#6c7288']]);
-  if (i >= have.length) return false;
+  const i = await trBag(T); if (i == null) return false;
   const es = B.dbl && !(B.act.e && !B.act.e.fnt) ? 'e2' : 'e', [k, nm, bm, col] = have[i], pk = B.btl.p2.active[es === 'e2' ? 1 : 0], E = B.act[es]; if (!pk || pk.fainted) return false;   /* 더블: 남은 한 마리에게 */
   T.balls[k]--; idlePanel();
   const cr = SPECIES[E?.sp]?.cr ?? 45, st = pk.status, sb = st === 'slp' || st === 'frz' ? 2 : st ? 1.5 : 1, M = pk.maxhp, H = Math.max(1, pk.hp);
