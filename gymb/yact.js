@@ -495,6 +495,8 @@ function drawMon(e) {
   let ox = 0, oy = 0, wh = e.flash > 0 ? Math.min(1, e.flash * 9) : 0, al = 1;
   if (e.warn > 0 && !e.shoot) { const p = 1 - e.warn / (e.warn0 || .5); ox = -Math.cos(e.wa || 0) * 7 * p + Math.sin(R.RT * 70) * 1.2 * p; oy = -Math.sin(e.wa || 0) * 5 * p; if (e.warn < .1) wh = Math.max(wh, .8); }
   if (e.enter > 0 && !e.drop) { al = 1; wh = Math.max(wh, Math.min(1, e.enter / BALL_OUT * 1.4)); }
+  if (e.mgT > 0) { const p = 1 - e.mgT / 1.8; wh = Math.min(1, p * 2.5); g.fillStyle = `rgba(255,255,255,${.25 + .3 * p})`; g.beginPath(); g.arc(e.x, e.y - 26, 30 + p * 34 + Math.sin(R.RT * 40) * 3, 0, 7); g.fill(); MEGA_C.forEach((c, i) => { g.strokeStyle = c; g.globalAlpha = .7; g.lineWidth = 3; g.beginPath(); g.arc(e.x, e.y - 26, 70 * (1 - p) + 20 + i * 5, R.RT * 6 + i, R.RT * 6 + i + 1.6); g.stroke(); }); g.globalAlpha = 1; }
+  else if (e.mega && e.hp > 0) { MEGA_C.forEach((c, i) => { g.strokeStyle = c; g.globalAlpha = .75; g.lineWidth = 3; g.beginPath(); g.ellipse(e.x, e.y, 34, 13, 0, R.RT * 3 + i * 1.047, R.RT * 3 + i * 1.047 + .8); g.stroke(); }); g.globalAlpha = 1; }
   if (e.inv > 0 && e.mine && e.hp > 0 && !e.roll && !e.hide && !e.dash && Math.floor(R.RT * 20) % 2) al = .45;
   if (e.fade != null) al = Math.max(0, e.fade);
   const sq = Math.max(-.45, Math.min(.45, e.sq || 0)), ms = e.mine ? (e.shrink > 0 ? .5 : e.buff > 0 ? 1.2 : 1) : 1;
@@ -563,7 +565,7 @@ function newGame() {
   me.mhp = me.hp = Math.round(me.st[0] * 2.8);
   Object.assign(R, { HS: 0, SLOW: 0, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, VIG: 0, BUF: null, HELD: {} }); R.Q.length = 0; R.PT.length = 0; R.GH.length = 0; R.SH = null;
   R.G = { o, M, me, stat: R.stat, pool: R.pool || foePool(R.stat), mobs: [], shots: [], drops: [], wave: 0, ko: 0, gold: 0, goldShown: 0, exp: 0, ev: 0, evRaw: 0, shard: 0, fainted: false, time: 0, start: R.T, over: false, egg0: M.eg?.p ?? 0, egg: M.eg?.p ?? 0, eggShown: M.eg?.p ?? 0,
-    combo: 0, comboT: 0, best: 0, just: 0, pend: 0, clearT: 0, sec: 0, queue: [], zones: [], waves: [], blasts: [], traps: [], fields: [], wx: null, qT: 0, bossPend: 0, items: [], itT: 9, mag: 0, hits: 0, egT: -9,
+    combo: 0, comboT: 0, best: 0, just: 0, pend: 0, clearT: 0, sec: 0, queue: [], zones: [], waves: [], blasts: [], cracks: [], crT: 4, traps: [], fields: [], wx: null, qT: 0, bossPend: 0, items: [], itT: 9, mag: 0, hits: 0, egT: -9,
     xpB: Math.max(0, GB().xpAt(GB().growth(P.sp), Math.min(GB().LV_MAX, M.lv + 5)) - GB().xpAt(GB().growth(P.sp), M.lv)) };
   [...R.G.pool.sm, ...R.G.pool.big].forEach(sp => spr(sp)); R.pool = null; M.mv.forEach(v => { me.cd[v.name] = 0; });
   buildButtons(); hud(); cbUi(); nextWave();
@@ -605,14 +607,41 @@ const BOSS_PAT = [['slam', 'rush', 'ring'], ['slam', 'fan', 'wave'], ['slam', 'r
 /* 경완 2026-11-14 '외부 코드에 있는데 반영 안 한 것': 레조넌스 레이드 보스의 브레이크 게이지를 구조만 참고. 대장을 때리면 게이지가 차고(상성이 좋을수록·패턴 중에 맞힐수록 빨리), 가득 차면 그로기 4초(패턴 끊김·받는 피해 1.5배).
    풀리면 3초 동안 안 차고 다음 게이지는 1.3배. 잡몹은 성격(공격형·겁쟁이)과 움직임(비스듬히 접근·치고 빠지기·좌우로 돌며 쏘기)을 종마다 다르게. */
 const GROGGY = 4;
+/* 경완 2026-11-14 '메가진화 페이즈 전환, 필드 깨지는 바닥 좋고': 마지막 대장은 HP 절반에서 페이즈 2 — 1.8초 동안 빛에 싸여(무적) 커지고 HP 15% 회복·능력치 1.15배·게이지 초기화·졸개 셋·곡 바뀜, 그 뒤 패턴이 더 빠르고 많다.
+   메가진화하는 종의 필드 그림은 없어서(PMD 그림에 메가 폼 없음) 같은 그림을 키우고 무지개 기운을 두른다.
+   깨지는 바닥: 3스테이지부터 금 간 바닥이 생긴다. 누가 0.9초쯤 밟고 있거나 대장이 그 위로 내려찍으면 무너져서 위에 있던 모두가 피해+잠깐 멈춤(대장은 게이지도 크게 참), 7초 동안 잔해라 느려진다. */
+const MEGA_C = ['#ff6a6a', '#ffb04a', '#ffe27a', '#8ff0a0', '#6ac8ff', '#c08aff'];
+function megaPhase(o) { const G = R.G; o.mega = 1; o.mgT = 1.8; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.groggy = 0; o.dz = 0; o.brk = 0; o.brkLock = 0; o.stun = 0; setAnim(o, anyAnim(o, 'Charge', 'Idle'), true);
+  G.shots = G.shots.filter(q => q.mine); G.waves = []; G.blasts = []; banner(`<small>페이즈 2</small>대장 ${nmSp(o.sp)} 메가진화!`, 'boss'); bgm('champ'); slow(1, .35); flash(.25, '255,255,255'); zoom(.1); rumble(4, 110, 1); se('KON2', .3); se('KIRAKIRA2', .1, { gain: 1.6 }); }
+function megaDone(o) { const G = R.G, me = G.me; o.k = (o.k || 1) * 1.25; o.hp = Math.min(o.mhp, o.hp + Math.round(o.mhp * .15)); o.hpLag = o.hp; o.st = o.st.map((v, i) => i ? Math.round(v * 1.15) : v); o.brkMax = 130; o.cd = .8; squash(o, -.5);
+  R.HS = Math.max(R.HS, .16); flash(.6, '255,255,255'); shake(1); zoom(.12); rumble(5, 60); se('DODON', .3); se('W153', .1); snd('DUN_Explosion', .1);
+  MEGA_C.forEach((c, i) => ring(o.x, o.y - 20, c, 12, 150 + i * 26, .5, 6, 1, i * .04)); stars(o.x, o.y - 30, 20, '#fff', 380); dust(o.x, o.y, 18, 240);
+  const d = Math.hypot(me.x - o.x, me.y - o.y) || 1; if (d < 150 && me.hp > 0) { me.kx += (me.x - o.x) / d * 360; me.ky += (me.y - o.y) / d * 240; }
+  pop(o.x, o.y - 110, '졸개를 불렀다!', '#ffe27a', true); for (let i = 0; i < 3; i++) { spawn(G.pool.sm[i % G.pool.sm.length]); G.mobs[G.mobs.length - 1].minion = 1; } }
+const inCr = (c, e, m = 0) => Math.hypot(e.x - c.x, (e.y - c.y) * 2) < c.r + m, pitK = e => R.G.cracks.some(c => c.pit && inCr(c, e)) ? .55 : 1;
+function crackBreak(c) { const G = R.G, me = G.me; if (c.pit) return; c.pit = R.T; ring(c.x, c.y, '#e9dcc0', 10, c.r + 30, .4, 6); dust(c.x, c.y, 18, 220); stars(c.x, c.y - 8, 8, '#c8b890', 240); shake(.5); buzz(1); snd('DUN_Rock_Smash', .09); se('W120', .12, { gain: .8 });
+  for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, v = 90 + Math.random() * 140; part({ x: c.x + Math.cos(a) * 10, y: c.y + Math.sin(a) * 5, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .5 - 150, ay: 520, life: .5 + Math.random() * .3, sz: 4 + (i % 2) * 2, col: i % 3 ? '#b8a070' : '#8a7448' }); }
+  if (me.hp > 0 && !me.hide && me.inv <= 0 && inCr(c, me)) { const n = Math.min(me.hp - 1, Math.round(me.mhp * .12)); if (n > 0) { me.hp -= n; pop(me.x, me.y - 56, n, '#ff7a6a', true); } me.busy = Math.max(me.busy, .45); me.flash = .16; squash(me, .4); chEnd(); dashEnd(); R.VIG = 1; buzz(2); hud(); }
+  for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0 || o.z > 30 || !inCr(c, o, o.boss ? 14 : 0)) continue; if (o.boss) brkAdd(o, { n: o.mhp * .2, e: 1 }); hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .06 : .3))), e: 1, crit: false, w: 3 }, 0.01, 0); o.stun = Math.max(o.stun || 0, o.boss ? .6 : 1.2); o.warn = 0; } }
+function crackStep(dt) { const G = R.G, me = G.me, T = R.T, A = R.A;
+  if (G.wave >= 3 && !G.clearT && (G.crT -= dt) <= 0) { G.crT = 9 + Math.random() * 6; if (G.cracks.filter(c => !c.pit).length < 3) { let x, y, n = 0; do { x = A.x0 + 50 + Math.random() * (A.x1 - A.x0 - 100); y = A.y0 + 50 + Math.random() * (A.y1 - A.y0 - 90); } while (++n < 30 && (inPond(x, y, 40) || Math.hypot(x - me.x, y - me.y) < 80 || G.cracks.some(c => Math.hypot(c.x - x, c.y - y) < 110)));
+      if (n < 30) G.cracks.push({ x, y, r: 38, w: 0, t0: T, pit: 0, ln: Array.from({ length: 9 }, (_, i) => [i / 9 * 6.28 + Math.random() * .5, .45 + Math.random() * .55, (Math.random() - .5) * .9]) }); } }
+  for (const c of G.cracks) { if (c.pit) continue; let on = me.hp > 0 && !me.hide && !(me.z > 10) && inCr(c, me) ? 1 : 0; for (const o of G.mobs) if (o.hp > 0 && o.enter <= 0 && !(o.z > 10) && inCr(c, o)) on += o.boss ? 2 : 1;
+    if (on) { c.w += dt * Math.min(2, .7 + on * .3); if (Math.random() < dt * 10) dust(c.x + (Math.random() - .5) * c.r, c.y + (Math.random() - .5) * c.r * .5, 1, 40); if (c.w >= .9) crackBreak(c); } else c.w = Math.max(0, c.w - dt * .25); }
+  G.cracks = G.cracks.filter(c => c.pit ? T - c.pit < 7 : T - c.t0 < 28); }
+function drawCrack(c) { const g = R.g, T = R.T, RT = R.RT;
+  if (c.pit) { const t = T - c.pit, a = Math.min(1, (7 - t) * 2); g.globalAlpha = a; g.fillStyle = '#3a2c1c'; g.beginPath(); g.ellipse(c.x, c.y, c.r, c.r * .5, 0, 0, 7); g.fill(); g.fillStyle = '#20180e'; g.beginPath(); g.ellipse(c.x, c.y + 2, c.r * .78, c.r * .36, 0, 0, 7); g.fill(); g.strokeStyle = '#8a7448'; g.lineWidth = 3; g.beginPath(); g.ellipse(c.x, c.y, c.r, c.r * .5, 0, 0, 7); g.stroke();
+    c.ln.forEach(([an, l], i) => { g.fillStyle = i % 2 ? '#b8a070' : '#8a7448'; g.fillRect(Math.round(c.x + Math.cos(an) * c.r * l * .8) - 3, Math.round(c.y + Math.sin(an) * c.r * l * .4) - 2, 6, 4); }); g.globalAlpha = 1; return; }
+  const k = c.w / .9, ap = Math.min(1, (T - c.t0) * 3), jx = k > .3 ? Math.sin(RT * 60) * k * 1.5 : 0; g.globalAlpha = ap * (T - c.t0 > 25 ? .5 : 1); g.fillStyle = `rgba(60,40,20,${.14 + k * .2})`; g.beginPath(); g.ellipse(c.x + jx, c.y, c.r, c.r * .5, 0, 0, 7); g.fill();
+  g.strokeStyle = k > .55 && Math.floor(RT * 12) % 2 ? '#fff' : '#4a3620'; g.lineWidth = 2 + k * 1.5; g.lineJoin = 'bevel'; for (const [an, l, bd] of c.ln) { const L = c.r * l * (.6 + k * .4), mx = Math.cos(an + bd * .4) * L * .55, my = Math.sin(an + bd * .4) * L * .55; g.beginPath(); g.moveTo(c.x + jx, c.y); g.lineTo(c.x + jx + mx, c.y + my * .5); g.lineTo(c.x + jx + Math.cos(an) * L, c.y + Math.sin(an) * L * .5); g.stroke(); } g.globalAlpha = 1; }
 function brkAdd(o, r) { if (o.groggy > 0 || o.brkLock > 0 || o.hp <= 0) return; const busy = o.act || o.slam || o.lunge || o.chain != null || o.warn > 0; o.brk += r.n / o.mhp * 100 * 2.2 * (r.e > 1 ? 1.5 : r.e < 1 ? .6 : 1) * (busy ? 1.5 : 1) * (r.crit ? 1.3 : 1); if (o.brk < o.brkMax) return;
   o.groggy = GROGGY; o.brk = o.brkMax; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.dz = GROGGY; setAnim(o, 'Hurt', true); squash(o, .45);
   pop(o.x, o.y - 96, '그로기!', '#ffe27a', true); R.HS = Math.max(R.HS, .14); slow(.5, .3); flash(.2, '255,240,170'); zoom(.08); shake(.6); rumble(3, 70); se('KON2', .3); se('KOUKA_H', .05); ring(o.x, o.y - 20, '#ffe27a', 10, 110, .4, 7, 1); ring(o.x, o.y - 20, '#fff', 6, 70, .3, 4, 1, .05); stars(o.x, o.y - 30, 14, '#ffe27a', 300); }
-const bossCd = o => (1.1 + Math.random() * .5) * (o.rage ? .55 : 1);
+const bossCd = o => (1.1 + Math.random() * .5) * (o.rage ? .55 : 1) * (o.mega ? .8 : 1);
 function bossPick(o, d) { const G = R.G, me = G.me, L = (BOSS_PAT[o.bi] || BOSS_PAT[0]).filter(k => k !== o.lastK && !(k === 'slam' && d > 300) && !(k === 'rush' && d > 260)), k = L[Math.floor(Math.random() * L.length)] || 'ring'; o.lastK = k; o.atkN++; snd('DUN_Leer', .05);
   if (k === 'slam') { o.slam = { x0: o.x, y0: o.y, x: me.x, y: me.y, t: 0, d: o.rage ? .6 : .75, r: 62 }; setAnim(o, anyAnim(o, 'Hop', 'Attack'), true); squash(o, -.3); dust(o.x, o.y, 6, 110); return; }
   if (k === 'rush') { o.chain = o.rage ? 3 : 2; o.warn = o.warn0 = .5; o.shoot = false; o.wa = Math.atan2(me.y - o.y, me.x - o.x); return; }
-  o.act = { k, t: 0, n: 0, w: k === 'rain' ? .3 : .6, N: k === 'ring' ? (o.rage ? 3 : 2) : k === 'fan' ? (o.rage ? 3 : 2) : k === 'rain' ? (o.rage ? 9 : 6) : 1, gap: k === 'ring' ? .45 : k === 'fan' ? .4 : .16 }; squash(o, -.3); setAnim(o, anyAnim(o, 'Charge', 'SpAttack', 'Attack'), true); }
+  o.act = { k, t: 0, n: 0, w: k === 'rain' ? .3 : .6, N: (k === 'ring' ? (o.rage ? 3 : 2) : k === 'fan' ? (o.rage ? 3 : 2) : k === 'rain' ? (o.rage ? 9 : 6) : 1) + (o.mega && k !== 'wave' ? 1 : 0), gap: k === 'ring' ? .45 : k === 'fan' ? .4 : .16 }; squash(o, -.3); setAnim(o, anyAnim(o, 'Charge', 'SpAttack', 'Attack'), true); }
 function bossAct(o, dt) { const G = R.G, me = G.me, a = o.act, T = R.T, t = tysOf(o.sp)[0], col = TYPE_C[t] || '#fff', A = R.A; a.t += dt;
   if (a.t < a.w) { if ((a.pt = (a.pt || 0) - dt) <= 0) { a.pt = .04; const an = Math.random() * 6.28; part({ x: o.x + Math.cos(an) * 44, y: o.y - 20 + Math.sin(an) * 28, vx: -Math.cos(an) * 150, vy: -Math.sin(an) * 100, life: .26, sz: 4, col: Math.random() < .7 ? col : '#fff' }); } return; }
   if (a.n < a.N && a.t >= a.w + a.n * a.gap) { const first = !a.n; a.n++;
@@ -887,7 +916,7 @@ function hitFx(Rr, o, delay, f, col, kx = 0, ky = 0, light) {
   ring(o.x, o.y - 20, col, 4, 24, .18, 4, 1, delay);
 }
 function hurt(o, r, kx, ky, light) {
-  const G = R?.G; if (!G || o.hp <= 0) return; const me = G.me; if (o.weak > 0) r = { ...r, n: Math.round(r.n * 1.4) }; if (o.groggy > 0) r = { ...r, n: Math.round(r.n * 1.5) };
+  const G = R?.G; if (!G || o.hp <= 0 || o.mgT > 0) return; const me = G.me; if (o.weak > 0) r = { ...r, n: Math.round(r.n * 1.4) }; if (o.groggy > 0) r = { ...r, n: Math.round(r.n * 1.5) };
   { const l = Math.hypot(kx, ky); if (l < .05) { const d = Math.hypot(o.x - me.x, o.y - me.y) || 1; kx = (o.x - me.x) / d; ky = (o.y - me.y) / d; } }
   const l = Math.hypot(kx, ky) || 1, ux = kx / l, uy = ky / l, big = r.e > 1 || r.crit, lt = !!light && !r.crit, col = r.crit ? '#ff9a3a' : r.e > 1 ? '#ffd84a' : r.e < 1 ? '#c8c8d8' : '#ffffff';
   o.hp -= r.n; o.flash = lt ? .07 : big ? .16 : .11; squash(o, lt ? .14 : big ? .36 : .26);
@@ -897,7 +926,7 @@ function hurt(o, r, kx, ky, light) {
   if (!o.boss && o.temp === 'aggr' && !o.rage && o.hp > 0 && o.hp < o.mhp * .4) { o.rage = 1; pop(o.x, o.y - 62, '화났다!', '#ff4a3a'); }
   if (!o.boss && o.temp === 'timid' && !o.fled && o.hp > 0 && o.hp < o.mhp * .5) { o.fled = 1; o.flee = 2.2; o.warn = 0; pop(o.x, o.y - 62, '겁먹었다!', '#9fc4ff'); }
   if (o.boss && !o.rage && o.hp > 0 && o.hp < o.mhp * .4) { o.rage = 1; pop(o.x, o.y - 90, '분노!', '#ff4a3a', true); ring(o.x, o.y, '#ff4a3a', 14, 130, .45, 7); shake(.5); flash(.14, '255,90,70'); se('KON2', .3); rumble(2, 90, 1); }
-  if (o.boss === 2 && !o.called && o.hp > 0 && o.hp < o.mhp * .55) { o.called = 1; pop(o.x, o.y - 106, '졸개를 불렀다!', '#ffe27a', true); for (let i = 0; i < 3; i++) { spawn(G.pool.sm[i % G.pool.sm.length]); G.mobs[G.mobs.length - 1].minion = 1; } }   // 대장도 급소·효과 굉장하면 준비 동작이 끊긴다
+  if (o.boss === 2 && !o.mega && o.hp > 0 && o.hp < o.mhp * .5) megaPhase(o);
   // 손맛: 멈칫 + 흔들림 + 맞은 방향으로 화면 밀림 + 불똥 + 진동
   if (lt) { R.TR = Math.max(R.TR, .16); kick(ux, uy, 1.5); sparks(o.x, o.y - 20, ux, uy, TYPE_C[tysOf(me.sp)[0]] || '#ffe27a', 3, 240); }   /* 잔타: 멈칫 없이 약한 흔들림만 깔아 둔다 */
   else { stop(WT.stop[w] + (big ? .03 : 0)); shake(WT.shake[w] + (big ? .1 : 0)); kick(ux, uy, 3 + w * 2 + (big ? 2 : 0)); buzz(big || w >= 2 ? 1 : 0); sparks(o.x, o.y - 20, ux, uy, TYPE_C[tysOf(me.sp)[0]] || '#ffe27a', 5 + w * 2 + (big ? 4 : 0), 250 + w * 40); }
@@ -990,7 +1019,7 @@ function step(dt) {
       if ((c.tk -= dt) <= 0) chTick(c);
       if (c.kind === 'stream' && Math.random() < dt * (c.amp ? 110 : 40)) { const dx = Math.cos(c.ang), dy = Math.sin(c.ang), r = 20 + Math.random() * Math.min(BEAM * rg(), 40 + c.t * 1100) * .9; part({ x: me.x + dx * r + (Math.random() - .5) * 16, y: me.y - 20 + dy * r + (Math.random() - .5) * 16, vx: dx * 120 + (Math.random() - .5) * 60, vy: dy * 120 - 30, life: .3, sz: 3, col: Math.random() < .5 ? c.col : '#fff' }); }
       if ((!R.HELD[c.i] && c.t >= K.min + (c.wd || 0)) || c.t >= c.max + (c.wd || 0)) chEnd(); }
-    else if (me.busy <= 0) { const sp = (120 + me.st[5] * .5) * (me.haste > 0 ? 1.6 : me.shrink > 0 ? 1.15 : 1), m = Math.hypot(J.dx, J.dy); if (me.haste > 0 && m > .15 && (me.hgT = (me.hgT || 0) - dt) <= 0) { me.hgT = .06; ghost(me, .2); }
+    else if (me.busy <= 0) { const sp = (120 + me.st[5] * .5) * (me.haste > 0 ? 1.6 : me.shrink > 0 ? 1.15 : 1) * pitK(me), m = Math.hypot(J.dx, J.dy); if (me.haste > 0 && m > .15 && (me.hgT = (me.hgT || 0) - dt) <= 0) { me.hgT = .06; ghost(me, .2); }
       if (m > .15) { me.x += J.dx * sp * dt; me.y += J.dy * sp * dt; if (Math.abs(J.dx) > .2) me.face = J.dx > 0 ? 1 : -1; me.up = J.dy < -.6 && Math.abs(J.dx) < .5; setAnim(me, 'Walk'); keepIn(me);
         if ((me.stepT -= dt) <= 0) { me.stepT = .2; dust(me.x - J.dx * 6, me.y, 1, 26); } }
       else if (!me.once || T - me.at > .5) setAnim(me, 'Idle'); }
@@ -1010,6 +1039,8 @@ function step(dt) {
     if (o.kx || o.ky) { o.x += o.kx * dt; o.y += o.ky * dt; const k = Math.pow(.0015, dt); o.kx *= k; o.ky *= k; if (Math.abs(o.kx) + Math.abs(o.ky) < 4) o.kx = o.ky = 0; keepIn(o); }
     if (!live) { if (!o.slam && !o.lunge) setAnim(o, 'Idle'); o.warn = 0; continue; }
     if (o.brkLock > 0) o.brkLock -= dt;
+    if (o.mgT > 0) { o.mgT -= dt; if (Math.random() < dt * 60) { const an = Math.random() * 6.28, rr = 90 + Math.random() * 50; part({ x: o.x + Math.cos(an) * rr, y: o.y - 24 + Math.sin(an) * rr * .7, vx: -Math.cos(an) * rr * 2.6, vy: -Math.sin(an) * rr * 1.8, life: .34, sz: 4, col: MEGA_C[Math.floor(Math.random() * 6)] }); } if (o.mgT <= 0) megaDone(o); continue; }
+    if (o.mega && Math.random() < dt * 16) part({ x: o.x + (Math.random() - .5) * 50, y: o.y - Math.random() * 20, vy: -100 - Math.random() * 70, life: .45, sz: 4, col: MEGA_C[Math.floor(Math.random() * 6)] });
     if (o.groggy > 0) { o.groggy -= dt; if (o.groggy <= 0) { o.brk = 0; o.brkMax *= 1.3; o.brkLock = 3; o.cd = .5; o.dz = 0; setAnim(o, 'Idle'); squash(o, -.3); ring(o.x, o.y, '#ff8a6a', 10, 80, .3, 5); } continue; }
     if (o.stun > 0) { o.stun -= dt; continue; }
     const dx = me.x - o.x, dy = me.y - o.y, d = Math.hypot(dx, dy) || 1; if (!o.lunge && !o.slam && !(o.warn > 0 && o.warn < .15)) o.face = dx > 0 ? 1 : -1; o.cd -= dt * (o.boss || o.temp !== 'aggr' ? 1 : o.rage ? 1.9 : 1.4);
@@ -1017,7 +1048,7 @@ function step(dt) {
     if (o.act) { bossAct(o, dt); continue; }
     if (o.slam) {   // 대장 내려찍기: 뛰어올라 예고한 동그라미로 떨어진다
       const L = o.slam; L.t += dt; const p = Math.min(1, L.t / L.d), e = p * p * (3 - 2 * p); o.x = L.x0 + (L.x - L.x0) * e; o.y = L.y0 + (L.y - L.y0) * e; o.z = Math.sin(Math.PI * p) * 120;
-      if (p >= 1) { o.z = 0; o.slam = null; o.cd = bossCd(o); squash(o, .4); stop(.05); shake(.7); zoom(.04); buzz(2); snd('DUN_Stomp', .09); ring(L.x, L.y, '#fff', 14, L.r + 30, .4, 7); ring(L.x, L.y, '#ff8a6a', 8, L.r, .3, 5, .5, .04); dust(L.x, L.y, 14, 180);
+      if (p >= 1) { o.z = 0; o.slam = null; o.cd = bossCd(o); for (const c of G.cracks) if (!c.pit && Math.hypot(c.x - L.x, (c.y - L.y) * 2) < L.r + c.r * .5) crackBreak(c); squash(o, .4); stop(.05); shake(.7); zoom(.04); buzz(2); snd('DUN_Stomp', .09); ring(L.x, L.y, '#fff', 14, L.r + 30, .4, 7); ring(L.x, L.y, '#ff8a6a', 8, L.r, .3, 5, .5, .04); dust(L.x, L.y, 14, 180);
         touch(Math.hypot(me.x - L.x, (me.y - L.y) * 2) < L.r + 6, () => hitMe(o, tysOf(o.sp)[0], 1, 85, me.x - L.x || 1, me.y - L.y)); setAnim(o, 'Idle'); }
       continue; }
     if (o.lunge) { const L = o.lunge; L.t -= dt; o.x += L.vx * dt; o.y += L.vy * dt; keepIn(o); if ((L.gt -= dt) <= 0) { L.gt = .05; ghost(o, .18); }
@@ -1034,7 +1065,7 @@ function step(dt) {
       if (d < 80) { begin(.45); continue; } } }
     if ((o.sideT -= dt) <= 0) { o.sideT = 1.2 + Math.random() * 1.8; o.side = -o.side; }
     const fl = o.flee > 0; if (fl) { o.flee -= dt; o.face = dx > 0 ? -1 : 1; } if (o.back > 0) o.back -= dt;
-    const want = fl ? 9999 : o.back > 0 ? 180 : o.ranged ? 150 : 0, sk = o.slowT > 0 ? .4 : 1, s = o.spd * sk * (fl ? 1.25 : 1) * (d > want ? 1 : -.6);
+    const want = fl ? 9999 : o.back > 0 ? 180 : o.ranged ? 150 : 0, sk = (o.slowT > 0 ? .4 : 1) * pitK(o), s = o.spd * sk * (fl ? 1.25 : 1) * (d > want ? 1 : -.6);
     let ux = dx / d, uy = dy / d; if (!fl && !o.boss && d > want + 44) { const a = .5 * o.side, c = Math.cos(a), sn = Math.sin(a); [ux, uy] = [ux * c - uy * sn, ux * sn + uy * c]; }   /* 똑바로 말고 비스듬히 다가온다 */
     let px = 0, py = 0; for (const q of G.mobs) if (q !== o && q.hp > 0) { const ex = o.x - q.x, ey = o.y - q.y, ed = Math.hypot(ex, ey); if (ed < 34 && ed > 0) { px += ex / ed * (34 - ed); py += ey / ed * (34 - ed); } }
     if (Math.abs(d - want) > 12) { o.x += (ux * s) * dt + px * dt * 3; o.y += (uy * s) * dt + py * dt * 3; setAnim(o, 'Walk'); }
@@ -1054,7 +1085,7 @@ function step(dt) {
   for (const z of G.zones) { if ((z.tk -= dt) > 0) continue; z.tk = .35; const v = z.v; for (const o of G.mobs) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - z.x, o.y - z.y); if (l > z.r + (o.boss ? 14 : 0)) continue; o.slowT = Math.max(o.slowT || 0, .6); const r0 = dmg(me, o, v.t, v.c, v.pw * .2, v.pw); hurt(o, r0, l > 8 ? (z.x - o.x) / l * .7 : 0.01, l > 8 ? (z.y - o.y) / l * .7 : 0, true); drainTo(v, o, r0.n); } }
   G.zones = G.zones.filter(z => T - z.t0 < z.d);
   hazStep(dt, live);
-  if (live) fieldStep(dt);
+  if (live) { fieldStep(dt); crackStep(dt); }
   G.drops = G.drops.filter(p => !p.got); if (G.mobs.length > 14) G.mobs = G.mobs.filter(o => o.hp > 0 || T - o.dead < 1.2);
   for (let i = R.PT.length - 1; i >= 0; i--) { const p = R.PT[i], t = T - p.t0;
     if (p.home && t > p.hold) { const h = typeof p.home === 'function' ? p.home() : p.home, dx = h.x - p.x, dy = h.y - p.y, d = Math.hypot(dx, dy), v = 260 + (t - p.hold) * 1700; if (d < v * dt + 5) { R.PT.splice(i, 1); p.on?.(); continue; } p.x += dx / d * v * dt; p.y += dy / d * v * dt; if (t > p.life) R.PT.splice(i, 1); continue; }
@@ -1169,6 +1200,7 @@ function draw() {
   for (const z of G.zones) drawZone(z);
   drawHaz();
   for (const t of G.traps) drawTrap(t);
+  for (const c of G.cracks) drawCrack(c);
   for (const p of G.drops) if (p.coin) drawCoin(p); else drawShard(p);
   for (const it of G.items) drawItem(it);
   if (G.me.hp > 0 && (G.me.buff > 0 || G.mag > 0)) { const me = G.me, g2 = R.g; if (me.buff > 0) { g2.strokeStyle = `rgba(160,240,130,${.35 + .25 * Math.sin(RT * 8)})`; g2.lineWidth = 3; g2.setLineDash([10, 8]); g2.lineDashOffset = -RT * 40; g2.beginPath(); g2.ellipse(me.x, me.y, 92 * RNG * .62, 92 * RNG * .62 * .5, 0, 0, 7); g2.stroke(); g2.setLineDash([]); }
