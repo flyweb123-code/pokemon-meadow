@@ -431,7 +431,7 @@ function setHp(side, hp, mhp, px = hpPx(hp, mhp)) {
   hbBalls(side);
 }
 // 체력 상자 안 HP 띠 왼쪽에 남은 포켓몬 수 몬스터볼 (경완 2026-10-28 '각자의 포켓몬 정보 박스 내에')
-function hbBalls(side) { const b = el?.querySelector(SEL('hb', side) + ' .hbb'); if (b && B) b.innerHTML = side[0] === 'e' && B.wild || side[0] === 'p' && B.train ? '' : balls(side[0]); }   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
+function hbBalls(side) { const b = el?.querySelector(SEL('hb', side) + ' .hbb'); if (b && B) b.innerHTML = side[0] === 'e' && B.wild || side[0] === 'p' && B.train || B.dbl && (side === 'e2' || side === 'p') ? '' : balls(side[0]); }   /* v25.16 경완 '상대 배틀박스 두개 다 포켓몬 목록 볼 그래픽 붙어있는데': 더블은 한쪽에 한 줄만 — 위에 있는 박스(상대 e·내 p2)에만 */   /* v23.10 야생 포켓몬은 몬스터볼 줄 없음 */
 async function drainHp(side, A, to) {
   const from = A.hp, p0 = hpPx(from, A.mhp), p1 = hpPx(to, A.mhp), n = Math.abs(p1 - p0);
   for (let i = 1; i <= n; i++) { if (!B) return; setHp(side, from + (to - from) * i / n, A.mhp, p0 + Math.sign(p1 - p0) * i); await wait(B.fast ? 8 : 17); }
@@ -1688,7 +1688,7 @@ async function handle(a) {
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); if (a.includes('[from] move: Pain Split') && !a.includes('[silent]')) await msg('서로의 체력을 나눠 가졌다!'); break; }   /* v21.30 고통나누기 문장 */
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); } X.fntS = true; hbBalls(s); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); } X.fntS = true; (B.dbl ? [s[0], s[0] + '2'] : [s]).forEach(hbBalls); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
     case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); if (a.some(x => /^\[from\] ability: /.test(x))) { await msg(a[3] === 'unboost' ? `${who(a[2])}의 능력은 떨어지지 않는다!` : `${who(a[2])}에게는 효과가 없는 것 같다…`); break; } if (a.includes('[weak]')) { await msg('그러나 대타를 만들기에는 체력이 부족했다!'); break; } { const fw = (a.find(x => /^\[from\] /.test(x)) || '').slice(7); const T = { 'Primordial Sea': '강한 비 때문에 불꽃 타입 공격이 사라져 버렸다!', 'Desolate Land': '강한 햇살 때문에 물 타입 공격이 증발해 버렸다!' }; if (T[fw]) { await msg(T[fw]); break; } } await msg('그러나 실패했다!'); break;   /* v21.30: 체력 부족한 대타·시작의바다·끝의대지 문장 */   /* v20.75: 클리어바디·정신력 등 특성으로 막으면 그 문장 */   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
