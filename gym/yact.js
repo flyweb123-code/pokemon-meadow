@@ -374,7 +374,7 @@ const HTML = `<canvas></canvas>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
   <div class="ya-tips"><div><b>이동</b><span>왼쪽 아래<br>끌기</span></div><div><b>기술</b><span>꾹 누르면<br>쭉 이어져요</span></div><div><b>대쉬</b><span><b style="display:inline;color:#e0402a">!</b> 뜰 때<br>딱 맞춰</span></div><div><b>줍기</b><span>골드·번뜩임<br>아이템</span></div></div>
   <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">특훈 시작</button></div>
-  <p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요 · PC: 방향키, Q W E R, 스페이스</p></div></div>
+  <p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요</p></div></div>
 <div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
     <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div><b class="rs-rk">S</b></div></div>
   <div class="ya-bd"><p class="rs-chips rs-sub"></p>
