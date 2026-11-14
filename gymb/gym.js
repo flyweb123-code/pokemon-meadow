@@ -615,6 +615,10 @@ const CLS = {
   sis_bro: { ow: 'swimmer_f_land', f: 1, t: [11, 15] },
   twins: { ow: 'twin', f: 1, t: [1, 7, 18], e: 1 },
   young_couple: { ow: 'lady', f: 1, t: [1, 18, 12] },
+  /* 경완 'gba 도 괜찮네 넣어줘': 짝 그림이 GBA(gym/img/tr 64칸)뿐인 노부부·멋진 커플·격투 남매도 더블 짝 도전자로 */
+  old_couple: { ow: 'old_man_1', f: 0, t: [1, 11, 12] },
+  cool_couple: { ow: 'cooltrainer_m', f: 0, t: [] },
+  crush_kin: { ow: 'black_belt', f: 0, t: [2] },
   worker: { ow: 'worker', f: 0, t: [9, 6, 5, 2] },
 };
 /* v24.99 경완 '더블 배틀 할 때는 도전자 npc 두명 들어와야 할 것 같고 겹치지 않게 들어와서 서야할듯. 대사도 한명씩' (베타):
@@ -624,6 +628,9 @@ const PAIR = {
   sis_bro: { ow2: 'swimmer_m_land', f2: 0, b: ['누나, 내가 도와줄게!', '우리 남매 호흡 한번 보세요!', '누나랑 맞춰 온 작전이 있어요!'], y: [['누나, 다음엔 더 잘할게…', '남매 특훈 다시 해야겠다!'], ['누나, 우리 해냈어!', '남매 콤비 최고!']] },
   interviewers: { ow2: 'cameraman', f2: 0, b: ['(카메라맨) 저도 같이 찍으면서 싸웁니다!', '(카메라맨) 둘이서 생중계 배틀 갑니다!', '(카메라맨) 이 장면, 특종 각이에요!'], y: [['(카메라맨) 오늘 방송은 여기까지…', '(카메라맨) 편집으로 살려 볼게요.'], ['(카메라맨) 특종이다!', '(카메라맨) 시청률 대박이겠어요!']] },
   double_team: { ow2: 'ace_trainer_f', f2: 1, b: ['(파트너) 우리 콤비, 아직 안 끝났어!', '(파트너) 둘이 맞춰 온 작전이 있어요!', '(파트너) 호흡 한번 보여 드리죠!'], y: [['(파트너) 다음엔 호흡 더 맞춰 올게요.', '(파트너) 콤비 연습 다시 하자.'], ['(파트너) 완벽한 콤비네이션!', '(파트너) 역시 우리 둘이야!']] },
+  old_couple: { ow2: 'old_woman', f2: 1, b: ['(할머니) 영감, 무리하지 말아요. 내가 같이 싸울게요!', '(할머니) 우리 둘이 함께한 세월이 몇 년인데요!', '(할머니) 젊은 관장님, 살살 부탁해요. 호호!'], y: [['(할머니) 영감, 그래도 재밌었죠?', '(할머니) 다음엔 차 한 잔 하고 다시 와요.'], ['(할머니) 영감, 우리 아직 쌩쌩하네요!', '(할머니) 세월의 호흡이에요. 호호!']] },
+  cool_couple: { ow2: 'cooltrainer_f', f2: 1, b: ['(여자 친구) 우리 둘, 실력도 잘 어울리거든요!', '(여자 친구) 둘이 맞춰 온 콤비 보여 줄게요!', '(여자 친구) 데이트 겸 진지하게 이기러 왔어요!'], y: [['(여자 친구) 다음엔 더 멋지게 이길 거야.', '(여자 친구) 괜찮아, 다시 맞춰 보자.'], ['(여자 친구) 역시 우리 최고의 커플!', '(여자 친구) 완벽한 데이트였어!']] },
+  crush_kin: { ow2: 'battle_girl', f2: 1, b: ['(누나) 동생아, 수련한 대로만 하자!', '(누나) 격투 남매의 합동 공격, 받아라!', '(누나) 하앗! 둘이 함께라면 무섭지 않아!'], y: [['(누나) 동생아, 폭포 수련 다시 가자!', '(누나) 아직 수련이 모자랐어…'], ['(누나) 동생아, 우리 해냈어! 하앗!', '(누나) 남매 합동 수련의 성과다!']] },
   young_couple: { ow2: 'gentleman', f2: 0, b: ['(남편) 여보, 내가 지켜 줄게!', '(남편) 둘이라면 문제없지!', '(남편) 우리 호흡 보여 드립시다!'], y: [['(남편) 여보, 다음엔 꼭 이기자.', '(남편) 그래도 즐거운 데이트였어.'], ['(남편) 여보, 우리 대단하다!', '(남편) 오늘 데이트 대성공이야!']] },
 };
 /* v25.20 경완 '더블 배틀은 짝 지은 배틀 그림 있는 종만 오게 해주고 배포해' + '보상도 2배', '더블배틀 도전자 오는 빈도 비중도 조절': 짝 직업은 보통 뽑기에서 빼고 더블 확률을 따로 굴림 (등급별 DBL_P, 새내기 0 · 동네 10% · 떠오르는~이름난 15% · 인기 이상 20% → 하루 2~3명).
@@ -712,6 +719,9 @@ const SAY_CLS = {
   tuber_f: { i: ['튜브 들고 놀러 왔어요!', '해변에서 연습 많이 했어요!', '튜브는 못 놓지만 배틀은 자신 있어요!'], w: ['튜브랑 같이 둥둥 떠내려갈래요…', '다음엔 더 잘할게요!'], l: ['와아! 이겼다!', '해변 친구들한테 자랑해야지!'] },
   sis_bro: { i: ['누나랑 같이 왔어요! / 동생 잘 따라와!', '남매의 팀워크를 보여 드릴게요!', '(동생) 누나가 다 해 준대요!'], w: ['(누나) 동생 탓이야! (동생) 아니거든!', '집에 가서 같이 연습하자…'], l: ['남매 최고!', '(동생) 누나 덕분이야!'] },
   twins: { i: ['저희 둘은 똑같아요! 실력도 똑같이 세요!', '누가 언니게요? 맞혀 보세요!', '둘이서 하나! 하나라서 둘!'], w: ['둘 다 졌어요…', '둘이 같이 더 연습할게요!'], l: ['둘이라서 이겼어요!', '쌍둥이 파워!'] },
+  old_couple: { i: ['영감이랑 산책 나왔다가 들렀소!', '우리 부부, 배틀 경력만 오십 년이오.', '늙었다고 얕보면 큰코다치오!'], w: ['허허, 오늘은 우리가 졌구먼.', '젊은이, 아주 잘 키웠소.'], l: ['허허, 아직 녹슬지 않았구먼!', '오십 년 호흡을 이길 순 없지!'] },
+  cool_couple: { i: ['저희 커플, 배틀도 잘 어울리거든요!', '둘이서 연습한 콤비, 보여 드리죠!', '멋지게 이기고 데이트하러 갈 거예요!'], w: ['데이트 망쳤다…', '둘이서 다시 연습하자.'], l: ['역시 우리 커플 최고!', '멋진 승리였지?'] },
+  crush_kin: { i: ['격투 남매, 도장 깨기 왔다! 하앗!', '누나랑 같이 폭포 수련 하고 왔어요!', '주먹과 주먹! 남매 합동 수련의 성과다!'], w: ['크윽… 수련이 모자랐다!', '누나, 다시 수련하러 가자!'], l: ['하앗! 남매 승리!', '합동 수련은 배신하지 않는다!'] },
   young_couple: { i: ['저희 데이트 중이에요! 금방 끝낼게요!', '둘의 사랑으로 이겨 볼게요!', '(남편) 여보, 내가 지켜 줄게!'], w: ['데이트 망쳤네요…', '(아내) 괜찮아, 다음에 또 오자.'], l: ['사랑의 승리!', '오늘 데이트 대성공!'] },
   worker: { i: ['공사장에서 쉬는 시간에 왔소!', '안전모 꽉 쓰고! 승부다!', '단단하게 다진 팀이오!'], w: ['공사 다시 해야겠군…', '현장으로 돌아가겠소!'], l: ['공사 완료!', '튼튼하게 지었지!'] },
 };
@@ -1187,7 +1197,7 @@ const sfWage = (rel, n, trait, v = .5) => { const mid = Math.max(1, sfEV(-2, 3, 
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
 /* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
-const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team']), SOLO_OF = { twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
+const PAIR_K = new Set(['twins', 'sis_bro', 'young_couple', 'interviewers', 'double_team', 'old_couple', 'cool_couple', 'crush_kin']), SOLO_OF = { old_couple: 'gentleman', cool_couple: 'cool_trainer_m', crush_kin: 'black_belt', twins: 'lass', sis_bro: 'swimmer_f', young_couple: 'lady', interviewers: 'reporter', double_team: 'cool_trainer_m' };
 function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) return; s.k = s.tr = k; s.cls = GB()?.TR_KO[k] || s.cls; s.ow = C.ow; s.f = C.f; }
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
@@ -4393,7 +4403,7 @@ async function trReward(R, o, ids, boss, shop, first) {
    노말·비행 = 배틀타워, 물·얼음·드래곤 = 배틀스테이지). 사천왕·챔피언 본인은 자기 방, 승급 심사는 챔피언 난천 방 */
 const CBG_TY = { 7: 'aaron', 12: 'aaron', 4: 'aaron', 5: 'bertha', 6: 'bertha', 9: 'bertha', 2: 'bertha', 10: 'flint', 13: 'flint', 14: 'lucian', 8: 'lucian', 17: 'lucian', 18: 'lucian', 1: 'tower', 3: 'tower', 11: 'hall', 15: 'hall', 16: 'hall' };
 /* v23.22 경완 '난이도로 차이 주는 건 이름 있는 트레이너만, 일반 도전자는 도전자 종류로': 트레이너 종류 → 방 */
-const CBG_CLS = { youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
+const CBG_CLS = { old_couple: 'castle', cool_couple: 'tower', crush_kin: 'bertha', youngster: 'in1', lass: 'in1', poke_kid: 'in1', school_kid_m: 'in1', school_kid_f: 'in1', cyclist_m: 'in3', jogger: 'in3',
   camper: 'aaron', picnicker: 'aaron', bug_catcher: 'aaron', aroma_lady: 'aaron', artist: 'aaron',
   hiker: 'bertha', ruin_maniac: 'bertha', black_belt: 'bertha', battle_girl: 'bertha',
   fisherman: 'in2', swimmer_m: 'in2', swimmer_f: 'in2', sailor: 'in2', skier_f: 'hall',
