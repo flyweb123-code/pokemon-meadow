@@ -668,12 +668,12 @@ async function shinyFx(side) {
 // 대타: 인형으로 바뀐다 / 공중날기·구멍파기 등 숨는 기술: 다음 기술까지 사라진다 (본가)
 function subFx(s, on) { const m = monEl(s); if (!m) return; let d = m.querySelector('.bt-sub'); if (!d) { d = document.createElement('i'); d.className = 'bt-sub'; m.appendChild(d); } m.classList.toggle('sub', on); }
 const HIDE_MV = /^(fly|dig|dive|bounce|phantomforce|shadowforce|skydrop)$/;
-/* v24.54 경완 '내 포켓몬 나올 때 던져지는 몬스터볼 그래픽 본가 기준': 플래티넘 ball_throws 그림(gym/img/ball, 32칸 10장: 0~7 도는 모습·8 옆·9 열림) */
+/* v24.55 경완 '내 포켓몬 나올 때 던져지는 몬스터볼 그래픽 본가 기준': 플래티넘 ball_throws 그림(gym/img/ball, 32칸 10장: 0~7 도는 모습·8 옆·9 열림) */
 const pbEl = (k = 'mon') => { const b = document.createElement('i'); b.className = 'ball pb spin'; b.style.setProperty('--bi', `url(${new URL(`${IMG}ball/${k}.png`, location.href).href})`);   /* CSS 변수 속 주소는 gym.css 기준으로 풀려서 절대 주소로 */ return b; };
 function throwBall(side, k) {
   const fx = $b('.bt-fx'), b = pbEl(k); fx.appendChild(b);
   const dx = slx(side), [x0, y0, x1, y1] = (side[0] === 'e' ? [190, 40, 176, 66] : [-10, 150, 80, 112]).map((v, i) => i % 2 ? v + sly(side) : v + dx);
-  const mid = side[0] === 'e' ? 30 : 62;   /* v24.54 내 볼은 본가처럼 왼쪽 아래 트레이너 손에서 높이 포물선 */
+  const mid = side[0] === 'e' ? 30 : 62;   /* v24.55 내 볼은 본가처럼 왼쪽 아래 트레이너 손에서 높이 포물선 */
   const c = 2 * mid - (y0 + y1) / 2, an = b.animate(Array.from({ length: 11 }, (_, i) => { const t = i / 10; return { transform: `translate(${x0 + (x1 - x0) * t}px,${(1 - t) ** 2 * y0 + 2 * (1 - t) * t * c + t * t * y1}px)` }; }), {   /* 포물선 */ duration: side[0] === 'e' ? 420 : 560, easing: 'linear', fill: 'forwards' });
   return an.finished.catch(() => {}).then(async () => { b.classList.remove('spin'); b.classList.add('open'); await wait(90); b.remove(); });
 }
@@ -867,7 +867,7 @@ function partyPanel(req, forced, ban = []) {
     list();
   });
 }
-/* v24.54 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
+/* v24.55 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
 function trPickMon(q, L) {
   return new Promise(async res => { if (q) await msg(q, 0);
     const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.g;
@@ -1234,7 +1234,7 @@ async function run(opts) {
   trE.style.cssText = ''; trE.style.backgroundImage = `url(${uE})`; trP.style.backgroundImage = `url(${uP})`; const trA = opts.wild ? null : trAni(trE, opts.foe.tr), uEp = trA ? `${IMG}dbk/tr/${trA[2]}.png` : uE; if (opts.wild) trE.style.visibility = 'hidden'; if (opts.chain) trP.style.visibility = 'hidden';   /* 야생은 상대 트레이너 없음 */
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` };   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
-  /* v24.54 경완 '포켓몬 바뀔 때 내 포켓몬 사라지지 않게': 이어지는 층에서 같은 포켓몬이 그대로 나오면 발판 위에 둔 채로 (B.pG 그림, sendOut 이 다시 안 그림) */
+  /* v24.55 경완 '포켓몬 바뀔 때 내 포켓몬 사라지지 않게': 이어지는 층에서 같은 포켓몬이 그대로 나오면 발판 위에 둔 채로 (B.pG 그림, sendOut 이 다시 안 그림) */
   B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._gif || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; const u = gifUrl(A.sp, true, A.shiny, A.g === 'F', A.fm); if (u !== m._gif) return false; B.pG[s] = u; return true; };
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); const kp = s === 'p' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = kp ? 'bt-mon p gf on pre' : `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; if (!kp) setSt(s, ''); });
   ['e2', 'p2'].forEach(s => { const kp = s === 'p2' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = kp ? 'bt-mon p s2 gf on pre' : `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; if (!kp) setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
@@ -1546,7 +1546,7 @@ async function handle(a) {
       else if (!from) { if (B.mh && s !== B.mh.s && ++B.mh.n > 1) await moveFx(B.mh.s, B.mh.id, false, undefined, s); await hitFx(s, effAhead(a[2])); }
       if (mhp) X.mhp = mhp; await drainHp(s, X, hp); X.st = stOf(a[3]) || X.st; if (hz) { const t = dmgFrom(from, a[2]); if (t) await msg(t, 300); } await flushPend(); break;
     }
-    case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (T && T[1] !== 'x') se('KAIFUKU');   /* v24.54 경완 '도구 쓸 때 효과음 본가 기준': 회복·부활·상태 고침 = SE_DP_KAIFUKU */ if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
+    case '-dxitem': { const T = IT_AI[a[3]]; await gap(); await msg(`${eun(B.foeNm)} ${eul(T?.[0] || a[3])} 사용했다!`); if (T && T[1] !== 'x') se('KAIFUKU');   /* v24.55 경완 '도구 쓸 때 효과음 본가 기준': 회복·부활·상태 고침 = SE_DP_KAIFUKU */ if (!a[4]) await itemFx('e'); break; }   /* v21.89 Improved Item AI: 상대 트레이너 도구 */
     case '-dxrevive': { hbBalls('e'); tray(); await msg(`${eun(nmIn(a[2]))} 기운을 되찾았다!`); break; }
     case '-heal': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp, mhp] = hpOf(a[3]); if (mhp) X.mhp = mhp; const from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7), sil = a.includes('[silent]');
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
