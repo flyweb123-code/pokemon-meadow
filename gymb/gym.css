@@ -4621,8 +4621,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-mw{transition:scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt .bt-pl{transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s,scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1),translate 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"],.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{overflow:visible}
-.bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{scale:1.25;transform-origin:-80.0px 144.0px}   /* v25.22 경완 '내 포켓몬 판 아래 잘림선 안 보이게 내려줘': 뒷모습 아래 잘린 줄이 화면 아래(144)에 그대로 숨게 위로 안 올림 */
-.bt.gx-p:not(.dbl) .bt-pl.p{translate:40px -2px}
+/* v25.23 경완 '내 포켓몬 판 크기 원래처럼 동일하게 가봐': 거다이맥스 때 내 포켓몬 그림·발판은 키우지 않고 원래 크기·자리 그대로 (구름만) */
 .bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.7;transform-origin:249.3px -17.3px}
 .bt.gx-p:not(.dbl) .bt-pl.e{scale:.7;transform-origin:137.3px -73.3px}
 .bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.3;transform-origin:222.7px 142.7px}
