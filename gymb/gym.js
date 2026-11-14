@@ -4236,8 +4236,9 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
    v23.55 경완 '레벨 올리는 거랑 도구는 헷갈리니까 빼자', v23.56 본가 도구 기준 (모두 그 판에서만) */
 /* v24.73 경완 '학습장치·경험치 부적처럼 얻은 도구는 포켓로그처럼 좌상단 아이콘': 이번 도전에 쌓인 도구 아이콘 + 개수 (영양제는 종류별 합) */
 const trItHtml = R => { const L = []; if (R.sh) L.push(['expshare', R.sh, '학습장치']); const xc = Math.round(((R.xpM || 1) - 1) / .25); if (xc > 0) L.push(['expcharm', xc, '경험치 부적']);
-  TR_VIT.forEach(([n], k) => { const c = Object.values(R.vit || {}).reduce((a, V) => a + ((V || [])[k] | 0), 0); if (c) L.push([trIc(n), c, n]); });
-  return L.map(([ic, c, n]) => `<i title="${n}"><img alt="" src="${IMG}item/${ic}.png">${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
+  /* v24.95 경완 '포켓로그처럼 먹은 포켓몬마다': 영양제는 먹은 포켓몬·종류마다 칸 따로, 아이콘 왼쪽 위 구석에 그 포켓몬 얼굴 */
+  Object.entries(R.vit || {}).forEach(([id, V]) => TR_VIT.forEach(([n], k) => { const c = (V || [])[k] | 0; if (c) L.push([trIc(n), c, n, id]); }));
+  return L.map(([ic, c, n, id]) => `<i title="${n}"${id ? ' class="pm"' : ''}><img alt="" src="${IMG}item/${ic}.png">${id ? `<img class="pmi" alt="" data-th="${id}">` : ''}${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
 const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
