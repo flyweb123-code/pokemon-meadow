@@ -416,7 +416,6 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 function paintHb(side, A) {
   const hb = $b(SEL('hb', side)); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = /mega|primal/.test(A.fm || ''); nm.textContent = A.nm; hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
-  { let si = hb.querySelector('.shico'); if (A.shiny) { if (!si) { si = document.createElement('i'); si.className = 'shico'; hb.appendChild(si); } const nm = hb.querySelector('.nm'); si.style.left = (nm.offsetLeft + Math.min(nm.scrollWidth, nm.offsetWidth) + 1) + 'px'; } else si?.remove(); }   // 경완 11-11 '포켓몬 이름 옆에 우리 게임 이로치 아이콘'
   { let ty = hb.querySelector('.tym'); if (!ty) { ty = document.createElement('span'); ty.className = 'tym'; hb.appendChild(ty); } let T = SPECIES[A.tsp || A.sp]?.t || []; try { const L = A.pk?.getTypes?.(true); if (L?.length && !A.pk.terastallized) T = L.map(t => TY_EN.indexOf(t)).filter(t => t > 0); } catch (e) {} const k = String(A.tsp || A.sp) + ':' + T.join(','); if (ty.dataset.sp !== k) { ty.dataset.sp = k; ty.innerHTML = T.map(t => tyI(t)).join(''); } }   /* 경완 2026-11-12: 메가진화 등으로 바뀐 타입도 (배틀 엔진의 지금 타입) */   // v14.85 경완: HP 막대 왼쪽 빈 칸에 타입 아이콘 (시안 C)
   const sx = hb.querySelector('.sx'); sx.className = 'sx ' + (A.g || ''); sx.textContent = A.g === 'M' ? '♂' : A.g === 'F' ? '♀' : '';
   setHp(side, A.hp, A.mhp); setSt(side, A.st);
@@ -1877,7 +1876,8 @@ async function moveFx1(s, id, miss, fx) {
   let spl = null;
   if (A[1].some(e => e[0] === 'p')) {
     await Promise.race([loadSpl(), wait(1500)]);
-    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
+    if (window.GymSPL && B) { extCv($b('.bt-ptc'), 256, 192, 1); $b('.bt-ptc').style.translate = id === 'sunnyday' ? '160px 0' : '';   /* v24.91 경완 '쾌청 빛 효과 빛줄기에 맞춰서 오른쪽으로': 햇빛 파티클을 빛줄기 나오는 오른쪽 위로 */
+      spl = window.GymSPL.start($b('.bt-ptc'), A[1], s, F, VER, me); await Promise.race([spl.ready, wait(2000)]); }
     if (!B) { spl?.stop(); return; }
     spl?.go();
   }
@@ -1961,7 +1961,9 @@ async function stFx(s, st, hurt = false) {
   await wait(P ? (P[0] === 'z' ? 1100 : 900) : 520); m.classList.remove('glow'); w?.remove(); }
 // 날씨가 이어지는 동안 위 화면에 비·모래바람·싸라기눈·눈이 계속 흩날리고, 쾌청이면 햇살이 비친다 (경완 2026-10-30)
 const WX_C = { RainDance: 'rain', PrimordialSea: 'rain', SunnyDay: 'sun', DesolateLand: 'sun', Sandstorm: 'sand', Hail: 'hail', Snow: 'snow' };
-function wxSet(w) { const f = $b('.bt-wx'); if (f) f.className = 'bt-wx' + (WX_C[w] ? ' on ' + WX_C[w] : ''); }
+function wxSet(w) { const f = $b('.bt-wx:not(.wx-old)'); if (!f) return; const c = WX_C[w] || ''; if ((f.dataset.w || '') === c) return; f.dataset.w = c;   /* v24.91 경완 '날씨 바뀔 땐 디졸브로': 옛 날씨 사본은 서서히 사라지고 새 날씨는 서서히 나타남 */
+  const T = 'opacity 1.2s ease'; if (f.classList.contains('on')) { const o = f.cloneNode(true); o.classList.add('wx-old'); o.style.transition = T; f.after(o); requestAnimationFrame(() => { o.classList.remove('on'); }); setTimeout(() => o.remove(), 1400); }
+  f.style.transition = 'none'; f.className = 'bt-wx' + (c ? ' ' + c : ''); void f.offsetWidth; f.style.transition = T; if (c) f.classList.add('on'); }
 // 레벨업 능력치 창 (본가처럼): 먼저 오른 만큼(+N), 누르면 새 능력치. 다시 누르면 닫힘 (경완 2026-10-30)
 const LV_ST = ['최대HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
 function lvWin(P, lv0, lv) {
