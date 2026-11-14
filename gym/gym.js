@@ -1073,12 +1073,12 @@ function blocked(c, sf) {
 const sfName = s => `${s.cls} ${esc(s.nm)}`;
 const TRAITS = {
   train: { n: '훈련광', d: '코치로 있으면 코치 실력이 더 좋다' }, teach: { n: '기술 선생', d: '코치로 있으면 특별한 기술을 더 빨리 가르친다' }, effort: { n: '노력파', d: '코치로 있으면 노력치 훈련이 더 빠르다' }, kind: { n: '다정함', d: '코치로 있으면 훈련장 친밀도 2배' },   /* v20.45 경완: 훈련장 특성 (코치 실력은 트레이너마다 cs) */ star: { n: '인기인', d: '도전자를 막으면 평판 +50%' }, money: { n: '수완가', d: '도전자를 막으면 골드 +50%' },
-  guts: { n: '근성', d: '배틀에 강하다' }, grow: { n: '성장형', d: '이길수록 포켓몬 레벨이 빨리 오른다' }, thrift: { n: '검소함', d: '주급이 적다' }, lazy: { n: '느긋함', d: '가끔 배틀을 쉰다' },
+  guts: { n: '근성', d: '배틀에 강하다' }, grow: { n: '성장형', d: '코치로 있으면 훈련 경험치가 더 많다' }, thrift: { n: '검소함', d: '주급이 적다' }, lazy: { n: '느긋함', d: '가끔 배틀을 쉰다' },
 };
 // 고용 트레이너 포켓몬은 시간이 지나도 조금씩 큰다: 하루 반마다(성장형은 하루마다) +1, 내 라인업 평균 -1 까지만. 쉬는 중엔 안 큼 (경완 2026-10-29)
 function sfGrow(now) {
   const g = st(), cap = Math.max(5, myAvg() - 1);
-  for (const s of g.sf || []) { const step = (s.trait === 'grow' ? 30 - 12 * trV(s) : 36) * H; if (!s.gt) { s.gt = now; continue; }
+  for (const s of g.sf || []) { const step = 36 * H;   /* v24.79 성장형은 이제 코치 효과(manage.js perHour) */ if (!s.gt) { s.gt = now; continue; }
     let k = 0; while (now - s.gt >= step && k++ < 30) { s.gt += step; if (!s.rest && teamLv(s.team) < cap) s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(100, cap, m[1] + 1)); }); } }
 }
 // 고용 트레이너가 차례로 도전자와 싸운다 (자동, 레벨·마릿수로 승패 확률)
@@ -1091,7 +1091,7 @@ function staffFight(c) {
     const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) - .2;   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
     if (Math.random() < 1 / (1 + Math.exp(-z))) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
-      if (s.xp >= (s.trait === 'grow' ? 2 : 3)) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
+      if (s.xp >= 3) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
       return { s, lost };
     }
     s.l = (s.l || 0) + 1; wkSf(s).l++; lost.push(s);
