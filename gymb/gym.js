@@ -4259,8 +4259,9 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
   if (R.ids.length > 6) { const B_ = id => GB().boxOf(id), nm = id => B_(id)?.nm || SPECIES[B_(id)?.sp]?.n || '';
     /* v25.17 경완 '포켓몬 꽉 찼을 때 동료 포켓몬 잡으면 쉬게 할 포켓몬 고를 수 있게 해줘 포켓몬 교체창이랑 동일하게. 텍스트는 쉬게 할 포켓몬을 고르라는 말 뜨고 내 포켓몬 누르면 박스로 돌아갔다 하고 동료 포켓몬 누르면 야생으로 돌아갔다고 하기' */
     const mx = id => { const p = B_(id), mm = GB().gm(p); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };
-    const q = '포켓몬이 가득 찼다!\n쉬게 할 포켓몬을 골라 주세요.';
-    const out = (o.pickMon ? await o.pickMon(q, R.ids.map(id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; }), 1) : R.ids[await o.choose(q, R.ids.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']))]) ?? P.id;
+    /* v25.18 경완 '왜 칸이 7개지' → 본가처럼 원래 6마리만 칸에, 새로 잡은 포켓몬은 대사창에. 그만두기 = 새 포켓몬을 놓아줌 */
+    const T6 = R.ids.filter(id => id !== P.id), q = `${eul(nm(P.id))} 데려가려면\n쉬게 할 포켓몬을 골라 주세요.`; await o.msgTap('포켓몬이 가득 찼다!');   /* 세 줄은 대사창을 넘쳐서 둘로 나눔 */
+    const out = (o.pickMon ? await o.pickMon(q, T6.map(id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; })) : T6[await o.choose(q, [...T6.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']), ['그만두기', `${nm(P.id)}${jong(nm(P.id)) ? '을' : '를'} 놓아줘요`, '#9aa0b4,#6c7288']])]) ?? P.id;
     const wild = !!B_(out)?.mate; R.ids.splice(R.ids.indexOf(out), 1); delete R.hp[out]; if (R.lead === out) R.lead = R.ids[0];
     await o.msgTap(`${eun(nm(out))} ${wild ? '야생으로' : '박스로'} 돌아갔다!`); }
 }
