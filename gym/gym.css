@@ -4691,3 +4691,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym.sim .ty-spb:active{translate:0 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 #6a3a00}
 #gym.sim .ty-spb img{width:30px;height:30px;image-rendering:pixelated}#gym.sim .ty-spb b{font-size:19px;letter-spacing:4px}
 #gym.sim .ty-spb{display:flex}
+
+/* 경완 2026-11-15 '특훈 글자 나오고 화면 열릴 때 훈련장 화면 잠깐 보이는 오류': 특훈 진입 줄무늬(.bs-tr.hd)는 닫힌 채 기다렸다가 시작 화면이 준비되면(.go) 열린다 (전엔 시간만 보고 열려서 준비가 늦으면 훈련장이 비침) */
+.bs-tr.hd>i.a{animation:bsHdA .42s ease-in-out both}.bs-tr.hd>i.b{animation:bsHdB .42s ease-in-out both}.bs-tr.hd>b{animation:bsHdT .5s ease-out both}
+.bs-tr.hd.go>i.a{animation:bsGoA .49s ease-in both}.bs-tr.hd.go>i.b{animation:bsGoB .49s ease-in both}.bs-tr.hd.go>b{animation:bsGoT .49s ease-out both}
+@keyframes bsHdA{0%{transform:translateX(-100%)}100%{transform:none}}@keyframes bsHdB{0%{transform:translateX(100%)}100%{transform:none}}
+@keyframes bsHdT{0%,56%{transform:scale(2.4);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes bsGoA{0%{transform:none}100%{transform:translateY(-100%)}}@keyframes bsGoB{0%{transform:none}100%{transform:translateY(100%)}}
+@keyframes bsGoT{0%{opacity:1}100%{opacity:0;transform:scale(.9)}}
