@@ -812,7 +812,7 @@ const repLose = () => -1;
 const trV = s => (s.tv ?? ((Math.imul((s.id | 0) ^ 0x5bd1e995, 2654435761) >>> 7) % 101)) / 100, trX = s => Math.round((1.3 + .4 * trV(s)) * 20) / 20;
 const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? trX(s) : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
-const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
+const CH_HF = 6, chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * CH_HF) : -7 + Math.round(f * 8)));   /* v25.97 보통 도전자 평판 덧셈 9 → 6 (명문 +4.5 → +2쯤, 전설 입구도 같이 낮아짐) */
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : pairOf(c) && !c.named ? { ...R, g: R.g * 2, r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
@@ -967,7 +967,7 @@ const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
    LV_CEIL = 지금 등급의 도전자(이름 있는 트레이너 포함) 천장, BS_CEIL = 그 등급에서 받는 승급 심사 천장. 팀에서 가장 높은 레벨이 천장을 넘으면 넘은 만큼 팀 전체를 내림 */
 const LV_CEIL = [30, 40, 50, 60, 72, 85, 100], BS_CEIL = [30, 42, 54, 66, 78, 90];
 /* v23.49 경완 '천장 말고 바닥도 있어야 하지 않을까 레벨 범위로': 내 레벨이 낮아도 상대는 등급 바닥 아래로 안 내려옴 (쉬운 도전자는 바닥 −5). 새내기는 바닥 없음 */
-const LV_FLOOR = [0, 22, 32, 42, 52, 62, 75], BS_FLOOR = [0, 35, 45, 55, 67, 80], LV_FLOOR_EZ = 5;
+const LV_FOL = .7, LV_FLOOR = [0, 22, 32, 42, 52, 62, 75], BS_FLOOR = [0, 35, 45, 55, 67, 80], LV_FLOOR_EZ = 5;
 function lvCeil(c) { if (!c?.team?.length) return c; const cap = c.boss ? BS_CEIL[c.boss - 1] : LV_CEIL[clampN(st()?.gmax | 0, 0, LV_CEIL.length - 1)]; if (!cap) return c;
   const over = Math.max(...c.team.map(m => m[1] | 0)) - cap; if (over > 0) c.team = c.team.map(m => [m[0], Math.max(2, m[1] - over), ...m.slice(2)]);
   const fl = c.boss ? BS_FLOOR[c.boss - 1] | 0 : Math.max(0, (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - (!c.named && !(c.diff | 0) ? LV_FLOOR_EZ : 0)), under = fl - Math.max(...c.team.map(m => m[1] | 0));
@@ -985,7 +985,10 @@ function refit0(c, my) {
   /* v25.82 경완 '고레벨 1마리에 나머지 5마리 저레벨로 구성하면 쉽게 이기는 구조?' → '최고 레벨 −5 하한': 도전자·이름 있는 트레이너 기준 레벨은 라인업 최고 레벨 − LV_ACE 아래로 안 내려감 (승급 심사는 박스 기준 bsBase 그대로) */
   const LV_ACE = 5, mean = Math.max(Math.round(L.reduce((a, b) => a + b, 0) / L.length), Math.max(...L) - LV_ACE);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
-  const sk = c.brk ? 0 : stkLv(g.stk), avg = c.boss ? bsBase(c.boss) : mean + sk - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
+  /* v25.97 경완 '적당히 긴장감 유지하면서 너무 패배해서 의욕이 꺾이지 않고 승리의 달콤함과 육성하면서 강해지는 희열', '일단 제안대로 해줘':
+     상대는 내 레벨을 LV_FOL(70%)만 따라옴 — 등급 레벨 범위 가운데(바닥·천장 평균)를 기준으로, 내가 1레벨 올리면 상대는 0.7레벨. 천장 전에도 키운 만큼 조금씩 유리해짐 (예전엔 100% 따라와 승률이 그대로). 새내기는 그대로 */
+  const gm0 = clampN(g.gmax | 0, 0, LV_CEIL.length - 1), anc = (LV_FLOOR[gm0] + LV_CEIL[gm0]) / 2, fol = x => gm0 ? Math.round(anc + (x - anc) * LV_FOL) : x, mean2 = fol(mean);
+  const sk = c.brk ? 0 : stkLv(g.stk), avg = c.boss ? bsBase(c.boss) : mean2 + sk - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 4 + Math.round(legX(g) * 2) - teamLv(c.team));   /* v24.30: 전설에선 이름 있는 트레이너도 평판 단계만큼 레벨 + */ c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
@@ -997,9 +1000,9 @@ function refit0(c, my) {
   const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff, S3 = strOf(my);
   const le = lsE(g), lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? Math.max(3, (c.n0 ||= chN()) - (le >> 1)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
   if (isLeg(g)) { if (lx >= 1) c.ivm = 31; c.ai = 2; } else if (diff && (chGi() > CH_AI || chGi() === CH_AI && (c.a2 ??= Math.random()) < CH_AI_P)) c.ai = 2; else delete c.ai;
-  const ls = lsOf(g), base = S3 ? Math.max(avg, S3.sl + sk - ls) + S3.lvB : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
+  const ls = lsOf(g), base = S3 ? Math.max(avg, fol(S3.sl) + sk - ls) + S3.lvB : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
   const ct = CT_OF(g.ty), q = (c.cq ?? 0) * (1 - le * .2);
-  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2) + (PR ? PAIR_LV : 0), n, isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, STR_FL[6], 540 + Math.round(lx * 20))) : Math.max(S3?.sb || 0, diff ? STR_FL[chGi()] : 0), ct, q, c.tw);
+  /* v25.97 전설 입구 완화: 평판 덧셈은 명문 수준(절반)에서 시작해 단계마다 +25%, 단계 레벨(+2)은 둘째 단계부터 */ c.team = mkTeam(C.t, chalLv(base, diff, isLeg(g) ? Math.min(1, .5 + lx * .25) : f) + Math.round((isLeg(g) ? Math.max(0, lx - 1) : lx) * 2) + (PR ? PAIR_LV : 0), n, isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, STR_FL[6], 540 + Math.round(lx * 20))) : Math.max(S3?.sb || 0, diff ? STR_FL[chGi()] : 0), ct, q, c.tw);
   // v17.32: 상성 좋은 포켓몬을 데려온 만큼 강함 보정 레벨을 덜 준다 (상성 포켓몬 비율만큼 lvB 빼기)
   const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 ? Math.round(S3.lvB * cs) : 0;
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
