@@ -3988,12 +3988,14 @@ function trPickSp(lv, boss, big) { const has = sp => GB().D.sp[sp]; const L = bi
 // 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (gym/yact.js). 보상은 보여 주기만, 아무것도 안 씀
 async function yaTest(fx) {
   if (!open || !st()?.d) return;
+  if (!(st().tr || []).length) { GA.toast?.('훈련장에 포켓몬을 먼저 넣어 주세요'); return; }   /* 훈련장이 비었으면 연출 없이 알림만 */
   /* 경완 2026-11-15 '승급심사 눌렀을 때처럼 시작화면 진입하는 연출 넣어줘': 훈련장 [특훈] 버튼으로 들어갈 땐 줄무늬가 화면을 가르며 '특훈' (bsGo 와 같은 .bs-tr), 닫힌 사이에 시작 화면이 뜬다 */
   if (fx) { if (root.querySelector('.bs-tr')) return; const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; { /* 경완 2026-11-15 '진입 연출 때 승급 심사 때도 원래 하단메뉴까지 가려졌나?' → 승급 심사처럼 아래 메뉴는 안 가림 */ const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; } f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} fx = performance.now(); { /* 시작 화면이 다 준비될 때까지 닫힌 채 기다렸다 연다 (늦어도 6초) */ const t0 = fx; let rd = 0; setTimeout(() => { if (f.isConnected && !f.classList.contains('go') && !f.dataset.end) root.classList.add('yahide'); }, 440); /* 줄무늬가 다 닫힌 뒤 뒤 화면을 감춤 (경완 '아직도 훈련장 비침') */ const iv = setInterval(() => { const y = root.querySelector('#yact'), now = performance.now(), dt = now - t0; if (!rd && y && !y.querySelector('.ya-load')) rd = now; /* 준비되고도 0.2초 더 닫아 둬 시작 화면이 다 그려진 뒤 연다 */ if (!(dt > 6000 || !open || f.dataset.end || (dt >= 910 && rd && now - rd >= 200))) return; clearInterval(iv); if (!y) root.classList.remove('yahide'); f.classList.add('go'); setTimeout(() => f.remove(), 500); }, 40); } }
   await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/manage.js', 'GymManage'); await loadJs('gym/yact.js', 'GymYA'); if (!window.GymYA) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); return; }
   if (fx) await new Promise(r => setTimeout(r, Math.max(0, 450 - (performance.now() - fx))));
-  const g = st(), ids = [...new Set([...(g.tr || []).map(e => e.id), ...(g.lu || []).flat()])].filter(id => GB().boxOf(id)).slice(0, 6);
-  const mons = (ids.length ? ids.map(id => GB().boxOf(id)) : (S.box || []).filter(P => P && !P.gTst && !P.egg).slice(0, 6)).map(P => ({ P, evk: (g.tr || []).find(e => e.id === P.id)?.evk ?? -1 }));
+  /* 경완 2026-11-15 '특훈 지금 훈련장에 있는 라인업만 나오지?' → '엉 그렇게 바꿔줘': 훈련장에서 훈련 중인 포켓몬(g.tr)만. 전엔 라인업(g.lu)도 이어 붙이고, 비면 상자 앞 6마리였음 */
+  const g = st(), mons = [...new Set((g.tr || []).map(e => e.id))].map(id => GB().boxOf(id)).filter(Boolean).map(P => ({ P, evk: (g.tr || []).find(e => e.id === P.id)?.evk ?? -1 }));
+  if (!mons.length) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); GA.toast?.('훈련장에 포켓몬이 없어요'); return; }
   root.classList.add('dhide');
   try { await window.GymYA.start({ host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('dhide', 'yahide'); root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); }
 }
