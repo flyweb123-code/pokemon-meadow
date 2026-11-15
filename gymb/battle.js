@@ -2371,9 +2371,9 @@ function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌�
     if (a === 'mvrec') { if (ord) return true; const b = p.querySelector('[data-a=mvrec]'); loadSim().then(() => { if (!p.isConnected) return; const nw = recMoves(P, m), was = m.mv.slice();
       if (nw.join() === was.join()) { if (b) { b.textContent = '지금이 추천 기술'; b.classList.add('on'); setTimeout(() => { if (b.isConnected) { b.textContent = '추천 기술'; b.classList.remove('on'); } }, 1400); } return; }
       /* v25.39 경완 '추천기술 누르면 바로 바뀌기보다 창 하나 새로 떠서 지금 기술 목록이랑 바뀐 후 기술목록 전후로 위아래로, 바뀐 기술 테두리·추천 딱지, 이렇게 바꾸시겠습니까? 밑에 닫기·바꾸기' */
-      const hi = nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0), rows = L => L.map(id => mvOf(id) ? mvRow(mvOf(id), '') : '').join('');
+      const hi = nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0), rows = L => L.map(id => mvOf(id) ? mvRow(mvOf(id), 'v' + id) : '').join('');   /* v25.40 경완 '추천 기술 목록 화면에서도 기술 슬롯 누르면 상세설명카드, 바꾸기 전 기술 목록 비활성화 하지 말고' */
       const q = gymPop(`<h4 class="rc-h">추천 기술</h4><div class="rc-sec"><span class="rc-tag">지금 기술</span><div class="mp-moves mp-line rc-bf">${rows(was)}</div></div><div class="rc-arw">▼</div><div class="rc-sec"><span class="rc-tag af">바꾼 후</span><div class="mp-moves mp-line rc-af">${rows(nw)}</div></div><p class="gy-msg rc-q">이렇게 바꾸시겠습니까?</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="ok">바꾸기</button></div>`, (a, c) => {
-        if (a === 'x') return c(); if (a !== 'ok') return; c(); if (m.mv.join() !== was.join()) return;
+        if (a === 'x') return c(); if (a?.[0] === 'v') return mvCard(a.slice(1)); if (a !== 'ok') return; c(); if (m.mv.join() !== was.join()) return;
         m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
         mark(re())(hi); });
       q.classList.add('rc-pop'); const R = q.querySelectorAll('.rc-af .mp-mv'); hi.forEach(i => { const e = R[i]; if (e) { e.classList.add('mv-recm'); e.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } }); }); return true; }
