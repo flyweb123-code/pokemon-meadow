@@ -414,6 +414,103 @@ const CSS = `
 #yact .rs-xp{display:block;font-size:9.5px;color:#6a6a7a;text-align:right}
 #yact .rs-rk{flex:none;width:46px;height:46px;line-height:40px;text-align:center;font-size:26px;border:3px solid currentColor;border-radius:50%;color:#e0402a;transform:rotate(-12deg);animation:yaStamp .35s .9s cubic-bezier(.2,1.6,.4,1) both}
 @keyframes yaStamp{0%{transform:rotate(-12deg) scale(2.4);opacity:0}}
+/* 경완 2026-11-16 '마지막 나오는 결과창도 시작화면처럼 퀄리티 좀 높여서': 시작 화면과 같은 어두운 무대 전체 화면 (금빛 발판·후광·유리 칸), 등급 메달, 스테이지 길에 어디까지 갔는지 */
+/* 경완 '아니 원래대로 창으로 뜨는 버전으로': 전체 화면 말고 가운데 창 */
+#yact .ya-res.fs{width:min(356px,calc(100% - 20px));max-height:calc(100% - 16px - var(--si-top,env(safe-area-inset-top)));display:flex;flex-direction:column;overflow:hidden;border-radius:18px;border:2px solid #8a90c0;color:#f0ecff;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 30px rgba(120,130,255,.4);background:radial-gradient(ellipse 120% 60% at 50% 0,#3c4470 0,#1a1c3c 45%,#0a0a18 100%)}
+#yact .ya-res.fs.win{border-color:#d8a830;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 34px rgba(255,200,60,.5)}
+#yact .ya-res.fs .ya-hero{padding:14px 14px 10px!important}
+#yact .ya-res.fs .ya-bd{padding:2px 14px 4px!important}
+#yact .ya-res.fs .fs-ft{padding:10px 14px 12px;background:none}
+#yact .ya-res.fs .ya-op{margin:7px 0 0;font-size:10.5px}
+#yact .ya-res.fs.win{background:radial-gradient(ellipse 120% 60% at 50% 0,#8a6436 0,#3a2658 42%,#0c0a1c 100%)}
+#yact .ya-res.fs>*{position:relative;z-index:1}
+#yact .ya-res.fs .rs-cf{display:none;position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;text-decoration:none}
+#yact .ya-res.fs.win .rs-cf{display:block}
+#yact .ya-res.fs .rs-cf i{position:absolute;top:-12px;width:6px;height:6px;animation:rsFall linear infinite}
+@keyframes rsFall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(820px) rotate(540deg)}}
+#yact .ya-res.fs .ya-hero,#yact .ya-res.fs .rs-hero.win{text-align:center;padding-bottom:10px;background:none;border:0;box-shadow:none;outline:0}
+#yact .ya-res.fs .rs-h{font-size:25px;letter-spacing:2px;color:#dfe3f6;text-shadow:0 3px 0 rgba(0,0,0,.55)}
+#yact .ya-res.fs.win .rs-h{color:#ffe9a0;text-shadow:0 3px 0 #6a3a00,0 0 16px rgba(255,200,60,.7)}
+#yact .ya-res.fs .rs-stg{font-size:11.5px;line-height:1.5;margin-top:6px;padding:2px 12px;border-radius:11px;background:rgba(8,6,24,.55);border:1.5px solid rgba(255,233,160,.45);color:#f0ecff}
+#yact .ya-res.fs .hr-row{margin-top:6px}
+#yact .ya-res.fs .hr-st{height:min(112px,13vh)}
+#yact .ya-res.fs:not(.win) .hr-st::before{background:radial-gradient(ellipse,#d0d4e8 0,#6c7294 60%,#3a3e58 100%);border-color:#14162a}
+#yact .ya-res.fs:not(.win) .hr-st>u.a{background:radial-gradient(circle,rgba(130,160,255,.4),rgba(160,180,255,.12) 45%,transparent 70%)}
+#yact .ya-res.fs:not(.win) .hr-st>u.b{opacity:.35}
+#yact .ya-res.fs .rs-im{object-fit:contain;image-rendering:pixelated;flex:none}
+#yact .ya-res.fs .rs-rk{position:absolute;right:-6px;top:0;width:60px;height:60px;line-height:54px;padding:0;text-align:center;font-size:32px;border-radius:50%;border:3px solid #6a3a00;color:#6a3a00;background:radial-gradient(circle at 35% 28%,#fffbe0 0,#ffd84a 45%,#e89a18 100%);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),0 4px 0 rgba(0,0,0,.5),0 0 16px rgba(255,200,60,.75);text-shadow:0 1px 0 #fff6c0;transform:rotate(-10deg);animation:rsStamp .4s .9s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes rsStamp{0%{transform:rotate(-10deg) scale(2.6);opacity:0}}
+#yact .ya-res.fs .rs-rk[data-rk="A"]{background:radial-gradient(circle at 35% 28%,#fff4e0 0,#ffb060 45%,#e06a18 100%);border-color:#6a2a00;color:#6a2a00;box-shadow:inset 0 0 0 3px rgba(255,255,255,.5),0 4px 0 rgba(0,0,0,.5),0 0 14px rgba(255,150,60,.6)}
+#yact .ya-res.fs .rs-rk[data-rk="B"]{background:radial-gradient(circle at 35% 28%,#fff 0,#c8d0e4 45%,#8088a8 100%);border-color:#2a3050;color:#2a3050;text-shadow:0 1px 0 #fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55),0 4px 0 rgba(0,0,0,.5),0 0 12px rgba(190,210,255,.5)}
+#yact .ya-res.fs .rs-rk[data-rk="C"]{background:radial-gradient(circle at 35% 28%,#ffe6cc 0,#d89058 45%,#96582a 100%);border-color:#4a2408;color:#4a2408;text-shadow:0 1px 0 #ffe0c0;box-shadow:inset 0 0 0 3px rgba(255,255,255,.4),0 4px 0 rgba(0,0,0,.5)}
+#yact .ya-res.fs .rs-rk[data-rk="D"]{background:radial-gradient(circle at 35% 28%,#e0e0ea 0,#8c8ca0 45%,#585870 100%);border-color:#24243a;color:#24243a;text-shadow:0 1px 0 #e8e8f0;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 4px 0 rgba(0,0,0,.5)}
+#yact .ya-res.fs .rs-me{display:block;width:100%;margin:0;padding:8px 12px 7px;border-radius:12px;text-align:left;color:#f0ecff;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,233,160,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 rgba(0,0,0,.45)}
+#yact .ya-res.fs .rs-me .r1{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:15px;white-space:nowrap}
+#yact .ya-res.fs .rs-me .r1 b{min-width:0;overflow:hidden;text-overflow:ellipsis;color:#fff}
+#yact .ya-res.fs .rs-lv{font-size:12.5px;color:#d8d2f2}
+#yact .ya-res.fs .rs-lv .lvup{color:#ffd84a}
+#yact .ya-res.fs .rs-me .xb{display:block;position:relative;height:11px;margin:6px 0 4px;border-radius:6px;overflow:hidden;background:#14122c;border:2px solid #0c0a1c;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+#yact .ya-res.fs .rs-me .xb i{position:absolute;left:0;top:0;bottom:0;width:var(--w);background:linear-gradient(90deg,#3a98e8,#8fe0ff);animation:yaXb .7s .5s ease-out both}
+#yact .ya-res.fs .rs-xp{display:block;text-align:right;font-size:10.5px;color:#b8b0d8}
+#yact .ya-res.fs .ya-bd{justify-content:flex-start;gap:9px;padding-top:2px!important}
+#yact .ya-res.fs .ya-road b{opacity:.5}
+#yact .ya-res.fs .ya-road b.dn{opacity:1;background:linear-gradient(180deg,#fff2a8,#e8a020);border-color:#fff6c8;color:#4a2400}
+#yact .ya-res.fs .ya-road b.m.dn{box-shadow:0 0 10px rgba(255,200,60,.7)}
+#yact .ya-res.fs .ya-road b.no{opacity:1;background:#6a1c30;border-color:#ff8a78;color:#fff;box-shadow:0 0 0 2px rgba(255,90,80,.35),0 0 10px rgba(255,90,80,.8);animation:rsNo 1.1s ease-in-out infinite}
+@keyframes rsNo{50%{box-shadow:0 0 0 4px rgba(255,90,80,.15),0 0 14px rgba(255,90,80,1)}}
+#yact .ya-res.fs .ya-road b.m.dn img,#yact .ya-res.fs .ya-road b.m.no img{filter:none;opacity:1}
+#yact .ya-res.fs .ya-road i{opacity:.35}
+#yact .ya-res.fs .ya-road i.dn{opacity:1;background:#ffd84a;box-shadow:0 0 5px rgba(255,216,74,.7)}
+#yact .ya-res.fs .rs-sub{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+#yact .ya-res.fs .rs-sub span{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;padding:5px 2px 6px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:2px solid rgba(255,255,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 3px 0 rgba(0,0,0,.4)}
+#yact .ya-res.fs .rs-sub i{font-style:normal;font-size:10.5px;color:#cfc8ee;white-space:nowrap}
+#yact .ya-res.fs .rs-sub b{font-size:18px;line-height:1.15;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+#yact .ya-res.fs .ya-rl{display:flex;flex-direction:column;gap:5px;background:none;border:0;box-shadow:none}
+#yact .ya-res.fs .ya-rl li{min-height:42px;padding:5px 12px 5px 8px;border-radius:11px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 3px 0 rgba(0,0,0,.4)}
+#yact .ya-res.fs .ya-rl .ic{height:19px;line-height:16px;padding:0 5px;border-radius:8px;border:1.5px solid rgba(0,0,0,.5);font-size:10.5px}
+#yact .ya-res.fs .ya-rl svg.ic{width:26px;height:26px;padding:0;border:0}
+#yact .ya-res.fs .ya-rl .k{font-size:12.5px;color:#f0ecff}
+#yact .ya-res.fs .ya-rl em{font-size:10.5px;color:#b8b0d8}
+#yact .ya-res.fs .ya-rl b{font-size:20px;color:#9fd8ff;text-shadow:0 2px 0 rgba(0,0,0,.45)}
+#yact .ya-res.fs .ya-rl b.ev{color:#d6b4ff}#yact .ya-res.fs .ya-rl b.fr{color:#ff9ab8}#yact .ya-res.fs .ya-rl b.eg{color:#8fe0ff}
+#yact .ya-res.fs .ya-rl li.ya-gold{background:linear-gradient(180deg,rgba(255,216,74,.3),rgba(232,154,24,.14));border-color:#d8a830;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.4),0 0 12px rgba(255,200,60,.35)}
+#yact .ya-res.fs .ya-rl li.ya-gold b{color:#ffe27a;font-size:23px}
+#yact .ya-res.fs .ya-rl li.ya-gold .k{color:#ffe9a0}
+#yact .ya-res.fs .rs-row{display:grid;grid-template-columns:1fr 1.5fr;gap:8px}
+#yact .ya-res.fs .fs-ft .bigb{font-size:17px;letter-spacing:1px;padding:12px 0}
+#yact .ya-res.fs .fs-ft .bigb.sec{flex:none;font-size:15px;letter-spacing:0;color:#f0ecff;border-color:rgba(255,255,255,.4);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));box-shadow:0 4px 0 rgba(0,0,0,.55)}
+#yact .ya-res.fs .fs-ft .bigb.sec:active{box-shadow:0 1px 0 rgba(0,0,0,.55)}
+/* 경완 '창이 너무 길다': 포켓몬·이름 칸을 한 줄로, 보상은 두 칸씩 */
+#yact .ya-res.fs .hr-row{flex-direction:row;align-items:center;gap:12px;margin-top:10px;text-align:left}
+#yact .ya-res.fs .hr-st{width:100px;height:88px;flex:none}
+#yact .ya-res.fs .hr-st::before{left:4px;right:4px;height:18px;border-width:2px}
+#yact .ya-res.fs .hr-st>u.a{width:170px;height:170px;margin:-85px 0 0 -85px}
+#yact .ya-res.fs .hr-st>u.b{inset:-14px -20px}
+#yact .ya-res.fs .rs-im{margin-bottom:5px}
+#yact .ya-res.fs .rs-rk{right:-10px;top:-8px;width:44px;height:44px;line-height:38px;font-size:23px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),0 3px 0 rgba(0,0,0,.5),0 0 12px rgba(255,200,60,.7)}
+#yact .ya-res.fs .rs-me{flex:1;min-width:0;width:auto}
+#yact .ya-res.fs .rs-h{font-size:23px}
+#yact .ya-res.fs .ya-hero{padding:12px 14px 8px!important}
+#yact .ya-res.fs .ya-bd{gap:7px}
+#yact .ya-res.fs .ya-road{padding:6px 8px}
+#yact .ya-res.fs .ya-road b.m{width:28px;height:28px;line-height:24px}#yact .ya-res.fs .ya-road b.m.f{width:34px;height:34px;line-height:30px}
+#yact .ya-res.fs .rs-sub span{flex-direction:row;justify-content:center;align-items:baseline;gap:4px;padding:4px 2px}
+#yact .ya-res.fs .rs-sub i{font-size:10px}#yact .ya-res.fs .rs-sub b{font-size:14px}
+#yact .ya-res.fs .ya-rl{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+#yact .ya-res.fs .ya-rl li{min-height:0;grid-template-columns:auto 1fr;grid-template-areas:"i b" "k k";row-gap:2px;padding:6px 9px 5px 7px}
+#yact .ya-res.fs .ya-rl li .k,#yact .ya-res.fs .ya-rl li.one .k{grid-area:k;grid-row:auto;align-self:auto;font-size:10.5px;color:#b8b0d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#yact .ya-res.fs .ya-rl li em{display:none}
+#yact .ya-res.fs .ya-rl li:has(b.eg) .k{display:none}
+#yact .ya-res.fs .ya-rl li:has(b.eg) em{display:block;grid-area:k;white-space:nowrap;overflow:hidden}
+#yact .ya-res.fs .ya-rl .ic{justify-self:start}
+#yact .ya-res.fs .ya-rl svg.ic{width:22px;height:22px}
+#yact .ya-res.fs .ya-rl b{font-size:18px}
+#yact .ya-res.fs .ya-rl li.ya-gold{grid-column:1/-1;grid-template-columns:28px 1fr auto;grid-template-areas:"i k b" "i e b";row-gap:0;padding:6px 12px 6px 8px}
+#yact .ya-res.fs .ya-rl li.ya-gold .k{grid-area:k;font-size:12.5px;color:#ffe9a0;align-self:end}
+#yact .ya-res.fs .ya-rl li.ya-gold.one .k{grid-row:1/3;align-self:center}
+#yact .ya-res.fs .ya-rl li.ya-gold em{display:block;grid-area:e}
+#yact .ya-res.fs .ya-rl li.ya-gold b{font-size:21px}
+#yact .ya-res.fs .fs-ft .bigb{padding:11px 0}
 #yact .rs-chips{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:10px 0 8px}
 #yact .rs-chips span{font-size:10px;line-height:1.5;padding:0 7px;background:#e9e4d8;border:1px solid #c8c0ac;white-space:nowrap}
 #yact .rs-chips b{margin-left:4px}
@@ -460,11 +557,12 @@ const HTML = `<canvas></canvas>
   </div>
   <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button></div></div>
 <div class="ya-tu"><div class="tu-w"><div class="tu-hd"><b>특훈 하는 법</b><button class="tu-x" type="button" aria-label="닫기">✕</button></div><div class="tu-im"><img alt=""></div><div class="tu-tx"><b class="tu-h"></b><p class="tu-p"></p></div><div class="tu-dots"></div><div class="tu-bt"><button class="tu-pv" type="button">이전</button><button class="tu-nx" type="button">다음</button></div></div></div>
-<div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
-    <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div><b class="rs-rk">S</b></div></div>
-  <div class="ya-bd"><p class="rs-chips rs-sub"></p>
-  <ul class="ya-rl"></ul>
-  <div class="rs-row"><button class="b3 bigb sec ya-back">훈련장으로</button><button class="b3 bigb ya-again">한 판 더</button></div>
+<div class="ya-win ya-res fs" hidden><u class="rs-cf"></u><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
+    <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im rs-im" alt=""><b class="rs-rk">S</b></div>
+    <div class="rs-me"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div></div></div>
+  <div class="ya-bd"><div class="ya-road"></div><div class="rs-sub"></div>
+  <ul class="ya-rl"></ul></div>
+  <div class="fs-ft"><div class="rs-row"><button class="b3 bigb sec ya-back">훈련장으로</button><button class="b3 bigb ya-again">한 판 더</button></div>
   <p class="ya-op">운영자 시험이라 실제로는 아무것도 받지 않아요.</p></div></div>
 <div class="ya-load">훈련장 준비 중…</div>`;
 
@@ -1436,11 +1534,15 @@ function end(clear, faint, quit) {
   setTimeout(() => { if (!R || R.G !== G) return; se('WIN_OPEN'); if (lv1 > lv0) setTimeout(() => se('EXPMAX'), 500); const q = R.q, r = q('.ya-res'), N = (n, pre = '+', suf = '') => `data-n="${n}" data-pre="${pre}" data-suf="${suf}">${pre}0${suf}`;
     q('.rs-h').textContent = clear ? '특훈 완료!' : faint ? `${josa(nm, '이', '가')} 지쳐 버렸다…` : '여기까지!';
     const rk = clear ? rk0 : G.wave >= 7 ? 'B' : G.wave >= 4 ? 'C' : 'D', ic = (t, c) => `<i class="ic" style="--c:${c}">${t}</i>`;
-    q('.rs-hero').classList.toggle('win', !!clear); q('.rs-stg').textContent = clear ? `스테이지 ${STAGES.length}/${STAGES.length} · ${mmss(G.time)}` : `스테이지 ${G.wave}/${STAGES.length} 에서 끝 · ${mmss(G.time)}`;
-    { const k = q('.rs-rk'); k.textContent = rk; k.style.color = rk === 'S' ? '#e0402a' : rk === 'A' ? '#e08a00' : '#6a6a7a'; k.style.animation = 'none'; void k.offsetWidth; k.style.animation = ''; }
-    q('.rs-nm').textContent = nm; q('.rs-lv').innerHTML = lv1 > lv0 ? `Lv.${lv0} → <i class="lvup">Lv.${lv1}</i>` : `Lv.${lv1}`; q('.rs-mi .xb i').style.setProperty('--w', (prog * 100).toFixed(0) + '%');
+    q('.rs-hero').classList.toggle('win', !!clear); r.classList.toggle('win', !!clear); q('.rs-stg').textContent = clear ? `스테이지 ${STAGES.length}/${STAGES.length} · ${mmss(G.time)}` : `스테이지 ${G.wave}/${STAGES.length} 에서 끝 · ${mmss(G.time)}`;
+    { const k = q('.rs-rk'); k.textContent = rk; k.dataset.rk = rk; k.style.animation = 'none'; void k.offsetWidth; k.style.animation = ''; }
+    q('.rs-nm').textContent = nm; q('.rs-lv').innerHTML = lv1 > lv0 ? `Lv.${lv0} → <i class="lvup">Lv.${lv1}</i>` : `Lv.${lv1}`; q('.rs-me .xb i').style.setProperty('--w', (prog * 100).toFixed(0) + '%');
     q('.rs-xp').textContent = lv1 >= B.LV_MAX ? '레벨 끝' : `다음 레벨까지 ${Math.max(0, b - x1)}`; { const im = q('.rs-im'); im.removeAttribute('src'); GA.thumb?.(P).then(u => { if (im.isConnected && typeof u === 'string') im.src = u; }).catch(() => {}); }
-    q('.rs-sub').innerHTML = `<span>쓰러뜨림<b>${G.ko}</b></span><span>최고 콤보<b>${G.best}</b></span><span>아슬아슬 회피<b>${G.just}</b></span><span>맞은 횟수<b>${G.hits}</b></span>`;
+    q('.rs-sub').innerHTML = `<span><i>쓰러뜨림</i><b>${G.ko}</b></span><span><i>최고 콤보</i><b>${G.best}</b></span><span><i>아슬아슬</i><b>${G.just}</b></span><span><i>맞은 횟수</i><b>${G.hits}</b></span>`;
+    { const pool = G.pool, w = G.wave, rd = r.querySelector('.ya-road');   /* 스테이지 길: 깬 칸은 금빛, 쓰러진 칸은 빨갛게, 만난 대장은 얼굴이 보임 */
+      rd.innerHTML = STAGES.map((S, i) => `${i ? `<i class="${clear || i < w ? 'dn' : ''}"></i>` : ''}<b class="${S.boss ? (S.boss.includes(2) ? 'm f ' : 'm ') : ''}${clear || i < w - 1 ? 'dn' : i === w - 1 ? 'no' : ''}" data-b="${S.boss ? S.boss[0] : ''}">${S.boss ? '?' : i + 1}</b>`).join('');
+      rd.querySelectorAll('b.m').forEach(el => GA.thumb?.({ sp: pool.big[+el.dataset.b] }).then(u => { if (R && R.G === G && el.isConnected && typeof u === 'string') { el.textContent = ''; const im = new Image(); im.alt = ''; im.src = u; el.append(im); } }).catch(() => {}));
+      const cf = r.querySelector('.rs-cf'); cf.innerHTML = clear ? Array.from({ length: 26 }, (_, i) => `<i style="left:${(i * 37 + 11) % 100}%;background:${['#ffd84a', '#ff8a70', '#8fe0ff', '#fff', '#c8a0ff', '#ffe9a0'][i % 6]};animation-duration:${3.2 + (i * 7 % 10) * .28}s;animation-delay:${-(i * 13 % 40) / 10}s;width:${4 + i % 3 * 2}px;height:${4 + (i + 1) % 3 * 2}px"></i>`).join('') : ''; }
     q('.ya-rl').innerHTML = `
       <li class="${xbon ? '' : 'one'}">${ic('경험치', '#3a98e8')}<span class="k">${lv1 > lv0 ? `레벨 ${lv1 - lv0} 올랐어요` : '쓰러뜨린 만큼 받아요'}</span><b ${N(G.exp)}</b>${xbon ? `<em>${rk0} 등급 완주 보너스 +${xbon} 포함</em>` : ''}</li>
       <li>${ic(STAT_KO[G.stat], '#8a4ae0')}<span class="k">노력치</span><b class="ev" ${N(G.ev)}</b><em>${!G.M.evRoom ? '이미 꽉 찼어요' : `한 판 최대 ${Math.min(EV_CAP, G.M.evRoom)}`}</em></li>
