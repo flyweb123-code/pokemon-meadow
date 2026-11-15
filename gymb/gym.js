@@ -976,6 +976,8 @@ function refit0(c, my) {
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
   c.str = S3 ? [S3.sb, S3.lvB - cut, ls, Math.round(cs * 100)] : null;
 }
+function nmFree(f) {   /* v25.54 경완 '아가씨 지우 왜 중복??': 기다리는 도전자와 같은 이름은 빼고 뽑음 */
+  const A = f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수'], used = new Set((st().q || []).map(c => c.nm)), B = A.filter(n => !used.has(n)); return pick(B.length ? B : A); }
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
   const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
@@ -991,7 +993,7 @@ function mkChal(t) {
   const dbl = Math.random() < (DBL_P[G.i] || 0), ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = dbl ? Object.keys(PAIR).filter(x => CLS[x]) : Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = dbl ? pairN(diff) : diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
+  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -1210,7 +1212,7 @@ function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) 
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
 /* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
@@ -3736,7 +3738,7 @@ function enter() {
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }
-  { const k = window.gymSimOn ? window.gymYaTest : null; window.gymYaTest = null; if (k) setTimeout(() => yaTest(), 900); }   // 운영자 직접 훈련 시연 (시뮬 안, 저장 안 건드림)   // v23.10 운영자 훈련하기 시연 (시뮬 안)
+  { const k = window.gymSimOn ? window.gymYaTest : null; window.gymYaTest = null; if (k) setTimeout(() => { if (lockedT('train')) yaTest(); else openTab('train'); }, 900); }   /* 경완 2026-11-15 '특훈 시연 훈련장에서 버튼 눌러서 들어가는거부터 해볼 수 있게': 시연 = 시뮬 훈련장을 열어 두고, 아래 [특훈] 버튼으로 들어감 */   // 운영자 직접 훈련 시연 (시뮬 안, 저장 안 건드림)   // v23.10 운영자 훈련하기 시연 (시뮬 안)
   { const k = window.gymSimOn ? window.gymLegExam : null; window.gymLegExam = null; if (k) setTimeout(() => legExamTest(k === 2), 900); }   // 운영자 전설 심사 (강박사) 시험
   { const k = window.gymSimOn ? window.gymDblTest : null; window.gymDblTest = null; if (k) setTimeout(() => dblTest(), 900); }   /* v24.94 운영자 더블 배틀 시험 */
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
@@ -4032,9 +4034,12 @@ function trPickSp(lv, boss, big, my, bio) { const has = sp => GB().D.sp[sp]; con
   if (my?.size) { const safe = ok.filter(sp => !trThreat(sp, my)); if (safe.length) ok = safe; else { const w = TR_WILD[0][1].filter(sp => has(sp) && !trThreat(sp, my)); if (w.length && !boss) ok = w; } }
   return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
 // 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (gym/yact.js). 보상은 보여 주기만, 아무것도 안 씀
-async function yaTest() {
+async function yaTest(fx) {
   if (!open || !st()?.d) return;
+  /* 경완 2026-11-15 '승급심사 눌렀을 때처럼 시작화면 진입하는 연출 넣어줘': 훈련장 [특훈] 버튼으로 들어갈 땐 줄무늬가 화면을 가르며 '특훈' (bsGo 와 같은 .bs-tr), 닫힌 사이에 시작 화면이 뜬다 */
+  if (fx) { if (root.querySelector('.bs-tr')) return; const f = document.createElement('div'); f.className = 'bs-tr'; f.style.zIndex = 6000; { /* 경완 2026-11-15 '진입 연출 때 승급 심사 때도 원래 하단메뉴까지 가려졌나?' → 승급 심사처럼 아래 메뉴는 안 가림 */ const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; } f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} setTimeout(() => f.remove(), 1400); fx = performance.now(); }
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); await loadJs('gymb/yact.js', 'GymYA'); if (!window.GymYA) return;
+  if (fx) await new Promise(r => setTimeout(r, Math.max(0, 450 - (performance.now() - fx))));
   const g = st(), ids = [...new Set([...(g.tr || []).map(e => e.id), ...(g.lu || []).flat()])].filter(id => GB().boxOf(id)).slice(0, 6);
   const mons = (ids.length ? ids.map(id => GB().boxOf(id)) : (S.box || []).filter(P => P && !P.gTst && !P.egg).slice(0, 6)).map(P => ({ P, evk: (g.tr || []).find(e => e.id === P.id)?.evk ?? -1 }));
   root.classList.add('dhide');
@@ -4944,7 +4949,7 @@ const isTstP = P => !!P && (!!P.gTst || (!!P.mgT && P.id >= 990000));   /* v23.0
 function dropMgT() { for (let i = S.box.length - 1; i >= 0; i--) if (isTstP(S.box[i])) S.box.splice(i, 1); }   // 상자 배열은 제자리에서 지움 (다른 곳이 같은 배열을 들고 있음)
 window.Gym = { prepare, enter, exit, visit, isOpen: () => open, _dz: (id, gi) => dzOf(id, gi), _routes: () => DESIGNS.flatMap(d => GRADES.map((_, gi) => { const D = dzOf(d.id, gi), C = chalRoute(D, ents); return { id: d.id, gi, door: D.door, leader: D.leader, guy: D.guy, free: !!D.free, chal: C.path, cf: C.cf, old: D.path, guyR: route(D, D.door, D.guy, []), oldGuy: guyPath(D) }; })), renderGold: renderGoldG, DESIGNS, _resultPop: (...a) => resultPop(...a), _walk: walk, _ent: ent, _tick: tick, _mapSrc: D => mapSrc(D), _bigPop: (id, a, b) => bigPop(dzOf(id, a), dzOf(id, b)),
   // gym/manage.js (훈련장·트레이너·상점)이 쓰는 것
-  k: { promoPend, trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf, warmImgs, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
+  k: { yaTest: () => yaTest(1), promoPend, trX, rkPop, rkCard, meCardOf, awMvNow, tutEv, newMark, fitSet, meCard, awMv, awayPop, sfEV, dayRec, jnlPop, fPop, GRADES, lockedT, lockOv, homeSay, bigOf, trSrc, owSrc, owW, fitSrc, fitOf, cbgOf, warmImgs, myF, bodyCard, sfPlace, sfList: () => sfList(), inGym, sfCard, openTab: (t, o) => openTab(t, o), decoEdit, decoList, st, glog, addG, addRep, save, pop, say, renderHome, renderTop, menuDot, setAt, gradeOf, luNow, myAvg, TRAITS, OUTFITS, DECO, staffMax, sfName, N3, IMG, H, DAY, dayStart, nextDay, hhmm, jong, eul, iga, eun, rndI, pick, mkCand, mkTeam, teamLv, dzOf, renderGoldG, resultPop, mkChal, blocked, badgeGet, infoPop, badgePop, challenge, luPick, pickNamed, nmVar, arrive } };
 // 필드 체육관 버튼 빨간 점: 기다리는 도전자·새 소식(at 이 지남)
 // 이미 명단에서 본 도전자(qSeen)는 기다리고 있어도 점을 띄우지 않는다 — 체육관 안 점과 똑같이 (경완 2026-10-30 '빨간점 다 확인했는데 아이콘 점이 안 사라짐')
 // 점 = 안 본 도전자, 또는 새 도전자가 올 시각이 지남(일정·당겨 온 도전자). 저장된 at 은 쓰지 않는다 (경완 2026-10-30 '명단만 확인해도 꺼지게')
