@@ -925,11 +925,12 @@ const tyHit = (A, B) => Math.max(...A.map(a => { let m = 1; for (const b of B) m
 const tyAdvT = (T, C) => { let s = 0, k = 0; for (const a of T) for (const b of C) { const A = SPECIES[a[0]]?.t, B = SPECIES[b[0]]?.t; if (!A?.length || !B?.length) continue; s += (tyHit(A, B) - tyHit(B, A)) / 2; k++; } return k ? s / k : 0; };
 const bsAvgT = T => { const L = T.map(m => bsOf(m[0])).filter(Boolean); return L.length ? L.reduce((a, b) => a + b, 0) / L.length : 0; };
 const sfBq = T => { const b = bsAvgT(T); return b ? b - spTgt(teamLv(T)) : 0; };   /* 라인업 등급 = 레벨 기준 종족값보다 얼마나 센가 */
-const SF_KP = .9, SF_CP = 1.5, SF_KT = .6, SF_CT = 1, SF_Z0 = -.3;
-/* v25.88 경완 '고용 트레이너 우리가 정했던 승률 계산 반영해서 밸런스 다시 맞춰줘' (연승 보정을 고용 트레이너 판에서 뺀 뒤): 실제 게임 코드 시뮬(등급별 도전자 400명 × 지원자)에서 보통 라인업 한 명이 막을 확률이
-   새내기 53·동네 41·떠오르는 34·이름난 32·인기 23·명문 16·전설 11% 로 등급이 오를수록 떨어졌음(어려운 도전자 비율·레벨·마릿수가 늘어서) → 등급별 보정 SF_ZG 로 어느 등급이든 정해 둔 값(보통 30% 안팎, 무작위 3명 체육관 64~73%)에 맞춤 */
-const SF_ZG = [-.95, -.5, -.2, -.1, .4, .85, 1.3], sfZ0 = () => SF_Z0 + (SF_ZG[clampN(gradeOf(st()?.rep || 0).i, 0, SF_ZG.length - 1)] || 0);
-const sfPow = (T, C) => { const a = bsAvgT(T), b = bsAvgT(C); return (a && b ? clampN((a - b) / 100 * SF_KP, -SF_CP, SF_CP) : 0) + clampN(tyAdvT(T, C) * SF_KT, -SF_CT, SF_CT); };
+/* v25.89 경완 '고용 트레이너들 배틀은 관장 배틀이랑 동일한 매커니즘 적용할 필요 없고 그냥 트레이너 등급별 승리 확률만 적용하면': 막을 확률 = 라인업 등급(보통·좋음·뛰어남·최고)마다 정해 둔 값 SF_P 하나.
+   도전자 레벨·마릿수·종족값·상성·체육관 등급은 안 봄 (v25.72 sfPow·v25.88 SF_ZG 없앰). 특성(근성·분위기 메이커·트러블메이커·느긋함)만 그 위에 얹음.
+   등급 s.lq: 새 지원자는 mkCand 가 넣고, 예전 트레이너는 라인업 종족값(sfBq)으로 한 번 정해 둠 (SF_BQ 문턱) */
+const SF_P = [.30, .46, .56, .61], SF_BQ = [-20, 50, 110];
+const sfLq = s => clampN(s.lq ?? (s.lq = SF_BQ.filter(x => sfBq(s.team) >= x).length), 0, SF_P.length - 1);
+const sfP0 = (lq, add = 0) => { const p = SF_P[clampN(lq | 0, 0, SF_P.length - 1)]; return 1 / (1 + Math.exp(-(Math.log(p / (1 - p)) + add))); };
 const SF_TIER = [[.70, -60], [.22, 20], [.07, 80], [.01, 140]];   /* 지원자 라인업 등급: 보통 70%·좋음 22%·뛰어남 7%·최고 1% (기준 종족값 ±) */
 const CT_OF = ty => Object.keys(SE).filter(a => SE[a].includes(+ty)).map(Number);
 const CT_A = [1, 1.5, 2, 3, 4, 5, 6];
@@ -1148,8 +1149,8 @@ function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
     if (s.rest || !inGym(s) || (s.trait === 'lazy' && Math.random() < .1 + .2 * trV(s))) continue;   // 체육관에 서 있는 트레이너만 도전자를 상대한다 (훈련장 코치를 겸해도 된다)
-    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) + sfZ0() + sfPow(s.team, c.team) + sfAura(s);   /* v25.72: 종족값·상성, -.2 → SF_Z0 */   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
-    if (Math.random() < 1 / (1 + Math.exp(-z))) {
+    const p = sfP0(sfLq(s), (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) + sfAura(s));
+    if (Math.random() < p) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
       if (s.xp >= 3) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
       return { s, lost };
@@ -1202,9 +1203,9 @@ function rollWeek(now) {
 // 주급 (7일마다). 골드가 모자라면 그 트레이너는 쉰다(배틀 안 함). 골드가 생기면 다음에 바로 낸다
 function payDay(now) {
   const g = st();
-  for (const c of g.cands || []) if (c.wv !== 3) { c.wage = sfWage(teamLv(c.team) - myAvg(), c.team.length, c.trait, (c.tv ?? 50) / 100, sfBq(c.team)); c.wv = 3; }
+  for (const c of g.cands || []) if (c.wv !== 4) { c.wage = sfWage(sfLq(c), c.trait, (c.tv ?? 50) / 100); c.wv = 4; }
   for (const s of g.sf) {
-    if (s.wv !== 3) { const o = s.wage; s.wage = sfWage(teamLv(s.team) - myAvg(), s.team.length, s.trait, (s.tv ?? 50) / 100, sfBq(s.team)); s.wv = 3; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${(+o || 0).toLocaleString()}G → ${s.wage.toLocaleString()}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
+    if (s.wv !== 4) { const o = s.wage; s.wage = sfWage(sfLq(s), s.trait, (s.tv ?? 50) / 100); s.wv = 4; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${(+o || 0).toLocaleString()}G → ${s.wage.toLocaleString()}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
     let k = 0;
     while (now >= s.pay && k++ < 20) {
       if (S.gold >= s.wage) { S.gold -= s.wage; try { window.pkGold?.('wage', s.wage); } catch (e) {} dayRec(s.pay).p += s.wage; s.lastE = s.eg || 0; s.eg = 0; s.pay += 7 * DAY; if (s.rest) glog('sf', `${sfName(s)}에게 밀린 주급 ${s.wage.toLocaleString()}G를 줬다. 다시 체육관을 지킨다.`); else glog('pay', `${sfName(s)} 주급 ${s.wage.toLocaleString()}G`); s.rest = 0; }
@@ -1217,12 +1218,11 @@ function payDay(now) {
    sfEV = 이 트레이너가 맨 앞 자리에서 일주일(하루 도전자 약 15명) 막아서 벌 골드 기댓값 (staffFight 승률 식·지금 등급의 쉬운/어려운 도전자 비율·GYM_G·GYM_SF_PCT 그대로).
    주급 = 보통 트레이너(내 평균 -2레벨·3마리) 기댓값 근처 + 실력 차이의 35%만 반영 → 잘하는 트레이너는 남고, 약한 트레이너는 손해. 뒤 자리 트레이너는 앞에서 놓친 도전자만 상대해서 덜 번다 */
 const sig = z => 1 / (1 + Math.exp(-z));
-function sfEV(rel, n, trait, v = .5, bq = 0) { const g = st(), G = gradeOf(g.rep || 0), f = bdPh(g.rep || 0), W = GYMB();
-  const pE = Math.min(1, [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8)), lu = Math.max(1, luNow().length || 3), lv = Math.min(rel, 3), gu = trait === 'guts' ? .25 + .3 * v : 0;
-  const pw = clampN(bq / 100 * SF_KP, -SF_CP, SF_CP), zE = (lv - (-7 + Math.round(f * 8))) / 8 + (n - (2.5 + (f > .5))) * .2 + gu + sfZ0() + pw, nH = (3 + clampN(lu + 1 + (f > .4) + (f > .8), 3, 6)) / 2, zH = (lv - (-1 + Math.round(f * 9))) / 8 + (n - nH) * .2 + gu + sfZ0() + pw;
-  const gold = (pE * sig(zE) * W.GYM_G[0] + (1 - pE) * sig(zH) * W.GYM_G[1]) * W.GYM_SF_PCT / 100 * (trait === 'money' ? 1.3 + .4 * v : 1);
+function sfEV(lq, trait, v = .5) { const g = st(), G = gradeOf(g.rep || 0), f = bdPh(g.rep || 0), W = GYMB();
+  const pE = Math.min(1, [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8)), p = sfP0(lq, trait === 'guts' ? .25 + .3 * v : 0);
+  const gold = (pE * W.GYM_G[0] + (1 - pE) * W.GYM_G[1]) * p * W.GYM_SF_PCT / 100 * (trait === 'money' ? 1.3 + .4 * v : 1);
   return 7 * 15 * (trait === 'lazy' ? .9 - .2 * v : 1) * gold; }
-const sfWage = (rel, n, trait, v = .5, bq = 0) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v, bq);   /* v25.72: 라인업 등급(bq)도 주급에 */ return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * ({ thrift: .9 - .2 * v, lazy: .85 - .15 * v, trouble: .8 - .2 * v, mood: 1.1 + .2 * v, scout: 1.05 + .1 * v }[trait] || 1)   /* v25.74 나쁜 특성은 싸게 */ * (.9 + Math.random() * .2) / 10) * 10); };
+const sfWage = (lq, trait, v = .5) => { const mid = Math.max(1, sfEV(0, '')), ev = sfEV(lq, trait, v);   /* 라인업 등급이 주급에 */ return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * ({ thrift: .9 - .2 * v, lazy: .85 - .15 * v, trouble: .8 - .2 * v, mood: 1.1 + .2 * v, scout: 1.05 + .1 * v }[trait] || 1)   /* v25.74 나쁜 특성은 싸게 */ * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
 const evOnG = () => gList().some(g => Math.max(g.gmax | 0, gradeOf(g.rep || 0).i) >= 2);   // battle.js evOn 과 같은 기준 (떠오르는 체육관부터 노력치)
 /* v25.20 경완 '체육관 지원은 짝 지은 트레이너들은 안 오게 해주고, 이미 고용된 트레이너들도 싱글 트레이너로 바꿔줘': 짝 직업(PAIR_K)은 지원 안 옴, 이미 고용됐거나 지원서에 있는 짝 트레이너는 같은 성별·타입의 혼자 직업으로 (SOLO_OF, g.sfSolo 한 번) */
@@ -1233,8 +1233,8 @@ function mkCand(now) {
   const tv = rndI(0, 100), sc = sfScout(), W = SF_TIER.map(([p], i) => i ? p * (1 + sc) : p), Wt = W.reduce((a, b) => a + b, 0), ti = (() => { let r = Math.random() * Wt; for (let i = 0; i < W.length; i++) { if ((r -= W[i]) < 0) return i; } return 0; })(), tq = SF_TIER[ti][1], types = ty ? [ty] : C.t;
   const tr2 = trait;   /* v25.76 경완 '그냥 무작위로 바꿔줘': 라인업과 상관없이 특성 13개 중 무작위 */
   const team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25), l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
-  const wage = sfWage(lv - avg, n, tr2, tv / 100, sfBq(team));
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 3, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  const wage = sfWage(ti, tr2, tv / 100);
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 4, lq: ti, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
 /* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
