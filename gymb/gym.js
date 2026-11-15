@@ -796,6 +796,8 @@ const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 **
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 /* v25.84 경완 '연승 보정 지수형으로 올라가야', '천장이랑 바닥 있으니까 상한 빼줘': 예전 = 연승×0.6 (최대 +10). 지금 = 1.25^연승 − 1 (3연승 +1, 5연승 +2, 8연승 +5, 10연승 +8, 12연승 +14…), 상한 없음(등급 레벨 천장 lvCeil 이 막음, 99 는 계산 안전용) */
 const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 1));
+/* v25.85 경완 '직접 배틀에만 적용': 고용 트레이너가 막는 판(staffFight)의 연승 보정은 예전 그대로 (연승×0.6, 최대 +10) */
+const stkLvSf = n => Math.min(10, Math.floor((n | 0) * .6));
 // v17.31 경완 '연승 보정처럼 연패 보정도': 내가 직접 싸워 진 게 2번 이어지면(g.lstk) 도전자 레벨 −2, 연패마다 −2 더 (최대 −8), 강함 보정(strOf)도 쉰다. 한 번 막으면 0. 승급 심사는 그대로
 const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
@@ -1161,7 +1163,7 @@ function arrive(c) {
   rollWeek(c.t);   /* v20.03 경완 '결산 트레이너 주급 대비 수익이 이번 주 기준으로 잡힘': 밀린 도전자는 그 시각의 주에 기록 (예전엔 입장 시각으로 먼저 주를 넘겨서 지난주 몫이 이번 주로 감) */
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`; dayRec(c.t).n++;
   let beat = 0;
-  if (c.team && !c.boss && !c.stkL) { c.stkL = stkLv(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
+  if (c.team && !c.boss && !c.stkL) { c.stkL = stkLvSf(g.stk); if (c.stkL) c.team = c.team.map(m => [m[0], clampN(m[1] + c.stkL, 5, 100), m[2]]); }   // 연승 난이도
   if (!c.named && !c.sfOk && g.sf.length) {
     const { s, lost } = staffFight(c); beat = lost.length;
     if (s) {
