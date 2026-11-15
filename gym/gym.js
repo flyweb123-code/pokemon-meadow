@@ -1136,7 +1136,7 @@ function sfGrow(now) {
 function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})[s.id] ||= { e: 0, w: 0, l: 0, r: 0 }; o.nm = sfName(s); o.tr = s.tr; o.wg = s.wage; return o; }
 /* v25.74: 분위기 메이커·트러블메이커 = 체육관에 서 있는 다른 트레이너 모두에게 z ±(.1~.25), 스카우터 = 좋은 라인업 지원자 (1 + .5~1.5)배 */
 const trVg = s => (s.tv ?? 50) / 100, sfOn = s => !s.rest && inGym(s);
-const SF_BAD = ['lazy', 'trouble'], SF_BADP = .35;   /* 좋음 이상 라인업 지원자는 35% 로 나쁜 특성 */
+const SF_BAD = ['lazy', 'trouble'], SF_BADP = .1;   /* 좋음 이상 라인업 지원자는 35% 로 나쁜 특성 */
 const sfAura = s => (st().sf || []).reduce((a, o) => o === s || !sfOn(o) ? a : a + (o.trait === 'mood' ? .1 + .15 * trVg(o) : o.trait === 'trouble' ? -(.1 + .15 * trVg(o)) : 0), 0);
 const sfScout = () => Math.min(3, (st().sf || []).reduce((a, o) => a + (o.trait === 'scout' && !o.rest ? .5 + trVg(o) : 0), 0));
 function staffFight(c) {
