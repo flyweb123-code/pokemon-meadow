@@ -1136,7 +1136,6 @@ function sfGrow(now) {
 function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})[s.id] ||= { e: 0, w: 0, l: 0, r: 0 }; o.nm = sfName(s); o.tr = s.tr; o.wg = s.wage; return o; }
 /* v25.74: 분위기 메이커·트러블메이커 = 체육관에 서 있는 다른 트레이너 모두에게 z ±(.1~.25), 스카우터 = 좋은 라인업 지원자 (1 + .5~1.5)배 */
 const trVg = s => (s.tv ?? 50) / 100, sfOn = s => !s.rest && inGym(s);
-const SF_BAD = ['lazy', 'trouble'], SF_BADP = .1;   /* 좋음 이상 라인업 지원자는 35% 로 나쁜 특성 */
 const sfAura = s => (st().sf || []).reduce((a, o) => o === s || !sfOn(o) ? a : a + (o.trait === 'mood' ? .1 + .15 * trVg(o) : o.trait === 'trouble' ? -(.1 + .15 * trVg(o)) : 0), 0);
 const sfScout = () => Math.min(3, (st().sf || []).reduce((a, o) => a + (o.trait === 'scout' && !o.rest ? .5 + trVg(o) : 0), 0));
 function staffFight(c) {
@@ -1227,7 +1226,7 @@ function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) 
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), sc = sfScout(), W = SF_TIER.map(([p], i) => i ? p * (1 + sc) : p), Wt = W.reduce((a, b) => a + b, 0), ti = (() => { let r = Math.random() * Wt; for (let i = 0; i < W.length; i++) { if ((r -= W[i]) < 0) return i; } return 0; })(), tq = SF_TIER[ti][1], types = ty ? [ty] : C.t;
-  const tr2 = ti > 0 && Math.random() < SF_BADP ? pick(SF_BAD) : trait;   /* v25.74 좋은 라인업에 가끔 나쁜 특성 (고민되게) */
+  const tr2 = trait;   /* v25.76 경완 '그냥 무작위로 바꿔줘': 라인업과 상관없이 특성 13개 중 무작위 */
   const team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25), l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
   const wage = sfWage(lv - avg, n, tr2, tv / 100, sfBq(team));
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 3, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
