@@ -15,6 +15,13 @@ const FLAG = {
   goldUse: 40,                 // v18.73 경완 '유저가 돈을 쓰면서 즐기기': 지난 7일 쓴 골드 / 번 골드(%)가 이보다 낮으면 표시
   minN: 10,
 };
+// 관장 배틀 난이도 (경완 2026-11-16 '유저들 실제 배틀 로그 보면서 난이도 밸런스 잡는거 정기 루틴화')
+// DIFF_VER = 난이도 숫자를 마지막으로 바꾼 버전. 난이도를 바꿔 배포하면 이 값도 같이 올린다 (그 뒤 기록만 따로 모아 봄).
+// DIFF_TG = 보통 도전자(df 1) 상대 관장 승률 목표 띠(%) — 등급이 오를수록 낮게. 띠는 '살펴보라'는 표시, 바꿀지는 경완이 정함.
+const DIFF_VER = 25.97;
+const GR = ['새내기', '동네', '떠오르는', '이름난', '인기', '명문', '전설'];
+const DIFF_TG = [[75, 97], [70, 95], [70, 92], [65, 90], [55, 85], [45, 75], [30, 60]];
+const DIFF_LS3 = 4;   // 100판에 3연패 이상이 이 횟수보다 많으면 표시 (의욕 꺾임)
 
 const dry = process.argv.indexOf('--dry');
 const d1 = sql => JSON.parse(execFileSync('npx', ['wrangler', 'd1', 'execute', 'pokegrow', '--remote', '--json', '--command', sql], { cwd: 'server', maxBuffer: 1 << 30 }).toString())[0].results;
@@ -37,6 +44,26 @@ const DF = ['쉬운 도전자', '보통 도전자', '어려운 도전자'];
 const catKey = k => DF.includes(k) ? DF.indexOf(k) : k === '이름 있는 트레이너' ? 5 : 10 + (+k.split(' ').pop() || 0);   // 쉬운·보통·어려운·이름 있는·승급 심사 1,2,…
 const catOf = d => d.c === 'boss' ? `승급 심사 ${d.bs}` : d.c === 'named' ? '이름 있는 트레이너' : DF[d.df] || `도전자 ${d.df}`;
 
+// 관장 배틀 난이도: 등급 × 상대 종류 승률, 사람별 승패 흐름(연승·연패), 연패 보정·쉬어 가는 도전자·연승 중 승률
+function diffOf(G) {
+  const kind = d => d.c === 'boss' ? '승급 심사' : d.c === 'named' ? '이름 있는' : d.df ? '보통' : '쉬운', KO = ['쉬운', '보통', '이름 있는', '승급 심사'];
+  const win = A => pct(A.filter(r => r.d.w).length, A.length), has = (A, k) => A.filter(r => r.d[k] != null);
+  const row = A => ({ n: A.length, people: people(A), win: win(A), quit: pct(A.filter(r => r.d.q).length, A.length), turns: avg(A.map(r => r.d.tn | 0)),
+    lvGap: avg(A.filter(r => r.d.ma && r.d.fa).map(r => r.d.fa - r.d.ma)), myN: avg(A.filter(r => r.d.mn).map(r => r.d.mn)), foeN: avg(A.filter(r => r.d.fn).map(r => r.d.fn)),
+    bsGap: avg(A.filter(r => r.d.mb && r.d.fb).map(r => r.d.fb - r.d.mb)), left: avg(has(A, 'lf').filter(r => r.d.w).map(r => r.d.lf | 0)) });
+  const cells = [...group(G, r => (r.d.gr | 0) + '|' + kind(r.d))].map(([k, A]) => { const [gi, kd] = k.split('|'); return { gi: +gi, kd, ...row(A) }; }).sort((a, b) => a.gi - b.gi || KO.indexOf(a.kd) - KO.indexOf(b.kd));
+  // 흐름: 한 사람의 승급 심사 뺀 배틀을 시간순으로 이어서 연승·연패 길이 (등급은 그 판 때 등급)
+  const flow = [...group(G.filter(r => r.d.c !== 'boss' && !r.d.q), r => r.d.gr | 0)].sort((a, b) => a[0] - b[0]).map(([gi, A]) => { const W = [], Ls = [], who3 = new Set();
+    for (const [code, B] of group(A, r => r.code)) { let n = 0, v = -1; const end = () => { if (n) (v ? W : Ls).push(n), v === 0 && n >= 3 && who3.add(code); };
+      for (const r of B.sort((a, b) => a.t - b.t)) { const w = r.d.w ? 1 : 0; if (w === v) n++; else { end(); v = w; n = 1; } } end(); }
+    return { gi: +gi, n: A.length, people: people(A), win: win(A), wAvg: avg(W), wMax: W.length ? Math.max(...W) : 0, lMax: Ls.length ? Math.max(...Ls) : 0, l3: Ls.filter(x => x >= 3).length, l3who: who3.size, l5: Ls.filter(x => x >= 5).length }; });
+  const H = G.filter(r => r.d.c === 'chal' && r.d.df);   // 보통 도전자만
+  const byLe = [...group(has(H, 'le'), r => r.d.le | 0)].sort((a, b) => a[0] - b[0]).map(([k, A]) => ({ k: +k, n: A.length, win: win(A) }));
+  const byStk = [['0~2연승', r => r.d.k0 < 3], ['3~5연승', r => r.d.k0 >= 3 && r.d.k0 < 6], ['6연승 이상', r => r.d.k0 >= 6]].map(([k, f]) => { const A = has(H, 'k0').filter(f); return { k, n: A.length, win: win(A), brk: win(A.filter(r => r.d.bk)), brkN: A.filter(r => r.d.bk).length }; });
+  const byAi = [...group(has(H, 'ai'), r => (r.d.gr | 0) + '|' + (r.d.ai | 0))].map(([k, A]) => ({ k, n: A.length, win: win(A) })).sort((a, b) => a.k < b.k ? -1 : 1);
+  const gmk = { foe: win(has(H, 'fm').filter(r => r.d.fm || r.d.fz)), foeN: has(H, 'fm').filter(r => r.d.fm || r.d.fz).length, me: win(has(H, 'um').filter(r => r.d.um || r.d.uz)), meN: has(H, 'um').filter(r => r.d.um || r.d.uz).length };
+  return { n: G.length, people: people(G), cells, flow, byLe, byStk, byAi, gmk };
+}
 function stats(L) {
   const G = L.filter(r => r.kind === 'gym'), F = L.filter(r => r.kind === 'sf'), M = L.filter(r => r.kind === 'mg' && (r.d.g || 'jump') === 'jump'), D = L.filter(r => r.kind === 'mg' && r.d.g === 'drop'), K = L.filter(r => r.kind === 'mg' && r.d.g === 'stack');   // v17.54: 진화구슬(drop)은 따로, 탑 쌓기(stack)도 따로 (2026-11-09: 장애물 넘기 칸에 섞여 있었음)   // v17.54: 진화구슬(drop)은 따로
   const gym = {
@@ -74,7 +101,7 @@ function stats(L) {
     reg: (() => { const G = [...group(E, r => r.d.r || '?')], few = G.filter(([, A]) => people(A) < 2).flatMap(([, A]) => A); return [...G.filter(([, A]) => people(A) >= 2).map(([k, A]) => eRow(k, A)).sort((a, b) => b.n - a.n), ...(few.length ? [eRow('그 밖 (한 명뿐인 도)', few)] : [])]; })(),
     city: [...group(E.filter(r => r.d.u || r.d.c), r => r.d.u || r.d.c)].filter(([, A]) => people(A) >= 3).map(([k, A]) => eRow(k, A)).sort((a, b) => b.people - a.people || b.n - a.n).slice(0, 25),
     evs: [...group(E.filter(r => /^ev:/.test(r.d.s || '')), r => r.d.s.slice(3))].map(([k, A]) => [k, A.length, people(A)]) };
-  return { gym, sf, mg, ed, tw, gold, egg, vers };
+  return { gym, sf, mg, ed, tw, gold, egg, vers, diff: diffOf(G), diffNew: diffOf(G.filter(r => parseFloat(r.ver) >= DIFF_VER)) };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -88,6 +115,10 @@ for (const c of S.gym.cats) if (c.n >= FLAG.minN) {
 if (S.sf.n >= FLAG.minN && (S.sf.block > FLAG.sfHi || S.sf.block < FLAG.sfLo)) flags.push(`트레이너가 도전자를 막는 비율 ${S.sf.block}%`);
 if (S.mg.n >= FLAG.minN && S.mg.dayGold.p50 > FLAG.mgDayG) flags.push(`미니게임 하루 골드 중앙값 ${S.mg.dayGold.p50}G (출퇴근 하루 골드 약 ${FLAG.mgDayG}G 보다 많음)`);
 if (S.gold.n >= FLAG.minN && S.gold.useRate != null && S.gold.useRate < FLAG.goldUse) flags.push(`번 골드의 ${S.gold.useRate}%만 씀 — 골드가 쌓이기만? (쓸 곳 살펴보기)`);
+{ const D = S.diffNew.n >= FLAG.minN ? S.diffNew : S.diff, tag = D === S.diffNew ? `v${DIFF_VER}~` : '지난 7일';
+  for (const c of D.cells) if (c.kd === '보통' && c.n >= FLAG.minN) { const [lo, hi] = DIFF_TG[c.gi] || [35, 85]; if (c.win > hi) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 쉬움?`); else if (c.win < lo) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 어려움?`); }
+  for (const f of D.flow) if (f.n >= FLAG.minN && f.l3 / f.n * 100 > DIFF_LS3) flags.push(`[난이도 ${tag}] ${GR[f.gi]} 3연패 이상 ${f.l3}번 (${f.n}판, ${f.l3who}명) — 의욕 꺾임?`);
+  for (const f of D.flow) if (f.n >= 20 && f.gi >= 3 && f.wAvg != null && f.wAvg > 8) flags.push(`[난이도 ${tag}] ${GR[f.gi]} 평균 연승 ${f.wAvg} — 긴장감 없음?`); }
 if (S.gym.quit > 15 && S.gym.n >= FLAG.minN) flags.push(`체육관 배틀 기권 ${S.gym.quit}%`);
 
 // ---------- 이슈 본문 ----------
@@ -96,6 +127,19 @@ const dlt = (a, b) => a == null || b == null ? '' : a === b ? ' (=)' : ` (${a > 
 const ymd = t => new Date(t + KST).toISOString().slice(0, 10);
 const tbl = (head, L) => ['| ' + head.join(' | ') + ' |', '|' + head.map(() => '---').join('|') + '|', ...L.map(r => '| ' + r.map(v).join(' | ') + ' |')].join('\n');
 const pc = (k, s) => P.gym.cats.find(c => c.k === k)?.[s];
+function diffMd(title, D, Pd) {
+  const pw = c => Pd?.cells.find(x => x.gi === c.gi && x.kd === c.kd)?.win, few = n => n < FLAG.minN ? ' ⚠︎적음' : '';
+  return [title, `${v(D.n)}판 · ${D.people}명. 승률 = 관장(유저)이 이긴 비율. 목표 = 보통 도전자만. ⚠︎적음 = ${FLAG.minN}판 미만이라 결론 내지 말 것.`, '',
+    tbl(['등급', '상대', '판', '명', '승률 %', '목표 %', '기권 %', '평균 턴', '상대−내 레벨', '내 마리', '상대 마리', '상대−내 종족값', '이겼을 때 남은 마리'],
+      D.cells.map(c => [GR[c.gi] || c.gi, c.kd, c.n + few(c.n), c.people, v(c.win) + dlt(c.win, pw(c)), c.kd === '보통' ? (DIFF_TG[c.gi] || []).join('~') : '', c.quit, c.turns, c.lvGap, c.myN, c.foeN, c.bsGap, c.left])), '',
+    '승패 흐름 (승급 심사·기권 빼고 한 사람의 배틀을 시간순으로 이음):', '',
+    tbl(['등급', '판', '명', '승률 %', '평균 연승', '최고 연승', '최고 연패', '3연패 이상(번)', '3연패 겪은 사람', '5연패 이상(번)'], D.flow.map(f => [GR[f.gi] || f.gi, f.n + few(f.n), f.people, f.win, f.wAvg, f.wMax, f.lMax, f.l3, f.l3who, f.l5])), '',
+    ...(D.byStk.some(r => r.n) ? ['보통 도전자 — 배틀 전 연승별 (v25.98 뒤 기록부터):', '', tbl(['연승', '판', '승률 %', '쉬어 가는 도전자 판', '쉬어 가는 판 승률 %'], D.byStk.map(r => [r.k, r.n, r.win, r.brkN, r.brk])), '',
+      `연패 보정 단계별: ${D.byLe.map(r => `${r.k}단계 ${r.n}판 ${v(r.win)}%`).join(' · ') || '-'}`,
+      `상대 AI 단계별 (등급|AI): ${D.byAi.map(r => `${r.k} ${r.n}판 ${v(r.win)}%`).join(' · ') || '-'}`,
+      `상대가 메가·Z 쓴 판 ${D.gmk.foeN}판 승률 ${v(D.gmk.foe)}% · 내가 메가·Z 쓴 판 ${D.gmk.meN}판 승률 ${v(D.gmk.me)}%`, ''] : ['연승별·연패 보정·AI 단계 기록은 v25.98 뒤부터 쌓임.', '']),
+  ];
+}
 const body = [
   `기간: ${ymd(NOW - 7 * DAY)} ~ ${ymd(NOW)} (KST, 지난 7일). 괄호 = 그 전 7일과 차이. 친구 코드 없이 사람 수만.`, '',
   '## 눈여겨볼 것', flags.length ? flags.map(f => '- ' + f).join('\n') : '- 기준 밖으로 벗어난 것 없음 (또는 판 수가 적음)', '',
@@ -106,6 +150,8 @@ const body = [
   '레벨 차 = 내 라인업 평균(또는 최고) − 상대 평균.', '',
   tbl(['관장 등급', '판', '명', '승률 %'], S.gym.grades.map(g => [g.k, g.n, g.people, g.win])), '',
   `체육관 하루 골드 (관장 배틀 + 트레이너, 한 사람 하루): 중앙 ${v(S.gym.dayGold.p50)}G · 상위 10% ${v(S.gym.dayGold.p90)}G · 최고 ${v(S.gym.dayGold.max)}G${dlt(S.gym.dayGold.p50, P.gym.dayGold.p50)}`, '',
+  ...diffMd('## 관장 배틀 난이도 (지난 7일 전체)', S.diff, P.diff),
+  ...(S.diffNew.n && S.diffNew.n < S.diff.n ? diffMd(`## 관장 배틀 난이도 (v${DIFF_VER} 뒤 기록만)`, S.diffNew, null) : S.diffNew.n ? [`위 표는 모두 v${DIFF_VER} 뒤 기록.`, ''] : [`v${DIFF_VER} 뒤 기록은 아직 없음.`, '']),
   '## 체육관 트레이너',
   `${v(S.sf.n)}번 · ${S.sf.people}명 · 도전자를 막은 비율 ${v(S.sf.block)}%${dlt(S.sf.block, P.sf.block)}`, '',
   tbl(['도전자', '번', '막음 %'], S.sf.byDf.map(r => [r.k, r.n, r.block])), '',
