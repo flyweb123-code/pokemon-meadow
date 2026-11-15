@@ -1684,7 +1684,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = dm.isZ && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ /* v25.38 다이맥스 기술은 원래 기술 연출 대신 maxFx (같은 타입 Z기술 연출 + 붉은 빛·흔들림) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1934,7 +1934,19 @@ async function moveFx(s, id, miss, fx, t) {
   sw.forEach(flip); fxL.forEach(x => { x.style.translate = `${slx(o)}px ${sly(o)}px`; });
   try { return await moveFx1(s[0], id, miss, fx); } finally { if (el) { sw.forEach(flip); fxL.forEach(x => { x.style.translate = ''; }); } }
 }
+/* v25.38 경완 '엉 그렇게 해줘봐': 다이맥스·거다이맥스 기술은 Gen 9 팩에 연출이 없어서('~ Max Moves ~' 칸이 비어 있음) 쇼다운처럼 같은 타입 Z기술 연출을 빌리고, 붉은 테두리 빛·화면 흔들림을 더함 */
+const MAX_ZT = { Normal: 'breakneckblitz', Fighting: 'alloutpummeling', Flying: 'supersonicskystrike', Poison: 'aciddownpour', Ground: 'tectonicrage', Rock: 'continentalcrush', Bug: 'savagespinout', Ghost: 'neverendingnightmare', Steel: 'corkscrewcrash', Fire: 'infernooverdrive', Water: 'hydrovortex', Grass: 'bloomdoom', Electric: 'gigavolthavoc', Psychic: 'shatteredpsyche', Ice: 'subzeroslammer', Dragon: 'devastatingdrake', Dark: 'blackholeeclipse', Fairy: 'twinkletackle' };
+const MAX_Z1 = { maxguard: 'banefulbunker', maxdarkness: 'maliciousmoonsault', gmaxsnooze: 'maliciousmoonsault' };
+const maxZ = id => { if (!/^g?max[a-z]/.test(id || '')) return null; const m = window.PSim?.Dex.moves.get(id); if (!m?.exists || !(m.isMax || /^G-?Max|^Max /.test(m.name))) return null; return MAX_Z1[id] || MAX_ZT[m.type] || null; };
+async function maxFx(s, z) {
+  const top = $b('.bt-top'); if (!top) return essFx(s, z);
+  const v = document.createElement('div'); v.className = 'bt-gxv'; top.appendChild(v); vib(1);
+  const a = B.fast ? 2 : 3, sh = top.animate([{ translate: '0 0' }, { translate: `${-a}px ${a / 2}px` }, { translate: `${a}px ${-a / 2}px` }, { translate: `${-a / 2}px ${-a / 2}px` }, { translate: `${a / 2}px ${a / 2}px` }, { translate: '0 0' }], { duration: 240, iterations: Infinity });
+  try { return await essFx(s, z); }
+  finally { sh.cancel(); v.classList.add('out'); setTimeout(() => v.remove(), 400); }
+}
 async function moveFx1(s, id, miss, fx) {
+  { const z = !fx && maxZ(id); if (z) { if (!miss) await maxFx(s, z); return; } }
   const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1];
