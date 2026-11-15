@@ -108,12 +108,13 @@ const inPond = (x, y, m = 0) => { const p = Y.pond; return x > p.x0 - m && x < p
 const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
 /* v24.04 경완 '코치랑 포켓몬 버튼 있는 쪽으로 포켓몬이랑 코치가 내려오지 않게': 오른쪽 아래 버튼 칸(.ty-btns 124×116 + 발 둘레) */
 /* 경완 2026-11-15 '버튼은 1번으로 (코치 · 특훈 · 포켓몬 아래 한 줄), 포켓몬이 버튼 있는 데까지 내려가지 않게': 버튼 칸 = 아래 한 줄 전체(BTN_H 72) */
-const BTN_H = 72, inBtn = (x, y) => !!Y && y > Y.H - BTN_H, offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - BTN_H - 2] : [x, y];
+/* 경완 2026-11-15 '엥 코치 포켓몬 버튼 위치 아직 본게임에 배포하지마': 새 배치(YNEW)는 운영자 시뮬(특훈 시연) 안에서만. 평소 훈련장은 예전대로 오른쪽 아래 두 칸(142×124), 아래 허들·과녁 자리도 그대로 */
+const YNEW = () => !!window.gymSimOn, BTN_W = 142, btnH = () => YNEW() ? 72 : 124, inBtn = (x, y) => !!Y && y > Y.H - btnH() && (YNEW() || x > Y.W - BTN_W), offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - btnH() - 2] : [x, y];
 const nearBush = (x, y) => Math.abs(x - Y.W / 2) < 120 && y < yTop() + 56;   // v20.85 문 옆 덤불 앞은 기술·훈련 자리로 안 씀 (경완 '덤불에 공격')
 function yardSpot(swim) {
   if (swim) { const p = Y.pond; return [p.x0 + 22 + Math.random() * Math.max(1, p.x1 - p.x0 - 44), p.y0 + 32 + Math.random() * Math.max(1, p.y1 - p.y0 - 44)]; }   // v21.01 경완 '가비루사 왜 육지로': 예전엔 훈련장 전체에서 60번 뽑다 다 빗나가면(약 1%) 땅 자리로 → 물 안에서만 뽑음
   for (let i = 0; i < 60; i++) { const x = 24 + Math.random() * (Y.W - 48), y = yTop() + Math.random() * (Y.H - yTop() - 20);
-    if (swim ? inPond(x, y - 10, -22) && !inBtn(x, y + 10) : !inPond(x, y, 16) && !nearBush(x, y) && !inBtn(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
+    if (swim ? inPond(x, y - 10, -22) && !(YNEW() && inBtn(x, y + 10)) : !inPond(x, y, 16) && !nearBush(x, y) && !inBtn(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
   return [Y.W * .3, Y.H * .6];
 }
 // 훈련장 소품 = 스칼렛 작업물 그림 (gymb/yard.json, config/staff/scarlet.json 에서 골라 옮김 + 후프링) (경완 2026-10-29 '스칼렛 작업물 수준으로, 가져와도 돼')
@@ -275,11 +276,11 @@ async function drawTrain() {
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
   /* v23.36 경완 '코치·포켓몬 버튼 밑에 있는 허들 지워야겠네' → v24.04 경완 '밑에 하나만 없애 달란 거였어': 위 허들(h1)·허들 달리기 다시, 트랙은 버튼 칸 위까지만 */
-  yProp('h1', 'track-hurdle', W * .72, H * .76); yProp('h2', 'track-hurdle', W * .72, Math.min(H * .88, H - BTN_H - 10));   /* 경완 2026-11-15 '저 정도면 지웠던 밑에 있던 허들 살려도 되겠다' (버튼이 아래 한 줄로 가서 자리가 남) */
+  yProp('h1', 'track-hurdle', W * .72, H * .76); if (YNEW()) yProp('h2', 'track-hurdle', W * .72, Math.min(H * .88, H - btnH() - 10));   /* 경완 2026-11-15 '저 정도면 지웠던 밑에 있던 허들 살려도 되겠다' (버튼이 아래 한 줄로 가서 자리가 남) */
   [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
-  Y.lane = { x: W * .72, y0: H * .66, y1: Math.max(H * .8, Math.min(H * .95, H - BTN_H - 4)) };
+  Y.lane = { x: W * .72, y0: H * .66, y1: Math.max(H * .8, Math.min(H * .95, H - btnH() - 4)) };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
-  { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Math.min(Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55, H - BTN_H - 14); /* 경완 2026-11-15 '수영장에 있는 타겟 가려지지 않게 위로' */ q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
+  { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Math.min(Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55, YNEW() ? H - btnH() - 14 : 1e9); /* 경완 2026-11-15 '수영장에 있는 타겟 가려지지 않게 위로' */ q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = ydOrd(g.sf).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * [.1, .9, .5][i], cy = H * (i === 2 ? .68 : .6); q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
@@ -563,7 +564,7 @@ function yardLoop(ts) {
   yFeedTick(now);
   for (const c of Y.co || []) yCoach(c, now, dt);   // v17.59 경완 '코치가 포켓몬들 따라다니면서 지켜보게': 한 마리씩 골라 옆으로 걸어가 지켜보고 응원
   for (const m of Y.mons) {
-    if (m.st !== 'go' && m.st !== 'run' && inBtn(m.x, m.y)) m.y = Y.H - BTN_H - 2;   /* v24.04 버튼 칸에 서 있지 않게 */
+    if (m.st !== 'go' && m.st !== 'run' && inBtn(m.x, m.y)) m.y = Y.H - btnH() - 2;   /* v24.04 버튼 칸에 서 있지 않게 */
     if (m.st === 'go') {
       const dx = m.tx - m.x, dy = m.ty - m.y, d = Math.hypot(dx, dy), v = (m.flyer ? 60 : 46) * dt;
       if (m.flyer && !m.fish) m.air = Math.min(24, (m.air || 0) + dt * 40);
