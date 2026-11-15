@@ -1549,7 +1549,7 @@ function partyIdx(side, line) {
 // 맞는 소리는 효과(굉장/별로)에 따라 다르다: 이어지는 줄을 미리 본다
 function effAhead(id) { const L = B.btl.log; for (let k = B.li; k < Math.min(L.length, B.li + 4); k++) { const x = L[k].split('|'); if (x[1] === '-supereffective' && x[2] === id) return 'H'; if (x[1] === '-resisted' && x[2] === id) return 'L'; if (x[1] === 'move' || x[1] === '-damage') break; } return 'M'; }
 // 정보 카드 친밀도 (경완 2026-10-29 '체육관 상세 정보카드에서도 확인')
-function frRow(P) { const fr = Math.min(255, P.fr || 0), h = fr >= 255 ? 5 : Math.min(4, Math.floor(fr / 51)); return `<p class="mp-frh"><small>친밀도</small><b class="${h >= 5 ? 'max' : ''}">${'♥'.repeat(h)}${'♡'.repeat(5 - h)}</b></p>`; }   // 레벨·랭크 밑 (경완 2026-10-29 '친밀도 + 하트만')
+function frRow(P) { const fr = Math.min(255, P.fr || 0), h = fr >= 255 ? 5 : Math.min(4, Math.floor(fr / 51)); return `<p class="mp-frh"><small>친밀도</small><b class="frtap${h >= 5 ? ' max' : ''}" data-fr="${fr}">${'♥'.repeat(h)}${'♡'.repeat(5 - h)}</b></p>`; }   // 레벨·랭크 밑 (경완 2026-10-29 '친밀도 + 하트만')   /* v25.53 경완 '체육관 상세카드에서도 친밀도 하트 부분 누르면 숫자 말풍선': .frtap → 본 게임 하트 말풍선(#frTip) */
 // 친밀도 기믹 (경완 2026-10-29 '배틀에 친밀도 기믹'): 하트(친밀도 51마다 1개, 255 = 만점)가 많을수록 내 포켓몬이 관장을 위해 힘낸다 (본가 소드·실드 '어펙션' 느낌)
 // ♥3 이상: 쓰러질 공격을 HP 1로 버팀 (15·20·25%) · ♥4 이상: 급소 +1, 턴 끝에 상태 이상을 스스로 고침 (20%) · ♥5(만점): 공격을 피함 (10%)
 const FR_END = [0, 0, 0, 15, 20, 25];
