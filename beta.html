@@ -9209,7 +9209,7 @@ const Visit = (() => {
       const top = () => { const c = qs('#clock'); if (c) { const r = c.getBoundingClientRect(); if (r.height) u.style.setProperty('--vownTop', Math.round(r.top) + 'px'); } };
       new MutationObserver(top).observe(document.body, { attributes: true, attributeFilter: ['class'] }); addEventListener('resize', top); top();
       u.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; e.stopPropagation(); sfx('tap');
-        if (b.dataset.a === 'out') ownOut(!OWN.out); });
+        if (b.dataset.a === 'out') { if (!OWN.out && window.Gym?.isOpen?.()) { Promise.resolve(window.Gym.exit('필드로 나가는 중')).then(() => { if (!window.Gym?.isOpen?.() && !OWN.out) ownOut(true); }); return; } ownOut(!OWN.out); } });   /* v25.87 경완 '체육관 홈화면에서 누군가 필드 놀러왔을 때 필드 나가기 누르면 필드로 안 가지는 오류': 체육관이 열려 있으면 퇴근부터 하고 나감 */
     }
     const vis = [...OWN.ppl.values()].filter(p => !p.o);
     // v14.99 경완: 친구가 오면 위쪽에 '○○이 놀러 왔어요 · 필드에 나가기' 한 줄 (말은 손님 머리 위 말풍선으로 보이고, 답하려면 나가서 아래 채팅창)
