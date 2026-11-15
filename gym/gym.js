@@ -926,6 +926,9 @@ const tyAdvT = (T, C) => { let s = 0, k = 0; for (const a of T) for (const b of 
 const bsAvgT = T => { const L = T.map(m => bsOf(m[0])).filter(Boolean); return L.length ? L.reduce((a, b) => a + b, 0) / L.length : 0; };
 const sfBq = T => { const b = bsAvgT(T); return b ? b - spTgt(teamLv(T)) : 0; };   /* 라인업 등급 = 레벨 기준 종족값보다 얼마나 센가 */
 const SF_KP = .9, SF_CP = 1.5, SF_KT = .6, SF_CT = 1, SF_Z0 = -.3;
+/* v25.88 경완 '고용 트레이너 우리가 정했던 승률 계산 반영해서 밸런스 다시 맞춰줘' (연승 보정을 고용 트레이너 판에서 뺀 뒤): 실제 게임 코드 시뮬(등급별 도전자 400명 × 지원자)에서 보통 라인업 한 명이 막을 확률이
+   새내기 53·동네 41·떠오르는 34·이름난 32·인기 23·명문 16·전설 11% 로 등급이 오를수록 떨어졌음(어려운 도전자 비율·레벨·마릿수가 늘어서) → 등급별 보정 SF_ZG 로 어느 등급이든 정해 둔 값(보통 30% 안팎, 무작위 3명 체육관 64~73%)에 맞춤 */
+const SF_ZG = [-.95, -.5, -.2, -.1, .4, .85, 1.3], sfZ0 = () => SF_Z0 + (SF_ZG[clampN(gradeOf(st()?.rep || 0).i, 0, SF_ZG.length - 1)] || 0);
 const sfPow = (T, C) => { const a = bsAvgT(T), b = bsAvgT(C); return (a && b ? clampN((a - b) / 100 * SF_KP, -SF_CP, SF_CP) : 0) + clampN(tyAdvT(T, C) * SF_KT, -SF_CT, SF_CT); };
 const SF_TIER = [[.70, -60], [.22, 20], [.07, 80], [.01, 140]];   /* 지원자 라인업 등급: 보통 70%·좋음 22%·뛰어남 7%·최고 1% (기준 종족값 ±) */
 const CT_OF = ty => Object.keys(SE).filter(a => SE[a].includes(+ty)).map(Number);
@@ -1145,7 +1148,7 @@ function staffFight(c) {
   const g = st(), lost = [];
   for (const s of g.sf) {
     if (s.rest || !inGym(s) || (s.trait === 'lazy' && Math.random() < .1 + .2 * trV(s))) continue;   // 체육관에 서 있는 트레이너만 도전자를 상대한다 (훈련장 코치를 겸해도 된다)
-    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) + SF_Z0 + sfPow(s.team, c.team) + sfAura(s);   /* v25.72: 종족값·상성, -.2 → SF_Z0 */   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
+    const z = (Math.min(teamLv(s.team), myAvg() + 3) - teamLv(c.team)) / 8 + (s.team.length - c.team.length) * .2 + (s.trait === 'guts' ? .25 + .3 * trV(s) : 0) + sfZ0() + sfPow(s.team, c.team) + sfAura(s);   /* v25.72: 종족값·상성, -.2 → SF_Z0 */   /* v15.79 경완 '13전 완승': 쉬운 도전자 상대 약 65%, 어려운 도전자 약 40% (예전 /3·+.3 은 90% 넘음). 트레이너 레벨은 내 평균 +3 까지만 친다 */
     if (Math.random() < 1 / (1 + Math.exp(-z))) {
       s.w = (s.w || 0) + 1; s.xp = (s.xp || 0) + 1;
       if (s.xp >= 3) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
@@ -1216,7 +1219,7 @@ function payDay(now) {
 const sig = z => 1 / (1 + Math.exp(-z));
 function sfEV(rel, n, trait, v = .5, bq = 0) { const g = st(), G = gradeOf(g.rep || 0), f = bdPh(g.rep || 0), W = GYMB();
   const pE = Math.min(1, [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8)), lu = Math.max(1, luNow().length || 3), lv = Math.min(rel, 3), gu = trait === 'guts' ? .25 + .3 * v : 0;
-  const pw = clampN(bq / 100 * SF_KP, -SF_CP, SF_CP), zE = (lv - (-7 + Math.round(f * 8))) / 8 + (n - (2.5 + (f > .5))) * .2 + gu + SF_Z0 + pw, nH = (3 + clampN(lu + 1 + (f > .4) + (f > .8), 3, 6)) / 2, zH = (lv - (-1 + Math.round(f * 9))) / 8 + (n - nH) * .2 + gu + SF_Z0 + pw;
+  const pw = clampN(bq / 100 * SF_KP, -SF_CP, SF_CP), zE = (lv - (-7 + Math.round(f * 8))) / 8 + (n - (2.5 + (f > .5))) * .2 + gu + sfZ0() + pw, nH = (3 + clampN(lu + 1 + (f > .4) + (f > .8), 3, 6)) / 2, zH = (lv - (-1 + Math.round(f * 9))) / 8 + (n - nH) * .2 + gu + sfZ0() + pw;
   const gold = (pE * sig(zE) * W.GYM_G[0] + (1 - pE) * sig(zH) * W.GYM_G[1]) * W.GYM_SF_PCT / 100 * (trait === 'money' ? 1.3 + .4 * v : 1);
   return 7 * 15 * (trait === 'lazy' ? .9 - .2 * v : 1) * gold; }
 const sfWage = (rel, n, trait, v = .5, bq = 0) => { const mid = Math.max(1, sfEV(-2, 3, '')), ev = sfEV(rel, n, trait, v, bq);   /* v25.72: 라인업 등급(bq)도 주급에 */ return Math.max(50, Math.round(mid * (.65 + .35 * ev / mid) * ({ thrift: .9 - .2 * v, lazy: .85 - .15 * v, trouble: .8 - .2 * v, mood: 1.1 + .2 * v, scout: 1.05 + .1 * v }[trait] || 1)   /* v25.74 나쁜 특성은 싸게 */ * (.9 + Math.random() * .2) / 10) * 10); };
