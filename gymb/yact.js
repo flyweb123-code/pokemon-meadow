@@ -311,18 +311,13 @@ const CSS = `
 #yact .ya-road b.m{position:relative;width:30px;height:30px;line-height:26px;background:#ffd0c8;border-color:#c03020;color:#c03020}
 #yact .ya-road b.f{width:38px;height:38px;line-height:34px;background:#ffd84a}
 #yact .ya-road b.m img{position:absolute;left:1px;top:1px;width:calc(100% - 2px);height:calc(100% - 2px);object-fit:contain;image-rendering:pixelated;filter:brightness(0);opacity:.82}
-#yact .ya-tips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px}
-#yact .ya-tips div{background:#fff;border:2px solid #d8d0bc;padding:5px 2px 6px;text-align:center}
-#yact .ya-tips b{display:block;font-size:10.5px;margin-bottom:2px}
-#yact .ya-tips span{display:block;font-size:9px;line-height:1.35;color:#5a5a6a}
 #yact .ya-op{font-size:9.5px;text-align:center;color:#7a7a8a;margin:9px 0 0;line-height:1.4}
 #yact .rs-row .sec{flex:0 0 34%}
 /* 경완 2026-11-15 '특훈 눌렀을 때 시작창 승급심사처럼 새로운 화면으로' → '무대 A 좋은데 빛줄기가 너무 밤티' → '3번으로 가고 기술 딱지 가독성 좀 높여줘': 전체 화면 어두운 무대(.fs), 후광 + 반짝이, 유리 칸 + 금빛 테두리 */
 #yact .ya-start.fs{left:0;top:0;transform:none;width:100%;height:100%;max-height:none;border:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);color:#f0ecff}
 #yact.pre{bottom:var(--mh,0px)}
 #yact.pre .fs .fs-ft{padding-bottom:12px}
-#yact.pre .fs .hr-st{height:min(112px,13.5vh)}#yact.pre .fs .ya-hero{padding-bottom:8px}#yact.pre .fs .ya-pmv{margin-top:7px}#yact.pre .fs .ya-pmv span{padding:4px 4px}#yact.pre .fs .ya-bd{gap:8px;padding-bottom:6px!important}#yact.pre .fs h3{margin-bottom:6px}#yact.pre .fs .ya-tips div{padding:5px 2px 6px}#yact.pre .fs .fs-ft{padding-top:8px}#yact.pre .fs .fs-ft .bigb{padding:12px 0}#yact.pre .fs .ya-op{margin-top:6px}
-@media (max-height:740px){#yact.pre .fs .ya-tips{display:none}}
+#yact.pre .fs .hr-st{height:min(112px,13.5vh)}#yact.pre .fs .ya-hero{padding-bottom:8px}#yact.pre .fs .ya-pmv{margin-top:7px}#yact.pre .fs .ya-pmv span{padding:4px 4px}#yact.pre .fs .ya-bd{gap:8px;padding-bottom:6px!important}#yact.pre .fs h3{margin-bottom:6px}#yact.pre .fs .fs-ft{padding-top:8px}#yact.pre .fs .fs-ft .bigb{padding:12px 0}#yact.pre .fs .ya-op{margin-top:6px}
 @media (max-height:700px){#yact.pre .fs .ya-sec:has(.fs-rwr){display:none}}
 #yact .fs .ya-hero{flex:none;padding:calc(var(--si-top,env(safe-area-inset-top)) + 10px) 16px 14px;background:none;border-bottom:0;overflow:visible}
 #yact .fs .ya-hero::before{display:none}
@@ -330,6 +325,30 @@ const CSS = `
 #yact .fs .fs-hd b{font-size:17px;flex:1;text-shadow:0 2px 0 rgba(0,0,0,.5)}
 #yact .fs .fs-bk{width:40px;height:40px;margin-left:-10px;border:0;background:none;color:#fff;font-size:18px;font-family:var(--px);cursor:pointer}
 #yact .fs .fs-bk:active{transform:translateX(-2px)}
+/* 경완 2026-11-15 '받는 보상 밑에 조작법을 없애고, 특훈 뒤로가기 행 우측 정렬에 물음표 아이콘 만들어서 누르면 게임 캡쳐화면이랑 같이 기본 튜토리얼 창': 직접 눌러 여는 창이라 바깥을 눌러도 닫히고 팝업 모션은 없다 */
+#yact .fs .fs-hp{flex:none;width:30px;height:30px;padding:0;border-radius:50%;border:2px solid #d8a830;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05));color:#ffe9a0;font:bold 16px/1 var(--px);box-shadow:0 3px 0 rgba(0,0,0,.45);cursor:pointer}
+#yact .fs .fs-hp:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.45)}
+#yact .ya-tu{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(6,4,18,.72)}
+#yact .ya-tu.on{display:flex}
+#yact .ya-tu .tu-w{width:min(350px,100%);display:flex;flex-direction:column;border-radius:14px;border:2px solid #d8a830;background:linear-gradient(180deg,#33286a,#17122e);box-shadow:0 6px 0 rgba(0,0,0,.5),0 0 22px rgba(120,90,255,.35);color:#f0ecff;padding:12px 14px 14px}
+#yact .ya-tu .tu-hd{display:flex;align-items:center;margin-bottom:10px}
+#yact .ya-tu .tu-hd b{flex:1;font-size:16px;color:#ffe9a0;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+#yact .ya-tu .tu-x{width:32px;height:32px;margin:-6px -6px -6px 0;border:0;background:none;color:#cfc8ee;font:14px/1 var(--px);cursor:pointer}
+#yact .ya-tu .tu-im{border-radius:10px;border:2px solid rgba(255,255,255,.22);overflow:hidden;background:#0c0a1c;aspect-ratio:39/25}
+#yact .ya-tu .tu-im img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+#yact .ya-tu .tu-tx{min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:6px;text-align:center;padding:8px 2px}
+#yact .ya-tu .tu-h{font-size:16px;color:#fff}
+#yact .ya-tu .tu-h i{font-style:normal;color:#ffd84a;margin-right:6px}
+#yact .ya-tu .tu-p{margin:0;font-size:12.5px;line-height:1.6;color:#dcd6f6}
+#yact .ya-tu .tu-p b{color:#ffe27a}
+#yact .ya-tu .tu-dots{display:flex;justify-content:center;gap:7px;margin-bottom:12px}
+#yact .ya-tu .tu-dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+#yact .ya-tu .tu-dots i.on{background:#ffd84a;box-shadow:0 0 6px rgba(255,216,74,.8)}
+#yact .ya-tu .tu-bt{display:grid;grid-template-columns:1fr 1.5fr;gap:8px}
+#yact .ya-tu .tu-bt button{padding:11px 0;border-radius:10px;font:bold 14px/1 var(--px);cursor:pointer;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#f0ecff;box-shadow:0 4px 0 rgba(0,0,0,.5)}
+#yact .ya-tu .tu-bt .tu-nx{border-color:#6a3a00;color:#4a2400;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);box-shadow:0 4px 0 #6a3a00}
+#yact .ya-tu .tu-bt button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.5)}
+#yact .ya-tu .tu-bt .tu-pv:disabled{opacity:.35;pointer-events:none}
 #yact .fs .hr-row{flex-direction:column;gap:6px;text-align:center}
 #yact .fs .hr-st{width:190px;height:min(158px,19vh);isolation:isolate}
 #yact .fs .hr-st::before{left:14px;right:14px;height:26px;background:radial-gradient(ellipse,#ffe9a0 0,#b88a2a 60%,#6a4a10 100%);border:3px solid #3a2400;box-shadow:0 3px 0 rgba(0,0,0,.4)}
@@ -372,9 +391,6 @@ const CSS = `
 #yact .fs .fs-rwr .c{font-style:normal;font-size:11px;padding:2px 9px;border-radius:8px;color:#fff;border:1.5px solid rgba(0,0,0,.5)}
 #yact .fs .fs-rwr .ex{background:#3a8ee0}#yact .fs .fs-rwr .ev{background:#8a5ae0}#yact .fs .fs-rwr .fr{background:#e85a8a}
 #yact .fs .fs-rwr .coin{margin-right:2px!important}
-#yact .fs .ya-tips{gap:6px}
-#yact .fs .ya-tips div{border-radius:10px;padding:7px 2px 8px;background:rgba(8,6,24,.45);border:2px solid rgba(255,255,255,.16)}
-#yact .fs .ya-tips b{color:#ffe9a0}#yact .fs .ya-tips span{color:#cfc8ee}
 #yact .fs .fs-ft{flex:none;padding:12px 16px calc(12px + var(--si-bottom,env(safe-area-inset-bottom)));background:linear-gradient(180deg,rgba(12,10,28,0),rgba(12,10,28,.9) 30%)}
 #yact .fs .fs-ft .bigb{margin:0;padding:14px 0;font-size:19px;letter-spacing:3px;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6)}
 #yact .fs .fs-ft .bigb:active{transform:translateY(3px);box-shadow:0 1px 0 #6a3a00}
@@ -430,14 +446,15 @@ const HTML = `<canvas></canvas>
 <div class="ya-pad"><button class="ya-dg">대쉬</button><div class="ya-mvs"></div></div>
 <div class="ya-ban"></div>
 <div class="ya-ov"></div>
-<div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><span class="ya-tg">운영자 시험</span></div>
+<div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><span class="ya-tg">운영자 시험</span><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
     <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""></div><div class="hr-in"><b class="hr-nm"></b><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
   <div class="ya-bd"><div class="ya-pk"></div>
   <div class="ya-sec"><h3>노력치 훈련</h3><div class="ya-stt"></div></div>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
   <div class="ya-sec"><h3>받는 보상</h3><div class="fs-rwr"><span><i class="c ex">경험치</i></span><span><i class="c ev">노력치</i></span><span><i class="c fr">친밀도</i></span><span><i class="coin"></i><b>골드</b></span><span><svg class="sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b>번뜩임</b></span></div></div>
-  <div class="ya-tips"><div><b>이동</b><span>왼쪽 아래<br>끌기</span></div><div><b>기술</b><span>꾹 누르면<br>쭉 이어져요</span></div><div><b>대쉬</b><span><b style="display:inline;color:#ff8a70">!</b> 뜰 때<br>딱 맞춰</span></div><div><b>줍기</b><span>골드·번뜩임<br>아이템</span></div></div></div>
-  <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button><p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요</p></div></div>
+  </div>
+  <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button></div></div>
+<div class="ya-tu"><div class="tu-w"><div class="tu-hd"><b>특훈 하는 법</b><button class="tu-x" type="button" aria-label="닫기">✕</button></div><div class="tu-im"><img alt=""></div><div class="tu-tx"><b class="tu-h"></b><p class="tu-p"></p></div><div class="tu-dots"></div><div class="tu-bt"><button class="tu-pv" type="button">이전</button><button class="tu-nx" type="button">다음</button></div></div></div>
 <div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
     <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div><b class="rs-rk">S</b></div></div>
   <div class="ya-bd"><p class="rs-chips rs-sub"></p>
@@ -1359,6 +1376,14 @@ function bind() {
   on(q('.ya-again'), 'click', () => { se('DECIDE'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
   on(q('.ya-back'), 'click', () => close());
   on(q('.ya-x'), 'click', () => close());
+  { /* 하는 법 창 (머리줄 ?) — 게임 화면 캡처 + 짧은 설명 4장, 좌우로 밀어도 넘어감 */
+    const TU = [['이동', '화면 <b>왼쪽 아래</b>를 누른 채 끌면<br>그쪽으로 움직여요.'], ['기술', '<b>오른쪽 아래 기술 버튼</b>을 누르면 기술을 써요.<br>꾹 누르고 있으면 쭉 이어져요.'], ['대쉬', '상대 머리 위에 <b>!</b> 가 뜨면 곧 공격이 와요.<br>그때 <b>대쉬</b>를 딱 맞춰 누르면 피해요.'], ['줍기', '떨어진 <b>골드·아이템</b>은 가까이 가면 주워요.<br>번뜩임을 모으면 특별한 기술을 깨달아요.']];
+    const tu = q('.ya-tu'); let ti = 0; tu.querySelector('.tu-dots').innerHTML = TU.map(() => '<i></i>').join('');
+    const show = () => { tu.querySelector('img').src = `gym/img/yact/tut${ti + 1}.png`; tu.querySelector('.tu-h').innerHTML = `<i>${ti + 1}</i>${TU[ti][0]}`; tu.querySelector('.tu-p').innerHTML = TU[ti][1]; [...tu.querySelectorAll('.tu-dots i')].forEach((d, i) => d.classList.toggle('on', i === ti)); tu.querySelector('.tu-pv').disabled = !ti; tu.querySelector('.tu-nx').textContent = ti === TU.length - 1 ? '확인' : '다음'; };
+    const off = () => tu.classList.remove('on'), go = d => { const n = ti + d; if (n < 0) return; if (n >= TU.length) { se('DECIDE'); off(); return; } ti = n; se('SELECT'); show(); };
+    on(q('.fs-hp'), 'click', () => { se('DECIDE'); ti = 0; show(); tu.classList.add('on'); });
+    on(tu, 'click', e => { if (e.target === tu || e.target.closest('.tu-x')) off(); else if (e.target.closest('.tu-nx')) go(1); else if (e.target.closest('.tu-pv')) go(-1); });
+    let sx = null; on(tu, 'touchstart', e => { sx = e.touches[0].clientX; }, { passive: true }); on(tu, 'touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(d) > 44 && !(d < 0 && ti === TU.length - 1)) go(d < 0 ? 1 : -1); }, { passive: true }); }
   on(q('.ya-quit'), 'click', () => { if (r.run && r.G) end(false, false, true); });
   let rz = 0; on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (R === r) resize(); }, 200); });
 }
