@@ -78,7 +78,7 @@ window.GymEss = (() => {
         else if (foc === 3) { [x, y] = tp(src, dst, cx, cy); if (pat >= 0 && rev(src[0], src[2], dst[0], dst[2])) m = !m; }
         const ctx = pri === 0 || pri === 2 ? bk : fr;
         if (i < 2) {
-          const S = i === 0 ? U : T, oc = i === 0 ? uo : to; seen.add(i);
+          const S = i === 0 ? U : T, oc = i === 0 ? uo : to; seen.add(i); if (foc === 4) { x = oc[0]; y = oc[1]; }   /* v25.57 경완 '다이어스 할 때 상대 포켓몬 위치 바뀜': 포켓몬 칸을 화면 절대 좌표(초점 4)로 옮기는 연출(지각의파동·오리진즈슈퍼노바)은 원본 화면(512×384) 기준 자리라 우리 화면에선 엉뚱한 데로 감 → 제자리 */
           if (pat >= 0) { S.el.style.visibility = 'hidden'; drawCel(ctx, sheet, x, y, m, C); continue; }
           S.el.style.visibility = ''; S.el.style.opacity = op / 255;
           S.el.style.transform = `translate(${(x - oc[0]) / 2}px,${(y - oc[1]) / 2}px) rotate(${-ang}deg) scale(${(m ? -1 : 1) * zx / 100},${zy / 100})`;
