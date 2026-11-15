@@ -798,7 +798,7 @@ const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 **
 const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 1));
 /* v25.86 경완 '고용 트레이너는 연승 여부는 나오지도 않는데 그 개념 자체를 빼도': 도전자가 올 때 팀 레벨에 연승 보정을 더하던 것(c.stkL) 없앰. 연승 보정은 직접 배틀(refit0)에만 */
 // v17.31 경완 '연승 보정처럼 연패 보정도': 내가 직접 싸워 진 게 2번 이어지면(g.lstk) 도전자 레벨 −2, 연패마다 −2 더 (최대 −8), 강함 보정(strOf)도 쉰다. 한 번 막으면 0. 승급 심사는 그대로
-const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
+const lsLv = n => (n | 0) < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);   /* v25.93: 연패 기록이 아직 없으면(undefined) -2 가 나와 상대 레벨 +2·강함 보정 꺼짐이던 것 고침 */
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
@@ -940,6 +940,10 @@ const ctQ = a => Math.min(.8, a * .13);   // 팀 포켓몬이 상성 타입을 �
 const isCt = (sp, ct) => (SPECIES[sp]?.t || []).some(x => ct.includes(x));
 const STR_BS = [450, 480, 510, 540, 570, 600, 680], STR_LV = [0, 1, 2, 3, 4, 5, 6];
 const bsOf = sp => (SPECIES[sp]?.bs || []).reduce((a, b) => a + b, 0);
+/* v25.91 경완 '체육관 관장 배틀의 핵심은 뒤로 갈수록 강한 포켓몬들 여럿으로 라인업을 꾸려서 높은 실력으로 배틀해야 이길 수 있게', '마리수는 다 열어놓고 그냥 뒤로 갈수록 많이 가져오는 도전자 빈도 수가 확률로 늘어나게끔', '연패 보정만 원래대로 냅두고 나머지 적용':
+   보통(어려운) 도전자만. CH_N = 등급별 3·4·5·6마리 확률(내 라인업 수와 무관, 예전엔 3~내 마리 수+1 고르게), CH_AI = 이 등급부터 AI·기술·도구 2단계, STR_FL = 상대 종 고르는 종족값 목표 바닥(종 폭 때문에 평균은 이보다 낮게 나옴 → 이름난 510·인기 530·명문 550쯤, 전설 시작도 명문보다 안 내려가게). 쉬운 도전자·더블·이름 있는 트레이너·승급 심사·연패 보정은 그대로 */
+const CH_N = [[50, 30, 15, 5], [40, 30, 20, 10], [30, 30, 25, 15], [20, 30, 30, 20], [10, 25, 35, 30], [5, 15, 35, 45], [0, 5, 25, 70]], CH_AI = 4, STR_FL = [0, 0, 0, 535, 565, 583, 583];
+const chGi = () => clampN(gradeOf(st().rep || 0).i, 0, CH_N.length - 1), chN = () => pickW([3, 4, 5, 6], CH_N[chGi()]);
 function strOf(my) {
   const g = st(), gi = clampN(gradeOf(g.rep || 0).i, 0, STR_BS.length - 1);
   const R = my.map(P => ({ b: bsOf(P.sp), lv: (GB()?.gm?.(P) || g.mon?.[P.id])?.lv || 0 })).filter(x => x.b && x.lv).sort((a, b) => b.b - a.b || b.lv - a.lv).slice(0, 3);
@@ -982,11 +986,11 @@ function refit0(c, my) {
   }
   const C = CLS[c.k]; if (!C) return;
   const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff, S3 = strOf(my);
-  const lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
-  if (isLeg(g)) { if (lx >= 1) c.ivm = 31; if (lx >= 2) c.ai = 2; else delete c.ai; }
+  const lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? (c.n0 ||= chN()) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
+  if (isLeg(g)) { if (lx >= 1) c.ivm = 31; c.ai = 2; } else if (diff && chGi() >= CH_AI) c.ai = 2; else delete c.ai;
   const ls = lsOf(g), base = S3 ? Math.max(avg, S3.sl + stkLv(g.stk) - ls) + (ls ? 0 : S3.lvB) : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
   const ct = CT_OF(g.ty), q = c.cq ?? 0;
-  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2) + (PR ? PAIR_LV : 0), n, ls ? 0 : isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, 540 + Math.round(lx * 20))) : S3?.sb, ct, q, c.tw);
+  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2) + (PR ? PAIR_LV : 0), n, ls ? 0 : isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, STR_FL[6], 540 + Math.round(lx * 20))) : Math.max(S3?.sb || 0, diff ? STR_FL[chGi()] : 0), ct, q, c.tw);
   // v17.32: 상성 좋은 포켓몬을 데려온 만큼 강함 보정 레벨을 덜 준다 (상성 포켓몬 비율만큼 lvB 빼기)
   const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 && !ls ? Math.round(S3.lvB * cs) : 0;
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
@@ -1008,8 +1012,8 @@ function mkChal(t) {
   const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
   const dbl = Math.random() < (DBL_P[G.i] || 0), ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = dbl ? Object.keys(PAIR).filter(x => CLS[x]) : Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
-  const n = dbl ? pairN(diff) : diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
+  const n = dbl ? pairN(diff) : diff ? chN() : rndI(2, 3) + (f > .5);
+  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, n0: diff && !dbl ? n : 0, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
