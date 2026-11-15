@@ -1085,7 +1085,7 @@ function addRep(n, sf) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r
 const dayNew = () => ({ n: 0, o: 0, p: 0, s: 0, me: { w: 0, l: 0, g: 0, r: 0 }, sf: {} });
 function dayRec(t = Date.now()) { const g = st(); if (!g.days || g.daysV !== 2) dayFill(g); const k = dayStart(t); let d = g.days[k];
   if (!d) { d = g.days[k] = dayNew(); Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
-/* v25.54 경완 '체육관 관장 전적이 이때까지의 모든 전적으로 나오는데, 해당 체육관 전적으로만 표시': g.gw/g.gl = 이 체육관에서만 이긴·진 수 (g.w/g.l 은 관장 몫이라 체육관을 옮겨 다님). 처음엔 이 체육관 날짜별 일지(90일)로, 휴업한 체육관이 없으면 g.w/g.l 그대로 */
+/* v25.62 경완 '체육관 관장 전적이 이때까지의 모든 전적으로 나오는데, 해당 체육관 전적으로만 표시': g.gw/g.gl = 이 체육관에서만 이긴·진 수 (g.w/g.l 은 관장 몫이라 체육관을 옮겨 다님). 처음엔 이 체육관 날짜별 일지(90일)로, 휴업한 체육관이 없으면 g.w/g.l 그대로 */
 const gWL = g => { if (!g) return [0, 0]; if (g.gw == null) { const me = st(), one = g === me && !(me.shelf || []).length && !(me.tyLog || []).length, D = Object.values(g.days || {}); g.gw = one ? g.w | 0 : D.reduce((a, x) => a + (x?.me?.w | 0), 0); g.gl = one ? g.l | 0 : D.reduce((a, x) => a + (x?.me?.l | 0), 0); } return [g.gw | 0, g.gl | 0]; };
 const daySf = (d, nm) => d.sf[nm] || (d.sf[nm] = { w: 0, g: 0, r: 0 });
 /* 일지가 없던(또는 v15.66 모양) 저장: 남아 있는 체육관 기록(g.log)으로 날짜별 일지를 다시 채운다. 기록에 없는 주급·상점은 옛 일지에서 옮김 */
