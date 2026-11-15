@@ -14042,6 +14042,9 @@ const FAIRY_MV = ['charm','drainingkiss','alluringvoice','disarmingvoice','playr
 const atkDef = P => { if (!P?.iv) return 0; const b = bsOf(P.sp); return (b[1] + P.iv[1]) - (b[2] + P.iv[2]); };   // 카드의 공격 - 방어 (종족값 + 개체값)
 const EVX = {};
 for (const [t, id] of [['흉내내기', 'mimic'], ['더블어택', 'doublehit'], ['구르기', 'rollout'], ['원시의힘', 'ancientpower'], ['짓밟기', 'stomp'], ['용의파동', 'dragonpulse'], ['도발', 'taunt'], ['트윈빔', 'twinbeam'], ['하이퍼드릴', 'hyperdrill'], ['드래곤옐', 'dragoncheer']]) EVX[t + '을 익혀야'] = EVX[t + '를 익혀야'] = { f: P => gmKnows(P, id), k: `거리를 채우고 체육관에서 ${t}${hasBat(t) ? '을' : '를'} 익히면 진화해요` };
+/* v25.62 경완 '진화힌트에 몇 레벨에 배우는지 적어줘야겠다' (미니뿡 '노말 체육관인데 기술머신에 하이퍼 드릴이 없다'): 기술 진화의 그 기술은 기술머신이 없는 레벨업 기술 → 진화 전 포켓몬이 몇 레벨에 배우는지 (gym/data.json 레벨업 표, 진화한 종 번호 → 레벨) */
+const EVO_MV_LV = { 122: 32, 185: 16, 424: 32, 463: 6, 465: 24, 469: 33, 473: 1, 763: 28, 804: 1, 853: 35, 981: 32, 982: 32 };
+const evoMvLv = c => { const l = EVO_MV_LV[c], f = SPECIES[SPECIES[c]?.fr]?.n; if (!l || !f) return ''; return l > 1 ? ` (${f}${hasBat(f) ? '은' : '는'} 레벨 ${l}에 배워요)` : ` (${f}${hasBat(f) ? '은' : '는'} 처음부터 배울 수 있어요 · 기술 바꾸기에서 넣어 주세요)`; };
 EVX['친밀도가 높고 페어리 기술을 익혀야'] = { f: P => (P?.fr || 0) >= FR_EVO && FAIRY_MV.some(id => gmKnows(P, id)), k: `친밀도가 ${FR_EVO} 이상이고 체육관에서 페어리 기술을 익히면 진화해요` };
 EVX['함께 1,000걸음을 걸어야'] = { f: () => true, k: '짝꿍으로 함께 걸어 거리를 채우면 진화해요' };
 EVX['공격이 방어보다 높아야'] = { f: P => atkDef(P) > 0, k: '거리를 채우고 공격이 방어보다 높으면 진화해요' };
@@ -14093,7 +14096,7 @@ function evoKids(sp, P, now) {
     if (!tmo && (P?.fr || 0) < FR_EVO) return false;
     const tm = tmo ? ev : ev.split(':')[1]; return !tm || (tm === 'day') === isDay(); });
 }
-const evoWhy = c => { const ev = SPECIES[c].ev || ''; if (SPECIES[c].rs) { const n = ITEM[evoItem(c)]?.n || ''; return `거리를 채우고 ${n}${hasBat(n) ? '을' : '를'} 쓰면 진화해요`; } { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n, q = evoReq(c); return q.n > 1 ? `${n} ${q.n.toLocaleString()}개를 모아 쓰면 진화해요` : `${n}${hasBat(n) ? '을' : '를'} ${q.tm ? (q.tm === 'day' ? '낮에 ' : '밤에 ') : ''}쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; if (ev === EV_DARK) return '필드에 악타입 포켓몬과 함께 나와 있어야 진화해요'; if (ev === EV_FLIP) return '거리를 채우고 휴대폰을 거꾸로 들면 진화해요'; if (ev === EV_REMO) return '필드에 총어와 함께 나와 있어야 진화해요'; if (EVX[ev]) return EVX[ev].k; return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
+const evoWhy = c => { const ev = SPECIES[c].ev || ''; if (SPECIES[c].rs) { const n = ITEM[evoItem(c)]?.n || ''; return `거리를 채우고 ${n}${hasBat(n) ? '을' : '를'} 쓰면 진화해요`; } { const it = evoItem(c); if (it && it !== 'link' && !/써야$/.test(ev)) { const n = ITEM[it].n, q = evoReq(c); return q.n > 1 ? `${n} ${q.n.toLocaleString()}개를 모아 쓰면 진화해요` : `${n}${hasBat(n) ? '을' : '를'} ${q.tm ? (q.tm === 'day' ? '낮에 ' : '밤에 ') : ''}쓰면 진화해요`; } } if (ev === 'day' || ev === 'night') return `${ev === 'day' ? '낮' : '밤'}에만 진화해요`; if (ev === EV_DARK) return '필드에 악타입 포켓몬과 함께 나와 있어야 진화해요'; if (ev === EV_FLIP) return '거리를 채우고 휴대폰을 거꾸로 들면 진화해요'; if (ev === EV_REMO) return '필드에 총어와 함께 나와 있어야 진화해요'; if (EVX[ev]) return EVX[ev].k + evoMvLv(c); return ev.startsWith('fr') ? `친밀도가 ${FR_EVO} 이상이어야${ev.endsWith('day') ? ', 낮에' : ev.endsWith('night') ? ', 밤에' : ''} 진화해요` : `${ev} 진화해요`; };
 // 짝꿍 등록 때: 돌·통신교환처럼 달린 거리로 진화할 수 없는 진화가 있으면 알려 준다
 async function evoNotice(sp, P) {   /* v21.43 경완: 제목 '특별한 진화!' + 갈래마다 실루엣 칸 (두 갈래면 양쪽에) */
   const L = CHILDREN[sp] || []; if (!L.length) return;
