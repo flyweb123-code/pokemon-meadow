@@ -2587,6 +2587,11 @@ async function meCardOf(D0, mine) { const D = rkClean(D0), G = gradeOf(D.rep, D.
   return p; }
 function sfCard(s) { loadJs('gymb/battle.js', 'GymBattle').then(() => loadJs('gymb/manage.js', 'GymManage')).then(() => { if (window.GymManage?.sfDetail) GymManage.sfDetail(s, true); else bodyCard(trSrc(s.tr), sfName(s), `${s.w || 0}승 ${s.l || 0}패`); }); }   // v16.68 경완 '체육관 홈 트레이너 상세카드도 고용 트레이너 상세카드로 통일' (+ 자리 바꾸기)
 // 체육관 정보: 팝업이 아니라 자세한 새 화면 (경완 2026-10-27 '새로운 창으로 더 자세하게')
+/* v25.41 경완 '체육관 정보 화면에 타이틀 박스 대신 관장 카드에 나오는 프로필 박스 넣고 그 위에 체육관 이름 박스' → '그냥 붙은 머리띠 느낌으로': 무대는 관장 카드와 같은 그림·줄 세우기 */
+async function ifMec(el) { const h = el.querySelector('.if-mec'); if (!h) return; const D = rkClean(rkCard(st())), src = await fitSrc('tr'), lu1 = D.lu; if (!h.isConnected) return;
+  h.innerHTML = `<div class="bd-pic mec-stg mecT${D.ty}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk${P[3] === 'S' || P[3] === 'A' ? ' rk' + P[3] : ''}" data-sp="${P[0]}" data-h="${SPECIES[P[0]]?.h || 10}" data-st="${mecSt(P[0]) ? 1 : 0}"><span></span></span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>`;
+  h.querySelectorAll('.mec-pk>span:first-child').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
+  const stg = h.querySelector('.mec-stg'); let k = 0; const go = () => { if (!stg.isConnected || k++ > 90) return; mecLay(stg); setTimeout(go, 33); }; stg.addEventListener('load', () => mecLay(stg), true); go(); }
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
@@ -2595,7 +2600,8 @@ function infoPop() {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; $g('.gy-main').appendChild(el);   // 하단 메뉴는 늘 보이게 (경완 2026-10-29)
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
-      <div class="if-hero2" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"><img class="ih-map" alt="" data-ms="${g.d}"><div class="ih-tx"><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입 체육관</span><h3><span>${esc(g.nm)}</span><button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button></h3><span class="ih-sub">${d0.getFullYear()}.${d0.getMonth() + 1}.${d0.getDate()} 개장 · 운영 ${days}일째</span></div></div>
+      <div class="if-nmb" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입 체육관</span><h3><span>${esc(g.nm)}</span></h3><button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button><small class="if-nmd">${d0.getFullYear()}.${String(d0.getMonth() + 1).padStart(2, '0')}.${String(d0.getDate()).padStart(2, '0')} 개장 · 운영 ${days}일째</small></div>
+      <div class="mec if-mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"></div>
       <div class="if-stats"><div><small>전적</small><b>${g.w || 0}<em>승</em> ${g.l || 0}<em>패</em></b></div><div><small>방어율</small><b>${wr}<em>%</em></b></div><div><small>이번 주</small><b>${w.w || 0}<em>승</em> ${w.l || 0}<em>패</em></b></div></div>
       <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? '다음' : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
@@ -2604,7 +2610,7 @@ function infoPop() {
       </div>
       <button class="if-re if-mg" type="button" data-a="mg">체육관 관리<small>관리하는 체육관 ${gList().length}곳</small></button>
     </div>`;
-  fillMs(el);
+  fillMs(el); ifMec(el);
   el.onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; sfx('tap'); const a = b.dataset.a;
     if (a === 'x') return el.remove(); if (a === 'perk') return perkPop(); if (a === 'big') return bigUp(el); if (a === 'bdg') return badgePop();
     if (a === 'nm') { el.remove(); return setup('nm'); }
