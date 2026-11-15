@@ -1083,6 +1083,8 @@ function addRep(n, sf) { const g = st(); const r0 = g.rep || 0; g.rep = clampN(r
 const dayNew = () => ({ n: 0, o: 0, p: 0, s: 0, me: { w: 0, l: 0, g: 0, r: 0 }, sf: {} });
 function dayRec(t = Date.now()) { const g = st(); if (!g.days || g.daysV !== 2) dayFill(g); const k = dayStart(t); let d = g.days[k];
   if (!d) { d = g.days[k] = dayNew(); Object.keys(g.days).map(Number).sort((a, b) => b - a).slice(90).forEach(x => delete g.days[x]); } return d; }
+/* v25.54 경완 '체육관 관장 전적이 이때까지의 모든 전적으로 나오는데, 해당 체육관 전적으로만 표시': g.gw/g.gl = 이 체육관에서만 이긴·진 수 (g.w/g.l 은 관장 몫이라 체육관을 옮겨 다님). 처음엔 이 체육관 날짜별 일지(90일)로, 휴업한 체육관이 없으면 g.w/g.l 그대로 */
+const gWL = g => { if (!g) return [0, 0]; if (g.gw == null) { const me = st(), one = g === me && !(me.shelf || []).length && !(me.tyLog || []).length, D = Object.values(g.days || {}); g.gw = one ? g.w | 0 : D.reduce((a, x) => a + (x?.me?.w | 0), 0); g.gl = one ? g.l | 0 : D.reduce((a, x) => a + (x?.me?.l | 0), 0); } return [g.gw | 0, g.gl | 0]; };
 const daySf = (d, nm) => d.sf[nm] || (d.sf[nm] = { w: 0, g: 0, r: 0 });
 /* 일지가 없던(또는 v15.66 모양) 저장: 남아 있는 체육관 기록(g.log)으로 날짜별 일지를 다시 채운다. 기록에 없는 주급·상점은 옛 일지에서 옮김 */
 function dayFill(g) { const old = g.days || {}; g.days = {}; g.daysV = 2; const txt = h => String(h).replace(/<[^>]*>/g, ''), num = (h, re) => +((txt(h).match(re) || [])[1] || 0);
@@ -1409,8 +1411,8 @@ async function challenge(picked) {
     g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
-    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } else { g.bsF = g.bsF || {}; g.bsF[c.boss] = (g.bsF[c.boss] | 0) + 1; } g.l++; if (g.wk) g.wk.l++; }
+    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
+    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } else { g.bsF = g.bsF || {}; g.bsF[c.boss] = (g.bsF[c.boss] | 0) + 1; } gWL(g); g.gl++; g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0; if (!res?.quit && !res?.cut) g.sfT = Date.now();   /* v23.52: 직접 배틀하면 트레이너 평판이 SF_ON_H 시간 동안 켜짐 */
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
@@ -1962,8 +1964,8 @@ async function legExam(gi, test) {
     const won = !!res?.won, r0 = g.rep || 0; let gold = 0;
     if (test) { if (won) { g.gmax = gi; g.rep = Math.max(r0, GRADES[gi][0]); g.newBdg = g.ty; g.newG = gi; g.grwN = gi; legLast = g.ty;   /* v23.66 경완 '승급 알림창 뒤 보상 알림창 안 뜸': 시험에서도 보상 창을 보여 줌 (보여 주기만, 골드·알은 안 줌) */ } }
     else {
-      if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); g.w++; if (g.wk) g.wk.w++; blocked(c); delete g.legN; delete g.lkTry; legLast = g.ty; }
-      else { g.stk = 0; g.l++; if (g.wk) g.wk.l++; g.lkTry = (g.lkTry | 0) + 1; }
+      if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); delete g.legN; delete g.lkTry; legLast = g.ty; }
+      else { g.stk = 0; gWL(g); g.gl++; g.l++; if (g.wk) g.wk.l++; g.lkTry = (g.lkTry | 0) + 1; }
       try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
         window.pkBal?.('gym', { c: 'boss', df: 2, bs: gi, nm: 'kang', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: (g.rep || 0) - r0, stk: g.stk | 0, ls: 0, sl: 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}
       { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += (g.rep || 0) - r0; }
@@ -2561,7 +2563,7 @@ function mtfOn(win, ty, g) {
 const rkBest = () => gList().reduce((a, x) => !a || (x.rep | 0) > (a.rep | 0) ? x : a, null);   // 관리 중인 체육관 중 평판이 가장 높은 곳
 function rkCard(g0) { const me = st(), g = g0 || rkBest(); if (!me || !g) return null;
   const lu = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '', GA.rankOf?.(P) || '']);
-  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: me.w | 0, l: me.l | 0, lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
+  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: gWL(g)[0], l: gWL(g)[1], lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
 const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.sx === 'f' ? 'f' : 'm';
   return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0),
     lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
@@ -2595,14 +2597,14 @@ async function ifMec(el) { const h = el.querySelector('.if-mec'); if (!h) return
 function infoPop() {
   root.querySelector('.gy-infos')?.remove();
   const g = st(), D = dzOf(g.d), G = gradeOf(g.rep || 0), d0 = new Date(g.t0 || Date.now()), days = Math.max(1, Math.floor((dayStart(Date.now()) - dayStart(g.t0 || Date.now())) / DAY) + 1);
-  const wl = (g.w || 0) + (g.l || 0), wr = wl ? Math.round((g.w || 0) / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), exam = nx0 => nx0 && (g.gmax | 0) <= G.i && (g.rep || 0) >= nx0[0];
+  const [gw, gl] = gWL(g), wl = gw + gl, wr = wl ? Math.round(gw / wl * 100) : 0, w = g.wk || {}, nb = Object.keys(g.bdg || {}).length, bL = bdLv(g, g.ty), exam = nx0 => nx0 && (g.gmax | 0) <= G.i && (g.rep || 0) >= nx0[0];
   const pct = G.hi > G.lo ? Math.min(100, ((g.rep || 0) - G.lo) / (G.hi - G.lo) * 100) : 100, nx = GRADES[G.i + 1];
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos'; $g('.gy-main').appendChild(el);   // 하단 메뉴는 늘 보이게 (경완 2026-10-29)
   el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 정보</b></div>
     <div class="gy-body">
       <div class="if-nmb" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"><span class="if-ty">${tyIcon(g.ty)}${TYPE_KO[g.ty]} 타입 체육관</span><h3><span>${esc(g.nm)}</span></h3><button class="gy-chg gy-pen" type="button" data-a="nm" aria-label="이름 바꾸기"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M8 0h2v1H8zM7 1h1v1H7zM10 1h1v1h-1zM6 2h1v1H6zM11 2h1v1h-1zM5 3h1v1H5zM10 3h1v1h-1zM4 4h1v1H4zM9 4h1v1H9zM3 5h1v1H3zM8 5h1v1H8zM2 6h1v1H2zM7 6h1v1H7zM1 7h1v2H1zM6 7h1v1H6zM5 8h1v1H5zM0 9h1v3H0zM4 9h1v1H4zM1 11h3v1H1zM2 10h1v1H2z"/><path fill="#f0c040" d="M7 2h1v1H7zM6 3h2v1H6zM5 4h2v1H5zM4 5h2v1H4zM3 6h2v1H3zM2 7h2v1H2zM2 8h3v1H2zM1 9h3v1H1zM3 10h1v1H3z"/><path fill="#e86070" d="M8 1h2v1H8zM8 2h3v1H8zM8 3h2v1H8zM8 4h1v1H8z"/></svg></button><small class="if-nmd">${d0.getFullYear()}.${String(d0.getMonth() + 1).padStart(2, '0')}.${String(d0.getDate()).padStart(2, '0')} 개장 · 운영 ${days}일째</small></div>
       <div class="mec if-mec" style="--tc:${GA.TYPE_C?.[g.ty] || '#5a6a9a'}"></div>
-      <div class="if-stats"><div><small>전적</small><b>${g.w || 0}<em>승</em> ${g.l || 0}<em>패</em></b></div><div><small>방어율</small><b>${wr}<em>%</em></b></div><div><small>이번 주</small><b>${w.w || 0}<em>승</em> ${w.l || 0}<em>패</em></b></div></div>
+      <div class="if-stats"><div><small>전적</small><b>${gw}<em>승</em> ${gl}<em>패</em></b></div><div><small>방어율</small><b>${wr}<em>%</em></b></div><div><small>이번 주</small><b>${w.w || 0}<em>승</em> ${w.l || 0}<em>패</em></b></div></div>
       <button class="if-grade" type="button" data-a="perk" data-g="${G.i}">${gEmb(G.i)}<div class="ig-tx"><div class="ig-top"><small>지금 등급</small><em>${nx ? '다음' : '가장 높은 등급'} ›</em></div><b class="ig-gr" data-g="${G.i}">${G.n}</b><i class="gy-bar"><i style="width:${pct}%"></i></i><span class="ig-rep">평판 <b>${g.rep || 0}</b>${nx ? ` / ${nx[0]}` : ''}${exam(nx) ? ' <span class="if-sim">승급 심사 대기</span>' : ''}</span></div></button>
       <div class="if-two">
         <div class="if-staff"><small>고용할 수 있는 트레이너</small><b>${staffMax()}<em>/ ${SF_MAX[SF_MAX.length - 1]}명</em></b></div>
