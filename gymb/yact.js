@@ -469,7 +469,7 @@ const HTML = `<canvas></canvas>
 <div class="ya-load">훈련장 준비 중…</div>`;
 
 // ---------- 시작 ----------
-async function start({ host, mons }) {
+async function start({ host, mons, bgm0, bgmNow }) {
   if (R) return; if (!mons?.length) { GA.toast?.('훈련할 포켓몬이 없어요'); return; }
   if (!document.getElementById('yactCss')) { const s = document.createElement('style'); s.id = 'yactCss'; s.textContent = CSS; document.head.append(s); }
   const el = document.createElement('div'); el.id = 'yact'; el.className = 'st0'; el.innerHTML = HTML; (host || document.body).append(el);
@@ -483,7 +483,7 @@ async function start({ host, mons }) {
   try {
     await GB()?.evyLoad?.();
     R.kit = await GA.pfxKit?.().catch(() => null);
-    try { R.bgm0 = window.GymBGM?.name || null; window.GymBGM?.sePrep(SE_PRE.map(n => 'DP_' + n)); ['wild', 'boss', 'bossBig', 'winWild'].forEach(n => window.GymBGM?.prep(n)); if (!MVFX) fetch('gym/mvfx.json').then(r => r.json()).then(j => { MVFX = j; }).catch(() => {}); } catch (e) {}
+    try { /* 경완 2026-11-16 '특훈 버튼 누르면 bgm 바뀌고 시작하면 게임 bgm으로 바로 바뀌게': 버튼에서 이미 곡을 바꿨으면(bgmNow) 돌아갈 곡(bgm0)은 바꾸기 전 곡 */ R.bgm0 = bgm0 !== undefined ? bgm0 : window.GymBGM?.name || null; if (bgmNow) R.bgmNow = bgmNow; window.GymBGM?.sePrep(SE_PRE.map(n => 'DP_' + n)); ['wild', 'boss', 'bossBig', 'winWild'].forEach(n => window.GymBGM?.prep(n)); if (!MVFX) fetch('gym/mvfx.json').then(r => r.json()).then(j => { MVFX = j; }).catch(() => {}); } catch (e) {}
     await Promise.all(mons.map(o => spr(o.P.sp, o.P.sex)));
     await resize(); bind(); startUi();
   } catch (e) { console.error(e); GA.toast?.('특훈을 열지 못했어요'); close(); return closed; }
@@ -1378,8 +1378,8 @@ function bind() {
   { const go = e => { e.preventDefault(); dodge(); }, d = q('.ya-dg'); on(d, 'touchstart', go, { passive: false }); on(d, 'mousedown', go); }
   on(q('.ya-pk'), 'click', e => { const b = e.target.closest('.pkc'); if (!b) return; se('SELECT'); r.pick = +b.dataset.i; const o = r.mons[r.pick]; if (o.evk >= 0) r.stat = o.evk; r.pool = null; startUi(); });
   on(q('.ya-stt'), 'click', e => { const b = e.target.closest('.stc'); if (!b) return; r.stat = +b.dataset.s; r.pool = null; startUi(); });
-  on(q('.ya-go'), 'click', () => { se('DECIDE'); r.el.classList.remove('pre', 'st0'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
-  on(q('.ya-again'), 'click', () => { se('DECIDE'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
+  on(q('.ya-go'), 'click', () => { se('DECIDE'); bgm('wild'); r.el.classList.remove('pre', 'st0'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
+  on(q('.ya-again'), 'click', () => { se('DECIDE'); bgm('wild'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
   on(q('.ya-back'), 'click', () => close());
   on(q('.ya-x'), 'click', () => close());
   { /* 하는 법 창 (머리줄 ?) — 게임 화면 캡처 + 짧은 설명 4장, 좌우로 밀어도 넘어감 */
