@@ -597,7 +597,11 @@ function close() { if (!R) return; humOff(); const r = R; try { if (r.bgmNow !==
 // ---------- 그림 ----------
 function spr(sp, sex) { const k = sp + ':' + (sex || ''); if (R.SPR[k]) return Promise.resolve(R.SPR[k]);
   return (GA.pmdMx || GA.pmd)(sp, sex).then(D => new Promise(ok => { const im = new Image(); im.onload = im.onerror = () => ok(R.SPR[k] = { D, im }); im.src = D.P ? D.P.i : D.img; })).catch(() => (R.SPR[k] = { D: {}, im: null })); }
-const sprOf = e => R.SPR[e.sp + ':' + (e.sex || '')] || R.SPR[e.sp + ':'];
+const sprOf = e => (e.msp && R.SPR[e.msp]) || R.SPR[e.sp + ':' + (e.sex || '')] || R.SPR[e.sp + ':'];
+/* 경완 2026-11-16 '우리 필드용 메가 폼 그림 있는데 다 받아줘': SpriteCollab 에 올라온 메가 폼 42종 (tools/mkpmdmega.py → gym/img/yact/mg/<번호>.json, fm 과 같은 모양). 마지막 대장이 메가진화하면 이 그림으로 바뀐다 (megaDone 의 o.msp) */
+const MEGA_SPR = new Set([6, 65, 80, 94, 115, 142, 150, 208, 227, 229, 248, 254, 282, 302, 303, 308, 310, 319, 323, 334, 354, 358, 359, 362, 380, 381, 384, 428, 448, 475, 491, 530, 560, 604, 670, 691, 701, 718, 719, 780, 807, 978]);
+function megaSpr(sp) { const k = 'M' + sp + ':', r = R; if (!MEGA_SPR.has(sp) || r.SPR[k]) return; r.SPR[k] = { D: {}, im: null };
+  fetch(`gym/img/yact/mg/${sp}.json?1`).then(x => x.ok ? x.json() : null).then(P => { if (!P || R !== r) return; const im = new Image(); im.onload = () => { if (R === r) r.SPR[k] = { D: { P, s: r.SPR[sp + ':']?.D?.s || 2 }, im }; }; im.src = P.i; }).catch(() => {}); }
 // 맞는 순간 하얗게 번쩍이는 그림 (캔버스 filter 는 아이폰에서 안 먹어서, 그림을 흰색으로 칠한 사본을 한 번 만들어 둔다)
 function whiteOf(S2) { if (S2.wh !== undefined) return S2.wh; S2.wh = null;
   try { const im = S2.im; if (im?.width) { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); S2.wh = c; } } catch (e) {}
@@ -734,7 +738,7 @@ function foePool(stat) {   // 고른 능력치 노력치만 주는 종 (gym/evy.
   const sm = pick(small, 6); for (let i = 0; sm.length < 6; i++) sm.push(sm[i] || 19);
   const bg = pick(big, 3); for (let i = 0; bg.length < 3; i++) bg.push(bg[i] || sm[i] || 20);
   /* 경완 2026-11-16 '마지막 대장은 항상 메가진화하는 애들로만': 메가스톤이 있는 종(GymBattle.MEGA_ST) 가운데 고른 능력치 노력치만 주는 종 → 없으면 그 능력치를 주는 종 → 없으면 아무 메가 종 */
-  { const MS = [...new Set(Object.values(GB()?.MEGA_ST || {}).map(v => v[0]))].filter(sp => SP[sp] && !SP[sp].leg && !SP[sp].my), only = MS.filter(sp => big.includes(sp) || small.includes(sp)), any = MS.filter(sp => +(E[sp] || '')[stat]), L = only.length ? only : any.length ? any : MS; if (L.length) bg[2] = L[Math.floor(Math.random() * L.length)]; }
+  { const MS0 = [...new Set(Object.values(GB()?.MEGA_ST || {}).map(v => v[0]))].filter(sp => SP[sp] && !SP[sp].leg && !SP[sp].my), MS1 = MS0.filter(sp => MEGA_SPR.has(sp)), MS = MS1.length ? MS1 : MS0 /* 메가 폼 필드 그림이 있는 종만 */, only = MS.filter(sp => big.includes(sp) || small.includes(sp)), any = MS.filter(sp => +(E[sp] || '')[stat]), L = only.length ? only : any.length ? any : MS; if (L.length) bg[2] = L[Math.floor(Math.random() * L.length)]; }
   return { sm, big: bg };
 }
 function moveList(P) {   // 내 포켓몬이 지금 쓰는 기술 4개 (체육관 기술 데이터)
@@ -768,7 +772,7 @@ function spawn(sp, boss, ox = 0, bi = 0) {
   let x = side === 0 ? A.x0 + 10 : side === 1 ? A.x1 - 10 : W * (.3 + Math.random() * .5), y = side === 2 ? A.y0 + 4 : A.y0 + 20 + Math.random() * (H * .45);
   if (boss) { x = W / 2 + ox; y = Math.max(A.y0 + 60, Math.min(H * .5, G.me.y - 120 < A.y0 + 60 ? G.me.y + 120 : G.me.y - 120)); }   // 대장은 한가운데로 하늘에서 떨어진다
   const e = { sp, lv, st: GB().statsOf(sp, lv, [10, 10, 10, 10, 10, 10], '', []), x, y, face: x < W / 2 ? 1 : -1, anim: 'Idle', at: R.T, boss, k: boss === 2 ? 1.8 : boss ? 1.5 : 1 /* 경완 2026-11-16 대장 크기 'A 괜찮고': 중간 대장 1.2 → 1.5배, 마지막 대장 1.4 → 1.8배 (메가진화 뒤 ×1.25), 맞는 범위는 bR 이 크기를 따라감 */, cd: .5 + Math.random() * .8, warn: 0, flash: 0, z: 0, enter: boss ? .7 : .35, drop: !!boss, sq: 0, sqv: 0, kx: 0, ky: 0, atkN: 0, bi, brk: 0, brkMax: 100, side: Math.random() < .5 ? 1 : -1, sideT: Math.random() * 2 };
-  const b = SP[sp]?.bs || [60, 60, 60, 60, 60, 60]; e.ranged = b[3] > b[1] + 10;
+  const b = SP[sp]?.bs || [60, 60, 60, 60, 60, 60]; e.ranged = b[3] > b[1] + 10; if (boss === 2) megaSpr(sp);
   if (!boss) { const ag = tysOf(sp).some(t => t === 2 || t === 16 || t === 17) ? .5 : .22, r = Math.random(); e.temp = r < ag ? 'aggr' : r < ag + .18 ? 'timid' : ''; e.rush = !e.ranged && b[5] >= 70; }   /* 성격: 공격형(격투·드래곤·악은 절반) · 겁쟁이 · 보통, 빠른 근접형은 치고 빠진다 */ e.spd = 48 + b[5] * .62;
   e.mhp = e.hp = e.hpLag = Math.round(e.st[0] * (boss === 2 ? 8.5 : boss ? 4.4 : 2.7));
   keepIn(e); G.mobs.push(e);
@@ -806,7 +810,7 @@ const GROGGY = 4;
 const MEGA_C = ['#ff6a6a', '#ffb04a', '#ffe27a', '#8ff0a0', '#6ac8ff', '#c08aff'];
 function megaPhase(o) { const G = R.G; o.mega = 1; o.mgT = 1.8; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.groggy = 0; o.dz = 0; o.brk = 0; o.brkLock = 0; o.stun = 0; setAnim(o, anyAnim(o, 'Charge', 'Idle'), true);
   G.shots = G.shots.filter(q => q.mine); G.waves = []; G.blasts = []; coinRain(o.x, o.y - 10, RAIN_P1); pop(o.x, o.y - 120, '1페이즈 돌파!', '#ffe27a', true); banner(`<small>페이즈 2</small>대장 ${nmSp(o.sp)} 메가진화!`, 'boss'); bgm('champ'); slow(1, .35); flash(.25, '255,255,255'); zoom(.1); rumble(4, 110, 1); se('KON2', .3); se('KIRAKIRA2', .1, { gain: 1.6 }); }
-function megaDone(o) { const G = R.G, me = G.me; o.k = (o.k || 1) * 1.25; o.hp = Math.min(o.mhp, o.hp + Math.round(o.mhp * .15)); o.hpLag = o.hp; o.st = o.st.map((v, i) => i ? Math.round(v * 1.15) : v); o.brkMax = 130; o.cd = .8; squash(o, -.5);
+function megaDone(o) { const G = R.G, me = G.me; if (R.SPR['M' + o.sp + ':']?.im) { o.msp = 'M' + o.sp + ':'; o.anim = 'Idle'; o.at = R.T; o.once = false; } o.k = (o.k || 1) * 1.25; o.hp = Math.min(o.mhp, o.hp + Math.round(o.mhp * .15)); o.hpLag = o.hp; o.st = o.st.map((v, i) => i ? Math.round(v * 1.15) : v); o.brkMax = 130; o.cd = .8; squash(o, -.5);
   R.HS = Math.max(R.HS, .16); flash(.6, '255,255,255'); shake(1); zoom(.12); rumble(5, 60); se('DODON', .3); se('W153', .1); snd('DUN_Explosion', .1);
   MEGA_C.forEach((c, i) => ring(o.x, o.y - 20, c, 12, 150 + i * 26, .5, 6, 1, i * .04)); stars(o.x, o.y - 30, 20, '#fff', 380); dust(o.x, o.y, 18, 240);
   const d = Math.hypot(me.x - o.x, me.y - o.y) || 1; if (d < 150 && me.hp > 0) { me.kx += (me.x - o.x) / d * 360; me.ky += (me.y - o.y) / d * 240; }
