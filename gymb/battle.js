@@ -475,7 +475,7 @@ const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
   const m = monEl(s); if (!m || !B) return; const pan = panOf(s), DBK = await dbkLoad();
   const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); paintHb(s, X); gkBg(); };
-  if (DBK && X && !((kind === 'mega' || kind === 'z') && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
+  if (DBK && X && !((kind === 'mega' || kind === 'z' || kind === 'dmax') && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
       if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-bracelet.png`)   /* 경완 '키스톤은 메가링' → 경완이 준 메가바클 그림 (2026-11-12) */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
@@ -516,6 +516,19 @@ async function gmFx(s, X, kind, ty) {
     ph = 2; t0 = performance.now(); au.classList.add('out'); setTimeout(() => { live = 0; const im = cl?.querySelector('img'); if (im && im.style.filter.includes(fid)) im.style.filter = m._patF || ''; flt.remove(); au.remove(); }, 650); if (kind === 'mega' || zE) { se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); mgMark(); } await wait(kind === 'mega' || zE ? 1100 : 420); m.classList.remove('gm-' + gk); if (trE) { trE.classList.remove('mgin'); trE.className = trWas; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
+  if (kind === 'dmax' && s[0] === 'e') {   /* v25.35 경완 '도전자가 하는 다이맥스는 메가·Z기술처럼 화면 커지지 않고 간단하게 (근데 볼에 들어갔다가 커진 후 나오는 연출이긴 해야됨)': 트레이너 들어옴 → 볼로 돌아감 → 볼이 붉게 빛나며 기운을 빨아들이고 커짐 → 붉게 번쩍 터지며 나옴 (크기는 그대로) → 하늘 배경·구름 */
+    const tr = $b('.bt-tr.e'), trW = tr?.className, F = B.fast ? .5 : 1, fx = $b('.bt-fx'), x = 176 + slx(s), y = 46 + sly(s);
+    if (tr) { tr.classList.remove('away'); tr.classList.add('mgin'); await wait(550 * F); }
+    se('SUIKOMU', { pan }); m.classList.add('recall'); await wait(430); m.classList.remove('on', 'recall');
+    const b = pbEl('mon'); b.classList.remove('spin'); b.classList.add('gxb'); fx?.appendChild(b); const at = (k, dy = 0, r = 0) => ({ transform: `translate(${x}px,${y + dy}px) rotate(${r}deg) scale(${k})` });
+    await b.animate([at(.2), at(.8)], { duration: 220 * F, easing: 'ease-out', fill: 'forwards' }).finished.catch(() => {});
+    se('KOUKA_M', { pan }); for (let j = 0; j < 14; j++) { const p = document.createElement('i'); p.className = 'gxp'; const a = j / 14 * Math.PI * 2; p.style.left = x + 'px'; p.style.top = y + 'px'; fx?.appendChild(p);
+      p.animate([{ transform: `translate(${Math.cos(a) * 70}px,${Math.sin(a) * 50}px) scale(1.3)`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: 'translate(0,0) scale(.3)', opacity: 0 }], { duration: 650 * F, delay: j * 50 * F, easing: 'ease-in', fill: 'both' }); setTimeout(() => p.remove(), 1600 * F); }
+    await b.animate([at(.8), at(1.4, -4, -8), at(1.9, -6, 8), at(2.5, -8, -6), at(3, -10, 0)], { duration: 1400 * F, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }).finished.catch(() => {});
+    se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); b.classList.add('open'); ballBurst(s, 'mon', 176, y - 4);
+    const fl = document.createElement('i'); fl.className = 'gxfl'; fl.style.setProperty('--x', x + 60 + 'px'); fl.style.setProperty('--y', y + 120 + 'px'); fx?.appendChild(fl); fl.animate([{ opacity: 0 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: 700 * F, fill: 'both' }); setTimeout(() => fl.remove(), 800 * F);
+    swap(); m.classList.add('on', 'gxin'); dmaxOn(s, X); setTimeout(() => b.remove(), 120); se('BOWA2', { pan });
+    await wait(750 * F); m.classList.remove('gxin'); if (tr) { tr.classList.remove('mgin'); tr.className = trW; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} await wait(500 * F); return; }
   if (kind === 'dmax') { se('KOUKA_M', { pan }); m.classList.add('fmc'); await wait(260); swap(); m.classList.remove('fmc'); dmaxOn(s, X); await wait(B.fast ? 400 : 900); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'undmax') { se('BOWA2', { pan }); m.classList.add('gxout'); await wait(B.fast ? 300 : 650); dmaxOff(s); swap(); se('KOUKA_L', { pan }); await wait(B.fast ? 400 : 1300); m.classList.remove('gxout'); }   /* 본가처럼 붉은 기운이 빠져나가며 원래 크기로 (화면도 다시 가까이) */
 }
