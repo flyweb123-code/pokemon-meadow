@@ -794,7 +794,8 @@ const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(.5, .05 * (n - 1)));   // v14.97 경완: 골드 연승 보너스 2연승 +5% · 연승마다 +5% · 11연승부터 +50%
 const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
-const stkLv = n => Math.min(10, Math.floor((n | 0) * .6));
+/* v25.84 경완 '연승 보정 지수형으로 올라가야', '천장이랑 바닥 있으니까 상한 빼줘': 예전 = 연승×0.6 (최대 +10). 지금 = 1.25^연승 − 1 (3연승 +1, 5연승 +2, 8연승 +5, 10연승 +8, 12연승 +14…), 상한 없음(등급 레벨 천장 lvCeil 이 막음, 99 는 계산 안전용) */
+const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 1));
 // v17.31 경완 '연승 보정처럼 연패 보정도': 내가 직접 싸워 진 게 2번 이어지면(g.lstk) 도전자 레벨 −2, 연패마다 −2 더 (최대 −8), 강함 보정(strOf)도 쉰다. 한 번 막으면 0. 승급 심사는 그대로
 const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
@@ -963,7 +964,8 @@ const SF_ON_H = 24;
 function sfRepOn(t) { const g = st(); if (g.sfT == null) g.sfT = Date.now(); delete g.sfB; delete g.sfP; return t - g.sfT <= SF_ON_H * H; }
 function refit0(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
-  const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
+  /* v25.82 경완 '고레벨 1마리에 나머지 5마리 저레벨로 구성하면 쉽게 이기는 구조?' → '최고 레벨 −5 하한': 도전자·이름 있는 트레이너 기준 레벨은 라인업 최고 레벨 − LV_ACE 아래로 안 내려감 (승급 심사는 박스 기준 bsBase 그대로) */
+  const LV_ACE = 5, mean = Math.max(Math.round(L.reduce((a, b) => a + b, 0) / L.length), Math.max(...L) - LV_ACE);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
   const avg = c.boss ? bsBase(c.boss) : mean + stkLv(g.stk) - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
@@ -4007,14 +4009,15 @@ async function yaTest(fx) {
   if (!open || !st()?.d) return;
   if (!(st().tr || []).length) { GA.toast?.('훈련장에 포켓몬을 먼저 넣어 주세요'); return; }   /* 훈련장이 비었으면 연출 없이 알림만 */
   /* 경완 2026-11-15 '승급심사 눌렀을 때처럼 시작화면 진입하는 연출 넣어줘': 훈련장 [특훈] 버튼으로 들어갈 땐 줄무늬가 화면을 가르며 '특훈' (bsGo 와 같은 .bs-tr), 닫힌 사이에 시작 화면이 뜬다 */
-  if (fx) { if (root.querySelector('.bs-tr')) return; const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; { /* 경완 2026-11-15 '진입 연출 때 승급 심사 때도 원래 하단메뉴까지 가려졌나?' → 승급 심사처럼 아래 메뉴는 안 가림 */ const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; } f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} fx = performance.now(); { /* 시작 화면이 다 준비될 때까지 닫힌 채 기다렸다 연다 (늦어도 6초) */ const t0 = fx; let rd = 0; setTimeout(() => { if (f.isConnected && !f.classList.contains('go') && !f.dataset.end) root.classList.add('yahide'); }, 440); /* 줄무늬가 다 닫힌 뒤 뒤 화면을 감춤 (경완 '아직도 훈련장 비침') */ const iv = setInterval(() => { const y = root.querySelector('#yact'), now = performance.now(), dt = now - t0; if (!rd && y && !y.querySelector('.ya-load')) rd = now; /* 준비되고도 0.2초 더 닫아 둬 시작 화면이 다 그려진 뒤 연다 */ if (!(dt > 6000 || !open || f.dataset.end || (dt >= 910 && rd && now - rd >= 200))) return; clearInterval(iv); if (!y) root.classList.remove('yahide'); f.classList.add('go'); setTimeout(() => f.remove(), 500); }, 40); } }
-  await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/manage.js', 'GymManage'); await loadJs('gym/yact.js', 'GymYA'); if (!window.GymYA) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); return; }
+  const b0 = window.GymBGM?.name || null, YB = 'league';   /* 경완 2026-11-16 '특훈 버튼 누르면 bgm 바뀌고': 버튼을 누르자마자 시작 화면 곡(승급 심사와 같은 리그 곡), 닫으면 b0 로 돌아감 */
+  if (fx) { if (root.querySelector('.bs-tr')) return; bgmPlay(YB); const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; { /* 경완 2026-11-15 '진입 연출 때 승급 심사 때도 원래 하단메뉴까지 가려졌나?' → 승급 심사처럼 아래 메뉴는 안 가림 */ const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; } f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} fx = performance.now(); { /* 시작 화면이 다 준비될 때까지 닫힌 채 기다렸다 연다 (늦어도 6초) */ const t0 = fx; let rd = 0; setTimeout(() => { if (f.isConnected && !f.classList.contains('go') && !f.dataset.end) root.classList.add('yahide'); }, 440); /* 줄무늬가 다 닫힌 뒤 뒤 화면을 감춤 (경완 '아직도 훈련장 비침') */ const iv = setInterval(() => { const y = root.querySelector('#yact'), now = performance.now(), dt = now - t0; if (!rd && y && !y.querySelector('.ya-load')) rd = now; /* 준비되고도 0.2초 더 닫아 둬 시작 화면이 다 그려진 뒤 연다 */ if (!(dt > 6000 || !open || f.dataset.end || (dt >= 910 && rd && now - rd >= 200))) return; clearInterval(iv); if (!y) root.classList.remove('yahide'); f.classList.add('go'); setTimeout(() => f.remove(), 500); }, 40); } }
+  await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/manage.js', 'GymManage'); await loadJs('gym/yact.js', 'GymYA'); if (!window.GymYA) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); if (fx && b0) bgmPlay(b0); return; }
   if (fx) await new Promise(r => setTimeout(r, Math.max(0, 450 - (performance.now() - fx))));
   /* 경완 2026-11-15 '특훈 지금 훈련장에 있는 라인업만 나오지?' → '엉 그렇게 바꿔줘': 훈련장에서 훈련 중인 포켓몬(g.tr)만. 전엔 라인업(g.lu)도 이어 붙이고, 비면 상자 앞 6마리였음 */
   const g = st(), mons = [...new Set((g.tr || []).map(e => e.id))].map(id => GB().boxOf(id)).filter(Boolean).map(P => ({ P, evk: (g.tr || []).find(e => e.id === P.id)?.evk ?? -1 }));
-  if (!mons.length) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); GA.toast?.('훈련장에 포켓몬이 없어요'); return; }
+  if (!mons.length) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); GA.toast?.('훈련장에 포켓몬이 없어요'); if (fx && b0) bgmPlay(b0); return; }
   root.classList.add('dhide');
-  try { await window.GymYA.start({ host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('dhide', 'yahide'); root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); }
+  try { await window.GymYA.start(fx ? { host: root, mons, bgm0: b0, bgmNow: YB } : { host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('dhide', 'yahide'); root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); }
 }
 /* v23.54 경완 '라인업 고르는 화면부터, 거기서 랜덤 라인업도, 내 계정엔 아무 영향 없이': 실제 라인업 화면(시뮬 안이라 나가면 되돌아감)에서 고르고,
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */

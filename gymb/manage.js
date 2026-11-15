@@ -1037,7 +1037,7 @@ function buyTm(id, can) {
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
 let itCat = -1;   // v20.80 도구 탭 항목 필터 (-1 = 모든 항목)
-const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : [])];
+const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
   // 분류별로 (경완 2026-10-31 '기존 도구들도 민트처럼 항목 분류', 열매 추가). 분류 안에서는 가격순, 타입 강화는 체육관 타입 먼저
@@ -1052,10 +1052,11 @@ function shopIt(body) {
   } else
   { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.80 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
   body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
-    ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+    ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
     if (b.dataset.f === 'ic') { sfx('tap'); return K.fPop('항목', [[-1, '모든 항목'], ...itCats().map(([, n], i) => [i, n])], itCat, v => { itCat = v; redraw(); }); }
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
+    if (b.dataset.soup) { sfx('tap'); return soupBuy(); }
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
       return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
         g.mint = g.mint || {}; g.mint[mk] = (g.mint[mk] || 0) + 1; K.newMark?.('mint', mk); K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }, '', n); }
@@ -1066,6 +1067,12 @@ function shopIt(body) {
 // v20.45 영양제 (노력치 +10, 300G): 상점 도구 탭 민트 밑, 창고(g.vit)에 쌓였다가 노력치 설정 창에서 먹임. 슬롯엔 창고 수 안 보임 (경완)
 function evShop() { if (!GB().evOn?.()) return ''; const B = GB();
   return `<p class="sp-sub ev-shs">영양제 · 먹이면 그 능력치 노력치 +10</p><div class="sp-list">${B.EV_VIT.map(([k, nm], i) => `<button type="button" class="sp-tm sp-it sp-vit" data-vit="${i}"><img class="tm-ic it-ic" alt="" src="${B.itImg(k)}"><span class="tm-nm"><b>${nm}</b></span><span class="tm-meta"><small><b class="ev-stc">${B.EV_N[i]}</b> 노력치 +10 · 한 능력치 252까지</small></span><em>${gold(B.EV_VP)}</em></button>`).join('')}</div>`; }
+/* v25.80 경완 '다이수프는 상점에서 파는 방향으로': 다이맥스밴드를 받은 관장만 (dmOn), 도구 탭 영양제 밑. 여러 개 살 수 있음, 창고 g.soup */
+function soupShop() { const B = GB(); if (!B.dmOn?.()) return '';
+  return `<p class="sp-sub">다이수프 · 먹이면 거다이맥스할 수 있게 돼요</p><div class="sp-list">${B.soupRow(0).replace('</button>', `<em>${gold(B.SOUP_P)}</em></button>`)}</div>`; }
+function soupBuy() { const B = GB(), g = st(), P = B.SOUP_P;
+  B.soupInfo(`${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
+    g.soup = (g.soup | 0) + 1; K.newMark?.('soup', 0); K.glog('tr', '도구 <b>다이수프</b>를 샀다.'); K.save(); redraw(); say('다이수프를 창고에 넣었어요.'); }, g.soup | 0); }
 function vitBuy(i) { const B = GB(), [k, nm] = B.EV_VIT[i], g = st(), n = g.vit?.[k] | 0;
   B.gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${B.itImg(k)}">${nm}${B.bagN(n)}</h4><p class="gy-msg mi-d">${B.EV_VD[i]}. 먹이면 ${B.EV_N[i]} 노력치가 10 올라간다. 상세카드 노력치 박스에서 먹일 수 있다.</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="y">${gold(B.EV_VP)} 사기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return; if (!buy(B.EV_VP)) return say(`골드가 모자라요. ${B.EV_VP}G가 필요해요.`);
