@@ -2666,9 +2666,12 @@ const gCard = (x, i) => { const G = gradeOf(x.rep || 0, x.gmax ?? 99), cur = x =
 function fPop(title, O, cur, pick) {
   const fp = document.createElement('div'); fp.className = 'fpop gy-fpop';
   fp.innerHTML = `<div class="win" role="listbox" aria-label="필터"><h4>${title}</h4><div class="fopts">${O.map(([v, n, t, pre], i) => `<button${i ? '' : ' class="all"'} data-v="${v}" aria-selected="${v === cur}">${t ? `<i class="sw" style="background:${GA.TYPE_C[t]}"></i>` : ''}${pre || ''}${n}</button>`).join('')}</div></div>`;
-  fp.onclick = e => { const o = e.target.closest('[data-v]'); if (o) { sfx('tap'); pick(+o.dataset.v); } if (o || e.target === fp) fp.remove(); };
+  fp.onclick = e => { const o = e.target.closest('[data-v]'); if (o) { sfx('tap'); pick(+o.dataset.v); } if (o || e.target === fp) { fp.remove(); ghostEat(); } };
   document.body.appendChild(fp); return fp;
 }
+/* v25.47 경완 '타입 정렬하면 정렬되자마자 그 자리에 있던 포켓몬 눌려서 상세카드 열리는 오류': 필터 창을 닫은 뒤 0.45초 동안 같은 터치로 생기는 클릭을 먹음 (아이폰 겹 클릭) */
+function ghostEat(ms = 450) { const t = performance.now() + ms, eat = e => { if (performance.now() > t) return document.removeEventListener('click', eat, true); e.stopPropagation(); e.preventDefault(); }; document.addEventListener('click', eat, true); setTimeout(() => document.removeEventListener('click', eat, true), ms + 50); }
+window.gyGhostEat = ghostEat;
 let mgTy = 0, mgSort = 'rep', mgDir = { rep: -1, date: -1 };   // v22.52 경완: 누른 정렬을 한 번 더 누르면 오름·내림 (화살표)
 const tyI0 = t => tyIcon(t).replace(/ data-tip="[^"]*"/, ''), nmTy = x => `<span class="re-nm">${tyI0(x.ty)}${esc(x.nm)}</span>`;   // 휴업·다시 열기 간판: 체육관 이름 옆 타입 아이콘   // 체육관 관리: 타입 고르기 + 평판순/날짜순 (경완 2026-10-30)
 function mgPop() {
