@@ -4711,3 +4711,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* 경완 2026-11-15 '아직도 훈련장 비침': 특훈 화면이 떠 있는 동안(줄무늬가 닫힌 뒤부터) 뒤의 훈련장·윗줄을 아예 안 그린다 — 아이폰에서 새 화면이 그려지기 전 한 프레임 뒤가 비쳐도 어두운 바탕만 보임. 아래 메뉴는 그대로 */
 #gym.yahide .gy-main,#gym.yahide .gy-top{visibility:hidden!important}
+/* v25.77 경완 '여기 지금 체육관 관리 버튼 잘림 여백 없이 스크롤 안되게 해줘': 체육관 정보 화면 아래 안전 영역 여백(메뉴가 이미 맡음) 빼고, 화면이 낮으면 칸들을 조금씩 줄여 한 화면에 */
+#gym .gy-setup.gy-infos{padding-bottom:0!important}#gym .gy-infos>.gy-body{padding-bottom:10px}#gym .gy-infos .if-re.if-mg{margin-top:0}
+#gym .gy-infos>.gy-body>*{flex-shrink:0}#gym .gy-infos>.gy-body>:is(.if-stats,.if-grade,.if-two,.if-re){margin-top:auto!important}
+@media (max-height:1000px){#gym .gy-infos>.gy-body{gap:8px}#gym .gy-infos .if-grade>.bdw img{width:68px!important;height:68px!important}#gym .gy-infos button.if-grade{padding:8px 12px}#gym .gy-infos .if-grade .ig-tx>b.ig-gr{font-size:16px;margin:2px 0 4px}#gym .gy-infos .if-two>div{min-height:60px;padding-top:6px;padding-bottom:6px}#gym .gy-infos .if-two b{font-size:26px}#gym .gy-infos .if-stats>div{padding:6px 4px}#gym .gy-infos .if-re{padding:9px}}
+@media (max-height:720px){#gym .gy-infos>.gy-body{gap:6px}#gym .gy-infos .if-grade>.bdw img{width:52px!important;height:52px!important}#gym .gy-infos .if-two>div{min-height:52px}#gym .gy-infos .if-two b{font-size:22px}#gym .gy-infos .if-stats b{font-size:17px}#gym .gy-infos .if-re{padding:7px}#gym .gy-infos .gy-bar{height:10px}}
