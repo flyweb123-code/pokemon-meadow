@@ -428,7 +428,9 @@ const CSS = `
 #yact .ya-rl li.ya-gold{background:#fff6d0}
 #yact .ya-rl li.ya-gold b{color:#a87800}
 #yact .rs-row{display:flex;gap:8px}
-#yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;background:#1c1c2e}
+/* 경완 2026-11-15 '시작화면 뜨기 전에 불러오는 중 같은 하얀 텍스트 아주 잠깐 1프레임 본 거 같은데': 준비 화면 바탕을 시작 화면과 같은 색으로, 글자는 1초 넘게 걸릴 때만 천천히 나타남 */
+#yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;color:rgba(240,236,255,0);background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);animation:yaLoadT .4s linear 1s forwards}
+@keyframes yaLoadT{to{color:rgba(240,236,255,.8)}}
 `;
 const HTML = `<canvas></canvas>
 <div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
