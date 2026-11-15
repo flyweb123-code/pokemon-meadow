@@ -474,12 +474,13 @@ async function start({ host, mons }) {
     HS: 0, SLOW: 0, SLOWK: 1, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, FLC: '255,255,230', VIG: 0, hapT: -1, hapN: -1, HELD: {}, BUF: null,
     JOY: { id: null, dx: 0, dy: 0, ox: 0, oy: 0 }, KEY: {}, done, off: [] };
   R.stat = mons[0].evk >= 0 ? mons[0].evk : 5;
+  preOn();   /* 경완 2026-11-15 '특훈 진입 연출 나올 때 하단 메뉴 잠깐 사라졌다가 나오는 오류': 준비 중 화면(.ya-load)부터 메뉴 위까지만 덮는다 (전엔 준비가 끝난 뒤에야 줄여서 그 사이 메뉴가 가려짐) */
   try {
     await GB()?.evyLoad?.();
     R.kit = await GA.pfxKit?.().catch(() => null);
     try { R.bgm0 = window.GymBGM?.name || null; window.GymBGM?.sePrep(SE_PRE.map(n => 'DP_' + n)); ['wild', 'boss', 'bossBig', 'winWild'].forEach(n => window.GymBGM?.prep(n)); if (!MVFX) fetch('gym/mvfx.json').then(r => r.json()).then(j => { MVFX = j; }).catch(() => {}); } catch (e) {}
     await Promise.all(mons.map(o => spr(o.P.sp, o.P.sex)));
-    await resize(); bind(); startUi(); preOn();
+    await resize(); bind(); startUi();
   } catch (e) { console.error(e); GA.toast?.('특훈을 열지 못했어요'); close(); return closed; }
   q('.ya-load').remove();
   R.raf = requestAnimationFrame(loop);
