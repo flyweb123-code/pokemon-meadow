@@ -317,6 +317,63 @@ const CSS = `
 #yact .ya-tips span{display:block;font-size:9px;line-height:1.35;color:#5a5a6a}
 #yact .ya-op{font-size:9.5px;text-align:center;color:#7a7a8a;margin:9px 0 0;line-height:1.4}
 #yact .rs-row .sec{flex:0 0 34%}
+/* 경완 2026-11-15 '특훈 눌렀을 때 시작창 승급심사처럼 새로운 화면으로' → '무대 A 좋은데 빛줄기가 너무 밤티' → '3번으로 가고 기술 딱지 가독성 좀 높여줘': 전체 화면 어두운 무대(.fs), 후광 + 반짝이, 유리 칸 + 금빛 테두리 */
+#yact .ya-start.fs{left:0;top:0;transform:none;width:100%;height:100%;max-height:none;border:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);color:#f0ecff}
+#yact .fs .ya-hero{flex:none;padding:10px 16px 14px;background:none;border-bottom:0;overflow:visible}
+#yact .fs .ya-hero::before{display:none}
+#yact .fs .fs-hd{display:flex;align-items:center;gap:8px;height:40px;margin:-4px 0 4px}
+#yact .fs .fs-hd b{font-size:17px;flex:1;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+#yact .fs .fs-bk{width:40px;height:40px;margin-left:-10px;border:0;background:none;color:#fff;font-size:18px;font-family:var(--px);cursor:pointer}
+#yact .fs .fs-bk:active{transform:translateX(-2px)}
+#yact .fs .hr-row{flex-direction:column;gap:6px;text-align:center}
+#yact .fs .hr-st{width:190px;height:min(158px,19vh);isolation:isolate}
+#yact .fs .hr-st::before{left:14px;right:14px;height:26px;background:radial-gradient(ellipse,#ffe9a0 0,#b88a2a 60%,#6a4a10 100%);border:3px solid #3a2400;box-shadow:0 3px 0 rgba(0,0,0,.4)}
+#yact .fs .hr-im{width:auto;height:95%;aspect-ratio:1;margin-bottom:8px}
+#yact .fs .hr-st>u{position:absolute;pointer-events:none;z-index:-1;text-decoration:none}
+#yact .fs .hr-st>u.a{left:50%;top:44%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,rgba(190,150,255,.55),rgba(255,220,130,.2) 45%,transparent 70%);animation:yaHalo 2.6s ease-in-out infinite}
+#yact .fs .hr-st>u.b{inset:-30px -70px;background:radial-gradient(circle 2px at 12% 30%,#fff3c0 99%,transparent),radial-gradient(circle 3px at 88% 22%,#fff3c0 99%,transparent),radial-gradient(circle 2px at 78% 62%,#fff 99%,transparent),radial-gradient(circle 3px at 20% 72%,#ffe08a 99%,transparent),radial-gradient(circle 2px at 30% 8%,#fff 99%,transparent),radial-gradient(circle 2px at 68% 4%,#ffe08a 99%,transparent),radial-gradient(circle 2px at 95% 50%,#fff3c0 99%,transparent),radial-gradient(circle 2px at 4% 52%,#fff 99%,transparent);filter:drop-shadow(0 0 4px rgba(255,220,120,.9));animation:yaTwk 3.2s ease-in-out infinite}
+@keyframes yaHalo{50%{transform:scale(1.08);opacity:.8}}
+@keyframes yaTwk{0%,100%{opacity:1;transform:translateY(0)}50%{opacity:.45;transform:translateY(-5px)}}
+#yact .fs .hr-in{width:100%}
+#yact .fs .hr-nm{font-size:22px;display:inline-block;max-width:70%;margin-right:8px;vertical-align:middle}
+#yact .fs .hr-lv{font-size:12px;margin:0;vertical-align:middle}
+#yact .fs .ya-pmv{grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+#yact .fs .ya-pmv span{font-size:13px;font-weight:700;line-height:1.3;padding:6px 4px;border-radius:9px;color:#fff;border:2px solid #0c0a1c;letter-spacing:.5px;background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 94%,#000) 0,color-mix(in srgb,var(--tc) 74%,#000) 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.28),inset 0 -3px 0 rgba(0,0,0,.25),0 2px 0 rgba(0,0,0,.5);text-shadow:-1px 0 #14101e,1px 0 #14101e,0 -1px #14101e,0 2px #14101e}
+#yact .fs .ya-bd{flex:1;min-height:0;overflow:auto;padding:10px 16px 12px!important;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+#yact .fs .ya-bd>*{margin:0}
+#yact .fs h3{font-size:12.5px;gap:8px;align-items:center;margin-bottom:8px;color:#ffe9a0}
+#yact .fs h3::before{content:"";width:8px;height:8px;rotate:45deg;flex:none;background:#ffd040;box-shadow:0 0 6px #ffd040}
+#yact .fs h3::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,rgba(255,233,160,.5),transparent)}
+#yact .fs .ya-pk{gap:7px;margin:0}
+#yact .fs .ya-pk.many{margin:0}
+#yact .fs .pkc{max-width:none;height:42px;border-radius:11px;padding:4px 8px;gap:5px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,233,160,.4);color:#f0ecff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 rgba(0,0,0,.45)}
+#yact .fs .pkc:active{transform:translateY(2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 1px 0 rgba(0,0,0,.45)}
+#yact .fs .pkc img{width:30px;height:30px}#yact .fs .pkc b{font-size:12px}
+#yact .fs .pkc.on{background:linear-gradient(180deg,#fff2a8 0,#ffd040 50%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 0 #6a3a00,0 0 12px rgba(255,200,60,.55)}
+#yact .fs .ya-stt{gap:5px;background:none;border:0;box-shadow:none}
+#yact .fs .stc{border-radius:10px;padding:5px 0 6px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,255,255,.22);color:#e8e2ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 rgba(0,0,0,.45);transition:transform .06s}
+#yact .fs .stc:active{transform:translateY(2px);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.08))}
+#yact .fs .stc img{width:28px;height:28px}
+#yact .fs .stc.on{background:linear-gradient(180deg,#b490ff 0,#7a4ae0 55%,#5a2ec0 100%);border-color:#ffe08a;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 0 #2c1470,0 0 12px rgba(170,120,255,.7)}
+#yact .fs .ya-road{border-radius:12px;padding:9px 8px;background:rgba(8,6,24,.55);border:2px solid rgba(255,233,160,.4);box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+#yact .fs .ya-road i{background:linear-gradient(90deg,rgba(255,233,160,.6),rgba(255,233,160,.25))}
+#yact .fs .ya-road b{border-radius:50%;width:20px;height:20px;line-height:16px;background:#30286a;border-color:#a898f0;color:#fff}
+#yact .fs .ya-road b.m{border-radius:9px;overflow:hidden;width:32px;height:32px;line-height:28px;background:#d05a70;border-color:#ffb0a0;box-shadow:0 0 8px rgba(255,90,80,.5)}
+#yact .fs .ya-road b.m.f{width:40px;height:40px;line-height:36px;border-radius:11px;background:linear-gradient(180deg,#ffe9a0,#e89a18);border-color:#fff2a8;box-shadow:0 0 10px rgba(255,200,60,.7)}
+#yact .fs .fs-rwr{display:flex;gap:4px;justify-content:space-between}
+/* 경완 2026-11-15 '받는 보상 뒤 원형 박스는 지워주고, 번뜩임 아이콘 게임 내 아이콘이랑 동일하게' */
+#yact .fs .fs-rwr span{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:24px;font-size:11.5px;white-space:nowrap;color:#fff}
+#yact .fs .fs-rwr .sv{width:18px;height:18px;flex:none}
+#yact .fs .fs-rwr .c{font-style:normal;font-size:11px;padding:2px 9px;border-radius:8px;color:#fff;border:1.5px solid rgba(0,0,0,.5)}
+#yact .fs .fs-rwr .ex{background:#3a8ee0}#yact .fs .fs-rwr .ev{background:#8a5ae0}#yact .fs .fs-rwr .fr{background:#e85a8a}
+#yact .fs .fs-rwr .coin{margin-right:2px!important}
+#yact .fs .ya-tips{gap:6px}
+#yact .fs .ya-tips div{border-radius:10px;padding:7px 2px 8px;background:rgba(8,6,24,.45);border:2px solid rgba(255,255,255,.16)}
+#yact .fs .ya-tips b{color:#ffe9a0}#yact .fs .ya-tips span{color:#cfc8ee}
+#yact .fs .fs-ft{flex:none;padding:12px 16px calc(12px + var(--si-bottom,env(safe-area-inset-bottom)));background:linear-gradient(180deg,rgba(12,10,28,0),rgba(12,10,28,.9) 30%)}
+#yact .fs .fs-ft .bigb{margin:0;padding:14px 0;font-size:19px;letter-spacing:3px;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6)}
+#yact .fs .fs-ft .bigb:active{transform:translateY(3px);box-shadow:0 1px 0 #6a3a00}
+#yact .fs .ya-op{color:#a8a0c8;margin-top:8px}
 #yact .rs-hero{padding:12px 14px 14px;text-align:center;background:radial-gradient(120% 100% at 50% 0,#5a6088 0,#34365a 55%,#1c1c3a 100%)}
 #yact .rs-hero.win{background:radial-gradient(120% 100% at 50% 0,#ffe27a 0,#f0a818 55%,#b86a00 100%)}
 #yact .rs-h{display:block;font-size:22px;line-height:1.25;text-shadow:0 2px 0 rgba(0,0,0,.45)}
@@ -368,15 +425,14 @@ const HTML = `<canvas></canvas>
 <div class="ya-pad"><button class="ya-dg">대쉬</button><div class="ya-mvs"></div></div>
 <div class="ya-ban"></div>
 <div class="ya-ov"></div>
-<div class="ya-win ya-start"><div class="ya-hero"><div class="hr-top"><b class="ya-rb">특훈</b><span class="ya-tg">운영자 시험</span></div>
-    <div class="hr-row"><div class="hr-st"><img class="hr-im" alt=""></div><div class="hr-in"><b class="hr-nm"></b><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
-  <div class="ya-pk"></div>
-  <div class="ya-bd">
+<div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><span class="ya-tg">운영자 시험</span></div>
+    <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""></div><div class="hr-in"><b class="hr-nm"></b><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
+  <div class="ya-bd"><div class="ya-pk"></div>
   <div class="ya-sec"><h3>노력치 훈련</h3><div class="ya-stt"></div></div>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
-  <div class="ya-tips"><div><b>이동</b><span>왼쪽 아래<br>끌기</span></div><div><b>기술</b><span>꾹 누르면<br>쭉 이어져요</span></div><div><b>대쉬</b><span><b style="display:inline;color:#e0402a">!</b> 뜰 때<br>딱 맞춰</span></div><div><b>줍기</b><span>골드·번뜩임<br>아이템</span></div></div>
-  <div class="rs-row"><button class="b3 bigb sec ya-x">닫기</button><button class="b3 bigb ya-go">특훈 시작</button></div>
-  <p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요</p></div></div>
+  <div class="ya-sec"><h3>받는 보상</h3><div class="fs-rwr"><span><i class="c ex">경험치</i></span><span><i class="c ev">노력치</i></span><span><i class="c fr">친밀도</i></span><span><i class="coin"></i><b>골드</b></span><span><svg class="sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b>번뜩임</b></span></div></div>
+  <div class="ya-tips"><div><b>이동</b><span>왼쪽 아래<br>끌기</span></div><div><b>기술</b><span>꾹 누르면<br>쭉 이어져요</span></div><div><b>대쉬</b><span><b style="display:inline;color:#ff8a70">!</b> 뜰 때<br>딱 맞춰</span></div><div><b>줍기</b><span>골드·번뜩임<br>아이템</span></div></div></div>
+  <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button><p class="ya-op">보상은 보여 주기만 하고 내 포켓몬·저장은 그대로예요</p></div></div>
 <div class="ya-win ya-res" hidden><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
     <div class="rs-me"><img class="rs-im" alt=""><div class="rs-mi"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div><b class="rs-rk">S</b></div></div>
   <div class="ya-bd"><p class="rs-chips rs-sub"></p>

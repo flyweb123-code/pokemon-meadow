@@ -107,12 +107,13 @@ let Y = null;   // 마당: { el, W, H, L, pr: {소품}, mons, raf, last, pos: {i
 const inPond = (x, y, m = 0) => { const p = Y.pond; return x > p.x0 - m && x < p.x1 + m && y > p.y0 - m && y < p.y1 + m; };   // 수영장(네모)
 const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
 /* v24.04 경완 '코치랑 포켓몬 버튼 있는 쪽으로 포켓몬이랑 코치가 내려오지 않게': 오른쪽 아래 버튼 칸(.ty-btns 124×116 + 발 둘레) */
-const BTN_W = 142, BTN_H = 124, inBtn = (x, y) => !!Y && x > Y.W - BTN_W && y > Y.H - BTN_H, offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - BTN_H - 2] : [x, y];
+/* 경완 2026-11-15 '버튼은 1번으로 (코치 · 특훈 · 포켓몬 아래 한 줄), 포켓몬이 버튼 있는 데까지 내려가지 않게': 버튼 칸 = 아래 한 줄 전체(BTN_H 72) */
+const BTN_H = 72, inBtn = (x, y) => !!Y && y > Y.H - BTN_H, offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - BTN_H - 2] : [x, y];
 const nearBush = (x, y) => Math.abs(x - Y.W / 2) < 120 && y < yTop() + 56;   // v20.85 문 옆 덤불 앞은 기술·훈련 자리로 안 씀 (경완 '덤불에 공격')
 function yardSpot(swim) {
   if (swim) { const p = Y.pond; return [p.x0 + 22 + Math.random() * Math.max(1, p.x1 - p.x0 - 44), p.y0 + 32 + Math.random() * Math.max(1, p.y1 - p.y0 - 44)]; }   // v21.01 경완 '가비루사 왜 육지로': 예전엔 훈련장 전체에서 60번 뽑다 다 빗나가면(약 1%) 땅 자리로 → 물 안에서만 뽑음
   for (let i = 0; i < 60; i++) { const x = 24 + Math.random() * (Y.W - 48), y = yTop() + Math.random() * (Y.H - yTop() - 20);
-    if (swim ? inPond(x, y - 10, -22) : !inPond(x, y, 16) && !nearBush(x, y) && !inBtn(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
+    if (swim ? inPond(x, y - 10, -22) && !inBtn(x, y + 10) : !inPond(x, y, 16) && !nearBush(x, y) && !inBtn(x, y) && !Object.values(Y.pr).some(q => Math.abs(q.x - x) < q.w / 2 + 10 && y < q.y + 8 && y > q.y - 24)) return [x, y]; }
   return [Y.W * .3, Y.H * .6];
 }
 // 훈련장 소품 = 스칼렛 작업물 그림 (gymb/yard.json, config/staff/scarlet.json 에서 골라 옮김 + 후프링) (경완 2026-10-29 '스칼렛 작업물 수준으로, 가져와도 돼')
@@ -274,11 +275,11 @@ async function drawTrain() {
   yProp('bag1', 'punch-bag', W * .1, r2); yProp('bag2', 'punch-bag', W * .27, r2); yProp('tramp', 'spring-trampoline', W * .5, r2); yProp('tgt', 'target-easel', W * .9, r2);
   // 깃발 없애고 허들은 위아래로 (경완 2026-10-29): 오른쪽 아래 세로 트랙, 위에서 아래로 달리며 넘기
   /* v23.36 경완 '코치·포켓몬 버튼 밑에 있는 허들 지워야겠네' → v24.04 경완 '밑에 하나만 없애 달란 거였어': 위 허들(h1)·허들 달리기 다시, 트랙은 버튼 칸 위까지만 */
-  yProp('h1', 'track-hurdle', W * .72, H * .76);
+  yProp('h1', 'track-hurdle', W * .72, H * .76); yProp('h2', 'track-hurdle', W * .72, Math.min(H * .88, H - BTN_H - 10));   /* 경완 2026-11-15 '저 정도면 지웠던 밑에 있던 허들 살려도 되겠다' (버튼이 아래 한 줄로 가서 자리가 남) */
   [.24, .5, .76].forEach((f, i) => yRing(i, W * f, r1));
   Y.lane = { x: W * .72, y0: H * .66, y1: Math.max(H * .8, Math.min(H * .95, H - BTN_H - 4)) };
   // 부표: 줄 위가 아니라 줄 아래 물 위에 둥둥 (입체 튜브)
-  { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55; q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
+  { const q = document.createElement('i'), x = Y.pond.x0 + (Y.pond.x1 - Y.pond.x0) * .66, y = Math.min(Y.pond.y + (Y.pond.y1 - Y.pond.y) * .55, H - BTN_H - 14); /* 경완 2026-11-15 '수영장에 있는 타겟 가려지지 않게 위로' */ q.className = 'ty-eq eq-water'; q.style.cssText = `left:${x}px;top:${y}px;z-index:${Math.round(y)};background-image:url(${buoyArt()})`; Y.L.append(q); Y.pr.water = { k: 'water', x, y, w: 64, h: 44, el: q }; }
   g.tr.forEach((e, i) => { const P = boxOf(e.id); if (P) yardMon(P, e, i); });
   // 코치 (훈련장에 배치한 트레이너): 코트 가장자리에서 응원
   Y.co = ydOrd(g.sf).slice(0, YARD_SF).map((x, i) => { const q = document.createElement('i'), cx = W * [.1, .9, .5][i], cy = H * (i === 2 ? .68 : .6); q.className = 'ty-co' + (K.owW(x.ow) > 16 ? ' w32' : ''); q.dataset.co = i;
@@ -305,7 +306,9 @@ const yCoaches = () => ydOrd(st().sf || []).slice(0, YARD_SF);
 function yBtns() {
   const g = st(), C = yCoaches(), f = C[0] || (g.sf || [])[0], w = f ? K.owW(f.ow) : 0;
   const face = f ? `<i class="ty-bic ty-cof${C.length ? '' : ' none'}" style="width:${Math.round(w * 36 / 32)}px;background-image:url(${K.owSrc(f.ow)})"></i>` : '<i class="ty-bic ty-cof empty"></i>';
+  /* 경완 2026-11-15 '특훈 버튼은 체육관 홈화면 도전자 받기 버튼처럼 하단 중앙으로' → '버튼은 1번으로': 아래 한 줄 = 코치 · 특훈(가운데 금빛) · 포켓몬. 특훈은 아직 운영자 시험(html.tests)에서만 보임 */
   return `<div class="ty-btns"><button type="button" class="ty-bt ty-cob" data-cob="1" aria-label="훈련장 코치 ${C.length}/${YARD_SF}">${face}<span><b>코치</b>${yDots(C.length, YARD_SF, YARD_SF)}</span></button>`
+    + `<button type="button" class="ty-spb" data-sp="1" aria-label="특훈"><img alt="" src="${IMG}item/blackbelt.png"><b>특훈</b></button>`
     + `<button type="button" class="ty-bt ty-add${g.tr.length ? '' : ' pulse'}" data-add="1" aria-label="포켓몬 보내기 ${g.tr.length}/${trMax()}"><img class="ty-bic ty-ball" alt="" src="${IMG}item/pokeball.png"><span><b>포켓몬</b>${yDots(g.tr.length, trMax(), TR_ALL)}</span></button></div>`;
 }
 // 훈련장 코치 창: 포켓몬 슬롯 창(statPop)과 같은 틀. 코치 칸 누르면 트레이너 상세카드, ✕ 는 코치에서 빼기(고용은 그대로), 빈 칸은 고용한 트레이너 중에서 고르기
@@ -345,6 +348,7 @@ function coWin() {
 }
 // v20.99 경완 '+ 눌러도 화면 안 뜸·포켓몬 눌러도 상세카드 안 뜸': 다른 메뉴가 sh.onclick 을 바꿔 두므로 훈련장을 다시 붙일 때도 꼭 다시 단다
 function yardTap(ev) {
+    if (ev.target.closest('[data-sp]')) { sfx('tap'); return K.yaTest?.(); }   /* 특훈 (운영자 시험: 보상은 보여 주기만) */
     if (ev.target.closest('[data-cob]')) { sfx('tap'); return coWin(); }   // v23.36 코치 버튼 → 훈련장 코치 창
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
