@@ -4699,3 +4699,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym.sim .ty-spb:active{translate:0 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 #6a3a00}
 #gym.sim .ty-spb img{width:30px;height:30px;image-rendering:pixelated}#gym.sim .ty-spb b{font-size:19px;letter-spacing:4px}
 #gym.sim .ty-spb{display:flex}
+/* v25.38 경완 '엉 그렇게 해줘봐': 다이맥스·거다이맥스 기술 쓰는 동안 위 화면 테두리 붉은 빛 (battle.js maxFx) */
+.bt-gxv{position:absolute;left:0;right:0;top:calc(var(--st,0px) / var(--k,1) * -1);bottom:0;pointer-events:none;z-index:30;background:radial-gradient(ellipse 75% 70% at 50% 50%,rgba(255,40,70,0) 55%,rgba(230,20,60,.42) 100%);animation:gxvIn .35s ease-out,gxvP .7s ease-in-out .35s infinite alternate;transition:opacity .35s}
+.bt-gxv.out{opacity:0}
+@keyframes gxvIn{from{opacity:0}to{opacity:1}}
+@keyframes gxvP{from{filter:brightness(1)}to{filter:brightness(1.35)}}
