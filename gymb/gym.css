@@ -4683,3 +4683,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-infos .if-nmb .gy-pen{position:absolute!important;top:50%;right:10px;translate:0 -50%}
 #gym .gy-infos .mec.if-mec{margin:0}
 #gym .gy-infos .mec .bd-pic.mec-stg{margin:0;height:200px;border:3px solid var(--frame);border-top:0;border-radius:0 0 6px 6px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+/* v25.42 경완 '레이아웃 무너짐': 체육관 정보 머리띠·무대가 커져 화면이 모자라면 전적 박스가 눌려 잘림 → 줄어들지 않고 스크롤 */
+#gym .gy-infos .gy-body>*{flex-shrink:0}
