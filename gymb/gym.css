@@ -4707,3 +4707,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes bsHdT{0%,56%{transform:scale(2.4);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes bsGoA{0%{transform:none}100%{transform:translateY(-100%)}}@keyframes bsGoB{0%{transform:none}100%{transform:translateY(100%)}}
 @keyframes bsGoT{0%{opacity:1}100%{opacity:0;transform:scale(.9)}}
+
+/* 경완 2026-11-15 '아직도 훈련장 비침': 특훈 화면이 떠 있는 동안(줄무늬가 닫힌 뒤부터) 뒤의 훈련장·윗줄을 아예 안 그린다 — 아이폰에서 새 화면이 그려지기 전 한 프레임 뒤가 비쳐도 어두운 바탕만 보임. 아래 메뉴는 그대로 */
+#gym.yahide .gy-main,#gym.yahide .gy-top{visibility:hidden!important}
