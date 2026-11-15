@@ -963,7 +963,8 @@ const SF_ON_H = 24;
 function sfRepOn(t) { const g = st(); if (g.sfT == null) g.sfT = Date.now(); delete g.sfB; delete g.sfP; return t - g.sfT <= SF_ON_H * H; }
 function refit0(c, my) {
   const g = st(), L = my.map(P => (GB()?.gm?.(P) || g.mon?.[P.id])?.lv).filter(Boolean); if (!L.length) return;   // 아직 개체 정보가 없는 포켓몬도 gm() 으로 만들어서 센다
-  const mean = Math.round(L.reduce((a, b) => a + b, 0) / L.length);
+  /* v25.82 경완 '고레벨 1마리에 나머지 5마리 저레벨로 구성하면 쉽게 이기는 구조?' → '최고 레벨 −5 하한': 도전자·이름 있는 트레이너 기준 레벨은 라인업 최고 레벨 − LV_ACE 아래로 안 내려감 (승급 심사는 박스 기준 bsBase 그대로) */
+  const LV_ACE = 5, mean = Math.max(Math.round(L.reduce((a, b) => a + b, 0) / L.length), Math.max(...L) - LV_ACE);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
   const avg = c.boss ? bsBase(c.boss) : mean + stkLv(g.stk) - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
