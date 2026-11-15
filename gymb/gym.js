@@ -4035,7 +4035,7 @@ function trPickSp(lv, boss, big, my, bio) { const has = sp => GB().D.sp[sp]; con
 async function yaTest(fx) {
   if (!open || !st()?.d) return;
   /* 경완 2026-11-15 '승급심사 눌렀을 때처럼 시작화면 진입하는 연출 넣어줘': 훈련장 [특훈] 버튼으로 들어갈 땐 줄무늬가 화면을 가르며 '특훈' (bsGo 와 같은 .bs-tr), 닫힌 사이에 시작 화면이 뜬다 */
-  if (fx) { if (root.querySelector('.bs-tr')) return; const f = document.createElement('div'); f.className = 'bs-tr'; f.style.zIndex = 6000; f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} setTimeout(() => f.remove(), 1400); fx = performance.now(); }
+  if (fx) { if (root.querySelector('.bs-tr')) return; const f = document.createElement('div'); f.className = 'bs-tr'; f.style.zIndex = 6000; { /* 경완 2026-11-15 '진입 연출 때 승급 심사 때도 원래 하단메뉴까지 가려졌나?' → 승급 심사처럼 아래 메뉴는 안 가림 */ const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; } f.innerHTML = '<i class="a"></i><i class="b"></i><b>특훈</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} setTimeout(() => f.remove(), 1400); fx = performance.now(); }
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); await loadJs('gymb/yact.js', 'GymYA'); if (!window.GymYA) return;
   if (fx) await new Promise(r => setTimeout(r, Math.max(0, 450 - (performance.now() - fx))));
   const g = st(), ids = [...new Set([...(g.tr || []).map(e => e.id), ...(g.lu || []).flat()])].filter(id => GB().boxOf(id)).slice(0, 6);
