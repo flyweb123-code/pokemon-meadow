@@ -73,7 +73,7 @@ GitHub 저장소 비밀 변수 (Settings › Secrets and variables › Actions).
 
 게임이 판마다 작은 기록을 `pk-bal`(localStorage)에 모았다가 `POST /v1 {op:'balLog', ev:[{k,t,v,d}]}` 로 50개씩 보낸다 (앱에서만). D1 `bal` 표, 120일 지나면 지움.
 
-- `gym` 관장 배틀: c(chal·named·boss) df 난이도 bs 심사 등급 gr 관장 등급 w 승 q 기권 tn 턴 gd 골드 rp 평판 stk 연승 ma/mx/mn 내 라인업 평균·최고 레벨·마리 fa/fn 상대 평균 레벨·마리 sp 내 포켓몬
+- `gym` 관장 배틀: c(chal·named·boss) df 난이도 bs 심사 등급 gr 관장 등급 w 승 q 기권 tn 턴 gd 골드 rp 평판 stk 연승 ma/mx/mn 내 라인업 평균·최고 레벨·마리 fa/fn 상대 평균 레벨·마리 sp 내 포켓몬 · v25.98~ k0 배틀 전 연승 le 연패 보정 단계 bk 쉬어 가는 도전자 ai 상대 AI 단계 mb/fb 내·상대 평균 종족값 lf 남은 내 포켓몬 fm/fz 상대 메가·Z um/uz 내 메가·Z pr 둘이 온 도전자
 - `sf` 트레이너: w 막음 df n 나선 트레이너 수 gd 골드 cl/sl 도전자·트레이너 평균 레벨
 - `mg` 미니게임: sc 점수 gd 골드 t 초 ph 단계 cm 최대 콤보 ab 기술 타입 rk 랭크 sp fh 하트 nb 최고 기록 day 오늘 미니게임 골드
 - `gold` 골드 (v18.73, 하루 한 줄, 날짜 바뀐 뒤 올라옴): day YYYYMMDD b0 그날 시작 잔액 b1 끝 잔액 ern 번 골드(addGold 합, 체육관 포함) es {mg·drop·stack·mission·gym·sf·promo·event·egg·dex·move·etc: 번 곳별 골드, v22.83~} sp {item·field·fit·bgm·gym·wage: 쓴 골드} it {산 것 id: 횟수}
