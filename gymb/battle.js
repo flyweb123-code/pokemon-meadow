@@ -1134,7 +1134,7 @@ function aiGmk(btl, c) {
   if (G.z && !G.meOnly && R.canZMove && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) { const ft = foe.getTypes?.() || foe.types || [];
     const j = R.canZMove.findIndex((z, k) => { if (!z || !R.moves?.[k] || R.moves[k].disabled) return false; const dm = PSim.Dex.moves.get(R.moves[k].id); return dm.category !== 'Status' && PSim.Dex.getImmunity(dm.type, ft) && PSim.Dex.getEffectiveness(dm.type, ft) >= 0; });
     if (j >= 0) { B.gmBase.e = R.moves[j].id; return `move ${j + 1} zmove`; } }
-  if (G.dmax && R.canDynamax && (left === 1 || (ace && hpR > .5))) return c + ' dynamax';
+  if (G.dmax && !G.meOnly && R.canDynamax && (left === 1 || (ace && hpR > .5))) return c + ' dynamax';
   if (G.tera && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return c + ' terastallize';   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
@@ -2757,11 +2757,11 @@ function usePop(P, done) {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
-    const IL = itAll(), ML = mintAll(), VL = vitAll();
-    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
+    const IL = itAll(), ML = mintAll(), VL = vitAll(), SL = soupAll();
+    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0) + SL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
     const TT = TL.filter(r => isTR(r[2]) === (useT === 'tr'));   /* v15.75 기술머신·기술레코드 탭 따로 */
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (egKn(m, id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
-      : (IL.length + ML.length + VL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
+      : (IL.length + ML.length + VL.length + SL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}${SL.map(([, n]) => soupRow(n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
       <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>${useT === 'it' ? '추천 도구' : '추천 기술'}</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
@@ -2789,7 +2789,8 @@ function usePop(P, done) {
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }
     if (b.dataset.mint) { const k = b.dataset.mint; return mintInfo(k, '먹이기', () => { mintUse(P, k); draw(); }); }
-    if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); } };
+    if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); }
+    if (b.dataset.soup) return soupInfo('먹이기', () => soupUse(P, draw), S.gym.soup | 0, P); };
 }
 // 창고 도구 → 지니게 하기 → 포켓몬 박스에서 고르기
 function itPick(id, done) {
@@ -3031,10 +3032,28 @@ function vitInfo(i, lab, act, own, P) { const r = P ? vitRoom(P, i) : 10;
 function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)) return; const n = evAdd(gm(P), i, 10); if (!n) return;
   if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
+/* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼': 다이수프 = 먹이면 거다이맥스 인자(gm(P).gmax)가 붙고, 이미 있으면 빠짐 (본가처럼). 거다이맥스 모습이 있는 34종만. 창고 S.gym.soup, 상점(다이맥스밴드 받은 관장만, dmOn) SOUP_P */
+const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png';
+const dmOn = () => !!(S.gym?.dBand || (S.gym?.shelf || []).some(x => x?.dBand) || window.gymDmOn);
+const gmaxOk = P => !!P && !!GMJ[(D?.sp?.[P.sp]?.id || '') + 'gmax'];
+const soupAll = () => (S.gym?.soup | 0) > 0 ? [[0, S.gym.soup | 0]] : [];
+const soupRow = (n, P) => { const ok = !P || gmaxOk(P), has = P && !!gm(P).gmax;
+  return `<button type="button" class="sp-tm sp-it sp-soup${ok ? '' : ' off'}" data-soup="1" ${ok ? '' : 'disabled'}><img class="tm-ic it-ic" alt="" src="${SOUP_IMG}"><span class="tm-nm"><b>다이수프</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${!P ? '거다이맥스 모습이 있는 포켓몬에게 먹여요' : !ok ? '거다이맥스 모습이 없는 포켓몬이에요' : has ? '먹이면 거다이맥스 인자가 빠져요' : '먹이면 거다이맥스할 수 있게 돼요'}</small></span></button>`; };
+const SOUP_D = '다이버섯으로 끓인 진한 수프. 거다이맥스 모습이 있는 포켓몬이 먹으면 거다이맥스할 수 있게 되고, 이미 할 수 있는 포켓몬이 먹으면 못 하게 된다.';
+function soupInfo(lab, act, own, P) { const ok = !P || gmaxOk(P);
+  gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${SOUP_IMG}">다이수프${bagN(own | 0)}</h4><p class="gy-msg mi-d">${SOUP_D}</p>${P && !ok ? `<p class="gy-msg" style="text-align:center"><small>${esc(nmOf(P))}에게는 거다이맥스 모습이 없어요.</small></p>` : ''}<div class="gy-btns${act && ok ? '' : ' one'}"><button data-a="x">닫기</button>${act && ok ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
+    (a, close) => { close(); if (a === 't') act?.(); }); }
+function soupUse(P, done) { const g = S.gym; if (!((g.soup | 0) > 0) || !gmaxOk(P)) return; const m = gm(P), on = !m.gmax;
+  if (on) m.gmax = 1; else delete m.gmax; if (!--g.soup) delete g.soup; GA.save(); se('DECIDE');
+  gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 다이수프를 먹었다!<br>${on ? '<b>거다이맥스</b>할 수 있게 되었다!' : '거다이맥스 인자가 빠졌다.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); }
+function soupPick(done) {
+  boxWin(false, null, done, { title: () => '다이수프 먹이기', tip: '거다이맥스 모습이 있는 포켓몬만 보여요', list: () => S.box.filter(P => tyOk(P) && gmaxOk(P)), ok: () => true, first: P => curLu().includes(P.id),
+    tag: P => gm(P).gmax ? '거다이맥스' : '', pick: (P, w) => { w.close(); soupUse(P, done); } });
+}
 function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
-window.GymBattle = { ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
