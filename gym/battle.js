@@ -2357,8 +2357,13 @@ function mvCardOrd(P, p, re) {   // re(hi): 카드 다시 그리기(새 창 돌�
     if (a === 'mveg') { if (!ord) window.GymManage?.egListPop?.(P); return true; }
     if (a === 'mvrec') { if (ord) return true; const b = p.querySelector('[data-a=mvrec]'); loadSim().then(() => { if (!p.isConnected) return; const nw = recMoves(P, m), was = m.mv.slice();
       if (nw.join() === was.join()) { if (b) { b.textContent = '지금이 추천 기술'; b.classList.add('on'); setTimeout(() => { if (b.isConnected) { b.textContent = '추천 기술'; b.classList.remove('on'); } }, 1400); } return; }
-      m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
-      mark(re())(nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0)); }); return true; }
+      /* v25.39 경완 '추천기술 누르면 바로 바뀌기보다 창 하나 새로 떠서 지금 기술 목록이랑 바뀐 후 기술목록 전후로 위아래로, 바뀐 기술 테두리·추천 딱지, 이렇게 바꾸시겠습니까? 밑에 닫기·바꾸기' */
+      const hi = nw.map((id, i) => was[i] === id ? -1 : i).filter(i => i >= 0), rows = L => L.map(id => mvOf(id) ? mvRow(mvOf(id), '') : '').join('');
+      const q = gymPop(`<h4 class="rc-h">추천 기술</h4><div class="rc-sec"><span class="rc-tag">지금 기술</span><div class="mp-moves mp-line rc-bf">${rows(was)}</div></div><div class="rc-arw">▼</div><div class="rc-sec"><span class="rc-tag af">바꾼 후</span><div class="mp-moves mp-line rc-af">${rows(nw)}</div></div><p class="gy-msg rc-q">이렇게 바꾸시겠습니까?</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="ok">바꾸기</button></div>`, (a, c) => {
+        if (a === 'x') return c(); if (a !== 'ok') return; c(); if (m.mv.join() !== was.join()) return;
+        m.mv = nw; m.kn = [...new Set([...(m.kn || []), ...was.filter(id => !nw.includes(id))])].filter(id => !nw.includes(id)); GA.save(); learnFan?.();
+        mark(re())(hi); });
+      q.classList.add('rc-pop'); const R = q.querySelectorAll('.rc-af .mp-mv'); hi.forEach(i => { const e = R[i]; if (e) { e.classList.add('mv-recm'); e.insertAdjacentHTML('beforeend', '<i class="mv-recl">추천</i>'); } }); }); return true; }
     if (/^(i.|mvs\d)/.test(a) && (drag || ord)) return true;
     if (/^mvs\d$/.test(a)) { movesPop(P, () => re(), -1, +a.slice(3)); return true; }   /* v23.98 경완 '훈련장 새 기술 버튼이 기술 바꾸기로': 새 기술 버튼(data-a mvs)과 빈 칸(mvs0~3) 이름이 겹쳤음 → 숫자 붙은 것만 */
     return false; };
