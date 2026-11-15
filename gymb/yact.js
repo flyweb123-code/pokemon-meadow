@@ -315,6 +315,9 @@ const CSS = `
 #yact .rs-row .sec{flex:0 0 34%}
 /* 경완 2026-11-15 '특훈 눌렀을 때 시작창 승급심사처럼 새로운 화면으로' → '무대 A 좋은데 빛줄기가 너무 밤티' → '3번으로 가고 기술 딱지 가독성 좀 높여줘': 전체 화면 어두운 무대(.fs), 후광 + 반짝이, 유리 칸 + 금빛 테두리 */
 #yact .ya-start.fs{left:0;top:0;transform:none;width:100%;height:100%;max-height:none;border:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);color:#f0ecff}
+/* 경완 2026-11-15 '또 훈련장 비치는데? 처음에 눌렀을 때': 시작 화면 동안(.st0)은 그 밑의 경기장 캔버스·HUD 를 아예 안 그린다 — 아이폰에서 시작 화면이 그려지기 전 한 순간 밑의 경기장(훈련장 그림)이 비쳤음. [특훈 시작]을 누르면 보임 */
+#yact.st0{background:#0c0a1c}
+#yact.st0>:not(.ya-start):not(.ya-tu):not(.ya-load){visibility:hidden!important}
 #yact.pre{bottom:var(--mh,0px)}
 #yact.pre .fs .fs-ft{padding-bottom:12px}
 #yact.pre .fs .hr-st{height:min(112px,13.5vh)}#yact.pre .fs .ya-hero{padding-bottom:8px}#yact.pre .fs .ya-pmv{margin-top:7px}#yact.pre .fs .ya-pmv span{padding:4px 4px}#yact.pre .fs .ya-bd{gap:8px;padding-bottom:6px!important}#yact.pre .fs h3{margin-bottom:6px}#yact.pre .fs .fs-ft{padding-top:8px}#yact.pre .fs .fs-ft .bigb{padding:12px 0}#yact.pre .fs .ya-op{margin-top:6px}
@@ -428,7 +431,9 @@ const CSS = `
 #yact .ya-rl li.ya-gold{background:#fff6d0}
 #yact .ya-rl li.ya-gold b{color:#a87800}
 #yact .rs-row{display:flex;gap:8px}
-#yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;background:#1c1c2e}
+/* 경완 2026-11-15 '시작화면 뜨기 전에 불러오는 중 같은 하얀 텍스트 아주 잠깐 1프레임 본 거 같은데': 준비 화면 바탕을 시작 화면과 같은 색으로, 글자는 1초 넘게 걸릴 때만 천천히 나타남 */
+#yact .ya-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:10;color:rgba(240,236,255,0);background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);animation:yaLoadT .4s linear 1s forwards}
+@keyframes yaLoadT{to{color:rgba(240,236,255,.8)}}
 `;
 const HTML = `<canvas></canvas>
 <div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
@@ -467,7 +472,7 @@ const HTML = `<canvas></canvas>
 async function start({ host, mons }) {
   if (R) return; if (!mons?.length) { GA.toast?.('훈련할 포켓몬이 없어요'); return; }
   if (!document.getElementById('yactCss')) { const s = document.createElement('style'); s.id = 'yactCss'; s.textContent = CSS; document.head.append(s); }
-  const el = document.createElement('div'); el.id = 'yact'; el.innerHTML = HTML; (host || document.body).append(el);
+  const el = document.createElement('div'); el.id = 'yact'; el.className = 'st0'; el.innerHTML = HTML; (host || document.body).append(el);
   const q = s => el.querySelector(s);
   let done; const closed = new Promise(ok => { done = ok; });
   R = { el, q, host: host || document.body, mons, pick: 0, stat: 5, G: null, T: 0, RT: 0, last: 0, run: false, raf: 0, FX: [], POPS: [], PT: [], GH: [], Q: [], SPR: {}, kit: null, BG: null, Y: {}, A: {},
@@ -1373,14 +1378,14 @@ function bind() {
   { const go = e => { e.preventDefault(); dodge(); }, d = q('.ya-dg'); on(d, 'touchstart', go, { passive: false }); on(d, 'mousedown', go); }
   on(q('.ya-pk'), 'click', e => { const b = e.target.closest('.pkc'); if (!b) return; se('SELECT'); r.pick = +b.dataset.i; const o = r.mons[r.pick]; if (o.evk >= 0) r.stat = o.evk; r.pool = null; startUi(); });
   on(q('.ya-stt'), 'click', e => { const b = e.target.closest('.stc'); if (!b) return; r.stat = +b.dataset.s; r.pool = null; startUi(); });
-  on(q('.ya-go'), 'click', () => { se('DECIDE'); r.el.classList.remove('pre'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
+  on(q('.ya-go'), 'click', () => { se('DECIDE'); r.el.classList.remove('pre', 'st0'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
   on(q('.ya-again'), 'click', () => { se('DECIDE'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
   on(q('.ya-back'), 'click', () => close());
   on(q('.ya-x'), 'click', () => close());
   { /* 하는 법 창 (머리줄 ?) — 게임 화면 캡처 + 짧은 설명 4장, 좌우로 밀어도 넘어감 */
     const TU = [['이동', '화면 <b>왼쪽 아래</b>를 누른 채 끌면<br>그쪽으로 움직여요.'], ['기술', '<b>오른쪽 아래 기술 버튼</b>을 누르면 기술을 써요.<br>꾹 누르고 있으면 쭉 이어져요.'], ['대쉬', '상대 머리 위에 <b>!</b> 가 뜨면 곧 공격이 와요.<br>그때 <b>대쉬</b>를 딱 맞춰 누르면 피해요.'], ['줍기', '떨어진 <b>골드·아이템</b>은 가까이 가면 주워요.<br>번뜩임을 모으면 특별한 기술을 깨달아요.']];
     const tu = q('.ya-tu'); let ti = 0; tu.querySelector('.tu-dots').innerHTML = TU.map(() => '<i></i>').join('');
-    const show = () => { tu.querySelector('img').src = `gym/img/yact/tut${ti + 1}.png`; tu.querySelector('.tu-h').innerHTML = `<i>${ti + 1}</i>${TU[ti][0]}`; tu.querySelector('.tu-p').innerHTML = TU[ti][1]; [...tu.querySelectorAll('.tu-dots i')].forEach((d, i) => d.classList.toggle('on', i === ti)); tu.querySelector('.tu-pv').disabled = !ti; tu.querySelector('.tu-nx').textContent = ti === TU.length - 1 ? '확인' : '다음'; };
+    const show = () => { tu.querySelector('img').src = `gym/img/yact/tut${ti + 1}.png?3`; tu.querySelector('.tu-h').innerHTML = `<i>${ti + 1}</i>${TU[ti][0]}`; tu.querySelector('.tu-p').innerHTML = TU[ti][1]; [...tu.querySelectorAll('.tu-dots i')].forEach((d, i) => d.classList.toggle('on', i === ti)); tu.querySelector('.tu-pv').disabled = !ti; tu.querySelector('.tu-nx').textContent = ti === TU.length - 1 ? '확인' : '다음'; };
     const off = () => tu.classList.remove('on'), go = d => { const n = ti + d; if (n < 0) return; if (n >= TU.length) { se('DECIDE'); off(); return; } ti = n; se('SELECT'); show(); };
     on(q('.fs-hp'), 'click', () => { se('DECIDE'); ti = 0; show(); tu.classList.add('on'); });
     on(tu, 'click', e => { if (e.target === tu || e.target.closest('.tu-x')) off(); else if (e.target.closest('.tu-nx')) go(1); else if (e.target.closest('.tu-pv')) go(-1); });
