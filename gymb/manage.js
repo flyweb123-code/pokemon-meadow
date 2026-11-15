@@ -831,7 +831,11 @@ const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) *
 // 포켓몬 그림 + 레벨: 상자 없이 그림 밑에 작은 글씨 (경완 2026-10-27 '박스 없이 좀 더 깔끔하게')
 const teamIc = (T, key) => `<span class="sf-team">${T.map(([sp, lv], i) => `<span${key != null ? ` class="sf-tp" role="button" data-tsp="${sp}" data-tlv="${lv}" data-tk="${key}-${i}"` : ''}><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;   // key 가 있으면 눌러서 상세카드 (지원서)
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
-const trtBox = (s, full, bare) => { const k = s?.trait, T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${k === 'kind' ? `코치로 있으면 훈련장 친밀도 ${trM(s)}배` : k === 'star' || k === 'money' ? `도전자를 막으면 ${k === 'star' ? '평판' : '골드'} +${Math.round((K.trX(s) - 1) * 100)}%` : T.d}</small>` : ''}</span>` : ''; };   // v21.83 다정함은 코치 % 에 안 들어가 세기를 여기서
+/* v25.73 경완 '노력파도 50% 고정하지 말고 확률 다 다르게': 특성 세기는 원래 트레이너마다 다름(tv) → 카드에 그 트레이너 숫자를 보여 줌 */
+const trtTxt = s => { const k = s.trait, v = trV(s), m = trM(s), h = Math.round((1 + (m - 1) / 2) * 100) / 100, p = x => Math.round(x * 100);
+  return { train: `코치로 있으면 코치 실력 ${m}배`, teach: `코치로 있으면 특별한 기술 ${m}배 빨리`, effort: `노력치 코치면 노력치 훈련 ${m}배 (다른 코치면 ${h}배)`, grow: `경험치 코치면 훈련 경험치 ${m}배 (다른 코치면 ${h}배)`, kind: `코치로 있으면 훈련장 친밀도 ${m}배`,
+    star: `도전자를 막으면 평판 +${p(K.trX(s) - 1)}%`, money: `도전자를 막으면 골드 +${p(K.trX(s) - 1)}%`, guts: `도전자를 막을 확률 +${p(1 / (1 + Math.exp(-(.25 + .3 * v))) - .5)}%p쯤`, thrift: `주급 ${p(.1 + .2 * v)}% 적게`, lazy: `${p(.1 + .2 * v)}% 확률로 배틀을 쉼` }[k] || K.TRAITS[k]?.d || ''; };
+const trtBox = (s, full, bare) => { const k = s?.trait, T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${trtTxt(s)}</small>` : ''}</span>` : ''; };   // v21.83 다정함은 코치 % 에 안 들어가 세기를 여기서
 // 트레이너: 지원서 탭 / 고용 관리 탭 (경완 2026-10-27)
 let sfT = 'sf';   // v17.40 경완: 트레이너 메뉴는 고용 관리 탭이 먼저
 // 지원서 남은 시간 (경완 2026-10-28): 우상단에 시:분, 가운데 : 가 깜빡
