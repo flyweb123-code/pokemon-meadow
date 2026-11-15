@@ -3887,7 +3887,7 @@ async function exit(tx = '퇴근하는 중') {
   // 로딩 화면이 실제로 그려진 다음에 정리한다: 체육관 화면은 곧바로 숨겨 휴대폰이 더 그리지 않게 (경완 2026-10-28 '화면 먼저 띄우고 뒤에서 로딩')
   const t0 = Date.now(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   root.style.visibility = 'hidden'; clearInterval(tickT); cancelAnimationFrame(palRaf); try { openTab(null); } catch (e) {} try { window.GymManage?.shopReset?.(); } catch (e) {}   /* v20.68 퇴근하면 상점 필터 처음대로 */
-  root.querySelectorAll('.gy-pop,.gy-setup,.gy-kang,.gy-town,.ev-tint,.ev-black,.ev-ttl').forEach(x => x.remove()); ded?.end?.();
+  root.querySelectorAll('.gy-pop,.gy-setup,.gy-boxw,.gy-kang,.gy-town,.ev-tint,.ev-black,.ev-ttl').forEach(x => x.remove()); ded?.end?.();   /* v25.51 경완 '박스 연 상태에서 퇴근 → 다시 출근하면 여전히 박스 열려있는데 기본값 홈화면으로': 박스·기술 가르치기 창(.gy-boxw)도 닫음 */
   await wait(0); try { window.GymBGM?.free(); } catch (e) {}
   await wait(Math.max(0, 2800 - (Date.now() - t0)));
   clearInterval(tickT); if (st()?.d) { tick(); setAt(); save(); }
