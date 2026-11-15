@@ -8090,7 +8090,7 @@ function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
     savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    since: S.since || undefined, seenAt: S.seenAt || undefined, dorm: S.dorm || undefined, gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, trOff: S.trOff, useH: S.useH, useHD: S.useHD, shopSeen: S.shopSeen, shopSeenF: S.shopSeenF, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: GT ? GT.real.concat(S.bag.filter(e => !e.tst)) : S.bag, ga: S.ga || undefined, gaSeen: S.gaSeen ? 1 : undefined, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, bagFull: S.bagFull || undefined, trI: S.trI, pity: S.pity, tree: S.tree, tree2: S.tree2 || undefined, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, mvG: S.mvG || 0, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], rfGhost: S.rfGhost || undefined, mgtFix: S.mgtFix || undefined, mgtFix2: S.mgtFix2 || undefined, mgtFix3: S.mgtFix3 || undefined, dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], rgH: S.rgH || undefined, lgW: S.lgW || undefined, evS: S.evS?.length ? S.evS : undefined, undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fits: S.fits || undefined, fit: S.fit || undefined, edBest: S.edBest || undefined, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, wkH: S.wkH || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frReqOut: S.frReqOut && Object.keys(S.frReqOut).length ? S.frReqOut : undefined, frReqDone: S.frReqDone && Object.keys(S.frReqDone).length ? S.frReqDone : undefined, frReqView: S.frReqView || undefined,   /* v14.07 경완 '친구 요청 한 게 사라짐': 보낸 요청·처리한 요청이 저장에 빠져 있어 앱을 다시 켜면 없어졌음 */ frOutP: S.frOutP && Object.keys(S.frOutP).length ? S.frOutP : undefined, frGot: S.frGot?.length ? S.frGot : undefined, frTy: S.frTy?.length ? S.frTy : undefined, frTyS: S.frTyS?.length ? S.frTyS : undefined, repP: S.repP ?? undefined, errs: S.errs.length ? S.errs : undefined };
+    since: S.since || undefined, seenAt: S.seenAt || undefined, dorm: S.dorm || undefined, gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, trOff: S.trOff, useH: S.useH, useHD: S.useHD, shopSeen: S.shopSeen, shopSeenF: S.shopSeenF, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: GT ? GT.real.concat(S.bag.filter(e => !e.tst)) : S.bag, ga: S.ga || undefined, gaSeen: S.gaSeen ? 1 : undefined, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, bagFull: S.bagFull || undefined, trI: S.trI, pity: S.pity, tree: S.tree, tree2: S.tree2 || undefined, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, mvG: S.mvG || 0, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], rfGhost: S.rfGhost || undefined, mgtFix: S.mgtFix || undefined, mgtFix2: S.mgtFix2 || undefined, mgtFix3: S.mgtFix3 || undefined, dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], rgH: S.rgH || undefined, lgW: S.lgW || undefined, evS: S.evS?.length ? S.evS : undefined, undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fits: S.fits || undefined, fit: S.fit || undefined, edBest: S.edBest || undefined, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], rfU: [...(S.rfU || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, wkH: S.wkH || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frReqOut: S.frReqOut && Object.keys(S.frReqOut).length ? S.frReqOut : undefined, frReqDone: S.frReqDone && Object.keys(S.frReqDone).length ? S.frReqDone : undefined, frReqView: S.frReqView || undefined,   /* v14.07 경완 '친구 요청 한 게 사라짐': 보낸 요청·처리한 요청이 저장에 빠져 있어 앱을 다시 켜면 없어졌음 */ frOutP: S.frOutP && Object.keys(S.frOutP).length ? S.frOutP : undefined, frGot: S.frGot?.length ? S.frGot : undefined, frTy: S.frTy?.length ? S.frTy : undefined, frTyS: S.frTyS?.length ? S.frTyS : undefined, repP: S.repP ?? undefined, errs: S.errs.length ? S.errs : undefined };
 }
 let saveFrozen = !!VISIT, tutFreeze = false, introPv = false, bootOk = false;   // bootOk (v21.37): start() 가 저장을 불러오기 전엔 저장하지 않는다   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 /* v23.06 경완 '내 포켓몬 박스에 있는 포켓몬들은 놓아주기 하는 거 아닌 이상 사라지지 않게': 저장할 때마다 지난번 상자와 비교해, 허락된 길(놓아주기 등 boxOut 으로 알린 것)이 아닌데 없어진 포켓몬은 그 자리(들어온 순서)로 되돌려 놓는다. 시험 포켓몬(id 990000~, gTst)은 빼고 */
@@ -8151,7 +8151,8 @@ async function restore(d) {
   S.buds.forEach(b => { const P = boxOf(b.pid); if (P && (b.km || 0) > (P.km || 0)) P.km = b.km; });   // 진화까지 달린 거리는 개체(P.km)에도 남긴다
   cleanPlaces();
   S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   /* v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) */
-  S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(dxK(sp))); (d.mons || []).forEach(o => S.unlocked.add(dxK(o.sp)));   /* v10.18: 10.02 에서 이 줄이 위 줄 주석 안으로 들어가 도감 목록을 못 불러오고 빈 채로 저장됐다 */
+  S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(dxK(sp))); (d.mons || []).forEach(o => S.unlocked.add(dxK(o.sp)));
+  S.rfU = new Set(d.rfU || []); if (!d.rfU) for (const k in RFORM) if (S.unlocked.has(dxK(k))) S.rfU.add(+k);   /* v25.51: 지역 폼 만남 기록 (처음엔 지금 도감에 보이던 폼 칸 그대로 — 등록이 없어지지 않게) */   /* v10.18: 10.02 에서 이 줄이 위 줄 주석 안으로 들어가 도감 목록을 못 불러오고 빈 채로 저장됐다 */
   S.rfGhost = d.rfGhost || 0; S.mgtFix = d.mgtFix || 0; S.mgtFix2 = d.mgtFix2 || 0; S.mgtFix3 = d.mgtFix3 || 0;   /* v23.07: 23.05~06 은 이 표시를 저장 안 해서 켤 때마다 다시 돌았고 날짜 자리 옮기기는 안 됐음 */ S.dexFix1 = !!d.dexFix1; if (!S.dexFix1) { S.dexFix1 = true; const add = sp => { for (let k = 0; sp != null && SPECIES[sp] && k < 4; k++) { S.unlocked.add(dxK(sp)); sp = SPECIES[sp].fr; } };   /* v10.18 경완 '도감 등록한 거 없어짐': 한 번만, 박스·필드·짝꿍 포켓몬과 그 진화 전 모습, 최근 부화, 베타 켜기 전 백업의 도감으로 되살린다 */
     [...(d.box || []), ...(d.mons || []), ...(d.buds || [])].forEach(o => add(o.sp)); (d.recentHatch || []).forEach(add); (d.dexNew || []).forEach(add);
     try { const o = JSON.parse(localStorage.getItem('pk-meadow-v2-prebeta') || 'null'), bd = o?.d && JSON.parse(o.d); (bd?.unlocked || []).forEach(sp => { if (SPECIES[sp]) S.unlocked.add(+sp); }); } catch (e) {} }
@@ -13090,13 +13091,15 @@ Object.keys(SPECIES).map(Number).forEach(sp => {   /* v21.21: 지역 폼 칸도 
   b.onclick = () => openCard(sp);
   dexBtns[sp] = b; grid.append(b); io.observe(b);
 });
-const dexLocked = sp => !S.unlocked.has(dxK(sp));
+const rfRep = k => { const rg = SPECIES[k]?.rg; return rg ? ((RF_OF[dxK(k)] || []).find(j => SPECIES[j]?.rg === rg && !SP_OFF.has(j)) ?? +k) : +k; };   /* v25.51 경완 '새로운 폼은 새로 만난 포켓몬으로 지역 도감에 등록되는 연출': 지역 폼은 (원래 번호, 지역) 묶음마다 따로 만남 — 팔데아 켄타로스 세 폼은 한 칸 */
+const dexHas = k => S.unlocked.has(dxK(k)) && (!SPECIES[k]?.rg || (RF_OF[dxK(k)] || []).some(j => SPECIES[j]?.rg === SPECIES[k].rg && !!S.rfU?.has(j)));
+const dexLocked = sp => !dexHas(sp);
 // 도감 카드: 도감에서 누르면 새 창으로 뜨고, 좌우로 넘겨 이전·다음 포켓몬을 본다
 let cardSp = null, cardEvo = null;   // cardEvo: 진화 끝에 띄운 카드 — 넘기기 없이 확인만
 const dexOrd = sp => { const o = dexBtns[sp].style.order; return o === '' ? +sp : +o; };   // 등록순 맨 앞(order 0)도 그대로
 const cardList = () => Object.keys(dexBtns).filter(k => !dexBtns[k].dxo).map(Number).sort((a, b) => dexOrd(a) - dexOrd(b));
 async function openCard(sp, dir = 0) {
-  if (!cardEvo && S.dexNew?.delete(dxK(sp))) { lockDexBtn(sp); save(); }   // 11.74 경완 '진화해서 도감 채우는 연출에도 NEW': 진화 끝에 저절로 뜬 카드는 본 것으로 치지 않는다 (도감 등록 연출에 NEW 가 붙게)
+  if (!cardEvo && [dxK(sp), +sp].map(k => S.dexNew?.delete(k)).some(Boolean)) { lockDexBtn(sp); save(); }   // 11.74 경완 '진화해서 도감 채우는 연출에도 NEW': 진화 끝에 저절로 뜬 카드는 본 것으로 치지 않는다 (도감 등록 연출에 NEW 가 붙게)
   cardSp = sp; const pop = $('#dexPop'), lock = dexLocked(sp), d = SPECIES[sp];
   if (!lock) playCry(sp, .15);
   pop.hidden = false;
@@ -13184,7 +13187,7 @@ function filterDex(fast) {   /* fast: 필터 고를 때 — 새로 보일 칸이
   now.forEach(x => unh(x[1]));
   $('#dexEmpty').hidden = shown > 0; dexHead(R);
 }
-function dexHead(R = dexRgSel()) { const tot = R ? R.sp.length : DEX_ALL(), k = R ? R.sp.filter(sp => S.unlocked.has(dxK(sp))).length : S.unlocked.size, r = k / tot * 100;   /* v21.21: 고른 도감의 등록 수·완성률 (예전엔 지역 폼까지 세어 /1082 로 보였다) */
+function dexHead(R = dexRgSel()) { const tot = R ? R.sp.length : DEX_ALL(), k = R ? R.sp.filter(dexHas).length : S.unlocked.size, r = k / tot * 100;   /* v21.21: 고른 도감의 등록 수·완성률 (예전엔 지역 폼까지 세어 /1082 로 보였다) */
   $('#dexOwn').textContent = `${k}/${tot}`; $('#dexPct').textContent = (r >= 100 ? 100 : r < 10 ? r.toFixed(1) : Math.floor(r * 10) / 10) + '%'; }
 let dexQv = '';   // v3.10: 엔터를 눌러야 검색 (경완, 모든 검색창)
 $('#dexQ').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); dexQv = $('#dexQ').value.trim(); filterDex(); $('#dexQ').blur(); } });
@@ -14043,7 +14046,7 @@ EVX['토중몬이 아이스크로 진화할 때 빈 자리가 있어야'] = { no
 EVX['함께 지내며 가족이 늘어야'] = { f: () => true, k: '거리를 채우면 진화해요 (아주 드물게 세 식구 모습으로)' };   /* 파밀리쥐 세 식구(Three) 1% 는 evoFm */
 function evoSilent(P, to) {   /* v21.51 경완 '배틀 도중 그 자리에서 진화': 진화 창 없이 상태만 (배틀 화면이 연출) — evolveWin 과 같은 순서 */
   const b = S.buds.find(x => x.pid === P.id), from = P.sp, fromN = SPECIES[from].n, toN = SPECIES[to].n, nm = nameOf(P);
-  if (!S.unlocked.has(dxK(to))) addGold(NEW_G, 'dex');
+  if (!dexHas(to)) addGold(NEW_G, 'dex');
   { const ef = evoFm(to, P.fm, P); if (ef) P.fm = ef; else delete P.fm; }
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true); evoExtra(P, from, to);
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);
@@ -14952,16 +14955,17 @@ async function mgtRescue() { if (!S.mgtFix2 && bootOk) { S.mgtFix2 = 1; for (con
   } catch (e) { console.error(e); } }
 function migrateBox() {
   for (const m of S.mons) if (m.pid == null || !boxOf(m.pid)) { const p = newPoke(m.sp, { shiny: false }); m.pid = p.id; }
-  for (const p of S.box) if (SPECIES[p.sp]) S.unlocked.add(dxK(p.sp));   /* v21.33 경완 '지역 폼 포켓몬 이미 있으면 도감도': 가진 포켓몬(지역 폼 포함)은 모두 도감에 등록 */
+  for (const p of S.box) if (SPECIES[p.sp]) { S.unlocked.add(dxK(p.sp)); if (SPECIES[p.sp].rg) (S.rfU ||= new Set()).add(+p.sp); }   /* v21.33 경완 '지역 폼 포켓몬 이미 있으면 도감도': 가진 포켓몬(지역 폼 포함)은 모두 도감에 등록 */
   for (const sp of S.unlocked) if (!S.box.some(p => dxK(p.sp) === sp)) newPoke(sp, { shiny: false });   /* v21.17 경완 '가라르 야돈이 그냥 야돈': 도감 칸은 원래 번호(dxK)라 지역 폼만 있으면 보통 모습을 새로 만들던 것 고침 */
   if (!S.rfGhost) { S.rfGhost = 1; const used = new Set([...S.mons.map(m => m.pid), ...S.buds.map(b => b.pid), ...(S.gym?.tr || []).map(e => e.id)]), gj = JSON.stringify(S.gym || {});   /* v21.17: 그렇게 잘못 생긴 보통 모습(장소·알 등급·친밀도 없음, 어디에도 안 씀, 지역 폼보다 늦게 생김)은 지운다 */
     const b0 = S.box; S.box = S.box.filter(p => !(p.g == null && !p.place && !p.fr && !p.km && !p.shiny && !used.has(p.id) && !new RegExp(`\\b${p.id}\\b`).test(gj) && S.box.some(q => q !== p && SPECIES[q.sp]?.rb === p.sp && q.t <= p.t)));  b0.forEach(p => { if (!S.box.includes(p)) boxOut(p.id); }); }
   for (const b of S.buds) if (b.pid == null || !boxOf(b.pid)) b.pid = (S.box.filter(p => p.sp === b.sp).sort((x, y) => ivSum(y) - ivSum(x))[0] || newPoke(b.sp, { shiny: false })).id;
 }
-S.gold = 0; S.box = []; BOX_SEEN = null; S.frAcc = 0; S.trOff = []; S.shopSeen = null; S.shopSeenF = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
+S.gold = 0; S.box = []; BOX_SEEN = null; S.frAcc = 0; S.trOff = []; S.shopSeen = null; S.shopSeenF = 0; S.tracks = ['azalea']; S.bgm = 'azalea'; S.eggs = []; S.bag = []; S.bagAcc = 0; S.bagDry = 0; S.pity = { e: 0, l: 0 }; S.walkKm = 0; S.walkSync = false; S.fedPend = 0; S.fedLog = []; S.unlocked = new Set(); S.rfU = new Set(); S.buds = []; S.runs = []; S.places = []; S.totalKm = 0; S.eid = 1;
 const hatchQ = [];
 
-function unlock(sp, fx) { sp = dxK(sp); if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); S.dexDot = true; if (fx && dexBtns[sp] && !tutOn) { dexFx.q.push(sp); return; }   /* 튜토리얼 중엔 도감 등록 연출을 건너뜀 — 연출이 끝나며 알 창을 다시 열어 필드 단계에서 멈추던 것 */  if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+function unlock(sp, fx) { const f = SPECIES[sp]?.rg && !dexHas(sp) ? rfRep(sp) : 0; sp = dxK(sp); unlockRf(f, fx); if (!S.unlocked.has(sp)) { S.unlocked.add(sp); trUpCheck(); (S.dexNew ||= new Set()).add(sp); S.dexDot = true; if (fx && dexBtns[sp] && !tutOn) { dexFx.q.push(sp); return; }   /* 튜토리얼 중엔 도감 등록 연출을 건너뜀 — 연출이 끝나며 알 창을 다시 열어 필드 단계에서 멈추던 것 */  if (dexBtns[sp]) { lockDexBtn(sp); dexCellReady(sp); } } }
+function unlockRf(f, fx) { if (!f) return; (S.rfU ||= new Set()).add(f); (S.dexNew ||= new Set()).add(f); S.dexDot = true; if (fx && dexBtns[f] && !tutOn) dexFx.q.push(f); else if (dexBtns[f]) { lockDexBtn(f); dexCellReady(f); } }   /* v25.51 경완 '새로운 폼은 새로 만난 포켓몬으로 지역 도감에 등록되는 연출': 처음 만난 지역 폼 = 그 지역 도감 칸 등록 (원래 종도 처음이면 전국도감에도) */
 /* v9.95 경완: 부화·진화로 새로 등록된 포켓몬은 창을 다 닫은 뒤 번호순 도감을 열어, 그 칸으로 스크롤하며 하나씩 채워 넣는다 (화면을 누르면 남은 것을 한꺼번에) */
 const dexFx = { q: [], on: false };
 function dexFxFlush() { const L = dexFx.q.splice(0); L.forEach(sp => { lockDexBtn(sp); dexCellReady(sp); }); return L; }
@@ -14981,10 +14985,15 @@ async function dexFxRun() {
     { let wi = dexFx.wi; dexFx.wi = null; clearTimeout(dexFx.wiT); if (!wi) { wi = document.createElement('div'); wi.className = 'dfxWhite'; document.body.append(wi); void wi.offsetWidth; wi.classList.add('on'); await wait(420); }   /* v10.20 경완: 시작할 때도 화면이 하얗게 밝아지면서 도감으로 넘어간다 */
       setMgrTab('dex'); syncTabs(); setFilter('dexSort', 1); await wait(60); wi.classList.add('out'); wi.classList.remove('on'); setTimeout(() => wi.remove(), 700); }
     { const tb = [...document.querySelectorAll('#dexTabs, #mgrTabs')].map(e => e.getBoundingClientRect()).find(r => r.height); if (tb) skB.style.bottom = Math.round(innerHeight - tb.top + 12) + 'px'; skB.hidden = skip; }   /* 아래 박스·도감 탭 바로 위 */
-    const own = $('#dexOwn'), tot = DEX_ALL(); let n = S.unlocked.size - L.length; own.textContent = `${n}/${tot}`;
+    const own = $('#dexOwn'); let tot = DEX_ALL(), n = S.unlocked.size - L.filter(k => !SPECIES[k]?.rg).length; own.textContent = `${n}/${tot}`;
     await wait(500);
+    let rgI = 0; const pend = new Set(L);
     for (const sp of L) {
-      const b = dexBtns[sp]; if (!b) continue;
+      pend.delete(sp); const b = dexBtns[sp]; if (!b) continue;
+      const ri = SPECIES[sp]?.rg ? DEX_RG.findIndex(x => x[1] === SPECIES[sp].rg) + 1 : 0;   /* v25.51 경완 '새로운 폼은 새로 만난 포켓몬으로 지역 도감에 등록되는 연출'": 지역 폼은 그 지역 도감으로 바꿔서 */
+      if (ri !== rgI) { rgI = ri; if (!skip) { const w2 = document.createElement('div'); w2.className = 'dfxWhite'; document.body.append(w2); void w2.offsetWidth; w2.classList.add('on'); await wait(420); setFilter('dexReg', ri); setFilter('dexSort', 1); await wait(120); w2.classList.add('out'); w2.classList.remove('on'); setTimeout(() => w2.remove(), 700); } else { setFilter('dexReg', ri); setFilter('dexSort', 1); }
+        [sp, ...pend].forEach(k => { const c = dexBtns[k]; if (c && SPECIES[k]?.rg) { c.classList.add('locked'); c.querySelector('.nm').textContent = '???'; c.querySelector('.newtag')?.remove(); } });
+        const Rg = dexRgSel(); if (Rg) { if (!Rg.no.has(sp)) { lockDexBtn(sp); continue; } n = Rg.sp.filter(k => dexHas(k) && k !== sp && !pend.has(k)).length; own.textContent = `${n}/${Rg.sp.length}`; tot = Rg.sp.length; } if (!skip) await wait(400); }
       if (!skip) { const sr = grid.getBoundingClientRect(), br = b.getBoundingClientRect(), y0 = grid.scrollTop, y1 = Math.max(0, Math.min(grid.scrollHeight - grid.clientHeight, y0 + (br.top - sr.top) - (sr.height - br.height) / 2)), D = Math.max(260, Math.min(900, 240 + Math.abs(y1 - y0) * .35)), t0 = performance.now();
         await new Promise(res => { const st = () => { const k = Math.min(1, (performance.now() - t0) / D), e = k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2; grid.scrollTop = y0 + (y1 - y0) * e; if (k < 1 && !skip) requestAnimationFrame(st); else res(); }; requestAnimationFrame(st); });
         b.classList.add('dfx'); await wait(skip ? 0 : 260); }
@@ -14998,7 +15007,7 @@ async function dexFxRun() {
     L.forEach(sp => { if (dexBtns[sp]) { dexBtns[sp].classList.remove('dfxHide'); lockDexBtn(sp); } });
     for (const [w, h] of W0) $(w).hidden = h;
     if (!$('#mgr').hidden && tab0 !== 'dex') setMgrTab(tab0);
-    if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; }
+    if (!sheet.hidden) { $('#dexQ').value = q0; dexQv = q0; for (const [id, v] of F0) setFilter(id, v); grid.scrollTop = y0s; } else if (+$('#dexReg').dataset.v) setFilter('dexReg', 0);
     syncTabs(); if (wf) { const w = wf; w.classList.add('out'); w.classList.remove('on'); setTimeout(() => w.remove(), 700); } setTimeout(() => shield.remove(), wf ? 650 : 0); document.body.classList.remove('dfxRun'); dexFx.on = false; if (dexFx.q.length) dexFxKick(); }
 }
 // 새로 등록된 칸은 그림을 바로 넣고 순서도 미리 맞춰 둔다 → 도감을 열 때 없던 칸이 뒤늦게 생기는 모습이 안 보인다
@@ -15782,7 +15791,7 @@ function rollEgg(e) { const RH = e.gc ? null : S.recentHatch;   /* v18.32 경완
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
 function bornPoke({ g, sp, place, sh }) {
-  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !S.unlocked.has(dxK(sp)); if (!gaSbx) unlock(sp, true); P.nw = true;   /* v18.48: 시험 부화는 도감 등록 안 함 */   // 박스에 새로 들어온 표시 (확인하면 지움)
+  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !dexHas(sp); if (!gaSbx) unlock(sp, true); P.nw = true;   /* v18.48: 시험 부화는 도감 등록 안 함 */   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: gaSbx ? Math.round(isNew ? NEW_EGG_G[g] : DUP_G[g]) : addGold(isNew ? NEW_EGG_G[g] : DUP_G[g], 'egg') };
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
@@ -16971,7 +16980,7 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
   for (let i = 0; i < 18; i++) evoSpark(parts, cx, cy, true);
   await wait(180);
   evoMusicFade(1.2);
-  const newTo = !S.unlocked.has(dxK(to)); if (newTo) addGold(NEW_G, 'dex');
+  const newTo = !dexHas(to); if (newTo) addGold(NEW_G, 'dex');
   { const ef = evoFm(to, P.fm, P); if (ef) P.fm = ef; else delete P.fm; }   /* v16.74: 진화하면 폼 이어받기 (본가 기준) */
   P.sp = to; P.km = 0; if (b) { b.sp = to; b.km = 0; } unlock(to, true); if (S.evoPend?.pid === P.id) S.evoPend = null; evoExtra(P, from, to);
   const fr0 = P.fr || 0; P.fr = Math.min(FR_MAX, fr0 + (EVO_FR[Math.min(2, evoStage(to))] || EVO_FR[1])); frMaxHit(P, fr0);   // 진화하면 친밀도가 오른다 (첫 진화 30, 두 번째 60)
@@ -17011,8 +17020,8 @@ async function evolveWin(P, card, forceTo, tool) {   // tool: 쓴 도구 id → 
 }
 // the dex only lets you release species you have met
 function lockDexBtn(sp) {
-  sp = dxK(sp); const on = S.unlocked.has(sp), nw = on && !!S.dexNew?.has(sp);   /* v21.21: 지역 폼 칸도 원래 번호 칸과 함께 */
-  for (const k of [sp, ...(RF_OF[sp] || [])]) { const b = dexBtns[k]; if (!b) continue;
+  sp = dxK(sp);   /* v21.21: 지역 폼 칸도 원래 번호 칸과 함께 */
+  for (const k of [sp, ...(RF_OF[sp] || [])]) { const b = dexBtns[k]; if (!b) continue; const on = dexHas(k), nw = on && !!S.dexNew?.has(k);   /* v25.51: 지역 폼 칸은 그 폼을 만나야 등록 */
     { const t = b.querySelector('.newtag'); if (nw && !t) b.insertAdjacentHTML('beforeend', '<span class="newtag">NEW</span>'); else if (!nw && t) t.remove(); }
     b.classList.toggle('locked', !on); b.querySelector('.nm').textContent = on ? SPECIES[k].n : '???';
     b.title = on ? `${SPECIES[k].g} · ${SPECIES[k].t.map(x => TYPE_KO[x]).join('·')}` : '아직 만나지 못한 포켓몬'; }
