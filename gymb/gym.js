@@ -976,6 +976,8 @@ function refit0(c, my) {
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
   c.str = S3 ? [S3.sb, S3.lvB - cut, ls, Math.round(cs * 100)] : null;
 }
+function nmFree(f) {   /* v25.54 경완 '아가씨 지우 왜 중복??': 기다리는 도전자와 같은 이름은 빼고 뽑음 */
+  const A = f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수'], used = new Set((st().q || []).map(c => c.nm)), B = A.filter(n => !used.has(n)); return pick(B.length ? B : A); }
 function mkChal(t) {
   const g = st(), G = gradeOf(g.rep || 0), avg = myAvg();
   const rep = g.rep || 0, L = clampN((g.gmax | 0) - 2, 0, 3), f = bdPh(rep), nx = GRADES[(g.gmax | 0) + 1];
@@ -991,7 +993,7 @@ function mkChal(t) {
   const dbl = Math.random() < (DBL_P[G.i] || 0), ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = dbl ? Object.keys(PAIR).filter(x => CLS[x]) : Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
   const n = dbl ? pairN(diff) : diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
+  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -1208,7 +1210,7 @@ function sfSolo(s) { const k = SOLO_OF[s?.k || s?.tr], C = k && CLS[k]; if (!C) 
 function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), wage = sfWage(lv - avg, n, trait, tv / 100);
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: pick(C.f ? GB()?.NAMES_F || ['영희'] : GB()?.NAMES_M || ['철수']), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait, wage, wv: 2, cs: rndI(10, 40), tv, team: mkTeam(ty ? [ty] : C.t, lv, n) };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
 /* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
