@@ -4665,3 +4665,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-fx .gxfl{position:absolute;left:-60px;right:-60px;top:-120px;bottom:-40px;background:radial-gradient(circle at var(--x) var(--y),rgba(255,255,255,.95),rgba(255,60,110,.75) 30%,rgba(255,30,90,0) 70%);pointer-events:none;z-index:4}
 .bt-mon.gxin .clip{animation:gxIn .7s cubic-bezier(.2,.8,.3,1.2) both}
 @keyframes gxIn{0%{transform:scale(.25);opacity:.2}55%{transform:scale(1.06);opacity:1}100%{transform:none}}
+
+/* v25.38 경완: 상세카드 기술 줄 '특별한 기술' 버튼 (추천 기술 왼쪽, 금빛) */
+#gym .mv-egb{background:#fff6dc;border-color:#e0b860;color:#9a6a10}

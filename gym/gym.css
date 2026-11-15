@@ -4657,3 +4657,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob.gkbg-dynamax .gk-mark{opacity:.88;background-image:url(../gym/img/dbk/Dynamax/mark.png);width:112px;height:84px;margin:-42px 0 0 -56px;filter:drop-shadow(0 0 8px rgba(255,255,255,.95)) drop-shadow(0 0 16px rgba(255,30,90,.65));animation:gkMark 4.5s linear infinite}
 .bt-hb .gkd-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_dynamax.png) center/contain no-repeat;image-rendering:pixelated}
 .bt-hb.gkd .nm{max-width:74px}
+
+/* v25.38 경완: 상세카드 기술 줄 '특별한 기술' 버튼 (추천 기술 왼쪽, 금빛) */
+#gym .mv-egb{background:#fff6dc;border-color:#e0b860;color:#9a6a10}
