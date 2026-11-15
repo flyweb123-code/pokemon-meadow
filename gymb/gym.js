@@ -5034,7 +5034,7 @@ async function dmaxTut(test) {
     await say('그리고 몇몇 포켓몬은\n다이맥스할 때 아예 모습까지\n바뀌는 \'거다이맥스\'를 한단다.'); await say('거다이맥스한 포켓몬은\n그 포켓몬만 쓰는\n특별한 기술을 쓰지!'); await say('거다이맥스를 하려면\n이 냄비에 든 \'다이수프\'를\n먹여야 한단다.');
     duo(1); await say('…박사님.', GW); await say('응?'); await say('사실 아까 한 숟갈\n먹어 봤는데…\n저는 안 커지던데요?', GW); await say('자네 지금 그걸\n먹었단 말인가!?'); await say('(맛은 버섯 전골\n같았어요.)', GW); await say('…다이수프는 포켓몬만\n커진다네. 사람은 배만\n부르지.'); duo(0);
     await say('다행히 한 그릇은\n남았구나. 이건 네 몫이란다.'); hideT(true); await soupGetPop(); g.soup = (g.soup | 0) + 1; sp0 = g.soup; save(); hideT(false);
-    await say('다이수프는 체육관 상점\n도구 탭에서도 판단다.\n거다이맥스 모습이 있는 포켓몬에게만 먹이렴.'); await say('한 번 더 먹이면\n거다이맥스 인자가 빠지니\n조심하고!');
+    await say('다이수프는 체육관 상점\n도구 탭에서도 판단다.'); await say('단, 거다이맥스 모습이\n있는 포켓몬에게만\n먹일 수 있단다.');   /* 경완 '여기 텍스트 박스 삐져나감': 한 줄 20자·세 줄 넘지 않게 */ await say('한 번 더 먹이면\n거다이맥스 인자가 빠지니\n조심하고!');
     const know = await T.ask(`그런데 ${NK()},\n다이맥스 쓰는 방법은\n알고 있니?`, { hiNo: 1 }, '네', '아니요'); if (!open) return;
     if (know || !B) { await say(`오, 역시 ${NK()}${jong(NK()) ? '이' : ''}구나!\n그럼 짧게만 짚고 가자.`);
       await say('거다이맥스 모습이 있는 포켓몬은\n카드 › 도구 사용에서\n다이수프를 먹이면 된단다.'); await say('배틀에서 \'싸운다\'를 누르면\n다이맥스 버튼이 생긴단다.\n켜고 기술을 고르면 끝!'); }
