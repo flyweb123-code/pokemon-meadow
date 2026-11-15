@@ -2315,7 +2315,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxSort = O?.view ? 'rank' : 'st'
     if (e.target.closest('[data-typop]')) { sfx('tap');   // 포켓몬 박스 타입 필터와 같은 창 (경완 2026-10-30): 체육관 타입과 같이 가진 타입만
       const fp = document.createElement('div'); fp.className = 'fpop gy-fpop';
       fp.innerHTML = `<div class="win" role="listbox" aria-label="필터"><h4>타입</h4><div class="fopts"><button class="all" data-v="0" aria-selected="${!bxTy}">모든 타입</button>${bxTyAll.map(t => `<button data-v="${t}" aria-selected="${bxTy === t}"><i class="sw" style="background:${GA.TYPE_C[t]}"></i>${TYPE_KO[t]}</button>`).join('')}</div></div>`;
-      fp.onclick = ev => { const o = ev.target.closest('[data-v]'); if (o) { sfx('tap'); bxTy = +o.dataset.v; draw(); grid.scrollTop = 0; } if (o || ev.target === fp) fp.remove(); };
+      fp.onclick = ev => { const o = ev.target.closest('[data-v]'); if (o) { sfx('tap'); bxTy = +o.dataset.v; draw(); grid.scrollTop = 0; } if (o || ev.target === fp) { fp.remove(); window.gyGhostEat?.(); } };   /* v25.47 정렬 직후 아래 포켓몬 눌림 막기 */
       document.body.appendChild(fp); return; }
     const s = e.target.closest('[data-sort]'); if (s) { sfx('tap'); const k = s.dataset.sort; if (k === bxSort) bxDir = -bxDir; else { bxSort = k; bxDir = 1; } draw(); grid.scrollTop = 0; return; }
     const c = e.target.closest('.pk'); if (!c) return; sfx('tap');
