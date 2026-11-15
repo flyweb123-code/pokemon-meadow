@@ -23,7 +23,7 @@ const EV_CAP = 8, EG_CAP = 15;
    경험치는 '지금 레벨에서 5레벨 오르는 양'을 쓰러뜨린 상대 무게대로 나눠 준다 (끝까지 다 쓰러뜨려야 딱 5레벨). */
 /* 경완 2026-11-14 '지금 난이도 너무 쉬움, 어렵게': 잡몹 수 46 → 64, 레벨 +1~2, 한 번에 나오는 수 5 → 스테이지 따라 4~8, 상대 공격 간격·예고 시간 짧게·탄 빠르게·피해 크게, 스테이지 회복 20% → 12%. 받는 피해 1.25배, 열매 35% → 25%. 골드는 잡몹 60% 만 떨어뜨려 한 판 양을 그대로 둔다. */
 /* 경완 2026-11-14 '여전히 너무 쉽다' (2차): 레벨 +1 더, 한 번에 5~10마리, 상대 HP·속도·공격 빈도 올림, 받는 피해 1.25 → 1.45배, 맞은 뒤 무적 .5초, 스테이지 회복 8%, 뒤 스테이지 원거리 상대는 세 갈래로 쏨, 대장 HP 올림 + 패턴 늘림 */
-const STAGES = [{ n: 5, lv: -2 }, { n: 6, lv: -2 }, { n: 8, lv: -1 }, { n: 3, lv: -1, boss: [0] }, { n: 8, lv: 0 }, { n: 10, lv: 0 }, { n: 4, lv: 1, boss: [1] }, { n: 11, lv: 1 }, { n: 4, lv: 2, boss: [0, 1] }, { n: 5, lv: 2, boss: [2] }];
+const STAGES = [{ n: 7, lv: -2 }, { n: 9, lv: -2 }, { n: 11, lv: -1 }, { n: 5, lv: -1, boss: [0] }, { n: 12, lv: 0 }, { n: 14, lv: 0 }, { n: 6, lv: 1, boss: [1] }, { n: 16, lv: 1 }, { n: 6, lv: 2, boss: [0, 1] }, { n: 7, lv: 2, boss: [2] }];   /* 경완 2026-11-15 '스테이지마다 좀 길어도 될 것 같고': 잡몹 64 → 93 (한 번에 나오는 수 MOB_MAX 는 그대로, 경험치는 XW_ALL 이 알아서 나눔) */
 const MOB_MAX = w => Math.min(10, 5 + Math.floor(w / 2)), BOSS_BGM = { 4: 'gymBattle', 7: 'tenno', 9: 'boss' };   /* 대장 스테이지마다 다른 곡 (관장 → 사천왕 → 전설 → 마지막은 디아루가·펄기아 곡) */
 const XP_KO = 9, XP_GM = [.6, .4, .25, .15, .15, .1, .1], CLEAR_X = { S: .5, A: .25 };
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
@@ -771,7 +771,7 @@ function itemSpawn() {
   const G = R.G, A = R.A, me = G.me; let x, y, n = 0; do { x = A.x0 + 30 + Math.random() * (A.x1 - A.x0 - 60); y = A.y0 + 40 + Math.random() * (A.y1 - A.y0 - 80); } while (++n < 30 && (inPond(x, y, 16) || Math.hypot(x - me.x, y - me.y) < 90));
   /* 경완 2026-11-14 '돌아가며 나오는 건 별로, ai 반영': 지금 상황에 필요한 것일수록 잘 나온다 (HP 낮음 → 열매, 상대 많음 → 폭탄, 바닥에 골드 많음 → 자석, 대장전 → 기합). 바로 전에 나온 것은 덜 나옴 */
   const hr = me.hp / me.mhp, live = G.mobs.filter(o => o.hp > 0 && o.enter <= 0), boss = live.some(o => o.boss), coins = G.drops.filter(p => p.coin).length;
-  const W = { berry: hr < .3 ? 7 : hr < .55 ? 3.5 : hr < .8 ? 1 : .15, bomb: 1 + Math.max(0, live.length - 2) * .9 + (boss ? .5 : 0), magnet: coins >= 8 ? 4 : coins >= 4 ? 2 : coins ? .7 : .1, power: boss ? 3.5 : 1 };
+  const W = { berry: hr < .3 ? 7 : hr < .55 ? 3.5 : hr < .8 ? 1 : .15, bomb: 1 + Math.max(0, live.length - 2) * .6 + (boss ? .5 : 0), magnet: coins >= 8 ? 4 : coins >= 4 ? 2 : coins ? .7 : .1, power: boss ? 3.5 : 1 };
   if (G.itLast) W[G.itLast] *= .3; if (G.items[0]) W[G.items[0].k] = 0;
   let k = 'bomb', r = Math.random() * Object.values(W).reduce((a, v) => a + v, 0); for (const n in W) { if ((r -= W[n]) <= 0) { k = n; break; } } G.itLast = k;
   G.items.push({ k, x, y, t0: R.T }); ring(x, y, '#fff', 30, 6, .3, 3); snd('DUN_Wonder_Tile', .025); se('KON', .2, { gain: 1.4 });
@@ -788,7 +788,7 @@ function itemUse(it) {
     ring(it.x, it.y, '#f0d8ff', 20, 420, .5, 10); ring(it.x, it.y, '#a040e0', 10, 300, .45, 8, .5, .05); ring(it.x, it.y, '#5a1a90', 8, 220, .55, 6, .5, .12); stars(it.x, it.y - 10, 16, '#c070ff', 340);
     for (let i = 0; i < 26; i++) { const a = Math.random() * 6.28, v = 60 + Math.random() * 260; part({ x: it.x, y: it.y - 8, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .55 - 40, ay: -60, dr: 3, life: .7 + Math.random() * .6, sz: 5 + (i % 3) * 3, col: ['#a040e0', '#c070ff', '#6a2aa8', '#e8c8ff'][i % 4] }); }
     { const G0 = G, A = R.A; for (let i = 0; i < 14; i++) after(.08 + i * .07, () => { if (R?.G !== G0) return; const x = A.x0 + Math.random() * (A.x1 - A.x0), y = A.y0 + Math.random() * (A.y1 - A.y0); for (let j = 0; j < 3; j++) part({ x: x + (Math.random() - .5) * 20, y, vy: -50 - Math.random() * 60, life: .6 + Math.random() * .4, sz: 4 + j * 2, col: j % 2 ? '#c070ff' : '#8a3ad0' }); }); }
-    for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - it.x, o.y - it.y) || 1; hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .18 : .6))), e: 1, crit: false, w: 3 }, (o.x - it.x) / l * 1.4, (o.y - it.y) / l * 1.4); if (o.hp > 0) o.dot = { t: 5, tk: .5, leech: false }; } }
+    for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - it.x, o.y - it.y) || 1; hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .1 : .35))), e: 1, crit: false, w: 3 }, (o.x - it.x) / l * 1.4, (o.y - it.y) / l * 1.4); if (o.hp > 0) o.dot = { t: 3, tk: .5, leech: false }; } }   /* 경완 2026-11-15 '오물폭탄 너무 센듯': 잡몹 60% → 35%·대장 18% → 10%, 독 5초 → 3초 (독까지 합쳐 잡몹 100% → 59%) */
   hud();
 }
 function drawFence() { const g = R.g, P = R.Y.pond, x0 = Math.round(P.x1) + 6, x1 = R.A.x1 + 16, by = Math.round(P.y0) + 12, O = '#20202c', px = (c, x, y, w, h) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
