@@ -476,6 +476,7 @@ body.gymBattle .gy-menu,body.gymBattle .gy-top{visibility:hidden}
 .trt{display:inline-flex;align-items:center;flex-wrap:wrap;gap:2px 6px;align-self:flex-start;margin:2px 0;padding:3px 8px 3px 3px;border:2px solid var(--tc,#4a7ad0);border-radius:6px;background:var(--tb,#eef4ff);font-size:12px;line-height:1.2}
 .trt b{padding:1px 5px;border-radius:3px;background:var(--tc,#4a7ad0);color:#fff;font-size:10.5px}.trt i{font-style:normal;font-weight:700;color:var(--tc,#4a7ad0)}.trt small{flex-basis:100%;padding-left:2px;color:var(--dim);font-size:11px}
 .trt-train{--tc:#d0602a;--tb:#fff1e6}.trt-star{--tc:#c79410;--tb:#fff8dc}.trt-money{--tc:#2f9a4c;--tb:#eaf8ee}.trt-guts{--tc:#c8344a;--tb:#ffecef}.trt-grow{--tc:#3a8ec8;--tb:#e9f5ff}.trt-thrift{--tc:#7a6a4a;--tb:#f6f1e6}.trt-lazy{--tc:#8a7ab0;--tb:#f2eefa}
+.trt-mood{--tc:#e07a20;--tb:#fff3e4}.trt-scout{--tc:#2a9a9a;--tb:#e6f7f7}.trt-trouble{--tc:#6a6a78;--tb:#eeeef2}
 .sp-tabs .tdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e84040;vertical-align:middle}.sp-tabs small{font-size:11px;opacity:.75}
 .sf-pic{width:48px;height:48px;image-rendering:pixelated;object-fit:contain}.sf-card.yard{background:#fff3e6;box-shadow:inset 0 0 0 2px #f0a060}.sf-card em.y{color:#d0602a;font-style:normal;font-weight:700}
 .sf-btn button:disabled{opacity:.4}
