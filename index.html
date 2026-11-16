@@ -15814,8 +15814,9 @@ function rollEgg(e) { const RH = e.gc ? null : S.recentHatch;   /* v18.32 경완
   return pool[i];
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
-function bornPoke({ g, sp, place, sh }) {
-  const P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}) }), isNew = !dexHas(sp); if (!gaSbx) unlock(sp, true); P.nw = true;   /* v18.48: 시험 부화는 도감 등록 안 함 */   // 박스에 새로 들어온 표시 (확인하면 지움)
+const TY_FM = { 741: { 10: '', 13: 'Pom_Pom', 14: 'Pa_U', 8: 'Sensu' } };   /* v26.xx 경완 '춤추새 불타입 빨간색이었는데 모양이 다른데?': 타입 알에서 나온 춤추새는 그 타입 스타일 (불꽃=이글이글·전기=파칙파칙·에스퍼=훌라훌라·고스트=하늘하늘) */
+function bornPoke({ g, sp, place, sh, ct }) {
+  const tf = ct && TY_FM[sp]?.[ct], P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}), ...(tf != null ? { fm: tf } : {}) }), isNew = !dexHas(sp); if (!gaSbx) unlock(sp, true); P.nw = true;   /* v18.48: 시험 부화는 도감 등록 안 함 */   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: gaSbx ? Math.round(isNew ? NEW_EGG_G[g] : DUP_G[g]) : addGold(isNew ? NEW_EGG_G[g] : DUP_G[g], 'egg') };
 }
 const bornMsg = ({ g, sp, P, isNew, dupG }) => `${GRADE[g].n} 알에서 <b>${esc(SPECIES[sp].n)}</b>${hasBat(SPECIES[sp].n) ? '이' : '가'} 태어났다!<br><span class="small">${isNew ? `새로 만난 포켓몬이라 <b>${dupG}G</b>를 받았다` : `이미 만난 포켓몬이라 <b>${dupG}G</b>를 받았다`}</span>`
