@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 // 특훈 (경완 2026-11-16 '특훈도 지속적으로 유저들 배틀 로그 확인하고 밸런스 확인하는거 루틴화 해줘'): 기록 = kind mg · g 'yact' (yact.js pay).
 // YA_VER = 특훈 난이도·보상 숫자를 마지막으로 바꾼 버전 (바꿔 배포하면 같이 올림). YA_TG = '살펴보라'는 띠 (내가 잡은 값, 바꿀지는 경완이 정함):
 // 완주율 % (끝까지 한 판 가운데), 완주한 판 1분 골드 상한 (다른 미니게임 1분 30~50G, 특훈 완주 약 1,000G/7분), 완주 가운데 S 등급 % 상한
-const YA_VER = 26.38, YA_TG = { clr: [25, 70], gpm: 200, sRate: 60, quit: 40 };
+const YA_VER = 26.39, YA_TG = { clr: [25, 70], gpm: 200, sRate: 60, quit: 40 };
 const DAY = 864e5, KST = 9 * 3600e3, NOW = Date.now();
 // 눈여겨볼 기준 (그냥 '살펴보라'는 표시일 뿐, 바꿀지는 경완이 정함)
 const FLAG = {
