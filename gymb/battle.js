@@ -1735,7 +1735,7 @@ async function handle(a) {
     case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);
         if (gx) { const gf = toID(PSim.Dex.species.get(X.pk?.baseSpecies?.name || X.fm || '').baseSpecies || '') + 'gmax'; if (GMJ[gf]) { X.fm0 = X.fm; X.fm = gf; X.gif = await pickGif(s, X); } }
-        B.gmx[s] = gx ? 2 : 1; await gmFx(s, X, 'dmax'); stPat(s, X.st); await msg(`${eun(n)} ${gx ? '거다이맥스' : '다이맥스'}했다!`); break; }
+        B.gmx[s] = gx ? 2 : 1; const dmM = !B.dmM && window.GymBGM?.name !== 'champ' ? (B.dmM = 'champ') : null; if (dmM) M('stop', .4);   /* 경완 '다이맥스 할 때랑 하는 동안 소드실드 체육관 배틀 bgm' → 곡을 못 구해 '일단 그럼 우리도 다른 bgm 으로': 배틀에서 처음 다이맥스하는 순간 챔피언 배틀 곡으로 바꿔 끝까지 */ await gmFx(s, X, 'dmax'); if (dmM && B) M('play', dmM, { fade: .3 }); stPat(s, X.st); await msg(`${eun(n)} ${gx ? '거다이맥스' : '다이맥스'}했다!`); break; }
       // fallthrough
     case '-start': { if (/^ability: /.test(a[3] || '') || /^(protosynthesis|quarkdrive)/.test(a[3] || '') || (a[3] === 'typechange' && a[4] && !/^\[/.test(a[4]))) { const n = who(a[2]), w = a[3], ab = toID(w.replace('ability: ', '')), PQ = /^(protosynthesis|quarkdrive)(atk|def|spa|spd|spe)$/.exec(w);
         const t = w === 'typechange' ? `${eun(n)} ${a[4].split('/').map(x => TYK[x] || x).join('·')} 타입이 되었다!` : PQ ? `${n}의 ${iga(STAT_KO[PQ[2]])} 올라갔다!` : { flashfire: `${n}의 불꽃 기술 위력이 올라갔다!`, slowstart: `${eun(n)} 제대로 힘을 낼 수 없다!`, supremeoverlord: `${eun(n)} 쓰러진 동료들의 힘을 이어받았다!` }[ab] ?? ''; if (t) await msg(t); break; }
