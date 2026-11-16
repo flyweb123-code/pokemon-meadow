@@ -679,8 +679,8 @@ function pickTrain(after) {
   const g = st(), ty = g.ty, inTr = id => g.tr.some(e => e.id === id);
   GB().boxWin(false, null, () => { redraw(); after?.(); }, {
     title: () => `훈련장에 보낼 포켓몬 <small>${g.tr.length}/${trMax()}</small>`, tip: `${TYPE_KO[ty]} 타입 포켓몬만 보여요`,
-    list: () => S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(ty)),   /* v22.98 경완 '훈련장엔 체육관 타입 포켓몬만' (체육관을 바꾸면 훈련장이 비니 다른 타입이 남을 일 없음) */   /* v20.50 경완: 만렙도 훈련장에 (노력치·친밀도·기술) */ ok: () => true, first: P => (SPECIES[P.sp]?.t || []).includes(ty),
-    tag: P => inTr(P.id) ? '훈련장' : onField(P.id) ? '필드' : '',
+    list: () => S.box.filter(P => GA.pTy(P).includes(ty)),   /* v22.98 경완 '훈련장엔 체육관 타입 포켓몬만' (체육관을 바꾸면 훈련장이 비니 다른 타입이 남을 일 없음) */   /* v20.50 경완: 만렙도 훈련장에 (노력치·친밀도·기술) */ ok: () => true, first: P => GA.pTy(P).includes(ty), luF: 1,
+    tag: P => [inTr(P.id) ? '훈련장' : onField(P.id) ? '필드' : '', (g.lu || []).some(L => (L || []).includes(P.id)) && '라인업'],   /* v26.73 경완 '포켓몬들에 라인업 딱지도 붙여줘' */
     pick: function this_pick(P, w) { const i = g.tr.findIndex(e => e.id === P.id);
       if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${esc(nmOf(P))}${K.jong(nmOf(P)) ? '을' : '를'} 훈련장에서 데려왔다.`); }
       else { if (g.tr.length >= trMax()) return say(trFull());
@@ -695,7 +695,7 @@ function pickTrain(after) {
 function trSend(P, done) {
   const g = st(), i = g.tr.findIndex(e => e.id === P.id), n = esc(nmOf(P)), j = K.jong(nmOf(P)) ? '을' : '를';
   if (i >= 0) { tickTrain(Date.now()); g.tr.splice(i, 1); K.glog('tr', `${n}${j} 훈련장에서 데려왔다.`); K.save(); redraw(); slotRf?.(); return done?.(); }
-  if (!(SPECIES[P.sp]?.t || []).includes(g.ty)) return say(`훈련장에는 ${TYPE_KO[g.ty]} 타입 포켓몬만 보낼 수 있어요.`);   // v22.98
+  if (!GA.pTy(P).includes(g.ty)) return say(`훈련장에는 ${TYPE_KO[g.ty]} 타입 포켓몬만 보낼 수 있어요.`);   // v22.98
   if (g.tr.length >= trMax()) return say(trFull());
   GB().gymPop(`<h4>${n}${j} 훈련장에 보낼까요?</h4>${onField(P.id) ? `<p class="gy-msg">지금 필드에 나가 있어서 보내면 <b>필드에서 빠져요</b>.</p>` : ''}<div class="gy-btns"><button data-a="x">취소</button><button class="main" data-a="ok">보내기</button></div>`, (a, close) => { close(); if (a !== 'ok') return;
     const m = S.mons.find(o => o.pid === P.id); if (m) { try { GA.removeMon(m, true); } catch (e) {} }
