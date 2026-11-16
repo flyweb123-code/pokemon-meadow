@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 기술 파티클 (경완 2026-10-27): 플래티넘 원본 파티클 엔진(SPL)을 브라우저로 옮긴 것
    - 파티클 자료는 tools/gym/mkspl.py 가 원본 .spa 에서 뽑은 gym/img/spl/<이름>.json·png
    - 언제 어떤 방출기를 만들지는 tools/gym/mkanim.py 가 원본 기술 대본에서 뽑은 gymb/mvfx.json 의 'p…' 사건

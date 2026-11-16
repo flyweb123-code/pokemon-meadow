@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 2026-11-13 경완 '임팩트·진동·손맛이 아쉽다, 해금 안 된 번뜩임 기술 이름은 안 보이게': 멈칫(히트스톱)·화면 흔들림/밀림·넉백·날아가 터지는 쓰러뜨리기·
    근접 달라붙기·입력 미리 받기·저스트 회피·콤보·상대 공격 예고·대장 낙하 등장·진동 단계(GA.haptic 0/1/2)를 넣고, 번뜩임 기술은 ??? + 타입만 보여 준다. */
 /* 훈련장 직접 훈련 = 특훈 (처음엔 운영자 시험, 경완 2026-11-13 '운영자 모드에서 우리 게임 엔진 써서 해볼 수 있게, 내 계정에 영향 아예 가지 않게')

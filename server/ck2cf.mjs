@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 // CloudKit(아이폰 친구 서버) → Cloudflare 친구 서버로 옮기기. 여러 번 돌려도 안전하다 (서버는 더 새 기록만 덮어씀).
 // node server/ck2cf.mjs            → 옮김 (환경 변수 CLOUDKIT_API_TOKEN, SERVER_ADMIN_TOKEN, SERVER_URL)
 // node server/ck2cf.mjs --dry      → CloudKit 에서 읽기만 하고 개수만 보여 줌
