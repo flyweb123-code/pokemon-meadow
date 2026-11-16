@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 체육관 BGM (2026-10-27 경완: "저 저장소에서 자동으로 다운 받아지게 해줘")
    플래티넘 원본 소리 데이터(pret/pokeplatinum 의 sound_data.sdat)에서 곡·악기·소리 조각만 바이트 범위로 받아
    이 기기(IndexedDB pk-music)에 넣어 두고, gym/sseq.js(DS 소리 엔진)로 일꾼에서 연주해 튼다. 저장소엔 곡 파일을 올리지 않는다.
@@ -55,6 +62,7 @@ const SONG = {
   train: { s: 'sBaTrain', bank: 'battle', vol: 88 },      // 트레이너 배틀
   gymBattle: { s: 'sBaGym', bank: 'battle', vol: 88 },    // 체육관 관장 배틀
   rival: { s: 'sBaRival', bank: 'battle', vol: 88 },      // 라이벌 배틀
+  dmax: { file: 'gym/snd/swsh-gym.m4a', ls: 62.0, le: 199.154 },   // 다이맥스 곡 (경완이 준 소드실드 체육관 관장 배틀 곡, 처음 62초 뒤부터 137.154초 반복. 원저작권은 권리자에게 있고, 이 파일을 내려받아 쓰는 데 따르는 법적 책임은 내려받아 활용하는 사람에게 있음 — gym/snd/README.md)
   champ: { s: 'sBaChamp', bank: 'battle', vol: 90, boost: 1.35 },      // 챔피언 배틀 (경완 '난천 배틀곡 음량이 작은 것 같은데': 재 보면 다른 배틀 곡과 같은 -19dB 지만 피아노 위주라 작게 들려 +2.6dB)
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다
   winGym: { s: 'sWinGym', bank: 'battle', vol: 120 },     // 관장에게 이겼다
@@ -165,6 +173,13 @@ async function make(name) {
   if (pcm.has(name)) return pcm.get(name);
   const S = SONG[name], B = BANK[S.bank];
   if (S.gba) { const p = makeGba(S); pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
+  if (S.file) { const p = (async () => {   /* 파일 곡(m4a): 풀어서 반복 끝(le)까지 자르고 반복 시작(ls) */
+    const r = await fetch(`${S.file}?v=${VER}`); if (!r.ok) throw new Error('http ' + r.status); const ab = await r.arrayBuffer();
+    const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ac = new OC(2, 44100, 44100);
+    const b = await new Promise((ok, no) => { const q = ac.decodeAudioData(ab, ok, no); if (q && q.then) q.then(ok, no); });
+    const n = Math.min(b.length, Math.round(S.le * b.sampleRate)), c0 = b.getChannelData(0), c1 = b.numberOfChannels > 1 ? b.getChannelData(1) : c0;
+    return { L: c0.slice(0, n), R: c1.slice(0, n), rate: b.sampleRate, loop: true, loopStart: Math.round(S.ls * b.sampleRate) }; })();
+    pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
   const p = (async () => {
     const [seq, bank, ...wars] = await Promise.all([part(S.s), part(B.b), ...B.w.map(part)]);
     const bk = sent.has(B.b) ? null : bank.slice(0), ws = B.w.map((w, i) => sent.has(w) ? null : wars[i].slice(0));

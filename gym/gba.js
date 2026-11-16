@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 // GBA(에메랄드) 소리: MIDI 악보 + 음색 묶음(voicegroup) 을 m4a 소리 엔진처럼 연주해 PCM 으로 만든다.
 // v16.94 경완 '에메랄드 원곡': pret/pokeemerald 의 sound/songs/midi/*.mid, direct_sound_samples/*.wav, programmable_wave_samples/*.pcm 을
 // 고정 커밋에서 받아 와서(gym/bgm.js) 여기(일꾼)로 넘긴다. 음색 설정은 gym/gba.json (tools 없이 /tmp 스크립트로 voicegroup .inc 에서 뽑음).

@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* v12.01 경완 '바로 가능한 다른 세대 곡 상점에': 4세대(하트골드·소울실버, 다이아몬드·펄) 필드 곡.
    pret 저장소의 원본 소리 데이터(sdat)에서 곡·악기·소리 묶음만 바이트 범위로 받아 이 기기(IndexedDB pk-music)에 넣고,
    gym/sseq.js(DS 소리 엔진)로 일꾼에서 연주한다. 저장소엔 곡 파일을 올리지 않는다. 체육관 곡(gym/bgm.js)과 같은 방식.

@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 // Offline cache for the home-screen app. The page is fetched fresh when online so updates arrive;
 // sprite chunks are served from cache; bump CACHE when they change.
 const CACHE = 'meadow-v22';   // 청크가 바뀌면 올린다 (v22: 공격 그림 옆모습 줄로(mkatkside.py), v21: 그림 바꾼 56종 공격 동작을 원래 대기 그림 돌진으로(mkatk.py), v20: 빠지거나 멈춘 동작 24종 채움(mkmotion.py), v19: 프레임 1px 여백(딩루 테두리)·하랑우탄 원래 그림, v18: 하랑우탄·미라이돈 공격 자세, v17: 새 공격 자세 43종, v16: 새 공격 자세 33종·대여르 작게, v15: 딩루 등 11종 모션 채움·새 공격 자세 12종, v14: 하랑우탄 앞모습·던지미 공격 자세, v13: 무쇠머리·도트 수 늘림, v12: 45종 종별 공격·특수공격·걷기 모션, v11: 마임꽁꽁 얼굴, v10: 육파리 뒷모습·자루도 눈, v9: 떨구새 날갯짓·뒷모습 크기, v8: 옛 캐시 청크가 새 캐시로 옮겨지던 문제 고침, v2: 암컷 스프라이트, v3: 기술 모션, v4: 45종 도트 다시 그림, v5: 45종 뒷모습·대기 프레임, v6: 45종 얼굴 점 살림)

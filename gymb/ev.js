@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 체육관 이벤트 스토리 엔진 (2026-11-07 경완 '체육관에 가끔씩 이벤트 스토리, 본가처럼 밖으로 나가 모험, 이벤트별 모듈·보상')
    이벤트 하나 = gymb/ev/<id>.js 하나. 파일은 GymEv.def({...}) 로 자기를 등록한다.
    def: { id, nm(이름), sub(한 줄 설명), songs[미리 받을 곡], imgs[미리 받을 그림], ch[장 함수들], reward{g, rep, fit, …} }
