@@ -4725,3 +4725,16 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v26.23 경완 '로켓단 이벤트 방향키도 특훈처럼 스틱, 위치 고정으로 계속 보이게' (ev.js .ev-stk) */
 #gym .ev-pad.ev-stk::before{display:none}#gym .ev-stk .ev-jb{position:absolute;left:50%;top:50%;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;background:rgba(28,28,46,.32);border:3px solid rgba(255,255,255,.45);box-shadow:0 3px 0 rgba(0,0,0,.35);transition:background .12s}#gym .ev-stk .ev-jb.on{background:rgba(28,28,46,.46)}
 #gym .ev-stk .ev-jk{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(255,255,255,.88);border:3px solid #20202c;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+/* v25.xx 경완 '포켓몬 교체 화면 슬롯을 행 전체 1*6 으로 바꾸고 한 박스에 먹인 도구 다 보여주는 식' (수련탑): 한 줄에 한 마리, 오른쪽에 지닌 도구·영양제 아이콘+개수 */
+.bt.mob .bp-party.tr1{grid-template-columns:1fr;grid-template-rows:repeat(6,minmax(0,1fr)) minmax(32px,40px);gap:5px;padding:10px 12px}
+.bt.mob .bp-party.tr1 .pty{grid-template-columns:34px minmax(0,1fr) minmax(0,.8fr) 38%!important;grid-template-rows:auto auto!important;row-gap:3px;column-gap:6px;align-content:center;padding:3px 8px 3px 6px!important}
+.bt.mob .bp-party.tr1 .pty>.rk-fr{grid-row:1/3!important;grid-column:1}
+.bt.mob .bp-party.tr1 .pty b{grid-column:2;grid-row:1;padding-right:0}
+.bt.mob .bp-party.tr1 .pty .pty-ty{grid-column:2;grid-row:2;display:flex;align-items:center;gap:2px}
+.bt.mob .bp-party.tr1 .pty .lv{position:static!important;margin-left:4px}
+.bt.mob .bp-party.tr1 .pty .hp{grid-column:3;grid-row:1;align-self:end}
+.bt.mob .bp-party.tr1 .pty .hpn{grid-column:3;grid-row:2}
+.bt .pty .pty-it{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:calc(38% - 6px);display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end;align-content:center;max-height:calc(100% - 4px);pointer-events:none}
+.bt .pty .pty-it i{position:relative;display:block;flex:none;width:17px;height:17px;border-radius:4px;background:#00000024;box-shadow:inset 0 0 0 1px #ffffff40}
+.bt .pty .pty-it img{position:static!important;grid-row:auto!important;width:17px!important;height:17px!important;object-fit:contain;image-rendering:pixelated}
+.bt .pty .pty-it b{position:absolute;right:-2px;bottom:-3px;font:700 7px/1 var(--px);color:#fff;text-shadow:1px 0 #000,-1px 0 #000,0 1px #000,0 -1px #000}
