@@ -1383,6 +1383,7 @@ async function run(opts) {
     else if (out !== 'quit') {
       if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
       { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
+      for (const s of Object.keys(B.gmx || {})) { const X = B.act?.[s]; if (!B.gmx[s] || !X || X.fnt) continue; B.gmx[s] = 0; if (X.fm0 != null) { X.fm = X.fm0; X.fm0 = null; X.gif = await pickGif(s, X); } await gmFx(s, X, 'undmax'); await msg(`${s[0] === 'p' ? eun(X.nm) : '상대 ' + eun(X.nm)} 원래대로 돌아왔다!`); }   /* 경완 '다이맥스 상태에서 이겼을 때 … 원래 크기로 돌아와서 원래대로 배틀 엔딩 진행': 승부가 끝날 때 다이맥스가 남아 있으면 풀고(화면도 원래대로) 트레이너가 들어옴 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');

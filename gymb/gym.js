@@ -5083,7 +5083,7 @@ async function dmaxTut(test) {
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
   let k = null, T = null, made = null, rs = null, k0 = null, sp0 = 0, pot = null; const B = GB(), lu0 = JSON.stringify(st()?.lu || null), luI0 = st()?.luI, GW = { who: '안내원' }, RW = { who: '연구원 하람' };
   const say = (t, o) => T.say(t, o), hideT = on => T?.hide(on), gu = () => guyEnt, duo = on => { const G = gu(); if (!G) return; if (on) { face(G, k); face(k, G); } else { face(k, meEnt); face(G, meEnt); } };
-  const soupKeep = () => { if ((g.soup | 0) < sp0) g.soup = sp0; };   /* 연습 포켓몬에게 먹인 수프는 다시 채워 줌 (받은 한 그릇은 그대로 남게) */
+  sp0 = g.soup | 0; const soupKeep = () => { if ((g.soup | 0) !== sp0) g.soup = sp0; };   /* 경완 '튜토에서 다이수프는 사실상 주는게 아니니까 (리자몽한테 쓰고 사라지니까)': 냄비 수프는 연습 때만 한 그릇 덜어 쓰고, 끝나면 가방 수프 수는 처음 그대로 */
   try {
     let CR; [k, CR, pot] = await kangIn(D, { pot: 1 }); if (!open) return;
     T = storyTalk();
@@ -5094,15 +5094,15 @@ async function dmaxTut(test) {
     hideT(true); await dBandPop(); g.dBand = 1; save(); hideT(false);
     await say('그리고 몇몇 포켓몬은\n다이맥스할 때 아예 모습까지\n바뀌는 \'거다이맥스\'를 한단다.'); await say('거다이맥스한 포켓몬은\n그 포켓몬만 쓰는\n특별한 기술을 쓰지!'); await say('거다이맥스를 하려면\n이 냄비에 든 \'다이수프\'를\n먹여야 한단다.');
     duo(1); await say('…박사님.', GW); await say('응?'); await say('사실 아까 한 숟갈\n먹어 봤는데…\n저는 안 커지던데요?', GW); await say('자네 지금 그걸\n먹었단 말인가!?'); await say('(맛은 버섯 전골\n같았어요.)', GW); await say('…다이수프는 포켓몬만\n커진다네. 사람은 배만\n부르지.'); duo(0);
-    await say('다행히 한 그릇은\n남았구나. 이건 네 몫이란다.'); hideT(true); await soupGetPop(); g.soup = (g.soup | 0) + 1; sp0 = g.soup; save(); hideT(false);
-    await say('다이수프는 체육관 상점\n도구 탭에서도 판단다.'); await say('단, 거다이맥스 모습이\n있는 포켓몬에게만\n먹일 수 있단다.');   /* 경완 '여기 텍스트 박스 삐져나감': 한 줄 20자·세 줄 넘지 않게 */ await say('한 번 더 먹이면\n거다이맥스 인자가 빠지니\n조심하고!');
+    await say('다행히 한 그릇은\n남았구나. 휴우…');
+    await say('이 냄비는 연구소 거라\n줄 수는 없지만, 다이수프는\n체육관 상점 도구 탭에서 판단다.'); await say('단, 거다이맥스 모습이\n있는 포켓몬에게만\n먹일 수 있단다.');   /* 경완 '여기 텍스트 박스 삐져나감': 한 줄 20자·세 줄 넘지 않게 */ await say('한 번 더 먹이면\n거다이맥스 인자가 빠지니\n조심하고!');
     const know = await T.ask(`그런데 ${NK()},\n다이맥스 쓰는 방법은\n알고 있니?`, { hiNo: 1 }, '네', '아니요'); if (!open) return;
     if (know || !B) { await say(`오, 역시 ${NK()}${jong(NK()) ? '이' : ''}구나!\n그럼 짧게만 짚고 가자.`);
       await say('거다이맥스 모습이 있는 포켓몬은\n카드 › 도구 사용에서\n다이수프를 먹이면 된단다.'); await say('배틀에서 \'싸운다\'를 누르면\n다이맥스 버튼이 생긴단다.\n켜고 기술을 고르면 끝!'); }
     else { const sp = SPECIES[M[0]]?.n || '포켓몬', mvN = B.mvOf?.(M[1][0])?.[1] || '기술';
       await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`);
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: DM_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[1], lv: 50, it: '', ab: M[2] }); delete g.mon[made.id].gmax; save();
-      gse('DP_DECIDE'); await say(`${sp}${pN(sp)} 거다이맥스\n모습이 있는 포켓몬이란다.`); await say(`${sp}에게 방금 받은\n다이수프를 먹여 보자!`);
+      gse('DP_DECIDE'); await say(`${sp}${pN(sp)} 거다이맥스\n모습이 있는 포켓몬이란다.`); await say(`냄비에 남은 다이수프\n한 그릇을 ${sp}에게\n먹여 보자!`); g.soup = sp0 + 1; save();   /* 연습용 한 그릇 (끝나면 soupKeep 이 되돌림) */
       hideT(true);
       const P = made, inLu = () => (g.lu?.[g.luI | 0] || []).includes(P.id);
       busy = false; root.classList.remove('busy');
@@ -5112,7 +5112,7 @@ async function dmaxTut(test) {
         { c: '다이수프', when: () => gtEl(`.gy-boxw [data-id="${P.id}"]`), t: `.gy-boxw [data-id="${P.id}"]`, tap: `.gy-boxw [data-id="${P.id}"]`, until: () => gtEl('.gy-pop .mp-head'), after: 900, s: `내가 빌려준 ${sp}${pI(sp)}\n여기 있구나. 눌러 보렴!` },
         { c: '다이수프', when: () => gtEl('.gy-pop [data-a=tm]'), t: '.gy-pop [data-a=tm]', tap: '.gy-pop [data-a=tm]', until: () => gtEl('.gy-storew'), after: 700, s: '카드 아래 \'도구 사용\'을\n눌러 보렴!' },   /* 경완 '점선박스 말고 상세카드 하단에 있는 도구 사용 버튼 눌러서 먹이게 — 점선박스는 도구 지니게 할 때 누르는 느낌' */
         { c: '다이수프', when: () => gtEl('.gy-storew [data-ut=it][aria-selected=false]'), t: '.gy-storew [data-ut=it]', tap: '.gy-storew [data-ut=it]', until: () => gtEl('.gy-storew [data-soup]'), after: 500, s: '\'도구\' 탭을 눌러 보렴.' },
-        { c: '다이수프', t: '.gy-storew [data-soup]', tap: '.gy-storew [data-soup]', until: () => gtEl('.gy-pop [data-a=t]'), after: 700, s: '방금 받은 다이수프가\n여기 있지? 눌러 보렴!' },
+        { c: '다이수프', t: '.gy-storew [data-soup]', tap: '.gy-storew [data-soup]', until: () => gtEl('.gy-pop [data-a=t]'), after: 700, s: '냄비에서 덜어 온\n다이수프가 여기 있지?\n눌러 보렴!' },
         { c: '다이수프', when: () => gtEl('.gy-pop [data-a=t]'), t: '.gy-pop [data-a=t]', snap: ['5a', '.gy-pop .win', '.gy-pop [data-a=t]'], tap: '.gy-pop [data-a=t]', until: () => !!B.gm(P).gmax, after: 700, s: '\'먹이기\'를 눌러 보렴!' },
         { c: '다이수프', when: () => gtEl('.gy-pop .gy-btns.one [data-a=x]'), t: '.gy-pop .gy-btns.one [data-a=x]', tap: '.gy-pop .gy-btns.one [data-a=x]', quiet: 1, until: () => !gtEl('.gy-pop .gy-btns.one [data-a=x]'), after: 500 },
         { c: '체육관', when: () => gtEl('.gy-storew .gy-back'), t: '.gy-storew .gy-back', tap: '.gy-storew .gy-back', until: () => !gtEl('.gy-storew'), after: 700, s: '잘했다! ◀ 를 눌러\n돌아가자.' },
@@ -5125,7 +5125,7 @@ async function dmaxTut(test) {
       if (!inLu()) { g.lu = g.lu || [[], [], []]; const l = g.lu[g.luI | 0] || (g.lu[g.luI | 0] = []); l.unshift(P.id); }
       soupKeep(); save();
       if (!open) return; busy = true; root.classList.add('busy'); k.el.style.visibility = ''; hideT(false);
-      await say(`좋아! 이제 ${sp}${pN(sp)}\n거다이맥스할 수 있단다.`); await say('먹인 수프만큼 한 그릇\n다시 채워 두마. 허허!'); await say('그럼 연습 배틀에서\n다이맥스를 써 보자!\n내 연구소 연구원이 상대해 줄 거란다.');
+      await say(`좋아! 이제 ${sp}${pN(sp)}\n거다이맥스할 수 있단다.`); await say('그럼 연습 배틀에서\n다이맥스를 써 보자!\n내 연구소 연구원이 상대해 줄 거란다.');
       { hideT(true); const kx = Math.round(k.x), ky = Math.round(k.y); k0 = [kx, ky]; const fr = (x, y) => !D.free || (D.free[y]?.[x] === '1' && !occOf([k]).some(q => q[0] === x && q[1] === y)), sx = fr(kx + 1, ky) ? kx + 1 : fr(kx - 1, ky) ? kx - 1 : kx;
         if (sx !== kx) await walk(k, [[sx, ky]], 300);
         face(k, { x: D.door[0], y: D.door[1] }); await wait(250); doorSe(); await wait(200);
