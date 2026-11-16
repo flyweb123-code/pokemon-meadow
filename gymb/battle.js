@@ -488,7 +488,7 @@ async function gmFx(s, X, kind, ty) {
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
         await GymDBK.tera(c); teraOn(s, ty); return; }
-      if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
+      if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballS = new URL(`${IMG}ball/mon.png`, location.href).href; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
         if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.gxTop = gxTop; c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
           c.bgImg = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = c.bg.url; setTimeout(() => r(i.complete && i.naturalWidth ? i : null), 1500); }); c.bgX = -parseFloat(getComputedStyle($b('.bt-bg')).backgroundPosition) || 0;
           await GymDBK.dmaxFull(c); await wait(B.fast ? 300 : 1300); return; }
