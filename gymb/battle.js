@@ -1382,7 +1382,7 @@ async function run(opts) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
       if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
-      { const L = (B.dbl ? ['e', 'e2'] : ['e']).map(monEl).filter(fe => fe && getComputedStyle(fe).opacity !== '0'); L.forEach(fe => { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; }); if (L.length) await wait(380); }   /* v26.xx 경완 '더블 배틀 끝나고 상대 트레이너 나올 때 포켓몬 두마리 다 들어가게': 두 번째 자리(e2)도 같이 */   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
+      { const L = (B.dbl ? ['e', 'e2'] : ['e']).map(monEl).filter(fe => fe && getComputedStyle(fe).opacity !== '0'); L.forEach(fe => { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; }); if (L.length) await wait(380); }   /* v26.47 경완 '더블 배틀 끝나고 상대 트레이너 나올 때 포켓몬 두마리 다 들어가게': 두 번째 자리(e2)도 같이 */   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
       for (const s of Object.keys(B.gmx || {})) { const X = B.act?.[s]; if (!B.gmx[s] || !X || X.fnt) continue; B.gmx[s] = 0; if (X.fm0 != null) { X.fm = X.fm0; X.fm0 = null; X.gif = await pickGif(s, X); } await gmFx(s, X, 'undmax'); await msg(`${s[0] === 'p' ? eun(X.nm) : '상대 ' + eun(X.nm)} 원래대로 돌아왔다!`); }   /* 경완 '다이맥스 상태에서 이겼을 때 … 원래 크기로 돌아와서 원래대로 배틀 엔딩 진행': 승부가 끝날 때 다이맥스가 남아 있으면 풀고(화면도 원래대로) 트레이너가 들어옴 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
