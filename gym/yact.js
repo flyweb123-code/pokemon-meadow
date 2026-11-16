@@ -319,7 +319,7 @@ const CSS = `
 #yact .ya-start.fs{left:0;top:0;transform:none;width:100%;height:100%;max-height:none;border:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);color:#f0ecff}
 /* 경완 2026-11-15 '또 훈련장 비치는데? 처음에 눌렀을 때': 시작 화면 동안(.st0)은 그 밑의 경기장 캔버스·HUD 를 아예 안 그린다 — 아이폰에서 시작 화면이 그려지기 전 한 순간 밑의 경기장(훈련장 그림)이 비쳤음. [특훈 시작]을 누르면 보임 */
 #yact.st0{background:#0c0a1c}
-#yact.st0>:not(.ya-start):not(.ya-tu):not(.ya-load){visibility:hidden!important}
+#yact.st0>:not(.ya-start):not(.ya-tu):not(.ya-evh):not(.ya-load){visibility:hidden!important}
 #yact.pre{bottom:var(--mh,0px)}
 #yact.pre .fs .fs-ft{padding-bottom:12px}
 #yact.pre .fs .hr-st{height:min(112px,13.5vh)}#yact.pre .fs .ya-hero{padding-bottom:8px}#yact.pre .fs .ya-pmv{margin-top:7px}#yact.pre .fs .ya-pmv span{padding:4px 4px}#yact.pre .fs .ya-bd{gap:8px;padding-bottom:6px!important}#yact.pre .fs h3{margin-bottom:6px}#yact.pre .fs .fs-ft{padding-top:8px}#yact.pre .fs .fs-ft .bigb{padding:12px 0}#yact.pre .fs .ya-op{margin-top:6px}
@@ -364,8 +364,56 @@ const CSS = `
 @keyframes yaHalo{50%{transform:scale(1.08);opacity:.8}}
 @keyframes yaTwk{0%,100%{opacity:1;transform:translateY(0)}50%{opacity:.45;transform:translateY(-5px)}}
 #yact .fs .hr-in{width:100%}
-#yact .fs .hr-nm{font-size:22px;display:inline-block;max-width:70%;margin-right:8px;vertical-align:middle}
-#yact .fs .hr-lv{font-size:12px;margin:0;vertical-align:middle}
+/* 경완 2026-11-16 '상단 포켓몬 이름 가운데 정렬 하고 레벨을 그 밑 줄로 박스 없이, 이름 옆에 성별 표시, 타입 아이콘 포켓몬 스프라이트 좌상단에' */
+#yact .fs .hr-nl{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}
+#yact .fs .hr-nm{font-size:22px;display:block;min-width:0;max-width:86%;margin:0}
+#yact .fs .hr-sx{flex:none;font-style:normal;font-size:17px;line-height:1;font-weight:700;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+#yact .fs .hr-sx.m{color:#6ab8ff}#yact .fs .hr-sx.f{color:#ff8ab4}
+#yact .fs .hr-lv{display:block;font-size:13px;line-height:1.3;margin:2px 0 0;padding:0;background:none;border:0;color:#d8d0f4;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+#yact .fs .hr-ty{position:absolute;left:-34px;top:2px;display:flex;flex-direction:column;gap:4px;z-index:1}
+#yact .fs .hr-ty .tyi{position:static;display:block;width:24px!important;height:24px!important;margin:0;filter:drop-shadow(0 2px 0 rgba(0,0,0,.5))}
+/* 경완 '노력치 훈련 텍스트 옆에 물음표 아이콘 … 창 디자인은 시작 화면이랑 잘 어울리게' */
+#yact .fs h3 .ya-evq{flex:none;order:1;width:22px;height:22px;margin:-4px 0 -4px -2px;padding:0;border-radius:50%;border:2px solid #d8a830;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05));color:#ffe9a0;font:bold 12px/1 var(--px);box-shadow:0 2px 0 rgba(0,0,0,.45);cursor:pointer}
+#yact .fs h3 .ya-evq:active{transform:translateY(2px);box-shadow:none}
+#yact .fs h3::after{order:2}
+#yact .ya-evh{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(6,4,18,.72)}
+#yact .ya-evh.on{display:flex}
+#yact .ya-evh .eh-w{width:min(330px,100%);border-radius:16px;border:2px solid #d8a830;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 26px rgba(120,90,255,.4);color:#f0ecff;padding:14px 14px 14px;text-align:center}
+#yact .ya-evh .eh-hd{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+#yact .ya-evh .eh-im{width:40px;height:40px;object-fit:contain;image-rendering:pixelated;flex:none}
+#yact .ya-evh .eh-t{font-size:15px;line-height:1.3;color:#ffe9a0;text-shadow:0 2px 0 rgba(0,0,0,.5);min-width:0;word-break:keep-all}
+#yact .ya-evh .eh-m{margin:0 0 10px;font-size:14px;line-height:1.5;word-break:keep-all}
+#yact .ya-evh .eh-m b{display:inline-block;padding:0 8px;border-radius:9px;color:#fff;background:linear-gradient(180deg,#b490ff,#6a3ad0);border:1.5px solid #ffe08a;box-shadow:0 0 8px rgba(170,120,255,.7)}
+#yact .ya-evh .eh-pl{display:flex;justify-content:center;gap:6px;margin-bottom:10px}
+#yact .ya-evh .eh-pl span{flex:1;max-width:92px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 5px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 rgba(0,0,0,.45)}
+#yact .ya-evh .eh-pl span.nx{border-color:#ffe08a;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.45),0 0 10px rgba(255,216,74,.6)}
+#yact .ya-evh .eh-pl span.dn{opacity:.55}
+#yact .ya-evh .eh-pl img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}
+#yact .ya-evh .eh-pl small{font-size:11px;line-height:1.2;color:#d8d0f4}
+#yact .ya-evh .eh-pl em{font-style:normal;font-size:12px;line-height:1.2;color:#ffe27a}
+#yact .ya-evh .eh-y{margin:0 0 12px;padding:8px 10px;border-radius:10px;background:rgba(8,6,24,.55);border:1.5px solid rgba(255,233,160,.3);font-size:12px;line-height:1.55;color:#cfc8ee;text-align:left;word-break:keep-all}
+#yact .ya-evh .eh-bt{display:flex;gap:8px}
+#yact .ya-evh .eh-bt button{flex:1;font-family:var(--px);font-weight:700;font-size:14px;padding:10px 4px;border-radius:11px;cursor:pointer;white-space:nowrap}
+#yact .ya-evh .eh-x{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.06));border:2px solid rgba(255,255,255,.3);color:#f0ecff;box-shadow:0 3px 0 rgba(0,0,0,.5)}
+#yact .ya-evh .eh-go{flex:1.6!important;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border:2px solid #6a3a00;color:#4a2400;box-shadow:0 3px 0 #6a3a00,0 0 10px rgba(255,200,60,.5)}
+#yact .ya-evh .eh-bt button:active{transform:translateY(3px);box-shadow:none}
+/* 경완 '스테이지 9단계는 대장 2마리 나오는건데 실루엣도 2마리여야' : 대장 수만큼 칸 */
+#yact .ya-road b.m+b.m{margin-left:3px}
+/* 경완 '포켓몬 선택 슬롯에도 포켓몬 이름 옆에 레벨 표시' */
+#yact .fs .pkc small{display:block;flex:none;font-size:10px;line-height:1;margin-left:auto;padding:2px 5px;border-radius:7px;background:rgba(8,6,24,.5);color:#ffe9a0;white-space:nowrap}
+#yact .fs .pkc.on small{background:rgba(74,36,0,.82);color:#fff2a8}
+#yact .fs .pkc b{flex:0 1 auto}
+/* 세 칸이면 옆에 둘 자리가 없어 이름 아래 줄로 (긴 이름 .lg 는 작게 두 줄 — 잘림 없이) */
+#yact .fs .ya-pk.n3 .pkc{flex-wrap:wrap;align-content:center;row-gap:2px;padding:3px 6px;height:44px}
+#yact .fs .ya-pk.n3 .pkc img{order:0}
+#yact .fs .ya-pk.n3 .pkc u{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-decoration:none}
+#yact .fs .pkc u{display:contents;text-decoration:none}
+#yact .fs .ya-pk.n3 .pkc small{margin:0;padding:1px 5px}
+#yact .fs .ya-pk.n3 .pkc b{max-width:100%}
+#yact .fs .ya-pk.n3 .pkc b.lg{font-size:10px;line-height:1.1;white-space:normal;word-break:keep-all;text-align:left}
+#yact .fs .ya-pk.many .pkc{flex-direction:column;gap:0;height:48px;padding:2px 0}
+#yact .fs .ya-pk.many .pkc img{width:28px;height:28px}
+#yact .fs .ya-pk.many .pkc small{margin:0;padding:1px 4px;font-size:9px}
 #yact .fs .ya-pmv{grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
 #yact .fs .ya-pmv span{font-size:13px;font-weight:700;line-height:1.3;padding:6px 4px;border-radius:9px;color:#fff;border:2px solid #0c0a1c;letter-spacing:.5px;background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 94%,#000) 0,color-mix(in srgb,var(--tc) 74%,#000) 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.28),inset 0 -3px 0 rgba(0,0,0,.25),0 2px 0 rgba(0,0,0,.5);text-shadow:-1px 0 #14101e,1px 0 #14101e,0 -1px #14101e,0 2px #14101e}
 #yact .fs .ya-bd{flex:1;min-height:0;overflow:auto;padding:10px 16px 12px!important;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
@@ -585,14 +633,15 @@ const HTML = `<canvas></canvas>
 <div class="ya-ban"></div>
 <div class="ya-ov"></div>
 <div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><span class="ya-tg">운영자 시험</span><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
-    <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""></div><div class="hr-in"><b class="hr-nm"></b><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
+    <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""><span class="hr-ty"></span></div><div class="hr-in"><div class="hr-nl"><b class="hr-nm"></b><i class="hr-sx"></i></div><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
   <div class="ya-bd"><div class="ya-pk"></div>
-  <div class="ya-sec"><h3>노력치 훈련</h3><div class="ya-stt"></div></div>
+  <div class="ya-sec"><h3>노력치 훈련<button class="ya-evq" type="button" aria-label="어떤 훈련이 좋을까">?</button></h3><div class="ya-stt"></div></div>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
   <div class="ya-sec"><h3>받는 보상</h3><div class="fs-rwr"><span><i class="c ex">경험치</i></span><span><i class="c ev">노력치</i></span><span><i class="c fr">친밀도</i></span><span><i class="coin"></i><b>골드</b></span><span><svg class="sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b>번뜩임</b></span></div></div>
   </div>
   <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button></div></div>
 <div class="ya-tu"><div class="tu-w"><div class="tu-hd"><b>특훈 하는 법</b><button class="tu-x" type="button" aria-label="닫기">✕</button></div><div class="tu-im"><img alt=""></div><div class="tu-tx"><b class="tu-h"></b><p class="tu-p"></p></div><div class="tu-dots"></div><div class="tu-bt"><button class="tu-pv" type="button">이전</button><button class="tu-nx" type="button">다음</button></div></div></div>
+<div class="ya-evh"><div class="eh-w"><div class="eh-hd"><img class="eh-im" alt=""><b class="eh-t"></b></div><p class="eh-m"></p><div class="eh-pl"></div><p class="eh-y"></p><div class="eh-bt"><button class="eh-x" type="button">닫기</button><button class="eh-go" type="button"></button></div></div></div>
 <div class="ya-win ya-gift" hidden><b class="gf-h">클리어 보상 꾸러미</b><span class="gf-s"></span>
   <div class="gf-st"><u class="a"></u><u class="b"></u><img class="gf-bx" alt="" src="gym/img/yact/gift.png"></div>
   <div class="gf-l"></div>
@@ -1562,6 +1611,7 @@ function bind() {
   { const go = e => { e.preventDefault(); dodge(); }, d = q('.ya-dg'); on(d, 'touchstart', go, { passive: false }); on(d, 'mousedown', go); }
   on(q('.ya-pk'), 'click', e => { const b = e.target.closest('.pkc'); if (!b) return; se('SELECT'); r.pick = +b.dataset.i; const o = r.mons[r.pick]; if (o.evk >= 0) r.stat = o.evk; r.pool = null; startUi(); });
   on(q('.ya-stt'), 'click', e => { const b = e.target.closest('.stc'); if (!b) return; r.stat = +b.dataset.s; r.pool = null; startUi(); });
+  { const eh = q('.ya-evh'), cl = () => eh.classList.remove('on'); on(q('.ya-evq'), 'click', () => { se('DECIDE'); evHint(); }); on(eh, 'click', e => { if (e.target === eh) cl(); }); on(q('.eh-x'), 'click', () => { se('SELECT'); cl(); }); on(q('.eh-go'), 'click', e => { const k = e.currentTarget.dataset.k; cl(); if (k === '') return; se('DECIDE'); r.stat = +k; r.pool = null; startUi(); }); }
   on(q('.ya-go'), 'click', () => { se('DECIDE'); bgm('wild'); r.el.classList.remove('pre', 'st0'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
   on(q('.gf-ok'), 'click', () => { const G = r.G; if (!G?.gift || G.giftOk) return; se('DECIDE'); q('.ya-gift').hidden = true; q('.ya-ov').hidden = true; G.giftOk = r.T; });
   on(q('.ya-again'), 'click', () => { se('DECIDE'); bgm('wild'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
@@ -1628,7 +1678,7 @@ function end(clear, faint, quit) {
     q('.rs-xp').textContent = lv1 >= B.LV_MAX ? '레벨 끝' : `다음 레벨까지 ${Math.max(0, b - x1)}`; { const im = q('.rs-im'); im.removeAttribute('src'); GA.thumb?.(P).then(u => { if (im.isConnected && typeof u === 'string') im.src = u; }).catch(() => {}); }
     q('.rs-sub').innerHTML = `<span><i>쓰러뜨림</i><b>${G.ko}</b></span><span><i>최고 콤보</i><b>${G.best}</b></span><span><i>아슬아슬</i><b>${G.just}</b></span><span><i>맞은 횟수</i><b>${G.hits}</b></span>`;
     { const pool = G.pool, w = G.wave, rd = r.querySelector('.ya-road');   /* 스테이지 길: 깬 칸은 금빛, 쓰러진 칸은 빨갛게, 만난 대장은 얼굴이 보임 */
-      rd.innerHTML = STAGES.map((S, i) => `${i ? `<i class="${clear || i < w ? 'dn' : ''}"></i>` : ''}<b class="${S.boss ? (S.boss.includes(2) ? 'm f ' : 'm ') : ''}${clear || i < w - 1 ? 'dn' : i === w - 1 ? 'no' : ''}" data-b="${S.boss ? S.boss[0] : ''}">${S.boss ? '?' : i + 1}</b>`).join('');
+      rd.innerHTML = STAGES.map((S, i) => `${i ? `<i class="${clear || i < w ? 'dn' : ''}"></i>` : ''}${roadB(S, i, clear || i < w - 1 ? 'dn' : i === w - 1 ? 'no' : '')}`).join('');
       rd.querySelectorAll('b.m').forEach(el => GA.thumb?.({ sp: pool.big[+el.dataset.b] }).then(u => { if (R && R.G === G && el.isConnected && typeof u === 'string') { el.textContent = ''; const im = new Image(); im.alt = ''; im.src = u; el.append(im); } }).catch(() => {}));
       const cf = r.querySelector('.rs-cf'); cf.innerHTML = clear ? Array.from({ length: 26 }, (_, i) => `<i style="left:${(i * 37 + 11) % 100}%;background:${['#ffd84a', '#ff8a70', '#8fe0ff', '#fff', '#c8a0ff', '#ffe9a0'][i % 6]};animation-duration:${3.2 + (i * 7 % 10) * .28}s;animation-delay:${-(i * 13 % 40) / 10}s;width:${4 + i % 3 * 2}px;height:${4 + (i + 1) % 3 * 2}px"></i>`).join('') : ''; }
     q('.ya-rl').innerHTML = `
@@ -1645,17 +1695,25 @@ function end(clear, faint, quit) {
 }
 
 // ---------- 시작 창 ----------
+/* 스테이지 길 한 칸: 대장 스테이지는 대장 수만큼 실루엣 칸 (9스테이지 = 둘) */
+function roadB(S, i, c) { return S.boss ? S.boss.map(b => `<b class="m ${b === 2 ? 'f ' : ''}${c}" data-b="${b}">?</b>`).join('') : `<b class="${c}">${i + 1}</b>`; }
+/* 노력치 훈련 ? : 훈련장 카드(manage.js evTrHint)와 같은 셈 — 추천 배분(evPlan) 순서대로 아직 목표에 못 미친 첫 능력치 */
+function evHint() { const q = R.q, o = R.mons[R.pick], B = GB(), P = o.P, pl = B.evPlan?.(P.sp); if (!pl) return; const e = B.evArr?.(B.gm(P)) || [], k = pl.k.find((k, j) => (e[k] | 0) < pl.v[j]), w = q('.ya-evh'), nm = nmOf(P);
+  q('.eh-t').textContent = `${nm}에게 좋은 훈련`; { const im = q('.eh-im'); im.removeAttribute('src'); GA.thumb?.(P).then(u => { if (R && typeof u === 'string') im.src = u; }).catch(() => {}); }
+  q('.eh-m').innerHTML = k == null ? '추천 배분대로 노력치가 다 찼어요.<br>아무 훈련이나 골라도 좋아요.' : `지금은 <b>${STAT_KO[k]}</b> 노력치 훈련이 좋아요.${R.stat === k ? '<br>이미 이 훈련을 골랐어요!' : ''}`;
+  q('.eh-pl').innerHTML = pl.k.map((s, j) => `<span class="${s === k ? 'nx' : (e[s] | 0) >= pl.v[j] ? 'dn' : ''}"><img alt="" src="${B.itImg(B.EV_PW[s])}"><small>${STAT_KO[s]}</small><em>${Math.min(e[s] | 0, pl.v[j])} / ${pl.v[j]}</em></span>`).join('');
+  q('.eh-y').textContent = `${pl.nm}. ${pl.why}`; const go = q('.eh-go'), can = k != null && R.stat !== k; go.style.display = can ? '' : 'none'; go.textContent = can ? `${STAT_KO[k]} 훈련 고르기` : ''; go.dataset.k = can ? k : ''; w.classList.add('on'); }
 function startUi() {
   const q = R.q, o = R.mons[R.pick], th = (P, f) => GA.thumb?.(P).then(u => { if (R && typeof u === 'string') f(u); }).catch(() => {});
-  q('.hr-nm').textContent = nmOf(o.P); q('.hr-lv').textContent = `Lv.${GB().gm(o.P).lv}`; { const im = q('.hr-im'), k = R.pick; im.removeAttribute('src'); th(o.P, u => { if (R.pick === k) im.src = u; }); }
-  q('.ya-pk').classList.toggle('many', R.mons.length > 3); q('.ya-pk').innerHTML = R.mons.length > 1 ? R.mons.map((m, i) => `<button class="pkc${i === R.pick ? ' on' : ''}" data-i="${i}"><img alt="" data-i="${i}"><b>${nmOf(m.P)}</b></button>`).join('') : '';
+  q('.hr-nm').textContent = nmOf(o.P); q('.hr-lv').textContent = `Lv.${GB().gm(o.P).lv}`; { const sx = q('.hr-sx'), g = o.P.sex === 'm' ? 'm' : o.P.sex === 'f' ? 'f' : ''; sx.className = 'hr-sx ' + g; sx.textContent = g === 'm' ? '♂' : g === 'f' ? '♀' : ''; q('.hr-ty').innerHTML = (SP[o.P.sp]?.t || []).map(t => (GA.tyIcon?.(t) || '').replace(/ data-tip="[^"]*"/, '')).join(''); } { const im = q('.hr-im'), k = R.pick; im.removeAttribute('src'); th(o.P, u => { if (R.pick === k) im.src = u; }); }
+  q('.ya-pk').classList.toggle('many', R.mons.length > 3); q('.ya-pk').innerHTML = R.mons.length > 1 ? R.mons.map((m, i) => `<button class="pkc${i === R.pick ? ' on' : ''}" data-i="${i}"><img alt="" data-i="${i}"><u><b${nmOf(m.P).length > 5 ? ' class="lg"' : ''}>${nmOf(m.P)}</b><small>Lv.${GB().gm(m.P).lv}</small></u></button>`).join('') : ''; q('.ya-pk').classList.toggle('n3', R.mons.length === 3);
   q('.ya-pk').style.display = R.mons.length > 1 ? '' : 'none'; q('.ya-bd').style.paddingTop = R.mons.length > 1 ? '' : '0';
   if (R.mons.length > 1) R.mons.forEach((m, i) => th(m.P, u => { const im = R.q(`.ya-pk img[data-i="${i}"]`); if (im) im.src = u; }));
   /* 경완 2026-11-15 '시작창 노력치 정하는거 훈련장에서 훈련할 노력치 정할 때처럼 팔찌 아이콘들 넣어놔줘': 훈련장 .ev-tk 와 같은 파워 도구 그림(EV_PW) */
   q('.ya-stt').innerHTML = STAT_KO.map((s, i) => `<button class="stc${i === R.stat ? ' on' : ''}" data-s="${i}"><img alt="" src="${GB().itImg(GB().EV_PW[i])}"><span>${s}</span></button>`).join('');
   if (!R.pool) R.pool = foePool(R.stat); const pool = R.pool; [...pool.sm, ...pool.big].forEach(sp => spr(sp));
   // 스테이지 길: 숫자 칸, 중간 대장·대장 칸에는 그 포켓몬 얼굴
-  q('.ya-road').innerHTML = STAGES.map((S, i) => `${i ? '<i></i>' : ''}<b class="${S.boss ? (S.boss.includes(2) ? 'm f' : 'm') : ''}" data-b="${S.boss ? S.boss[0] : ''}">${S.boss ? '?' : i + 1}</b>`).join('');   // 대장 칸은 실루엣만 (경완 '대장은 실루엣으로 가려놓자')
+  q('.ya-road').innerHTML = STAGES.map((S, i) => `${i ? '<i></i>' : ''}${roadB(S, i, '')}`).join('');   // 대장 칸은 실루엣만 (경완 '대장은 실루엣으로 가려놓자')
   q('.ya-road').querySelectorAll('b.m').forEach(el => th({ sp: pool.big[+el.dataset.b] }, u => { if (R.pool === pool && el.isConnected) { el.textContent = ''; const im = new Image(); im.alt = ''; im.src = u; el.append(im); } }));
   q('.ya-pmv').innerHTML = moveList(o.P).map(v => `<span style="--tc:${TYPE_C[v.t] || '#888'}">${v.name}</span>`).join('');
 }
