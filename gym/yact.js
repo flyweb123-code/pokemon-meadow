@@ -29,7 +29,7 @@ const XP_KO = 9, XP_GM = [.6, .4, .25, .15, .15, .1, .1], CLEAR_X = { S: .5, A: 
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
 const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 10, BAG_COMBO_N = 100, /* 경완 '엉 그렇게 해줘' (2026-11-16): 20콤보마다 8G → 100콤보마다 10G. 자동 플레이 시뮬에서 콤보 자루가 완주 골드의 절반 넘음(1분 약 185G) */ CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
-  CPAL = [null, ['#6a4400', '#ffc830', '#d08a00', '#fff2a0'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];   /* 경완 2026-11-16 '떨어지는 골드 색은 그냥 아이콘이랑 동일한 금색 골드로': 동·은 색을 없애고 모두 점수판 동전과 같은 금색, 값은 크기로만 구분 */
+  CPAL = [null, ['#6a4400', '#ffc830', '#d08a00', '#fff2a0'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0'], ['#6a1010', '#f04a3a', '#b02020', '#ffb0a0']];   /* 경완 2026-11-16 '골드 크기는 값으로 차이 두기 보다는 큰 값은 빨강으로': 크기는 모두 같게, 10G 짜리(3)만 빨강 */   /* 경완 2026-11-16 '떨어지는 골드 색은 그냥 아이콘이랑 동일한 금색 골드로': 동·은 색을 없애고 모두 점수판 동전과 같은 금색, 값은 크기로만 구분 */
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
 const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
 /* 경완 2026-11-14: 아이템 = 본가 도구 그림(자석·연막탄·자뭉열매·플러스파워) + 테두리 빛만 */
@@ -1490,7 +1490,7 @@ let BAG_IM = null; function bagIm() { if (!BAG_IM) { BAG_IM = new Image(); BAG_I
 function drawBag(p) { const g = R.g, t = R.T - p.t0, k = p.val >= 40 ? 3 : 2, im = bagIm(), w = (im.width || 18) * k, h = (im.height || 21) * k, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, w * .42, w * .14, 0, 0, 7); g.fill(); g.imageSmoothingEnabled = false; if (im.complete && im.width) g.drawImage(im, Math.round(x - w / 2), y - h, w, h);
   if ((t * 1.3 + p.x * .37) % 1 < .3) { g.fillStyle = '#fff'; g.fillRect(x + w / 2 - 2, y - h - 4, 2, 8); g.fillRect(x + w / 2 - 5, y - h - 1, 8, 2); } }
-function drawCoin(p) { if (p.bag) return drawBag(p); const g = R.g, t = R.T - p.t0, C = CPAL[p.coin] || CPAL[1], s = p.coin === 3 ? 15 : p.coin === 2 ? 13 : 11, x = Math.round(p.x), y = Math.round(p.y - p.z - s / 2 - 3 + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));   /* 경완 '골드는 다 네모 아이콘으로': 점수판 동전과 같은 네모, 색만 다름 */
+function drawCoin(p) { if (p.bag) return drawBag(p); const g = R.g, t = R.T - p.t0, C = CPAL[p.coin] || CPAL[1], s = 12, x = Math.round(p.x), y = Math.round(p.y - p.z - s / 2 - 3 + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));   /* 경완 '골드는 다 네모 아이콘으로': 점수판 동전과 같은 네모, 색만 다름 */
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, s * .6, s * .25, 0, 0, 7); g.fill(); coinSq(g, x, y, s, C);
   if (p.coin > 1 && (t * 1.3 + p.x * .37) % 1 < (p.coin > 2 ? .3 : .16)) { g.fillStyle = '#fff'; g.fillRect(x + s / 2, y - s / 2 - 8, 2, 8); g.fillRect(x + s / 2 - 3, y - s / 2 - 5, 8, 2); } }
 // 번뜩임 조각 = 네 갈래 별 (동전과 헷갈리지 않게, 경완 2026-11-13). 색 = 등급: 하늘 +1% · 보라 +3% · 무지개 +5%
