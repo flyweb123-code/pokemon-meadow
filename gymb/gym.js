@@ -2334,7 +2334,7 @@ const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-
 const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.42)
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
-  if (p.querySelector('.le-get')) gyHold(p.querySelector('.gy-btns'), 1000);   /* v24.42 경완 '튜토리얼 막 누르다 넘어가지 않게 중요한 물건 알림창은 초반에 잠깐 잠금' (전설 알·메가링·테라·Z링·Z크리스탈·테라피스) */
+  if (p.querySelector('.le-get,.eg-ft')) gyHold(p.querySelector('.gy-btns'), 1000);   /* v26.46 경완 '폭거북스 번뜩임으로 레어 기술 오픈 됐었는데 배틀 끝나고 오픈되는 알림창이 안 뜨네': 결과창 확인을 빨리 두 번 누르면 바로 뒤 깨달음 창(같은 자리 확인 버튼)이 눌려 닫혔음 → 깨달음·번뜩임 창도 1초 잠금 */   /* v24.42 경완 '튜토리얼 막 누르다 넘어가지 않게 중요한 물건 알림창은 초반에 잠깐 잠금' (전설 알·메가링·테라·Z링·Z크리스탈·테라피스) */
   p.onclick = e => { if (e.target === p) { if (!p.classList.contains('gy-np')) close(); return; } const b = e.target.closest('button[data-a]'); if (b && b.closest('.gy-hold')) return; if (b) { sfx('tap'); onClick?.(b.dataset.a, close, p); } };
   const close = () => p.remove(); $g('.gy-main').appendChild(p); return p;
 }
