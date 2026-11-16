@@ -17,7 +17,9 @@ const IM = { 1: [8], 2: [8], 4: [9], 5: [3], 8: [1], 13: [5], 14: [17], 16: [18]
 const eff = (a, ds) => ds.reduce((m, d) => m * ((IM[a] || []).includes(d) ? 0 : (SE[a] || []).includes(d) ? 2 : (NV[a] || []).includes(d) ? .5 : 1), 1);
 const tysOf = sp => SP[sp]?.t || [1], nmSp = sp => SP[sp]?.n || '???';
 const josa = (w, a, b) => { const c = w.charCodeAt(w.length - 1) - 0xac00; return w + (c >= 0 && c % 28 ? a : b); };
-const EV_CAP = 8, EG_CAP = 15;
+/* v26.39 경완 '지금 번뜩임이 관장 배틀로 오르는 확률 대비 좀 많이 오르는듯' → 카드 '한 판 최대 5%': 한 판 상한 15 → 5%, 조각 확률도 같이 (잡몹 6% → 1.5% 하늘만, 중간 대장 60% 보라 → 50% 하늘, 마지막 대장은 남은 만큼) */
+/* 경완 '근데 완주하면 많이 올라도 될듯': 마지막 대장의 무지개 조각 +5% 는 상한과 따로 (EG_CLEAR) → 완주 한 판 5~10% */
+const EV_CAP = 8, EG_CAP = 5, EG_CLEAR = 5;
 /* 경완 2026-11-13 '페이즈를 늘려 한 판을 길게, 끝까지 깨면 레벨 5쯤': 10 스테이지 (4·7 = 중간 대장, 9 = 중간 대장 둘, 10 = 대장).
    n = 잡몹 수, lv = 내 레벨 기준 상대 레벨, boss = 대장 칸(0·1 중간 대장, 2 마지막 대장). 시간 제한은 없고(경완 2026-11-13 '체력 다 닳면 끝') 스테이지를 깰 때마다 HP 20% 회복.
    경험치는 '지금 레벨에서 5레벨 오르는 양'을 쓰러뜨린 상대 무게대로 나눠 준다 (끝까지 다 쓰러뜨려야 딱 5레벨). */
@@ -1305,8 +1307,8 @@ function ko(o, ux, uy) {
   const cr = Math.random(), coins = o.boss === 2 ? [] : o.boss ? [1, 1, 1] : o.minion ? [] : [cr < .01 ? 3 : cr < .07 ? 2 : 1];   /* 경완 '잡몹은 동전 다 떨구긴 했으면': 모두 하나씩, 대신 은·금은 드물게 */   /* 골드는 바닥에 떨어지고 주워야 내 것, 색마다 값이 다름 */
   const ex = o.minion ? 0 : Math.round(G.xpB * (o.boss === 2 ? XW.fin : o.boss ? XW.mid : XW.mob(G.wave - 1)) / XW_ALL); G.exp += ex;
   const y = EVY()[o.sp] || '', evAdd = +y[G.stat] || 0, before = G.ev; G.evRaw += evAdd / 6; G.ev = Math.min(EV_CAP, G.M.evRoom, Math.floor(G.evRaw + 1e-6));
-  const evUp = G.ev - before, egLeft = G.M.eg ? Math.min(EG_CAP, 99 - G.egg0) - G.shard - G.drops.reduce((a, p) => a + (p.sh ? EGV[p.sh] : 0), 0) : 0;
-  let shard = o.boss === 2 ? 3 : o.boss ? (Math.random() < .6 ? 2 : 0) : Math.random() < .06 ? (Math.random() < .15 ? 2 : 1) : 0; while (shard && EGV[shard] > egLeft) shard--;
+  const evUp = G.ev - before, egLeft = G.M.eg ? Math.min(EG_CAP + (o.boss === 2 ? EG_CLEAR : 0), 99 - G.egg0) - G.shard - G.drops.reduce((a, p) => a + (p.sh ? EGV[p.sh] : 0), 0) : 0;
+  let shard = o.boss === 2 ? 3 : o.boss ? (Math.random() < .5 ? 1 : 0) : Math.random() < .015 ? 1 : 0; while (shard && EGV[shard] > egLeft) shard--;
   // 펑 터지는 순간에 보상이 튀어나온다
   after(.42, () => { const x = o.x, yy = o.y;
     fxOnce(PX()?.s.Smoke_White ? 'Smoke_White' : 'Wood_Hammer_Smoke', 2, 0, x, yy - 14, 1, { s: o.boss ? 1.3 : .9 }); stars(x, yy - 16, o.boss ? 14 : 6, '#fff', o.boss ? 300 : 200); dust(x, yy, o.boss ? 12 : 5, 120); ring(x, yy, '#fff', 6, o.boss ? 90 : 44, .3, 5);
