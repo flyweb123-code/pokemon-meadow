@@ -516,7 +516,7 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 @keyframes frmini{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}20%,60%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1);opacity:0}}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
-#boxGrid>.pk[hidden]{display:none}#boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 96px auto 125px}/* v26.64 경완 '여전히 두번째 줄 필터 느림': 화면 밖 칸은 그리지 않음 */
+#boxGrid>.pk[hidden]{display:none}#boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 96px auto 125px}#boxGrid{position:relative}#boxGrid>.pk.off{content-visibility:hidden;position:absolute;left:0;top:0;width:96px;visibility:hidden;pointer-events:none}/* v26.64 경완 '여전히 두번째 줄 필터 느림': 화면 밖 칸은 그리지 않음 */
 #boxGrid.nohit::before{content:'찾는 포켓몬이 없다.';grid-column:1/-1;text-align:center;color:var(--dim);padding:24px 0}
 #evoFull{position:fixed;inset:0;z-index:7000;overflow:hidden;background:#05060e;color:#fff;opacity:0;transition:opacity .35s;--p:0}
 #evoFull.in{opacity:1}#evoFull[hidden]{display:none}
@@ -13418,7 +13418,6 @@ function menuDots() { try { $('#btnGym')?.classList.toggle('lock', gymLocked() |
   set($('#openShop'), fpDot() || SHOP_TABS.some(shopNewIn)); if (frH) { let fq = false; try { fq = frReqNew(); } catch (e) {} let vb = false; try { vb = Visit.unread() > 0; } catch (e) {} for (const id of ['#openSet', '#pfFrIc', '#frReqIc']) { const b = $(id); if (b) set(b, fq || (vb && id !== '#frReqIc')); } }   /* v12.66 경완: 받은 친구 요청 = 프로필 메뉴·친구 버튼·요청 아이콘 빨간 점 */ for (const t of SHOP_TABS) { const b = document.querySelector(`#shopTabs [data-st="${t}"]`), d = b && b.querySelector('.dot'), on = shopNewIn(t) || (t === 'fashion' && fpDot()); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } { const b = $('#btnGym'); if (b) set(b, b.classList.contains('evon') || !!window.gymDot?.() || (!window.Gym && gymDotLite(S.gym))); if (b) { const g = S.gym, now = Date.now(), n = g?.d ? gymQN(g, now) : 0; let c = b.querySelector('.gy-cnt'); if (n > 0 && !b.classList.contains('lock')) { if (!c) { c = document.createElement('b'); c.className = 'gy-cnt'; b.appendChild(c); } c.textContent = n > 9 ? '9+' : n; } else c?.remove(); }   /* v12.82 경완: 기다리는 도전자 수를 체육관 아이콘 우하단에 작게 */ } 
   for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexDot]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
-let bxRev = 0;
 let bxSoonT = 0; const renderBoxSoon = () => { clearTimeout(bxSoonT); bxSoonT = setTimeout(() => { if (pkEls.size) renderBox(); }, 120); };
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (boxDir > 0 ? '▼' : '▲') : ''; });
@@ -13447,9 +13446,8 @@ function renderBox() {
   if (make.length) { const f = document.createDocumentFragment(); for (const r of make) f.appendChild(r.el); grid.appendChild(f); }
   // 순서가 바뀌면 칸을 실제로 다시 늘어놓는다 (CSS order 만 바꾸면 아이폰에서 후광만 남거나 자리가 어긋나 보였다)
   { const cur = [...grid.children].filter(c => c.classList.contains('pk')); if (want.some((r, k) => cur[k] !== r.el)) { const f = document.createDocumentFragment(); for (const r of want) f.appendChild(r.el); grid.appendChild(f); } }
-  /* v26.63 경완 '포켓몬 박스에서 두번째 행 필터는 껐다 켰다 할 때 포켓몬 목록 불러오는게 오래 걸리네': 숨겼던 칸을 한꺼번에 다시 보이면 수백 칸을 한 번에 그려 멈칫 → 위쪽 30칸만 바로, 나머지는 다음 프레임부터 60칸씩 */
-  { const rev = ++bxRev, late = []; let vi = 0; L.forEach((p, k) => { const h = !vis(p), el = want[k].el; if (!h) vi++; if (el.hidden === h) return; if (!h && vi > 30) late.push(el); else el.hidden = h; });
-    const step = () => { if (rev !== bxRev) return; late.splice(0, 60).forEach(el => { el.hidden = false; }); if (late.length) requestAnimationFrame(step); }; if (late.length) requestAnimationFrame(step); }
+  /* v26.65 경완 '아직도 느려 첫번째 줄에 비하면': 필터에서 빠진 칸을 hidden(display:none)으로 숨기면 다시 보일 때 아이폰이 칸·그림을 처음부터 다시 만든다(정렬은 칸이 그대로라 빠름) → 숨기지 않고 .off 로 격자 밖에 그림 상태째 보관 (content-visibility:hidden) */
+  L.forEach((p, k) => { const off = !vis(p), el = want[k].el; if (el.hidden) el.hidden = false; if (el.classList.contains('off') !== off) el.classList.toggle('off', off); });
   grid.classList.toggle('nohit', !!q && !hits);
   for (const r of make) { const im = r.el.querySelector('img[data-sp]'), sp = +im.dataset.sp; if (!thumbOf(sp)) ensureSprite(sp).then(() => { im.src = thumbOf(fKey(sp, im.dataset.sx)); }).catch(() => {}); }
 }
