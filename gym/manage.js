@@ -832,8 +832,9 @@ const sayOf = c => { const L = LINES[c.trait] || [''], n = Math.abs((c.id | 0) *
 const teamIc = (T, key) => `<span class="sf-team">${T.map(([sp, lv], i) => `<span${key != null ? ` class="sf-tp" role="button" data-tsp="${sp}" data-tlv="${lv}" data-tk="${key}-${i}"` : ''}><img alt="" data-sp="${sp}"><small>Lv.${lv}</small></span>`).join('')}</span>`;   // key 가 있으면 눌러서 상세카드 (지원서)
 // 특성은 상자로 (경완 2026-10-27 '트레이너 특성은 확실하게 박스로')
 /* v25.73 경완 '노력파도 50% 고정하지 말고 확률 다 다르게': 특성 세기는 원래 트레이너마다 다름(tv) → 카드에 그 트레이너 숫자를 보여 줌 */
+/* v26.02 경완 '성장형 트레이너 특성 중에 다른 코치면 1.2배 이거 뭔 말임?': '다른 코치' = 코치 종류(경험치·노력치·기술)가 다른 경우라 풀어 씀 */
 const trtTxt = s => { const k = s.trait, v = trV(s), m = trM(s), h = Math.round((1 + (m - 1) / 2) * 100) / 100, p = x => Math.round(x * 100);
-  return { train: `코치로 있으면 코치 실력 ${m}배`, teach: `코치로 있으면 특별한 기술 ${m}배 빨리`, effort: `노력치 코치면 노력치 훈련 ${m}배 (다른 코치면 ${h}배)`, grow: `경험치 코치면 훈련 경험치 ${m}배 (다른 코치면 ${h}배)`, kind: `코치로 있으면 훈련장 친밀도 ${m}배`,
+  return { train: `코치로 있으면 코치 실력 ${m}배`, teach: `코치로 있으면 특별한 기술 ${m}배 빨리`, effort: `노력치 코치면 노력치 훈련 ${m}배, 경험치·기술 코치여도 ${h}배`, grow: `경험치 코치면 훈련 경험치 ${m}배, 노력치·기술 코치여도 ${h}배`, kind: `코치로 있으면 훈련장 친밀도 ${m}배`,
     star: `도전자를 막으면 평판 +${p(K.trX(s) - 1)}%`, money: `도전자를 막으면 골드 +${p(K.trX(s) - 1)}%`, guts: `도전자를 막을 확률 +${p(1 / (1 + Math.exp(-(.25 + .3 * v))) - .5)}%p쯤`, thrift: `주급 ${p(.1 + .2 * v)}% 적게`, lazy: `${p(.1 + .2 * v)}% 확률로 배틀을 쉼`,
     mood: `다른 트레이너들 막을 확률 +${p(1 / (1 + Math.exp(-(.1 + .15 * v))) - .5)}%p쯤`, trouble: `다른 트레이너들 막을 확률 −${p(1 / (1 + Math.exp(-(.1 + .15 * v))) - .5)}%p쯤`, scout: `좋은 라인업 지원자 ${Math.round((1.5 + v) * 10) / 10}배 자주` }[k] || K.TRAITS[k]?.d || ''; };
 const trtBox = (s, full, bare) => { const k = s?.trait, T = K.TRAITS[k]; return T ? `<span class="trt trt-${k}">${bare ? '' : '<b>특성</b>'}<i>${T.n}</i>${full ? `<small>${trtTxt(s)}</small>` : ''}</span>` : ''; };   // v21.83 다정함은 코치 % 에 안 들어가 세기를 여기서
