@@ -1139,7 +1139,7 @@ function sfGrow(now) {
     let k = 0; while (now - s.gt >= step && k++ < 30) { s.gt += step; if (!s.rest && teamLv(s.team) < cap) s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(100, cap, m[1] + 1)); }); } }
 }
 // v19.08 경완 '트레이너별로 주급과 수익': 이번 주 트레이너별 기록 g.wk.sf[id] = { nm, tr, wg 주급, e 번 골드, w 막음, l 짐, r 평판 }
-function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})[s.id] ||= { e: 0, w: 0, l: 0, r: 0 }; o.nm = sfName(s); o.tr = s.tr; o.wg = s.wage; return o; }
+function wkSf(s) { const w = st().wk; if (!w) return {}; const o = (w.sf ||= {})[s.id] ||= { e: 0, w: 0, l: 0, r: 0 }; o.nm = sfName(s); o.tr = s.tr; o.wg = s.wage; o.h = s.hired; return o; }
 /* v25.74: 분위기 메이커·트러블메이커 = 체육관에 서 있는 다른 트레이너 모두에게 z ±(.1~.25), 스카우터 = 좋은 라인업 지원자 (1 + .5~1.5)배 */
 const trVg = s => (s.tv ?? 50) / 100, sfOn = s => !s.rest && inGym(s);
 const sfAura = s => (st().sf || []).reduce((a, o) => o === s || !sfOn(o) ? a : a + (o.trait === 'mood' ? .1 + .15 * trVg(o) : o.trait === 'trouble' ? -(.1 + .15 * trVg(o)) : 0), 0);
@@ -1177,9 +1177,12 @@ function arrive(c) {
   g.q.push(c); glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // v19.08: 보고서에 넣을 트레이너 줄 — 지금 있는 트레이너(기록 없어도 0) + 이번 주에 일했다가 나간 트레이너
+/* v25.92 경완 '체육관 결산에서 트레이너별 주급 별 순이익 계산할 때 지금까지 일수만큼의 급여로 계산해야할듯': 그 주에 일한 날(고용한 날·해고한 날 기준, 1~7일)만큼만 주급 → wg = 주급×일수/7, wf = 한 주 주급, d = 일수 */
+const sfWkD = (k, h, t1) => { const a = k + WK_H * H, b = Math.min(a + 7 * DAY, t1 || Infinity); return Math.max(1, Math.min(7, Math.ceil((b - Math.max(a, h || 0)) / DAY - .01))); };
+const sfWkW = (wf, d) => Math.round((wf || 0) * d / 7);
 function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
-  for (const s of g.sf || []) { const x = R[s.id] || { e: 0, w: 0, l: 0, r: 0 }; delete R[s.id]; L.push({ nm: sfName(s), tr: s.tr, wg: x.wg || s.wage, e: x.e, w: x.w, l: x.l, r: x.r, co: s.yard && !inGym(s) ? 1 : 0 }); }
-  for (const x of Object.values(R)) if (x.nm) L.push({ ...x, out: 1 });
+  for (const s of g.sf || []) { const x = R[s.id] || { e: 0, w: 0, l: 0, r: 0 }; delete R[s.id]; const wf = x.wg || s.wage, d = sfWkD(o.k, s.hired); L.push({ nm: sfName(s), tr: s.tr, wf, d, wg: sfWkW(wf, d), e: x.e, w: x.w, l: x.l, r: x.r, co: s.yard && !inGym(s) ? 1 : 0 }); }
+  for (const x of Object.values(R)) if (x.nm) { const d = sfWkD(o.k, x.h, x.t1); L.push({ ...x, wf: x.wg, d, wg: sfWkW(x.wg, d), out: 1 }); }
   return L; }
 // 지난주 보고서 (월요일): 전적·막은 도전자·번 골드, 가상 체육관들과 점수 순위 (v19.08 경완: 화면엔 순위 안 띄움)
 function rollWeek(now) {
@@ -2997,12 +3000,13 @@ function reportPop(any) {
   let body;
   if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 주급만큼 일했는지를 정리해 드려요.</p>`;
   else {
-    const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.out ? 0 : x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
+    if (r.sf && !r.sfD) { r.sfD = 1; for (const x of r.sf) if (x.d == null) { const s = (g.sf || []).find(y => sfName(y) === x.nm && y.tr === x.tr); x.wf = x.wg; x.d = sfWkD(r.k || wkOf(Date.now()) - 7 * DAY, s?.hired); x.wg = sfWkW(x.wf, x.d); } }   /* v25.92 이미 만든 보고서도 일한 날만큼 */
+    const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
     const k0 = r.k || wkOf(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
     const row = x => { const d = (x.e || 0) - (x.wg || 0), pc = x.wg ? Math.min(100, Math.round((x.e || 0) / x.wg * 100)) : 100, tag = x.co ? '<i class="wr-tag co">훈련장 코치</i>' : x.out ? '<i class="wr-tag out">그만둠</i>' : '';
       return `<li class="${x.co ? 'co' : d >= 0 ? 'up' : 'dn'}"><span class="aw-pic"><img alt="" src="${trSrc(x.tr)}"></span><div class="wr-b"><p class="wr-n"><b>${esc(x.nm)}</b>${tag}</p>
         <p class="wr-s">${x.co ? '포켓몬 훈련 담당 · 도전자는 안 받음' : `${x.w || 0}명 막음 · ${x.l || 0}번 짐`}</p>
-        <div class="wr-bar"><i style="width:${x.co ? 0 : pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>주급 ${G(x.wg)}G</span></p></div>
+        <div class="wr-bar"><i style="width:${x.co ? 0 : pc}%"></i></div><p class="wr-m"><span><i class="coin"></i>${G(x.e)}G 벌고</span><span>주급 ${G(x.wg)}G${x.d && x.d < 7 ? ` <small class="wr-dd">(${x.d}일)</small>` : ''}</span></p></div>
         <em class="wr-d">${x.co ? `<small>주급</small>−${G(x.wg)}G` : d >= 0 ? `<small>${x.wg ? `주급의 ${Math.round((x.e || 0) / x.wg * 10) / 10}배` : '이득'}</small>+${G(d)}G` : `<small>주급보다</small>−${G(-d)}G`}</em></li>`; };
     // v19.10 경완 '다 들어가게 줄이지 말고 넘기게': 1쪽 결산, 2쪽부터 트레이너 3명씩 — 점·이전/다음으로 넘김 (밀어서도)
     const PG = [`<div class="aw-tot"><div><span>전적</span><b>${r.w}<small>승</small> ${r.l}<small>패</small></b><span class="wr-sub">방어율 ${dr}%</span></div><div><span>막은 도전자</span><b>${r.b}<small>명</small></b></div><div><span>평판</span><b class="aw-r">${awR(r.r || 0)}</b></div></div>

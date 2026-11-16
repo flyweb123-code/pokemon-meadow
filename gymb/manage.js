@@ -916,6 +916,7 @@ function sfDetail(s, home) {
         const wd = s.rest ? 0 : Math.max(1, Math.min(7, Math.ceil((now - (s.pay - 7 * K.DAY)) / K.DAY - .01))), amt = s.rest ? 0 : Math.round(s.wage * wd / 7);
         pop(`${sfFace(s)}<h4>해고할까요?</h4><p class="gy-msg">${esc(s.cls)} <b>${esc(s.nm)}</b>${K.jong(s.nm) ? '을' : '를'} 해고해요.${amt ? `<br>지금까지 일한 <b>${wd}일치 수당 ${amt.toLocaleString()}G</b>를 줘요.` : ''}</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">${amt ? `${amt.toLocaleString()}G 주고 해고` : '해고'}</button></div>`,
         (b2, c2) => { c2(); if (b2 !== 'y') return sfDetail(s, home); if (amt && !spend(amt)) return say(`골드가 모자라요. 수당 ${amt.toLocaleString()}G가 필요해요.`); if (amt) { try { K.dayRec().p += amt; window.pkGold?.('wage', amt); } catch (e) {} }
+          { const W = g.wk?.sf?.[s.id]; if (W) W.t1 = now; }   /* v25.92 주간 결산: 해고한 날까지만 주급 */
           g.sf = g.sf.filter(x => x !== s); K.glog('sf', `${esc(s.cls)} ${esc(s.nm)}${K.jong(s.nm) ? '을' : '를'} 해고했다.${amt ? ` <small>수당 ${amt.toLocaleString()}G</small>` : ''}`); K.save(); redraw(); K.renderHome(); }); }
     });
   return p;
