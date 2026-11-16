@@ -692,6 +692,7 @@ async function start({ host, mons, bgm0, bgmNow }) {
   const el = document.createElement('div'); el.id = 'yact'; el.className = 'st0'; el.innerHTML = HTML; (host || document.body).append(el);
   const q = s => el.querySelector(s);
   let done; const closed = new Promise(ok => { done = ok; });
+  for (const k in SE_T) delete SE_T[k];
   R = { el, q, host: host || document.body, mons, pick: 0, stat: 5, G: null, T: 0, RT: 0, last: 0, run: false, raf: 0, FX: [], POPS: [], PT: [], GH: [], Q: [], SPR: {}, kit: null, BG: null, Y: {}, A: {},
     HS: 0, SLOW: 0, SLOWK: 1, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, FLC: '255,255,230', VIG: 0, hapT: -1, hapN: -1, HELD: {}, BUF: null,
     JOY: { id: null, dx: 0, dy: 0, ox: 0, oy: 0 }, KEY: {}, done, off: [] };
@@ -740,7 +741,8 @@ const hudPt = sel => { const el = R.q(sel), b = R.el.getBoundingClientRect(), r 
 const snd = (n, gv = .05, at = 0) => { try { R?.kit?.snd(n, at, gv); } catch (e) {} };
 /* 경완 2026-11-14 '게임에 bgm 하고 효과음 다 입혀, 볼 던지고 터지는 건 본가 효과음': 본가(플래티넘) 효과음 = 체육관 소리 엔진 GymBGM.se('DP_…'), 곡 = GymBGM.play.
    se(이름, 최소 간격 초, 옵션): 같은 소리가 한꺼번에 겹치면 시끄러워서 간격 안엔 한 번만. mvSe: 기술마다 본가 배틀 연출 대본(gym/mvfx.json)의 소리를 그대로. */
-const SE_T = {}; const se = (n, gap = .07, o) => { if (!R) return; if (R.RT - (SE_T[n] ?? -9) < gap) return; SE_T[n] = R.RT; try { window.GymBGM?.se('DP_' + n, o); } catch (e) {} };
+/* v26.40 경완 '앱 잠깐 내렸다가 왔는데 특훈 효과음이 안 나는 오류': SE_T(소리별 마지막 시각)가 특훈을 닫아도 남아, 다시 열면(R.RT 가 0 부터) 지난번 한 시간만큼 본가 효과음이 전부 막혔다 → 지금 시각보다 뒤인 옛 기록은 무시 */
+const SE_T = {}; const se = (n, gap = .07, o) => { if (!R) return; const l = SE_T[n]; if (l != null && l <= R.RT && R.RT - l < gap) return; SE_T[n] = R.RT; try { window.GymBGM?.se('DP_' + n, o); } catch (e) {} };
 const bgm = n => { if (!R || R.bgmNow === n) return; R.bgmNow = n; try { if (!n) window.GymBGM?.stop(.5); else Promise.resolve(window.GymBGM?.play(n)).then(() => setTimeout(() => { if (R && R.bgmNow === n) try { window.GymBGM?.duck(BGM_K, .4); } catch (e) {} }, 700)); } catch (e) {} };
 const BGM_K = 1.8;   /* 경완 2026-11-14 'bgm 음량 더 키워야': 효과음이 많이 겹쳐 곡이 묻혀서 이 화면에서만 곡을 1.8배로 (GymBGM.duck = 지금 곡 크기 배율) */
 let MVFX = null; const mvSe = (id, gap = .3) => { const sc = MVFX?.[id]?.[1]; if (!sc) return false; const L = []; for (const e of sc) if (e[0] === 's' && !L.some(x => x[2] === e[2]) && L.length < 2) L.push(e); if (!L.length) return false; const t0 = L[0][1];
