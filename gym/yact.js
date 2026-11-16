@@ -574,6 +574,7 @@ const CSS = `
 @keyframes gfIt{0%{transform:translateY(-16px) scale(.6);opacity:0}}
 #yact .gf-l img{width:40px;height:40px;object-fit:contain;image-rendering:pixelated}
 #yact .gf-l i{font-style:normal;font-size:11px;line-height:1.25;color:#f0ecff;max-width:100%;word-break:keep-all;text-align:center;letter-spacing:-.3px}
+#yact .gf-l i s{display:inline-block;margin-right:3px;padding:0 3px;border-radius:3px;background:#3f7fd0;color:#fff;font-size:9px;font-weight:700;line-height:13px;text-decoration:none;vertical-align:1px;letter-spacing:0}#yact .gf-l i s.tr{background:#c0508a}
 #yact .gf-l span{--gc:255,233,160}
 #yact .gf-l span.gr1{--gc:96,168,255;--gd:#2a5fb8;--gl:#bfe0ff}
 #yact .gf-l span.gr2{--gc:186,132,255;--gd:#6a3ac0;--gl:#ecd8ff}
@@ -1522,19 +1523,23 @@ function drawBox(p) { const g = R.g, t = R.T - p.t0, im = boxIm(), k = 2, w = (i
 const GIFT_W = [75, 16, 8, 1], GIFT_GR = ['', '레어', '에픽', '전설'], giftGr = pr => pr >= 10000 ? 3 : pr > 1500 ? 2 : pr > 0 ? 1 : 0;   /* 경완 '전설은 5,000G는 넘어야' → '아니 10,000G는 넘어야할듯' — 10,000G 넘는 건 메가스톤(12,000G)뿐 */
 /* 경완 '최종 보스의 메가스톤 나올 확률도 좀 높여주고, 이미 창고에 있으면 안 나오는거고' — 쓰러뜨린 대장의 메가스톤 GIFT_BOSS %, 가진 메가스톤(창고·지닌 것)은 어느 칸에서도 안 나옴 */
 const GIFT_TW = [82, 16, 2], GIFT_BOSS = 8;   /* 경완 2026-11-16 '메가진화 보스 깨기가 어려워서 꾸러미 보상 수준 좀 높여줘도': 무작위 칸 1 → 2칸(v26.18 부터 도구 고정 한 칸 + 무작위 한 칸), 대장 메가스톤 4 → 8% */
-const GIFT = (stat, boss) => { const B = GB(), H = B.HOLD || {}, V = B.EV_VIT || [['protein']], MS = B.MEGA_ST || {}, has = id => (GA.S?.gym?.itm?.[id] | 0) > 0 || !!B.itWho?.(id),
+/* 경완 2026-11-16 '보상 리스트에는 기술머신이나 기술레코드도 포함시켜줘': 무작위 칸의 영양제 몫(75%) 가운데 GIFT_TM %(전체로는 25%)는 훈련한 포켓몬이 배울 수 있고 아직 모르는 기술머신·기술레코드 (가진 기술머신은 빼고, 상점 값이 쌀수록 잘 나옴 — 값 셈은 manage.js tmPrice 와 같게). id 는 'tm:기술' */
+const GIFT_TM = 25, tmPr = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000, tmGr = pr => pr >= 2000 ? 2 : pr >= 700 ? 1 : 0;
+const giftTm = P => { const B = GB(), D = B.D, own = GA.S?.gym?.tms || {}; if (!P || !D || !B.tmOf) return null; const L = B.tmOf(P.sp).map(i => D.mv[i]).filter(x => x && B.tmCan(P, x[0]) && (B.isTR(x[0]) || !(own[x[0]] > 0))); if (!L.length) return null;
+  let r = Math.random() * L.reduce((a, x) => a + 1 / tmPr(x), 0); for (const x of L) if ((r -= 1 / tmPr(x)) <= 0) return ['tm:' + x[0], tmGr(tmPr(x))]; const x = L[L.length - 1]; return ['tm:' + x[0], tmGr(tmPr(x))]; };
+const GIFT = (stat, boss, P) => { const B = GB(), H = B.HOLD || {}, V = B.EV_VIT || [['protein']], MS = B.MEGA_ST || {}, has = id => (GA.S?.gym?.itm?.[id] | 0) > 0 || !!B.itWho?.(id),
     ok = Object.keys(H).filter(id => !B.ZC_T?.[id] && !(B.ZC_ST || []).includes(id) && H[id][1] > 0 && (!MS[id] || (H[id][1] >= 10000 && !has(id)))),
     bs = Object.keys(MS).filter(id => MS[id][0] === boss && H[id]?.[1] > 0 && !has(id)),
     pw = L => { let r = Math.random() * L.reduce((a, id) => a + 1 / H[id][1], 0); for (const id of L) if ((r -= 1 / H[id][1]) <= 0) return id; return L[L.length - 1]; },
     v0 = (V[stat] || V[0])[0], rv = () => V[Math.floor(Math.random() * V.length)][0], out = [[v0, 1, 0]],
-    slot = () => { let r = Math.random() * 100, k = 0; while (k < 3 && (r -= GIFT_W[k]) > 0) k++; const L = k ? ok.filter(id => giftGr(H[id][1]) === k) : []; return L.length ? [pw(L), k] : [rv(), 0]; },
+    slot = () => { let r = Math.random() * 100, k = 0; while (k < 3 && (r -= GIFT_W[k]) > 0) k++; const L = k ? ok.filter(id => giftGr(H[id][1]) === k) : []; if (!k && Math.random() * GIFT_W[0] < GIFT_TM) { const t = giftTm(P); if (t) return t; } return L.length ? [pw(L), k] : [rv(), 0]; },
     add = (id, gr) => { const e = out.find(x => x[0] === id); if (!e) out.push([id, 1, gr]); else if (gr) add(rv(), 0); /* 도구·열매는 같은 걸 두 개 안 줌 (경완 '1개만 쓸 수 있는 아이템인데') */ else e[1]++; };
   const tool = () => { let r = Math.random() * 100, k = 1; while (k < 3 && (r -= GIFT_TW[k - 1]) > 0) k++; for (; k > 0; k--) { const L = ok.filter(id => giftGr(H[id][1]) === k); if (L.length) return [pw(L), k]; } return [rv(), 0]; };   /* 경완 2026-11-16 '꾸러미 보상은 도구를 고정으로 1개 주긴 해야할듯': 영양제 + 도구 한 칸(레어 82·에픽 16·전설 2%) + 무작위 한 칸 */
   if (bs.length && Math.random() * 100 < GIFT_BOSS) { const id = bs[Math.floor(Math.random() * bs.length)]; add(id, giftGr(H[id][1])); } else add(...tool());
   add(...slot()); return out.sort((a, b) => a[2] - b[2]); };
-function gotBox(p) { const G = R.G, me = G.me; if (G.gift) return; G.gift = G.giftT || GIFT(G.stat, G.pool.big[2]); if (p) p.got = true; se('PIRORIRO'); snd('DUN_Stat_Up', .07); buzz(1); flash(.2, '255,240,170'); ring(me.x, me.y - 16, '#ffe27a', 8, 90, .4, 6, 1); stars(me.x, me.y - 24, 14, '#ffe27a', 280); pop(me.x, me.y - 70, '선물상자!', '#ffe27a', true);
-  after(.7, () => { if (R?.G !== G) return; const q = R.q, w = q('.ya-gift'), B = GB(), nm = id => B.HOLD?.[id]?.[0] || (B.EV_VIT || []).find(v => v[0] === id)?.[1] || id;
-    q('.gf-s').textContent = `메가 ${nmSp(G.pool.big[2])} 격파 보상`; q('.gf-l').innerHTML = G.gift.map(([id, n, gr], i) => `<span class="gr${gr | 0}" style="--i:${i}">${gr ? `<em>${GIFT_GR[gr]}</em><u></u>` : ''}<img alt="" src="${B.itImg(id)}"><i>${nm(id)}</i><b>×${n}</b></span>`).join(''); const top = Math.max(0, ...G.gift.map(x => x[2] | 0)); w.dataset.gr = top; if (top) after(.55 + (G.gift.length - 1) * .16 + .3, () => { if (R?.G !== G || w.hidden) return; se(top > 1 ? 'PIRORIRO' : 'PINPON', .5); buzz(top > 1 ? 2 : 1); });
+function gotBox(p) { const G = R.G, me = G.me; if (G.gift) return; G.gift = G.giftT || GIFT(G.stat, G.pool.big[2], G.M.P); if (p) p.got = true; se('PIRORIRO'); snd('DUN_Stat_Up', .07); buzz(1); flash(.2, '255,240,170'); ring(me.x, me.y - 16, '#ffe27a', 8, 90, .4, 6, 1); stars(me.x, me.y - 24, 14, '#ffe27a', 280); pop(me.x, me.y - 70, '선물상자!', '#ffe27a', true);
+  after(.7, () => { if (R?.G !== G) return; const q = R.q, w = q('.ya-gift'), B = GB(), tmX = id => id.startsWith('tm:') ? B.mvOf(id.slice(3)) : null, nm = id => { const x = tmX(id); return x ? `<s class="${B.isTR(x[0]) ? 'tr' : ''}">${B.isTR(x[0]) ? 'TR' : 'TM'}</s>${x[1]}` : B.HOLD?.[id]?.[0] || (B.EV_VIT || []).find(v => v[0] === id)?.[1] || id; }, im = id => { const x = tmX(id); return x ? `gym/img/bt/tm_${x[2]}.png` : B.itImg(id); };
+    q('.gf-s').textContent = `메가 ${nmSp(G.pool.big[2])} 격파 보상`; q('.gf-l').innerHTML = G.gift.map(([id, n, gr], i) => `<span class="gr${gr | 0}" style="--i:${i}">${gr ? `<em>${GIFT_GR[gr]}</em><u></u>` : ''}<img alt="" src="${im(id)}"><i>${nm(id)}</i><b>×${n}</b></span>`).join(''); const top = Math.max(0, ...G.gift.map(x => x[2] | 0)); w.dataset.gr = top; if (top) after(.55 + (G.gift.length - 1) * .16 + .3, () => { if (R?.G !== G || w.hidden) return; se(top > 1 ? 'PIRORIRO' : 'PINPON', .5); buzz(top > 1 ? 2 : 1); });
     q('.ya-ov').hidden = false; w.hidden = false; w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop'); se('WIN_OPEN'); se('PINPON', .3); buzz(1);
     const ok = q('.gf-ok'); ok.classList.add('lk'); setTimeout(() => ok.classList.remove('lk'), 1000); }); }   /* 저절로 뜨는 창: 버튼으로만 닫힘·팝업 모션·소리·1초 잠금 */
 let BAG_IM = null; function bagIm() { if (!BAG_IM) { BAG_IM = new Image(); BAG_IM.src = 'gym/img/item/goldsack.png'; } return BAG_IM; }
@@ -1771,5 +1776,5 @@ function startUi() {
   q('.ya-pmv').innerHTML = moveList(o.P).map(v => `<span style="--tc:${TYPE_C[v.t] || '#888'}"><em>${mvForm(v)}</em><b>${v.name}</b></span>`).join('');
 }
 
-window.GymYA = { start, close, get _R() { return R; }, _gift: (s, b) => GIFT(s, b), _S: () => GA.S, _use: i => useMove(i), _dodge: () => dodge(), _hold: (i, on) => { if (!R) return; if (on) { useMove(i, true); R.HELD[i] = 1; } else delete R.HELD[i]; }, _end: c => R?.G && end(c) };
+window.GymYA = { start, close, get _R() { return R; }, _gift: (s, b, P) => GIFT(s, b, P), _S: () => GA.S, _use: i => useMove(i), _dodge: () => dodge(), _hold: (i, on) => { if (!R) return; if (on) { useMove(i, true); R.HELD[i] = 1; } else delete R.HELD[i]; }, _end: c => R?.G && end(c) };
 })();
