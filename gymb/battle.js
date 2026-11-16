@@ -935,8 +935,8 @@ function partyPanel(req, forced, ban = []) {
     const pkOf = i => B.btl.p1.pokemon[i], mgOf = pk => /mega/i.test(pk?.species?.forme || '') ? pk.species.id : '', fmd = pk => !!pk?.set && toID(pk.set.species) !== pk.species.id;   /* 경완 2026-11-13: 메가진화(폼 체인지)한 포켓몬은 교체 창에도 바뀐 타입·특성 */
     const tys = (A, pk) => (fmd(pk) ? pk.species.types.map(t => TY_EN.indexOf(t)) : SPECIES[A.tsp || A.sp]?.t || []).map(t => tyI(t)).join('');
     // 포켓몬 버튼: 정사각형 프로필 + 이름·성별 + 타입 (경완 2026-10-29)
-    const list = () => { const p = panel(`<div class="bp-party">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
-      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}${boxOf(A.pid)?.mate ? ' mate' : ''}" data-i="${i}">${boxOf(A.pid)?.mate ? '<em class="pty-mt">동료</em>' : ''}${boxOf(A.pid) ? thumb(boxOf(A.pid), mgOf(pkOf(i))) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span></button>`; }).join('')}
+    const list = () => { const p = panel(`<div class="bp-party${B.ptyIt ? ' tr1' : ''}">${L.map((m, i) => { const [hp, mhp, r, fnt] = hpOfM(m), A = B.my[myIx(i)];
+      return `<button class="pty${m.active ? ' act' : ''}${fnt ? ' fnt' : ''}${boxOf(A.pid)?.mate ? ' mate' : ''}" data-i="${i}">${boxOf(A.pid)?.mate ? '<em class="pty-mt">동료</em>' : ''}${boxOf(A.pid) ? thumb(boxOf(A.pid), mgOf(pkOf(i))) : ''}<b>${esc(A.nm)}${sx(A.g)}</b><span class="pty-ty">${tys(A, pkOf(i))}<span class="lv">Lv${A.lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${hp}/${mhp}`}</span>${B.ptyIt ? `<span class="pty-it">${B.ptyIt(A.pid)}</span>` : ''}</button>`; }).join('')}
       ${forced ? '' : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`); fillTh(p);
       p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); if (b.hasAttribute('data-x')) return res(null); card(+b.dataset.i); }; };
     // 누르면 바로 바뀌지 않고 상세 카드 → '바꾸기' (경완 2026-10-29)
@@ -953,8 +953,8 @@ function partyPanel(req, forced, ban = []) {
 /* v24.55 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
 function trPickMon(q, L) {
   return new Promise(async res => { if (q) await msg(q, 0);
-    const p = panel(`<div class="bp-party">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
-      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span></button>`; }).join('')}
+    const p = panel(`<div class="bp-party${B?.ptyIt ? ' tr1' : ''}">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
+      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span>${B?.ptyIt ? `<span class="pty-it">${B.ptyIt(x.id)}</span>` : ''}</button>`; }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
 }
@@ -1334,10 +1334,11 @@ async function run(opts) {
   /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
   if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
+  if (opts.xit) { xitInstall(btl.dex); btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) pk.m.xit = { ...x }; }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '', ptyIt: opts.ptyIt || null   /* 수련탑: 교체 화면 줄마다 지닌 도구 */ };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
@@ -1370,6 +1371,7 @@ async function run(opts) {
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
+  if (opts.xit) try { xitStart(btl); } catch (e) { console.error(e); }
   try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
@@ -1381,6 +1383,7 @@ async function run(opts) {
     else if (out !== 'quit') {
       if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
       { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
+      for (const s of Object.keys(B.gmx || {})) { const X = B.act?.[s]; if (!B.gmx[s] || !X || X.fnt) continue; B.gmx[s] = 0; if (X.fm0 != null) { X.fm = X.fm0; X.fm0 = null; X.gif = await pickGif(s, X); } await gmFx(s, X, 'undmax'); await msg(`${s[0] === 'p' ? eun(X.nm) : '상대 ' + eun(X.nm)} 원래대로 돌아왔다!`); }   /* 경완 '다이맥스 상태에서 이겼을 때 … 원래 크기로 돌아와서 원래대로 배틀 엔딩 진행': 승부가 끝날 때 다이맥스가 남아 있으면 풀고(화면도 원래대로) 트레이너가 들어옴 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');
@@ -2541,6 +2544,21 @@ function tmPop(P, done, slot) {
 const tmRow = (x, n, id, off, note) => `<button type="button" class="sp-tm${off ? ' off' : ''}" data-tm="${id}" ${off ? 'disabled' : ''}><img class="tm-ic" alt="" src="${IMG}bt/tm_${x[2]}.png"><span class="tm-nm">${isTR(id) ? '<i class="tm-tr">TR</i>' : ''}<b>${esc(x[1])}</b>${isTR(id) ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta">${tyTag(x[2], x[3])}<small>위력 ${x[4] || '—'} · 명중 ${x[5] && x[5] !== true ? x[5] : '—'}${note ? ` · ${note}` : ''}</small></span></button>`;
 // ---------- 지니는 도구 (경완 2026-10-29): 본가처럼 포켓몬에게 하나씩. 일회용(상처약·열매 등)은 없고 계속 효과 있는 것만. 그림은 PokeAPI/sprites items
 // HOLD[id] = [이름, 가격, 설명, 타입 강화면 타입 번호]
+/* v25.xx 경완 '우리도 여러개 쓸 수 있게 해야하지 않을까?' 수련탑 쌓이는 지닌 도구 (포켓로그처럼 한 마리가 여러 개·같은 것 여러 장): 쇼다운은 도구 1칸뿐이라 도구 효과를 volatile 로 따로 붙임.
+   개수 = pokemon.m.xit[k]. 배틀 문장은 fullname 'item: 영어 이름' 으로 본래 도구 문장을 탐 */
+const TR_XIT_TY = { charcoal: 'Fire', mysticwater: 'Water', miracleseed: 'Grass', magnet: 'Electric', nevermeltice: 'Ice', blackbelt: 'Fighting', poisonbarb: 'Poison', softsand: 'Ground', sharpbeak: 'Flying', twistedspoon: 'Psychic', silverpowder: 'Bug', hardstone: 'Rock', spelltag: 'Ghost', dragonfang: 'Dragon', blackglasses: 'Dark', metalcoat: 'Steel', silkscarf: 'Normal', fairyfeather: 'Fairy' };
+function xitInstall(dex) { const C = dex.data.Conditions; if (C.xitside) return; const N = (pk, k) => pk?.m?.xit?.[k] | 0, I = k => dex.data.Items[k]?.name || k;
+  const def = (k, h) => { C['xit' + k] = { name: 'xit' + k, fullname: 'item: ' + I(k), ...h }; };
+  def('leftovers', { onResidualOrder: 5, onResidualSubOrder: 4, onResidual(pk) { this.heal(pk.baseMaxhp / 16 * N(pk, 'leftovers')); } });
+  def('shellbell', { onAfterMoveSecondarySelfPriority: -1, onAfterMoveSecondarySelf(pk, t, mv) { if (mv.totalDamage && !pk.forceSwitchFlag) this.heal(mv.totalDamage / 8 * N(pk, 'shellbell'), pk); } });
+  def('kingsrock', { onModifyMovePriority: -1, onModifyMove(mv) { if (mv.category === 'Status') return; mv.secondaries = mv.secondaries || []; mv.secondaries.push({ chance: 10 * N(this.effectState.target, 'kingsrock'), volatileStatus: 'flinch' }); } });
+  def('quickclaw', { onFractionalPriorityPriority: -2, onFractionalPriority(pr, pk, t, mv) { if (mv.category !== 'Status' && this.randomChance(N(pk, 'quickclaw'), 10)) { this.add('-activate', pk, 'item: Quick Claw'); return .1; } } });
+  def('widelens', { onSourceModifyAccuracyPriority: -2, onSourceModifyAccuracy(acc) { if (typeof acc === 'number') return this.chainModify(1 + .1 * N(this.effectState.target, 'widelens')); } });
+  def('focusband', { onDamagePriority: -40, onDamage(d, pk, src, eff) { if (eff?.effectType === 'Move' && d >= pk.hp && this.randomChance(N(pk, 'focusband'), 10)) { this.add('-activate', pk, 'item: Focus Band'); return pk.hp - 1; } } });
+  Object.entries(TR_XIT_TY).forEach(([k, ty]) => def(k, { onBasePowerPriority: 15, onBasePower(bp, pk, t, mv) { if (mv.type === ty) return this.chainModify(1 + .2 * N(pk, k)); } }));
+  C.xitside = { name: 'xitside', onSwitchIn(pk) { for (const k in pk.m.xit || {}) if (N(pk, k) > 0) pk.addVolatile('xit' + k); } };
+}
+function xitStart(btl) { const sd = btl.p1; if (!sd.pokemon.some(pk => pk.m.xit)) return; sd.addSideCondition('xitside', sd.active[0]); sd.active.forEach(pk => { if (pk) for (const k in pk.m.xit || {}) if ((pk.m.xit[k] | 0) > 0) pk.addVolatile('xit' + k); }); }
 const HOLD = {
   leftovers: ["먹다남은음식", 4000, "지니게 하면 매 턴 끝날 때마다 HP가 조금씩 회복된다.", 0],
   blacksludge: ["검은오물", 2500, "독 타입이 지니면 매 턴 HP가 회복된다. 다른 타입은 HP가 줄어든다.", 0],
