@@ -31,9 +31,11 @@
 
 ## 서명
 
-`app/dev.keystore` 는 친구들끼리 APK 로 나눠 쓰는 개발용 키입니다 (비밀번호 `pokegrow`).
-플레이 스토어에 올릴 땐 새 업로드 키를 만들어 비밀 변수로 넣습니다:
-`ANDROID_KEYSTORE_FILE`, `ANDROID_KEYSTORE_PASS`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASS` (build.gradle.kts 참고).
+친구들끼리 APK 로 나눠 쓰는 서명 키는 **저장소에 두지 않습니다** (2026-11-17 부터, 예전 기록에는 남아 있음).
+- GitHub 빌드: 비밀 변수 `ANDROID_KEYSTORE_B64`(키 파일 base64), `ANDROID_KEYSTORE_PASS`(비밀번호). 별칭이 다르면 `ANDROID_KEY_ALIAS`, 키 비밀번호가 다르면 `ANDROID_KEY_PASS`.
+- 내 컴퓨터 빌드: 키 파일을 `android/app/dev.keystore` 에 두고(gitignore 됨), `~/.gradle/gradle.properties` 에 `ANDROID_KEYSTORE_PASS=...` 한 줄.
+- 같은 키를 계속 써야 이미 깐 사람이 지우지 않고 업데이트됩니다. 키를 바꾸면 모두 지우고 다시 깔아야 합니다.
+플레이 스토어에 올릴 땐 새 업로드 키를 만들어 같은 비밀 변수로 넣습니다.
 
 ## 내 컴퓨터에서 빌드
 

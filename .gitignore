@@ -1,1 +1,6 @@
 native/PokeGrow/kakao-key.txt
+
+# 안드로이드 서명 키는 저장소에 두지 않음 (2026-11-17)
+android/app/dev.keystore
+*.jks
+*.keystore

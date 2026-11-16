@@ -28,7 +28,13 @@ jobs:
         env:
           KAKAO_KEY: ${{ secrets.KAKAO_KEY }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}   # 친구 방문 푸시 (없으면 푸시만 빠짐)
+          # 서명 키는 저장소에 두지 않고 비밀 변수로 (경완 2026-11-17 '안드로이드 일단 비공개해')
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASS }}
         run: |
+          if [ -z "$ANDROID_KEYSTORE_B64" ] || [ -z "$ANDROID_KEYSTORE_PASS" ]; then echo "::error::비밀 변수 ANDROID_KEYSTORE_B64 / ANDROID_KEYSTORE_PASS 가 없습니다 (android/README.md 서명 절)"; exit 1; fi
+          echo "$ANDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/dev.keystore"
+          export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/dev.keystore"
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
           cp app/build/outputs/apk/release/app-release.apk ../pokegrow.apk
