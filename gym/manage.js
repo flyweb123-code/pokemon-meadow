@@ -109,7 +109,8 @@ const yTop = () => 138;   // 체육관 벽 아래부터 걸어 다님
 /* v24.04 경완 '코치랑 포켓몬 버튼 있는 쪽으로 포켓몬이랑 코치가 내려오지 않게': 오른쪽 아래 버튼 칸(.ty-btns 124×116 + 발 둘레) */
 /* 경완 2026-11-15 '버튼은 1번으로 (코치 · 특훈 · 포켓몬 아래 한 줄), 포켓몬이 버튼 있는 데까지 내려가지 않게': 버튼 칸 = 아래 한 줄 전체(BTN_H 72) */
 /* 경완 2026-11-15 '엥 코치 포켓몬 버튼 위치 아직 본게임에 배포하지마': 새 배치(YNEW)는 운영자 시뮬(특훈 시연) 안에서만. 평소 훈련장은 예전대로 오른쪽 아래 두 칸(142×124), 아래 허들·과녁 자리도 그대로 */
-const YNEW = () => !!window.gymSimOn, BTN_W = 142, btnH = () => YNEW() ? 72 : 124, inBtn = (x, y) => !!Y && y > Y.H - btnH() && (YNEW() || x > Y.W - BTN_W), offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - btnH() - 2] : [x, y];
+/* 경완 2026-11-16 '됐어 이제 본게임에 … 배포해': 특훈 공개와 함께 새 배치를 모두에게 */
+const YNEW = () => true, BTN_W = 142, btnH = () => YNEW() ? 72 : 124, inBtn = (x, y) => !!Y && y > Y.H - btnH() && (YNEW() || x > Y.W - BTN_W), offBtn = (x, y) => inBtn(x, y) ? [x, Y.H - btnH() - 2] : [x, y];
 const nearBush = (x, y) => Math.abs(x - Y.W / 2) < 120 && y < yTop() + 56;   // v20.85 문 옆 덤불 앞은 기술·훈련 자리로 안 씀 (경완 '덤불에 공격')
 function yardSpot(swim) {
   if (swim) { const p = Y.pond; return [p.x0 + 22 + Math.random() * Math.max(1, p.x1 - p.x0 - 44), p.y0 + 32 + Math.random() * Math.max(1, p.y1 - p.y0 - 44)]; }   // v21.01 경완 '가비루사 왜 육지로': 예전엔 훈련장 전체에서 60번 뽑다 다 빗나가면(약 1%) 땅 자리로 → 물 안에서만 뽑음
@@ -349,7 +350,7 @@ function coWin() {
 }
 // v20.99 경완 '+ 눌러도 화면 안 뜸·포켓몬 눌러도 상세카드 안 뜸': 다른 메뉴가 sh.onclick 을 바꿔 두므로 훈련장을 다시 붙일 때도 꼭 다시 단다
 function yardTap(ev) {
-    if (ev.target.closest('[data-sp]')) { sfx('tap'); return K.yaTest?.(); }   /* 특훈 (운영자 시험: 보상은 보여 주기만) */
+    if (ev.target.closest('[data-sp]')) { sfx('tap'); return K.yaTest?.(); }   /* 특훈 */
     if (ev.target.closest('[data-cob]')) { sfx('tap'); return coWin(); }   // v23.36 코치 버튼 → 훈련장 코치 창
     const c = ev.target.closest('[data-co]'); if (c) { sfx('tap'); const o = Y.co[+c.dataset.co]?.s; if (o) sfDetail(o); return; }
     const t = ev.target.closest('[data-p],[data-add]'); if (!t) return; sfx('tap');
