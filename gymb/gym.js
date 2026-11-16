@@ -4590,7 +4590,7 @@ const PROMO = {
   2: { in: [['k', '{N}!!! 크, 큰일 났다!\n아니, 좋은 쪽으로\n큰일 났단다!'], ['k', '떠오르는 체육관이라니!\n소식 듣자마자 연구소에서\n한달음에 뛰어왔단다!'], ['k', '세상에, 이 체육관이\n벌써 이렇게 크다니…\n오오오오…!'], ['g', '박사님, 숨 좀 쉬세요!\n얼굴이 새빨개요!'], ['k', '헉… 헉… 에헴!\n조금 흥분했구나.'], ['g', '강박사님! 이번엔 무슨\n비기예요? 혹시…\n월급 올리는 비기?!'], ['k', '…그건 {N}에게 물어보렴.'], ['g', '(관장님을 빤히 쳐다본다…)'], ['k', '에헴! 오늘 알려 줄 비기는\n바로 \'노력치\'란다.'], ['k', '훈련장에서 자세히 알려 주마.\n같이 가 보자!']],
     out: [['k', '노력치를 잘 쌓으면\n어떤 도전자도 무섭지 않을 거란다.'], ['k', '나도 젊었을 땐 노력치를 전부\n스피드에 몰아줬었지.'], ['g', '오, 그래서 어떻게 됐어요?'], ['k', '…도망만 아주 잘 쳤단다.\n허허허!'], ['k', '{N}, 요즘 도전자들 사이에서\n네 체육관 이야기가\n자자하더구나.'], ['k', '포켓몬은 믿어 주는 만큼\n강해진단다. 너라면\n분명 해낼 수 있어!'], ['g', '관장님, 저도 믿어 주세요!\n…월급도요!'], ['k', '허허! 그럼 다음 등급이 되면\n또 새 비기를 들고 오마.\n힘내라, {N}!']] } };
 // 경완 2026-11-12 '튜토리얼 들어오기 전에 강박사 항상 노크 먼저 > 강박사 관장님 보기': 똑똑똑! (화면 흔들림·관장·안내원 '!') → 문 열고 들어와 관장 앞까지 → 서로 마주 봄
-async function kangIn(D) {
+async function kangIn(D, o = {}) {
   let A = null; try { await loadJs('gymb/ev.js', 'GymEv'); A = window.GymEv?.tools?.(EV_API, { id: 'hof' }); } catch (e) {}
   try { window.GymBGM?.sePrep?.(['HG_WALL_HIT', 'DP_REGI', 'DP_DOOR']); } catch (e) {}
   await wait(600);
@@ -4600,9 +4600,24 @@ async function kangIn(D) {
   dlg(''); root.classList.add('dhide'); doorSe(); await wait(200);
   const k = ent({ ow: 'kang', src: KANG_OW, fw: 32, x: D.door[0], y: D.door[1], f: 'u' }); root.classList.remove('dhide'); dlg('<b>강박사</b>가 들어왔다!');
   // 경완 2026-11-12 '입구에서부터 천천히 들어오는 게 아니라 중간에 등장': 0.17초/칸이라 문에서 튀어나온 것처럼 보였음 → 도전자보다 천천히(0.34초/칸), 문 칸에서 잠깐 서 있다가
-  await wait(450); const CR = chalRoute(D, [k]); if (CR?.path?.length) await walk(k, CR.path, 340);
+  await wait(450); const CR = chalRoute(D, [k]); let pot = null;
+  if (o.pot && CR?.path?.length) { k.f = 'd'; place(k); dlg('<b>강박사</b>가 무언가를 끌고 들어왔다!'); pot = await potDrag(k, D.door, CR.path, A); }
+  else if (CR?.path?.length) await walk(k, CR.path, 340);
   dlg(''); root.classList.add('dhide'); face(k, meEnt); face(meEnt, k); if (guyEnt) face(guyEnt, k); await wait(350);
-  return [k, CR]; }
+  return [k, CR, pot]; }
+/* v26.17 경완 '강박사가 냄비 쪽을 바라보고 뒷걸음질로 한 템포씩 끌면서 들어오게': 다이수프 냄비(MAXSOUP 아이콘) 소품. 강박사는 냄비를 보며 한 칸 뒷걸음 → 냄비가 쿵 하고 끌려옴 → 잠깐 숨 고르기 */
+function potEnt(x, y) { const e = { prop: 1, pot: 1, x, y, w: 18, h: 15, el: document.createElement('i') }; e.el.className = 'gy-prop gy-pot'; e.el.style.backgroundImage = `url(${IMG}dbk/it/MAXSOUP.png?v=2)`; $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); return e; }
+function potDel(p) { if (!p) return; p.el.remove(); ents = ents.filter(x => x !== p); }
+const glide = (e, tx, ty, ms) => new Promise(done => { const x0 = e.x, y0 = e.y, t0 = performance.now(); e.stepN = (e.stepN || 0) + 1; const tick = now => { const q = Math.min(1, (now - t0) / ms); e.x = x0 + (tx - x0) * q; e.y = y0 + (ty - y0) * q; if (!e.prop) e.st = q < .6 ? (e.stepN % 2 ? 1 : 2) : 0; place(e); q < 1 ? requestAnimationFrame(tick) : (e.x = tx, e.y = ty, !e.prop && (e.st = 0), place(e), done()); }; requestAnimationFrame(tick); });
+async function potDrag(k, door, path, A) { const pot = potEnt(door[0], door[1]); pot.el.style.visibility = 'hidden'; let n = 0;
+  try { window.GymBGM?.sePrep?.(['HG_WALL_HIT2']); } catch (e) {}
+  for (const [tx, ty] of path) while (Math.round(k.x) !== tx || Math.round(k.y) !== ty) { const kx = Math.round(k.x), ky = Math.round(k.y), dx = Math.sign(tx - kx), dy = dx ? 0 : Math.sign(ty - ky);
+      face(k, pot.el.style.visibility === 'hidden' ? { x: kx - dx, y: ky - dy } : pot); await glide(k, kx + dx, ky + dy, 420);   /* 냄비 쪽을 본 채로 뒷걸음 */
+      pot.el.style.visibility = ''; gse('HG_WALL_HIT2', .55); GA.haptic?.(0); await glide(pot, kx, ky, 260); face(k, pot);
+      n++; if (n % 3 === 0) { A?.bub?.(k, '💦', 700); await wait(520); } else await wait(220); }   /* 세 번 끌 때마다 땀 한 번 */
+  return pot; }
+/* 누가 냄비를 들고 걸어감: 걷는 사람 바로 앞(보는 쪽)에 붙여 따라가게 — 멈추면 stop() */
+function potCarry(pot, who) { let on = true; const tick = () => { if (!on || !pot.el.isConnected) return; const f = who.f, ox = f === 'l' ? -.55 : f === 'r' ? .55 : 0, oy = f === 'u' ? -.3 : .25; pot.x = who.x + ox; pot.y = who.y + oy; place(pot); requestAnimationFrame(tick); }; requestAnimationFrame(tick); return () => { on = false; }; }
 // 강박사 나감: 아래 대화창이 빈 채로 남지 않게 먼저 닫고 걸어 나감 (경완 2026-11-12 '강박사 나갈 때 빈 대사창')
 async function kangOut(D, k, T) { dlg(''); root.classList.add('dhide'); T?.hide(true); await wait(250); T?.el?.remove(); await walk(k, outRoute(D, k) || [[D.door[0], Math.round(k.y)], D.door], 200); await wait(200); doorSe(); await wait(120); }
 async function promoVisit(gi) {
@@ -5020,13 +5035,13 @@ async function dmaxTut(test) {
   await Promise.all([loadJs('gymb/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => loadJs('gymb/manage.js', 'GymManage')), loadJs('gymb/bgm.js', 'GymBGM')]).catch(() => {});
   try { window.GymBGM?.sePrep?.(['DP_DOOR', 'ME_FANFA3', 'DP_DECIDE', 'DP_REGI']); } catch (e) {}
   busy = true; root.classList.add('busy'); root.classList.remove('gview'); openTab(null);
-  let k = null, T = null, made = null, rs = null, k0 = null, sp0 = 0; const B = GB(), lu0 = JSON.stringify(st()?.lu || null), luI0 = st()?.luI, GW = { who: '안내원' }, RW = { who: '연구원 하람' };
+  let k = null, T = null, made = null, rs = null, k0 = null, sp0 = 0, pot = null; const B = GB(), lu0 = JSON.stringify(st()?.lu || null), luI0 = st()?.luI, GW = { who: '안내원' }, RW = { who: '연구원 하람' };
   const say = (t, o) => T.say(t, o), hideT = on => T?.hide(on), gu = () => guyEnt, duo = on => { const G = gu(); if (!G) return; if (on) { face(G, k); face(k, G); } else { face(k, meEnt); face(G, meEnt); } };
   const soupKeep = () => { if ((g.soup | 0) < sp0) g.soup = sp0; };   /* 연습 포켓몬에게 먹인 수프는 다시 채워 줌 (받은 한 그릇은 그대로 남게) */
   try {
-    let CR; [k, CR] = await kangIn(D); if (!open) return;
+    let CR; [k, CR, pot] = await kangIn(D, { pot: 1 }); if (!open) return;
     T = storyTalk();
-    await say(`${NK()}!\n드디어 명문 체육관이구나!\n이 동네에서 모르는 사람이 없겠어.`);
+    await say('헉… 헉…\n이 냄비, 생각보다\n무겁구먼…'); await say(`${NK()}!\n드디어 명문 체육관이구나!\n이 동네에서 모르는 사람이 없겠어.`);
     /* 개그 (경완 '스토리 튜토리얼마다 개그'): 강박사가 들고 온 냄비 = 다이수프 → 안내원이 몰래 맛봄 → 하람이 '연구소 점심이 없어졌어요' */
     duo(1); await say('박사님, 그 커다란\n냄비는 뭐예요?\n냄새가 엄청 좋은데요?', GW); await say('이건 이따가 쓸 거라네.\n절대 건드리면 안 되네!'); await say('네에…', GW); duo(0);
     for (const x of ['명문 체육관에 어울리는\n아주 거대한 비기를\n들고 왔단다.', '바로 \'다이맥스\'란다!', '다이맥스한 포켓몬은\n몸이 산만큼 커지고\n체력도 크게 늘어나지.', '기술도 전부 엄청난\n\'다이맥스 기술\'로 바뀐단다.\n단, 한 배틀에 한 번, 3턴 동안!', '다이맥스엔 트레이너의\n다이맥스밴드가 필요하지.\n자, 받으렴!']) { if (!open) return; await say(x); }
@@ -5099,7 +5114,8 @@ async function dmaxTut(test) {
       await say(`우와… ${sp}${pI(sp)}\n체육관 천장에 닿을 만큼\n커졌어요!`, RW); await say(`역시 ${NK()}${jong(NK()) ? '이' : ''}네요.\n처음 쓰는 다이맥스인데도\n완벽했어요!`, RW); face(k, meEnt); face(meEnt, k);
       await say('어떠냐, 거대하지?\n이게 바로 거다이맥스란다!'); await say('다이맥스는 한 배틀에 한 번,\n3턴뿐이니 언제 쓸지가\n중요하단다.'); await say('상대 에이스가 나왔을 때나\n마지막 한 마리일 때가\n좋겠지!');
       await say(`${sp}${pN(sp)} 이제 돌려받으마.`);
-      if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 남은 수프\n냉장고에 다시 넣어 두러\n먼저 가 볼게요!', RW); hideT(true); await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; await wait(400); if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); hideT(false); }
+      if (rs) { const r0 = rs; face(r0, meEnt); await say('그럼 저는 남은 수프\n냉장고에 다시 넣어 두러\n먼저 가 볼게요!', RW); hideT(true); let stopC = null; if (pot) { gse('HG_WALL_HIT2', .55); await glide(pot, r0.x, r0.y, 300); stopC = potCarry(pot, r0); }   /* 하람이 냄비를 번쩍 들고 나감 */
+        await walk(r0, outRoute(D, r0) || [D.door], 260); doorSe(); r0.el.style.visibility = 'hidden'; stopC?.(); potDel(pot); pot = null; await wait(400); if (k0 && (Math.round(k.x) !== k0[0] || Math.round(k.y) !== k0[1])) await walk(k, [k0], 300); face(k, meEnt); face(meEnt, k); await wait(200); hideT(false); }
     }
     if (!open) return;
     if (made) { const i = S.box.indexOf(made); if (i >= 0) S.box.splice(i, 1); delete g.mon?.[made.id]; made = null; } soupKeep(); save();
@@ -5110,9 +5126,9 @@ async function dmaxTut(test) {
     else { await say('흠, 지금 라인업에는\n거다이맥스 모습이 있는\n포켓몬이 없구나.'); await say('그래도 다이맥스는\n어떤 포켓몬이든 할 수 있단다.\n배틀에서 꼭 써 보렴!'); }
     await say('아, 그리고 다이수프는\n포켓몬에게만 먹이렴.\n…맛은 묻지 말고. 허허!');
     await say(`그럼 거대하게 빛날\n체육관을 기대하마.\n건투를 빈다, ${NK()}!`);
-    await kangOut(D, k, T); T = null; k.el.style.visibility = 'hidden'; await wait(1000); if (open) await tipPop(5);
+    const stopK = pot ? potCarry(pot, k) : null; if (pot) gse('HG_WALL_HIT2', .55); await kangOut(D, k, T); T = null; stopK?.(); potDel(pot); pot = null; k.el.style.visibility = 'hidden'; await wait(1000); if (open) await tipPop(5);
   } finally {
-    T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } if (rs) { rs.el.remove(); ents = ents.filter(x => x !== rs); }
+    potDel(pot); T?.el?.remove(); if (k) { k.el.remove(); ents = ents.filter(x => x !== k); } if (rs) { rs.el.remove(); ents = ents.filter(x => x !== rs); }
     if (made) { const i = S.box.indexOf(made); if (i >= 0) S.box.splice(i, 1); delete g.mon?.[made.id]; } soupKeep();
     try { const l0 = JSON.parse(lu0); if (l0) g.lu = l0; } catch (e) {} (g.lu || []).forEach(l => { const j = l.indexOf(DM_TID); if (j >= 0) l.splice(j, 1); }); g.luI = luI0;
     document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); root.classList.remove('busy'); busy = false; meEnt.f = 'd'; place(meEnt); save(); renderTop?.();
