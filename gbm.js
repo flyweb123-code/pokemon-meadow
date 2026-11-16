@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 게임보이 BGM (v11.94 경완 2026-10-30 '곡 파일 가져오기 대신 다른 저장소에서'):
    pret/pokecrystal·pret/pokered 의 악보(.asm)를 GitHub 에서 받아 금·은/레드·블루 사운드 엔진처럼 프레임 단위로 진행하고,
    4채널(사각파 2·파형·노이즈)을 직접 합성해 반복 구간이 있는 AudioBuffer 로 만든다. 저장소엔 곡 파일을 올리지 않는다.

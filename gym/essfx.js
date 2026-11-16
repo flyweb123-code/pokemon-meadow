@@ -1,3 +1,10 @@
+/*
+ * 포켓에그 © 2026 flyweb123-code. 무단 사용·복제·수정·재배포 및 AI 학습·수집 금지 (LICENSE 참고).
+ * 포켓몬 관련 권리는 Nintendo·Creatures·GAME FREAK, 외부 자료는 각 권리자에게 있음.
+ * 이 코드·자료를 내려받아 활용해서 생기는 모든 법적 책임은 내려받아 활용한 사람에게 있으며, 제작자는 책임지지 않음.
+ * Copyright (c) 2026 flyweb123-code. No unauthorized use, copying, modification, redistribution or AI training/scraping.
+ * Anyone who downloads and uses this code or material bears all legal responsibility for that use; the author accepts no liability.
+ */
 /* 5세대 이후 기술 연출 재생 (Gen 9 Move Animation Project — Pokémon Essentials PBAnimationPlayerX 를 그대로 따라 함, 경완 2026-11-12 '응 다 반영해줘')
    좌표는 Essentials 512×384 = 우리 위 화면 256×192 의 2배. 20fps. 데이터는 tools/gym/mkess.py 가 gym/img/ess/a/<기술>.json 으로 뽑음
    칸: [칸 번호, 무늬, x, y, 가로%, 세로%, 각도, 뒤집기, 섞기, 불투명, 초점, 앞뒤, 색r,g,b,a]   타이밍: [0 소리, 프레임, 소리, 볼륨, 피치] [1·3 배경·앞 판 놓기, 프레임, 그림, x, y, 불투명, 색] [2·4 옮기기, 프레임, 길이, x, y, 불투명, 색] */
