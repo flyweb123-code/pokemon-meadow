@@ -1181,7 +1181,7 @@ function sfDuel(s, t) {
   if (s.xp >= 3) { s.xp = 0; const cap = Math.min(100, myAvg() + 3); s.team.forEach(m => { m[1] = Math.max(m[1], Math.min(cap, m[1] + 1)); }); }
   const KS0 = Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], k = pick(KL.length ? KL : KS0), nm = nmFree(CLS[k].f), cn = `${GB()?.TR_KO[k] || '트레이너'} <b>${esc(nm)}</b>`;
   const R = REW(diff), r0 = g.rep || 0;
-  const gold = addG(Math.round(R.g * sfPct() * (s.trait === 'money' ? trX(s) : 1)), 'sf'); s.eg = (s.eg || 0) + gold; const on = sfRepOn(t || Date.now()); if (on && !isLeg(g)) addRep(sfRep(s, R.r), 1);   /* v24.19: 전설의 체육관에선 고용 트레이너가 막아도 평판은 안 오름 (골드만) */
+  const gold = addG(Math.round(sfGM(g) * (.5 + Math.random()) * (s.trait === 'money' ? trX(s) : 1) / 5) * 5, 'sf'); s.eg = (s.eg || 0) + gold; const on = sfRepOn(t || Date.now()); if (on && !isLeg(g)) addRep(sfRep(s, R.r), 1);   /* v24.19: 전설의 체육관에선 고용 트레이너가 막아도 평판은 안 오름 (골드만) */
   const rep = (g.rep || 0) - r0;
   try { window.pkBal?.('sf', { w: 1, df: diff, n: 1, gd: gold, gr: g.gmax | 0, sl: Math.round(teamLv(s.team)) }); } catch (e) {}
   { const o = wkSf(s); o.e += gold; o.w++; o.r += rep; } awSf(s, gold, rep); blocked(null, 1); { const x = daySf(dayRec(t), `${s.cls} ${s.nm}`); x.w++; x.g += gold; x.r += rep; }
@@ -1237,9 +1237,12 @@ function payDay(now) {
    주급 = 보통 트레이너(내 평균 -2레벨·3마리) 기댓값 근처 + 실력 차이의 35%만 반영 → 잘하는 트레이너는 남고, 약한 트레이너는 손해. 뒤 자리 트레이너는 앞에서 놓친 도전자만 상대해서 덜 번다 */
 const sig = z => 1 / (1 + Math.exp(-z));
 /* v25.90: sfEV = 일주일(하루 SF_DAY 명) 자기 도전자를 막아 벌 골드 기댓값. 주급 = 보통 등급 기댓값의 21.7% + 자기 기댓값의 51.6% → 전설의 체육관 기준 하루 순이익 보통 +40 · 좋음 +80 · 뛰어남 +100 · 최고 +115G, 최고 6명 ≈ +700G */
+/* v26.19 경완 '고용 트레이너들이 버는 돈은 관장 배틀 매커니즘이랑 상관 없이 우리가 정한 순이익률 따라서 확률적으로 벌리게': 한 번 막을 때 골드 = 정한 평균(sfGM)의 50~150% 무작위.
+   예전엔 도전자 쉬움 40G·어려움 100G(관장 배틀 보상 GYM_G) 둘 중 하나라 늘 같은 값으로 보였음. 평균은 주급 셈(sfEV)과 같아서 등급별 순이익은 그대로 */
+const sfGM = g => { const pE = sfDiffP(g), W = GYMB(); return (pE * W.GYM_G[0] + (1 - pE) * W.GYM_G[1]) * sfPct(); };
 function sfEV(lq, trait, v = .5) { const g = st(), W = GYMB();
   const pE = sfDiffP(g), p = sfP0(lq, trait === 'guts' ? .25 + .3 * v : 0);
-  const gold = (pE * W.GYM_G[0] + (1 - pE) * W.GYM_G[1]) * p * sfPct() * (trait === 'money' ? 1.3 + .4 * v : 1);
+  const gold = sfGM(g) * p * (trait === 'money' ? 1.3 + .4 * v : 1);
   return 7 * SF_DAY * (trait === 'lazy' ? .9 - .2 * v : 1) * gold; }
 const sfWage = (lq, trait, v = .5) => { const mid = Math.max(1, sfEV(0, '')), ev = sfEV(lq, trait, v); return Math.max(50, Math.round((.217 * mid + .516 * ev) * ({ thrift: .9 - .2 * v, lazy: .85 - .15 * v, trouble: .8 - .2 * v, mood: 1.1 + .2 * v, scout: 1.05 + .1 * v }[trait] || 1)   /* v25.74 나쁜 특성은 싸게 */ * (.9 + Math.random() * .2) / 10) * 10); };
 // 면접 지원자 (하루~이틀에 한 명, 30시간 동안 기다린다)
