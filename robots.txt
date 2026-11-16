@@ -1,4 +1,4 @@
-# 포켓에그 — AI 학습·수집 봇 막기 (경완 2026-11-17). 일반 검색 봇은 막지 않음.
+# 포켓에그 — AI 학습·수집 봇과 일반 검색 봇 모두 막기 (경완 2026-11-17 '일반 검색 막아').
 # 주의: 검색 봇은 도메인 맨 위(flyweb123-code.github.io/robots.txt)만 읽는다.
 User-agent: GPTBot
 User-agent: ChatGPT-User
@@ -24,4 +24,4 @@ User-agent: ImagesiftBot
 Disallow: /
 
 User-agent: *
-Allow: /
+Disallow: /
