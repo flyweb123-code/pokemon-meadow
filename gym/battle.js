@@ -474,7 +474,7 @@ const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
   const m = monEl(s); if (!m || !B) return; const pan = panOf(s), DBK = await dbkLoad();
   const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); paintHb(s, X); gkBg(); };
-  if (DBK && X && !((kind === 'mega' || kind === 'z') && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
+  if (DBK && X && !((kind === 'mega' || kind === 'z' || kind === 'dmax') && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
       if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-bracelet.png`)   /* 경완 '키스톤은 메가링' → 경완이 준 메가바클 그림 (2026-11-12) */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
@@ -515,6 +515,19 @@ async function gmFx(s, X, kind, ty) {
     ph = 2; t0 = performance.now(); au.classList.add('out'); setTimeout(() => { live = 0; const im = cl?.querySelector('img'); if (im && im.style.filter.includes(fid)) im.style.filter = m._patF || ''; flt.remove(); au.remove(); }, 650); if (kind === 'mega' || zE) { se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); mgMark(); } await wait(kind === 'mega' || zE ? 1100 : 420); m.classList.remove('gm-' + gk); if (trE) { trE.classList.remove('mgin'); trE.className = trWas; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
+  if (kind === 'dmax' && s[0] === 'e') {   /* v25.35 경완 '도전자가 하는 다이맥스는 메가·Z기술처럼 화면 커지지 않고 간단하게 (근데 볼에 들어갔다가 커진 후 나오는 연출이긴 해야됨)': 트레이너 들어옴 → 볼로 돌아감 → 볼이 붉게 빛나며 기운을 빨아들이고 커짐 → 붉게 번쩍 터지며 나옴 (크기는 그대로) → 하늘 배경·구름 */
+    const tr = $b('.bt-tr.e'), trW = tr?.className, F = B.fast ? .5 : 1, fx = $b('.bt-fx'), x = 176 + slx(s), y = 46 + sly(s);
+    if (tr) { tr.classList.remove('away'); tr.classList.add('mgin'); await wait(550 * F); }
+    se('SUIKOMU', { pan }); m.classList.add('recall'); await wait(430); m.classList.remove('on', 'recall');
+    const b = pbEl('mon'); b.classList.remove('spin'); b.classList.add('gxb'); fx?.appendChild(b); const at = (k, dy = 0, r = 0) => ({ transform: `translate(${x}px,${y + dy}px) rotate(${r}deg) scale(${k})` });
+    await b.animate([at(.2), at(.8)], { duration: 220 * F, easing: 'ease-out', fill: 'forwards' }).finished.catch(() => {});
+    se('KOUKA_M', { pan }); for (let j = 0; j < 14; j++) { const p = document.createElement('i'); p.className = 'gxp'; const a = j / 14 * Math.PI * 2; p.style.left = x + 'px'; p.style.top = y + 'px'; fx?.appendChild(p);
+      p.animate([{ transform: `translate(${Math.cos(a) * 70}px,${Math.sin(a) * 50}px) scale(1.3)`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: 'translate(0,0) scale(.3)', opacity: 0 }], { duration: 650 * F, delay: j * 50 * F, easing: 'ease-in', fill: 'both' }); setTimeout(() => p.remove(), 1600 * F); }
+    await b.animate([at(.8), at(1.4, -4, -8), at(1.9, -6, 8), at(2.5, -8, -6), at(3, -10, 0)], { duration: 1400 * F, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' }).finished.catch(() => {});
+    se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); b.classList.add('open'); ballBurst(s, 'mon', 176, y - 4);
+    const fl = document.createElement('i'); fl.className = 'gxfl'; fl.style.setProperty('--x', x + 60 + 'px'); fl.style.setProperty('--y', y + 120 + 'px'); fx?.appendChild(fl); fl.animate([{ opacity: 0 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: 700 * F, fill: 'both' }); setTimeout(() => fl.remove(), 800 * F);
+    swap(); m.classList.add('on', 'gxin'); dmaxOn(s, X); setTimeout(() => b.remove(), 120); se('BOWA2', { pan });
+    await wait(750 * F); m.classList.remove('gxin'); if (tr) { tr.classList.remove('mgin'); tr.className = trW; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} await wait(500 * F); return; }
   if (kind === 'dmax') { se('KOUKA_M', { pan }); m.classList.add('fmc'); await wait(260); swap(); m.classList.remove('fmc'); dmaxOn(s, X); await wait(B.fast ? 400 : 900); try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'undmax') { se('BOWA2', { pan }); m.classList.add('gxout'); await wait(B.fast ? 300 : 650); dmaxOff(s); swap(); se('KOUKA_L', { pan }); await wait(B.fast ? 400 : 1300); m.classList.remove('gxout'); }   /* 본가처럼 붉은 기운이 빠져나가며 원래 크기로 (화면도 다시 가까이) */
 }
@@ -1121,7 +1134,7 @@ function aiGmk(btl, c) {
   if (G.z && !G.meOnly && R.canZMove && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) { const ft = foe.getTypes?.() || foe.types || [];
     const j = R.canZMove.findIndex((z, k) => { if (!z || !R.moves?.[k] || R.moves[k].disabled) return false; const dm = PSim.Dex.moves.get(R.moves[k].id); return dm.category !== 'Status' && PSim.Dex.getImmunity(dm.type, ft) && PSim.Dex.getEffectiveness(dm.type, ft) >= 0; });
     if (j >= 0) { B.gmBase.e = R.moves[j].id; return `move ${j + 1} zmove`; } }
-  if (G.dmax && R.canDynamax && (left === 1 || (ace && hpR > .5))) return c + ' dynamax';
+  if (G.dmax && !G.meOnly && R.canDynamax && (left === 1 || (ace && hpR > .5))) return c + ' dynamax';
   if (G.tera && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return c + ' terastallize';   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
@@ -1368,6 +1381,7 @@ async function run(opts) {
     else if (out !== 'quit') {
       if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
       { const L = (B.dbl ? ['e', 'e2'] : ['e']).map(monEl).filter(fe => fe && getComputedStyle(fe).opacity !== '0'); L.forEach(fe => { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; }); if (L.length) await wait(380); }   /* v26.47 경완 '더블 배틀 끝나고 상대 트레이너 나올 때 포켓몬 두마리 다 들어가게': 두 번째 자리(e2)도 같이 */   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
+      for (const s of Object.keys(B.gmx || {})) { const X = B.act?.[s]; if (!B.gmx[s] || !X || X.fnt) continue; B.gmx[s] = 0; if (X.fm0 != null) { X.fm = X.fm0; X.fm0 = null; X.gif = await pickGif(s, X); } await gmFx(s, X, 'undmax'); await msg(`${s[0] === 'p' ? eun(X.nm) : '상대 ' + eun(X.nm)} 원래대로 돌아왔다!`); }   /* 경완 '다이맥스 상태에서 이겼을 때 … 원래 크기로 돌아와서 원래대로 배틀 엔딩 진행': 승부가 끝날 때 다이맥스가 남아 있으면 풀고(화면도 원래대로) 트레이너가 들어옴 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');
@@ -1671,7 +1685,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = dm.isZ && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ /* v25.38 다이맥스 기술은 원래 기술 연출 대신 maxFx (같은 타입 Z기술 연출 + 붉은 빛·흔들림) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1921,7 +1935,19 @@ async function moveFx(s, id, miss, fx, t) {
   sw.forEach(flip); fxL.forEach(x => { x.style.translate = `${slx(o)}px ${sly(o)}px`; });
   try { return await moveFx1(s[0], id, miss, fx); } finally { if (el) { sw.forEach(flip); fxL.forEach(x => { x.style.translate = ''; }); } }
 }
+/* v25.38 경완 '엉 그렇게 해줘봐': 다이맥스·거다이맥스 기술은 Gen 9 팩에 연출이 없어서('~ Max Moves ~' 칸이 비어 있음) 쇼다운처럼 같은 타입 Z기술 연출을 빌리고, 붉은 테두리 빛·화면 흔들림을 더함 */
+const MAX_ZT = { Normal: 'breakneckblitz', Fighting: 'alloutpummeling', Flying: 'supersonicskystrike', Poison: 'aciddownpour', Ground: 'tectonicrage', Rock: 'continentalcrush', Bug: 'savagespinout', Ghost: 'neverendingnightmare', Steel: 'corkscrewcrash', Fire: 'infernooverdrive', Water: 'hydrovortex', Grass: 'bloomdoom', Electric: 'gigavolthavoc', Psychic: 'shatteredpsyche', Ice: 'subzeroslammer', Dragon: 'devastatingdrake', Dark: 'blackholeeclipse', Fairy: 'twinkletackle' };
+const MAX_Z1 = { maxguard: 'banefulbunker', maxdarkness: 'maliciousmoonsault', gmaxsnooze: 'maliciousmoonsault' };
+const maxZ = id => { if (!/^g?max[a-z]/.test(id || '')) return null; const m = window.PSim?.Dex.moves.get(id); if (!m?.exists || !(m.isMax || /^G-?Max|^Max /.test(m.name))) return null; return MAX_Z1[id] || MAX_ZT[m.type] || null; };
+async function maxFx(s, z) {
+  const top = $b('.bt-top'); if (!top) return essFx(s, z);
+  const v = document.createElement('div'); v.className = 'bt-gxv'; top.appendChild(v); vib(1);
+  const a = B.fast ? 2 : 3, sh = top.animate([{ translate: '0 0' }, { translate: `${-a}px ${a / 2}px` }, { translate: `${a}px ${-a / 2}px` }, { translate: `${-a / 2}px ${-a / 2}px` }, { translate: `${a / 2}px ${a / 2}px` }, { translate: '0 0' }], { duration: 240, iterations: Infinity });
+  try { return await essFx(s, z); }
+  finally { sh.cancel(); v.classList.add('out'); setTimeout(() => v.remove(), 400); }
+}
 async function moveFx1(s, id, miss, fx) {
+  { const z = !fx && maxZ(id); if (z) { if (!miss) await maxFx(s, z); return; } }
   const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1];
@@ -2744,11 +2770,11 @@ function usePop(P, done) {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
-    const IL = itAll(), ML = mintAll(), VL = vitAll();
-    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
+    const IL = itAll(), ML = mintAll(), VL = vitAll(), SL = soupAll();
+    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0) + SL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
     const TT = TL.filter(r => isTR(r[2]) === (useT === 'tr'));   /* v15.75 기술머신·기술레코드 탭 따로 */
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (egKn(m, id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
-      : (IL.length + ML.length + VL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
+      : (IL.length + ML.length + VL.length + SL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}${SL.map(([, n]) => soupRow(n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
       <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>${useT === 'it' ? '추천 도구' : '추천 기술'}</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
@@ -2776,7 +2802,8 @@ function usePop(P, done) {
     if (b.dataset.tm) { const id = b.dataset.tm; return mvInfo(id, () => teachTm(P, id, draw)); }
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }
     if (b.dataset.mint) { const k = b.dataset.mint; return mintInfo(k, '먹이기', () => { mintUse(P, k); draw(); }); }
-    if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); } };
+    if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); }
+    if (b.dataset.soup) return soupInfo('먹이기', () => soupUse(P, draw), S.gym.soup | 0, P); };
 }
 // 창고 도구 → 지니게 하기 → 포켓몬 박스에서 고르기
 function itPick(id, done) {
@@ -3018,10 +3045,28 @@ function vitInfo(i, lab, act, own, P) { const r = P ? vitRoom(P, i) : 10;
 function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)) return; const n = evAdd(gm(P), i, 10); if (!n) return;
   if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
+/* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼': 다이수프 = 먹이면 거다이맥스 인자(gm(P).gmax)가 붙고, 이미 있으면 빠짐 (본가처럼). 거다이맥스 모습이 있는 34종만. 창고 S.gym.soup, 상점(다이맥스밴드 받은 관장만, dmOn) SOUP_P */
+const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png?v=2';
+const dmOn = () => !!(S.gym?.dBand || (S.gym?.shelf || []).some(x => x?.dBand) || window.gymDmOn);
+const gmaxOk = P => !!P && !!GMJ[(D?.sp?.[P.sp]?.id || '') + 'gmax'];
+const soupAll = () => (S.gym?.soup | 0) > 0 ? [[0, S.gym.soup | 0]] : [];
+const soupRow = (n, P) => { const ok = !P || gmaxOk(P), has = P && !!gm(P).gmax;
+  return `<button type="button" class="sp-tm sp-it sp-soup${ok ? '' : ' off'}" data-soup="1" ${ok ? '' : 'disabled'}><img class="tm-ic it-ic" alt="" src="${SOUP_IMG}"><span class="tm-nm"><b>다이수프</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${!P ? '거다이맥스 모습이 있는 포켓몬에게 먹여요' : !ok ? '거다이맥스 모습이 없는 포켓몬이에요' : has ? '먹이면 거다이맥스 인자가 빠져요' : '먹이면 거다이맥스할 수 있게 돼요'}</small></span></button>`; };
+const SOUP_D = '다이버섯으로 끓인 진한 수프. 거다이맥스 모습이 있는 포켓몬이 먹으면 거다이맥스할 수 있게 되고, 이미 할 수 있는 포켓몬이 먹으면 못 하게 된다.';
+function soupInfo(lab, act, own, P) { const ok = !P || gmaxOk(P);
+  gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${SOUP_IMG}">다이수프${bagN(own | 0)}</h4><p class="gy-msg mi-d">${SOUP_D}</p>${P && !ok ? `<p class="gy-msg" style="text-align:center"><small>${esc(nmOf(P))}에게는 거다이맥스 모습이 없어요.</small></p>` : ''}<div class="gy-btns${act && ok ? '' : ' one'}"><button data-a="x">닫기</button>${act && ok ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
+    (a, close) => { close(); if (a === 't') act?.(); }); }
+function soupUse(P, done) { const g = S.gym; if (!((g.soup | 0) > 0) || !gmaxOk(P)) return; const m = gm(P), on = !m.gmax;
+  if (on) m.gmax = 1; else delete m.gmax; if (!--g.soup) delete g.soup; GA.save(); se('DECIDE');
+  gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 다이수프를 먹었다!<br>${on ? '<b>거다이맥스</b>할 수 있게 되었다!' : '거다이맥스 인자가 빠졌다.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); }
+function soupPick(done) {
+  boxWin(false, null, done, { title: () => '다이수프 먹이기', tip: '거다이맥스 모습이 있는 포켓몬만 보여요', list: () => S.box.filter(P => tyOk(P) && gmaxOk(P)), ok: () => true, first: P => curLu().includes(P.id),
+    tag: P => gm(P).gmax ? '거다이맥스' : '', pick: (P, w) => { w.close(); soupUse(P, done); } });
+}
 function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
-window.GymBattle = { MEGA_ST, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
