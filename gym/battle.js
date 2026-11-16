@@ -1367,7 +1367,7 @@ async function run(opts) {
     if (cut) await msgTap('배틀이 중간에 멈췄다!');
     else if (out !== 'quit') {
       if (opts.wild) { if (won && !opts.noWin) M('play', winM, { fade: .05 }); } else {   /* v24.14 경완 '쓰러질 때마다 승리 소리 말고 BGM 계속' */   /* v23.10 야생: 트레이너 말 없이 이긴 곡만 */
-      { const fe = monEl('e'); if (getComputedStyle(fe).opacity !== '0') { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; await wait(380); } }   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
+      { const L = (B.dbl ? ['e', 'e2'] : ['e']).map(monEl).filter(fe => fe && getComputedStyle(fe).opacity !== '0'); L.forEach(fe => { fe.style.transition = 'opacity .35s'; fe.style.opacity = '0'; }); if (L.length) await wait(380); }   /* v26.47 경완 '더블 배틀 끝나고 상대 트레이너 나올 때 포켓몬 두마리 다 들어가게': 두 번째 자리(e2)도 같이 */   /* v18.09 경완 '승부 끝나고 스프라이트 겹쳐 보임': 진 승부는 상대 포켓몬이 남아 있어 다시 나온 트레이너와 겹쳤다 → 포켓몬을 먼저 들여보냄 */
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');
