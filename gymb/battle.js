@@ -1684,7 +1684,7 @@ async function handle(a) {
       await msg(`${who(a[2])}의 ${mvKo(id)}!`, 0);
       if (a.includes('[notarget]')) break;
       if (noFx()) break;   // 효과가 없는 기술·실패·방어에 막힘은 본가처럼 연출 없이 바로 그 말 (경완 2026-10-29)   // 상대가 먼저 쓰러져 맞을 대상이 없으면 연출 없이 '하지만 상대가 없었다' (본가처럼, 경완 2026-10-29)
-      { const dm = PSim.Dex.moves.get(id), fid = (dm.isZ || dm.isMax) && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
+      { const dm = PSim.Dex.moves.get(id), fid = dm.isZ && B.gmBase[s] && !(dm.isZ && await loadEss().then(() => window.GymEss?.has?.(id))) ? B.gmBase[s] : id;   /* 2026-11-13 Z기술은 Gen 9 팩 전용 연출이 있으면 그걸로 (34개, 1000만볼트만 없음) */ /* v25.38 다이맥스 기술은 원래 기술 연출 대신 maxFx (같은 타입 Z기술 연출 + 붉은 빛·흔들림) */ await moveFx(s, fid, a.includes('[miss]') || a.some(x => x === '[still]'), undefined, /^p\d[ab]: /.test(a[4] || '') ? sideOf(a[4]) : null); if (dm.isZ) { zAura(s, false, true); if (s[0] === 'p') { B.gkUsed = null; gkBg(); } } }   /* v21.89 Z기술·다이맥스 기술은 바탕 기술 연출 */
       break;
     }
     case '-notarget': await gap(); await msg('하지만 공격할 상대가 없었다!', 500); break;
@@ -1826,7 +1826,7 @@ const dmgFrom = (f, id) => { const n = who(id); f = f.replace(/^item: |^ability:
   const X2 = { recoil: `${eun(n)} 공격의 반동을 받았다!`, highjumpkick: `${eun(n)} 의욕이 넘쳐서 땅에 부딪쳤다!`, jumpkick: `${eun(n)} 의욕이 넘쳐서 땅에 부딪쳤다!`, 'Salt Cure': `${eun(n)} 소금절이 데미지를 입고 있다!`, 'Spiky Shield': `${eun(n)} 상처를 입었다!` }; return T[f] || X2[f] || ''; };
 function statusMsg(n, st) { const T = { brn: '화상을 입었다!', par: '마비되어 기술이 나오기 어려워졌다!', slp: '잠들어 버렸다!', frz: '얼어붙었다!', psn: '독에 걸렸다!', tox: '맹독을 입었다!' }; return `${eun(n)} ${T[st] || '상태 이상이 되었다!'}`; }
 function cureMsg(n, st) { const T = { slp: '눈을 떴다!', frz: '얼음 상태가 나았다!', par: '마비가 풀렸다!', brn: '화상이 나았다!', psn: '독이 사라졌다!', tox: '독이 사라졌다!' }; return `${eun(n)} ${T[st] || '상태가 나았다!'}`; }
-function cantMsg(n, r) { const T = { par: '몸이 저려서 움직일 수 없다!', slp: '쿨쿨 잠들어 있다.', frz: '얼어버려서 움직일 수 없다!', flinch: '풀이 죽어 기술을 쓸 수 없었다!', recharge: '공격의 반동으로 움직일 수 없다!', nopp: '기술의 남은 PP 가 없다!' }; return `${eun(n)} ${T[r] || '움직일 수 없다!'}`; }
+function cantMsg(n, r) { const T = { par: '몸이 저려서 움직일 수 없다!', slp: '쿨쿨 잠들어 있다.', frz: '얼어버려서 움직일 수 없다!', flinch: '풀이 죽어 기술을 쓸 수 없었다!', recharge: '공격의 반동으로 움직일 수 없다!', nopp: '기술의 남은 PP 가 없다!', Attract: '헤롱헤롱해서 기술을 쓸 수 없었다!', 'Focus Punch': '집중이 흐트러져서 기술을 쓸 수 없다!' }; if (r === 'Shell Trap') return `${n}의 트랩셸은 불발로 끝났다!`; return `${eun(n)} ${T[r] || '움직일 수 없다!'}`; }   /* 경완 '트랩셸 했는데 폭거북스는 움직일 수 없다! 뜨는 이유는?' — 트랩셸·힘껏펀치·헤롱헤롱 실패 본가 문장 */
 function startMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${eun(n)} 혼란에 빠졌다!`, Substitute: `${n}의 대타가 나타났다!`, 'Leech Seed': `${n}에게 씨앗을 심었다!`, Taunt: `${eun(n)} 도발에 넘어가 버렸다!`, Encore: `${eun(n)} 앙코르를 받았다!`, Attract: `${eun(n)} 헤롱헤롱해졌다!`, typechange: '', 'Focus Energy': `${eun(n)} 의욕이 넘치고 있다!`, Disable: `${n}의 기술을 쓸 수 없게 되었다!`, Yawn: `${eun(n)} 졸음이 오기 시작했다!`, perish3: `${n}의 멸망의 카운트가 3이 되었다!`, perish2: `${n}의 멸망의 카운트가 2가 되었다!`, perish1: `${n}의 멸망의 카운트가 1이 되었다!`, perish0: `${n}의 멸망의 카운트가 0이 되었다!`, Torment: `${eun(n)} 트집을 잡혔다!`, 'Magnet Rise': `${eun(n)} 전자력으로 떠올랐다!`, 'Aqua Ring': `${eun(n)} 물의 베일로 몸을 감쌌다!`, Ingrain: `${eun(n)} 뿌리를 뻗었다!`, Curse: `${eun(n)} 저주를 받았다!`, Nightmare: `${eun(n)} 악몽을 꾸기 시작했다!`, 'Heal Block': `${eun(n)} 회복할 수 없게 되었다!`, Embargo: `${eun(n)} 도구를 쓸 수 없게 되었다!`, Stockpile: '', Charge: `${eun(n)} 전기를 모으고 있다!`, Imprison: `${eun(n)} 봉인을 걸었다!`, Telekinesis: `${eun(n)} 공중에 떠올랐다!`, 'Smack Down': `${eun(n)} 떨어졌다!`, 'Salt Cure': `${eun(n)} 소금에 절여졌다!`, 'Future Sight': `${eun(n)} 미래를 예지했다!`, 'Doom Desire': `${eun(n)} 파멸의소원을 미래에 맡겼다!`, Uproar: `${eun(n)} 소란을 피우고 있다!` }; return T[w] ?? ''; }
 function endMsg(n, w) { w = (w || '').replace('move: ', ''); const T = { confusion: `${n}의 혼란이 풀렸다!`, Substitute: `${n}의 대타는 사라져 버렸다…`, Taunt: `${n}의 도발 효과가 풀렸다!`, Encore: `${n}의 앙코르 상태가 풀렸다!`, Disable: `${n}의 사슬묶기가 풀렸다!`, Yawn: '', 'Magnet Rise': `${n}의 전자력이 사라졌다!`, 'Heal Block': `${n}의 회복봉인이 풀렸다!`, Torment: '', 'Leech Seed': `${n}의 씨앗이 떨어졌다!`, 'Salt Cure': '', 'Future Sight': `${eun(n)} 미래예지 공격을 받았다!`, 'Doom Desire': `${eun(n)} 파멸의소원 공격을 받았다!`, ...Object.fromEntries(Object.keys(TRAP).map(k => [k, `${eun(n)} ${mvKo(toID(k))}에서 풀려났다!`])) }; return T[w] ?? ''; }
 /* v23.69 경완 '테라스탈 버튼에는 타입 아이콘': v23.71 본가 테라 타입 보석 아이콘 (Pokémon Showdown sprites/types/Tera<타입>.png, gym/img/dbk/Tera/ty/<번호>.png) */ const TERA_I = Object.fromEntries(['Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock', 'Bug', 'Ghost', 'Steel', 'Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Ice', 'Dragon', 'Dark', 'Fairy', 'Stellar'].map((n, i) => [n, i + 1]));
@@ -1934,7 +1934,19 @@ async function moveFx(s, id, miss, fx, t) {
   sw.forEach(flip); fxL.forEach(x => { x.style.translate = `${slx(o)}px ${sly(o)}px`; });
   try { return await moveFx1(s[0], id, miss, fx); } finally { if (el) { sw.forEach(flip); fxL.forEach(x => { x.style.translate = ''; }); } }
 }
+/* v25.38 경완 '엉 그렇게 해줘봐': 다이맥스·거다이맥스 기술은 Gen 9 팩에 연출이 없어서('~ Max Moves ~' 칸이 비어 있음) 쇼다운처럼 같은 타입 Z기술 연출을 빌리고, 붉은 테두리 빛·화면 흔들림을 더함 */
+const MAX_ZT = { Normal: 'breakneckblitz', Fighting: 'alloutpummeling', Flying: 'supersonicskystrike', Poison: 'aciddownpour', Ground: 'tectonicrage', Rock: 'continentalcrush', Bug: 'savagespinout', Ghost: 'neverendingnightmare', Steel: 'corkscrewcrash', Fire: 'infernooverdrive', Water: 'hydrovortex', Grass: 'bloomdoom', Electric: 'gigavolthavoc', Psychic: 'shatteredpsyche', Ice: 'subzeroslammer', Dragon: 'devastatingdrake', Dark: 'blackholeeclipse', Fairy: 'twinkletackle' };
+const MAX_Z1 = { maxguard: 'banefulbunker', maxdarkness: 'maliciousmoonsault', gmaxsnooze: 'maliciousmoonsault' };
+const maxZ = id => { if (!/^g?max[a-z]/.test(id || '')) return null; const m = window.PSim?.Dex.moves.get(id); if (!m?.exists || !(m.isMax || /^G-?Max|^Max /.test(m.name))) return null; return MAX_Z1[id] || MAX_ZT[m.type] || null; };
+async function maxFx(s, z) {
+  const top = $b('.bt-top'); if (!top) return essFx(s, z);
+  const v = document.createElement('div'); v.className = 'bt-gxv'; top.appendChild(v); vib(1);
+  const a = B.fast ? 2 : 3, sh = top.animate([{ translate: '0 0' }, { translate: `${-a}px ${a / 2}px` }, { translate: `${a}px ${-a / 2}px` }, { translate: `${-a / 2}px ${-a / 2}px` }, { translate: `${a / 2}px ${a / 2}px` }, { translate: '0 0' }], { duration: 240, iterations: Infinity });
+  try { return await essFx(s, z); }
+  finally { sh.cancel(); v.classList.add('out'); setTimeout(() => v.remove(), 400); }
+}
 async function moveFx1(s, id, miss, fx) {
+  { const z = !fx && maxZ(id); if (z) { if (!miss) await maxFx(s, z); return; } }
   const m = mvOf(id); if (miss) return; if (!m) { if (!fx) await essFx(s, id); return; }   /* Z기술은 기술 표에 없어서 Gen 9 팩 연출만 */ const ty = m[2], cat = fx ? 2 : m[3], col = TY_FX[ty] || '#fff';
   if (CRY_MV.has(id)) { const X = B.act[s]; try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} }
   let A = MFX[fx || MV_SUB[id] || id]; if (A && Array.isArray(A[0])) A = A[s[0] === 'p' ? 0 : 1];
@@ -3033,7 +3045,7 @@ function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)
   if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
 /* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼': 다이수프 = 먹이면 거다이맥스 인자(gm(P).gmax)가 붙고, 이미 있으면 빠짐 (본가처럼). 거다이맥스 모습이 있는 34종만. 창고 S.gym.soup, 상점(다이맥스밴드 받은 관장만, dmOn) SOUP_P */
-const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png';
+const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png?v=2';
 const dmOn = () => !!(S.gym?.dBand || (S.gym?.shelf || []).some(x => x?.dBand) || window.gymDmOn);
 const gmaxOk = P => !!P && !!GMJ[(D?.sp?.[P.sp]?.id || '') + 'gmax'];
 const soupAll = () => (S.gym?.soup | 0) > 0 ? [[0, S.gym.soup | 0]] : [];
