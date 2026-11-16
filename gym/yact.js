@@ -28,7 +28,7 @@ const MOB_MAX = w => Math.min(10, 5 + Math.floor(w / 2)), BOSS_BGM = { 4: 'gymBa
 const XP_KO = 9, XP_GM = [.6, .4, .25, .15, .15, .1, .1], CLEAR_X = { S: .5, A: .25 };
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
-const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 8, CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
+const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 10, BAG_COMBO_N = 100, /* 경완 '엉 그렇게 해줘' (2026-11-16): 20콤보마다 8G → 100콤보마다 10G. 자동 플레이 시뮬에서 콤보 자루가 완주 골드의 절반 넘음(1분 약 185G) */ CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
   CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
 const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
@@ -480,6 +480,40 @@ const CSS = `
 #yact .ya-res.fs .fs-ft .bigb{font-size:17px;letter-spacing:1px;padding:12px 0}
 #yact .ya-res.fs .fs-ft .bigb.sec{flex:none;font-size:15px;letter-spacing:0;color:#f0ecff;border-color:rgba(255,255,255,.4);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));box-shadow:0 4px 0 rgba(0,0,0,.55)}
 #yact .ya-res.fs .fs-ft .bigb.sec:active{box-shadow:0 1px 0 rgba(0,0,0,.55)}
+/* 경완 2026-11-16 '메가진화 폼까지 다 깨면 보상이랑 선물상자 떨어지고 조금 있다가 자석처럼 한번에 먹어지는 효과, 선물상자 먹으면 체육관 아이템들 꾸러미 보상 창, 확인 누르면 결과창': 결과창과 같은 어두운 무대 창 */
+#yact .ya-gift{z-index:10;width:min(330px,calc(100% - 28px));padding:16px 14px 14px;text-align:center;overflow:hidden;border-radius:18px;border:2px solid #d8a830;color:#f0ecff;background:radial-gradient(ellipse 120% 60% at 50% 0,#8a6436 0,#3a2658 42%,#0c0a1c 100%);box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 34px rgba(255,200,60,.5)}
+#yact .ya-gift.pop{animation:yaPop .32s cubic-bezier(.2,1.5,.4,1)}
+#yact .gf-h{display:block;font-size:22px;letter-spacing:1px;color:#ffe9a0;text-shadow:0 3px 0 #6a3a00,0 0 16px rgba(255,200,60,.7)}
+#yact .gf-s{display:inline-block;margin-top:6px;font-size:11.5px;line-height:1.5;padding:2px 12px;border-radius:11px;background:rgba(8,6,24,.55);border:1.5px solid rgba(255,233,160,.45)}
+#yact .gf-st{position:relative;height:104px;margin:8px 0 4px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+#yact .gf-st>u{position:absolute;pointer-events:none;z-index:-1;text-decoration:none}
+#yact .gf-st>u.a{left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,140,.6),rgba(190,150,255,.22) 45%,transparent 70%);animation:yaHalo 2.6s ease-in-out infinite}
+#yact .gf-st>u.b{inset:-6px 10px;background:radial-gradient(circle 2px at 12% 30%,#fff3c0 99%,transparent),radial-gradient(circle 3px at 88% 22%,#fff3c0 99%,transparent),radial-gradient(circle 2px at 78% 72%,#fff 99%,transparent),radial-gradient(circle 3px at 20% 78%,#ffe08a 99%,transparent),radial-gradient(circle 2px at 32% 8%,#fff 99%,transparent),radial-gradient(circle 2px at 66% 6%,#ffe08a 99%,transparent);animation:yaHalo 1.8s ease-in-out infinite}
+#yact .gf-bx{width:80px;height:auto;image-rendering:pixelated;animation:gfBox .7s cubic-bezier(.2,1.5,.4,1) both,yaBob 1.6s .7s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.45))}
+@keyframes gfBox{0%{transform:scale(.3) rotate(-18deg);opacity:0}60%{transform:scale(1.2) rotate(6deg)}}
+#yact .gf-l{display:flex;justify-content:center;gap:8px;margin:14px 0 12px}
+#yact .gf-l span{position:relative;flex:0 0 31%;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:8px 2px 7px;border-radius:11px;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:2px solid rgba(255,233,160,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 rgba(0,0,0,.45);animation:gfIt .34s cubic-bezier(.2,1.5,.4,1) both;animation-delay:calc(var(--i)*.16s + .55s)}
+@keyframes gfIt{0%{transform:translateY(-16px) scale(.6);opacity:0}}
+#yact .gf-l img{width:40px;height:40px;object-fit:contain;image-rendering:pixelated}
+#yact .gf-l i{font-style:normal;font-size:11px;line-height:1.25;color:#f0ecff;max-width:100%;word-break:keep-all;text-align:center;letter-spacing:-.3px}
+#yact .gf-l span{--gc:255,233,160}
+#yact .gf-l span.gr1{--gc:96,168,255;--gd:#2a5fb8;--gl:#bfe0ff}
+#yact .gf-l span.gr2{--gc:186,132,255;--gd:#6a3ac0;--gl:#ecd8ff}
+#yact .gf-l span.gr3{--gc:255,206,72;--gd:#b06a00;--gl:#fff6c8}
+#yact .gf-l span[class*="gr"]:not(.gr0){border-color:rgb(var(--gc));background:linear-gradient(180deg,rgba(var(--gc),.34),rgba(var(--gc),.1));box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 3px 0 rgba(0,0,0,.45),0 0 14px rgba(var(--gc),.75);overflow:visible}
+#yact .gf-l em{position:absolute;left:50%;top:-10px;transform:translateX(-50%);z-index:2;font-style:normal;font-size:10.5px;line-height:1;padding:3px 8px 3px;border-radius:8px;white-space:nowrap;color:#fff;background:linear-gradient(180deg,rgb(var(--gc)),var(--gd));border:1.5px solid var(--gl);box-shadow:0 2px 0 rgba(0,0,0,.5);text-shadow:0 1px 0 rgba(0,0,0,.45);animation:gfTag .3s cubic-bezier(.2,1.8,.4,1) both;animation-delay:calc(var(--i)*.16s + .85s)}
+#yact .gf-l span.gr3 em{color:#4a2400;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+@keyframes gfTag{0%{transform:translateX(-50%) scale(0)}}
+#yact .gf-l u{position:absolute;inset:0;border-radius:9px;overflow:hidden;pointer-events:none;text-decoration:none}
+#yact .gf-l u::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:38%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:gfSh 2.4s ease-in-out infinite;animation-delay:calc(var(--i)*.16s + 1.1s)}
+@keyframes gfSh{0%{left:-60%}45%,100%{left:130%}}
+#yact .gf-l span.gr1 u::after{display:none}
+#yact .ya-gift[data-gr="3"] .gf-st>u.a{background:radial-gradient(circle,rgba(255,236,150,.85),rgba(255,180,60,.3) 45%,transparent 70%)}
+#yact .ya-gift[data-gr="2"] .gf-st>u.a{background:radial-gradient(circle,rgba(226,190,255,.75),rgba(150,100,255,.28) 45%,transparent 70%)}
+#yact .gf-l b{position:absolute;right:5px;top:3px;font-size:13px;color:#ffe27a;text-shadow:0 2px 0 rgba(0,0,0,.5)}
+#yact .ya-gift .gf-ok{margin:0;padding:12px 0;font-size:17px;letter-spacing:3px;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6)}
+#yact .ya-gift .gf-ok:active{transform:translateY(3px);box-shadow:0 1px 0 #6a3a00}
+#yact .ya-gift .gf-ok.lk{opacity:.55;pointer-events:none}
 /* 경완 '창이 너무 길다': 포켓몬·이름 칸을 한 줄로, 보상은 두 칸씩 */
 #yact .ya-res.fs .hr-row{flex-direction:row;align-items:center;gap:12px;margin-top:10px;text-align:left}
 #yact .ya-res.fs .hr-st{width:100px;height:88px;flex:none}
@@ -557,6 +591,10 @@ const HTML = `<canvas></canvas>
   </div>
   <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button></div></div>
 <div class="ya-tu"><div class="tu-w"><div class="tu-hd"><b>특훈 하는 법</b><button class="tu-x" type="button" aria-label="닫기">✕</button></div><div class="tu-im"><img alt=""></div><div class="tu-tx"><b class="tu-h"></b><p class="tu-p"></p></div><div class="tu-dots"></div><div class="tu-bt"><button class="tu-pv" type="button">이전</button><button class="tu-nx" type="button">다음</button></div></div></div>
+<div class="ya-win ya-gift" hidden><b class="gf-h">클리어 보상 꾸러미</b><span class="gf-s"></span>
+  <div class="gf-st"><u class="a"></u><u class="b"></u><img class="gf-bx" alt="" src="gym/img/yact/gift.png"></div>
+  <div class="gf-l"></div>
+  <button class="b3 bigb gf-ok" type="button">확인</button></div>
 <div class="ya-win ya-res fs" hidden><u class="rs-cf"></u><div class="ya-hero rs-hero"><b class="rs-h">특훈 완료!</b><span class="rs-stg"></span>
     <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im rs-im" alt=""><b class="rs-rk">S</b></div>
     <div class="rs-me"><div class="r1"><b class="rs-nm"></b><span class="rs-lv"></span></div><i class="xb"><i></i></i><small class="rs-xp"></small></div></div></div>
@@ -1149,11 +1187,11 @@ function hurt(o, r, kx, ky, light) {
   else se(r.e < 1 ? 'KOUKA_L' : 'KOUKA_M', lt ? .16 : .07, { gain: lt ? .6 : 1 });
   // 콤보: 이어 맞힐수록 기술이 빨리 다시 찬다 (맞으면 끊김)
   G.combo++; G.comboT = 2.5; G.best = Math.max(G.best, G.combo); cbUi(true);
-  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); if (G.combo % 20 === 0) bagDrop(me.x + (Math.random() - .5) * 60, me.y - 10, BAG_COMBO); }
+  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); if (G.combo % BAG_COMBO_N === 0) bagDrop(me.x + (Math.random() - .5) * 60, me.y - 10, BAG_COMBO); }
   if (o.hp <= 0) ko(o, ux, uy);
 }
 function ko(o, ux, uy) {
-  const G = R.G, me = G.me; o.hp = 0; o.dead = R.T; o.warn = 0; o.lunge = o.slam = null; setAnim(o, 'Hurt', true); G.ko++;
+  const G = R.G, me = G.me; if (o.boss === 2) G.boxOn = 1; o.hp = 0; o.dead = R.T; o.warn = 0; o.lunge = o.slam = null; setAnim(o, 'Hurt', true); G.ko++;
   // 날아가서 통통 튀다 펑
   o.dvx = ux * (o.boss ? 230 : 430); o.dvy = uy * (o.boss ? 150 : 280); o.zv = o.boss ? 260 : 330; o.spin = (ux >= 0 ? 1 : -1) * (o.boss ? 5 : 11); o.rot = 0; o.flash = .22;
   const last = !G.pend && G.mobs.every(m => m === o || m.hp <= 0), fin = last && G.wave >= STAGES.length;
@@ -1170,7 +1208,7 @@ function ko(o, ux, uy) {
     fxOnce(PX()?.s.Smoke_White ? 'Smoke_White' : 'Wood_Hammer_Smoke', 2, 0, x, yy - 14, 1, { s: o.boss ? 1.3 : .9 }); stars(x, yy - 16, o.boss ? 14 : 6, '#fff', o.boss ? 300 : 200); dust(x, yy, o.boss ? 12 : 5, 120); ring(x, yy, '#fff', 6, o.boss ? 90 : 44, .3, 5);
     if (o.boss) { shake(.5); rumble(2, 80, 1); } else buzz(0); snd('DUN_Rock_Smash', o.boss ? .07 : .035);
     if (ex) pop(x, yy - 34, `+${ex} 경험치`, '#bfe6ff'); if (evUp > 0) pop(x, yy - 54, `${STAT_KO[G.stat]} 노력치 +${evUp}`, '#d6b4ff', true);
-    if (o.boss) bagDrop(x, yy - 4, BAG_B[G.wave] || 12); if (o.boss === 2) coinRain(x, yy - 6, RAIN_MEGA);
+    if (o.boss) bagDrop(x, yy - 4, BAG_B[G.wave] || 12); if (o.boss === 2) { coinRain(x, yy - 6, RAIN_MEGA); G.drops.push({ box: 1, x, y: yy - 4, t0: R.T, vy: -300, z: 18, vx: 26, gy: 22 }); }
     coins.forEach(cv => { const a = Math.random() * 6.28, v = coins.length > 1 ? 50 + Math.random() * 80 : 15 + Math.random() * 35; G.drops.push({ coin: cv, val: cval(cv, G.wave), x, y: yy - 4, t0: R.T, vy: -170 - Math.random() * 90, z: 12, vx: Math.cos(a) * v, gy: Math.sin(a) * v * .6 }); });
     for (let i = 0; i < (o.boss ? 8 : 3); i++) fly('xp', x, yy - 14, () => ({ x: me.x, y: me.y - 22 }), null, '#8fd0ff');
     if (shard) G.drops.push({ sh: shard, x, y: yy - 4, t0: R.T, vy: -150, z: 10, vx: (Math.random() - .5) * 60 });
@@ -1292,8 +1330,8 @@ function step(dt) {
   G.shots = G.shots.filter(s => T - s.t0 < s.life && s.x > -40 && s.x < R.W + 40 && s.y > -40 && s.y < R.H + 40);
   for (const p of G.drops) { if (p.z > 0 || p.vy < 0) { p.vy += 620 * dt; p.z -= p.vy * dt; if (p.vx) p.x += p.vx * dt; if (p.gy) p.y += p.gy * dt; if (p.z < 0) { p.z = 0; if (p.vy > 90) { p.vy = -p.vy * .4; p.z = .01; } else { p.vy = 0; p.vx = 0; p.gy = 0; } if (p.coin && !p.ld) { p.ld = 1; se('KATI', .05, { gain: 1.6 }); } }
       const A = R.A; p.x = Math.max(A.x0 + 8, Math.min(A.x1 - 8, p.x)); p.y = Math.max(A.y0 + 8, Math.min(A.y1 - 4, p.y)); if (inPond(p.x, p.y, 0)) p.y = R.Y.pond.y0 - 4; }   // 연못 안엔 안 떨어지게
-    const d = Math.hypot(me.x - p.x, me.y - p.y), mg = p.mag || (G.mag > 0 && p.coin), pull = G.clearT || mg ? 9999 : p.coin ? 66 : 84; if (mg) p.mag = 1; if ((T - p.t0 > .5 || mg) && d < pull && me.hp > 0) { const v = mg ? 12 : 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (me.y - p.y) * Math.min(1, dt * v); }
-    if ((T - p.t0 > .5 || p.mag) && d < 22 && me.hp > 0) { p.got = true; if (p.coin) gotCoin(p); else gotShard(p); } }
+    const d = Math.hypot(me.x - p.x, me.y - p.y), mg = p.mag || (G.mag > 0 && p.coin), pull = p.box ? 0 : G.magAll || mg ? 9999 : p.coin ? 66 : 84;   /* 경완 '선물상자는 끌려오지 않고 직접 먹게' */ if (mg) p.mag = 1; if ((T - p.t0 > .5 || mg) && d < pull && me.hp > 0) { const v = mg || G.magAll ? 12 : 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (me.y - p.y) * Math.min(1, dt * v); }
+    if ((T - p.t0 > .5 || p.mag) && d < (p.box ? 28 : 22) && me.hp > 0) { p.got = true; if (p.coin) gotCoin(p); else if (p.box) gotBox(p); else gotShard(p); } }
   for (const z of G.zones) { if ((z.tk -= dt) > 0) continue; z.tk = .35; const v = z.v; for (const o of G.mobs) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - z.x, o.y - z.y); if (l > z.r + bR(o, 14)) continue; o.slowT = Math.max(o.slowT || 0, .6); const r0 = dmg(me, o, v.t, v.c, v.pw * .2, v.pw); hurt(o, r0, l > 8 ? (z.x - o.x) / l * .7 : 0.01, l > 8 ? (z.y - o.y) / l * .7 : 0, true); drainTo(v, o, r0.n); } }
   G.zones = G.zones.filter(z => T - z.t0 < z.d);
   hazStep(dt, live);
@@ -1307,7 +1345,9 @@ function step(dt) {
     if (G.mobs.every(o => o.hp <= 0) && !G.pend && !G.waiting) {
       if (G.wave < STAGES.length) { G.waiting = true; stageClear(); after(1.1, () => { if (!G.over) { G.waiting = false; nextWave(); } }); }
       else if (!G.clearT) { G.clearT = T; banner('특훈 완료!', 'win'); setAnim(me, anyAnim(me, 'Pose', 'Hop', 'Idle'), true); me.busy = .8; rumble(3, 120, 1); for (let i = 0; i < 26; i++) part({ kind: 'star', x: R.W * Math.random(), y: R.A.y0 - 30 - Math.random() * 60, vx: (Math.random() - .5) * 60, vy: 120 + Math.random() * 140, life: 1.6, sz: 2, col: ['#ffe27a', '#ff9ab0', '#9fe4ff', '#bff59a'][i % 4] }); }
-      else if (T - G.clearT > 1.5 && (!G.drops.length || T - G.clearT > 3.5)) end(true); }
+      else { const tc = T - G.clearT, open = G.gift && !G.giftOk;   /* 경완 2026-11-16 '선물상자는 직접 먹게, 먹기 전까지 결과창 안 나오게, 골드 끌려오기 전에 먹으면 확인 누르면 창 닫히고 골드 끌려오고 결과창': 골드는 조금 있다가 한꺼번에 빨려 오고(꾸러미 창이 떠 있으면 닫힌 뒤), 결과창은 상자 확인 + 골드 다 먹은 뒤 */
+        if (!G.magAll && tc > 1.5 && !open) { G.magAll = T; se('SUIKOMU', .1, { gain: 1.8 }); buzz(1); ring(me.x, me.y, '#ffe27a', 300, 14, .45, 7); ring(me.x, me.y, '#fff', 220, 10, .38, 4, .5, .08); ring(me.x, me.y, '#ffe27a', 150, 8, .32, 3, .5, .16); }
+        if (G.magAll && (!G.boxOn || G.giftOk)) { const t2 = T - Math.max(G.magAll, G.giftOk || 0); if (t2 > 1 && !G.drops.length) end(true); /* 경완 '필드 위에 있는 보상 다 먹어야 결과창 등장하게' */ } } }
     if (!G.over && me.hp <= 0 && T - me.dead > .55) end(false, true);
   }
 }
@@ -1359,6 +1399,37 @@ function coinRain(x, y, L) { const G = R.G; L.forEach((cv, i) => after(i * .035,
 const RAIN_P1 = [3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1], RAIN_MEGA = [3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];   /* 메가진화 전 12개 38G · 메가진화까지 깨면 30개 104G + 자루 */
 function bagDrop(x, y, val) { const G = R.G, a = Math.random() * 6.28; G.drops.push({ coin: 3, bag: 1, val, x, y, t0: R.T, vy: -230, z: 14, vx: Math.cos(a) * 30, gy: Math.sin(a) * 18 }); }
 /* 경완 2026-11-14 '보따리 디자인 구림 → 외부 저장소 스프라이트 → 1번(전리품 자루)에 우리 코인, 자루 입구 안쪽에 → B로 가자': 본가 전리품 자루(PokeAPI sprites loot-sack) 입구 안에 네모 금 동전을 넣은 그림 gym/img/item/goldsack.png */
+let BOX_IM = null; function boxIm() { if (!BOX_IM) { BOX_IM = new Image(); BOX_IM.src = 'gym/img/yact/gift.png'; } return BOX_IM; }   /* 선물상자 = 경완 '6번으로' (PokeAPI sprites items/prop-case) */
+function drawBox(p) { const g = R.g, t = R.T - p.t0, im = boxIm(), k = 2, w = (im.width || 20) * k, h = (im.height || 18) * k, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 4) * 2)), cy = y - h / 2;
+  g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, w * .45, w * .15, 0, 0, 7); g.fill();
+  if (!p.z) {   /* 경완 '뒤에 빛 후광 효과도': 위로 솟는 부드러운 빛기둥 + 숨 쉬는 둥근 후광 + 바닥에 퍼지는 고리 + 반짝이 (딱딱한 빛줄기는 안 씀) */
+    const pu = .5 + .5 * Math.sin(t * 3.2), ap = Math.min(1, (t - .6) * 2); if (ap > 0) { g.save(); g.globalAlpha = ap; g.globalCompositeOperation = 'lighter';
+      let gr = g.createLinearGradient(0, cy - 130, 0, cy + 6); gr.addColorStop(0, 'rgba(255,236,150,0)'); gr.addColorStop(1, `rgba(255,236,150,${.3 + pu * .14})`); g.fillStyle = gr; g.beginPath(); g.moveTo(x - 34, cy - 130); g.lineTo(x + 34, cy - 130); g.lineTo(x + 15, cy + 6); g.lineTo(x - 15, cy + 6); g.fill();
+      const r = 46 + pu * 8; gr = g.createRadialGradient(x, cy, 4, x, cy, r); gr.addColorStop(0, 'rgba(255,246,200,.75)'); gr.addColorStop(.45, 'rgba(255,214,110,.32)'); gr.addColorStop(1, 'rgba(255,200,90,0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, cy, r, 0, 7); g.fill();
+      const rp = (t * .8) % 1; g.strokeStyle = `rgba(255,236,150,${(1 - rp) * .7})`; g.lineWidth = 3; g.beginPath(); g.ellipse(x, p.y, 16 + rp * 40, (16 + rp * 40) * .36, 0, 0, 7); g.stroke(); g.restore(); }
+    if (Math.random() < .22) part({ kind: 'star', x: x + (Math.random() - .5) * 46, y: cy + 10 - Math.random() * 60, vy: -46, life: .6, sz: 2, col: Math.random() < .6 ? '#ffe27a' : '#fff' });
+  }
+  g.imageSmoothingEnabled = false; if (im.complete && im.width) g.drawImage(im, Math.round(x - w / 2), y - h, w, h); }
+/* 꾸러미 내용(제안): 훈련한 능력치 영양제 2 · 지닌 도구 하나 · 나무열매 2 (체육관 상점 도구 HOLD 에서, 메가스톤·Z크리스탈 빼고) */
+/* 꾸러미 = 상점 가격 기준 무작위 — 경완 '꾸러미 보상은 고정할 필요없이 상점 가격 고려해서 밸런스 맞춰줘' · '열매 같은건 2개 줄 필요가 없지 않아? 1개만 쓸 수 있는 아이템인데'
+   훈련한 능력치 영양제 1개(300G)는 꼭, 그리고 한 칸 더: GIFT_W 확률로 영양제 / 레어(1,500G 까지) / 에픽(5,000G 까지) / 전설(10,000G 넘는 메가스톤) 지닌 도구·나무열매 (같은 등급 안에서는 싼 것일수록 잘 나옴). 값어치 평균 약 950G, 넷 중 셋은 600G
+   등급 딱지 GIFT_GR — 경완 '도구는 높은 가격인만큼 레어 딱지 같은거 붙여서 나왔으면' · 색은 알 등급(레어 파랑·에픽 보라·전설 금)과 같게 */
+const GIFT_W = [75, 16, 8, 1], GIFT_GR = ['', '레어', '에픽', '전설'], giftGr = pr => pr >= 10000 ? 3 : pr > 1500 ? 2 : pr > 0 ? 1 : 0;   /* 경완 '전설은 5,000G는 넘어야' → '아니 10,000G는 넘어야할듯' — 10,000G 넘는 건 메가스톤(12,000G)뿐 */
+/* 경완 '최종 보스의 메가스톤 나올 확률도 좀 높여주고, 이미 창고에 있으면 안 나오는거고' — 쓰러뜨린 대장의 메가스톤 GIFT_BOSS %, 가진 메가스톤(창고·지닌 것)은 어느 칸에서도 안 나옴 */
+const GIFT_BOSS = 4;
+const GIFT = (stat, boss) => { const B = GB(), H = B.HOLD || {}, V = B.EV_VIT || [['protein']], MS = B.MEGA_ST || {}, has = id => (GA.S?.gym?.itm?.[id] | 0) > 0 || !!B.itWho?.(id),
+    ok = Object.keys(H).filter(id => !B.ZC_T?.[id] && !(B.ZC_ST || []).includes(id) && H[id][1] > 0 && (!MS[id] || (H[id][1] >= 10000 && !has(id)))),
+    bs = Object.keys(MS).filter(id => MS[id][0] === boss && H[id]?.[1] > 0 && !has(id)),
+    pw = L => { let r = Math.random() * L.reduce((a, id) => a + 1 / H[id][1], 0); for (const id of L) if ((r -= 1 / H[id][1]) <= 0) return id; return L[L.length - 1]; },
+    v0 = (V[stat] || V[0])[0]; let r = Math.random() * 100, k = 0; while (k < 3 && (r -= GIFT_W[k]) > 0) k++;
+  if (bs.length && Math.random() * 100 < GIFT_BOSS) { const id = bs[Math.floor(Math.random() * bs.length)]; return [[v0, 1, 0], [id, 1, giftGr(H[id][1])]]; }
+  const L = k ? ok.filter(id => giftGr(H[id][1]) === k) : [], x = L.length ? pw(L) : V[Math.floor(Math.random() * V.length)][0];
+  return x === v0 ? [[v0, 2, 0]] : [[v0, 1, 0], [x, 1, L.length ? k : 0]]; };
+function gotBox(p) { const G = R.G, me = G.me; if (G.gift) return; G.gift = G.giftT || GIFT(G.stat, G.pool.big[2]); if (p) p.got = true; se('PIRORIRO'); snd('DUN_Stat_Up', .07); buzz(1); flash(.2, '255,240,170'); ring(me.x, me.y - 16, '#ffe27a', 8, 90, .4, 6, 1); stars(me.x, me.y - 24, 14, '#ffe27a', 280); pop(me.x, me.y - 70, '선물상자!', '#ffe27a', true);
+  after(.7, () => { if (R?.G !== G) return; const q = R.q, w = q('.ya-gift'), B = GB(), nm = id => B.HOLD?.[id]?.[0] || (B.EV_VIT || []).find(v => v[0] === id)?.[1] || id;
+    q('.gf-s').textContent = `메가 ${nmSp(G.pool.big[2])} 격파 보상`; q('.gf-l').innerHTML = G.gift.map(([id, n, gr], i) => `<span class="gr${gr | 0}" style="--i:${i}">${gr ? `<em>${GIFT_GR[gr]}</em><u></u>` : ''}<img alt="" src="${B.itImg(id)}"><i>${nm(id)}</i><b>×${n}</b></span>`).join(''); const top = Math.max(0, ...G.gift.map(x => x[2] | 0)); w.dataset.gr = top; if (top) after(.55 + (G.gift.length - 1) * .16 + .3, () => { if (R?.G !== G || w.hidden) return; se(top > 1 ? 'PIRORIRO' : 'PINPON', .5); buzz(top > 1 ? 2 : 1); });
+    q('.ya-ov').hidden = false; w.hidden = false; w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop'); se('WIN_OPEN'); se('PINPON', .3); buzz(1);
+    const ok = q('.gf-ok'); ok.classList.add('lk'); setTimeout(() => ok.classList.remove('lk'), 1000); }); }   /* 저절로 뜨는 창: 버튼으로만 닫힘·팝업 모션·소리·1초 잠금 */
 let BAG_IM = null; function bagIm() { if (!BAG_IM) { BAG_IM = new Image(); BAG_IM.src = 'gym/img/item/goldsack.png'; } return BAG_IM; }
 function drawBag(p) { const g = R.g, t = R.T - p.t0, k = p.val >= 40 ? 3 : 2, im = bagIm(), w = (im.width || 18) * k, h = (im.height || 21) * k, x = Math.round(p.x), y = Math.round(p.y - p.z + (p.z ? 0 : Math.sin(t * 5 + p.x) * 2));
   g.fillStyle = 'rgba(20,40,10,.28)'; g.beginPath(); g.ellipse(x, p.y, w * .42, w * .14, 0, 0, 7); g.fill(); g.imageSmoothingEnabled = false; if (im.complete && im.width) g.drawImage(im, Math.round(x - w / 2), y - h, w, h);
@@ -1422,7 +1493,7 @@ function draw() {
   drawHaz();
   for (const t of G.traps) drawTrap(t);
   for (const c of G.cracks) drawCrack(c);
-  for (const p of G.drops) if (p.coin) drawCoin(p); else drawShard(p);
+  for (const p of G.drops) if (p.coin) drawCoin(p); else if (p.box) drawBox(p); else drawShard(p);
   for (const it of G.items) drawItem(it);
   if (G.me.hp > 0 && (G.me.buff > 0 || G.mag > 0)) { const me = G.me, g2 = R.g; if (me.buff > 0) { g2.strokeStyle = `rgba(160,240,130,${.35 + .25 * Math.sin(RT * 8)})`; g2.lineWidth = 3; g2.setLineDash([10, 8]); g2.lineDashOffset = -RT * 40; g2.beginPath(); g2.ellipse(me.x, me.y, 92 * RNG * .62, 92 * RNG * .62 * .5, 0, 0, 7); g2.stroke(); g2.setLineDash([]); }
     if (G.mag > 0) { const p = (RT * 1.2) % 1; g2.strokeStyle = `rgba(255,120,120,${.6 * p})`; g2.lineWidth = 3; g2.beginPath(); g2.ellipse(me.x, me.y, 120 * (1 - p) + 14, (120 * (1 - p) + 14) * .5, 0, 0, 7); g2.stroke(); } }
@@ -1487,6 +1558,7 @@ function bind() {
   on(q('.ya-pk'), 'click', e => { const b = e.target.closest('.pkc'); if (!b) return; se('SELECT'); r.pick = +b.dataset.i; const o = r.mons[r.pick]; if (o.evk >= 0) r.stat = o.evk; r.pool = null; startUi(); });
   on(q('.ya-stt'), 'click', e => { const b = e.target.closest('.stc'); if (!b) return; r.stat = +b.dataset.s; r.pool = null; startUi(); });
   on(q('.ya-go'), 'click', () => { se('DECIDE'); bgm('wild'); r.el.classList.remove('pre', 'st0'); q('.ya-start').hidden = true; q('.ya-ov').hidden = true; r.el.classList.add('play'); r.T = 0; r.FX.length = 0; r.POPS.length = 0; newGame(); r.run = true; });
+  on(q('.gf-ok'), 'click', () => { const G = r.G; if (!G?.gift || G.giftOk) return; se('DECIDE'); q('.ya-gift').hidden = true; q('.ya-ov').hidden = true; G.giftOk = r.T; });
   on(q('.ya-again'), 'click', () => { se('DECIDE'); bgm('wild'); q('.ya-res').hidden = true; q('.ya-ov').hidden = true; r.FX.length = 0; r.POPS.length = 0; r.el.classList.add('play'); newGame(); r.run = true; });
   on(q('.ya-back'), 'click', () => close());
   on(q('.ya-x'), 'click', () => close());
@@ -1582,5 +1654,5 @@ function startUi() {
   q('.ya-pmv').innerHTML = moveList(o.P).map(v => `<span style="--tc:${TYPE_C[v.t] || '#888'}">${v.name}</span>`).join('');
 }
 
-window.GymYA = { start, close, get _R() { return R; }, _use: i => useMove(i), _dodge: () => dodge(), _hold: (i, on) => { if (!R) return; if (on) { useMove(i, true); R.HELD[i] = 1; } else delete R.HELD[i]; }, _end: c => R?.G && end(c) };
+window.GymYA = { start, close, get _R() { return R; }, _gift: (s, b) => GIFT(s, b), _S: () => GA.S, _use: i => useMove(i), _dodge: () => dodge(), _hold: (i, on) => { if (!R) return; if (on) { useMove(i, true); R.HELD[i] = 1; } else delete R.HELD[i]; }, _end: c => R?.G && end(c) };
 })();

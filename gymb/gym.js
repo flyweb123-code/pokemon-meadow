@@ -798,7 +798,11 @@ const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 **
 const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 1));
 /* v25.86 경완 '고용 트레이너는 연승 여부는 나오지도 않는데 그 개념 자체를 빼도': 도전자가 올 때 팀 레벨에 연승 보정을 더하던 것(c.stkL) 없앰. 연승 보정은 직접 배틀(refit0)에만 */
 // v17.31 경완 '연승 보정처럼 연패 보정도': 내가 직접 싸워 진 게 2번 이어지면(g.lstk) 도전자 레벨 −2, 연패마다 −2 더 (최대 −8), 강함 보정(strOf)도 쉰다. 한 번 막으면 0. 승급 심사는 그대로
-const lsLv = n => n < 2 ? 0 : Math.min(8, ((n | 0) - 1) * 2);
+/* v25.94 경완 '연패 보정 받고 있다는 티가 많이 나나?', '최대한 티 안 나게' → '응 그렇게 해줘봐': 보이는 것(레벨·종·메가)은 거의 그대로, 안 보이는 쪽으로 봐줌.
+   단계 lsE = 연패 수 − 1 (2연패 1 … 5연패 4, g.lstk 는 5 까지만 쌓임). 레벨은 최대 −2 (예전 −8), 강함 보정·종족값 바닥은 연패 중에도 켬.
+   대신 단계마다: 개체값 상한 31 − 6×단계, 노력치 등급 −1.5×단계, AI·도구 단계 −(단계÷2), 상성 포켓몬 비율 ×(1 − .2×단계), 마리 수 −(단계÷2, 최소 3), 메가·Z 확률 ×(1 − .25×단계).
+   이기면 바로 0 이 아니라 한 단계씩 풀림. 이름 있는 트레이너는 레벨·개체값·노력치·메가·Z 만, 승급 심사·전설의 체육관은 보정 없음 */
+const lsLv = n => (n | 0) < 2 ? 0 : Math.min(2, (n | 0) - 1), LS_MAX = 5, lsE = g => isLeg(g) ? 0 : clampN((g.lstk | 0) - 1, 0, 4);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
@@ -808,7 +812,7 @@ const repLose = () => -1;
 const trV = s => (s.tv ?? ((Math.imul((s.id | 0) ^ 0x5bd1e995, 2654435761) >>> 7) % 101)) / 100, trX = s => Math.round((1.3 + .4 * trV(s)) * 20) / 20;
 const sfRep = (s, r) => { const g = st(); g.sfR = (g.sfR || 0) + r * .5 * (s.trait === 'star' ? trX(s) : 1); const n = Math.floor(g.sfR + 1e-9); g.sfR -= n; return n; };
 // 도전자 레벨: 난이도 f(0~1)가 초반엔 천천히, 뒤로 갈수록 가파르게 오른다 (bdPh). 보통 = 내 평균 -1 → +8, 쉬움 = -7 → +1
-const chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * 9) : -7 + Math.round(f * 8)));
+const CH_HF = 6, chalLv = (avg, diff, f) => Math.max(3, avg + (diff ? -1 + Math.round(f * CH_HF) : -7 + Math.round(f * 8)));   /* v25.97 보통 도전자 평판 덧셈 9 → 6 (명문 +4.5 → +2쯤, 전설 입구도 같이 낮아짐) */
 const rewOf = c => { const R = REW(c.diff); return c.boss ? { ...R, g: R.g * (1 + c.boss), r: R.r * 2 } : pairOf(c) && !c.named ? { ...R, g: R.g * 2, r: R.r * 2 } : R; };
 const DIFF_KO = ['쉬움', '보통', '어려움'];
 // 체육관 등급 배지 (경완 2026-10-29 '배지 개념을 체육관 등급이랑 통합'): 다음 등급 문턱 바로 앞에서 '승급 심사' 보스를 이겨야 올라간다.
@@ -940,6 +944,15 @@ const ctQ = a => Math.min(.8, a * .13);   // 팀 포켓몬이 상성 타입을 �
 const isCt = (sp, ct) => (SPECIES[sp]?.t || []).some(x => ct.includes(x));
 const STR_BS = [450, 480, 510, 540, 570, 600, 680], STR_LV = [0, 1, 2, 3, 4, 5, 6];
 const bsOf = sp => (SPECIES[sp]?.bs || []).reduce((a, b) => a + b, 0);
+/* v25.91 경완 '체육관 관장 배틀의 핵심은 뒤로 갈수록 강한 포켓몬들 여럿으로 라인업을 꾸려서 높은 실력으로 배틀해야 이길 수 있게', '마리수는 다 열어놓고 그냥 뒤로 갈수록 많이 가져오는 도전자 빈도 수가 확률로 늘어나게끔', '연패 보정만 원래대로 냅두고 나머지 적용':
+   보통(어려운) 도전자만. CH_N = 등급별 3·4·5·6마리 확률(내 라인업 수와 무관, 예전엔 3~내 마리 수+1 고르게), CH_AI = 이 등급부터 AI·기술·도구 2단계, STR_FL = 상대 종 고르는 종족값 목표 바닥(종 폭 때문에 평균은 이보다 낮게 나옴 → 이름난 510·인기 530·명문 550쯤, 전설 시작도 명문보다 안 내려가게). 쉬운 도전자·더블·이름 있는 트레이너·승급 심사·연패 보정은 그대로 */
+const CH_N = [[50, 30, 15, 5], [40, 30, 20, 10], [30, 30, 25, 15], [20, 30, 30, 20], [10, 25, 35, 30], [5, 15, 35, 45], [0, 5, 25, 70]], CH_AI = 5, STR_FL = [0, 0, 0, 535, 565, 583, 583];
+const chGi = () => clampN(gradeOf(st().rep || 0).i, 0, CH_N.length - 1), chN = () => pickW([3, 4, 5, 6], CH_N[chGi()]);
+/* v25.95 경완 '연승할 때 중간에 가끔 한번씩 랜덤 확률로 어렵지 않은 도전자들 한 번씩 섞어줘야, 연승 보정 받고 있다는거 눈치 못 채고… 할만한 도전자가 오는 희열', '응 세기 낮춰주고 25%로 해줘':
+   쉬어 가는 도전자 c.brk = 올 때 STK_BRK(25%) 로 정해 둠(두 명 연속은 안 됨, g.brkL), 그 도전자는 연승 보정 레벨(stkLv)을 안 받음. 이겨도 연승 수는 그대로 오름. 화면 표시 없음.
+   세기 낮춤: 봇 승률이 인기 56→28%·명문 37→9% 로 떨어져서, 인기는 다시 AI 1단계, 명문(CH_AI 5)은 도전자 절반(CH_AI_P, c.a2 로 정해 둠)만 2단계, 전설은 전부.
+   다시 돌린 봇 승률(도구·메가 없는 봇): 종족값 520 라인업 인기 33%·명문 14%, 종족값 600 라인업 인기 75%·명문 39% */
+const STK_BRK = .25, CH_AI_P = .5;
 function strOf(my) {
   const g = st(), gi = clampN(gradeOf(g.rep || 0).i, 0, STR_BS.length - 1);
   const R = my.map(P => ({ b: bsOf(P.sp), lv: (GB()?.gm?.(P) || g.mon?.[P.id])?.lv || 0 })).filter(x => x.b && x.lv).sort((a, b) => b.b - a.b || b.lv - a.lv).slice(0, 3);
@@ -954,7 +967,7 @@ const teamLv = T => T.reduce((a, m) => a + m[1], 0) / T.length;
    LV_CEIL = 지금 등급의 도전자(이름 있는 트레이너 포함) 천장, BS_CEIL = 그 등급에서 받는 승급 심사 천장. 팀에서 가장 높은 레벨이 천장을 넘으면 넘은 만큼 팀 전체를 내림 */
 const LV_CEIL = [30, 40, 50, 60, 72, 85, 100], BS_CEIL = [30, 42, 54, 66, 78, 90];
 /* v23.49 경완 '천장 말고 바닥도 있어야 하지 않을까 레벨 범위로': 내 레벨이 낮아도 상대는 등급 바닥 아래로 안 내려옴 (쉬운 도전자는 바닥 −5). 새내기는 바닥 없음 */
-const LV_FLOOR = [0, 22, 32, 42, 52, 62, 75], BS_FLOOR = [0, 35, 45, 55, 67, 80], LV_FLOOR_EZ = 5;
+const LV_FOL = .7, LV_FLOOR = [0, 22, 32, 42, 52, 62, 75], BS_FLOOR = [0, 35, 45, 55, 67, 80], LV_FLOOR_EZ = 5;
 function lvCeil(c) { if (!c?.team?.length) return c; const cap = c.boss ? BS_CEIL[c.boss - 1] : LV_CEIL[clampN(st()?.gmax | 0, 0, LV_CEIL.length - 1)]; if (!cap) return c;
   const over = Math.max(...c.team.map(m => m[1] | 0)) - cap; if (over > 0) c.team = c.team.map(m => [m[0], Math.max(2, m[1] - over), ...m.slice(2)]);
   const fl = c.boss ? BS_FLOOR[c.boss - 1] | 0 : Math.max(0, (LV_FLOOR[clampN(st()?.gmax | 0, 0, LV_FLOOR.length - 1)] | 0) - (!c.named && !(c.diff | 0) ? LV_FLOOR_EZ : 0)), under = fl - Math.max(...c.team.map(m => m[1] | 0));
@@ -972,7 +985,10 @@ function refit0(c, my) {
   /* v25.82 경완 '고레벨 1마리에 나머지 5마리 저레벨로 구성하면 쉽게 이기는 구조?' → '최고 레벨 −5 하한': 도전자·이름 있는 트레이너 기준 레벨은 라인업 최고 레벨 − LV_ACE 아래로 안 내려감 (승급 심사는 박스 기준 bsBase 그대로) */
   const LV_ACE = 5, mean = Math.max(Math.round(L.reduce((a, b) => a + b, 0) / L.length), Math.max(...L) - LV_ACE);
   // v13.88 경완 '막아줘': 승급 심사는 약한 포켓몬을 섞어 평균을 낮춰도 상대가 약해지지 않게 — 기준 레벨 = 평균과 (가장 높은 레벨 − BS_GAP) 중 큰 쪽
-  const avg = c.boss ? bsBase(c.boss) : mean + stkLv(g.stk) - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
+  /* v25.97 경완 '적당히 긴장감 유지하면서 너무 패배해서 의욕이 꺾이지 않고 승리의 달콤함과 육성하면서 강해지는 희열', '일단 제안대로 해줘':
+     상대는 내 레벨을 LV_FOL(70%)만 따라옴 — 등급 레벨 범위 가운데(바닥·천장 평균)를 기준으로, 내가 1레벨 올리면 상대는 0.7레벨. 천장 전에도 키운 만큼 조금씩 유리해짐 (예전엔 100% 따라와 승률이 그대로). 새내기는 그대로 */
+  const gm0 = clampN(g.gmax | 0, 0, LV_CEIL.length - 1), anc = (LV_FLOOR[gm0] + LV_CEIL[gm0]) / 2, fol = x => gm0 ? Math.round(anc + (x - anc) * LV_FOL) : x, mean2 = fol(mean);
+  const sk = c.brk ? 0 : stkLv(g.stk), avg = c.boss ? bsBase(c.boss) : mean2 + sk - lsOf(g);   // 승급 심사 말고는 연승 중이면 도전자가 그만큼 세진다 (배틀 직전 연승 기준)
   if (c.named) {
     // 본가 단계 팀도 라인업 평균 +2 로 레벨만 옮긴다 (경완 2026-10-29 '여전히 라인업 기반이 아닌 듯'). 구성·기술은 그대로
     if (!c.sc) { const d = Math.round(avg + 4 + Math.round(legX(g) * 2) - teamLv(c.team));   /* v24.30: 전설에선 이름 있는 트레이너도 평판 단계만큼 레벨 + */ c.team = c.team.map(m => [m[0], clampN(m[1] + d, 5, 100), m[2]]); return; }
@@ -982,13 +998,13 @@ function refit0(c, my) {
   }
   const C = CLS[c.k]; if (!C) return;
   const f = c.f ?? (c.ivm || 0) / 20, diff = c.diff, S3 = strOf(my);
-  const lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? rndI(3, clampN(my.length + 1 + (f > .4) + (f > .8), 3, 6)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
-  if (isLeg(g)) { if (lx >= 1) c.ivm = 31; if (lx >= 2) c.ai = 2; else delete c.ai; }
-  const ls = lsOf(g), base = S3 ? Math.max(avg, S3.sl + stkLv(g.stk) - ls) + (ls ? 0 : S3.lvB) : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
-  const ct = CT_OF(g.ty), q = c.cq ?? 0;
-  c.team = mkTeam(C.t, chalLv(base, diff, f) + Math.round(lx * 2) + (PR ? PAIR_LV : 0), n, ls ? 0 : isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, 540 + Math.round(lx * 20))) : S3?.sb, ct, q, c.tw);
+  const le = lsE(g), lx = legX(g), PR = pairOf(c), n = PR ? Math.max(pairN(diff), Math.min(6, c.team?.length | 0)) : Math.max(diff ? Math.max(3, (c.n0 ||= chN()) - (le >> 1)) : clampN(rndI(2, 3) + (f > .5), 1, my.length), isLeg(g) ? Math.min(6, 4 + Math.floor(lx)) : 0);
+  if (isLeg(g)) { if (lx >= 1) c.ivm = 31; c.ai = 2; } else if (diff && (chGi() > CH_AI || chGi() === CH_AI && (c.a2 ??= Math.random()) < CH_AI_P)) c.ai = 2; else delete c.ai;
+  const ls = lsOf(g), base = S3 ? Math.max(avg, fol(S3.sl) + sk - ls) + S3.lvB : avg;   // 기준 레벨 = 평균과 센 3마리 평균 중 큰 쪽 + 강함 보정 (연패 중엔 강함 보정 쉼)
+  const ct = CT_OF(g.ty), q = (c.cq ?? 0) * (1 - le * .2);
+  /* v25.97 전설 입구 완화: 평판 덧셈은 명문 수준(절반)에서 시작해 단계마다 +25%, 단계 레벨(+2)은 둘째 단계부터 */ c.team = mkTeam(C.t, chalLv(base, diff, isLeg(g) ? Math.min(1, .5 + lx * .25) : f) + Math.round((isLeg(g) ? Math.max(0, lx - 1) : lx) * 2) + (PR ? PAIR_LV : 0), n, isLeg(g) && S3 ? Math.min(STR_BS[STR_BS.length - 1], Math.max(S3.sb, STR_FL[6], 540 + Math.round(lx * 20))) : Math.max(S3?.sb || 0, diff ? STR_FL[chGi()] : 0), ct, q, c.tw);
   // v17.32: 상성 좋은 포켓몬을 데려온 만큼 강함 보정 레벨을 덜 준다 (상성 포켓몬 비율만큼 lvB 빼기)
-  const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 && !ls ? Math.round(S3.lvB * cs) : 0;
+  const cs = c.team.filter(m => isCt(m[0], ct)).length / c.team.length, cut = S3 ? Math.round(S3.lvB * cs) : 0;
   if (cut) c.team = c.team.map(m => [m[0], clampN(m[1] - cut, 2, 100), m[2]]);
   c.str = S3 ? [S3.sb, S3.lvB - cut, ls, Math.round(cs * 100)] : null;
 }
@@ -1008,8 +1024,8 @@ function mkChal(t) {
   const diff = isLeg(g) ? 1 : (g.ez | 0) < 3 || Math.random() < [.85, .55, .4, .28, .18, .1, .06][G.i] * (1 - f * .8) ? 0 : 1; g.ez = (g.ez | 0) + 1;   // v14.44 경완: 처음 3명까지만 무조건 쉬움 (예전 5명) · 초반엔 쉬운 도전자가 많고 등급이 오를수록 줄어든다
   const dbl = Math.random() < (DBL_P[G.i] || 0), ct = CT_OF(g.ty), A = ctA(G.i, diff), KS0 = dbl ? Object.keys(PAIR).filter(x => CLS[x]) : Object.keys(CLS).filter(x => !!CLS[x].e === !diff && !PAIR[x]), KL = isLeg(g) ? KS0.filter(x => LEG_CLS.includes(x)) : [], KS = KL.length ? KL : KS0;   /* v24.19 경완 '전설 등급부터는 본가 기준 뒤에 나오는 도전자들(드래곤 조련사, 엘리트 트레이너 등)이나 이름 있는 트레이너들만' */
   const k = pickW(KS, KS.map(x => 1 + A * ctAdv(CLS[x].t, ct))), C = CLS[k], cq = ctQ(A);   // 상성 좋은 트레이너가 더 자주 (등급·어려움일수록)
-  const n = dbl ? pairN(diff) : diff ? rndI(3, clampN(luNow().length + 1 + (f > .4) + (f > .8), 3, 6)) : rndI(2, 3) + (f > .5);
-  { const tw = Math.random() < TW_P ? 1 : 0; return { id: ++g.cid, t, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
+  const n = dbl ? pairN(diff) : diff ? chN() : rndI(2, 3) + (f > .5);
+  { const tw = Math.random() < TW_P ? 1 : 0, brk = !g.brkL && Math.random() < STK_BRK ? 1 : 0; g.brkL = brk; return { id: ++g.cid, t, k, brk, a2: Math.random(), cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), diff, f, cq, n0: diff && !dbl ? n : 0, ivm: Math.min(31, 8 + Math.round(f * 20)), tw, team: mkTeam(C.t, chalLv(avg, diff, f) + (dbl ? PAIR_LV : 0), n, 0, ct, cq, tw) }; }
 }
 // 이름 있는 트레이너 팀을 지금 내 라인업에 맞춰 (레벨 = 내 평균 + bonus). 가장 가까운 단계 팀을 골라 레벨만 옮긴다
 function nmTeam(n, tgt) {
@@ -1410,14 +1426,14 @@ async function challenge(picked) {
     const my = c.test ? c.test.map(id => GB().boxOf(id)).filter(Boolean) : luNow();   /* v25.08 운영자 더블 배틀 시험: 라인업 사본 */
     refit(c, my);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
-    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff ? 1 : 0)); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : gradeOf(g.rep || 0).i); return o; });
+    const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : Math.max(0, (c.ai ?? (c.diff ? 1 : 0)) - (lsE(g) >> 1))); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); if (!c.boss && lsE(g)) o.iv = o.iv.map(v => Math.min(v, 31 - lsE(g) * 6)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : Math.max(0, gradeOf(g.rep || 0).i - Math.round(lsE(g) * 1.5))); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
     const fmg = foeMega(c, team, 0, my); const fz = foeZ(c, team, 0, my);   /* v24.51 경완 "메가 쓰는 배틀에선 왜 Z 안 써?": 본가 7세대처럼 한 배틀에 메가 1번·Z 1번 둘 다 (메가스톤 든 포켓몬은 도구가 있어 Z크리스탈 안 받음) */   // 메가진화 해금 뒤 한동안은 도전자가 메가진화 안 씀 (MG_FOE)
     const sayEnd = { win: N ? N.ln[1].replace('{me}', me) : CS.w, lose: N ? N.ln[2].replace('{me}', me) : CS.l };
     document.body.classList.add('gymBattle');
     let res;
     dlg(''); root.classList.add('dhide');   // 배틀 화면이 닫힐 때 승부 대사가 잠깐 비치지 않게 미리 비운다 (경완 2026-10-29)
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') || DMAX_ON && tutSeen('dBand') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}), ...(DMAX_ON && tutSeen('dBand') ? { dmax: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, ...(c.test ? { practice: true } : {}), foe: { tr: c.tr, cls: c.cls, nm: PR && !c.named ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : c.ai ?? (c.diff | 0) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), ...(MEGA_ON && (tutSeen('mgRing') || fmg) || Z_ON && tutSeen('zRing') || DMAX_ON && tutSeen('dBand') ? { gmk: { ...(MEGA_ON && (tutSeen('mgRing') || fmg) ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}), ...(DMAX_ON && tutSeen('dBand') ? { dmax: 1 } : {}) } } : {}), frw: FR_W[c.boss ? 3 : c.diff | 0], dbl: !!PR, ...(c.test ? { practice: true } : {}), foe: { tr: c.tr, cls: c.cls, nm: PR && !c.named ? `${c.nm}${jong(c.nm) ? '과' : '와'} ${c.nm2}` : c.nm, team, say: sayEnd, hold: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : Math.max(0, (c.ai ?? (c.diff | 0)) - (lsE(g) >> 1)) }, rew: { g: rewOf(c).g, r: repWin(rewOf(c).r) + stkBonus((g.stk | 0) + 1), rl: Math.min(0, Math.max(Math.min(0, repFloor(g) - (g.rep || 0)), repLose())) }, diff: c.boss ? BS_AI[c.boss - 1] : c.diff, ...chalEnv(c, team), music: bm, win: (NM && bm === NM.music && NM.win) || null, exam: c.boss ? { g: GRADES[c.boss][1], bd: bdHtml(g.ty, c.boss + 1) } : null, meBackUrl: await fitSrc('trb') }); }
     finally { document.body.classList.remove('gymBattle'); dlg(''); root.classList.add('dhide'); }   // 배틀 끝나고 돌아오면 아래 대화창은 숨김 (경완 2026-10-29)
     if (res?.mg && !res.cut && !g.mgUse) { g.mgUse = 1; g.mgN = 0; }   /* 경완 2026-11-13: 도전자 메가진화 판 수는 이 체육관에서 내가 처음 메가진화를 써서 싸운 배틀부터 (메가링만 있고 메가 포켓몬 없으면 안 셈) */
     if (res?.zu && !res.cut && !g.zUse) { g.zUse = 1; g.zN = 0; } if (res && !res.cut && g.zUse && (g.gmax | 0) >= 4) g.zN = (g.zN | 0) + 1;   /* v24.51 도전자 Z기술 판 수 (Z_FOE, 체육관마다) */
@@ -1428,15 +1444,15 @@ async function challenge(picked) {
       dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut(); return;
     }
     if (c.test) { g.q.shift(); root.classList.remove('dhide'); await talk(`<span class="gy-who">${esc(c.cls)} ${esc(c.nm)}</span>` + esc(res?.won ? sayEnd.lose : sayEnd.win)); dlg(''); root.classList.add('dhide'); if (meEnt) { meEnt.f = 'd'; place(meEnt); } await goOut(); return; }   /* v25.08 시험: 결과·골드·평판·기록 없이 한마디 하고 나감 */
-    g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now();
+    g.q.shift(); const R = rewOf(c), won = !!res?.won, now = Date.now(); const bl0 = { k: g.stk | 0, e: c.boss ? 0 : lsE(g) };   /* 밸런스 기록용: 배틀 전 연승·연패 보정 단계 */
     let gold = 0, rep = 0;
     const r0 = g.rep || 0;
-    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
-    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = (g.lstk | 0) + 1; } else { g.bsF = g.bsF || {}; g.bsF[c.boss] = (g.bsF[c.boss] | 0) + 1; } gWL(g); g.gl++; g.l++; if (g.wk) g.wk.l++; }
+    if (won) { g.stk = (g.stk | 0) + 1; g.lstk = Math.max(0, Math.min(LS_MAX, g.lstk | 0) - 1); gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); }   /* v22.14: 이긴 배틀 친밀도는 battle.js frBattle 이 FR_W 로 (예전 R.fr 은 겹쳐서 뺌) */
+    else { g.stk = 0; if (!c.boss) { addRep(repLose()); g.lstk = Math.min(LS_MAX, (g.lstk | 0) + 1); } else { g.bsF = g.bsF || {}; g.bsF[c.boss] = (g.bsF[c.boss] | 0) + 1; } gWL(g); g.gl++; g.l++; if (g.wk) g.wk.l++; }
     if (!g.fb1 && !c.boss) { g.fb1 = 1; if ((g.w | 0) + (g.l | 0) <= 1) fbNext = won ? ['첫 승리 축하드립니다, 관장님!!<br>역시 배틀에 재능이 있으시군요!', '앞으로 이렇게만 하시면 돼요.<br>궁금한 점이 있으면 언제든 저한테 물어보세요!'] : ['아쉽네요, 관장님…<br>첫 배틀이라 긴장하셨나 봐요.', '라인업을 다시 짜 보거나 포켓몬을 키워서<br>다음 도전자는 꼭 막아 봐요!', '궁금한 점이 있으면 언제든 저한테 물어보세요!']; }   // v14.33 경완: 첫 배틀 뒤 안내원 대사창 (이기면 축하, 지면 아쉬움)   // 승급 심사는 져도 평판이 그대로라 버튼으로 바로 다시 받을 수 있다 (경완 2026-10-30)
     rep = (g.rep || 0) - r0; if (!res?.quit && !res?.cut) g.sfT = Date.now();   /* v23.52: 직접 배틀하면 트레이너 평판이 SF_ON_H 시간 동안 켜짐 */
     try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
-      window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
+      window.pkBal?.('gym', { c: c.boss ? 'boss' : c.named ? 'named' : 'chal', df: c.diff | 0, bs: c.boss | 0, nm: c.named || '', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: rep, stk: g.stk | 0, ls: g.lstk | 0, sl: c.stkL | 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0), k0: bl0.k, le: bl0.e, bk: c.brk ? 1 : 0, ai: c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : Math.max(0, (c.ai ?? (c.diff ? 1 : 0)) - (bl0.e >> 1)), mb: av((res?.my || []).map(o => bsOf(o?.sp | 0) | 0).filter(Boolean)), fb: av(team.map(o => bsOf(o.sp) | 0).filter(Boolean)), lf: Object.values(res?.hp || {}).filter(h => h > 0).length, fm: fmg ? 1 : 0, fz: fz ? 1 : 0, um: res?.mg ? 1 : 0, uz: res?.zu ? 1 : 0, pr: PR ? 1 : 0 }); } catch (e) {}   /* 경완 '유저들 실제 배틀 로그 보면서 난이도 밸런스 잡는거 정기 루틴화' (2026-11-16): 배틀 전 연승 k0·연패 보정 le·쉬어 가는 도전자 bk·AI 단계·종족값 mb/fb·남은 내 포켓몬 lf·메가/Z */   /* 밸런스 기록 (경완 2026-11-05): 도전자 종류·등급·승패·턴·골드·평판·내/상대 레벨 */
     { const m = dayRec(now).me; if (won) m.w++; else m.l++; m.g += gold; m.r += rep; }
     if (N && !c.sc) { const x = g.nt[N.id] || { s: 0 }; g.nt[N.id] = won ? { s: Math.max(x.s | 0, c.s | 0) + 1, n: now + rnd(2, 3.5) * DAY } : { s: x.s, n: now + rnd(.8, 1.5) * DAY }; }
     glog(won ? 'win' : 'lose', `${esc(c.cls)} <b>${esc(c.nm)}</b>${won ? `에게 이겼다! <small>+${gold}G · 평판 +${rep}</small>` : `에게 졌다… <small>평판 ${rep}</small>`}`);
@@ -1984,7 +2000,7 @@ async function legExam(gi, test) {
     const won = !!res?.won, r0 = g.rep || 0; let gold = 0;
     if (test) { if (won) { g.gmax = gi; g.rep = Math.max(r0, GRADES[gi][0]); g.newBdg = g.ty; g.newG = gi; g.grwN = gi; legLast = g.ty;   /* v23.66 경완 '승급 알림창 뒤 보상 알림창 안 뜸': 시험에서도 보상 창을 보여 줌 (보여 주기만, 골드·알은 안 줌) */ } }
     else {
-      if (won) { g.stk = (g.stk | 0) + 1; g.lstk = 0; gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); delete g.legN; delete g.lkTry; legLast = g.ty; }
+      if (won) { g.stk = (g.stk | 0) + 1; g.lstk = Math.max(0, Math.min(LS_MAX, g.lstk | 0) - 1); gold = addG(R.g + stkGold(g.stk, R.g)); addRep(repWin(R.r) + stkBonus(g.stk)); gWL(g); g.gw++; g.w++; if (g.wk) g.wk.w++; blocked(c); delete g.legN; delete g.lkTry; legLast = g.ty; }
       else { g.stk = 0; gWL(g); g.gl++; g.l++; if (g.wk) g.wk.l++; g.lkTry = (g.lkTry | 0) + 1; }
       try { const lv = L => (L || []).map(o => o?.lv | 0).filter(Boolean), ml = lv(res?.my), fl = lv(team), av = L => L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : 0;
         window.pkBal?.('gym', { c: 'boss', df: 2, bs: gi, nm: 'kang', gr: g.gmax | 0, w: won ? 1 : 0, q: res?.quit ? 1 : 0, tn: res?.turns | 0, gd: gold, rp: (g.rep || 0) - r0, stk: g.stk | 0, ls: 0, sl: 0, ma: av(ml), mx: ml.length ? Math.max(...ml) : 0, mn: ml.length, fa: av(fl), fn: fl.length, sp: (res?.my || []).map(o => o?.sp | 0) }); } catch (e) {}
@@ -4530,20 +4546,20 @@ function foeMgP(c) { const g = st(); if (!MEGA_ON || !tutSeen('mgRing') || !g?.m
   const M = MG_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / MG_FOE.ramp); }
 // 경완 2026-11-12 '난이도 밸런스는 기본, 유저 라인업이 메가진화 안 나와도 되는 라인업이면 이 시점이 와도 안 나옴 — 이 시점은 최솟값': 라인업이 셀수록 1 에 가까움
 //   내 라인업에 메가스톤 지닌 포켓몬이 있으면 1, 아니면 센 3마리 종족값이 레벨 기준(spTgt)보다 얼마나 높은지 + 연승. 연패 중이면 0
-function mgNeed(my) { const g = st(), B = GB(); if (!my?.length || (g.lstk | 0) >= 2) return 0;
+function mgNeed(my) { const g = st(), B = GB(); if (!my?.length) return 0;
   if (my.some(P => { const it = (B?.gm?.(P) || g.mon?.[P.id])?.it; return it && B?.MEGA_ST?.[it]; })) return 1;
   const R = my.map(P => ({ b: bsOf(P.sp), lv: (B?.gm?.(P) || g.mon?.[P.id])?.lv || 0 })).filter(x => x.b && x.lv).sort((a, b) => b.b - a.b).slice(0, 3); if (!R.length) return 0;
   const sb = R.reduce((a, x) => a + x.b, 0) / R.length, sl = R.reduce((a, x) => a + x.lv, 0) / R.length;
   return clampN((sb - spTgt(sl)) / 60 + Math.min(.4, (g.stk | 0) * .08), 0, 1); }
-function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c) * mgNeed(my))) return false;
+function foeMega(c, team, force, my) { const B = GB(); if (!B?.mgSt || !(force || Math.random() < foeMgP(c) * mgNeed(my) * (c.boss ? 1 : 1 - lsE(st()) * .25))) return false;
   for (let i = team.length - 1; i >= 0; i--) { const o = team[i], L = B.mgSt(o.sp); if (L?.length) { o.it = L[Math.random() * L.length | 0]; return true; } } return false; }   // 경완 2026-11-13: 레벨 −2 보정 뺌 (유저가 먼저 메가진화를 써야 도전자도 쓰니 같은 조건)
 /* v24.51 경완 'Z도 메가처럼 처음 Z기술 쓴 이후로 도전자들도 쓰게': 이 체육관에서 내가 처음 Z기술을 쓴 배틀(g.zUse)부터 직접 싸운 도전자 배틀 수(g.zN)로 MG_FOE 와 같은 틀.
    인기 체육관(gmax 4) 이상 + Z링. 라인업이 셀수록(zNeed, Z크리스탈 지님 = 1) 더 자주. 뒤쪽 포켓몬부터 도구 없고 공격 기술이 있는 포켓몬에게 그 기술 타입 Z크리스탈 */
 const Z_FOE = { wait: 1, ramp: 10, max: { boss: .9, named: .7, 2: .5, 1: .3, 0: .12 } };
 function foeZP(c) { const g = st(); if (!Z_ON || !tutSeen('zRing') || !g?.zUse || (g?.gmax | 0) < 4) return 0; const d = (g.zN | 0) - Z_FOE.wait; if (d < 0) return 0;
   const M = Z_FOE.max, mx = c.boss ? M.boss : c.named ? M.named : M[c.diff | 0] ?? M[0]; return mx * Math.min(1, (d + 1) / Z_FOE.ramp); }
-function zNeed(my) { const g = st(), B = GB(); if (!my?.length || (g.lstk | 0) >= 2) return 0; if (my.some(P => { const it = (B?.gm?.(P) || g.mon?.[P.id])?.it; return it && B?.ZC_T?.[it]; })) return 1; return mgNeed(my); }
-function foeZ(c, team, force, my) { const B = GB(); if (!B?.ZC_ST || !(force || Math.random() < foeZP(c) * zNeed(my))) return false;
+function zNeed(my) { const g = st(), B = GB(); if (!my?.length) return 0; if (my.some(P => { const it = (B?.gm?.(P) || g.mon?.[P.id])?.it; return it && B?.ZC_T?.[it]; })) return 1; return mgNeed(my); }
+function foeZ(c, team, force, my) { const B = GB(); if (!B?.ZC_ST || !(force || Math.random() < foeZP(c) * zNeed(my) * (c.boss ? 1 : 1 - lsE(st()) * .25))) return false;
   for (let i = team.length - 1; i >= 0; i--) { const o = team[i]; if (o.it) continue; const ts = (o.mv || []).map(id => B.mvOf?.(id)).filter(x => x && x[3] !== 2 && x[4] && B.ZC_ST[x[2]]).map(x => x[2]); if (!ts.length) continue;
     const st0 = SPECIES[o.sp]?.t || [], t = ts.find(x => st0.includes(x)) || ts[0]; o.it = B.ZC_ST[t]; return true; } return false; }
 const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN = w => jong(w) ? '은' : '는';

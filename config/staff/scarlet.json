@@ -1,6 +1,1129 @@
 {
  "days": [
   {
+   "at": 1794782962640,
+   "theme": "숲속 꼬마 찻집",
+   "note": "쌀쌀해지는 11월이라 풀밭 한쪽에 따뜻한 찻집을 차렸어요! 줄무늬 차양 카운터를 가운데 두고 숯불 주전자 화로·커다란 찻잔·케이크 스탠드·마카롱 탑을 그렸고, 커피 그라인더 손잡이는 빙글빙글 돌고 문종은 딸랑 흔들려요. 찻잔 등과 화로는 밤에 둘레를 따뜻하게 밝혀요.",
+   "items": [
+    {
+     "id": "cafe-kettle-brazier",
+     "n": "숯불 주전자 화로",
+     "k": "찻집",
+     "glow": 1,
+     "d": "토기 화로 안에서 숯불이 타고, 그 위에 무쇠 주전자가 보글보글 끓어요. 화로 앞 구멍으로 빨간 숯이 보여요.",
+     "px": [
+      "........kIIIIk........",
+      ".......kJJJJJJk.......",
+      "......kJkkJJkkJk......",
+      ".....kJkkjjjjkkJk.....",
+      ".k...kIJJJJJJJJJk.....",
+      "kJk.kIIIIIiiiIijjk....",
+      "kJjkkIIiiiiIijjjjk....",
+      ".kjjiIIiiiIijjijjjk...",
+      "..kjjiiiIiijijjjjk....",
+      "...kkiiiiIjjjijjjk....",
+      ".....kiiijjjjjjjk.....",
+      "....kkJJJJJJJJJJk.k...",
+      "...krkokkrykkokrkkok..",
+      "..kkoryroyyorryoyrok..",
+      ".kEEeeeeeeeeeeeeeeeek.",
+      ".kffffffffffffffffffk.",
+      "..kEEEeeeeeeeffffffk..",
+      "..kEfffffffffffffffk..",
+      "..kEEEeeFFFFFFfffffk..",
+      "...kEEeeFFrxFFffffk...",
+      "...kEEeeFxoyrFffffk...",
+      "....kEEeFFxrFFfffk....",
+      "....kEEeeeeefffffk....",
+      ".....kEEeeeeffffk.....",
+      ".....kkEEeeefffkk.....",
+      "....kffkkkkkkkkffk....",
+      ".....kk........kk....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "I": "#a8b2c0",
+      "i": "#6e7888",
+      "j": "#4c5464",
+      "J": "#2e3440",
+      "E": "#d4b494",
+      "e": "#b49478",
+      "f": "#8a6a58",
+      "F": "#5a4236",
+      "x": "#3a3232",
+      "y": "#ffe27a",
+      "o": "#f5a03c",
+      "r": "#e0502c"
+     },
+     "fit": "찻집 카운터 옆, 쌀쌀한 날 풀밭 한가운데",
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "화로 옆에서 불꽃을 살짝 불어 넣어 숯불을 살려요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "숯불 화로에 불꽃을 살짝 불어 넣어 숯을 빨갛게 살렸다.",
+        "식어 가던 화로에 불을 보태 주전자를 다시 보글보글 끓게 했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "화로 앞에 앉아 불을 쬐다 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "숯불 화로 앞에 앉아 불을 쬐다 꾸벅꾸벅 졸았다.",
+        "화로 앞에서 몸을 녹이며 눈을 가늘게 떴다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "화로 쪽으로 가다가 뜨거운 열기에 놀라 물러나요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "숯불 화로의 열기에 놀라 얼른 물러났다.",
+        "화로 쪽으로 가다가 뜨끈한 바람에 발길을 돌렸다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "물을 뿜어 바닥난 주전자를 채워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "물을 뿜어 무쇠 주전자를 찰랑찰랑 채웠다.",
+        "주전자에 물을 너무 세게 부어 숯불이 치익 소리를 냈다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-giant-teacup",
+     "n": "커다란 찻잔",
+     "k": "찻집",
+     "glow": 0,
+     "d": "파란 띠를 두른 하얀 도자기 찻잔에 홍차가 가득 담겨 있어요. 받침 접시까지 있어서 작은 포켓몬은 몸을 담글 수 있을 만큼 커요.",
+     "px": [
+      ".....kkkkkkkkkkkkkkkkkk.......",
+      "...kkWWWWWWWWWWWWWWWWWWkk.....",
+      "..kWWuuuuuuuuuuuuuuuuuuWvk....",
+      "..kWtuuuuuttttttttttttttvk....",
+      "..kWWTTTTTTTTTTTTTTTTTTvvkkk..",
+      "..kWWWWWWWWWWWWWWWWWWWWWvvvvk.",
+      "..kbbbbbbbbbbbbbbbbbbbbbbkkvvk",
+      "...kBWWBwwBwwBwwBwwBwvBvk.kVvk",
+      "...kWWWwwwwwwwwwwwwwwvvvk.kVvk",
+      "...kWWWwbwwbwwbwwbwwbvvbkkvVk.",
+      "....kWWWwwwwwwwwwwwwvvvkvvVk..",
+      "....kbbbbbbbbbbbbbbbbbbkkkk...",
+      ".....kWWWwwwwwwwwwwvvvk.......",
+      ".....kkWWwwwwwwwwwwvvkk.......",
+      "..kkkWWWWWwwwwwwwwvvwwwkkk....",
+      "kkWWWWWWWWWwwwwwwvvwvvvvvvkk..",
+      "WWWWwwwwwwwwwwwwwwwwwwwwwvvvk.",
+      "kkwwwwvvvvvvvvvvvvvvvvvvvvkk..",
+      "..kkkwwwwvvvvvvvvvvvvvvkkk....",
+      ".....kkkkkkkkkkkkkkkkkk......."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#fbf8f2",
+      "w": "#e6e0d6",
+      "v": "#bdb6ac",
+      "V": "#8e8880",
+      "b": "#6f9ad0",
+      "B": "#3f64a0",
+      "t": "#c88a48",
+      "T": "#94582c",
+      "u": "#e6b67a"
+     },
+     "fit": "찻집 카운터 앞, 꽃밭 옆",
+     "acts": [
+      {
+       "w": "작은 물 타입",
+       "a": "찻잔 속 홍차에 몸을 담그고 고개만 쏙 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "peek"
+       },
+       "l": [
+        "커다란 찻잔 속 홍차에 몸을 담그고 고개만 쏙 내밀었다.",
+        "찻잔 속에서 홍차 목욕을 하며 눈을 지그시 감았다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 찻잔 가장자리에 앉아 김을 쐬어요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "커다란 찻잔 가장자리에 날아와 앉아 홍차 김을 쐬었다.",
+        "찻잔 테두리에 앉아 홍차 향을 맡으며 깃털을 골랐다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "찻잔 앞에 서서 홍차 냄새를 킁킁 맡아요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "커다란 찻잔 앞에서 까치발로 홍차 냄새를 킁킁 맡았다.",
+        "찻잔을 들여다보다 홍차에 비친 제 얼굴에 놀랐다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "식은 홍차에 따뜻한 불꽃을 살짝 쏘아 데워요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "식은 홍차에 불꽃을 살짝 쏘아 다시 김이 나게 데웠다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-cake-stand",
+     "n": "3단 케이크 스탠드",
+     "k": "찻집",
+     "glow": 0,
+     "d": "금빛 기둥에 접시 세 개를 층층이 단 디저트 스탠드예요. 위에는 딸기 케이크, 가운데는 마카롱, 아래는 쿠키와 케이크 조각이 놓여 있어요.",
+     "px": [
+      ".........kGGk.........",
+      "........kGkkGk........",
+      ".........kGGk.........",
+      ".........kgGk.........",
+      ".........kgGk.........",
+      ".......kkrrRkk........",
+      "......kpPPPPPpk.......",
+      "......kWWWWWWWk.......",
+      "......kpqqqqqpkk......",
+      ".....kWWWWWWWWWWk.....",
+      "......kvvvgGvvvk......",
+      ".....kkkkkgGkkkkk.....",
+      "....kmmknnkkookmmk....",
+      "....kwwWwwWkwwWwwk....",
+      "....kMMkNNkkOOkMMk....",
+      "...kWWWWWWWWWWWWWWk...",
+      "....kvvvvvgGvvvvvk....",
+      "....kkkkkkgGkkkkk.kk..",
+      "...kcckpPPpkkpPPpkcck.",
+      "..kcCCcWWWWrkWWWWrcCCk",
+      "..kkcckqqqqkkqqqqkcck.",
+      ".kWWWWWWWWWWWWWWWWWWk.",
+      "..kvvvvvvvvvvvvvvvvk..",
+      "...kkkkkkkgGkkkkkkk...",
+      ".........kgGk.........",
+      "........kkgGk.........",
+      ".......kgGGGGk........",
+      "......kggGGGGHk.......",
+      ".......kkkkkkk........",
+      "......................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "g": "#f2d27a",
+      "G": "#c99a3c",
+      "H": "#8e6a28",
+      "W": "#fbf8f2",
+      "v": "#cfc8be",
+      "r": "#e85060",
+      "R": "#a82c3c",
+      "p": "#f8d8de",
+      "P": "#f2b8c4",
+      "q": "#d89aa6",
+      "m": "#a8dcc0",
+      "M": "#6eb090",
+      "n": "#f4b8c8",
+      "N": "#d47e96",
+      "o": "#f4dc8a",
+      "O": "#cca848",
+      "w": "#fff6ea",
+      "c": "#e0b07a",
+      "C": "#a8743e"
+     },
+     "fit": "찻집 카운터 옆, 피크닉 자리",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "맨 아래 접시에서 쿠키를 하나 집어 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "3단 케이크 스탠드 맨 아래 접시에서 쿠키를 하나 집어 먹었다.",
+        "케이크 스탠드에서 쿠키를 집어 먹고 부스러기를 털었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 꼭대기 고리에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "3단 케이크 스탠드 꼭대기 고리에 날아와 앉았다.",
+        "케이크 스탠드 꼭대기에 앉아 딸기를 내려다본다."
+       ]
+      },
+      {
+       "w": "나는 벌레·페어리 타입",
+       "a": "스탠드 둘레를 빙빙 날며 달콤한 크림 냄새를 맡아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "케이크 스탠드 둘레를 빙빙 날며 크림 냄새를 맡았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "스탠드 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어 딸기를 노려요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "케이크 스탠드 뒤에 숨어 빼꼼 고개를 내밀고 딸기를 노렸다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-coffee-grinder",
+     "n": "손잡이 커피 그라인더",
+     "k": "찻집",
+     "glow": 0,
+     "d": "나무 상자 위에 은빛 그릇과 손잡이를 단 옛날 커피 그라인더예요. 손잡이를 돌리면 원두가 갈려 아래 서랍에 모여요.",
+     "px": [
+      "...............kk...",
+      "..............kaak..",
+      ".............kaacck.",
+      ".........kkkkkkGdk..",
+      "........kGgggggGk...",
+      "........kHGGGGGGk...",
+      "........kHkkkkkk....",
+      ".....kkkkGkkkk......",
+      "....kssSssssSuk.....",
+      "...ksSSSSSSSSSuk....",
+      "...ktttttttttuuk....",
+      "...kDDDDDDDDDDDDk...",
+      "..kaaaaaaaaaaaaaak..",
+      "..kaacaaaaaacccddk..",
+      "..kaaaaaaaaacccddk..",
+      "..kaaaaaaaaacccddk..",
+      "..kaacaaaaaacccddk..",
+      "..kaaDDDDDDDDDDddk..",
+      "..kaaDaacccccdDddk..",
+      "..kaaDaacgGccdDddk..",
+      "..kaaDaacccccdDddk..",
+      "..kaaDDDDDDDDDDddk..",
+      "..kaacaaaaaacccddk..",
+      "..kaaaaaaaaacccddk..",
+      "..kDDDDDDDDDDDDDDk..",
+      "...kkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e0b07a",
+      "c": "#b07e4a",
+      "d": "#7e5432",
+      "D": "#5a3a24",
+      "g": "#f2d27a",
+      "G": "#c99a3c",
+      "H": "#8e6a28",
+      "s": "#e8ecf0",
+      "S": "#b8c0ca",
+      "t": "#8a929e",
+      "u": "#5e6672"
+     },
+     "fit": "찻집 카운터 옆, 나무 탁자 근처",
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "손잡이를 힘차게 돌려 원두를 드르륵 갈아요",
+       "x": {
+        "m": "push",
+        "fx": "spin"
+       },
+       "l": [
+        "커피 그라인더 손잡이를 힘차게 돌려 원두를 드르륵 갈았다.",
+        "그라인더 손잡이를 너무 빨리 돌려 원두 가루가 폴폴 날렸다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "전기를 흘려 손잡이가 저절로 빙글빙글 돌게 해요",
+       "x": {
+        "m": "skill",
+        "fx": "spin"
+       },
+       "l": [
+        "커피 그라인더에 찌릿 전기를 흘려 손잡이를 저절로 돌렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "그라인더 옆에서 갓 간 커피 향을 맡고 고개를 번쩍 들어요",
+       "x": {
+        "at": "side",
+        "m": "peek"
+       },
+       "l": [
+        "커피 그라인더 옆에서 커피 향을 맡고 눈이 번쩍 뜨였다.",
+        "그라인더 서랍 냄새를 맡고 고개를 갸웃했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "그라인더 상자에 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "커피 향에도 아랑곳없이 그라인더에 기대 꾸벅꾸벅 졸았다."
+       ]
+      }
+     ],
+     "mv": {
+      "st": [
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       ".....kkkkGkkkk......",
+       "....kssSssssSuk.....",
+       "...ksSSSSSSSSSuk....",
+       "...ktttttttttuuk....",
+       "...kDDDDDDDDDDDDk...",
+       "..kaaaaaaaaaaaaaak..",
+       "..kaacaaaaaacccddk..",
+       "..kaaaaaaaaacccddk..",
+       "..kaaaaaaaaacccddk..",
+       "..kaacaaaaaacccddk..",
+       "..kaaDDDDDDDDDDddk..",
+       "..kaaDaacccccdDddk..",
+       "..kaaDaacgGccdDddk..",
+       "..kaaDaacccccdDddk..",
+       "..kaaDDDDDDDDDDddk..",
+       "..kaacaaaaaacccddk..",
+       "..kaaaaaaaaacccddk..",
+       "..kDDDDDDDDDDDDDDk..",
+       "...kkkkkkkkkkkkkk..."
+      ],
+      "mp": [
+       "...............kk...",
+       "..............kaak..",
+       ".............kaacck.",
+       ".........kkkkkkGdk..",
+       "........kGgggggGk...",
+       "........kHGGGGGGk...",
+       "........kHkkkkkk....",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "....................",
+       "...................."
+      ],
+      "o": [
+       9.5,
+       5.5
+      ],
+      "k": "spin"
+     }
+    },
+    {
+     "id": "cafe-sugar-jar",
+     "n": "각설탕 유리병",
+     "k": "찻집",
+     "glow": 0,
+     "d": "코르크 마개를 끼운 유리병 안에 하얀 각설탕이 수북이 쌓여 있어요. 병을 건드리면 각설탕이 달그락거려요.",
+     "px": [
+      "....kaaaaaak....",
+      "...kaaaaaccdk...",
+      "...kaaaaaccdk...",
+      "..kSSSSSSSSuuk..",
+      ".klllllllmmmnnk.",
+      ".klhhllllmmmnnk.",
+      ".klhlllllmmmnnk.",
+      ".klhlllllmmmnnk.",
+      ".klhllWWwmWWwnk.",
+      ".klhllwwvmwwvnk.",
+      ".klhllvvVmvvVnk.",
+      ".klhWwWWwWWwnnk.",
+      ".klhwvwwvwwvnnk.",
+      ".klvvVvvVvvVnnk.",
+      ".klWWwWWwWWwnnk.",
+      ".klwwvwwvwwvnnk.",
+      ".klvvVvvVvvVnnk.",
+      ".klVVVVVVVVVVnk.",
+      "..knnnnnnnnnnk..",
+      "...kkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e0b07a",
+      "c": "#b07e4a",
+      "d": "#7e5432",
+      "S": "#c8d4dc",
+      "u": "#7c8a96",
+      "l": "#d8eef4",
+      "m": "#b4d4de",
+      "n": "#86aab8",
+      "h": "#ffffff",
+      "W": "#ffffff",
+      "w": "#e8e4dc",
+      "v": "#c4beb4",
+      "V": "#968f86"
+     },
+     "fit": "찻집 카운터 옆, 찻잔 근처",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "병을 톡톡 건드려 각설탕이 달그락거리는 소리를 들어요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "각설탕 유리병을 톡톡 건드려 달그락 소리를 들었다.",
+        "유리병 속 각설탕을 세어 보다 헷갈려 처음부터 다시 셌다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "병 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "각설탕 유리병 뒤에 숨었다가 빼꼼 고개를 내밀었다."
+       ]
+      },
+      {
+       "w": "나는 벌레·페어리 타입",
+       "a": "서 있던 자리에서 날아올라 코르크 마개 위에 앉아 단내를 맡아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "각설탕 유리병 코르크 마개 위에 날아와 앉아 단내를 맡았다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-awning-counter",
+     "n": "줄무늬 차양 찻집 카운터",
+     "k": "찻집",
+     "glow": 0,
+     "d": "초록·크림 줄무늬 차양을 친 작은 찻집 카운터예요. 카운터 위에 찻주전자와 찻잔, 유리 덮개를 씌운 케이크가 놓여 있어요.",
+     "px": [
+      ".kRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRk.",
+      ".kkQQYYYYQQQQYYYYQQQQYYYYQQQQYYkk.",
+      "kQQQQYYYYQQQQYYYYQQQQYYYYQQQQYYYYk",
+      "kqqqqyyyyqqqqyyyyqqqqyyyyqqqqyyyyk",
+      "kqqqqyyyyqqqqyyyyqqqqyyyyqqqqyyyyk",
+      "kqqqqyyyyqqqqyyyyqqqqyyyyqqqqyyyyk",
+      "krrrrzzzzrrrrzzzzrrrrzzzzrrrrzzzzk",
+      "krrrrzzzzrrrrzzzzrrrrzzzzrrrrzzzzk",
+      "krrrrzzzzrrrrzzzzrrrrzzzzrrrrzzzzk",
+      ".krrcdzzkkrrkkzzkkrrkkzzkkrraczzk.",
+      "..kacdkk..kkk.kk..kk.klllkkkacdk..",
+      "..kacdk..k.kWkk.....kllmmmkkacdk..",
+      "..kacdk.kvkWWWwk....klpPpnkkacdk..",
+      "..kacdk..kvWWWwvkkkkklWWWnkkacdk..",
+      "..kacdk..kWWbbwvkWWvklqqqnkkacdk..",
+      "..kacdk.kWWbbbWvkbbvkgGGGHkkacdk..",
+      "..kacdkkkkwwwvvkkwvvkkGHkkkkacdk..",
+      ".kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAk.",
+      ".kaaaaaaaaaaaaaaaaaaaaaaaaaaaaaak.",
+      "..kadddddddddddddddddddddddddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaccccccccccccccccccccccccddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "..kaaaaadccccdccccdccccdccdddddk..",
+      "...kkkkkkkkkkkkkkkkkkkkkkkkkkkk...",
+      ".................................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#f2cc98",
+      "a": "#e0b07a",
+      "c": "#b07e4a",
+      "d": "#7e5432",
+      "Q": "#4c9a8c",
+      "q": "#e0b07a",
+      "r": "#3c7c70",
+      "Y": "#e6dcc4",
+      "y": "#fbf4e2",
+      "z": "#cfc4a8",
+      "R": "#2e5e56",
+      "W": "#fbf8f2",
+      "w": "#e6e0d6",
+      "v": "#bdb6ac",
+      "b": "#6f9ad0",
+      "l": "#e8f4f8",
+      "m": "#c4dce6",
+      "n": "#90b0bc",
+      "p": "#f8d8de",
+      "P": "#e85060",
+      "g": "#f2d27a",
+      "G": "#c99a3c",
+      "H": "#8e6a28"
+     },
+     "fit": "풀밭 가장자리, 찻집 소품들의 한가운데",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "카운터 앞에 서서 유리 덮개 속 케이크를 기웃거려요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "찻집 카운터 앞에서 유리 덮개 속 케이크를 기웃거렸다.",
+        "찻집 카운터 앞에 서서 오늘의 차를 고민한다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "카운터 뒤에 숨었다가 점원처럼 고개를 쏙 내밀어요",
+       "x": {
+        "m": "hide peek"
+       },
+       "l": [
+        "찻집 카운터 뒤에서 점원처럼 고개를 쏙 내밀었다.",
+        "카운터 뒤에 숨어 있다가 \"어서 오세요!\" 하듯 튀어나왔다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 차양 위에 앉아 쉬어요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "찻집 차양 위에 날아와 앉아 날개를 접고 쉬었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "카운터 기둥에 등을 기대고 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "찻집 카운터 기둥에 기대 새근새근 낮잠을 잤다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-honey-pot",
+     "n": "꿀단지",
+     "k": "찻집",
+     "glow": 0,
+     "d": "넘칠 만큼 꿀이 가득 찬 토기 단지예요. 가장자리로 금빛 꿀이 주르륵 흘러내리고, 나무 꿀 막대가 꽂혀 있어요.",
+     "px": [
+      "...........kddck....",
+      "............kdck....",
+      "....kkkkkkkkkdck....",
+      "...keyyhhhhhhdcek...",
+      "..kohhHHHhhhHHhook..",
+      "..khHHHHHHHHHHHhk...",
+      "..khkHhkkhHHkHhk....",
+      "..koHkkhkkkHkkeEk...",
+      "..koHkkkkkkHeeEEk...",
+      ".kooooeeeeeheEEEEk..",
+      ".koooeeeeeeeEEEEEk..",
+      ".kooFFFFFFFFFFFFFk..",
+      ".kooeeWWbbbbwvEFFk..",
+      ".koeeeWvvvvvvvFFFk..",
+      ".keeeeWWWWWwwvFFFk..",
+      "..keeeeeEEEEFFFFk...",
+      "..keeeeEEEEEFFFFk...",
+      "...kkeEEEEEFFFkk....",
+      ".....kkEEEFFkk......",
+      ".......kkkkk........"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "o": "#e8a868",
+      "e": "#c87c48",
+      "E": "#9a5a34",
+      "F": "#6e3e24",
+      "h": "#ffd650",
+      "H": "#f0aa28",
+      "y": "#fff2a8",
+      "d": "#7e5432",
+      "c": "#b07e4a",
+      "W": "#fbf4e2",
+      "w": "#e6dcc4",
+      "v": "#c4b89c",
+      "b": "#e0a020",
+      "B": "#6a4a20"
+     },
+     "fit": "찻집 카운터 옆, 꽃밭 근처",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "흘러내린 꿀을 찍어 할짝할짝 먹어요",
+       "x": {
+        "at": "side",
+        "an": "Eat"
+       },
+       "l": [
+        "꿀단지에서 흘러내린 꿀을 찍어 할짝할짝 먹었다.",
+        "꿀단지 꿀을 먹다 손이 끈적끈적해져 쩔쩔맸다."
+       ]
+      },
+      {
+       "w": "나는 벌레 타입",
+       "a": "단지 둘레를 붕붕 날며 꿀 냄새를 맡아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "꿀단지 둘레를 붕붕 날며 꿀 냄새를 맡았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "단지 위로 기어올라 꿀 속에 얼굴을 쏙 넣어요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "꿀단지 위로 기어올라 꿀 속에 얼굴을 쏙 넣었다.",
+        "꿀단지에 올라갔다가 꿀범벅이 되어 내려왔다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-door-bell",
+     "n": "찻집 문종",
+     "k": "찻집",
+     "glow": 0,
+     "d": "나무 기둥에서 뻗은 팔에 놋쇠 종이 매달려 있어요. 손님이 오면 딸랑딸랑 울리는 찻집의 문종이에요.",
+     "px": [
+      "...k..............",
+      "..kAk.............",
+      ".kAAAkkkkkkkkkkk..",
+      ".kacdccccccccccdk.",
+      ".kacddddddddddddk.",
+      ".kacdddkkkkkskkk..",
+      ".kacdckdk..ksk....",
+      ".kacddkk...ksk....",
+      ".kacdk....kggk....",
+      ".kacdk...kgggGk...",
+      ".kacdk..kgLgGGGk..",
+      ".kacdk..kgLGGGHk..",
+      ".kacdk..kLGGGGHk..",
+      ".kacdk.kgGGGGGHHk.",
+      ".kacdkkGGGGGGGHHk.",
+      ".kacdkkHHHHHHHHHk.",
+      ".kacdk.kkkkHHkkk..",
+      ".kacdk.....kk.....",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      ".kacdk............",
+      "kDDDDDk...........",
+      ".kkkkk............",
+      ".................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#f2cc98",
+      "a": "#e0b07a",
+      "c": "#b07e4a",
+      "d": "#7e5432",
+      "D": "#5a3a24",
+      "s": "#d8c8a8",
+      "g": "#f2d27a",
+      "G": "#c99a3c",
+      "H": "#8e6a28",
+      "L": "#fff6c8"
+     },
+     "fit": "찻집 카운터 입구 쪽",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "종을 톡 쳐서 딸랑 소리를 내요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "찻집 문종을 톡 쳐서 딸랑딸랑 소리를 냈다.",
+        "문종을 울리고는 손님이 온 척 시치미를 뗐다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 종을 단 나무 팔 위에 앉아요",
+       "x": {
+        "at": [
+         0.6,
+         0.12
+        ],
+        "m": "fly",
+        "fx": "swing"
+       },
+       "l": [
+        "찻집 문종 나무 팔에 날아와 앉아 종을 살랑 흔들었다."
+       ]
+      },
+      {
+       "w": "노말·페어리 타입",
+       "a": "종소리에 맞춰 노래 기술을 불러요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "찻집 문종 소리에 맞춰 노래를 불렀다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥에 등을 기대고 종소리를 들으며 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "문종 기둥에 기대 딸랑 소리를 들으며 꾸벅꾸벅 졸았다."
+       ]
+      }
+     ],
+     "mv": {
+      "st": [
+       "...k..............",
+       "..kAk.............",
+       ".kAAAkkkkkkkkkkk..",
+       ".kacdccccccccccdk.",
+       ".kacddddddddddddk.",
+       ".kacdddkkkkkskkk..",
+       ".kacdckdk.........",
+       ".kacddkk..........",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       ".kacdk............",
+       "kDDDDDk...........",
+       ".kkkkk............",
+       ".................."
+      ],
+      "mp": [
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "...........ksk....",
+       "...........ksk....",
+       "..........kggk....",
+       ".........kgggGk...",
+       "........kgLgGGGk..",
+       "........kgLGGGHk..",
+       "........kLGGGGHk..",
+       ".......kgGGGGGHHk.",
+       "......kGGGGGGGHHk.",
+       "......kHHHHHHHHHk.",
+       ".......kkkkHHkkk..",
+       "...........kk.....",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       ".................."
+      ],
+      "o": [
+       12.5,
+       5.5
+      ],
+      "k": "swing",
+      "amp": 1.8
+     }
+    },
+    {
+     "id": "cafe-teacup-lamp",
+     "n": "찻잔 등",
+     "k": "찻집",
+     "glow": 1,
+     "d": "거꾸로 뒤집은 찻잔을 갓으로 쓴 무쇠 가로등이에요. 밤이 되면 찻잔 아래 전구가 따뜻하게 빛나요.",
+     "px": [
+      ".......kjjk.......",
+      "......kkijk.......",
+      ".....kWWWWvk......",
+      "...kkkWWWWvkkk....",
+      "..kWWWWWWWWWWvkk..",
+      ".kWWWWWWWwwwvvvvk.",
+      ".kbbbbbbbbbbbbkvk.",
+      ".kWWBWWBWwBwvvvvk.",
+      ".kWWWWWWWwwwvvkk..",
+      "kWWWWWWWWWWWWvvk..",
+      ".kkkkyLLLLykkkk...",
+      ".....kLllLk.......",
+      "......kllk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      ".....kiijik.......",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      "......kijk........",
+      ".....kkijkk.......",
+      "....kiiijjjk......",
+      "...kiiiijjjjk.....",
+      "...kjjjjJJJJk.....",
+      "....kkkkkkkk......",
+      ".................."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "i": "#6e7888",
+      "j": "#4c5464",
+      "J": "#2e3440",
+      "W": "#fbf8f2",
+      "w": "#e6e0d6",
+      "v": "#bdb6ac",
+      "b": "#6f9ad0",
+      "B": "#3f64a0",
+      "L": "#fff6c8",
+      "l": "#ffe48a",
+      "y": "#f8d870"
+     },
+     "fit": "찻집 카운터 양옆, 밤 산책길",
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "찻잔 등 둘레를 빙빙 날며 불빛을 구경해요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "찻잔 등 둘레를 빙빙 날며 따뜻한 불빛을 구경했다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 찻잔 갓 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "찻잔 등 꼭대기에 날아와 앉아 밤 풀밭을 내려다봤다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "기둥에 전기를 흘려 불빛을 반짝 더 밝혀요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "찻잔 등에 전기를 흘려 불빛을 반짝 밝혔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "등 기둥에 기대 불빛 아래에서 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "찻잔 등 기둥에 기대 불빛 아래에서 새근새근 잠들었다."
+       ]
+      }
+     ]
+    },
+    {
+     "id": "cafe-macaron-tower",
+     "n": "마카롱 탑",
+     "k": "찻집",
+     "glow": 0,
+     "d": "분홍·민트·레몬·보라 마카롱을 층층이 쌓아 올린 탑이에요. 꼭대기에는 딸기가 하나 얹혀 있어요.",
+     "px": [
+      "....................",
+      "....................",
+      "....................",
+      "....................",
+      "..........k.........",
+      ".........ksk........",
+      "........krrk........",
+      "........krRk........",
+      ".......kppPk........",
+      ".......kwwvk........",
+      ".......kPPQkk.......",
+      "......knnVppPk......",
+      "......kwwvwwvk......",
+      ".....kkVVXPPQk......",
+      "....kooOnnVppPk.....",
+      "....kwwvwwvwwvk.....",
+      "....kOORVVXPPQkk....",
+      "...kmmMooOnnVppPk...",
+      "...kwwvwwvwwvwwvk...",
+      "..kkMMNOORVVXPPQk...",
+      ".kppPmmMooOnnVppPk..",
+      ".kwwvwwvwwvwwvwwvk..",
+      ".kPPQMMNOORVVXPPQk..",
+      ".kggggggggggggggggk.",
+      "..kGGGGGGGGGGGGGGk..",
+      "...kkkkkgGGHkkkkk...",
+      "........kkkk........"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "p": "#f8c8d4",
+      "P": "#e898ae",
+      "Q": "#c06c86",
+      "m": "#bfe8d0",
+      "M": "#84c4a2",
+      "N": "#5a9a7a",
+      "o": "#fbe8a0",
+      "O": "#e6c464",
+      "R": "#b8963c",
+      "n": "#dcccf2",
+      "V": "#ac94d6",
+      "X": "#7e68a8",
+      "w": "#fffaf0",
+      "v": "#e6dccb",
+      "r": "#e85060",
+      "s": "#5cae5c",
+      "g": "#f2d27a",
+      "G": "#c99a3c",
+      "H": "#8e6a28"
+     },
+     "fit": "찻집 카운터 옆, 파티 자리",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "맨 아래 마카롱을 하나 쏙 빼 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "마카롱 탑 맨 아래에서 마카롱을 하나 쏙 빼 먹었다.",
+        "마카롱 탑에서 하나를 빼 먹고 탑이 무너질까 조마조마했다."
+       ]
+      },
+      {
+       "w": "나는 벌레·페어리 타입",
+       "a": "탑 둘레를 빙빙 날며 색깔별로 냄새를 맡아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "마카롱 탑 둘레를 빙빙 날며 색깔별로 냄새를 맡았다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 꼭대기 딸기 옆에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "마카롱 탑 꼭대기 딸기 옆에 날아와 앉았다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "탑 옆에서 스르르 사라졌다 나타나며 마카롱을 하나 슬쩍해요",
+       "x": {
+        "m": "blink"
+       },
+       "l": [
+        "마카롱 탑 옆에서 스르르 사라졌다 나타나 마카롱을 하나 슬쩍했다."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
    "at": 1794696533196,
    "theme": "숲속 꼬마 기상 관측소",
    "note": "오늘은 풀밭 한쪽에 꼬마 기상 관측소를 차렸어요! 풍속계·백엽상·우량계·해시계처럼 날씨를 재는 도구를 그렸고, 풍향 자루와 관측 풍선은 바람에 흔들려요. 물·얼음·불꽃·전기 타입이 기술로 눈금을 바꿔 놓는 장난을 넣었어요.",
