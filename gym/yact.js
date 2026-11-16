@@ -1724,7 +1724,7 @@ function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>$
 // ---------- 끝: 결과창 + 보상 지급 ----------
 /* 경완 2026-11-16 '됐어 이제 본게임에 체육관 내 업데이트 알림창이랑 같이 배포해': 특훈 일반 공개 — 결과창에 보이는 값을 그대로 실제로 준다 (pay).
    운영자 '특훈 시연'(gymSimOn) 안에서는 예전처럼 보여 주기만. 클리어 보상 꾸러미(선물상자)는 하루 첫 완주에만 (giftDue, g.yaD = 받은 날) — 횟수 제한이 없어 꾸러미(평균 약 2,800G)를 판마다 주면 상점이 무너짐 */
-const dayK = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }, giftDue = () => !!window.gymSimOn || (GA.S?.gym?.yaD | 0) !== dayK();
+const dayK = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }, giftDue = () => true;   /* 경완 2026-11-16 '꾸러미 횟수 제한 없어도 돼.' — 하루 첫 완주 제한(v26.34)을 뺌. g.yaD 는 받은 날 기록으로만 남김 */
 function pay(G, clear, fr) { if (window.gymSimOn || G.paid) return; G.paid = 1; const B = GB(), P = G.o.P, g = GA.S?.gym; if (!g || !B.boxOf?.(P.id)) return;
   try { const m = B.gm(P); if (G.exp > 0) B.gainXp(P, G.exp, 'keep'); if (G.ev > 0) B.evAdd(m, G.stat, G.ev); if (fr > 0) { if (GA.addFr) GA.addFr(P.id, fr); else P.fr = Math.min(255, (P.fr || 0) + fr); }
     const eg = G.M.eg; if (eg && G.egg > G.egg0) G.egGot = B.egAdd(P, eg.i, G.egg - G.egg0) || null;
