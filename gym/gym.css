@@ -4681,18 +4681,17 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-infos .gy-body>*{flex-shrink:0}
 
 /* 경완 2026-11-15 '특훈 버튼은 체육관 홈화면 도전자 받기 버튼처럼 하단 중앙으로' → '버튼은 1번으로': 훈련장 아래 한 줄 = 코치 · 특훈 · 포켓몬. 경완 '아직 본게임에 배포하지마' → 운영자 시뮬(#gym.sim) 안에서만 */
-#gym.sim .ty-btns{left:calc(var(--si-left,env(safe-area-inset-left)) + 10px);right:calc(var(--si-right,env(safe-area-inset-right)) + 10px);bottom:10px;flex-direction:row;align-items:stretch;justify-content:space-between;gap:8px;pointer-events:none}
-#gym.sim .ty-btns>*{pointer-events:auto}
-#gym.sim .ty-btns .ty-bt{width:92px;height:50px;gap:4px;padding:0 6px 0 5px;border-radius:12px}
-#gym.sim .ty-btns .ty-bt b{font-size:12px}
-#gym.sim .ty-btns .ty-ball{width:26px;height:26px}
-#gym.sim .ty-btns .ty-cof{margin:-6px -4px 0 -4px}#gym.sim .ty-btns .ty-cof.empty{width:20px;height:20px;margin:0 2px}
-#gym.sim .ty-btns .ty-dd{gap:2px}#gym.sim .ty-btns .ty-dd i{width:5px;height:5px}
-#gym .ty-spb{display:none}
-#gym.sim .ty-spb{flex:1;min-width:0;height:50px;align-items:center;justify-content:center;gap:7px;padding:0;font:inherit;border:3px solid #6a3a00;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);color:#4a2400;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6);cursor:pointer;transition:translate .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}
-#gym.sim .ty-spb:active{translate:0 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 #6a3a00}
-#gym.sim .ty-spb img{width:30px;height:30px;image-rendering:pixelated}#gym.sim .ty-spb b{font-size:19px;letter-spacing:4px}
-#gym.sim .ty-spb{display:flex}
+#gym .ty-btns{left:calc(var(--si-left,env(safe-area-inset-left)) + 10px);right:calc(var(--si-right,env(safe-area-inset-right)) + 10px);bottom:10px;flex-direction:row;align-items:stretch;justify-content:space-between;gap:8px;pointer-events:none}
+#gym .ty-btns>*{pointer-events:auto}
+#gym .ty-btns .ty-bt{width:92px;height:50px;gap:4px;padding:0 6px 0 5px;border-radius:12px}
+#gym .ty-btns .ty-bt b{font-size:12px}
+#gym .ty-btns .ty-ball{width:26px;height:26px}
+#gym .ty-btns .ty-cof{margin:-6px -4px 0 -4px}#gym .ty-btns .ty-cof.empty{width:20px;height:20px;margin:0 2px}
+#gym .ty-btns .ty-dd{gap:2px}#gym .ty-btns .ty-dd i{width:5px;height:5px}
+#gym .ty-spb{flex:1;min-width:0;height:50px;align-items:center;justify-content:center;gap:7px;padding:0;font:inherit;border:3px solid #6a3a00;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);color:#4a2400;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6);cursor:pointer;transition:translate .06s,box-shadow .06s;-webkit-tap-highlight-color:transparent}
+#gym .ty-spb:active{translate:0 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 0 #6a3a00}
+#gym .ty-spb img{width:30px;height:30px;image-rendering:pixelated}#gym .ty-spb b{font-size:19px;letter-spacing:4px}
+#gym .ty-spb{display:flex}   /* 경완 2026-11-16 '이제 본게임에 배포해': #gym.sim 안에서만이던 것을 모두에게 */
 
 /* 경완 2026-11-15 '특훈 글자 나오고 화면 열릴 때 훈련장 화면 잠깐 보이는 오류': 특훈 진입 줄무늬(.bs-tr.hd)는 닫힌 채 기다렸다가 시작 화면이 준비되면(.go) 열린다 (전엔 시간만 보고 열려서 준비가 늦으면 훈련장이 비침) */
 .bs-tr.hd>i.a{animation:bsHdA .42s ease-in-out both}.bs-tr.hd>i.b{animation:bsHdB .42s ease-in-out both}.bs-tr.hd>b{animation:bsHdT .5s ease-out both}

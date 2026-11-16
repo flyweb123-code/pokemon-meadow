@@ -3728,6 +3728,15 @@ async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await P
     { c: '#b8860b', t: '체육관 등급을 올려요', im: `<div class="on-bds">${bdHtml(st().ty, 1)}<i class="on-ar"></i>${bdHtml(st().ty, 5)}</div>`, tx: `<p>승급 심사를 통과하면<br><em>등급 배지</em>가 바뀌어요.</p><p class="on-sm">등급이 오르면 체육관이 넓어지고<br>훈련장·트레이너 고용이 열려요.</p>` },
     { c: '#7a3aa8', t: '특별한 선물', im: `<div class="on-egg on-eggs">${[11, 10, 12].map(t => GA.eggIco?.(t) || '').join('')}</div>`, tx: `<p><em>전설의 체육관</em>이 되면<br>내 체육관 타입의 <em>전설 알</em>을 받아요!</p><p class="on-sm">알을 부화시키면<br>해당 타입을 가진 전설의 포켓몬이 태어나요.</p>` }];
   notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
+/* 경완 2026-11-16 '특훈 배포했을 때 체육관 들어갔을 때 처음에 뜰 업데이트 알림창 만들어서 시안 보여줘': 개설 알림창과 같은 넘겨 보는 창. 경완 '됐어 이제 본게임에 체육관 내 업데이트 알림창이랑 같이 배포해' → later() 에서 체육관마다 말고 계정에 한 번 (tutSeen('yaN')) */
+function yaNote() { return new Promise(ok => { const shot = (n, r) => `<div class="on-shot"><img src="${IMG}yact/${n}.png" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;   /* 경완 '1번 캡쳐 이미지는 훈련장에 있는 특훈 버튼 이미지로, 3번에서 메가진화는 스포하지 말아줘' */
+  const P = [
+    { c: '#7a3aa8', t: '새 훈련 · 특훈', im: shot('up1', [27, 68, 46, 25]), tx: `<p>훈련장에 <em>특훈</em> 버튼이 생겼어요!<br>내 포켓몬을 직접 움직여 훈련해요.</p><p class="on-sm">훈련장에 넣어 둔 포켓몬으로 할 수 있어요.</p>` },
+    { c: '#c8781e', t: '직접 싸워요', im: shot('tut2'), tx: `<p>화면을 끌어 <em>이동</em>하고<br>기술 버튼으로 <em>공격</em>해요.</p><p class="on-sm">대쉬로 아슬아슬하게 피하면 더 좋아요.</p>` },
+    { c: '#c0302a', t: '우두머리를 쓰러뜨려요', im: shot('up3'), tx: `<p>스테이지 10 에는 강력한<br><em>우두머리</em>가 기다리고 있어요!</p><p class="on-sm">끝까지 깨면 보상이 훨씬 커져요.</p>` },
+    { c: '#b8860b', t: '보상을 받아요', im: shot('up4'), tx: `<p><em>경험치·노력치·친밀도·골드</em>를 받고<br>우두머리를 쓰러뜨리면 <em>보상 꾸러미</em>!</p><p class="on-sm">고른 능력치의 노력치가 올라요.</p>` }];
+  notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }
+window.gymYaNote = yaNote;
 // 넘겨 보는 알림창 (개설 알림창 · 안내원 배틀 설명): P = [{ c 색, t 제목, im 그림, tx 글 }]
 function notePager(P, ok) {
   const w = document.createElement('div'); w.className = 'gy-on';
@@ -3921,6 +3930,7 @@ async function later() {
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
+  if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
   /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
   if (open && PROMO_ON && !window.gymSimOn && !gtOn) { const gm = st()?.gmax | 0; if (gm >= 1 && !tutSeen('trTut')) return promoTut(1); if (gm >= 2 && !tutSeen('evTB') && GB()?.evOn?.()) return promoTut(2); }
   if (open && MEGA_ON && !window.gymSimOn && (st()?.gmax | 0) >= 3 && !tutSeen('mgTut') && !gtOn) await promoTut(3);
@@ -4030,7 +4040,7 @@ const trNew = ids => trMark({ ids, balls: { mon: 5 }, key: ids.join(','), floor:
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 정산 기준점 (도전 시작·지난 그만두기 때 레벨·경험치·층·코인) */
 const trMark = R => { R.m0 = Object.fromEntries(R.ids.map(id => { const m = GB().gm(GB().boxOf(id)); return [id, [m.lv, m.xp | 0]]; })); R.f0 = R.floor; R.c0 = R.coin | 0; R.t = Date.now(); return R; };
 function trPickSp(lv, boss, big) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? TR_BOSS : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; const ok = L.filter(has); return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
-// 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (gym/yact.js). 보상은 보여 주기만, 아무것도 안 씀
+// 특훈: 훈련장 포켓몬을 직접 움직이는 미니게임 (yact.js). v26.34 부터 모두에게 — 보상은 yact.js pay() 가 실제로 줌 (운영자 시뮬 안에서는 보여 주기만)
 async function yaTest(fx) {
   if (!open || !st()?.d) return;
   if (!(st().tr || []).length) { GA.toast?.('훈련장에 포켓몬을 먼저 넣어 주세요'); return; }   /* 훈련장이 비었으면 연출 없이 알림만 */
