@@ -4623,13 +4623,13 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-mw{transition:scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt .bt-pl{transition:transform .9s cubic-bezier(.2,.7,.3,1),opacity .3s,scale 1.4s cubic-bezier(.3,.7,.3,1),transform-origin 1.4s cubic-bezier(.3,.7,.3,1),translate 1.4s cubic-bezier(.3,.7,.3,1)}
 .bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"],.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{overflow:visible}
-/* v25.23 경완 '내 포켓몬 판 크기 원래처럼 동일하게 가봐': 거다이맥스 때 내 포켓몬 그림·발판은 키우지 않고 원래 크기·자리 그대로 (구름만) */
-.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.7;transform-origin:249.3px -17.3px}
-.bt.gx-p:not(.dbl) .bt-pl.e{scale:.7;transform-origin:137.3px -73.3px}
-.bt.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.3;transform-origin:222.7px 142.7px}
-.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.e{scale:.85;transform-origin:-29.3px -53.3px}
-.bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.p[data-sl="0"]{scale:.78;transform-origin:80px 144px}
-.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.p{scale:.8;transform-origin:128px 24px}
+.bt.gx-p:not(.dbl) .bt-mw.p[data-sl="0"]{scale:1.25;transform-origin:80px 144px}   /* v25.31 경완 '25.26 버전이 괜찮아보이네 다 돌려줘': 내 포켓몬만 바닥(144)·발판 가운데 기준 1.25배, 발판은 원래 크기·자리 */
+.bt.gx-p:not(.gx-e):not(.dbl) .bt-mw.e[data-sl="0"]{scale:.45;transform-origin:216px 34.2px}   /* v25.34 경완 '0.45배로 가자': 내가 거다이맥스일 때 상대 포켓몬·발판 .45배 */
+.bt.gx-p:not(.dbl) .bt-pl.e{scale:.45;transform-origin:104px -21.8px}
+/* v25.35 경완 '다이맥스한 도전자 포켓몬 크기랑 발판은 키우지 말고 내 포켓몬이랑 발판을 줄여줘서': 상대 다이맥스 때 상대는 그대로, 내 쪽만 줄임 (아래 두 줄) */
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.e[data-sl="0"]{scale:1.2;transform-origin:176px 96px}   /* v25.37 경완 '도전자 포켓몬은 1.2배 크게' (발판은 그대로) */
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-mw.p[data-sl="0"]{scale:.4;transform-origin:80px 144px}   /* v25.37 경완 '0.4배로 가자': 도전자 다이맥스 때 내 포켓몬 .4·발판 .42 */
+.bt.gx-e:not(.gx-p):not(.dbl) .bt-pl.p{scale:.42;transform-origin:128px 24px}
 .bt.gx-p.gx-e:not(.dbl) .bt-mw.e[data-sl="0"]{scale:.85;transform-origin:322.7px -130.7px}
 .bt .bt-hb{transition:transform .35s ease-out,opacity .2s,translate .6s cubic-bezier(.3,.7,.3,1)}
 .bt-gxc{position:absolute;left:0;top:0;width:256px;pointer-events:none}
@@ -4709,6 +4709,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @media (max-height:1000px){#gym .gy-infos>.gy-body{gap:8px}#gym .gy-infos .if-grade>.bdw img{width:68px!important;height:68px!important}#gym .gy-infos button.if-grade{padding:8px 12px}#gym .gy-infos .if-grade .ig-tx>b.ig-gr{font-size:16px;margin:2px 0 4px}#gym .gy-infos .if-two>div{min-height:60px;padding-top:6px;padding-bottom:6px}#gym .gy-infos .if-two b{font-size:26px}#gym .gy-infos .if-stats>div{padding:6px 4px}#gym .gy-infos .if-re{padding:9px}}
 @media (max-height:720px){#gym .gy-infos>.gy-body{gap:6px}#gym .gy-infos .if-grade>.bdw img{width:52px!important;height:52px!important}#gym .gy-infos .if-two>div{min-height:52px}#gym .gy-infos .if-two b{font-size:22px}#gym .gy-infos .if-stats b{font-size:17px}#gym .gy-infos .if-re{padding:7px}#gym .gy-infos .gy-bar{height:10px}}
 #gym .wr-m .wr-dd{font-size:9px;margin-left:2px;color:#a0a0b0}
+/* v25.38 경완 '엉 그렇게 해줘봐': 다이맥스·거다이맥스 기술 쓰는 동안 위 화면 테두리 붉은 빛 (battle.js maxFx) */
+.bt-gxv{position:absolute;left:0;right:0;top:calc(var(--st,0px) / var(--k,1) * -1);bottom:0;pointer-events:none;z-index:30;background:radial-gradient(ellipse 75% 70% at 50% 50%,rgba(255,40,70,0) 55%,rgba(230,20,60,.42) 100%);animation:gxvIn .35s ease-out,gxvP .7s ease-in-out .35s infinite alternate;transition:opacity .35s}
+.bt-gxv.out{opacity:0}
+@keyframes gxvIn{from{opacity:0}to{opacity:1}}
+@keyframes gxvP{from{filter:brightness(1)}to{filter:brightness(1.35)}}
 /* v26.23 경완 '로켓단 이벤트 방향키도 특훈처럼 스틱, 위치 고정으로 계속 보이게' (ev.js .ev-stk) */
 #gym .ev-pad.ev-stk::before{display:none}#gym .ev-stk .ev-jb{position:absolute;left:50%;top:50%;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;background:rgba(28,28,46,.32);border:3px solid rgba(255,255,255,.45);box-shadow:0 3px 0 rgba(0,0,0,.35);transition:background .12s}#gym .ev-stk .ev-jb.on{background:rgba(28,28,46,.46)}
 #gym .ev-stk .ev-jk{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(255,255,255,.88);border:3px solid #20202c;box-shadow:0 3px 0 rgba(0,0,0,.3)}
