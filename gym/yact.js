@@ -848,14 +848,15 @@ function fly(kind, x, y, home, on, col) { const a = Math.random() * 6.28, v = 90
 
 // ---------- 판 만들기 ----------
 const EVY = () => GB()?.EVY || {};
+const spOff = sp => !!GA.SP_OFF?.has(+sp);   /* 경완 2026-11-16 '특훈에 나오는 몬스터들 작업실에서 꺼놓은 몬스터들은 안 나오게' (체육관 도전자 gym.js spOff 와 같은 목록) */
 function foePool(stat) {   // 고른 능력치 노력치만 주는 종 (gym/evy.json): 1 = 잡몹, 2~3 = 대장
   const E = EVY(), small = [], big = [];
-  for (const k in E) { const sp = +k, y = E[k], s = SP[sp]; if (!s || sp > 1025 || s.leg || s.my || !(+y[stat])) continue; const tot = [...y].reduce((a, c) => a + (+c || 0), 0); if (tot !== +y[stat]) continue; (+y[stat] >= 2 ? big : small).push(sp); }
+  for (const k in E) { const sp = +k, y = E[k], s = SP[sp]; if (!s || sp > 1025 || s.leg || s.my || spOff(sp) || !(+y[stat])) continue; const tot = [...y].reduce((a, c) => a + (+c || 0), 0); if (tot !== +y[stat]) continue; (+y[stat] >= 2 ? big : small).push(sp); }
   const pick = (L, n) => { const o = []; L = L.slice(); while (o.length < n && L.length) o.push(L.splice(Math.floor(Math.random() * L.length), 1)[0]); return o; };
   const sm = pick(small, 6); for (let i = 0; sm.length < 6; i++) sm.push(sm[i] || 19);
   const bg = pick(big, 3); for (let i = 0; bg.length < 3; i++) bg.push(bg[i] || sm[i] || 20);
   /* 경완 2026-11-16 '마지막 대장은 항상 메가진화하는 애들로만': 메가스톤이 있는 종(GymBattle.MEGA_ST) 가운데 고른 능력치 노력치만 주는 종 → 없으면 그 능력치를 주는 종 → 없으면 아무 메가 종 */
-  { const MS0 = [...new Set(Object.values(GB()?.MEGA_ST || {}).map(v => v[0]))].filter(sp => SP[sp] && !SP[sp].leg && !SP[sp].my), MS1 = MS0.filter(sp => MEGA_SPR.has(sp)), MS = MS1.length ? MS1 : MS0 /* 메가 폼 필드 그림이 있는 종만 */, only = MS.filter(sp => big.includes(sp) || small.includes(sp)), any = MS.filter(sp => +(E[sp] || '')[stat]), L = only.length ? only : any.length ? any : MS; if (L.length) bg[2] = L[Math.floor(Math.random() * L.length)]; }
+  { const MS0 = [...new Set(Object.values(GB()?.MEGA_ST || {}).map(v => v[0]))].filter(sp => SP[sp] && !SP[sp].leg && !SP[sp].my && !spOff(sp)), MS1 = MS0.filter(sp => MEGA_SPR.has(sp)), MS = MS1.length ? MS1 : MS0 /* 메가 폼 필드 그림이 있는 종만 */, only = MS.filter(sp => big.includes(sp) || small.includes(sp)), any = MS.filter(sp => +(E[sp] || '')[stat]), L = only.length ? only : any.length ? any : MS; if (L.length) bg[2] = L[Math.floor(Math.random() * L.length)]; }
   return { sm, big: bg };
 }
 function moveList(P) {   // 내 포켓몬이 지금 쓰는 기술 4개 (체육관 기술 데이터)
