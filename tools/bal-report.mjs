@@ -5,6 +5,10 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 
+// 특훈 (경완 2026-11-16 '특훈도 지속적으로 유저들 배틀 로그 확인하고 밸런스 확인하는거 루틴화 해줘'): 기록 = kind mg · g 'yact' (yact.js pay).
+// YA_VER = 특훈 난이도·보상 숫자를 마지막으로 바꾼 버전 (바꿔 배포하면 같이 올림). YA_TG = '살펴보라'는 띠 (내가 잡은 값, 바꿀지는 경완이 정함):
+// 완주율 % (끝까지 한 판 가운데), 완주한 판 1분 골드 상한 (다른 미니게임 1분 30~50G, 특훈 완주 약 1,000G/7분), 완주 가운데 S 등급 % 상한
+const YA_VER = 26.38, YA_TG = { clr: [25, 70], gpm: 200, sRate: 60, quit: 40 };
 const DAY = 864e5, KST = 9 * 3600e3, NOW = Date.now();
 // 눈여겨볼 기준 (그냥 '살펴보라'는 표시일 뿐, 바꿀지는 경완이 정함)
 const FLAG = {
@@ -87,6 +91,15 @@ function stats(L) {
   };
   const ed = { n: D.length, people: people(D), score: { p50: q(D.map(r => r.d.sc | 0), .5), p90: q(D.map(r => r.d.sc | 0), .9) }, sec: avg(D.map(r => r.d.t | 0)), goldPlay: avg(D.map(r => r.d.gd | 0)), ab: avg(D.map(r => r.d.ab | 0)) };
   const tw = { n: K.length, people: people(K), score: { p50: q(K.map(r => r.d.sc | 0), .5), p90: q(K.map(r => r.d.sc | 0), .9) }, sec: avg(K.map(r => r.d.t | 0)), goldPlay: avg(K.map(r => r.d.gd | 0)), ab: avg(K.map(r => r.d.ab | 0)) };
+  const Y = L.filter(r => r.kind === 'mg' && r.d.g === 'yact'), yaOf = Y => { const E = Y.filter(r => !r.d.q), C = Y.filter(r => r.d.w), sec = A => avg(A.map(r => r.d.t | 0)), gpm = A => { const t = A.reduce((a, r) => a + (r.d.t | 0), 0); return t ? Math.round(A.reduce((a, r) => a + (r.d.gd | 0), 0) / t * 60) : null; }, dg = perDay(Y, r => r.d.gd | 0), dn = perDay(Y, () => 1);
+    return { n: Y.length, people: people(Y), clear: pct(C.length, E.length), quit: pct(Y.length - E.length, Y.length), sec: sec(Y), secClr: sec(C), gold: avg(Y.map(r => r.d.gd | 0)), goldClr: avg(C.map(r => r.d.gd | 0)), gpm: gpm(Y), gpmClr: gpm(C),
+      sRate: pct(C.filter(r => r.d.rk === 'S').length, C.length), hitClr: q(C.map(r => r.d.hit | 0), .5), mega: pct(Y.filter(r => r.d.mgs).length, Y.length), megaWin: pct(C.length, Y.filter(r => r.d.mgs).length),
+      gift: C.filter(r => r.d.gf).length, giftV: avg(C.filter(r => r.d.gf).map(r => r.d.gv | 0)), xp: avg(Y.map(r => r.d.xp | 0)), ev: avg(Y.map(r => r.d.ev | 0)),
+      dayGold: { p50: q(dg, .5), p90: q(dg, .9), max: q(dg, 1) }, dayPlays: { p50: q(dn, .5), p90: q(dn, .9), max: q(dn, 1) },
+      stage: Array.from({ length: 10 }, (_, i) => i + 1).map(k => { const A = Y.filter(r => !r.d.w && (r.d.st | 0) === k); return { k, n: A.length, faint: A.filter(r => r.d.fn).length, quit: A.filter(r => r.d.q).length }; }).filter(r => r.n),
+      grade: [...group(Y, r => r.d.gr | 0)].sort((a, b) => a[0] - b[0]).map(([k, A]) => { const E2 = A.filter(r => !r.d.q), C2 = A.filter(r => r.d.w); return { k: +k, n: A.length, people: people(A), clear: pct(C2.length, E2.length), lv: avg(A.map(r => r.d.lv | 0)), st: avg(A.map(r => r.d.w ? 10 : r.d.st | 0)), gpm: gpm(A) }; }),
+      lvs: [['Lv.1~19', 0, 19], ['Lv.20~39', 20, 39], ['Lv.40~59', 40, 59], ['Lv.60~', 60, 999]].map(([k, a, b]) => { const A = Y.filter(r => (r.d.lv | 0) >= a && (r.d.lv | 0) <= b), E2 = A.filter(r => !r.d.q); return { k, n: A.length, clear: pct(A.filter(r => r.d.w).length, E2.length), st: avg(A.map(r => r.d.w ? 10 : r.d.st | 0)), xp: avg(A.map(r => r.d.xp | 0)) }; }).filter(r => r.n) }; };
+  const ya = yaOf(Y), yaNew = yaOf(Y.filter(r => parseFloat(r.ver) >= YA_VER));
   const Gd = L.filter(r => r.kind === 'gold'), spOf = d => Object.values(d.sp || {}).reduce((a, b) => a + (+b || 0), 0), sum = A => A.reduce((a, b) => a + b, 0);   // v18.73: 하루 한 줄 골드 기록 (잔액·번 돈·쓴 돈)
   const catM = new Map(), itM = new Map(), esM = new Map(); for (const r of Gd) { for (const [k, n] of Object.entries(r.d.es || {})) { const c = esM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); esM.set(k, c); }   /* v22.83 번 곳별 (es 없는 옛 기록은 빠짐) */ for (const [k, n] of Object.entries(r.d.sp || {})) { const c = catM.get(k) || { g: 0, who: new Set() }; c.g += +n || 0; c.who.add(r.code); catM.set(k, c); } for (const [k, n] of Object.entries(r.d.it || {})) itM.set(k, (itM.get(k) || 0) + (+n || 0)); }
   const gold = { n: Gd.length, people: people(Gd), ern: { p50: q(Gd.map(r => r.d.ern | 0), .5), p90: q(Gd.map(r => r.d.ern | 0), .9) }, sp: { p50: q(Gd.map(r => spOf(r.d)), .5), p90: q(Gd.map(r => spOf(r.d)), .9) },
@@ -101,7 +114,7 @@ function stats(L) {
     reg: (() => { const G = [...group(E, r => r.d.r || '?')], few = G.filter(([, A]) => people(A) < 2).flatMap(([, A]) => A); return [...G.filter(([, A]) => people(A) >= 2).map(([k, A]) => eRow(k, A)).sort((a, b) => b.n - a.n), ...(few.length ? [eRow('그 밖 (한 명뿐인 도)', few)] : [])]; })(),
     city: [...group(E.filter(r => r.d.u || r.d.c), r => r.d.u || r.d.c)].filter(([, A]) => people(A) >= 3).map(([k, A]) => eRow(k, A)).sort((a, b) => b.people - a.people || b.n - a.n).slice(0, 25),
     evs: [...group(E.filter(r => /^ev:/.test(r.d.s || '')), r => r.d.s.slice(3))].map(([k, A]) => [k, A.length, people(A)]) };
-  return { gym, sf, mg, ed, tw, gold, egg, vers, diff: diffOf(G), diffNew: diffOf(G.filter(r => parseFloat(r.ver) >= DIFF_VER)) };
+  return { gym, sf, mg, ed, tw, ya, yaNew, gold, egg, vers, diff: diffOf(G), diffNew: diffOf(G.filter(r => parseFloat(r.ver) >= DIFF_VER)) };
 }
 const S = stats(cur), P = stats(prev);
 
@@ -119,6 +132,10 @@ if (S.gold.n >= FLAG.minN && S.gold.useRate != null && S.gold.useRate < FLAG.gol
   for (const c of D.cells) if (c.kd === '보통' && c.n >= FLAG.minN) { const [lo, hi] = DIFF_TG[c.gi] || [35, 85]; if (c.win > hi) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 쉬움?`); else if (c.win < lo) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 어려움?`); }
   for (const f of D.flow) if (f.n >= FLAG.minN && f.l3 / f.n * 100 > DIFF_LS3) flags.push(`[난이도 ${tag}] ${GR[f.gi]} 3연패 이상 ${f.l3}번 (${f.n}판, ${f.l3who}명) — 의욕 꺾임?`);
   for (const f of D.flow) if (f.n >= 20 && f.gi >= 3 && f.wAvg != null && f.wAvg > 8) flags.push(`[난이도 ${tag}] ${GR[f.gi]} 평균 연승 ${f.wAvg} — 긴장감 없음?`); }
+{ const D = S.yaNew.n >= FLAG.minN ? S.yaNew : S.ya, tag = D === S.yaNew && S.yaNew.n < S.ya.n ? `v${YA_VER}~` : '지난 7일';
+  if (D.n >= FLAG.minN) { if (D.clear != null && D.clear > YA_TG.clr[1]) flags.push(`[특훈 ${tag}] 완주율 ${D.clear}% (목표 ${YA_TG.clr.join('~')}%) — 너무 쉬움?`); else if (D.clear != null && D.clear < YA_TG.clr[0]) flags.push(`[특훈 ${tag}] 완주율 ${D.clear}% (목표 ${YA_TG.clr.join('~')}%) — 너무 어려움?`);
+    if (D.gpmClr > YA_TG.gpm) flags.push(`[특훈 ${tag}] 완주한 판 1분 골드 ${D.gpmClr}G (기준 ${YA_TG.gpm}G) — 골드 너무 많음?`); if (D.sRate > YA_TG.sRate) flags.push(`[특훈 ${tag}] 완주 가운데 S 등급 ${D.sRate}% — S 조건이 너무 쉬움?`); if (D.quit > YA_TG.quit) flags.push(`[특훈 ${tag}] 그만두기 ${D.quit}% — 지루하거나 너무 어려움?`);
+    if (D.dayGold.p50 > FLAG.mgDayG * 3) flags.push(`[특훈 ${tag}] 한 사람 하루 특훈 골드 중앙 ${D.dayGold.p50}G`); } }
 if (S.gym.quit > 15 && S.gym.n >= FLAG.minN) flags.push(`체육관 배틀 기권 ${S.gym.quit}%`);
 
 // ---------- 이슈 본문 ----------
@@ -127,6 +144,14 @@ const dlt = (a, b) => a == null || b == null ? '' : a === b ? ' (=)' : ` (${a > 
 const ymd = t => new Date(t + KST).toISOString().slice(0, 10);
 const tbl = (head, L) => ['| ' + head.join(' | ') + ' |', '|' + head.map(() => '---').join('|') + '|', ...L.map(r => '| ' + r.map(v).join(' | ') + ' |')].join('\n');
 const pc = (k, s) => P.gym.cats.find(c => c.k === k)?.[s];
+function yaMd(title, D, Pd) { const few = n => n < FLAG.minN ? ' ⚠︎적음' : ''; if (!D.n) return [title, '기록 없음', ''];
+  return [title, `${v(D.n)}판${few(D.n)} · ${D.people}명 · 완주율 ${v(D.clear)}%${dlt(D.clear, Pd?.clear)} (목표 ${YA_TG.clr.join('~')}%, 그만둔 판 빼고) · 그만두기 ${v(D.quit)}% · 한 판 평균 ${v(D.sec)}초 (완주 ${v(D.secClr)}초)`,
+    `골드: 한 판 평균 ${v(D.gold)}G (완주 ${v(D.goldClr)}G) · 1분에 ${v(D.gpm)}G (완주한 판 ${v(D.gpmClr)}G) · 한 사람 하루 중앙 ${v(D.dayGold.p50)}G · 상위 10% ${v(D.dayGold.p90)}G · 최고 ${v(D.dayGold.max)}G`,
+    `한 사람 하루 판 수: 중앙 ${v(D.dayPlays.p50)} · 상위 10% ${v(D.dayPlays.p90)} · 최고 ${v(D.dayPlays.max)} · 경험치 한 판 평균 ${v(D.xp)} · 노력치 ${v(D.ev)}`,
+    `우두머리 2페이즈까지 간 판 ${v(D.mega)}% · 그중 완주 ${v(D.megaWin)}% · 완주 가운데 S 등급 ${v(D.sRate)}% · 완주한 판 맞은 횟수 중앙 ${v(D.hitClr)} · 꾸러미 ${v(D.gift)}개 (값어치 평균 ${v(D.giftV)}G)`, '',
+    '어느 스테이지에서 끝났나 (완주 못 한 판):', '', tbl(['스테이지', '판', '쓰러짐', '그만둠'], D.stage.map(r => [r.k, r.n, r.faint, r.quit])), '',
+    tbl(['관장 등급', '판', '명', '완주율 %', '포켓몬 평균 레벨', '평균 도달 스테이지', '1분 골드'], D.grade.map(r => [GR[r.k] || r.k, r.n + few(r.n), r.people, r.clear, r.lv, r.st, r.gpm])), '',
+    tbl(['포켓몬 레벨', '판', '완주율 %', '평균 도달 스테이지', '경험치 평균'], D.lvs.map(r => [r.k, r.n, r.clear, r.st, r.xp])), '']; }
 function diffMd(title, D, Pd) {
   const pw = c => Pd?.cells.find(x => x.gi === c.gi && x.kd === c.kd)?.win, few = n => n < FLAG.minN ? ' ⚠︎적음' : '';
   return [title, `${v(D.n)}판 · ${D.people}명. 승률 = 관장(유저)이 이긴 비율. 목표 = 보통 도전자만. ⚠︎적음 = ${FLAG.minN}판 미만이라 결론 내지 말 것.`, '',
@@ -168,10 +193,12 @@ const body = [
   '## 미니게임 (포켓몬 탑 쌓기)',
   `${v(S.tw.n)}판 · ${S.tw.people}명 · 한 판 평균 ${v(S.tw.sec)}초 · 기술 평균 ${v(S.tw.ab)}번`,
   `점수: 중앙 ${v(S.tw.score.p50)} · 상위 10% ${v(S.tw.score.p90)} · 골드: 한 판 평균 ${v(S.tw.goldPlay)}G (1분에 ${S.tw.sec ? v(Math.round(S.tw.goldPlay / S.tw.sec * 60)) : '-'}G)`, '',
+  ...yaMd('## 특훈 (지난 7일 전체)', S.ya, P.ya),
+  ...(S.yaNew.n && S.yaNew.n < S.ya.n ? yaMd(`## 특훈 (v${YA_VER} 뒤 기록만)`, S.yaNew, null) : []),
   '## 골드 (한 사람 하루, 다음 날 올라옴)',
   `${v(S.gold.n)}일치 · ${S.gold.people}명 · 번 골드 중앙 ${v(S.gold.ern.p50)}G (상위 10% ${v(S.gold.ern.p90)}G) · 쓴 골드 중앙 ${v(S.gold.sp.p50)}G (상위 10% ${v(S.gold.sp.p90)}G)`,
   `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
-  ...(S.gold.src?.length ? [`번 곳 (번 곳 기록이 있는 ${v(S.gold.srcN)}일치 합)`, '', tbl(['번 곳', '골드', '%', '명'], (T => S.gold.src.map(c => [({ mg: '장애물 넘기', drop: '진화구슬 키우기', stack: '탑 쌓기', mission: '미니게임 미션', gym: '체육관 도전자 배틀', sf: '체육관 트레이너', promo: '체육관 승급 보상', event: '체육관 이벤트', egg: '알 부화', dex: '도감 새 포켓몬', move: '움직인 거리', etc: '그 밖' })[c.k] || c.k, c.g, T ? Math.round(c.g / T * 1000) / 10 : '-', c.people]))(S.gold.src.reduce((a, c) => a + c.g, 0))), ''] : []),
+  ...(S.gold.src?.length ? [`번 곳 (번 곳 기록이 있는 ${v(S.gold.srcN)}일치 합)`, '', tbl(['번 곳', '골드', '%', '명'], (T => S.gold.src.map(c => [({ mg: '장애물 넘기', drop: '진화구슬 키우기', stack: '탑 쌓기', yact: '특훈', mission: '미니게임 미션', gym: '체육관 도전자 배틀', sf: '체육관 트레이너', promo: '체육관 승급 보상', event: '체육관 이벤트', egg: '알 부화', dex: '도감 새 포켓몬', move: '움직인 거리', etc: '그 밖' })[c.k] || c.k, c.g, T ? Math.round(c.g / T * 1000) / 10 : '-', c.people]))(S.gold.src.reduce((a, c) => a + c.g, 0))), ''] : []),
   tbl(['쓴 곳', '골드', '명'], S.gold.cats.map(c => [({ item: '진화 도구·아이템', field: '필드 소품', fit: '의상', bgm: '배경 음악', gym: '체육관 상점', wage: '트레이너 월급·수당' })[c.k] || c.k, c.g, c.people])), '',
   `많이 산 것: ${S.gold.items.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '## 지역 알 (주운 곳 — 시·군 이름만, 좌표 없음)',
