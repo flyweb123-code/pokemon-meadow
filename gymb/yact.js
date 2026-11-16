@@ -444,6 +444,20 @@ const CSS = `
 #yact .fs .fs-rwr .c{font-style:normal;font-size:11px;padding:2px 9px;border-radius:8px;color:#fff;border:1.5px solid rgba(0,0,0,.5)}
 #yact .fs .fs-rwr .ex{background:#3a8ee0}#yact .fs .fs-rwr .ev{background:#8a5ae0}#yact .fs .fs-rwr .fr{background:#e85a8a}
 #yact .fs .fs-rwr .coin{margin-right:2px!important}
+/* 경완 2026-11-16 '선택 슬롯박스 안에도 이름 옆에 성별 아이콘, 타입 아이콘은 우상단으로 한 줄로, 기술 이름 왼쪽에 형태 딱지, 9스테이지는 두 보스가 동시에 나온다는 거 알 수 있게 겹친 형태로, 받는 보상 끝에 클리어 보상 상자' */
+#yact .fs .fs-rwr{gap:2px}#yact .fs .fs-rwr span{gap:3px;font-size:11px}#yact .fs .fs-rwr .c{padding:2px 6px}
+#yact .fs .fs-rwr .gb{width:22px;height:22px;flex:none;image-rendering:pixelated;object-fit:contain;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+#yact .fs .pkc .pn{display:flex;align-items:center;gap:2px;min-width:0;flex:0 1 auto;max-width:100%}
+#yact .fs .pkc .sx{flex:none;font-style:normal;font-weight:700;font-size:12px;line-height:1}
+#yact .fs .pkc .sx.m{color:#6ab8ff}#yact .fs .pkc .sx.f{color:#ff8ab4}
+#yact .fs .pkc.on .sx.m{color:#1a5ac0}#yact .fs .pkc.on .sx.f{color:#c8306a}
+#yact .fs .ya-pk.many .pkc .pn{display:none}
+#yact .fs .hr-ty{left:auto;right:-36px;top:2px;flex-direction:row;gap:3px}
+#yact .fs .ya-pmv span{display:flex;align-items:center;justify-content:center;gap:5px}
+#yact .fs .ya-pmv span b{min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+#yact .fs .ya-pmv span em{flex:none;font-style:normal;font-size:10px;line-height:1;letter-spacing:0;padding:3px 5px;border-radius:6px;background:rgba(12,10,28,.62);color:#fff2c8;text-shadow:none;border:1px solid rgba(255,255,255,.28)}
+#yact .fs .ya-road b.m+b.m{margin-left:-14px;margin-top:7px;position:relative;z-index:1;box-shadow:-2px -2px 0 rgba(8,6,24,.85),0 0 8px rgba(255,90,80,.5)}
+#yact .fs .ya-road b.m:has(+b.m){margin-top:-7px}
 #yact .fs .fs-ft{flex:none;padding:12px 16px calc(12px + var(--si-bottom,env(safe-area-inset-bottom)));background:linear-gradient(180deg,rgba(12,10,28,0),rgba(12,10,28,.9) 30%)}
 #yact .fs .fs-ft .bigb{margin:0;padding:14px 0;font-size:19px;letter-spacing:3px;border-radius:12px;background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6)}
 #yact .fs .fs-ft .bigb:active{transform:translateY(3px);box-shadow:0 1px 0 #6a3a00}
@@ -637,7 +651,7 @@ const HTML = `<canvas></canvas>
   <div class="ya-bd"><div class="ya-pk"></div>
   <div class="ya-sec"><h3>노력치 훈련<button class="ya-evq" type="button" aria-label="어떤 훈련이 좋을까">?</button></h3><div class="ya-stt"></div></div>
   <div class="ya-sec"><h3>스테이지</h3><div class="ya-road"></div></div>
-  <div class="ya-sec"><h3>받는 보상</h3><div class="fs-rwr"><span><i class="c ex">경험치</i></span><span><i class="c ev">노력치</i></span><span><i class="c fr">친밀도</i></span><span><i class="coin"></i><b>골드</b></span><span><svg class="sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b>번뜩임</b></span></div></div>
+  <div class="ya-sec"><h3>받는 보상</h3><div class="fs-rwr"><span><i class="c ex">경험치</i></span><span><i class="c ev">노력치</i></span><span><i class="c fr">친밀도</i></span><span><i class="coin"></i><b>골드</b></span><span><svg class="sv" viewBox="-13 -13 26 26" aria-hidden="true"><path d="M0.0 -12.5L3.2 -3.2L12.5 0.0L3.2 3.2L0.0 12.5L-3.2 3.2L-12.5 0.0L-3.2 -3.2Z" fill="#20202c"/><path d="M0.0 -9.5L2.4 -2.4L9.5 0.0L2.4 2.4L0.0 9.5L-2.4 2.4L-9.5 0.0L-2.4 -2.4Z" fill="#58c8ff"/><path d="M0.0 -5.2L1.3 -1.3L5.2 0.0L1.3 1.3L0.0 5.2L-1.3 1.3L-5.2 0.0L-1.3 -1.3Z" fill="#fff"/></svg><b>번뜩임</b></span><span><img class="gb" alt="" src="gym/img/yact/gift.png"><b>상자</b></span></div></div>
   </div>
   <div class="fs-ft"><button class="b3 bigb ya-go">특훈 시작</button></div></div>
 <div class="ya-tu"><div class="tu-w"><div class="tu-hd"><b>특훈 하는 법</b><button class="tu-x" type="button" aria-label="닫기">✕</button></div><div class="tu-im"><img alt=""></div><div class="tu-tx"><b class="tu-h"></b><p class="tu-p"></p></div><div class="tu-dots"></div><div class="tu-bt"><button class="tu-pv" type="button">이전</button><button class="tu-nx" type="button">다음</button></div></div></div>
@@ -836,6 +850,9 @@ function moveList(P) {   // 내 포켓몬이 지금 쓰는 기술 4개 (체육�
     let k = Rr?.k; k = !c ? 'Self' : k === 'Offset' ? 'Attack' : k === 'Throw' || k === 'WaveMotion' ? 'Projectile' : k || (c === 1 ? 'Attack' : 'Projectile');
     return { id, name, t: t || 1, c, pw, k, Rr, A: { hide: !!c && RX.hide.test(id), vortex: !!c && RX.vortex.test(id), drain: !!c && RX.drain.test(id), multi: RX.multi.test(id), beam: RX.beam.test(id), spot: RX.spot.test(id), st: c ? '' : stOf(id) } }; });
 }
+/* 경완 2026-11-16 '기술 슬롯 기술 이름 왼쪽에는 형태 딱지 붙여줘': 특훈에서 그 기술이 나가는 모양 (use() 의 kind 고르기와 같은 셈) */
+function mvForm(v) { if (!v.c) return '변화'; if (v.A.hide) return '잠복'; const e = r => (v.Rr?.e || []).some(x => x[0] === r); let kind = v.k === 'Attack' ? 'melee' : v.k === 'Projectile' ? (e('col') ? 'col' : e('stream') ? 'stream' : 'proj') : 'area';
+  if (v.A.vortex) kind = 'vortex'; else if (kind === 'proj' && !e('proj')) kind = v.A.beam ? 'stream' : v.A.spot || (v.Rr && !v.A.multi) ? 'col' : 'proj'; return { melee: '근접', proj: v.A.multi ? '연발' : '탄', stream: '빔', col: '낙하', area: v.k === 'Dash' ? '돌진' : '범위', vortex: '장판' }[kind]; }
 function mineOf(o) {   // 고른 포켓몬 → 판에서 쓸 값 (읽기만)
   const B = GB(), P = o.P, m = B.gm(P), lv = m.lv || 1, eg = B.egFocus?.(P) ?? -1, er = eg >= 0 ? B.egList(P).find(r => r.i === eg) : null;
   // 번뜩임으로 깨닫는 중인 기술은 아직 모르는 기술이라 이름은 안 쓰고 타입만 (게임의 ??? 칸과 같게)
@@ -1708,7 +1725,7 @@ function evHint() { const q = R.q, o = R.mons[R.pick], B = GB(), P = o.P, pl = B
 function startUi() {
   const q = R.q, o = R.mons[R.pick], th = (P, f) => GA.thumb?.(P).then(u => { if (R && typeof u === 'string') f(u); }).catch(() => {});
   q('.hr-nm').textContent = nmOf(o.P); q('.hr-lv').textContent = `Lv.${GB().gm(o.P).lv}`; { const sx = q('.hr-sx'), g = o.P.sex === 'm' ? 'm' : o.P.sex === 'f' ? 'f' : ''; sx.className = 'hr-sx ' + g; sx.textContent = g === 'm' ? '♂' : g === 'f' ? '♀' : ''; q('.hr-ty').innerHTML = (SP[o.P.sp]?.t || []).map(t => (GA.tyIcon?.(t) || '').replace(/ data-tip="[^"]*"/, '')).join(''); } { const im = q('.hr-im'), k = R.pick; im.removeAttribute('src'); th(o.P, u => { if (R.pick === k) im.src = u; }); }
-  q('.ya-pk').classList.toggle('many', R.mons.length > 3); q('.ya-pk').innerHTML = R.mons.length > 1 ? R.mons.map((m, i) => `<button class="pkc${i === R.pick ? ' on' : ''}" data-i="${i}"><img alt="" data-i="${i}"><u><b${nmOf(m.P).length > 5 ? ' class="lg"' : ''}>${nmOf(m.P)}</b><small>Lv.${GB().gm(m.P).lv}</small></u></button>`).join('') : ''; q('.ya-pk').classList.toggle('n3', R.mons.length === 3);
+  q('.ya-pk').classList.toggle('many', R.mons.length > 3); q('.ya-pk').innerHTML = R.mons.length > 1 ? R.mons.map((m, i) => `<button class="pkc${i === R.pick ? ' on' : ''}" data-i="${i}"><img alt="" data-i="${i}"><u><span class="pn"><b${nmOf(m.P).length > 5 ? ' class="lg"' : ''}>${nmOf(m.P)}</b>${m.P.sex === 'm' ? '<i class="sx m">♂</i>' : m.P.sex === 'f' ? '<i class="sx f">♀</i>' : ''}</span><small>Lv.${GB().gm(m.P).lv}</small></u></button>`).join('') : ''; q('.ya-pk').classList.toggle('n3', R.mons.length === 3);
   q('.ya-pk').style.display = R.mons.length > 1 ? '' : 'none'; q('.ya-bd').style.paddingTop = R.mons.length > 1 ? '' : '0';
   if (R.mons.length > 1) R.mons.forEach((m, i) => th(m.P, u => { const im = R.q(`.ya-pk img[data-i="${i}"]`); if (im) im.src = u; }));
   /* 경완 2026-11-15 '시작창 노력치 정하는거 훈련장에서 훈련할 노력치 정할 때처럼 팔찌 아이콘들 넣어놔줘': 훈련장 .ev-tk 와 같은 파워 도구 그림(EV_PW) */
@@ -1717,7 +1734,7 @@ function startUi() {
   // 스테이지 길: 숫자 칸, 중간 대장·대장 칸에는 그 포켓몬 얼굴
   q('.ya-road').innerHTML = STAGES.map((S, i) => `${i ? '<i></i>' : ''}${roadB(S, i, '')}`).join('');   // 대장 칸은 실루엣만 (경완 '대장은 실루엣으로 가려놓자')
   q('.ya-road').querySelectorAll('b.m').forEach(el => th({ sp: pool.big[+el.dataset.b] }, u => { if (R.pool === pool && el.isConnected) { el.textContent = ''; const im = new Image(); im.alt = ''; im.src = u; el.append(im); } }));
-  q('.ya-pmv').innerHTML = moveList(o.P).map(v => `<span style="--tc:${TYPE_C[v.t] || '#888'}">${v.name}</span>`).join('');
+  q('.ya-pmv').innerHTML = moveList(o.P).map(v => `<span style="--tc:${TYPE_C[v.t] || '#888'}"><em>${mvForm(v)}</em><b>${v.name}</b></span>`).join('');
 }
 
 window.GymYA = { start, close, get _R() { return R; }, _gift: (s, b) => GIFT(s, b), _S: () => GA.S, _use: i => useMove(i), _dodge: () => dodge(), _hold: (i, on) => { if (!R) return; if (on) { useMove(i, true); R.HELD[i] = 1; } else delete R.HELD[i]; }, _end: c => R?.G && end(c) };
