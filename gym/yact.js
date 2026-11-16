@@ -164,6 +164,8 @@ const CSS = `
 #yact .ya-tm{font-size:26px;line-height:1;min-width:64px;padding:8px 0 5px;text-align:center;text-shadow:0 2px 0 var(--ink);background:rgba(28,28,46,.66);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.16),3px 3px 0 rgba(0,0,0,.22)}
 #yact .ya-tr{right:10px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:stretch;gap:5px;width:126px}
 #yact .ya-quit{font-size:11px;padding:4px 8px;background:#e9e4d8;align-self:flex-end;pointer-events:auto}
+#yact .ya-god{position:absolute;right:0;top:40px;font-size:11px;padding:4px 7px;background:#e9e4d8;color:#6a667a;pointer-events:auto;white-space:nowrap}
+#yact .ya-god.on{background:#ffd84a;color:#20202c;box-shadow:0 0 8px rgba(255,216,74,.9)}
 #yact .ya-rw{display:flex;flex-direction:column;gap:4px}
 #yact .ya-rw .ch{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:3px 7px;white-space:nowrap}
 #yact .ya-rw .ch b{font-size:13px}
@@ -567,7 +569,7 @@ const CSS = `
 @keyframes yaLoadT{to{color:rgba(240,236,255,.8)}}
 `;
 const HTML = `<canvas></canvas>
-<div class="ya-hud ya-top"><button class="b3 ya-quit">그만</button></div>
+<div class="ya-hud ya-top"><button class="b3 ya-god" type="button">무적 끔</button><button class="b3 ya-quit">그만</button></div>
 <div class="ya-hud ya-arc">
   <div class="sg mg-hg"><i class="coin" aria-hidden="true"></i><b>0</b></div>
   <div class="sg ex"><i class="ri">경험치</i><b class="ya-rwe">+0</b></div>
@@ -856,7 +858,7 @@ function megaDone(o) { const G = R.G, me = G.me; if (R.SPR['M' + o.sp + ':']?.im
 const inCr = (c, e, m = 0) => Math.hypot(e.x - c.x, (e.y - c.y) * 2) < c.r + m, pitK = e => R.G.cracks.some(c => c.pit && inCr(c, e)) ? .55 : 1;
 function crackBreak(c) { const G = R.G, me = G.me; if (c.pit) return; c.pit = R.T; ring(c.x, c.y, '#e9dcc0', 10, c.r + 30, .4, 6); dust(c.x, c.y, 18, 220); stars(c.x, c.y - 8, 8, '#c8b890', 240); shake(.5); buzz(1); snd('DUN_Rock_Smash', .09); se('W120', .12, { gain: .8 });
   for (let i = 0; i < 10; i++) { const a = Math.random() * 6.28, v = 90 + Math.random() * 140; part({ x: c.x + Math.cos(a) * 10, y: c.y + Math.sin(a) * 5, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .5 - 150, ay: 520, life: .5 + Math.random() * .3, sz: 4 + (i % 2) * 2, col: i % 3 ? '#b8a070' : '#8a7448' }); }
-  if (me.hp > 0 && !me.hide && me.inv <= 0 && inCr(c, me)) { const n = Math.min(me.hp - 1, Math.round(me.mhp * .12)); if (n > 0) { me.hp -= n; pop(me.x, me.y - 56, n, '#ff7a6a', true); } me.busy = Math.max(me.busy, .45); me.flash = .16; squash(me, .4); chEnd(); dashEnd(); R.VIG = 1; buzz(2); hud(); }
+  if (me.hp > 0 && !GOD && !me.hide && me.inv <= 0 && inCr(c, me)) { const n = Math.min(me.hp - 1, Math.round(me.mhp * .12)); if (n > 0) { me.hp -= n; pop(me.x, me.y - 56, n, '#ff7a6a', true); } me.busy = Math.max(me.busy, .45); me.flash = .16; squash(me, .4); chEnd(); dashEnd(); R.VIG = 1; buzz(2); hud(); }
   for (const o of [...G.mobs]) { if (o.hp <= 0 || o.enter > 0 || o.z > 30 || !inCr(c, o, o.boss ? 14 : 0)) continue; if (o.boss) brkAdd(o, { n: o.mhp * .2, e: 1 }); hurt(o, { n: Math.max(1, Math.round(o.mhp * (o.boss ? .06 : .3))), e: 1, crit: false, w: 3 }, 0.01, 0); o.stun = Math.max(o.stun || 0, o.boss ? .6 : 1.2); o.warn = 0; } }
 function crackStep(dt) { const G = R.G, me = G.me, T = R.T, A = R.A;
   if (false && (G.crT -= dt) <= 0) { G.crT = 9 + Math.random() * 6; if (G.cracks.filter(c => !c.pit).length < 3) { let x, y, n = 0; do { x = A.x0 + 50 + Math.random() * (A.x1 - A.x0 - 100); y = A.y0 + 50 + Math.random() * (A.y1 - A.y0 - 90); } while (++n < 30 && (inPond(x, y, 40) || Math.hypot(x - me.x, y - me.y) < 80 || G.cracks.some(c => Math.hypot(c.x - x, c.y - y) < 110)));
@@ -1243,7 +1245,7 @@ function step(dt) {
     if (!G.clearT) G.time += dt; G.mag = Math.max(0, G.mag - dt);
     if (G.queue.length && (G.qT -= dt) <= 0 && G.mobs.filter(o => o.hp > 0).length < MOB_MAX(G.wave)) { spawn(G.queue.shift()); G.qT = .4; setPend(); }
     if (!G.clearT && (G.itT -= dt) <= 0) { G.itT = 10 + Math.random() * 6; if (G.items.length < 2) itemSpawn(); }
-    for (const it of G.items) if (T - it.t0 > .4 && me.hp > 0 && Math.hypot(me.x - it.x, me.y - it.y) < 26) { it.got = 1; itemUse(it); }
+    for (const it of G.items) if (T - it.t0 > .4 && me.hp > 0 && Math.hypot(me.x - it.x, pickY(me, it.y) - it.y) < 26) { it.got = 1; itemUse(it); }
     G.items = G.items.filter(it => !it.got && T - it.t0 < 14);
   }
   if (me.kx || me.ky) { me.x += me.kx * dt; me.y += me.ky * dt; const k = Math.pow(.0006, dt); me.kx *= k; me.ky *= k; if (Math.abs(me.kx) + Math.abs(me.ky) < 4) me.kx = me.ky = 0; keepIn(me); }
@@ -1330,7 +1332,7 @@ function step(dt) {
   G.shots = G.shots.filter(s => T - s.t0 < s.life && s.x > -40 && s.x < R.W + 40 && s.y > -40 && s.y < R.H + 40);
   for (const p of G.drops) { if (p.z > 0 || p.vy < 0) { p.vy += 620 * dt; p.z -= p.vy * dt; if (p.vx) p.x += p.vx * dt; if (p.gy) p.y += p.gy * dt; if (p.z < 0) { p.z = 0; if (p.vy > 90) { p.vy = -p.vy * .4; p.z = .01; } else { p.vy = 0; p.vx = 0; p.gy = 0; } if (p.coin && !p.ld) { p.ld = 1; se('KATI', .05, { gain: 1.6 }); } }
       const A = R.A; p.x = Math.max(A.x0 + 8, Math.min(A.x1 - 8, p.x)); p.y = Math.max(A.y0 + 8, Math.min(A.y1 - 4, p.y)); if (inPond(p.x, p.y, 0)) p.y = R.Y.pond.y0 - 4; }   // 연못 안엔 안 떨어지게
-    const d = Math.hypot(me.x - p.x, me.y - p.y), mg = p.mag || (G.mag > 0 && p.coin), pull = p.box ? 0 : G.magAll || mg ? 9999 : p.coin ? 66 : 84;   /* 경완 '선물상자는 끌려오지 않고 직접 먹게' */ if (mg) p.mag = 1; if ((T - p.t0 > .5 || mg) && d < pull && me.hp > 0) { const v = mg || G.magAll ? 12 : 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (me.y - p.y) * Math.min(1, dt * v); }
+    const py = pickY(me, p.y), d = Math.hypot(me.x - p.x, py - p.y), mg = p.mag || (G.mag > 0 && p.coin), pull = p.box ? 0 : G.magAll || mg ? 9999 : p.coin ? 66 : 84;   /* 경완 '선물상자는 끌려오지 않고 직접 먹게' */ if (mg) p.mag = 1; if ((T - p.t0 > .5 || mg) && d < pull && me.hp > 0) { const v = mg || G.magAll ? 12 : 5 + (T - p.t0) * 3; p.x += (me.x - p.x) * Math.min(1, dt * v); p.y += (py - p.y) * Math.min(1, dt * v); }
     if ((T - p.t0 > .5 || p.mag) && d < (p.box ? 28 : 22) && me.hp > 0) { p.got = true; if (p.coin) gotCoin(p); else if (p.box) gotBox(p); else gotShard(p); } }
   for (const z of G.zones) { if ((z.tk -= dt) > 0) continue; z.tk = .35; const v = z.v; for (const o of G.mobs) { if (o.hp <= 0 || o.enter > 0) continue; const l = Math.hypot(o.x - z.x, o.y - z.y); if (l > z.r + bR(o, 14)) continue; o.slowT = Math.max(o.slowT || 0, .6); const r0 = dmg(me, o, v.t, v.c, v.pw * .2, v.pw); hurt(o, r0, l > 8 ? (z.x - o.x) / l * .7 : 0.01, l > 8 ? (z.y - o.y) / l * .7 : 0, true); drainTo(v, o, r0.n); } }
   G.zones = G.zones.filter(z => T - z.t0 < z.d);
@@ -1351,8 +1353,11 @@ function step(dt) {
     if (!G.over && me.hp <= 0 && T - me.dead > .55) end(false, true);
   }
 }
+/* 줍기 판정 높이 — 경완 '떠 있는 포켓몬들도 아이템 먹을 때 판정 위치 포켓몬 스프라이트 있는 곳으로' : 그림자(발)부터 떠 있는 그림 높이(GA.lift)까지 세로 줄에서 물건과 가장 가까운 점 */
+function pickY(me, y) { const L = (GA.lift?.(me.sp) || 0) + (me.z || 0); return Math.max(me.y - L, Math.min(me.y, y)); }
+let GOD = false;   /* 시연용 무적 버튼 (.ya-god) — 경완 '특훈 시연에 테스트 버튼으로 무적 버튼 하나'. !! 특훈을 일반 공개할 땐 버튼·GOD 지울 것 */
 function hitMe(o, t, c, pw, vx, vy) {
-  const G = R.G, me = G.me;
+  const G = R.G, me = G.me; if (GOD) { me.inv = Math.max(me.inv, .3); return; }
   if (me.prot > 0) { me.inv = Math.max(me.inv, .3); pop(me.x, me.y - 56, '막았다!', '#7af0a0', true); ring(me.x, me.y - 18, '#7af0a0', 20, 44, .25, 5, 1); snd('DUN_Miss', .04); buzz(0); return; }
   if ((me.shrink > 0 && Math.random() < .7) || (me.clone > 0 && Math.random() < .5)) { me.inv = Math.max(me.inv, .4); pop(me.x, me.y - 56, '빗나갔다!', '#e4ecf8', true); snd('DUN_Miss', .04); if (me.clone > 0) ghost(me, .3); return; }
   const r = dmg(o, me, t, c, pw); r.n = Math.round(r.n * 1.3); if (me.guard > 0) r.n = Math.max(1, Math.round(r.n * .4)); me.hp = Math.max(0, me.hp - r.n); me.inv = .5; me.flash = .16; setAnim(me, 'Hurt', true); chEnd(); dashEnd(); me.busy = .22; me.dash = null; R.BUF = null; squash(me, .32);
@@ -1571,6 +1576,7 @@ function bind() {
     on(tu, 'click', e => { if (e.target === tu || e.target.closest('.tu-x')) off(); else if (e.target.closest('.tu-nx')) go(1); else if (e.target.closest('.tu-pv')) go(-1); });
     let sx = null; on(tu, 'touchstart', e => { sx = e.touches[0].clientX; }, { passive: true }); on(tu, 'touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(d) > 44 && !(d < 0 && ti === TU.length - 1)) go(d < 0 ? 1 : -1); }, { passive: true }); }
   on(q('.ya-quit'), 'click', () => { if (r.run && r.G) end(false, false, true); });
+  { const gb = q('.ya-god'), gs = () => { gb.classList.toggle('on', GOD); gb.textContent = GOD ? '무적 켬' : '무적 끔'; }; gs(); on(gb, 'click', () => { GOD = !GOD; gs(); se('DECIDE'); buzz(0); }); }
   let rz = 0; on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (R === r) resize(); }, 200); });
 }
 function buildButtons() {
