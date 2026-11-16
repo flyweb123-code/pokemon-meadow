@@ -55,7 +55,7 @@ const SONG = {
   train: { s: 'sBaTrain', bank: 'battle', vol: 88 },      // 트레이너 배틀
   gymBattle: { s: 'sBaGym', bank: 'battle', vol: 88 },    // 체육관 관장 배틀
   rival: { s: 'sBaRival', bank: 'battle', vol: 88 },      // 라이벌 배틀
-  champ: { s: 'sBaChamp', bank: 'battle', vol: 90 },      // 챔피언 배틀
+  champ: { s: 'sBaChamp', bank: 'battle', vol: 90, boost: 1.35 },      // 챔피언 배틀 (경완 '난천 배틀곡 음량이 작은 것 같은데': 재 보면 다른 배틀 곡과 같은 -19dB 지만 피아노 위주라 작게 들려 +2.6dB)
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다
   winGym: { s: 'sWinGym', bank: 'battle', vol: 120 },     // 관장에게 이겼다
   wild: { s: 'sBaPoke', bank: 'battle', vol: 88 },        // 야생 포켓몬 배틀 (훈련하기)
@@ -183,7 +183,7 @@ async function bufOf(ctx, name) {
   if (!r.L) { pcm.delete(name); r = await make(name); }
   /* v19.38 경완 'bgm 음량 효과음이랑 밸런스': 곡마다 크기(RMS)가 달라 GBA 곡(전당 등)이 훨씬 크게 들림 → 체육관 곡 크기(-19dB)보다 큰 곡만 그만큼 줄인다 */
   let ss = 0, sn = 0; for (let i = 0; i < r.L.length; i += 7) { ss += r.L[i] * r.L[i] + r.R[i] * r.R[i]; sn += 2; }
-  const db = sn ? 10 * Math.log10(ss / sn + 1e-12) : -99, lg = Math.max(.35, Math.min(1, Math.pow(10, (-19 - db) / 20)));
+  const db = sn ? 10 * Math.log10(ss / sn + 1e-12) : -99, lg = Math.max(.35, Math.min(1, Math.pow(10, (-19 - db) / 20))) * (SONG[name]?.boost || 1);
   const x = { ctx, buf: toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate, lg };
   r.L = r.R = null; bufs.set(name, x); return x;
 }
