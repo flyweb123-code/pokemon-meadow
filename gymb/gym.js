@@ -3449,6 +3449,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
 const iconKeep = [];
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
 async function prepare() {
+  yaWarm();
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
   if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else { DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`))); L.push(preload(`${IMG}map/${TOWN.img}.png`), preload(KANG_OW)); }
@@ -3730,11 +3731,28 @@ async function openNote(nm) { let mu = `${IMG}open_map.webp`; try { mu = await P
     { c: '#2f6fb0', t: '평판을 모아요', im: shot('top', [29, 51, 42, 22]), tx: `<p><em>평판</em>이 꽉 차면 승급 심사를 받아<br>체육관 등급을 올릴 수 있어요.</p>` },
     { c: '#b8860b', t: '체육관 등급을 올려요', im: `<div class="on-bds">${bdHtml(st().ty, 1)}<i class="on-ar"></i>${bdHtml(st().ty, 5)}</div>`, tx: `<p>승급 심사를 통과하면<br><em>등급 배지</em>가 바뀌어요.</p><p class="on-sm">등급이 오르면 체육관이 넓어지고<br>훈련장·트레이너 고용이 열려요.</p>` },
     { c: '#7a3aa8', t: '특별한 선물', im: `<div class="on-egg on-eggs">${[11, 10, 12].map(t => GA.eggIco?.(t) || '').join('')}</div>`, tx: `<p><em>전설의 체육관</em>이 되면<br>내 체육관 타입의 <em>전설 알</em>을 받아요!</p><p class="on-sm">알을 부화시키면<br>해당 타입을 가진 전설의 포켓몬이 태어나요.</p>` }];
-  notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
+  noteWarm(P).then(() => { notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }); }   // v13.93 경완 '개설 알림창 뜰 때 알림창 효과음': 본게임 업데이트 알림창과 같은 소리
+/* 경완 2026-11-16 '특훈 배포했을 때 체육관 들어갔을 때 처음에 뜰 업데이트 알림창 만들어서 시안 보여줘': 개설 알림창과 같은 넘겨 보는 창. 경완 '됐어 이제 본게임에 체육관 내 업데이트 알림창이랑 같이 배포해' → later() 에서 체육관마다 말고 계정에 한 번 (tutSeen('yaN')) */
+function yaNote() { return new Promise(ok => { const shot = (n, r) => `<div class="on-shot"><img src="${IMG}yact/${n}.png" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;   /* 경완 '1번 캡쳐 이미지는 훈련장에 있는 특훈 버튼 이미지로, 3번에서 메가진화는 스포하지 말아줘' */
+  const P = [
+    { c: '#7a3aa8', t: '새 훈련 · 특훈', im: shot('up1', [27, 68, 46, 25]), tx: `<p>훈련장에 <em>특훈</em> 버튼이 생겼어요!<br>내 포켓몬을 직접 움직여 훈련해요.</p><p class="on-sm">훈련장에 넣어 둔 포켓몬으로 할 수 있어요.</p>` },
+    { c: '#c8781e', t: '직접 싸워요', im: shot('tut2'), tx: `<p>화면을 끌어 <em>이동</em>하고<br>기술 버튼으로 <em>공격</em>해요.</p><p class="on-sm">대쉬로 아슬아슬하게 피하면 더 좋아요.</p>` },
+    { c: '#c0302a', t: '우두머리를 쓰러뜨려요', im: shot('up3'), tx: `<p>스테이지 10 에는 강력한<br><em>우두머리</em>가 기다리고 있어요!</p><p class="on-sm">끝까지 깨면 보상이 훨씬 커져요.</p>` },
+    { c: '#b8860b', t: '보상을 받아요', im: shot('up4'), tx: `<p><em>경험치·노력치·친밀도·골드</em>를 받고<br>우두머리를 쓰러뜨리면 <em>보상 꾸러미</em>!</p><p class="on-sm">고른 능력치의 노력치가 올라요.</p>` }];
+  noteWarm(P).then(() => { notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }); }
+window.gymYaNote = yaNote;
 // 넘겨 보는 알림창 (개설 알림창 · 안내원 배틀 설명): P = [{ c 색, t 제목, im 그림, tx 글 }]
+/* 경완 2026-11-16 '업데이트 알림창 캡쳐 사진 지연 없이 바로바로 뜨게 해줘. 이건 업데이트 알림창 만들 때마다 규칙으로': 저절로 뜨는 넘겨 보는 알림창은 noteWarm(P) 로 모든 장 그림을 다 받아(디코드까지) 둔 뒤에 띄운다 (늦어도 4초).
+   notePager 도 모든 장 그림을 안 보이는 칸(.on-pre)에 미리 넣어 둬서 넘길 때 바로 보인다 */
+const noteSrcs = P => P.flatMap(p => [...String(p.im || '').matchAll(/<img[^>]*\ssrc="([^"]+)"/g)].map(m => m[1]));
+const noteWarm = (P, ms = 4000) => Promise.race([Promise.all(noteSrcs(P).map(u => new Promise(r => { const im = new Image(); im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => r(im)); im.onerror = () => r(null); im.src = u; }))), new Promise(r => setTimeout(r, ms))]);
+const YA_IM = ['up1', 'tut2', 'up3', 'up4'];
+/* 경완 2026-11-16 '체육관 로딩중일 때부터 받는게 나을듯': 특훈 알림창을 아직 안 본 계정은 출근 중 로딩 화면(prepare) 때부터 그림을 받아 둔다 (yaKeep 에 쥐고 있어 버려지지 않게) */
+let yaKeep = null; const yaWarm = () => { try { if (yaKeep || !st()?.d || tutSeen('yaN')) return; yaKeep = YA_IM.map(n => { const im = new Image(); im.src = `${IMG}yact/${n}.png`; im.decode?.().catch(() => {}); return im; }); } catch (e) {} };
 function notePager(P, ok) {
   const w = document.createElement('div'); w.className = 'gy-on';
   w.innerHTML = `<div class="win on-card"><div class="on-body"></div><div class="on-dots">${P.map(() => '<i></i>').join('')}</div><div class="on-btns"><button type="button" class="on-prev">이전</button><button type="button" class="on-ok">다음</button></div></div>`;
+ { const pre = document.createElement('div'); pre.className = 'on-pre'; pre.setAttribute('aria-hidden', 'true'); pre.style.cssText = 'position:absolute;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none'; pre.innerHTML = noteSrcs(P).map(u => `<img alt="" src="${u}">`).join(''); w.appendChild(pre); }
   root.appendChild(w); const B = w.querySelector('.on-body'), ok1 = w.querySelector('.on-ok'), pr = w.querySelector('.on-prev'), last = P.length - 1; let i = 0, busy = 0;
   const go = d => { const p = P[i]; B.innerHTML = `<div class="on-pg" style="--c:${p.c}"><b class="on-t">${p.t}</b>${p.im}<div class="on-tx">${p.tx}</div></div>`; w.querySelectorAll('.on-dots i').forEach((e, k) => e.classList.toggle('on', k === i));
     ok1.textContent = i < last ? '다음' : '확인'; pr.disabled = !i; if (d) B.firstChild.animate([{ transform: `translateX(${d * 60}%)`, opacity: .2 }, { transform: 'none', opacity: 1 }], { duration: 220, easing: 'cubic-bezier(.2,.8,.3,1)' }); };
@@ -3926,6 +3944,7 @@ async function later() {
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   await unlockChk();
+  if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
   /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
   if (open && PROMO_ON && !window.gymSimOn && !gtOn) { const gm = st()?.gmax | 0; if (gm >= 1 && !tutSeen('trTut')) return promoTut(1); if (gm >= 2 && !tutSeen('evTB') && GB()?.evOn?.()) return promoTut(2); }
   if (open && MEGA_ON && !window.gymSimOn && (st()?.gmax | 0) >= 3 && !tutSeen('mgTut') && !gtOn) await promoTut(3);
@@ -4082,7 +4101,7 @@ function trPickSp(lv, boss, big, my, bio) { const has = sp => GB().D.sp[sp]; con
   if (bio && !big) { const b = ok.filter(sp => (SPECIES[sp]?.t || []).some(t => bio.ty.includes(t))); if (b.length >= (boss ? 3 : 6)) ok = b; }   /* v24.87 지역 타입 포켓몬 (모자라면 전체에서) */
   if (my?.size) { const safe = ok.filter(sp => !trThreat(sp, my)); if (safe.length) ok = safe; else { const w = TR_WILD[0][1].filter(sp => has(sp) && !trThreat(sp, my)); if (w.length && !boss) ok = w; } }
   return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
-// 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (gym/yact.js). 보상은 보여 주기만, 아무것도 안 씀
+// 운영자 '직접 훈련 시연' (경완 2026-11-13 '내 계정에 영향 아예 가지 않게'): 훈련장 포켓몬을 직접 움직이는 미니게임 (yact.js). v26.34 부터 모두에게 — 보상은 yact.js pay() 가 실제로 줌 (운영자 시뮬 안에서는 보여 주기만)
 async function yaTest(fx) {
   if (!open || !st()?.d) return;
   if (!(st().tr || []).length) { GA.toast?.('훈련장에 포켓몬을 먼저 넣어 주세요'); return; }   /* 훈련장이 비었으면 연출 없이 알림만 */
@@ -4094,8 +4113,8 @@ async function yaTest(fx) {
   /* 경완 2026-11-15 '특훈 지금 훈련장에 있는 라인업만 나오지?' → '엉 그렇게 바꿔줘': 훈련장에서 훈련 중인 포켓몬(g.tr)만. 전엔 라인업(g.lu)도 이어 붙이고, 비면 상자 앞 6마리였음 */
   const g = st(), mons = [...new Set((g.tr || []).map(e => e.id))].map(id => GB().boxOf(id)).filter(Boolean).map(P => ({ P, evk: (g.tr || []).find(e => e.id === P.id)?.evk ?? -1 }));
   if (!mons.length) { root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); GA.toast?.('훈련장에 포켓몬이 없어요'); if (fx && b0) bgmPlay(b0); return; }
-  root.classList.add('dhide');
-  try { await window.GymYA.start(fx ? { host: root, mons, bgm0: b0, bgmNow: YB } : { host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('dhide', 'yahide'); root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); }
+  const hadD = root.classList.contains('dhide'); root.classList.add('dhide');
+  try { await window.GymYA.start(fx ? { host: root, mons, bgm0: b0, bgmNow: YB } : { host: root, mons }); } catch (err) { console.error(err); } finally { root.classList.remove('yahide'); /* 경완 2026-11-16 '특훈 들어갔다가 시작 안하고 체육관 홈화면 오면 빈 대사창 밑에 깔려있는 오류': 시작 화면에서 아래 메뉴로 나가면 그 메뉴(홈 homeSay)가 먼저 대사창을 숨기는데, 여기서 뒤늦게 dhide 를 떼어 빈 대사창이 드러났음 → 들어올 때 상태로만 되돌리고, 대사창이 비어 있으면 숨긴 채 둔다 */ { const dl = root.querySelector('.gy-dlg'), empty = !dl || !dl.innerHTML.trim(); root.classList.toggle('dhide', hadD || empty); } root.querySelector('.bs-tr.hd')?.setAttribute('data-end', 1); }
 }
 /* v23.54 경완 '라인업 고르는 화면부터, 거기서 랜덤 라인업도, 내 계정엔 아무 영향 없이': 실제 라인업 화면(시뮬 안이라 나가면 되돌아감)에서 고르고,
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
