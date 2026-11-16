@@ -516,7 +516,7 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 @keyframes frmini{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}20%,60%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1);opacity:0}}
 @keyframes frpop{0%{opacity:0;transform:translate(-50%,-80%)}15%{opacity:1;transform:translate(-50%,-100%)}75%{opacity:1;transform:translate(-50%,-150%)}100%{opacity:0;transform:translate(-50%,-170%)}}
 .boxq{margin:0 0 8px}.boxq input{flex:1 1 100%}
-#boxGrid>.pk[hidden]{display:none}
+#boxGrid>.pk[hidden]{display:none}#boxGrid>.pk{content-visibility:auto;contain-intrinsic-size:auto 96px auto 125px}/* v26.64 경완 '여전히 두번째 줄 필터 느림': 화면 밖 칸은 그리지 않음 */
 #boxGrid.nohit::before{content:'찾는 포켓몬이 없다.';grid-column:1/-1;text-align:center;color:var(--dim);padding:24px 0}
 #evoFull{position:fixed;inset:0;z-index:7000;overflow:hidden;background:#05060e;color:#fff;opacity:0;transition:opacity .35s;--p:0}
 #evoFull.in{opacity:1}#evoFull[hidden]{display:none}
@@ -13348,7 +13348,7 @@ cardPager(monPop, {
 monPop.addEventListener('click', e => { if (e.target !== monPop) return; const d = sideTap(monPop, e); if (d) { const h = $(d < 0 ? '#mHl' : '#mHr'); if (!h.hidden) monStep(d); return; } closeMon(); });
 document.querySelectorAll('.bx-row [data-bf]').forEach(b => b.onclick = () => { sfx('tap'); boxF[b.dataset.bf] = !boxF[b.dataset.bf]; renderBox(); boxTop(); });
 document.querySelectorAll('#boxSort [data-sort]').forEach(b => b.onclick = () => { const k = b.dataset.sort; if (k === boxSort) boxDir = -boxDir; else { boxSort = k; boxDir = 1; } try { localStorage.setItem('pk-box-sort', boxSort); localStorage.setItem('pk-box-dir', boxDir); } catch (e) {} renderBox(); boxTop(); });
-function boxTop() { let el = $('#boxGrid'); while (el && !(el.scrollHeight > el.clientHeight + 2 && /auto|scroll/.test(getComputedStyle(el).overflowY))) el = el.parentElement; if (el) el.scrollTop = 0; }   // 정렬을 바꾸면 맨 위부터
+function boxTop() { requestAnimationFrame(() => { let el = $('#boxGrid'); while (el && !(el.scrollHeight > el.clientHeight + 2 && /auto|scroll/.test(getComputedStyle(el).overflowY))) el = el.parentElement; if (el) el.scrollTop = 0; }); }   /* v26.64: 누른 순간 화면 배치를 억지로 다시 재지 않게 다음 그리기 때 맨 위로 */   // 정렬을 바꾸면 맨 위부터
 // 검색: 별명·종 이름에 들어 있거나 도감 번호가 같으면
 let boxQv = '';
 const boxQ = () => boxQv;
@@ -13413,6 +13413,7 @@ function menuDots() { try { $('#btnGym')?.classList.toggle('lock', gymLocked() |
   for (const [t, on] of [['buddy', S.buds.some(b => b.nw || budNew(b))], ['dex', !!S.dexDot]]) { const b = document.querySelector(`#mgrTabs [data-t="${t}"]`), d = b && b.querySelector('.dot'); if (b && on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새 소식"></i>'); else if (b && !on && d) d.remove(); } }
 function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b => { delete b.nw; if (budReady(b)) b.es = true; }); save(); menuDots(); } }   // v5.00 경완: 진화 빨간 점도 짝꿍 탭을 보고 나면 모두 사라진다
 let bxRev = 0;
+let bxSoonT = 0; const renderBoxSoon = () => { clearTimeout(bxSoonT); bxSoonT = setTimeout(() => { if (pkEls.size) renderBox(); }, 120); };
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (boxDir > 0 ? '▼' : '▲') : ''; });
   document.querySelectorAll('.bx-row [data-bf]').forEach(b => b.setAttribute('aria-pressed', !!boxF[b.dataset.bf]));
@@ -13425,8 +13426,9 @@ function renderBox() {
   if (anyF && !hits) grid.insertAdjacentHTML('afterbegin', `<p class="empty-msg" style="grid-column:1/-1">${boxF.sh && !boxF.field && !boxF.bud ? '아직 이로치 포켓몬이 없다.' : boxF.field && !boxF.bud && !boxF.sh ? '필드에 나가 있는 포켓몬이 없다.' : boxF.bud && !boxF.field && !boxF.sh ? '짝꿍인 포켓몬이 없다.' : '조건에 맞는 포켓몬이 없다.'}</p>`);
   const want = [], make = [];
   for (const p of L) {
-    const tag = (field.has(p.id) ? 1 : 0) | (bud.has(p.id) ? 2 : 0) | (yard.has(p.id) ? 4 : 0), rk = rankOf(p), th = !!thumbOf(p.sp);
-    const sig = `${p.sp}|${p.sex}|${p.shiny}|${p.fr}|${p.nm || ''}|${tag}|${rk}|${th}|${p.nw ? 1 : 0}`;
+    const tag = (field.has(p.id) ? 1 : 0) | (bud.has(p.id) ? 2 : 0) | (yard.has(p.id) ? 4 : 0), rk = rankOf(p), th = !!thumbOf(p.sp), pk = pKey(p);   /* v26.64 경완 '다시 빨간 춤추새로 돌아왔는데?': 폼 그림을 받기 전에 만든 칸이 기본 모습으로 남던 것 → 그림 열쇠(pk)도 칸 표시에 넣고, 받으면 바로 바꿈 */
+    const sig = `${p.sp}|${p.sex}|${p.shiny}|${p.fr}|${p.nm || ''}|${tag}|${rk}|${th}|${p.nw ? 1 : 0}|${pk}`;
+    { const f = !FM_LIVE.has(p.sp) && fmOf(p), k = f && p.sp + '~' + f; if (k && pk !== k) fmLoad(k).then(ok => { if (ok && S.box.includes(p)) renderBoxSoon(); }); }
     let r = pkEls.get(p.id);
     if (!r || r.sig !== sig) { r = { sig, el: null, html: pkHtml(p, tag, rk) }; pkEls.set(p.id, r); make.push(r); }
     want.push(r);
