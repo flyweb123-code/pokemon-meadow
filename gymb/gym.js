@@ -782,8 +782,15 @@ function chalSay(c, g) {
   const LC = isLeg(g) && !c.named ? LEG_SAY[c.tr] || LEG_SAY[String(c.tr).replace(/_f$/, '_m')] : null, LG = isLeg(g) && !c.named ? LC?.own ? LC : { i: [...LEG_SAY.g.i, ...(LC?.i || []), ...(LC?.i || [])], w: [...LEG_SAY.g.w, ...(LC?.w || []), ...(LC?.w || [])], l: [...LEG_SAY.g.l, ...(LC?.l || []), ...(LC?.l || [])] } : null;
   if (LG) L[0] = pick(LG.i);   /* 전설의 체육관: 첫 마디는 전설 대사 (가끔 붙는 한 마디 더는 그대로) */
   const E0 = g.evAft?.n > 0 && EV_SAY[g.evAft.id]; if (E0) { L.splice(0, L.length, pick(E0.i)); } const E = E0 || (LG && Math.random() < .7 ? LG : null);   /* 이벤트 직후: 첫 마디는 이벤트 이야기, 이기고 지는 말도 반쯤 */
-  return { i: L.map(t => sayFill(t, V)), w: sayFill(pick(E && Math.random() < .5 ? E.w : Math.random() < .4 && C.w ? C.w : SAY_GEN.w[d]), V), l: sayFill(pick(E && Math.random() < .5 ? E.l : Math.random() < .4 && C.l ? C.l : SAY_GEN.l[d]), V) };
+  const wT = pick(E && Math.random() < .5 ? E.w : Math.random() < .4 && C.w ? C.w : SAY_GEN.w[d]), lT = pick(E && Math.random() < .5 ? E.l : Math.random() < .4 && C.l ? C.l : SAY_GEN.l[d]);
+  if (ld && L.some(t => t.includes('{mon'))) c.monSp = ld;   /* 첫 마디에 부른 포켓몬은 배틀 팀에 꼭 남김 (sayMon) */
+  return { i: L.map(t => sayFill(t, V)), w: sayFill(wT, V), l: sayFill(lT, V), wT, lT, V };
 }
+/* v26.04 경완 '가끔 체육관 도전자들 졌을 때 대사 브리기톤아 수고했어 이런식으로 포켓몬 이름 얘기할 때 있는데 들고 왔던 라인업이랑 안 맞을 때 있음':
+   대사는 도착 때 팀으로 정하는데 배틀 직전 refit 이 팀을 다시 뽑아서 이름이 달라졌음 → 첫 마디에 부른 포켓몬은 팀에 남기고(맨 끝 자리), 이기고 지는 말은 실제 배틀 팀 에이스 이름으로 다시 채움 */
+function sayMon(c, CS) { if (!c.team?.length) return; const sp = c.monSp; delete c.monSp;
+  if (sp && !c.team.some(m => m[0] === sp)) { const t = c.team[c.team.length - 1]; c.team[c.team.length - 1] = [sp, t[1]]; }
+  if (!CS?.wT) return; const ld = c.team[c.team.length - 1][0], V = { ...CS.V, mon: SPECIES[ld]?.n || '포켓몬' }; CS.w = sayFill(CS.wT, V); CS.l = sayFill(CS.lT, V); }
 const REW0 = [{ g: 40, r: 1, rl: -1, fr: 1 }, { g: 100, r: 1, rl: -1, fr: 2 }, { g: 300, r: 2, rl: -1, fr: 4 }];   // 평판은 막은 도전자 1명 ≈ 1 (경완 2026-10-29)
 const GYMB = () => GA.GYMB || { GYM_G: REW0.map(o => o.g), GYM_SF_PCT: 30, WAGE_BASE: 150, WAGE_LV: 5, WAGE_MAX: 600 };   // 골드·주급 값은 작업실 밸런스 (게임 10.78)
 // v22.14 경완 '친밀도 높을수록 덜 오름 + 난이도별' 합침: 이긴 도전자 배틀에 나간 포켓몬 친밀도 [0~99, 100~199, 200~] — 쉬움·보통·어려움·승급 심사
@@ -1424,7 +1431,7 @@ async function challenge(picked) {
     do await talk(whoAt(L.length - 1) + esc(L[L.length - 1]), '배틀 시작');   // 난이도·마리 수는 안 보여 줌 (경완 2026-10-28), 버튼 글자 '배틀 시작' (경완 2026-10-29)
     while (!picked && await luPick() == null);   // 승급 심사는 포켓몬 화면에서 라인업을 이미 골랐다
     const my = c.test ? c.test.map(id => GB().boxOf(id)).filter(Boolean) : luNow();   /* v25.08 운영자 더블 배틀 시험: 라인업 사본 */
-    refit(c, my);
+    refit(c, my); if (!N) sayMon(c, CS);
     // 어려운 도전자·이름 있는 트레이너는 실전 기술 배치 (경완 2026-10-29)
     const team = (c.boss ? bsCut(c.team, c.boss) : c.team).map(([sp, lv, mv]) => { const o = GB().foeEntry(sp, lv, c.boss ? BS_AI[c.boss - 1] : c.named ? 2 : Math.max(0, (c.ai ?? (c.diff ? 1 : 0)) - (lsE(g) >> 1))); if (mv && mv.length) o.mv = mv; if (c.boss) { const [a, b] = BS_IV[c.boss - 1] || [31, 31]; o.iv = o.iv.map(() => rndI(a, b)); } else if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); if (!c.boss && lsE(g)) o.iv = o.iv.map(v => Math.min(v, 31 - lsE(g) * 6)); o.evs = GB().foeEvs?.(sp, c.boss ? c.boss : Math.max(0, gradeOf(g.rep || 0).i - Math.round(lsE(g) * 1.5))); return o; });
     // 배틀이 끝나면 배틀 화면에서 상대가 한마디 (경완 2026-10-28)
