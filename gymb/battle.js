@@ -3033,7 +3033,7 @@ function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)
   if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
 /* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼': 다이수프 = 먹이면 거다이맥스 인자(gm(P).gmax)가 붙고, 이미 있으면 빠짐 (본가처럼). 거다이맥스 모습이 있는 34종만. 창고 S.gym.soup, 상점(다이맥스밴드 받은 관장만, dmOn) SOUP_P */
-const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png';
+const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png?v=2';
 const dmOn = () => !!(S.gym?.dBand || (S.gym?.shelf || []).some(x => x?.dBand) || window.gymDmOn);
 const gmaxOk = P => !!P && !!GMJ[(D?.sp?.[P.sp]?.id || '') + 'gmax'];
 const soupAll = () => (S.gym?.soup | 0) > 0 ? [[0, S.gym.soup | 0]] : [];
