@@ -4543,8 +4543,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}   /* v25.14 경완 '이상해씨 하단 잘림선': 뒷모습 그림은 아래가 반듯하게 잘려 있어 화면 아래(144)에 숨겨야 함 — 첫 자리는 올리지 않음 */
 .bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:4px;height:148px}   /* v25.11 경완 '내 포켓몬 두번째에 나온 애 스프라이트가 처음 나온 애보다 앞쪽에': 두 번째 자리(오른쪽)가 앞 — 그리는 차례(battle.js 판 순서)도 뒤로, 조금 아래 */
 .bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
-.bt.dbl .bt-hb.e:not(.s2){left:0;top:3px}
-.bt.dbl .bt-hb.e.s2{left:0;top:28px}   /* v25.16 볼 줄은 위 박스에만 → 화면 위에 안 잘리게 두 박스 조금 아래로 */
+.bt.dbl .bt-hb.e:not(.s2){left:-5px;top:3px}
+.bt.dbl .bt-hb.e.s2{left:-5px;top:28px}   /* v26.xx 경완 '더블 배틀할 때 상대 체력박스들 왼쪽 여백 생기는거 없애줘' — 한 마리 배틀(-6px)처럼 몸통을 화면 끝에 */   /* v25.16 볼 줄은 위 박스에만 → 화면 위에 안 잘리게 두 박스 조금 아래로 */
 .bt.dbl .bt-hb.p.s2{left:160px;top:74px}
 .bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
 .bt .pty.tg-p.off{opacity:.4;filter:grayscale(1)}.bt .bp-tgp.tg-all .cancel{grid-column:1!important}.bt .bp-tgp.tg-all .tg-go{grid-column:2;--c1:#f4706a;--c2:#d93a3c}   /* v25.11 쓰기 버튼 (그만두기 오른쪽) */
@@ -4714,7 +4714,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym.yahide .gy-main,#gym.yahide .gy-top{visibility:hidden!important}
 /* v25.77 경완 '여기 지금 체육관 관리 버튼 잘림 여백 없이 스크롤 안되게 해줘': 체육관 정보 화면 아래 안전 영역 여백(메뉴가 이미 맡음) 빼고, 화면이 낮으면 칸들을 조금씩 줄여 한 화면에 */
 #gym .gy-setup.gy-infos{padding-bottom:0!important}#gym .gy-infos>.gy-body{padding-bottom:10px}#gym .gy-infos .if-re.if-mg{margin-top:0}
-#gym .gy-infos>.gy-body>*{flex-shrink:0}#gym .gy-infos>.gy-body>:is(.if-stats,.if-grade,.if-two,.if-re){margin-top:auto!important}
+#gym .gy-infos>.gy-body>*{flex-shrink:0}#gym .gy-infos>.gy-body>.if-re{margin-top:auto!important}   /* v26.xx 경완 '체육관 관리 버튼 위치 고정하고 나머지 박스들 사이 여백 좀 줄여줘' — 남는 칸은 관리 버튼 위로만 */
 @media (max-height:1000px){#gym .gy-infos>.gy-body{gap:8px}#gym .gy-infos .if-grade>.bdw img{width:68px!important;height:68px!important}#gym .gy-infos button.if-grade{padding:8px 12px}#gym .gy-infos .if-grade .ig-tx>b.ig-gr{font-size:16px;margin:2px 0 4px}#gym .gy-infos .if-two>div{min-height:60px;padding-top:6px;padding-bottom:6px}#gym .gy-infos .if-two b{font-size:26px}#gym .gy-infos .if-stats>div{padding:6px 4px}#gym .gy-infos .if-re{padding:9px}}
 @media (max-height:720px){#gym .gy-infos>.gy-body{gap:6px}#gym .gy-infos .if-grade>.bdw img{width:52px!important;height:52px!important}#gym .gy-infos .if-two>div{min-height:52px}#gym .gy-infos .if-two b{font-size:22px}#gym .gy-infos .if-stats b{font-size:17px}#gym .gy-infos .if-re{padding:7px}#gym .gy-infos .gy-bar{height:10px}}
 #gym .wr-m .wr-dd{font-size:9px;margin-left:2px;color:#a0a0b0}
