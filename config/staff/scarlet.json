@@ -1,6 +1,1049 @@
 {
  "days": [
   {
+   "at": 1794869267433,
+   "theme": "숲속 꼬마 목장",
+   "note": "어제 찻집에 이어 오늘은 풀밭 한쪽에 아담한 목장을 꾸렸어요! 빨간 헛간과 사일로를 뒤에 세우고, 여물통·우유 양동이·버터 교유기·편자 던지기로 놀 거리를 채웠어요. 양수기 바퀴는 빙글빙글 돌고 워낭은 땡그랑 흔들리며, 헛간 랜턴은 밤에 목장 길을 따뜻하게 밝혀요.",
+   "items": [
+    {
+     "id": "ranch-barn",
+     "n": "빨간 헛간",
+     "k": "목장",
+     "d": "맞배 꺾인 지붕을 얹은 빨간 헛간이에요. 하얀 X자 큰 문이 살짝 열려 있고, 지붕 밑 다락 창에 건초가 삐죽 보여요.",
+     "px": [
+      "........kUUUUUUUUUUk........",
+      ".......kkTTTTTTTTTTkk.......",
+      ".....kkRRRRRRRRRRRRTTkk.....",
+      "...kkRRSSSSHHHHHISSSSTTkk...",
+      "..kRTSSTSSTHXXXXISSTSSTTTk..",
+      ".kRRSSSSSSSHZZYZISSSSSSSTTk.",
+      ".kRRSSSSSSSHZYZZISSSSSSSTTk.",
+      "kTRSTSSTSSTHYYYYISSTSSTSSTTk",
+      "kRRSSSSSSSSSSSSSSSSSSSSSSTTk",
+      "UUUUUUUUUUUUUUUUUUUUUUUUUUUU",
+      "kUUUUUUUUUUUUUUUUUUUUUUUUUUk",
+      "kRRSTSSSTSSSTSSSTSSSTSSSTTTk",
+      "kRRSTSSSTSSSTSSSTSSSTSSSTTTk",
+      "kRRSTSSHHHHHHHHHHHHHISSSTTTk",
+      "kRRHHHSHHSSSSUTSSSSHISHHHTTk",
+      "kRRPPHSHRHSSHUTHSSHTISPPHTTk",
+      "kRRHPPSHRHSSHUTHSSHTISHPPTTk",
+      "kRRJJJSHRSHHSUTSHHSTISJJJTTk",
+      "kRRSTSSHRSHHSUTOHHSTISSSTTTk",
+      "kRRSTSSHRSHHSUTOHHSTISSSTTTk",
+      "kRRSTSSHRSHHSUTSHHSTISSSTTTk",
+      "kRRSTSSHRHSSHUTHSSHTISSSTTTk",
+      "kRRSTSSHRHSSHUTHSSHTISSSTTTk",
+      "kRRSTSSHHSSSSUTSSSSHISSSTTTk",
+      "kRRSTSSJJJJJJJJJJJJJJSSSTTTk",
+      "kUUUUUUUUUUUUUUUUUUUUUUUUUUk"
+     ],
+     "pal": {
+      "R": "#e2765a",
+      "S": "#c2503c",
+      "T": "#94382e",
+      "U": "#682a28",
+      "H": "#f4efe2",
+      "I": "#d8d0bf",
+      "J": "#aaa292",
+      "Y": "#f4da7c",
+      "Z": "#d6ae4c",
+      "X": "#a6823a",
+      "O": "#7e8896",
+      "P": "#3e4658",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "살짝 열린 큰 문틈으로 쏙 숨었다가 옆으로 고개만 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "헛간 문틈으로 쏙 숨었다가 고개만 빼꼼 내밀었다.",
+        "빨간 헛간 문 뒤에 숨어 숨바꼭질을 했다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 헛간 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "빨간 헛간 지붕 꼭대기에 날아올라 목장을 내려다봤다.",
+        "헛간 용마루에 앉아 깃털을 골랐다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "헛간 벽에 기대 그늘에서 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "헛간 벽 그늘에 기대 새근새근 낮잠을 잤다.",
+        "빨간 헛간에 등을 기대고 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "무거운 헛간 문을 힘껏 밀어 활짝 열어 줘요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "무거운 헛간 문을 힘껏 밀어 활짝 열었다.",
+        "삐걱대는 헛간 문을 두 손으로 밀어 젖혔다."
+       ]
+      }
+     ],
+     "fit": "목장 한가운데 뒤쪽, 큰 나무 옆"
+    },
+    {
+     "id": "ranch-windpump",
+     "n": "바람개비 양수기",
+     "k": "목장",
+     "d": "나무 탑 꼭대기에 금속 날개 바퀴가 달린 양수기예요. 바람이 불면 바퀴가 빙글빙글 돌며 아래 나무 물통에 물을 퍼 올려요.",
+     "px": [
+      "........kkkNNkkk........",
+      ".......kNNNkMNNNk.......",
+      "......kNNkkkMMMNNk......",
+      ".....kNNk..kMMMkNNk.....",
+      ".....kNMMk.kMMk.kNk.....",
+      ".....kNMMMkPPk..kNk.....",
+      "....kNMMMMPMOPkkkkNk....",
+      "....kOkkkkPOPPNNNNOk....",
+      ".....kOk..kPPkNNNOk.....",
+      ".....kOk.kNNk.kNNOk.....",
+      ".....kOOkNNNk..kOOk.....",
+      "......kOONNNkkkOOk......",
+      ".......kOOCCCCOOk.......",
+      "........kkCCCCkk........",
+      ".........kBOPCk.........",
+      "........kBCOPDCk........",
+      "........kBCOPDCk........",
+      ".......kBCDOPDDCk.......",
+      ".......kBCCOPCCCk.......",
+      "......kBCkDOPDkDCk......",
+      "......kBCkkOPkkDCk......",
+      "......kBCkkOPkkDCk......",
+      ".....kBCkDkOPkDkDCk.....",
+      ".....kBCCCCOPCCCCCk.....",
+      "....kBCkDkkOPkkDkDCk....",
+      "....kBCkkkDOPDkkkDCk....",
+      ".kkkBCkkkkDOPDkkkkDCkkk.",
+      "kAAAAAAAAAAAAAAAAAAAAACk",
+      "kAwwwvwwwwwwwwvwwwwwwwCk",
+      "kABBCBBBBCBBBBCBBBBCBBCk",
+      "kABBCBBBBCBBBBCBBBBCBBCk",
+      "kDDDDDDDDDDDDDDDDDDDDDDk"
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "w": "#6aa8d8",
+      "v": "#bfe2f4",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "바퀴 앞에 떠서 힘껏 날갯짓해 날개 바퀴를 돌려요",
+       "x": {
+        "at": [
+         0.5,
+         0.35
+        ],
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "양수기 바퀴 앞에서 날갯짓해 바퀴를 빙글빙글 돌렸다.",
+        "힘찬 날갯짓으로 양수기를 돌려 물통에 물을 채웠다."
+       ]
+      },
+      {
+       "w": "물 타입 / 헤엄치는 포켓몬",
+       "a": "아래 나무 물통 앞에 서서 시원한 물을 마셔요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "양수기 물통에 얼굴을 대고 시원한 물을 꿀꺽꿀꺽 마셨다.",
+        "갓 퍼 올린 물을 마시고 기분 좋게 몸을 털었다."
+       ]
+      },
+      {
+       "w": "비행 타입",
+       "a": "서 있던 자리에서 날아올라 날개 바퀴 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "양수기 꼭대기에 날아올라 바람 냄새를 맡았다.",
+        "도는 바퀴 위에 앉았다가 어지러워 고개를 흔들었다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "탑 옆에서 전기를 흘려 바퀴를 윙 돌려요",
+       "x": {
+        "m": "skill",
+        "fx": "spin"
+       },
+       "l": [
+        "양수기에 전기를 찌릿 흘려 바퀴를 윙 돌렸다.",
+        "바람이 없는 날 대신 전기로 양수기를 돌려 줬다."
+       ]
+      }
+     ],
+     "fit": "물통 옆이나 연못 가까이, 바람 잘 부는 언덕",
+     "mv": {
+      "st": [
+       13,
+       14,
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       21,
+       22,
+       23,
+       24,
+       25,
+       26,
+       27,
+       28,
+       29,
+       30,
+       31
+      ],
+      "mp": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12
+      ],
+      "o": [
+       11.5,
+       6.5
+      ],
+      "k": "spin"
+     }
+    },
+    {
+     "id": "ranch-butter-churn",
+     "n": "버터 교유기",
+     "k": "목장",
+     "d": "쇠테를 두른 나무 통에 막대를 꽂은 버터 교유기예요. 막대를 위아래로 쿵쿵 찧으면 뚜껑 틈으로 노란 버터가 살짝 넘쳐요.",
+     "px": [
+      "....kAAAAAAAk...",
+      "....kCCCBCCCk...",
+      ".....kkkAkkk....",
+      ".......kAk......",
+      "....kkkkAk......",
+      "...kYYYkAkkkk...",
+      "..kAAAAAAAAAAk..",
+      "..kDDDDDDDDDDk..",
+      "..kAAYCBBCYCDk..",
+      "..kAAYCBBCBCDk..",
+      "..kMMNNNNNNNOk..",
+      "..kAABCBBCBCDk..",
+      "..kAABCBBCBCDk..",
+      "..kAABCBBCBCDk..",
+      "..kAABCBBCBCDk..",
+      ".kAABCBBCBBCDk..",
+      ".kAABCBBCBBCCDk.",
+      ".kAABCBBCBBCCDk.",
+      ".kAABCBBCBBCCDk.",
+      ".kMMNNNNNNNNNOk.",
+      ".kAABCBBCBBCCDk.",
+      ".kAABCBBCBBCCDk.",
+      ".kDDDDDDDDDDDDk.",
+      "..kkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "Y": "#f6dc6e",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "막대를 잡고 위아래로 쿵쿵 찧어 버터를 만들어요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "교유기 막대를 쿵쿵 찧어 고소한 버터를 만들었다.",
+        "힘차게 막대를 찧다가 버터가 튀어 얼굴에 묻었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "뚜껑 틈에 넘친 버터를 날름 핥아 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "교유기 뚜껑에 넘친 버터를 날름 핥아 먹었다.",
+        "몰래 버터를 핥다가 입가가 반짝반짝해졌다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "통 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "버터 교유기 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "나무 통 뒤에 숨어 버터 냄새를 킁킁 맡았다."
+       ]
+      }
+     ],
+     "fit": "헛간 옆, 우유 양동이 곁"
+    },
+    {
+     "id": "ranch-milk-pail",
+     "n": "우유 양동이와 의자",
+     "k": "목장",
+     "d": "세 발 나무 의자 옆에 하얀 우유가 찰랑찰랑 담긴 양철 양동이가 놓여 있어요. 양동이 손잡이가 반달처럼 휘어 있어요.",
+     "px": [
+      "..............kOOk....",
+      ".............kOkkOk...",
+      "...........kkOkkkkOkk.",
+      "..........kOOOOOOOOOOk",
+      "..........kMHHMHHHHHPk",
+      ".kkkkkkkkkkMIIIIIIIIPk",
+      "kAAAAAAAAACMMNNNNNNOPk",
+      "kCCCCCCCCCCMMNNNNNNOPk",
+      ".kCkkBCkkDkOOOOOOOOOOk",
+      ".kCkkBCkkDkkMMNNNNNOPk",
+      ".kCkkBCkkDkkMMNNNNOPk.",
+      ".kDDDDDDDDkkMMNNNNOPk.",
+      "kCkkkBCkkkDkMMNNNNOPk.",
+      "kCk.kBCk.kDkMMNNNNOPk.",
+      "kCk.kBCk.kDkMMNNNNOPk.",
+      "kCk..kk..kDkPPPPPPPPk."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "H": "#f4efe2",
+      "I": "#d8d0bf",
+      "J": "#aaa292",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "세 발 의자 위에 올라가 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.25,
+         0.4
+        ]
+       },
+       "l": [
+        "세 발 나무 의자에 올라앉아 다리를 달랑달랑 흔들었다.",
+        "우유 양동이 옆 의자에 앉아 한숨 돌렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "양동이 앞에 서서 고개를 넣고 우유를 핥아요",
+       "x": {
+        "at": [
+         0.72,
+         1
+        ],
+        "an": "Eat"
+       },
+       "l": [
+        "양동이에 고개를 넣고 우유를 할짝할짝 핥았다.",
+        "우유를 마시다 코끝에 하얀 수염이 생겼다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "양동이에 찬 기운을 불어 우유를 시원하게 식혀요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "우유 양동이에 찬 기운을 불어 시원하게 식혔다.",
+        "너무 세게 불어 우유 위에 살얼음이 얼었다."
+       ]
+      }
+     ],
+     "fit": "헛간 문 옆, 여물통 곁"
+    },
+    {
+     "id": "ranch-feed-trough",
+     "n": "건초 여물통",
+     "k": "목장",
+     "d": "X자 다리 위에 기다란 나무 여물통을 얹고 마른 건초와 곡식을 수북이 담았어요. 모서리엔 쇠 장식을 박았어요.",
+     "px": [
+      "..kk.kYkkYk...kYkYkkkkYYkk..",
+      "kkYYkkYYYXYkkkYYYZkXYkZZYYkk",
+      "AXXXXXXXXXXXXXXXXXXXXXXXXXXC",
+      "AAMNBBBBBCBBBBBBBBCBBBBBMNCC",
+      "kANNBBBBBCBBBBBBBBCBBBBBNNCk",
+      "kAACCCCCCCCCCCCCCCCCCCCCCCCk",
+      "kAABBBBBBCBBBBBBBBCBBBBBBCCk",
+      "kAABBBBBBCBBBBBBBBCBBBBBBCCk",
+      ".kAABBBBBCBBBBBBBBCBBBBBCCk.",
+      ".kDDDDDDDDDDDDDDDDDDDDDDDDk.",
+      "..kkDkkkkkkkkkkkkkkkkkkkDk..",
+      "...kDCk...............kDCk..",
+      "...kDkCk.............kDkCk..",
+      "..kDkkCk.............kDkkCk."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "Y": "#f4da7c",
+      "Z": "#d6ae4c",
+      "X": "#a6823a",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "여물통 앞에 서서 건초를 냠냠 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "여물통에 고개를 박고 건초를 냠냠 먹었다.",
+        "여물통 곡식을 오물오물 먹다가 볼이 빵빵해졌다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "여물통 옆에서 기술을 써 건초를 새로 수북이 채워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "기술로 싱싱한 풀을 돋워 여물통을 다시 가득 채웠다.",
+        "바닥난 여물통에 새 풀을 소복이 채워 줬다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "여물통 가장자리에 올라가 끝에서 끝까지 균형 잡으며 걸어요",
+       "x": {
+        "at": "top",
+        "m": "walk wobble"
+       },
+       "l": [
+        "여물통 가장자리를 아슬아슬 끝에서 끝까지 걸었다.",
+        "여물통 위를 걷다 휘청해서 건초 속에 폭 빠질 뻔했다."
+       ]
+      }
+     ],
+     "fit": "헛간 앞, 울타리 안쪽"
+    },
+    {
+     "id": "ranch-gate",
+     "n": "목장 울타리 문",
+     "k": "목장",
+     "d": "굵은 나무 기둥 사이에 X자 버팀목을 댄 목장 문이에요. 문 위에는 빨간 글씨 작은 팻말, 옆에는 쇠 빗장이 달려 있어요.",
+     "px": [
+      "CCCk.....kHHHHHHHHHIk.....kCCC",
+      "AAAk.....kHHTTHTTTHIk.....kAAA",
+      "ABCkkkkkkkJJJJJJJJJIkkkkkkkABC",
+      "ABCABCAAAAAAAABCAAAAAAAABBAABC",
+      "ABCOOCCCCCCCCBCCBCCCCCCCBBCABC",
+      "ABCkBCkkkkkkBCBCCBkkkkkkBBkABC",
+      "ABCkBCk....kBCBCkCk....kBBkABC",
+      "ABCkBCk...kBCkBCkCBk...kBBkABC",
+      "ABCkBCkkkkBCkkBCkkCBkkkkBBkABC",
+      "ABCABCAAABCAAABCAAACBAAABMNNBC",
+      "ABCCBCCCCBCCCCBCCCCCCCCCBNNNBC",
+      "ABCkBCkkBCkkkkBCkkkkCBkkBBkABC",
+      "ABCkBCkBCk...kBCk...kCBkBBkABC",
+      "ABCkBCBCk....kBCk....kCBBBkABC",
+      "ABCkBCBCkkkkkkBCkkkkkkCBBBkABC",
+      "ABCOOBCAAAAAAABCAAAAAAACBBAABC",
+      "ABCCBCCCCCCCCCBCCCCCCCCCBBCABC",
+      "DDDkkkkkkkkkkkkkkkkkkkkkkkkDDD"
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "H": "#f4efe2",
+      "I": "#d8d0bf",
+      "J": "#aaa292",
+      "T": "#b0403a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "문 가로대를 타고 위로 올라가 꼭대기에 걸터앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "목장 문 가로대를 영차영차 타고 꼭대기에 걸터앉았다.",
+        "울타리 문 위에 올라 목장 안을 두리번거렸다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 문 팻말 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "목장 문 팻말 위에 날아가 앉아 꼬리를 까딱였다.",
+        "울타리 문 꼭대기에 앉아 지나가는 포켓몬을 구경했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "문기둥에 등을 기대고 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "울타리 문기둥에 기대 꾸벅꾸벅 졸았다.",
+        "목장 문 앞에서 문지기처럼 섰다가 그대로 잠들었다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "빗장을 밀어 무거운 문을 활짝 열어 줘요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "쇠 빗장을 덜컥 밀어 목장 문을 활짝 열었다.",
+        "삐걱대는 목장 문을 힘껏 밀어 젖혔다."
+       ]
+      }
+     ],
+     "fit": "목장 울타리 한가운데, 길 끝"
+    },
+    {
+     "id": "ranch-silo",
+     "n": "곡물 사일로",
+     "k": "목장",
+     "d": "빨간 둥근 지붕을 쓴 키 큰 양철 사일로예요. 쇠테가 층층이 감겨 있고, 옆에 꼭대기까지 오르는 사다리와 아래 작은 쪽문이 있어요.",
+     "px": [
+      "......kkkOOkkk......",
+      "....kkSSRRSTTTkk....",
+      "...kRRSRSSSTTTUUk...",
+      "..kRRRSSSSSTTTUUUk..",
+      ".kRRRRSSSSSTTTUUUUk.",
+      ".kRRRRSSSSSTTTUUUUk.",
+      "kUUUUUUUUUUUUUUUUUUk",
+      ".kMMMNNNNNNNNNOOOPk.",
+      ".kMMHHHHNNNDNNDOOPk.",
+      ".kMMJJJJNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kONOOOOOOODOODPPPk.",
+      ".kMMMNNNNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kMMMNNNNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kONOOOOOOODOODPPPk.",
+      ".kMMMNNNNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kMMMNNNNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kONOOOOOOODOODPPPk.",
+      ".kMMMNNNNNNDCCDOOPk.",
+      ".kMMMNNNNNNDNNDOOPk.",
+      ".kMMMTTTTNNDNNDOOPk.",
+      ".kMMMRSSTNNDCCDOOPk.",
+      ".kMMMRSSTNNDNNDOOPk.",
+      ".kONORSYTOODOODPPPk.",
+      ".kMMMRSSTNNDCCDOOPk.",
+      ".kMMMRSSTNNDNNDOOPk.",
+      ".kMMMRSSTNNDNNDOOPk.",
+      ".kPPPPPPPPPPPPPPPPk."
+     ],
+     "pal": {
+      "R": "#e2765a",
+      "S": "#c2503c",
+      "T": "#94382e",
+      "U": "#682a28",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "H": "#f4efe2",
+      "I": "#d8d0bf",
+      "J": "#aaa292",
+      "Y": "#f2d27a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "옆 사다리를 한 칸씩 타고 위로 올라가요",
+       "x": {
+        "at": [
+         0.62,
+         0.2
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "사일로 사다리를 한 칸씩 영차영차 올라갔다.",
+        "사다리 중간에서 아래를 내려다보고 깜짝 놀라 꼭 붙잡았다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 둥근 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "사일로 둥근 지붕 꼭대기에 날아가 앉았다.",
+        "목장에서 가장 높은 사일로 꼭대기에서 바람을 맞았다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "사일로 그늘에 기대 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "사일로 그늘에 기대 시원하게 낮잠을 잤다.",
+        "양철 벽에 등을 대고 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "강철 타입",
+       "a": "양철 벽을 통통 두드려 울리는 소리를 들어요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "사일로 양철 벽을 통통 두드려 울림 소리를 들었다.",
+        "사일로를 두드리고 쿵 울리는 소리에 귀를 쫑긋했다."
+       ]
+      }
+     ],
+     "fit": "헛간 옆 뒤쪽, 큰 소품 곁"
+    },
+    {
+     "id": "ranch-horseshoe-toss",
+     "n": "편자 던지기 말뚝",
+     "k": "목장",
+     "d": "모래 상자 가운데 쇠 말뚝을 박고 빨간 깃발을 달았어요. 말뚝에 걸린 편자 하나와 모래 위에 떨어진 편자들이 놓여 있어요.",
+     "px": [
+      "..........kPqrrk.......",
+      "..........kPrrrk.......",
+      "..........kPkkk........",
+      ".........kMMk..........",
+      ".........kMOk..........",
+      ".........kMOk..........",
+      ".........kMOk..........",
+      ".........kMOk..........",
+      "..kk..kk.kMOk...kkkk...",
+      ".kMMkkMNkkMOk..kNOOOk..",
+      ".kMNkkNOkkMOkkkMNNNNOk.",
+      ".kMNkkNOMMPPMMOMNkkNOk.",
+      "kkMNNNNONNPPNNNMNkkNOkk",
+      "AAANOOOAOOOOOOAMMAAMNAC",
+      "ABEEEEEEEEMOEEEEEEEEEBC",
+      "ABFFFGFFFFFFFFFGFFFFFBC",
+      "ABBBBBBBBBBBBBBBBBBBBBC",
+      "DDDDDDDDDDDDDDDDDDDDDDD"
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#545c6a",
+      "E": "#f0dca0",
+      "F": "#dcc080",
+      "G": "#b89a5c",
+      "r": "#d8503c",
+      "q": "#f07a5a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "격투·강철 타입",
+       "a": "편자를 들고 말뚝을 향해 힘껏 던져 걸어요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "편자를 휙 던져 말뚝에 땡그랑 걸었다.",
+        "편자를 던졌는데 말뚝을 빙글 돌고 튕겨 나가 아쉬워했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "모래 상자 앞에 서서 누가 편자를 거는지 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "편자 던지기 말뚝 앞에서 응원하며 구경했다.",
+        "편자가 걸리자 폴짝 뛰며 박수를 쳤다."
+       ]
+      },
+      {
+       "w": "땅 타입",
+       "a": "모래 상자에 들어가 모래를 파고 편자를 찾아 꺼내요",
+       "x": {
+        "at": "front",
+        "m": "hide peek"
+       },
+       "l": [
+        "모래 상자를 파헤쳐 묻힌 편자를 찾아냈다.",
+        "모래 속에 쏙 들어갔다가 편자를 머리에 걸고 나왔다."
+       ]
+      }
+     ],
+     "fit": "헛간 앞 마당, 풀밭 빈 곳"
+    },
+    {
+     "id": "ranch-cowbell-post",
+     "n": "워낭 기둥",
+     "k": "목장",
+     "d": "나무 기둥 팔에 커다란 놋쇠 워낭을 매달았어요. 건드리면 워낭이 흔들리며 땡그랑 맑은 소리가 나요.",
+     "px": [
+      "kAAAAAk...........",
+      "kCCCCCk...........",
+      ".kABCkkkkkkkkkkk..",
+      ".kABAAAAAAAAAAAAk.",
+      ".kABCCCCCCCCCCCCk.",
+      ".kABCCCDDkkkWkkk..",
+      ".kABCDDkk..kWk....",
+      ".kABCkk....kWk....",
+      ".kACCk....kaadk...",
+      ".kABCk...kaabcdk..",
+      ".kABCk...kaHbcdk..",
+      ".kABCk...kaHbcdk..",
+      ".kACCk..kaabbbcdk.",
+      ".kABCk.krsrrrrrrrk",
+      ".kABCk.kaabbbbbcdk",
+      ".kABCk.kaabbbbbcdk",
+      ".kACCk.kcbccccccck",
+      ".kABCkkadddddddddd",
+      ".kABCk.kkkkPPkkkkk",
+      ".kABCk....kPPk....",
+      ".kACCk.....kk.....",
+      ".kABCk............",
+      ".kABCk............",
+      ".kABCk............",
+      ".kACCk............",
+      ".kABCk............",
+      ".kABCk............",
+      ".kABCk............",
+      ".kABCk............",
+      ".kDDDk............"
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "W": "#c8b48a",
+      "a": "#ffe08a",
+      "b": "#e0b040",
+      "c": "#ac7c2a",
+      "d": "#6e4e1e",
+      "H": "#fff6d0",
+      "P": "#545c6a",
+      "r": "#c0463a",
+      "s": "#e66a52",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "워낭 밑으로 가서 머리로 톡 밀어 땡그랑 울려요",
+       "x": {
+        "at": [
+         0.66,
+         0.75
+        ],
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "워낭을 머리로 톡 밀어 땡그랑 울렸다.",
+        "워낭 소리가 마음에 들어 몇 번이고 흔들었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "워낭 옆에 떠서 날갯짓 바람으로 워낭을 흔들어요",
+       "x": {
+        "at": [
+         0.66,
+         0.4
+        ],
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓 바람으로 워낭을 흔들어 땡그랑 소리를 냈다.",
+        "워낭 앞에서 파닥이다 소리에 놀라 뒤로 물러났다."
+       ]
+      },
+      {
+       "w": "노말·페어리 타입",
+       "a": "워낭 소리에 맞춰 노래 기술을 써요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "땡그랑 워낭 소리에 맞춰 노래를 불렀다.",
+        "워낭 박자에 맞춰 흥얼흥얼 노래했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥에 기대 워낭 소리를 들으며 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "워낭 기둥에 기대 바람에 흔들리는 소리를 들으며 졸았다.",
+        "땡그랑 소리를 자장가 삼아 꾸벅꾸벅 잠들었다."
+       ]
+      }
+     ],
+     "fit": "목장 문 옆, 길가",
+     "mv": {
+      "st": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       20,
+       21,
+       22,
+       23,
+       24,
+       25,
+       26,
+       27,
+       28,
+       29
+      ],
+      "mp": [
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15,
+       16,
+       17,
+       18,
+       19
+      ],
+      "o": [
+       12,
+       7
+      ],
+      "k": "swing",
+      "amp": 1.8
+     }
+    },
+    {
+     "id": "ranch-barn-lantern",
+     "n": "헛간 랜턴 기둥",
+     "k": "목장",
+     "d": "나무 기둥 쇠팔에 빨간 갓을 쓴 석유 랜턴을 걸었어요. 유리 속 불꽃이 밤마다 목장 길을 따뜻하게 밝혀요.",
+     "px": [
+      "AAAAAk..........",
+      "CCCCCk..........",
+      "kABCkkkkkkkkk...",
+      "kABOOOOOOOOOOk..",
+      "kABPPPPPPPPPPk..",
+      "kABCkPPkkkkPk...",
+      "kABCPkk..kkPkk..",
+      "kACCk...kPPPPPk.",
+      "kABCk..kqqqqqqqk",
+      "kABCk..kuuuuuuuk",
+      "kABCk..kPGgPggPk",
+      "kABCk..kPGgyggPk",
+      "kACCk..kPgoyogPk",
+      "kABCk..kPgoyogPk",
+      "kABCk..kPgoyogPk",
+      "kABCk..kPgrorgPk",
+      "kABCk..kqqqqqqqk",
+      "kACCk..kuuuuuuuk",
+      "kABCk...kPPPPPk.",
+      "kABCk....kkkkk..",
+      "kABCk...........",
+      "kABCk...........",
+      "kACCk...........",
+      "kABCk...........",
+      "kABCk...........",
+      "kABCk...........",
+      "kABCk...........",
+      "kACCk...........",
+      "kABCk...........",
+      "kABCk...........",
+      "kABCk...........",
+      "kDDDk..........."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "O": "#7e8896",
+      "P": "#3e4658",
+      "q": "#d65a44",
+      "u": "#8a2e2a",
+      "g": "#fbeec0",
+      "G": "#ffffff",
+      "y": "#ffe27a",
+      "o": "#f5a03c",
+      "r": "#e0502c",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "나는 포켓몬",
+       "a": "랜턴 높이에 떠서 불빛 둘레를 빙빙 돌아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "헛간 랜턴 불빛 둘레를 빙글빙글 날아다녔다.",
+        "따뜻한 랜턴 불빛 곁을 맴돌며 춤을 췄다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "랜턴 옆에서 불꽃을 살짝 보태 불을 환하게 키워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "랜턴에 불꽃을 살짝 보태 목장 길을 환하게 밝혔다.",
+        "꺼져 가던 랜턴 불을 다시 활활 살렸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 쇠팔 위에 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.12
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "랜턴 쇠팔 위에 날아가 앉아 불빛을 내려다봤다.",
+        "랜턴 쇠팔에 앉아 따뜻한 불 옆에서 깃털을 부풀렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 아래 기대 랜턴 불빛 속에서 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "랜턴 기둥 아래 기대 불빛 속에서 새근새근 잠들었다.",
+        "따뜻한 랜턴 불빛 아래서 꾸벅꾸벅 졸았다."
+       ]
+      }
+     ],
+     "fit": "목장 문 옆, 밤에 길 밝힐 곳",
+     "glow": 1
+    }
+   ]
+  },
+  {
    "at": 1794782962640,
    "theme": "숲속 꼬마 찻집",
    "note": "쌀쌀해지는 11월이라 풀밭 한쪽에 따뜻한 찻집을 차렸어요! 줄무늬 차양 카운터를 가운데 두고 숯불 주전자 화로·커다란 찻잔·케이크 스탠드·마카롱 탑을 그렸고, 커피 그라인더 손잡이는 빙글빙글 돌고 문종은 딸랑 흔들려요. 찻잔 등과 화로는 밤에 둘레를 따뜻하게 밝혀요.",
