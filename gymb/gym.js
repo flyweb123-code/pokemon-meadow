@@ -1193,7 +1193,7 @@ function arrive(c) {
   g.q.push(c); glog('in', `${cn}${jong(c.nm) ? '이' : '가'} 도전하러 왔다!${c.boss ? ` <small>${GRADES[c.boss][1]} 승급 심사</small>` : c.named ? ' <small>이름 있는 트레이너</small>' : ''}`, c.t);
 }
 // v19.08: 보고서에 넣을 트레이너 줄 — 지금 있는 트레이너(기록 없어도 0) + 이번 주에 일했다가 나간 트레이너
-/* v25.92 경완 '체육관 결산에서 트레이너별 주급 별 순이익 계산할 때 지금까지 일수만큼의 급여로 계산해야할듯': 그 주에 일한 날(고용한 날·해고한 날 기준, 1~7일)만큼만 주급 → wg = 주급×일수/7, wf = 한 주 주급, d = 일수 */
+/* v26.00 경완 '체육관 결산에서 트레이너별 주급 별 순이익 계산할 때 지금까지 일수만큼의 급여로 계산해야할듯': 그 주에 일한 날(고용한 날·해고한 날 기준, 1~7일)만큼만 주급 → wg = 주급×일수/7, wf = 한 주 주급, d = 일수 */
 const sfWkD = (k, h, t1) => { const a = k + WK_H * H, b = Math.min(a + 7 * DAY, t1 || Infinity); return Math.max(1, Math.min(7, Math.ceil((b - Math.max(a, h || 0)) / DAY - .01))); };
 const sfWkW = (wf, d) => Math.round((wf || 0) * d / 7);
 function rptSf(o) { const g = st(), R = { ...(o.sf || {}) }, L = [];
@@ -3019,7 +3019,7 @@ function reportPop(any) {
   let body;
   if (!r) body = `<div class="aw-hd wr-hd"><small>주간 보고서</small><b>첫 보고서는 다음 주 월요일에 와요</b></div><p class="wr-empty">한 주 동안 막은 도전자, 번 골드, 트레이너들이 주급만큼 일했는지를 정리해 드려요.</p>`;
   else {
-    if (r.sf && !r.sfD) { r.sfD = 1; for (const x of r.sf) if (x.d == null) { const s = (g.sf || []).find(y => sfName(y) === x.nm && y.tr === x.tr); x.wf = x.wg; x.d = sfWkD(r.k || wkOf(Date.now()) - 7 * DAY, s?.hired); x.wg = sfWkW(x.wf, x.d); } }   /* v25.92 이미 만든 보고서도 일한 날만큼 */
+    if (r.sf && !r.sfD) { r.sfD = 1; for (const x of r.sf) if (x.d == null) { const s = (g.sf || []).find(y => sfName(y) === x.nm && y.tr === x.tr); x.wf = x.wg; x.d = sfWkD(r.k || wkOf(Date.now()) - 7 * DAY, s?.hired); x.wg = sfWkW(x.wf, x.d); } }   /* v26.00 이미 만든 보고서도 일한 날만큼 */
     const L = (r.sf || []).slice().sort((a, b) => (b.co ? -1e9 : b.e - b.wg) - (a.co ? -1e9 : a.e - a.wg)), sg = L.reduce((a, x) => a + (x.e || 0), 0), wg = L.reduce((a, x) => a + (x.wg || 0), 0), mine = Math.max(0, (r.g || 0) - sg), net = (r.g || 0) - wg;
     const k0 = r.k || wkOf(Date.now()) - 7 * DAY, dr = r.w + r.l ? Math.round(r.w / (r.w + r.l) * 100) : 0;
     const row = x => { const d = (x.e || 0) - (x.wg || 0), pc = x.wg ? Math.min(100, Math.round((x.e || 0) / x.wg * 100)) : 100, tag = x.co ? '<i class="wr-tag co">훈련장 코치</i>' : x.out ? '<i class="wr-tag out">그만둠</i>' : '';
