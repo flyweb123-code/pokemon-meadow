@@ -46,14 +46,19 @@ android {
     }
 
     signingConfigs {
-        // 친구들에게 APK 로 나눠 줄 때 쓰는 개발용 서명 (늘 같은 키라 새 버전을 덮어 설치할 수 있다).
-        // 플레이 스토어에 올릴 땐 비밀 변수 ANDROID_KEYSTORE_B64 등으로 진짜 키를 넣는다 (README).
+        // 친구들에게 APK 로 나눠 줄 때 쓰는 서명 (늘 같은 키라 새 버전을 덮어 설치할 수 있다).
+        // 경완 2026-11-17 '안드로이드 일단 비공개해': 키 파일·비밀번호는 저장소에 두지 않는다.
+        // GitHub 빌드 = 비밀 변수 ANDROID_KEYSTORE_B64·ANDROID_KEYSTORE_PASS 등 (android.yml 이 파일로 풀어 줌).
+        // 내 컴퓨터 빌드 = app/dev.keystore(gitignore) + ~/.gradle/gradle.properties 의 ANDROID_KEYSTORE_PASS (README).
         create("dev") {
+            fun sec(k: String, def: String? = null): String =
+                System.getenv(k) ?: (project.findProperty(k) as String?) ?: def
+                    ?: error("서명 비밀 값 $k 가 없습니다 (android/README.md 서명 절 참고)")
             val ks = System.getenv("ANDROID_KEYSTORE_FILE")
             storeFile = if (ks != null) file(ks) else file("dev.keystore")
-            storePassword = System.getenv("ANDROID_KEYSTORE_PASS") ?: "pokegrow"
-            keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: "pokegrow"
-            keyPassword = System.getenv("ANDROID_KEY_PASS") ?: "pokegrow"
+            storePassword = sec("ANDROID_KEYSTORE_PASS")
+            keyAlias = sec("ANDROID_KEY_ALIAS", "pokegrow")
+            keyPassword = sec("ANDROID_KEY_PASS", storePassword)
         }
     }
 
