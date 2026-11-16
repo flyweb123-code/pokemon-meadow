@@ -4718,3 +4718,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v26.23 경완 '로켓단 이벤트 방향키도 특훈처럼 스틱, 위치 고정으로 계속 보이게' (ev.js .ev-stk) */
 #gym .ev-pad.ev-stk::before{display:none}#gym .ev-stk .ev-jb{position:absolute;left:50%;top:50%;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;background:rgba(28,28,46,.32);border:3px solid rgba(255,255,255,.45);box-shadow:0 3px 0 rgba(0,0,0,.35);transition:background .12s}#gym .ev-stk .ev-jb.on{background:rgba(28,28,46,.46)}
 #gym .ev-stk .ev-jk{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(255,255,255,.88);border:3px solid #20202c;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+
+/* v26.73 경완 '라인업 딱지 색 필드 딱지 색이랑 똑같아서 색 바꿔야겠다': 라인업 = 파랑, 필드 = 초록 그대로 / 훈련장 고르기 라인업 필터 버튼 */
+#gym .gy-boxw .pk .tgs .tg.tg-lu,.gy-boxw .pk .tg.tg-lu{background:#2f6fd0!important;color:#fff!important}
+.gy-boxw .bw-tyf button.bw-luf{display:block;flex:none;height:auto;min-width:0;padding:5px 12px!important;border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink);opacity:1;font-size:13px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.gy-boxw .bw-tyf button.bw-luf.on{background:var(--frame);color:var(--win)}

@@ -4739,3 +4739,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .pty .pty-it i{position:relative;display:block;flex:none;width:17px;height:17px;border-radius:4px;background:#00000024;box-shadow:inset 0 0 0 1px #ffffff40}
 .bt .pty .pty-it img{position:static!important;grid-row:auto!important;width:17px!important;height:17px!important;object-fit:contain;image-rendering:pixelated}
 .bt .pty .pty-it b{position:absolute;right:-2px;bottom:-3px;font:700 7px/1 var(--px);color:#fff;text-shadow:1px 0 #000,-1px 0 #000,0 1px #000,0 -1px #000}
+
+/* v26.73 경완 '라인업 딱지 색 필드 딱지 색이랑 똑같아서 색 바꿔야겠다': 라인업 = 파랑, 필드 = 초록 그대로 / 훈련장 고르기 라인업 필터 버튼 */
+#gym .gy-boxw .pk .tgs .tg.tg-lu,.gy-boxw .pk .tg.tg-lu{background:#2f6fd0!important;color:#fff!important}
+.gy-boxw .bw-tyf button.bw-luf{display:block;flex:none;height:auto;min-width:0;padding:5px 12px!important;border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink);opacity:1;font-size:13px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.gy-boxw .bw-tyf button.bw-luf.on{background:var(--frame);color:var(--win)}
