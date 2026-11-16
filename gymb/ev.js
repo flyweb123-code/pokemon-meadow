@@ -456,8 +456,10 @@ function field(I, o) {
   F.trail = (tx, ty, ms, hop) => { const p = F.pl; if (!p || p.act) return;
     if (p.wait) { p.wait = false; p.x = tx; p.y = ty; p.f = F.me.f; p.put(); p.el.hidden = false; p.el.animate?.([{ opacity: 0 }, { opacity: 1 }], { duration: 160 }); return; }   /* 문에서 나온 뒤 첫 걸음에 내 뒤 칸에 나타남 (경완 2026-11-08 '건물 뚫고 나옴') */ const x0 = p.x, y0 = p.y, dx = tx - x0, dy = ty - y0; if (!dx && !dy) return;
     if (Math.abs(dx) + Math.abs(dy) > 2.01) { p.x = tx; p.y = ty; p.put(); return; }   // 방이 바뀌었거나 멀리 떨어졌으면 곧장
-    p.f = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); p.mv++;
-    anim(ms, (e2, q) => { p.x = x0 + dx * q; p.y = y0 + dy * q; p.hop = hop ? Math.sin(q * Math.PI) * 10 : 0; }).then(() => { p.x = tx; p.y = ty; p.hop = 0; p.mv--; }); };
+    p.f = Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); p.mv++; const tok = p.tok = (p.tok | 0) + 1; p.bk = [x0, y0];
+    anim(ms, (e2, q) => { if (p.tok !== tok) return; p.x = x0 + dx * q; p.y = y0 + dy * q; p.hop = hop ? Math.sin(q * Math.PI) * 10 : 0; }).then(() => { if (p.tok === tok) { p.x = tx; p.y = ty; p.hop = 0; } p.mv--; }); };
+  /* v26.28 내가 걷다 되돌아서면 관장 옆 포켓몬도 있던 칸으로 (겹치지 않게) */
+  F.trailBack = () => { const p = F.pl; if (!p || p.act || !p.bk) return; const [bx, by] = p.bk, x1 = p.x, y1 = p.y, tok = p.tok = (p.tok | 0) + 1; p.bk = null; p.hop = 0; p.mv++; anim(120, (e2, q) => { if (p.tok !== tok) return; p.x = x1 + (bx - x1) * q; p.y = y1 + (by - y1) * q; }).then(() => { if (p.tok === tok) { p.x = bx; p.y = by; } p.mv--; }); };
   F.palFace = t => { const p = F.pl; if (!p) return; const dx = t.x - p.x, dy = t.y - p.y; p.f = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); };
   F.palHi = () => F.palJoy();   // 말 걸면 울음소리
   F.palBub = (t, ms = 900) => F.pl ? F.bub(F.pl, t, ms) : null;
@@ -555,6 +557,14 @@ function field(I, o) {
     if (best?.p.length) await s.go(best.p, ms); s.face(t); t.face?.(s); return !!best; };
   // 여러 사람을 자리들에 나눠 보낼 때: 사람마다 가장 가까운 빈 자리
   F.nearest = (s, spots) => { let best = null; for (const q of spots) { const p = F.path(s, q); if (p && (!best || p.length < best[1].length)) best = [q, p]; } return best?.[0] || null; };
+  /* v26.28 경완 '약간 미끄러지는 느낌, 방향전환이 바로 안 되는 느낌': 내 한 칸 걸음 = F.meStep. 걷는 중 반대쪽으로 밀면 그 자리에서 바로 되돌아오고, 칸 30% 안에서 옆으로 틀면 있던 칸으로 빨리 돌아와 그쪽으로 (예전엔 칸 끝까지 미끄러진 뒤에야 방향이 바뀜). 되돌아오면 false */
+  F.meStep = (d, ms, t) => new Promise(ok => { const s = F.me, [dx, dy] = DIR[d], x0 = s.x, y0 = s.y; s.f = d; const n = s.n = (s.n || 0) + 1; s.res = [x0 + dx, y0 + dy]; F.trail(x0, y0, ms); let bq = -1, bt = 0, nd = null;
+    const fr = now => { if (bq < 0) { const q = Math.min(1, Math.max(0, (now - t) / ms)), h = F.hold;
+        if (q < 1 && h && h !== d && (h === OPP[d] || q < .3) && !el.classList.contains('lock')) { const [hx, hy] = DIR[h]; if (h === OPP[d] || !F.solid(x0 + hx, y0 + hy, s)) { bq = q; bt = now; nd = h; F.trailBack(); } }
+        if (bq < 0) { s.x = x0 + dx * q; s.y = y0 + dy * q; s.st = q < .5 ? (n % 2 ? 1 : 2) : 0; s.put(); if (q >= 1) { s.x = x0 + dx; s.y = y0 + dy; s.res = null; s.endT = t + ms; s.st = 0; s.put(); return ok(true); } return requestAnimationFrame(fr); } }
+      const bm = Math.max(1, bq * ms * (nd === OPP[d] ? 1 : .5)), u = Math.min(1, (now - bt) / bm), q = bq * (1 - u); s.x = x0 + dx * q; s.y = y0 + dy * q; s.f = nd; s.st = u < .5 ? (n % 2 ? 1 : 2) : 0; s.put();
+      if (u >= 1) { s.x = x0; s.y = y0; s.res = null; s.endT = now; s.st = 0; s.put(); return ok(false); } requestAnimationFrame(fr); };
+    requestAnimationFrame(fr); });
   F.lock = on => { const was = el.classList.contains('lock'); el.classList.toggle('lock', on); if (on) { press(null); F.run = false; el.querySelector('.evf-b')?.classList.remove('on'); } else if (was) { F.unT = performance.now(); F.aQ = false; } };   // 풀린 직후 0.4초는 A 무시: 대화를 넘기던 탭이 A 로 또 눌려 대화가 다시 열리던 것 (경완 2026-11-07)
   F.show = () => new Promise(ok => { requestAnimationFrame(() => { el.classList.add('on'); setTimeout(ok, 650); }); });
   F.close = async () => { el.classList.add('out'); await wait(800); el.remove(); off(); };
@@ -613,7 +623,7 @@ function field(I, o) {
           else if (w && !w.mat && (!w.d || w.d === d)) { m.turn(d); goW(w); }
           else if (cAt(tx, ty) === LEDGE[d] && !F.solid(tx + dx, ty + dy, m)) { busy = true; m.jump(d).then(after); }
           else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (F.run && !(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('HG_WALL_HIT'); } }   // 벽에 부딪히는 소리는 달리다 부딪혔을 때만 (경완 2026-11-07 '본가처럼 달리다 부딪혔을 때만')
-          else { busy = true; const t = performance.now(), c = m.endT && t - m.endT < 70 ? m.endT : t; m.go([[tx, ty]], F.run ? RUN : ME_WALK, c).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
+          else { busy = true; const t = performance.now(), c = m.endT && t - m.endT < 70 ? m.endT : t; F.meStep(d, F.run ? RUN : ME_WALK, c).then(r => { if (r) return after(); lastMv = performance.now(); busy = false; }); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
       requestAnimationFrame(tick); };
