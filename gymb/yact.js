@@ -156,6 +156,20 @@ const CSS = `
 @keyframes yaNo{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 #yact .ya-dg.cd{color:#8a8794}
 #yact .ya-ov{position:absolute;inset:0;z-index:8;background:rgba(14,14,28,.45)}
+/* v26.43 경완 '그만 누르면 일시정지 창 뜨고, 그만둘건지 계속할건지 선택하게 앱 잠깐 나갔을 때도 일시정지 창 띄워줘. 계속하기 하면 다시 카운트다운하고 시작' */
+#yact .ya-pz{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(8,8,20,.62);pointer-events:auto}
+#yact .ya-pz[hidden]{display:none}
+#yact .ya-pz .pz-w{width:min(286px,calc(100% - 40px));padding:18px 16px 16px;border-radius:18px;border:2px solid #8a90c0;color:#f0ecff;text-align:center;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 30px rgba(120,130,255,.4);background:radial-gradient(ellipse 120% 70% at 50% 0,#3c4470 0,#1a1c3c 50%,#0a0a1a 100%)}
+#yact .ya-pz.np .pz-w{animation:yaPzPop .32s steps(4,end)}
+@keyframes yaPzPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+#yact .ya-pz .pz-t{display:block;font-size:22px;letter-spacing:4px;text-shadow:0 3px 0 #0c0a1c}
+#yact .ya-pz .pz-s{margin:8px 0 14px;font-size:12.5px;line-height:1.5;color:#c8c8ee}
+#yact .ya-pz .pz-b{display:flex;flex-direction:column;gap:10px}
+#yact .ya-pz .bigb{margin:0;padding:13px 0;font-size:17px;letter-spacing:1px;border-radius:12px}
+#yact .ya-pz .pz-go{background:linear-gradient(180deg,#fff2a8 0,#ffd040 45%,#e89a18 100%);border-color:#6a3a00;color:#4a2400;box-shadow:0 4px 0 #6a3a00,0 0 14px rgba(255,200,60,.6)}
+#yact .ya-pz .pz-go:active{transform:translateY(3px);box-shadow:0 1px 0 #6a3a00}
+#yact .ya-pz .pz-q{font-size:14px;padding:11px 0;color:#f0ecff;border-color:rgba(255,255,255,.4);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));box-shadow:0 4px 0 rgba(0,0,0,.55)}
+#yact .ya-pz .pz-q:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.55)}
 #yact .bigb{display:block;width:100%;margin-top:14px;padding:11px 0;font-size:15px;background:#ffd84a}
 #yact .bigb.sec{background:#e9e4d8;font-size:13px;padding:9px 0}
 #yact .ya-res.pop{animation:yaPop .32s cubic-bezier(.2,1.5,.4,1)}
@@ -662,6 +676,7 @@ const HTML = `<canvas></canvas>
 <div class="ya-pad"><button class="ya-dg">대쉬</button><div class="ya-mvs"></div></div>
 <div class="ya-ban"></div><div class="ya-warn" hidden><i class="t"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i><i class="b"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i></div>
 <div class="ya-ov"></div>
+<div class="ya-pz" hidden><div class="pz-w"><b class="pz-t">일시정지</b><p class="pz-s">그만두면 지금까지 얻은 보상만 받아요.</p><div class="pz-b"><button class="b3 bigb pz-go" type="button">계속하기</button><button class="b3 bigb pz-q" type="button">그만두기</button></div></div></div>
 <div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
     <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""><span class="hr-ty"></span></div><div class="hr-in"><div class="hr-nl"><b class="hr-nm"></b><i class="hr-sx"></i></div><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
   <div class="ya-bd"><div class="ya-pk"></div>
@@ -890,7 +905,7 @@ function newGame() {
   [...R.G.pool.sm, ...R.G.pool.big].forEach(sp => spr(sp)); R.pool = null; M.mv.forEach(v => { me.cd[v.name] = 0; });
   buildButtons(); hud(); cbUi();
   /* 경완 2026-11-14 '겜 시작할 때 카운트 다운': 3·2·1·시작! 뒤에 첫 스테이지 (그동안 움직일 수는 있음) */
-  { const G0 = R.G; G0.waiting = true; ['3', '2', '1', '시작!'].forEach((t, i) => setTimeout(() => { if (!R || R.G !== G0 || G0.over) return; banner(i < 3 ? `<b>${t}</b>` : `<b style="font-size:60px">${t}</b>`, 'stg'); buzz(i < 3 ? 0 : 1); se(i < 3 ? 'KON' : 'KON2', .05, { gain: 1.5 }); }, i * 750)); setTimeout(() => { if (R && R.G === G0 && !G0.over) { G0.waiting = false; nextWave(); } }, 3 * 750 + 650); }
+  { const G0 = R.G; G0.waiting = true; ['3', '2', '1', '시작!'].forEach((t, i) => setTimeout(() => { if (!R || R.G !== G0 || G0.over || R.PZ) return; banner(i < 3 ? `<b>${t}</b>` : `<b style="font-size:60px">${t}</b>`, 'stg'); buzz(i < 3 ? 0 : 1); se(i < 3 ? 'KON' : 'KON2', .05, { gain: 1.5 }); }, i * 750)); { const go = () => { if (!R || R.G !== G0 || G0.over) return; if (R.PZ) { setTimeout(go, 200); return; } G0.waiting = false; nextWave(); }; setTimeout(go, 3 * 750 + 650); } }
 }
 function spawn(sp, boss, ox = 0, bi = 0) {
   const G = R.G, A = R.A, W = R.W, H = R.H, SG = STAGES[G.wave - 1] || STAGES[0], lv = Math.max(2, boss === 2 ? G.M.lv + 5 : boss ? G.M.lv + SG.lv + 4 : G.M.lv + SG.lv - Math.floor(Math.random() * 2)), side = Math.floor(Math.random() * 3);
@@ -1653,7 +1668,7 @@ function orb(x, y, c, r) { const g = R.g; g.fillStyle = 'rgba(255,255,255,.25)';
 function loop(ms) {
   if (!R) return; const now = ms / 1000, rdt = Math.min(.05, R.last ? now - R.last : 0); R.last = now; R.RT += rdt;
   // 멈칫하는 동안엔 판 시간이 서고, 느린 화면일 땐 천천히 흐른다. 흔들림·숫자는 실제 시간으로
-  let dt = rdt; if (R.HS > 0) { R.HS -= rdt; dt = 0; } else if (R.SLOW > 0) { R.SLOW -= rdt; dt = rdt * R.SLOWK; }
+  let dt = rdt; if (R.PZ) dt = 0; else if (R.HS > 0) { R.HS -= rdt; dt = 0; } else if (R.SLOW > 0) { R.SLOW -= rdt; dt = rdt * R.SLOWK; }
   R.HSB = Math.min(.3, (R.HSB ?? .3) + rdt * .3); R.TR = Math.max(0, R.TR - rdt * 1.9); { const k = Math.exp(-rdt * 16); R.KX *= k; R.KY *= k; } R.ZM *= Math.exp(-rdt * 7); R.FLASH = Math.max(0, R.FLASH - rdt); R.VIG = Math.max(0, R.VIG - rdt * 2.4);
   R.T += dt; if (R.G && dt > 0) step(dt); if (R && R.run && R.G) cdUi();
   if (!R) return; draw(); R.raf = requestAnimationFrame(loop);
@@ -1689,7 +1704,10 @@ function bind() {
     on(q('.fs-hp'), 'click', () => { se('DECIDE'); ti = 0; show(); tu.classList.add('on'); });
     on(tu, 'click', e => { if (e.target === tu || e.target.closest('.tu-x')) off(); else if (e.target.closest('.tu-nx')) go(1); else if (e.target.closest('.tu-pv')) go(-1); });
     let sx = null; on(tu, 'touchstart', e => { sx = e.touches[0].clientX; }, { passive: true }); on(tu, 'touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(d) > 44 && !(d < 0 && ti === TU.length - 1)) go(d < 0 ? 1 : -1); }, { passive: true }); }
-  on(q('.ya-quit'), 'click', () => { if (r.run && r.G) end(false, false, true); });
+  on(q('.ya-quit'), 'click', () => pzOpen(0));
+  on(q('.pz-go'), 'click', pzGo); on(q('.pz-q'), 'click', () => { if (R !== r || r.PZ !== 1 || !r.G) return; se('CANCEL'); q('.ya-pz').hidden = true; r.PZ = 0; duckSet(1); end(false, false, true); });
+  on(q('.ya-pz'), 'click', e => { if (e.target === e.currentTarget && !e.currentTarget.classList.contains('np')) pzGo(); });   /* 직접 '그만' 을 눌러 연 창만 바깥을 눌러 계속하기. 앱에서 돌아와 저절로 뜬 창은 버튼으로만 */
+  { const hid = () => { if (document.hidden && R === r) pzOpen(1); }; on(document, 'visibilitychange', hid); on(window, 'pagehide', () => { if (R === r) pzOpen(1); }); }
   let rz = 0; on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (R === r) resize(); }, 200); });
 }
 function buildButtons() {
@@ -1723,6 +1741,19 @@ function hgUp() { const el = R.q('.mg-hg'); el.classList.remove('up'); void el.o
 function cbUi(up) { const G = R.G, el = R.q('.ya-cb'), n = G.combo; el.classList.toggle('on', n >= 2); if (n < 2) return; el.dataset.t = n >= 30 ? 3 : n >= 10 ? 2 : 1;
   el.querySelector('b').textContent = n; el.querySelector('small').textContent = `기술 충전 +${Math.round(Math.min(.45, n * .015) * 100)}%`;
   if (up) { el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); } }
+/* 일시정지: R.PZ 1 = 창이 떠 있음, 2 = 계속하기 뒤 3·2·1 세는 중. 그동안 판 시간(dt)이 서고 조작(R.run)도 막힌다 */
+const duckSet = on => { try { if (R?.bgmNow) window.GymBGM?.duck(on ? BGM_K : BGM_K * .35); } catch (e) {} };
+function pzOpen(auto) {
+  const G = R?.G; if (!R || !R.run || !G || G.over || R.PZ || !R.q('.ya-ov').hidden) { if (auto && R?.PZ === 2) { R.PZ = 1; R.pzN = (R.pzN | 0) + 1; pzShow(1); } return; }
+  R.PZ = 1; R.run = false; chEnd(); dashEnd(); R.JOY.id = null; R.JOY.dx = R.JOY.dy = 0; R.HELD = {}; R.BUF = null; R.KEY = {}; duckSet(0); pzShow(auto);
+}
+function pzShow(auto) { const w = R.q('.ya-pz'); w.hidden = false; w.classList.toggle('np', !!auto); if (auto) { void w.offsetWidth; se('PINPON', .3); buzz(1); } else se('WIN_OPEN'); }
+function pzGo() {
+  if (!R || R.PZ !== 1) return; const r = R, G = r.G, n = r.pzN = (r.pzN | 0) + 1; r.PZ = 2; r.q('.ya-pz').hidden = true; se('DECIDE'); duckSet(1);
+  const ok = () => R === r && r.G === G && !G.over && r.PZ === 2 && r.pzN === n;
+  ['3', '2', '1'].forEach((t, i) => setTimeout(() => { if (!ok()) return; banner(`<b>${t}</b>`, 'stg'); buzz(0); se('KON', .05, { gain: 1.5 }); }, i * 750));
+  setTimeout(() => { if (!ok()) return; r.PZ = 0; r.run = true; r.last = 0; banner('<b style="font-size:60px">시작!</b>', 'stg'); buzz(1); se('KON2', .05, { gain: 1.5 }); }, 3 * 750);
+}
 function banner(t, kind = '') { const b = R.q('.ya-ban'); b.innerHTML = `<span>${t}</span>`; b.className = 'ya-ban'; void b.offsetWidth; b.className = 'ya-ban on ' + kind; }
 
 // ---------- 끝: 결과창 + 보상 지급 ----------
