@@ -317,7 +317,7 @@ function tools(I, def) {
 //   col 글자: . 걸음  # 막힘  c 카운터  v ^ < > 턱. 그 밖의 글자도 막힘
 // 걸음 그림 칸: 0 아래 1 위 2 왼쪽 3·4 아래 걷기 5·6 위 걷기 7·8 왼쪽 걷기 (오른쪽은 뒤집기)
 const FR = { d: [0, 3, 4], u: [1, 5, 6], l: [2, 7, 8], r: [2, 7, 8] }, DIR = { u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0] }, OPP = { u: 'd', d: 'u', l: 'r', r: 'l' };
-const LEDGE = { d: 'v', u: '^', l: '<', r: '>' }, WALK = 267, RUN = 133, TURN = 133, JUMP = 533, DOORF = 67;
+const LEDGE = { d: 'v', u: '^', l: '<', r: '>' }, WALK = 267, ME_WALK = 213, RUN = 133,   /* v26.27 경완 대각선 대신 '지금처럼' + 스틱에 비해 느린 느낌: 내 걸음만 본가 267ms → 213ms (마을 사람·문 들어가기는 그대로) */ TURN = 133, JUMP = 533, DOORF = 67;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 function field(I, o) {
   const root = I.root, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(2, Math.round(W / (12 * 16) * 4) / 4);
@@ -561,9 +561,9 @@ function field(I, o) {
   // 걷기: 누르고 있는 동안 계속 (손가락을 다른 화살표로 밀면 방향만 바뀜)
   /* v26.23 경완 '체육관 로켓단 이벤트나 친구 필드 놀러가서 돌아다닐 때 방향키도 특훈 방향키처럼 스틱 형태로 바꿔줘. 대신 특훈과는 달리 스틱 위치가 고정된채로 계속 보이게': 십자 방향키 → 고정 스틱(특훈 .ya-joyb 모양). 가운데에서 14px 넘게 밀면 더 많이 민 축 방향으로 한 칸씩 (본가 4방향 이동 그대로), 방향 바뀔 때 살짝 진동 */
   const jk = pad.querySelector('.ev-jk'), jb = pad.querySelector('.ev-jb');
-  const press = (d, far, d2 = null) => { if (d && d !== F.hold) F.holdT = performance.now(); F.hold = d; F.far = !!d && !!far; F.hold2 = d && far ? d2 : null; jb.classList.toggle('on', !!d); if (!d) jk.style.transform = ''; };
+  const press = (d, far) => { if (d && d !== F.hold) F.holdT = performance.now(); F.hold = d; F.far = !!d && !!far; jb.classList.toggle('on', !!d); if (!d) jk.style.transform = ''; };
   let jId = null; const jMv = e => { const r = jb.getBoundingClientRect(); let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy), RR = r.width * .36; if (l > RR) { dx *= RR / l; dy *= RR / l; } jk.style.transform = `translate(${dx}px,${dy}px)`;
-    const d = l < 14 ? null : Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); const far = l >= RR * .6, mn = Math.min(Math.abs(dx), Math.abs(dy)) / (l || 1), d2 = !d || mn < .38 ? null : Math.abs(dx) > Math.abs(dy) ? (dy > 0 ? 'd' : 'u') : (dx > 0 ? 'r' : 'l'); if (d !== F.hold || far !== F.far || d2 !== F.hold2) press(d, far, d2); };   /* v26.26 경완 '대각으로도 움직이게': 대각으로 밀면 d2(덜 민 축)와 번갈아 한 칸씩 = 칸 맞춘 지그재그 대각선 */   /* v26.25 경완 '방향키 움직일 때마다 진동 안 느껴지게': 방향 바꿀 때 진동 뺌. 끝까지 민 스틱은 제자리 돌기 없이 바로 걸음 (살짝 밀면 방향만) — 경완 '스틱에 비해 움직임이 느린 느낌' */
+    const d = l < 14 ? null : Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); const far = l >= RR * .6; if (d !== F.hold || far !== F.far) press(d, far); };   /* v26.25 경완 '방향키 움직일 때마다 진동 안 느껴지게': 방향 바꿀 때 진동 뺌. 끝까지 민 스틱은 제자리 돌기 없이 바로 걸음 (살짝 밀면 방향만) — 경완 '스틱에 비해 움직임이 느린 느낌' */
   pad.addEventListener('pointerdown', e => { e.preventDefault(); jId = e.pointerId; try { pad.setPointerCapture(e.pointerId); } catch (x) {} jMv(e); });
   pad.addEventListener('pointermove', e => { if (e.pointerId === jId) jMv(e); });
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => pad.addEventListener(n, e => { if (e.pointerId !== jId) return; jId = null; press(null); }));
@@ -607,14 +607,13 @@ function field(I, o) {
           // 말 걸기·살펴보기는 버튼 누르는 소리와 같게 (경완 2026-11-08). 앞에 아무것도 없으면 아무 일 없이 계속 걷는다 (경완 2026-11-08 'A 눌러도 이동 끊기지 않게')
           if (s && h.talk) { I.sfx?.('tap'); run(async () => { s.face?.(m); const r = await h.talk(s); if (s.rest) { clearTimeout(s.restT); s.restT = setTimeout(() => { if (s.on !== false && !s.mv) { s.f = s.rest; s.put(); } }, 1800); } return r; }); }   /* s.rest: 말 걸고 나서 조금 뒤 원래 방향으로 (꼬마 콩이, 경완 2026-11-08) */ else if (pl) run(async () => { F.palFace(m); return h.pal ? h.pal() : F.palHi(); }); else if (w && !w.to && h.warp) { I.sfx?.('tap'); run(() => h.warp(w)); } else if (h.look && (!h.can || h.can([tx, ty]))) { I.sfx?.('tap'); run(() => h.look([tx, ty], m.f)); } }
         else if (F.pkQ) { F.pkQ = false; run(() => F.luOpen()); } else if (F.ppQ) { F.ppQ = false; run(() => F.palPick()); } else if (F.bgQ) { F.bgQ = false; run(() => F.bag?.()); }
-        else if (F.hold) { let d = F.hold; if (F.hold2) { const a = F.zz ? F.hold2 : F.hold, c = a === F.hold ? F.hold2 : F.hold, [ax, ay] = DIR[a]; d = F.solid(m.x + ax, m.y + ay, m) && !F.warpAt(m.x + ax, m.y + ay) ? c : a; }   /* 대각: 두 방향을 번갈아, 한쪽이 막히면 다른 쪽 */
-          const [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
+        else if (F.hold) { const d = F.hold, [dx, dy] = DIR[d], tx = m.x + dx, ty = m.y + dy, w = F.warpAt(tx, ty), mat = F.warpAt(m.x, m.y), moving = performance.now() - lastMv < 60;
           if (m.f !== d && !moving && !F.far) { m.turn(d); busy = true; setTimeout(() => { busy = false; }, TURN); }   // 제자리 돌기 (짧게 누르면 방향만)
           else if (mat && mat.mat && mat.d === d) goW(mat);   // 매트 위에서 그 방향 = 밖으로
           else if (w && !w.mat && (!w.d || w.d === d)) { m.turn(d); goW(w); }
           else if (cAt(tx, ty) === LEDGE[d] && !F.solid(tx + dx, ty + dy, m)) { busy = true; m.jump(d).then(after); }
           else if (F.solid(tx, ty, m)) { if (m.f !== d) m.turn(d); const t = performance.now(); if (F.run && !(t - (F.bumpT || 0) < 300)) { F.bumpT = t; I.gse?.('HG_WALL_HIT'); } }   // 벽에 부딪히는 소리는 달리다 부딪혔을 때만 (경완 2026-11-07 '본가처럼 달리다 부딪혔을 때만')
-          else { busy = true; F.zz = !!F.hold2 && d === F.hold; const t = performance.now(), c = m.endT && t - m.endT < 70 ? m.endT : t; const pr = m.go([[tx, ty]], F.run ? RUN : WALK, c); if (F.hold2) { m.f = F.hold; m.put(); } pr.then(after); }   /* 대각 지그재그 동안 얼굴은 더 민 쪽 그대로 */   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
+          else { busy = true; const t = performance.now(), c = m.endT && t - m.endT < 70 ? m.endT : t; m.go([[tx, ty]], F.run ? RUN : ME_WALK, c).then(after); }   // 걷는 동안엔 잠그지 않아 꾹 누르면 계속 걷는다 (경완 2026-11-07)
         }
       }
       requestAnimationFrame(tick); };
