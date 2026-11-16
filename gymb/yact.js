@@ -107,6 +107,18 @@ const CSS = `
 #yact .ya-ban{position:absolute;left:0;right:0;top:34%;z-index:5;text-align:center;font-size:24px;line-height:1.2;padding:11px 0;text-shadow:0 3px 0 var(--ink),0 0 10px rgba(0,0,0,.4);pointer-events:none;opacity:0;overflow:hidden}
 #yact .ya-ban::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(20,20,40,0),rgba(20,20,40,.8) 16%,rgba(20,20,40,.8) 84%,rgba(20,20,40,0))}
 #yact .ya-ban span{display:inline-block}
+#yact .ya-warn{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+#yact .ya-warn::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(60,0,0,0) 38%,rgba(120,0,8,.5) 78%,rgba(70,0,6,.82) 100%);opacity:0}
+#yact .ya-warn.on::before{animation:yaWarnP .75s ease-out 4}
+#yact .ya-warn i{position:absolute;left:0;right:0;height:26px;display:block;overflow:hidden;background:repeating-linear-gradient(-45deg,rgba(214,40,26,.92) 0 14px,rgba(34,22,24,.92) 14px 28px);border-top:2px solid #20101a;border-bottom:2px solid #20101a;opacity:0;font-style:normal}
+#yact .ya-warn i.t{top:27%}#yact .ya-warn i.b{bottom:30%}
+#yact .ya-warn.on i{animation:yaWarnI 3s ease-out both}
+#yact .ya-warn b{position:absolute;left:0;top:0;white-space:nowrap;font-size:13px;line-height:22px;letter-spacing:2px;color:#ffe27a;text-shadow:0 2px 0 #20101a,1px 0 #20101a,-1px 0 #20101a}
+#yact .ya-warn.on i.t b{animation:yaWarnL 3s linear both}#yact .ya-warn.on i.b b{animation:yaWarnR 3s linear both}
+@keyframes yaWarnP{0%{opacity:1}100%{opacity:.25}}
+@keyframes yaWarnI{0%{opacity:0;transform:scaleY(0)}8%{opacity:1;transform:scaleY(1)}90%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(0)}}
+@keyframes yaWarnL{0%{transform:translateX(0)}100%{transform:translateX(-240px)}}
+@keyframes yaWarnR{0%{transform:translateX(-240px)}100%{transform:translateX(0)}}
 #yact .ya-ban.on{animation:yaBan 1.3s ease-out both}
 #yact .ya-ban.on span{animation:yaBanT 1.3s cubic-bezier(.2,.9,.3,1) both}
 @keyframes yaBan{0%{opacity:0;clip-path:inset(50% 0)}10%{opacity:1;clip-path:inset(0)}80%{opacity:1;clip-path:inset(0)}100%{opacity:0;clip-path:inset(50% 0)}}
@@ -238,6 +250,8 @@ const CSS = `
 #yact .ya-arc .ya-egt{font-style:normal;font-size:8px;line-height:11px;padding:0 3px;border:1px solid var(--ink);text-shadow:none}
 #yact .ya-arc .ya-stb{top:0;width:152px;height:76px;padding-top:3px;border-radius:0 0 76px 76px;background:rgba(26,28,50,.62);box-shadow:inset 0 -2px 0 1px rgba(255,255,255,.16)}
 #yact .ya-arc .ya-stb .ya-ph{font-size:10px;line-height:14px;margin:0 0 2px}
+/* 경완 2026-11-16 '상단 정보창 위 잘림선 보이는데': 반원이 안전 영역(시계 줄) 아래에서 시작해 평평한 윗변이 건물 위에 선으로 보였다 → 위쪽 반원을 이어 붙여 동그란 판이 화면 위로 넘어가게 */
+#yact .ya-arc .ya-stb::after{content:"";position:absolute;left:-3px;right:-3px;bottom:100%;height:76px;box-sizing:border-box;border:3px solid var(--ink);border-bottom:0;border-radius:76px 76px 0 0;background:rgba(26,28,50,.62);pointer-events:none}
 #yact .ya-arc .ya-stn .n b{font-size:26px}
 /* 경완 2026-11-14 '반원에 구슬 4개 좋다': 바깥 띠를 없애고 스테이지 반원 둘레에 동그란 구슬 네 개(골드·경험치·노력치·번뜩임), 구슬 테두리가 게이지(--p 0~1)로 차오른다. 능력치 이름·타입 딱지는 구슬에선 뺌 */
 #yact .ya-arc .sg{width:56px;height:56px;margin:-28px;border-radius:50%;background:rgba(26,28,50,.66);border:3px solid var(--ink);box-sizing:border-box;gap:1px;--p:0;--c:#fff}
@@ -644,7 +658,7 @@ const HTML = `<canvas></canvas>
 <div class="ya-joy"></div><div class="ya-joyb"><i class="ya-joyk"></i></div>
 <div class="ya-hint">왼쪽 아래를 끌어서 이동</div>
 <div class="ya-pad"><button class="ya-dg">대쉬</button><div class="ya-mvs"></div></div>
-<div class="ya-ban"></div>
+<div class="ya-ban"></div><div class="ya-warn" hidden><i class="t"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i><i class="b"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i></div>
 <div class="ya-ov"></div>
 <div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><span class="ya-tg">운영자 시험</span><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
     <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""><span class="hr-ty"></span></div><div class="hr-in"><div class="hr-nl"><b class="hr-nm"></b><i class="hr-sx"></i></div><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
@@ -914,9 +928,9 @@ const GROGGY = 4;
    메가진화하는 종의 필드 그림은 없어서(PMD 그림에 메가 폼 없음) 같은 그림을 키우고 무지개 기운을 두른다.
    깨지는 바닥: 3스테이지부터 금 간 바닥이 생긴다. 누가 0.9초쯤 밟고 있거나 대장이 그 위로 내려찍으면 무너져서 위에 있던 모두가 피해+잠깐 멈춤(대장은 게이지도 크게 참), 7초 동안 잔해라 느려진다. */
 const MEGA_C = ['#ff6a6a', '#ffb04a', '#ffe27a', '#8ff0a0', '#6ac8ff', '#c08aff'];
-function megaPhase(o) { const G = R.G; o.mega = 1; o.mgT = 1.8; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.groggy = 0; o.dz = 0; o.brk = 0; o.brkLock = 0; o.stun = 0; setAnim(o, anyAnim(o, 'Charge', 'Idle'), true);
-  G.shots = G.shots.filter(q => q.mine); G.waves = []; G.blasts = []; coinRain(o.x, o.y - 10, RAIN_P1); pop(o.x, o.y - 120, '1페이즈 돌파!', '#ffe27a', true); banner(`<small>페이즈 2</small>대장 ${nmSp(o.sp)} 메가진화!`, 'boss'); bgm('champ'); slow(1, .35); flash(.25, '255,255,255'); zoom(.1); rumble(4, 110, 1); se('KON2', .3); se('KIRAKIRA2', .1, { gain: 1.6 }); }
-function megaDone(o) { const G = R.G, me = G.me; if (R.SPR['M' + o.sp + ':']?.im) { o.msp = 'M' + o.sp + ':'; o.anim = 'Idle'; o.at = R.T; o.once = false; } o.k = (o.k || 1) * 1.25; o.hp = Math.min(o.mhp, o.hp + Math.round(o.mhp * .15)); o.hpLag = o.hp; o.st = o.st.map((v, i) => i ? Math.round(v * (i === 1 || i === 3 ? 1.35 : 1.15)) : v); o.spd *= 1.25; o.brkMax = 150; o.cd = .6;   /* 경완 2026-11-16 '메가진화 하면 보스가 더 세지고 난이도도 어려워져야하는데 반영이 안되어 있는듯': 공격·특공 1.15 → 1.35배, 걸음 1.25배, 패턴 사이 쉬는 시간 .8 → .6배, 패턴 겹치기(bossPick) */ squash(o, -.5);
+function megaPhase(o) { const G = R.G; o.mega = 1; o.mgT = MEGA_T; o.act = o.slam = o.lunge = null; o.chain = null; o.warn = 0; o.z = 0; o.groggy = 0; o.dz = 0; o.brk = 0; o.brkLock = 0; o.stun = 0; setAnim(o, anyAnim(o, 'Charge', 'Idle'), true);
+  G.shots = G.shots.filter(q => q.mine); G.waves = []; G.blasts = []; coinRain(o.x, o.y - 10, RAIN_P1); pop(o.x, o.y - 120, '1페이즈 돌파!', '#ffe27a', true); banner(`<small>페이즈 2</small>우두머리 ${nmSp(o.sp)} 메가진화!`, 'boss'); megaGather(o); bgm('champ'); slow(1, .35); flash(.25, '255,255,255'); zoom(.1); rumble(4, 110, 1); se('KON2', .3); se('KIRAKIRA2', .1, { gain: 1.6 }); }
+function megaDone(o) { const G = R.G, me = G.me; if (R.SPR['M' + o.sp + ':']?.im) { o.msp = 'M' + o.sp + ':'; o.anim = 'Idle'; o.at = R.T; o.once = false; } o.k = (o.k || 1) * 1.25; o.hp = Math.min(o.mhp, o.hp + Math.round(o.mhp * .15)); o.hpLag = o.hp; o.st = o.st.map((v, i) => i ? Math.round(v * (i === 1 || i === 3 ? 1.35 : 1.15)) : v); o.spd *= 1.25; o.brkMax = 150; o.cd = .6; megaMark(o);   /* 경완 2026-11-16 '메가진화 하면 보스가 더 세지고 난이도도 어려워져야하는데 반영이 안되어 있는듯': 공격·특공 1.15 → 1.35배, 걸음 1.25배, 패턴 사이 쉬는 시간 .8 → .6배, 패턴 겹치기(bossPick) */ squash(o, -.5);
   R.HS = Math.max(R.HS, .16); flash(.6, '255,255,255'); shake(1); zoom(.12); rumble(5, 60); se('DODON', .3); se('W153', .1); snd('DUN_Explosion', .1);
   MEGA_C.forEach((c, i) => ring(o.x, o.y - 20, c, 12, 150 + i * 26, .5, 6, 1, i * .04)); stars(o.x, o.y - 30, 20, '#fff', 380); dust(o.x, o.y, 18, 240);
   const d = Math.hypot(me.x - o.x, me.y - o.y) || 1; if (d < 150 && me.hp > 0) { me.kx += (me.x - o.x) / d * 360; me.ky += (me.y - o.y) / d * 240; }
@@ -966,13 +980,32 @@ function drawHaz() { const g = R.g, G = R.G, T = R.T;
   for (const w of G.waves) { const a = Math.min(1, (w.max - w.r) / 60); g.globalAlpha = a * .35; g.strokeStyle = w.col; g.lineWidth = 16; g.beginPath(); g.ellipse(w.x, w.y, w.r, w.r * .5, 0, 0, 7); g.stroke(); g.globalAlpha = a; g.strokeStyle = '#ff5a4a'; g.lineWidth = 7; g.beginPath(); g.ellipse(w.x, w.y, w.r, w.r * .5, 0, 0, 7); g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.ellipse(w.x, w.y, w.r + 2, (w.r + 2) * .5, 0, 0, 7); g.stroke(); g.globalAlpha = 1; } }
 const bR = (o, n) => o.boss ? n + Math.round(((o.k || 1.2) - 1.2) * 30) : 0;   /* 대장이 맞는 범위·몸으로 닿는 범위: 그림 크기(o.k)만큼 넓어진다 */
 const setPend = () => { const G = R.G; G.pend = G.queue.length + (G.bossPend ? 1 : 0); };
+/* 경완 2026-11-16 '스테이지 10 대장 > 우두머리 로 변경. 10 스테이지 보스 나오기 전에 긴장감 높이는 연출': 곡이 끊기고 3초 동안 화면 가장자리가 붉게 뛰며 위아래 경고 띠, 쿵… 쿵… 점점 크게 → 곡 시작·배너 → 하늘에서 떨어짐. 그동안 잡몹은 안 나온다 */
+const FIN_WARN = 3;
+function finWarn() { const G = R.G, P = G.pool, S = STAGES[G.wave - 1], w = R.q('.ya-warn'), live = () => R?.G === G && !G.over;
+  bgm(''); G.queue = []; for (let i = 0; i < S.n; i++) G.queue.push(P.sm[(i + G.wave) % P.sm.length]); G.qT = FIN_WARN + 1.6; G.bossPend = 1; setPend(); hud();
+  w.hidden = false; w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); se('KON2', 0, { gain: .8 });
+  for (let i = 0; i < 4; i++) after(i * .75, () => { if (!live()) return; se('DODON', 0, { gain: .7 + i * .3 }); snd('DUN_Stomp', .05 + i * .02); shake(.25 + i * .18); rumble(1 + i, 120, 1); buzz(i > 1 ? 2 : 1); });
+  after(FIN_WARN, () => { w.hidden = true; w.classList.remove('on'); if (!live()) return; bgm('bossBig'); se('KON2'); se('VSDEMO04', .3, { gain: .7 }); snd('DUN_Leer', .07); rumble(2, 180, 1); flash(.2, '255,60,40'); banner(`<small>마지막 스테이지</small>우두머리 ${nmSp(P.big[2])} 등장!`, 'boss'); });
+  after(FIN_WARN + .75, () => { if (!live()) return; spawn(P.big[2], 2, 0, 2); G.bossPend = 0; setPend(); }); }
+/* 경완 2026-11-16 '보스 메가진화 할 때도 무지개 빛 모이는 연출 추가. 진화할 때 메가마크도': megaPhase 동안 무지개 빛줄기·고리가 대장에게 모이고 가운데가 하얗게 차오른다 → megaDone 때 머리 위에 메가 마크(배틀과 같은 dbk/Mega/mark.png)가 한 바퀴 돌고 사라짐 */
+const MEGA_T = 2.6; let MARK_IM = null; function markIm() { if (!MARK_IM) { MARK_IM = new Image(); MARK_IM.src = 'gym/img/dbk/Mega/mark.png'; } return MARK_IM; }
+function megaGather(o) { markIm(); se('SUIKOMU', .15, { gain: 1.6 });
+  fxAdd(0, MEGA_T, t => { const g = R.g, p = Math.min(1, t / MEGA_T), x = o.x, y = o.y - 26; g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < 24; i++) { const q = (t * 1.5 + i * .618) % 1, an = i * 2.399 + t * 1.4, r1 = (1 - q) * 210 + 18, r0 = r1 + 34 * (1 - q) + 8, c = Math.cos(an), sn = Math.sin(an) * .7; g.globalAlpha = Math.min(1, q * 2.5) * .85; g.strokeStyle = MEGA_C[i % 6]; g.lineWidth = 3 + q * 3; g.beginPath(); g.moveTo(x + c * r0, y + sn * r0); g.lineTo(x + c * r1, y + sn * r1); g.stroke(); }
+    for (let j = 0; j < 3; j++) { const q = (t * 1.1 + j / 3) % 1, r = (1 - q) * 170 + 14; g.globalAlpha = q * .6; g.strokeStyle = MEGA_C[(j * 2 + Math.floor(t * 1.1)) % 6]; g.lineWidth = 4; g.beginPath(); g.ellipse(x, y, r, r * .7, 0, 0, 7); g.stroke(); }
+    const R0 = 22 + p * 58, gr = g.createRadialGradient(x, y, 0, x, y, R0); gr.addColorStop(0, `rgba(255,255,255,${.35 + p * .6})`); gr.addColorStop(.5, `rgba(255,240,200,${.2 + p * .4})`); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.globalAlpha = 1; g.fillStyle = gr; g.beginPath(); g.arc(x, y, R0, 0, 7); g.fill(); g.restore(); }); }
+function megaMark(o) { const im = markIm(), D = 1.9;
+  fxAdd(.15, D, t => { if (!im.complete || !im.naturalWidth) return; const g = R.g, a = t < .18 ? t / .18 : t > D - .35 ? Math.max(0, (D - t) / .35) : 1, sc = t < .25 ? .4 + t / .25 * .85 : t < .4 ? 1.25 - (t - .25) / .15 * .25 : 1, sp = Math.cos(Math.min(1, Math.max(0, (t - .35) / .9)) * 6.283), h = 62 * sc, w = h * im.naturalWidth / im.naturalHeight, x = o.x, y = o.y - 70 * (o.k || 1) - 30 - Math.min(1, t / .3) * 8;
+    g.save(); g.globalAlpha = a; g.translate(Math.round(x), Math.round(y)); g.shadowColor = 'rgba(255,255,255,.95)'; g.shadowBlur = 14; g.scale(sp || .02, 1); g.imageSmoothingEnabled = true; g.drawImage(im, -w / 2, -h / 2, w, h); g.restore(); }); }
 function nextWave() {
   const G = R.G; G.wave++; const S = STAGES[G.wave - 1], P = G.pool, bs = S.boss || [], fin = bs.includes(2);
-  bgm(fin ? 'bossBig' : bs.length ? (BOSS_BGM[G.wave] || 'boss') : 'wild'); if (bs.length) { se('KON2'); se('VSDEMO04', .3, { gain: .7 }); } else se('SLIDEIN', .3);
+  if (fin) return finWarn();
+  bgm(bs.length ? (BOSS_BGM[G.wave] || 'boss') : 'wild'); if (bs.length) { se('KON2'); se('VSDEMO04', .3, { gain: .7 }); } else se('SLIDEIN', .3);
   G.queue = []; for (let i = 0; i < S.n; i++) G.queue.push(P.sm[(i + G.wave) % P.sm.length]); G.qT = 0;   // 잡몹은 자리가 나는 대로 (한 번에 5마리까지)
   if (bs.length) { G.bossPend = 1; after(.75, () => { bs.forEach((b, i) => spawn(P.big[b], b === 2 ? 2 : 1, bs.length > 1 ? (i ? 80 : -80) : 0, b)); G.bossPend = 0; setPend(); }); snd('DUN_Leer', .07); rumble(2, 180, 1); }
   setPend();
-  banner(fin ? `<small>마지막 스테이지</small>대장 ${nmSp(P.big[2])} 등장!` : bs.length ? `<small>스테이지 ${G.wave}</small>중간 대장 ${bs.map(b => nmSp(P.big[b])).join('·')} 등장!` : `<small>스테이지</small><b>${G.wave}</b>`, bs.length ? 'boss' : 'stg'); if (!bs.length) buzz(1); hud();
+  banner(bs.length ? `<small>스테이지 ${G.wave}</small>중간 대장 ${bs.map(b => nmSp(P.big[b])).join('·')} 등장!` : `<small>스테이지</small><b>${G.wave}</b>`, bs.length ? 'boss' : 'stg'); if (!bs.length) buzz(1); hud();
 }
 const mmss = t => { t = Math.floor(t); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0'); };
 function stageClear() {   // 스테이지를 깨면 HP 8% 회복
@@ -1487,17 +1520,18 @@ function drawBox(p) { const g = R.g, t = R.T - p.t0, im = boxIm(), k = 2, w = (i
 /* 꾸러미 = 상점 가격 기준 무작위 — 경완 '꾸러미 보상은 고정할 필요없이 상점 가격 고려해서 밸런스 맞춰줘' · '열매 같은건 2개 줄 필요가 없지 않아? 1개만 쓸 수 있는 아이템인데'
    훈련한 능력치 영양제 1개(300G)는 꼭, 그리고 한 칸 더: GIFT_W 확률로 영양제 / 레어(1,500G 까지) / 에픽(5,000G 까지) / 전설(10,000G 넘는 메가스톤) 지닌 도구·나무열매 (같은 등급 안에서는 싼 것일수록 잘 나옴). 값어치 평균 약 950G, 넷 중 셋은 600G
    등급 딱지 GIFT_GR — 경완 '도구는 높은 가격인만큼 레어 딱지 같은거 붙여서 나왔으면' · 색은 알 등급(레어 파랑·에픽 보라·전설 금)과 같게 */
-const GIFT_W = [75, 16, 8, 1], GIFT_GR = ['', '레어', '에픽', '전설'], giftGr = pr => pr >= 10000 ? 3 : pr > 1500 ? 2 : pr > 0 ? 1 : 0;   /* 경완 '전설은 5,000G는 넘어야' → '아니 10,000G는 넘어야할듯' — 10,000G 넘는 건 메가스톤(12,000G)뿐 */
+const GIFT_W = [60, 28, 10, 2], GIFT_GR = ['', '레어', '에픽', '전설'], giftGr = pr => pr >= 10000 ? 3 : pr > 1500 ? 2 : pr > 0 ? 1 : 0;   /* 경완 '전설은 5,000G는 넘어야' → '아니 10,000G는 넘어야할듯' — 10,000G 넘는 건 메가스톤(12,000G)뿐 */
 /* 경완 '최종 보스의 메가스톤 나올 확률도 좀 높여주고, 이미 창고에 있으면 안 나오는거고' — 쓰러뜨린 대장의 메가스톤 GIFT_BOSS %, 가진 메가스톤(창고·지닌 것)은 어느 칸에서도 안 나옴 */
-const GIFT_BOSS = 4;
+const GIFT_BOSS = 8;   /* 경완 2026-11-16 '메가진화 보스 깨기가 어려워서 꾸러미 보상 수준 좀 높여줘도': 무작위 칸 1 → 2칸, 칸 확률 [75,16,8,1] → [60,28,10,2], 대장 메가스톤 4 → 8% */
 const GIFT = (stat, boss) => { const B = GB(), H = B.HOLD || {}, V = B.EV_VIT || [['protein']], MS = B.MEGA_ST || {}, has = id => (GA.S?.gym?.itm?.[id] | 0) > 0 || !!B.itWho?.(id),
     ok = Object.keys(H).filter(id => !B.ZC_T?.[id] && !(B.ZC_ST || []).includes(id) && H[id][1] > 0 && (!MS[id] || (H[id][1] >= 10000 && !has(id)))),
     bs = Object.keys(MS).filter(id => MS[id][0] === boss && H[id]?.[1] > 0 && !has(id)),
     pw = L => { let r = Math.random() * L.reduce((a, id) => a + 1 / H[id][1], 0); for (const id of L) if ((r -= 1 / H[id][1]) <= 0) return id; return L[L.length - 1]; },
-    v0 = (V[stat] || V[0])[0]; let r = Math.random() * 100, k = 0; while (k < 3 && (r -= GIFT_W[k]) > 0) k++;
-  if (bs.length && Math.random() * 100 < GIFT_BOSS) { const id = bs[Math.floor(Math.random() * bs.length)]; return [[v0, 1, 0], [id, 1, giftGr(H[id][1])]]; }
-  const L = k ? ok.filter(id => giftGr(H[id][1]) === k) : [], x = L.length ? pw(L) : V[Math.floor(Math.random() * V.length)][0];
-  return x === v0 ? [[v0, 2, 0]] : [[v0, 1, 0], [x, 1, L.length ? k : 0]]; };
+    v0 = (V[stat] || V[0])[0], rv = () => V[Math.floor(Math.random() * V.length)][0], out = [[v0, 1, 0]],
+    slot = () => { let r = Math.random() * 100, k = 0; while (k < 3 && (r -= GIFT_W[k]) > 0) k++; const L = k ? ok.filter(id => giftGr(H[id][1]) === k) : []; return L.length ? [pw(L), k] : [rv(), 0]; },
+    add = (id, gr) => { const e = out.find(x => x[0] === id); if (!e) out.push([id, 1, gr]); else if (gr) add(rv(), 0); /* 도구·열매는 같은 걸 두 개 안 줌 (경완 '1개만 쓸 수 있는 아이템인데') */ else e[1]++; };
+  if (bs.length && Math.random() * 100 < GIFT_BOSS) { const id = bs[Math.floor(Math.random() * bs.length)]; add(id, giftGr(H[id][1])); } else add(...slot());
+  add(...slot()); return out.sort((a, b) => a[2] - b[2]); };
 function gotBox(p) { const G = R.G, me = G.me; if (G.gift) return; G.gift = G.giftT || GIFT(G.stat, G.pool.big[2]); if (p) p.got = true; se('PIRORIRO'); snd('DUN_Stat_Up', .07); buzz(1); flash(.2, '255,240,170'); ring(me.x, me.y - 16, '#ffe27a', 8, 90, .4, 6, 1); stars(me.x, me.y - 24, 14, '#ffe27a', 280); pop(me.x, me.y - 70, '선물상자!', '#ffe27a', true);
   after(.7, () => { if (R?.G !== G) return; const q = R.q, w = q('.ya-gift'), B = GB(), nm = id => B.HOLD?.[id]?.[0] || (B.EV_VIT || []).find(v => v[0] === id)?.[1] || id;
     q('.gf-s').textContent = `메가 ${nmSp(G.pool.big[2])} 격파 보상`; q('.gf-l').innerHTML = G.gift.map(([id, n, gr], i) => `<span class="gr${gr | 0}" style="--i:${i}">${gr ? `<em>${GIFT_GR[gr]}</em><u></u>` : ''}<img alt="" src="${B.itImg(id)}"><i>${nm(id)}</i><b>×${n}</b></span>`).join(''); const top = Math.max(0, ...G.gift.map(x => x[2] | 0)); w.dataset.gr = top; if (top) after(.55 + (G.gift.length - 1) * .16 + .3, () => { if (R?.G !== G || w.hidden) return; se(top > 1 ? 'PIRORIRO' : 'PINPON', .5); buzz(top > 1 ? 2 : 1); });
@@ -1535,7 +1569,7 @@ function hpBar(e) { const g = R.g, w = e.boss ? 72 : 34, h = e.boss ? 6 : 4, jx 
   if (rl > r) { g.fillStyle = '#fff'; g.fillRect(x, y, Math.ceil(w * rl), h); }   // 방금 깎인 만큼은 하얗게 남았다가 줄어든다
   g.fillStyle = r > .5 ? '#58d050' : r > .2 ? '#f8c030' : '#f05038'; g.fillRect(x, y, Math.ceil(w * r), h);
   if (e.boss) { const by = y + h + 2, gr = e.groggy > 0, br = gr ? e.groggy / GROGGY : Math.min(1, e.brk / e.brkMax); g.fillStyle = '#20202c'; g.fillRect(x - 1, by, w + 2, 5); g.fillStyle = '#3a3a48'; g.fillRect(x, by + 1, w, 3); g.fillStyle = gr ? (Math.floor(R.RT * 10) % 2 ? '#fff' : '#ffe27a') : e.brkLock > 0 ? '#6a6a7a' : '#ffb830'; g.fillRect(x, by + 1, Math.ceil(w * br), 3);
-    const t = gr ? '그로기!' : `대장 Lv.${e.lv}`; g.font = 'bold 11px Galmuri11'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(t, e.x, y + 23); g.fillStyle = '#ffd84a'; g.fillText(t, e.x, y + 23); } }
+    const t = gr ? '그로기!' : `${e.boss === 2 ? '우두머리' : '대장'} Lv.${e.lv}`; g.font = 'bold 11px Galmuri11'; g.textAlign = 'center'; g.lineWidth = 3; g.strokeStyle = '#20202c'; g.strokeText(t, e.x, y + 23); g.fillStyle = '#ffd84a'; g.fillText(t, e.x, y + 23); } }
 // 상대 공격 예고: 바닥에 빨간 길(돌진)·점선(원거리)·동그라미(내려찍기)가 차오른다
 function drawTele(o) { const g = R.g;
   if (o.slam) { const L = o.slam, p = Math.min(1, L.t / L.d); g.fillStyle = 'rgba(255,60,40,.16)'; g.beginPath(); g.ellipse(L.x, L.y, L.r, L.r * .5, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(255,60,40,.34)'; g.beginPath(); g.ellipse(L.x, L.y, L.r * p, L.r * .5 * p, 0, 0, 7); g.fill(); g.strokeStyle = p > .8 ? '#fff' : 'rgba(255,90,70,.9)'; g.lineWidth = 2; g.beginPath(); g.ellipse(L.x, L.y, L.r, L.r * .5, 0, 0, 7); g.stroke(); return; }
