@@ -2442,7 +2442,7 @@ function mecLay(stg) {
       const m = (lo + hi) / 2; A.forEach(a => { a.x = m + (a.x - m) * .97; }); } }
   A.forEach(a => { const f = a.x > cx + 6 ? ' scaleX(-1)' : '';   /* 경완 '관장을 중심으로 바깥쪽을 보게' */ Object.assign(a.e.style, { left: a.x - a.off * a.s * (f ? -1 : 1) + 'px', bottom: a.b - a.ob * a.s + 'px', zIndex: a.z, transform: `translateX(-50%) scale(${a.s})${f}` }); a.e.classList.add('on'); });
   // 경완 '프로필 박스 윗 여백은 남지 않게': 가장 높은 머리(관장 포함) 위 8px 까지만 무대 (150px 아래로는 안 줄임)
-  const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(Math.min(150, H - 40), Math.min(H, Math.ceil(top + 8))) + 'px';   /* v26.xx 경완 '작은 화면 맞춰': 작은 화면(무대 CSS 160px)은 바닥 120px */
+  const top = Math.max(LH + LB + 6, ...A.map(a => a.b + a.h)); stg.style.height = Math.max(Math.min(150, H - 40), Math.min(H, Math.ceil(top + 8))) + 'px';   /* v26.52 경완 '작은 화면 맞춰': 작은 화면(무대 CSS 160px)은 바닥 120px */
   return true;
 }
 const CLOSET_SVG = '<svg viewBox="0 0 14 14" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 0h2v1H6zM5 1h1v1H5zM8 1h1v2H8zM7 3h1v1H7zM6 4h2v1H6zM5 5h1v1H5zM8 5h1v1H8zM4 6h1v1H4zM9 6h1v1H9zM3 7h1v1H3zM10 7h1v1h-1zM2 8h1v1H2zM11 8h1v1h-1zM1 9h1v1H1zM12 9h1v1h-1zM0 10h1v2H0zM13 10h1v2h-1zM4 9h6v1H4zM1 12h12v1H1z"/><path fill="#c88a4a" d="M5 6h1v1H5zM8 6h1v1H8zM4 7h1v1H4zM9 7h1v1H9zM3 8h1v1H3zM10 8h1v1h-1zM2 9h2v1H2zM10 9h2v1h-2zM1 10h12v2H1z"/><path fill="#e8b070" d="M2 10h10v1H2z"/></svg>';   /* v21.62 경완: 프로필 옷장과 같은 박스 없는 옷걸이 */
