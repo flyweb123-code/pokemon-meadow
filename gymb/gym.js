@@ -5059,7 +5059,7 @@ async function zTut(test) {
 /* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼 만들어서 운영자 모드에 추가해줘봐': 명문 체육관 승급 = 강박사 다섯 번째 비기 다이맥스.
    다이맥스밴드(g.dBand) + 다이수프 한 그릇(g.soup) → 아니요면 거다이맥스 모습 있는 시험 포켓몬(DM_TID)에게 수프 먹이기 → 라인업 → 하람과 연습 배틀(gmk dmax, meOnly) → 상점에서 수프 판다는 안내 → tipPop(5).
    DMAX_ON 꺼 둠 = 운영자 승급 튜토리얼에서만 (경완이 켜라고 할 때 켬, 그때 gym/ 에도 복사) */
-const DMAX_ON = false;
+const DMAX_ON = true;   /* 경완 2026-11-16 '됐어 이제 다이맥스랑 이 튜토리얼 본게임에 배포해' */
 /* 체육관 타입 → 연습 포켓몬 [종(거다이맥스 모습 있는 34종 중), 기술(첫 번째 = 체육관 타입 공격 기술), 특성] */
 const DM_TUT = { 1: [143, ['bodyslam', 'crunch', 'earthquake', 'rest'], 'thickfat'], 2: [68, ['crosschop', 'rockslide', 'bulletpunch', 'bulkup'], 'noguard'], 3: [823, ['bravebird', 'bodypress', 'ironhead', 'roost'], 'pressure'], 4: [569, ['gunkshot', 'drainpunch', 'stompingtantrum', 'toxicspikes'], 'stench'],
   5: [844, ['earthquake', 'stoneedge', 'glare', 'coil'], 'shedskin'], 6: [839, ['stoneedge', 'flamethrower', 'stealthrock', 'rapidspin'], 'flashfire'], 7: [12, ['bugbuzz', 'airslash', 'sleeppowder', 'quiverdance'], 'compoundeyes'], 8: [94, ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'],
