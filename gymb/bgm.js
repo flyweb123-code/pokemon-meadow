@@ -209,7 +209,7 @@ function stopSrc(fade = .4) {
 async function start(name, { fade = .6 } = {}) {
   const ctx = GA.audio(), out = GA.bgmGain(); if (!ctx || !out) return;
   const B = await bufOf(ctx, name);
-  if (cur.want !== name || !on()) return;
+  if (cur.want !== name || !on() || document.hidden) return;
   if (cur.name === name && cur.src && cur.ctx === ctx && cur.out === out) return;
   stopSrc(.3);
   const src = ctx.createBufferSource(), g = ctx.createGain();
@@ -227,8 +227,9 @@ function watch() {
     if (!cur.want) { clearInterval(tick); tick = 0; return; }
     if (!cur.src && cur.fin === cur.want) return;   // 이름 있는 트레이너 승리 뒤 승리 곡이 끝나고 처음부터 또 겹쳐 나오던 것 (경완 2026-10-29)
     if (!on()) { if (cur.src) stopSrc(.2); cur.name = null; return; }
+    if (document.hidden) return;   /* 경완 '점거 중 앱 내리면 아지트 곡이 처음부터 잠깐 들리다 꺼짐': 앱이 내려가 있는 동안엔 다시 틀지 않음 (돌아오면 이어서) */
     let ctx = null, out = null; try { ctx = GA.audio(); out = GA.bgmGain(); } catch (e) {}
-    if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src && cur.ctx !== ctx) { posNow(); cur.src = null; } cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
+    if (!cur.src || cur.ctx !== ctx || cur.out !== out) { if (cur.src) stopSrc(.2); cur.name = null; start(cur.want, { fade: 1 }).catch(() => {}); }
   }, 700);
 }
 // ---------- 효과음 (배틀: 맞는 소리·쓰러짐·볼·기술 소리 등, 플래티넘 원본) ----------

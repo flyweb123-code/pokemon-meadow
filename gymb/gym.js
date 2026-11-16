@@ -5067,9 +5067,7 @@ async function dmaxTut(test) {
         { c: '다이수프', pre: async () => { g.luI = 0; }, hold: 50, t: '.gy-menu [data-t=battle]', tap: '.gy-menu [data-t=battle]', until: () => gtEl('.gy-sheet [data-box]'), after: 900, s: '\'포켓몬\' 메뉴를 눌러 보렴!' },
         { c: '다이수프', when: () => !gtEl(`.gy-boxw [data-id="${P.id}"]`), t: '.gy-sheet [data-box]', tap: '.gy-sheet [data-box]', until: () => gtEl(`.gy-boxw [data-id="${P.id}"]`), after: 800, s: '\'포켓몬 박스\'를 눌러 보렴.' },
         { c: '다이수프', when: () => gtEl(`.gy-boxw [data-id="${P.id}"]`), t: `.gy-boxw [data-id="${P.id}"]`, tap: `.gy-boxw [data-id="${P.id}"]`, until: () => gtEl('.gy-pop .mp-head'), after: 900, s: `내가 빌려준 ${sp}${pI(sp)}\n여기 있구나. 눌러 보렴!` },
-        { c: '다이수프', when: () => gtEl('.gy-pop .th-add'), t: '.gy-pop .th-add', tap: '.gy-pop .th-add', until: () => gtEl('.gy-pop [data-a=use]') || gtEl('.gy-storew'), after: 700, s: '그림 옆 점선 칸을\n누르면 도구를 쓸 수 있단다.\n+ 를 눌러 보렴!' },
-        { c: '다이수프', when: () => !gtEl('.gy-pop [data-a=use]') && !gtEl('.gy-storew') && gtEl('.gy-pop .mp-thb'), t: '.gy-pop .mp-thb', tap: '.gy-pop .mp-thb', until: () => gtEl('.gy-pop [data-a=use]') || gtEl('.gy-storew'), after: 700, s: '포켓몬 그림을 눌러 보렴!' },
-        { c: '다이수프', when: () => gtEl('.gy-pop [data-a=use]'), t: '.gy-pop [data-a=use]', tap: '.gy-pop [data-a=use]', until: () => gtEl('.gy-storew'), after: 700, s: '\'도구 사용\'을 눌러 보렴!' },
+        { c: '다이수프', when: () => gtEl('.gy-pop [data-a=tm]'), t: '.gy-pop [data-a=tm]', tap: '.gy-pop [data-a=tm]', until: () => gtEl('.gy-storew'), after: 700, s: '카드 아래 \'도구 사용\'을\n눌러 보렴!' },   /* 경완 '점선박스 말고 상세카드 하단에 있는 도구 사용 버튼 눌러서 먹이게 — 점선박스는 도구 지니게 할 때 누르는 느낌' */
         { c: '다이수프', when: () => gtEl('.gy-storew [data-ut=it][aria-selected=false]'), t: '.gy-storew [data-ut=it]', tap: '.gy-storew [data-ut=it]', until: () => gtEl('.gy-storew [data-soup]'), after: 500, s: '\'도구\' 탭을 눌러 보렴.' },
         { c: '다이수프', t: '.gy-storew [data-soup]', tap: '.gy-storew [data-soup]', until: () => gtEl('.gy-pop [data-a=t]'), after: 700, s: '방금 받은 다이수프가\n여기 있지? 눌러 보렴!' },
         { c: '다이수프', when: () => gtEl('.gy-pop [data-a=t]'), t: '.gy-pop [data-a=t]', snap: ['5a', '.gy-pop .win', '.gy-pop [data-a=t]'], tap: '.gy-pop [data-a=t]', until: () => !!B.gm(P).gmax, after: 700, s: '\'먹이기\'를 눌러 보렴!' },
@@ -5107,7 +5105,7 @@ async function dmaxTut(test) {
         { c: '다이맥스', when: () => gtEl('.bt .gkb') && !done, t: '.bt .gkb', tap: '.bt .gkb', until: () => gtEl('.bt .gkb.on') || done, after: 600, s: '다이맥스 버튼이 생겼지?\n눌러서 켜 보렴!' },
         { c: '다이맥스', when: () => gtEl('.bt .gkb.on') && !done, t: () => gtEl('.bt .mvb[data-i="0"]') || gtEl('.bt .mvb'), snap: ['5b', '.bt', '.bt .gkb.on'], tap: '.bt .mvb', until: () => !gtEl('.bt .mvb') || done, after: 300, s: `기술이 전부 다이맥스\n기술로 바뀌었지?\n${mvN}였던 기술을 눌러 보렴!` }]);
       await fight();
-      if (!done && open) await gtu([{ c: '다이맥스', t: '.bt-hb.e', s: '다이맥스는 3턴 동안 이어진단다.\n한 번 더 공격해 보렴!' },
+      if (!done && open) await gtu([{ c: '다이맥스', t: '.bt-hb.p', s: '다이맥스는 3턴 동안 이어진단다.\n한 번 더 공격해 보렴!' }   /* 경완 '3턴 대사 나올 때는 상대 체력 박스가 아니라 우리 포켓몬 체력 박스' */,
         { c: '다이맥스', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', until: () => gtEl('.bt .mvb') || done, after: 400, quiet: 1 },
         { c: '다이맥스', when: () => gtEl('.bt .mvb') && !done, t: '.bt .mvb[data-i="0"]', tap: '.bt .mvb', quiet: 1, until: () => !gtEl('.bt .mvb') || done, after: 300 }]);
       for (let n = 0; n < 6 && !done && open; n++) { await fight(); if (done || !open) break; await gtu([{ c: '마무리', t: '.bt [data-a=fight]', tap: '.bt [data-a=fight]', quiet: 1, until: () => gtEl('.bt .mvb') || done, after: 400 }, { c: '마무리', when: () => gtEl('.bt .mvb') && !done, t: '.bt .mvb[data-i="0"]', tap: '.bt .mvb', quiet: 1, until: () => !gtEl('.bt .mvb') || done, after: 300 }]); }
