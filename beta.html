@@ -41,6 +41,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 .vt.jp .vt-s{animation:vtJump .38s cubic-bezier(.3,.7,.4,1)}.vt.jp::before{animation:vtJs .38s cubic-bezier(.3,.7,.4,1)}@keyframes vtJump{45%{translate:0 -24px}}@keyframes vtJs{45%{scale:.55;opacity:.6}}
 .vpad{position:fixed;z-index:6200;left:14px;bottom:var(--vpad-b, 170px);width:132px;height:132px;display:grid;grid-template:repeat(3,44px)/repeat(3,44px);touch-action:none;user-select:none;-webkit-user-select:none}
 .vpad[hidden]{display:none}
+.vpad.vstk{display:block}.vstk .vj-b{position:absolute;left:50%;top:50%;width:122px;height:122px;margin:-61px 0 0 -61px;border-radius:50%;background:rgba(28,28,46,.3);border:3px solid rgba(255,255,255,.5);box-shadow:0 3px 0 rgba(0,0,0,.3);transition:background .12s}.vstk .vj-b.on{background:rgba(28,28,46,.44)}.vstk .vj-k{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border-radius:50%;background:rgba(255,255,255,.9);border:3px solid var(--frame,#20202c);box-shadow:0 3px 0 rgba(0,0,0,.3)}   /* v26.23 경완 '친구 필드 방향키도 특훈처럼 스틱, 위치 고정' */
 .vpad button{appearance:none;border:3px solid var(--frame,#20202c);background:rgba(244,236,216,.9);border-radius:8px;padding:0;box-shadow:0 3px 0 rgba(0,0,0,.35);display:grid;place-items:center;touch-action:none}
 .vpad button.on{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.35);background:#ffd34a}
 .vpad button i{width:0;height:0;border:8px solid transparent}
@@ -8941,14 +8942,15 @@ const Visit = (() => {
   const SPD = 72;   // 필드 좌표/초
   function padMake() {
     if (pad) return pad;
-    pad = el('div', 'vpad', ['up', 'left', 'right', 'down'].map(k => `<button type="button" data-k="${k}" aria-label="${{ up: '위', left: '왼쪽', right: '오른쪽', down: '아래' }[k]}"><i></i></button>`).join(''));
-    // v15.23 경완 '누른 채로 다른 방향키로 미끄러지면 그 방향키가 눌리게': 손가락 자리로 칸을 정한다 (대각선 칸 = 두 방향)
-    const P = new Map(), CELL = [[[], ['up'], []], [['left'], [], ['right']], [[], ['down'], []]];
-    const sync = () => { const ks = new Set([...P.values()].flat()); for (const k of ['up', 'down', 'left', 'right']) { const was = keys.has(k), now = ks.has(k); if (now && !was) { keys.add(k); try { haptic(0); } catch (e) {} } else if (!now && was) keys.delete(k); pad.querySelector(`[data-k=${k}]`).classList.toggle('on', now); } };
-    const at = e => { const r = pad.getBoundingClientRect(), c = Math.floor((e.clientX - r.left) / (r.width / 3)), w = Math.floor((e.clientY - r.top) / (r.height / 3)); if (c < -1 || c > 3 || w < -1 || w > 3) return []; return CELL[Math.max(0, Math.min(2, w))][Math.max(0, Math.min(2, c))]; };
-    pad.addEventListener('pointerdown', e => { if (!e.target.closest('button')) return; e.preventDefault(); e.stopPropagation(); try { pad.setPointerCapture(e.pointerId); } catch (er) {} P.set(e.pointerId, at(e)); sync(); });
-    pad.addEventListener('pointermove', e => { if (!P.has(e.pointerId)) return; const k = at(e); if (k.join() !== P.get(e.pointerId).join()) { P.set(e.pointerId, k); sync(); } });
-    for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, e => { if (P.delete(e.pointerId)) sync(); });
+    /* v26.23 경완 '체육관 로켓단 이벤트나 친구 필드 놀러가서 돌아다닐 때 방향키도 특훈 방향키처럼 스틱 형태로 바꿔줘. 대신 특훈과는 달리 스틱 위치가 고정된채로 계속 보이게': 십자 방향키 → 고정 스틱(특훈 모양). 미는 방향으로 8방향(대각선 = 두 키), 가운데 14px 안은 멈춤, 방향 바뀔 때 살짝 진동 */
+    pad = el('div', 'vpad vstk', '<i class="vj-b"><i class="vj-k"></i></i>'); pad.setAttribute('aria-label', '이동 스틱');
+    const sjb = pad.querySelector('.vj-b'), sjk = pad.querySelector('.vj-k'); let jId = null;
+    const sync = ks => { let ch = 0; for (const k of ['up', 'down', 'left', 'right']) { const was = keys.has(k), now = ks.includes(k); if (now && !was) { keys.add(k); ch = 1; } else if (!now && was) keys.delete(k); } if (ch) try { haptic(0); } catch (e) {} sjb.classList.toggle('on', !!ks.length); };
+    const jMv = e => { const r = sjb.getBoundingClientRect(); let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy), RR = r.width * .36; if (l > RR) { dx *= RR / l; dy *= RR / l; } sjk.style.transform = `translate(${dx}px,${dy}px)`;
+      const ks = []; if (l >= 14) { const ux = dx / l, uy = dy / l; if (ux > .38) ks.push('right'); if (ux < -.38) ks.push('left'); if (uy > .38) ks.push('down'); if (uy < -.38) ks.push('up'); } sync(ks); };
+    pad.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); jId = e.pointerId; try { pad.setPointerCapture(e.pointerId); } catch (er) {} jMv(e); });
+    pad.addEventListener('pointermove', e => { if (e.pointerId === jId) jMv(e); });
+    for (const t of ['pointerup', 'pointercancel', 'lostpointercapture']) pad.addEventListener(t, e => { if (e.pointerId !== jId) return; jId = null; sjk.style.transform = ''; sync([]); });
     pad.addEventListener('contextmenu', e => e.preventDefault());
     document.body.append(pad);
     // v15.16 경완: 오른쪽(채팅창 우상단)에 점프 버튼 — 다른 사람 화면에도 같이 뜀

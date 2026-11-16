@@ -323,7 +323,7 @@ function field(I, o) {
   const root = I.root, W = root.clientWidth || innerWidth, H = root.clientHeight || innerHeight, k = Math.max(2, Math.round(W / (12 * 16) * 4) / 4);
   const el = document.createElement('div'); el.className = 'gy-town ev-fld lock';
   el.innerHTML = `<div class="tw-map"><i class="ev-ov"></i></div><b class="ev-loc">${I.esc(o.nm || '')}</b><i class="ev-fade"></i>
-    <div class="ev-pad">${['u', 'l', 'r', 'd'].map(d => `<button type="button" data-d="${d}" aria-label="${({ u: '위', d: '아래', l: '왼쪽', r: '오른쪽' })[d]}"></button>`).join('')}</div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="evf-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button><button type="button" class="ev-bag" aria-label="가방">가방</button>`;
+    <div class="ev-pad ev-stk" aria-label="이동 스틱"><i class="ev-jb"><i class="ev-jk"></i></i></div><button type="button" class="ev-a" aria-label="말 걸기">A</button><button type="button" class="evf-b" aria-label="달리기">달리기</button><button type="button" class="ev-quit">나가기</button><button type="button" class="ev-pk" aria-label="같이 다니는 포켓몬">포켓몬</button><button type="button" class="ev-bag" aria-label="가방">가방</button>`;
   try { const gm = root.querySelector('.gy-main')?.getBoundingClientRect(), rb = root.getBoundingClientRect(); if (gm && gm.height) root.style.setProperty('--evmb', Math.round(rb.bottom - gm.bottom + 8) + 'px'); } catch (e) {}
   root.appendChild(el); const map = el.firstElementChild, ov = map.firstElementChild, fade = el.querySelector('.ev-fade'), pad = el.querySelector('.ev-pad'), aB = el.querySelector('.ev-a');
   const F = { el, map, k, sps: [], obs: [], hid: [], pl: null, hold: null, aQ: false, quitQ: false, me: null, follow: true, warps: [], block: new Set(), cur: 'main', rooms: Object.assign({}, o.rooms || {}) };
@@ -559,10 +559,14 @@ function field(I, o) {
   F.show = () => new Promise(ok => { requestAnimationFrame(() => { el.classList.add('on'); setTimeout(ok, 650); }); });
   F.close = async () => { el.classList.add('out'); await wait(800); el.remove(); off(); };
   // 걷기: 누르고 있는 동안 계속 (손가락을 다른 화살표로 밀면 방향만 바뀜)
-  const press = d => { if (d && d !== F.hold) F.holdT = performance.now(); F.hold = d; pad.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.d === d)); };
-  pad.addEventListener('pointerdown', e => { const b = e.target.closest('button'); if (!b) return; e.preventDefault(); try { pad.setPointerCapture(e.pointerId); } catch (x) {} I.haptic?.(0); press(b.dataset.d); });   // 방향키 누를 때 살짝 진동 (경완 2026-11-07 '조작감')
-  pad.addEventListener('pointermove', e => { if (!F.hold) return; const b = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.ev-pad button'); if (b && b.dataset.d !== F.hold) { I.haptic?.(0); press(b.dataset.d); } });
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => pad.addEventListener(n, () => press(null)));
+  /* v26.23 경완 '체육관 로켓단 이벤트나 친구 필드 놀러가서 돌아다닐 때 방향키도 특훈 방향키처럼 스틱 형태로 바꿔줘. 대신 특훈과는 달리 스틱 위치가 고정된채로 계속 보이게': 십자 방향키 → 고정 스틱(특훈 .ya-joyb 모양). 가운데에서 14px 넘게 밀면 더 많이 민 축 방향으로 한 칸씩 (본가 4방향 이동 그대로), 방향 바뀔 때 살짝 진동 */
+  const jk = pad.querySelector('.ev-jk'), jb = pad.querySelector('.ev-jb');
+  const press = d => { if (d && d !== F.hold) F.holdT = performance.now(); F.hold = d; jb.classList.toggle('on', !!d); if (!d) jk.style.transform = ''; };
+  let jId = null; const jMv = e => { const r = jb.getBoundingClientRect(); let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); const l = Math.hypot(dx, dy), RR = r.width * .36; if (l > RR) { dx *= RR / l; dy *= RR / l; } jk.style.transform = `translate(${dx}px,${dy}px)`;
+    const d = l < 14 ? null : Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'r' : 'l') : (dy > 0 ? 'd' : 'u'); if (d !== F.hold) { if (d) I.haptic?.(0); press(d); } };
+  pad.addEventListener('pointerdown', e => { e.preventDefault(); jId = e.pointerId; try { pad.setPointerCapture(e.pointerId); } catch (x) {} jMv(e); });
+  pad.addEventListener('pointermove', e => { if (e.pointerId === jId) jMv(e); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => pad.addEventListener(n, e => { if (e.pointerId !== jId) return; jId = null; press(null); }));
   pad.addEventListener('contextmenu', e => e.preventDefault());
   // 달리기 (본가 달리기 신발: 누른 채로 걸으면 한 칸 8프레임, 경완 2026-11-07 'A 버튼 위에 달리기 버튼')
   const bB = el.querySelector('.evf-b'), runOn = on => { F.run = on; bB.classList.toggle('on', on); };
