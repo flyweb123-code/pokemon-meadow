@@ -28,7 +28,7 @@ const MOB_MAX = w => Math.min(10, 5 + Math.floor(w / 2)), BOSS_BGM = { 4: 'gymBa
 const XP_KO = 9, XP_GM = [.6, .4, .25, .15, .15, .1, .1], CLEAR_X = { S: .5, A: .25 };
 const XW = { mob: i => 1 + i * .15, mid: 5, fin: 10 }, XW_ALL = STAGES.reduce((a, S, i) => a + S.n * XW.mob(i) + (S.boss || []).reduce((b, k) => b + (k === 2 ? XW.fin : XW.mid), 0), 0);
 // 골드: 색마다 값이 다르다 (동 1 · 은 3 · 금 10). 번뜩임: 색마다 게이지 값·연출이 다르다 (하늘 1% 조용히 · 보라 3% · 무지개 5% 크게)
-const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 8, CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
+const CV = [0, 1, 3, 10], cval = cv => CV[cv], BAG_B = { 4: 12, 7: 25, 9: 18, 10: 60 }, BAG_COMBO = 10, BAG_COMBO_N = 100, /* 경완 '엉 그렇게 해줘' (2026-11-16): 20콤보마다 8G → 100콤보마다 10G. 자동 플레이 시뮬에서 콤보 자루가 완주 골드의 절반 넘음(1분 약 185G) */ CLEAR_G = { S: 150, A: 80 }, S_HITS = 12,   /* 경완 2026-11-14 저녁 '다른 미니게임 수준에 맞추되 잘하면 잘 벌게': 기본 동전은 적게(1분 30~40G), 대장 꾸러미는 스테이지가 뒤일수록 큼, 콤보 20마다 꾸러미, 아슬아슬 회피마다 동전, 완주 등급 보너스 */   /* 경완 2026-11-14 '7스테이지에서 쓰러지면 2~300G, 끝까지 깨면 약 1,000G': 뒤 스테이지일수록 동전 값이 큼 */
   CPAL = [null, ['#5a2c10', '#d0803c', '#9a5220', '#f4c090'], ['#3a4250', '#c8d2e0', '#8894a8', '#ffffff'], ['#6a4400', '#ffc830', '#d08a00', '#fff2a0']];
 const EGV = [0, 1, 3, 5], EGC = [null, '#58c8ff', '#b47cff', '#ff6ad0'];
 const ITEMS = { magnet: { n: '자석', c: '#e04848', im: 'magnet' }, bomb: { n: '폭탄', c: '#8a4ad8', im: 'toxicorb' }, berry: { n: '열매', c: '#4a8ae8', im: 'sitrusberry' }, power: { n: '기합', c: '#f08020', im: 'xattack' } };
@@ -1187,7 +1187,7 @@ function hurt(o, r, kx, ky, light) {
   else se(r.e < 1 ? 'KOUKA_L' : 'KOUKA_M', lt ? .16 : .07, { gain: lt ? .6 : 1 });
   // 콤보: 이어 맞힐수록 기술이 빨리 다시 찬다 (맞으면 끊김)
   G.combo++; G.comboT = 2.5; G.best = Math.max(G.best, G.combo); cbUi(true);
-  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); if (G.combo % 20 === 0) bagDrop(me.x + (Math.random() - .5) * 60, me.y - 10, BAG_COMBO); }
+  if (G.combo % 10 === 0) { pop(me.x, me.y - 78, `${G.combo} 콤보!`, '#ffe27a', true); buzz(1); stars(me.x, me.y - 30, 8); if (G.combo % BAG_COMBO_N === 0) bagDrop(me.x + (Math.random() - .5) * 60, me.y - 10, BAG_COMBO); }
   if (o.hp <= 0) ko(o, ux, uy);
 }
 function ko(o, ux, uy) {
