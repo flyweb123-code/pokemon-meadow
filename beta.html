@@ -453,7 +453,7 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 .bag-sort button{white-space:nowrap}#boxSort button[data-dir]:not([data-dir=''])::after{content:attr(data-dir);font-size:9px;margin-left:3px;vertical-align:1px}
 .legdark{position:absolute;inset:0;z-index:1040;pointer-events:none;opacity:0;transition:opacity .5s;background:radial-gradient(circle at var(--lx) var(--ly),color-mix(in srgb,var(--lc) 30%,transparent) 0,rgba(6,4,18,.55) 120px,rgba(6,4,18,.82) 320px)}.legdark.on{opacity:1}
 .legflash{position:absolute;inset:0;z-index:1090;pointer-events:none;mix-blend-mode:screen}
-/* v14.66 경완: 박스 = 윗줄 정렬 5개(거리 추가), 아랫줄 타입·필드·짝꿍·이로치(따로 켜고 끔)·마리 수 */.bx-tools{row-gap:8px}.bx-row{display:flex;align-items:center;gap:6px;width:100%;min-width:0}.bx-row .bag-sort{flex:none}.bx-row .bag-sort button{margin-left:0;padding:4px 10px}.bx-row #boxType{min-width:0;width:auto;font-size:12px;line-height:inherit;padding:4px 22px 4px 9px;border:3px solid var(--inner);box-shadow:none;background-color:#fff}.bx-row #boxType.on{border-color:var(--frame);background-color:var(--frame);color:var(--win)}.bx-row #boxType::after{right:7px}.bx-row .tcount{margin-left:auto;white-space:nowrap}#boxSort{flex:1 1 100%;min-width:0}#boxType{flex:none;width:auto;min-width:96px;font-size:13px;padding-top:5px;padding-bottom:5px}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
+/* v14.66 경완: 박스 = 윗줄 정렬 5개(거리 추가), 아랫줄 타입·필드·짝꿍·이로치(따로 켜고 끔)·마리 수 */.bx-tools{row-gap:8px}.bx-row{display:flex;align-items:center;gap:6px;width:100%;min-width:0}.bx-row .bag-sort{flex:none}.bx-row .bag-sort button{margin-left:0;padding:4px 10px}.bx-row #boxType{min-width:0;width:auto;font-size:12px;line-height:inherit;padding:4px 22px 4px 9px;border:3px solid var(--inner);box-shadow:none;background-color:#fff}.bx-row #boxType.on{border-color:var(--frame);background-color:var(--frame);color:var(--win)}.bx-row #boxType::after{right:7px}.bx-row .tcount{margin-left:auto;white-space:nowrap}#mgr .sheet-head{flex-wrap:nowrap}#mgr .sheet-head h3{flex:0 1 auto;min-width:0}#mgr .sheet-head .bx-cnt{margin-left:auto;font-size:14px;color:var(--dim);white-space:nowrap}.bx-row.g6{gap:4px}.bx-row.g6 .bag-sort{flex:0 1 auto;min-width:0}.bx-row.g6 .bag-sort button{padding:4px 6px;font-size:13px;white-space:nowrap}.bx-row .bag-sort[hidden]{display:none}#boxSort{flex:1 1 100%;min-width:0}#boxType{flex:none;width:auto;min-width:96px;font-size:13px;padding-top:5px;padding-bottom:5px}#boxSort button{flex:1 1 0;min-width:0;padding-left:0;padding-right:0;text-align:center}
 .bd-card.ready{border-color:#e8a020;animation:bdGlow 4s ease-in-out infinite}
 @keyframes bdGlow{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffd75e,0 0 4px 0 rgba(255,200,60,.3)}50%{box-shadow:3px 3px 0 rgba(0,0,0,.2),0 0 0 2px #ffe4a0,0 0 12px 3px rgba(255,200,60,.5)}}
 .bd-evo .row>span:last-child{white-space:nowrap}
@@ -2705,7 +2705,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
 
 <div class="sheet" id="mgr" hidden>
   <div class="win mgrwin" role="dialog" aria-label="포켓몬">
-    <div class="sheet-head"><h3 id="mgrTitle">포켓몬</h3><button class="opt" id="closeMgr">닫기</button></div>
+    <div class="sheet-head"><h3 id="mgrTitle">포켓몬</h3><span class="tcount bx-cnt" id="boxCount" hidden></span><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mtab" data-t="field">
       <div class="mgr-tools"><button type="button" class="j-out f-out" id="btnOutF">필드에 나가기<svg viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h1v1h1v1h1v1H5v1H4v1H3v1H2V5h1V4H0V2h3V1H2z"/></svg></button><div class="mgr-two test-only"><button class="test-btn" id="mgrClear">모두 빼기 (테스트)</button><button class="test-btn" id="mgrRandom">무작위 (테스트)</button></div><span class="tcount" id="mgrCap"></span></div>
       <div class="mgr-body">
@@ -2719,7 +2719,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
     <div class="mtab boxtab" data-t="box" hidden>
       <div class="bag-test"><button id="boxReset" class="test-btn">전체 포켓몬 초기화</button><button id="boxGen" class="test-btn">포켓몬 생성하기</button><button id="boxGenEgg" class="test-btn">알로 1,000마리</button></div>
       <div class="filters boxq"><span class="qw"><input id="boxQ" type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" aria-label="검색어 지우기">✕</button></span></div>
-      <div class="mgr-tools bx-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="km">거리</button></div><div class="bx-row"><span class="bag-sort"><button class="fsel" id="boxType" data-v="0" aria-haspopup="listbox">모든 타입</button></span><span class="bag-sort"><button data-bf="field" aria-pressed="false">필드</button></span><span class="bag-sort"><button data-bf="bud" aria-pressed="false">짝꿍</button></span><span class="bag-sort"><button data-bf="sh" aria-pressed="false">이로치</button></span><span class="tcount" id="boxCount"></span></div></div>
+      <div class="mgr-tools bx-tools"><div class="bag-sort" id="boxSort"><button data-sort="new">날짜</button><button data-sort="rank">랭크</button><button data-sort="bs">종족값</button><button data-sort="fr">친밀도</button><button data-sort="km">거리</button></div><div class="bx-row"><span class="bag-sort"><button class="fsel" id="boxType" data-v="0" aria-haspopup="listbox">모든 타입</button></span><span class="bag-sort"><button data-bf="field" aria-pressed="false">필드</button></span><span class="bag-sort"><button data-bf="bud" aria-pressed="false">짝꿍</button></span><span class="bag-sort bx-gym"><button data-bf="lu" aria-pressed="false">라인업</button></span><span class="bag-sort bx-gym"><button data-bf="yd" aria-pressed="false">훈련장</button></span><span class="bag-sort"><button data-bf="sh" aria-pressed="false">이로치</button></span></div></div>
       <div class="boxgrid" id="boxGrid"></div>
     </div>
     <div class="runtabs mtabs" id="mgrTabs" role="tablist"><button class="runtab" role="tab" data-t="box">박스</button><button class="runtab" role="tab" data-t="dex">도감</button><button class="runtab" role="tab" data-t="field">필드</button><button class="runtab" role="tab" data-t="buddy">짝꿍</button></div>
@@ -13241,7 +13241,7 @@ let mgPick = false;   // v7.57: 미니게임 '함께 놀 포켓몬'을 박스에
 let mgrTab = 'field', boxSort = 'new', budPick = null, boxFromSlot = false;   // budPick: 짝꿍 칸을 고르는 중이면 그 칸 번호
 // 정렬 버튼은 다시 누를 때마다 내림차순 ↔ 오름차순 (boxDir: 1 = 큰 것/최근 먼저)
 let boxDir = 1;
-const boxF = { field: false, bud: false, sh: false };   // v14.66 경완: 보기 필터 (같이 켤 수 있음)
+const boxF = { field: false, bud: false, sh: false, lu: false, yd: false };   /* v26.xx 경완 '짝꿍 필터 박스 옆에다가 라인업 훈련장 필터박스': 체육관 라인업(세 줄 모두)·훈련장에 있는 포켓몬 */   // v14.66 경완: 보기 필터 (같이 켤 수 있음)
 try { boxSort = localStorage.getItem('pk-box-sort') || 'new'; if (boxSort === 'no' || boxSort === 'field' || boxSort === 'bud') boxSort = 'new'; boxDir = localStorage.getItem('pk-box-dir') === '-1' ? -1 : 1; } catch (e) {}
 // v3.99 경완: 하단 메뉴 '포켓몬' = 박스·도감 탭, '필드' = 필드·짝꿍 탭 (도감은 따로 그려 둔 창이라 도감 탭을 누르면 그 창으로 바꿔 연다)
 const TAB_G = { box: 'poke', dex: 'poke', field: 'fld', buddy: 'fld' }; let mgrG = 'poke', lastTab = { poke: 'box', fld: 'field' }; var mgrReady = true;
@@ -13256,7 +13256,7 @@ function setMgrTab(t) {
   boxFromSlot = false; if (t !== 'box') budPick = null;
   mgrTab = t; try { localStorage.setItem('pk-mgr-tab', t); } catch (e) {}
   document.querySelectorAll('#mgrTabs button').forEach(b => { b.setAttribute('aria-selected', b.dataset.t === t); if (b.dataset.t === t) $('#mgrTitle').textContent = b.textContent; });   // 창 제목 = 지금 탭
-  document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t);
+  document.querySelectorAll('.mtab').forEach(x => x.hidden = x.dataset.t !== t); $('#boxCount').hidden = t !== 'box';   /* v26.xx 경완 '전체 마리수 표시를 박스행 있는 우상단으로' */
   if (t === 'buddy') renderBuddy();
   if (t === 'box') renderBox(); else renderMgr(true);
 }
@@ -13351,7 +13351,7 @@ let boxQv = '';
 const boxQ = () => boxQv;
 let boxTy = 0;   // v11.97 경완: 박스 타입 버튼 (도감 타입 고르기와 같은 창 위 창)
 const boxHit = (p, q, noTy) => (noTy || !boxTy || (SPECIES[p.sp]?.t || []).includes(boxTy)) && (!q || nameHit(nameOf(p), q) || nameHit(SPECIES[p.sp].n, q) || String(p.sp) === q.replace(/^0+/, ''));
-const boxFHit = (p, bdS) => (!boxF.field || onField(p.id)) && (!boxF.bud || (bdS || new Set(S.buds.map(b => b.pid))).has(p.id)) && (!boxF.sh || p.shiny);
+const boxFHit = (p, bdS) => (!boxF.field || onField(p.id)) && (!boxF.bud || (bdS || new Set(S.buds.map(b => b.pid))).has(p.id)) && (!boxF.sh || p.shiny) && (!boxF.lu || (S.gym?.lu || []).some(L => (L || []).includes(p.id))) && (!boxF.yd || (S.gym?.tr || []).some(e => e.id === p.id));
 function boxList(all, keepAll) {
   const q = all ? '' : boxQ();
   const bdS = boxF.bud ? new Set(S.buds.map(b => b.pid)) : null;
@@ -13412,8 +13412,9 @@ function seeBuds() { if (S.buds.some(b => b.nw || budNew(b))) { S.buds.forEach(b
 function renderBox() {
   document.querySelectorAll('#boxSort [data-sort]').forEach(b => { const on = b.dataset.sort === boxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (boxDir > 0 ? '▼' : '▲') : ''; });
   document.querySelectorAll('.bx-row [data-bf]').forEach(b => b.setAttribute('aria-pressed', !!boxF[b.dataset.bf]));
-  const L = boxList(true, true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), yard = new Set((S.gym?.tr || []).map(e => e.id)), grid = $('#boxGrid'), anyF = boxF.field || boxF.bud || boxF.sh;   /* 필드 보기도 칸은 지우지 않고 숨긴다 → 다른 정렬로 돌아갈 때 바로 */
+  const L = boxList(true, true), q = boxQ(), bud = new Set(S.buds.map(b => b.pid)), field = new Set(S.mons.map(m => m.pid)), yard = new Set((S.gym?.tr || []).map(e => e.id)), grid = $('#boxGrid'), anyF = boxF.field || boxF.bud || boxF.sh || boxF.lu || boxF.yd;   /* 필드 보기도 칸은 지우지 않고 숨긴다 → 다른 정렬로 돌아갈 때 바로 */
   const vis = p => boxHit(p, q) && boxFHit(p, bud), hits = q || boxTy || anyF ? L.filter(vis).length : S.box.length;
+  document.querySelectorAll('.bx-row .bx-gym').forEach(e => e.hidden = !S.gym?.d); document.querySelector('.bx-row')?.classList.toggle('g6', !!S.gym?.d);   /* 체육관을 연 뒤에만 */
   $('#boxCount').innerHTML = q ? `찾은 포켓몬 <b>${hits}</b>마리` : `전체 <b>${hits}</b>마리`;   // v14.66 경완: 이로치 수는 따로 안 보이고, 필터를 켜면 걸러진 수
   if (!L.length) { pkEls.clear(); grid.innerHTML = `<p class="empty-msg">아직 부화시킨 포켓몬이 없다.</p>`; return; }
   grid.querySelector('.empty-msg')?.remove();
@@ -13626,7 +13627,7 @@ new MutationObserver(() => { if (mgr.hidden && repPick) { repPick = false; mgr.c
 new MutationObserver(() => { if (mgr.hidden) { if (boxTy) setFilter('boxType', 0); if (mgPick) { mgPick = false; mgr.classList.remove('mgpick'); } closePoke(); budPick = null; clearBudFocus(); boxFromSlot = false; if (mgrTab === 'buddy') seeBuds(); } }).observe(mgr, { attributes: true, attributeFilter: ['hidden'] });
 function pokeOpen() { return (!mgr.hidden && mgrG === 'poke') || (!sheet.hidden && dexMode !== 'buddy'); }
 function fldOpen() { return !mgr.hidden && mgrG === 'fld'; }
-function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (g === 'poke') { boxSort = 'new'; boxDir = 1; boxF.field = boxF.bud = boxF.sh = false; if (boxTy) setFilter('boxType', 0); try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {} }   /* v4.53 경완: 포켓몬 메뉴를 다시 열면 박스는 늘 날짜(최신)순 */ if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
+function menuTo(isOpen, g) { const was = isOpen(); closeToggles(); hideSheets(); if (was) return; if (g === 'poke') { boxSort = 'new'; boxDir = 1; boxF.field = boxF.bud = boxF.sh = boxF.lu = boxF.yd = false; if (boxTy) setFilter('boxType', 0); try { localStorage.setItem('pk-box-sort', 'new'); localStorage.setItem('pk-box-dir', 1); } catch (e) {} }   /* v4.53 경완: 포켓몬 메뉴를 다시 열면 박스는 늘 날짜(최신)순 */ if (budPick != null) { budPick = null; closePoke(); } const t = g === 'poke' ? 'box' : g === 'fld' ? 'field' : lastTab[g];   /* v4.04 경완: 포켓몬 메뉴는 늘 포켓몬(박스) 탭부터. v4.48: 필드 메뉴도 늘 필드 탭부터 */ if (t === 'dex') { setMgrTab('dex'); return; } openMgr(); setMgrTab(t); }
 $('#openMgr').onclick = () => menuTo(pokeOpen, 'poke');
 $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나갔으면 고르기 상태를 푼다
 $('#closeMgr').onclick = closeMgr;
