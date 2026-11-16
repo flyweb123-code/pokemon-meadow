@@ -1525,8 +1525,11 @@ const GIFT_W = [75, 16, 8, 1], GIFT_GR = ['', '레어', '에픽', '전설'], gif
 const GIFT_TW = [82, 16, 2], GIFT_BOSS = 8;   /* 경완 2026-11-16 '메가진화 보스 깨기가 어려워서 꾸러미 보상 수준 좀 높여줘도': 무작위 칸 1 → 2칸(v26.18 부터 도구 고정 한 칸 + 무작위 한 칸), 대장 메가스톤 4 → 8% */
 /* 경완 2026-11-16 '보상 리스트에는 기술머신이나 기술레코드도 포함시켜줘': 무작위 칸의 영양제 몫(75%) 가운데 GIFT_TM %(전체로는 25%)는 훈련한 포켓몬이 배울 수 있고 아직 모르는 기술머신·기술레코드 (가진 기술머신은 빼고, 상점 값이 쌀수록 잘 나옴 — 값 셈은 manage.js tmPrice 와 같게). id 는 'tm:기술' */
 const GIFT_TM = 25, tmPr = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000, tmGr = pr => pr >= 2000 ? 2 : pr >= 700 ? 1 : 0;
-const giftTm = P => { const B = GB(), D = B.D, own = GA.S?.gym?.tms || {}; if (!P || !D || !B.tmOf) return null; const L = B.tmOf(P.sp).map(i => D.mv[i]).filter(x => x && B.tmCan(P, x[0]) && (B.isTR(x[0]) || !(own[x[0]] > 0))); if (!L.length) return null;
-  let r = Math.random() * L.reduce((a, x) => a + 1 / tmPr(x), 0); for (const x of L) if ((r -= 1 / tmPr(x)) <= 0) return ['tm:' + x[0], tmGr(tmPr(x))]; const x = L[L.length - 1]; return ['tm:' + x[0], tmGr(tmPr(x))]; };
+/* 경완 2026-11-16 '꼭 훈련한 포켓몬이 배울 수 있는거 아니여도 내 체육관 포켓몬들이 배울 수 있는 기술머신 레코드 포함해서 나오게. 훈련한 포켓몬이 배울 수 있는게 확률 좀 더 높게': 후보 = 체육관 타입 박스 포켓몬(상점 shopTm 과 같은 범위) 가운데 누구든 배울 수 있고 아직 모르는 기술, 훈련한 포켓몬이 배울 수 있으면 무게 GIFT_TMW 배 */
+const GIFT_TMW = 3;
+const giftTm = P => { const B = GB(), D = B.D, g = GA.S?.gym || {}, own = g.tms || {}; if (!P || !D || !B.tmOf) return null; const W = new Map(), put = (Q, k) => B.tmOf(Q.sp).forEach(i => { const x = D.mv[i]; if (x && B.tmCan(Q, x[0]) && (B.isTR(x[0]) || !(own[x[0]] > 0))) W.set(x, Math.max(W.get(x) || 0, k)); });
+  (GA.S?.box || []).forEach(Q => { if (Q !== P && (SP[Q.sp]?.t || []).includes(g.ty)) put(Q, 1); }); put(P, GIFT_TMW); const L = [...W].map(([x, k]) => [x, k / tmPr(x)]); if (!L.length) return null;
+  let r = Math.random() * L.reduce((a, e) => a + e[1], 0), x = L[L.length - 1][0]; for (const e of L) if ((r -= e[1]) <= 0) { x = e[0]; break; } return ['tm:' + x[0], tmGr(tmPr(x))]; };
 const GIFT = (stat, boss, P) => { const B = GB(), H = B.HOLD || {}, V = B.EV_VIT || [['protein']], MS = B.MEGA_ST || {}, has = id => (GA.S?.gym?.itm?.[id] | 0) > 0 || !!B.itWho?.(id),
     ok = Object.keys(H).filter(id => !B.ZC_T?.[id] && !(B.ZC_ST || []).includes(id) && H[id][1] > 0 && (!MS[id] || (H[id][1] >= 10000 && !has(id)))),
     bs = Object.keys(MS).filter(id => MS[id][0] === boss && H[id]?.[1] > 0 && !has(id)),
