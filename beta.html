@@ -14976,6 +14976,8 @@ async function mgtRescue() { if (!S.mgtFix2 && bootOk) { S.mgtFix2 = 1; for (con
       if (gh) { boxOut(gh.id); S.box.splice(S.box.indexOf(gh), 1); } boxPut(p); back.push(p); }
     save(); if (back.length) { const nm = back.map(p => nameOf(p)).join(', '); try { log(`상자에서 사라졌던 <b>${esc(nm)}</b>${J({ name: back[back.length - 1].nm || nameOf(back[back.length - 1]) }, '이/가').slice(-1)} 돌아왔다.`, [], true); } catch (e) {} try { sayPop(`상자에서 사라졌던 <b>${esc(nm)}</b>${J({ name: nameOf(back[back.length - 1]) }, '이/가').slice(-1)} 돌아왔어요!`); } catch (e) {} }
   } catch (e) { console.error(e); } }
+/* v26.xx 경완 '응' (불꽃 타입 알에서 훌라훌라로 잘못 나온 춤추새 한 마리만 이글이글로): 11-17 00:20 알 뽑기 불꽃 알 3321 → 3412, 한 번만 */
+function fmFix1() { if (S.fmFix1) return; S.fmFix1 = 1; const P = (S.box || []).find(p => p.id === 3412 && p.sp === 741 && p.fm === 'Pa_U' && p.t === 1794842421818); if (P) { delete P.fm; try { save(); } catch (e) {} } }
 function migrateBox() {
   for (const m of S.mons) if (m.pid == null || !boxOf(m.pid)) { const p = newPoke(m.sp, { shiny: false }); m.pid = p.id; }
   for (const p of S.box) if (SPECIES[p.sp]) { S.unlocked.add(dxK(p.sp)); if (SPECIES[p.sp].rg) (S.rfU ||= new Set()).add(+p.sp); }   /* v21.33 경완 '지역 폼 포켓몬 이미 있으면 도감도': 가진 포켓몬(지역 폼 포함)은 모두 도감에 등록 */
@@ -15820,7 +15822,7 @@ function rollEgg(e) { const RH = e.gc ? null : S.recentHatch;   /* v18.32 경완
   return pool[i];
 }
 // 태어난 포켓몬을 상자에 넣고 도감 등록, 이미 만난 종이면 골드
-const TY_FM = { 741: { 10: '', 13: 'Pom_Pom', 14: 'Pa_U', 8: 'Sensu' } };   /* v26.61 경완 '춤추새 불타입 빨간색이었는데 모양이 다른데?': 타입 알에서 나온 춤추새는 그 타입 스타일 (불꽃=이글이글·전기=파칙파칙·에스퍼=훌라훌라·고스트=하늘하늘) */
+const TY_FM = { 741: { 10: '', 13: 'Pom_Pom', 14: 'Pa_U', 8: 'Sensu' }, 413: { 12: '', 5: 'Sand', 9: 'Trash' } };   /* v26.xx 경완 '또 이런 오류 있는 포켓몬 있는지 검토': 무작위 폼인데 폼마다 타입이 다른 건 춤추새·도롱마담(풀=초목·땅=모래땅·강철=슈레트)뿐 */   /* v26.61 경완 '춤추새 불타입 빨간색이었는데 모양이 다른데?': 타입 알에서 나온 춤추새는 그 타입 스타일 (불꽃=이글이글·전기=파칙파칙·에스퍼=훌라훌라·고스트=하늘하늘) */
 function bornPoke({ g, sp, place, sh, ct }) {
   const tf = ct && TY_FM[sp]?.[ct], P = newPoke(sp, { g, place, ...(sh ? { shiny: true } : {}), ...(tf != null ? { fm: tf } : {}) }), isNew = !dexHas(sp); if (!gaSbx) unlock(sp, true); P.nw = true;   /* v18.48: 시험 부화는 도감 등록 안 함 */   // 박스에 새로 들어온 표시 (확인하면 지움)
   return { g, sp, place, P, isNew, dupG: gaSbx ? Math.round(isNew ? NEW_EGG_G[g] : DUP_G[g]) : addGold(isNew ? NEW_EGG_G[g] : DUP_G[g], 'egg') };
@@ -17643,7 +17645,7 @@ async function start(data) {
   if (layApply() + layPre) seaRedraw();   // v9.06 경완: 맵 편집에서 옮긴 자리
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); setTimeout(mgtRescue, 2500); setTimeout(mgtRescue2, 6000); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
+  migrateBox(); fmFix1(); setTimeout(mgtRescue, 2500); setTimeout(mgtRescue2, 6000); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
   if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (introPrev) { tutFreeze = false; setTimeout(() => location.replace(location.pathname), 1500); return; }   /* v8.04 경완: 운영자 '튜토리얼 미리 보기' — 끝나면 원래 저장으로 돌아감 (미리 보기 중엔 저장 안 함) */ if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) acctGate(false).then(() => { locFirst(); return acctSync(); }).then(re => { if (!re) acctSend(); try { stGiftUndo(); } catch (e) {} });   setTimeout(() => { try { if (!saveFrozen && S.items) stGiftUndo(); } catch (e) {} }, 15000);   // v11.97 경완: 계정 없으면 먼저 만들어야 게임 진행
