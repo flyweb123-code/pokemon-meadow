@@ -605,7 +605,7 @@
      1) 위 화면이 그 포켓몬 쪽으로 커짐(megaFull 과 같은 틀) 2) 가운데 원래 앞모습 3) 아래 트레이너 컷인 + 다이맥스밴드 4) 트레이너가 볼을 던져 포켓몬을 넣음
      5) 밴드의 붉은 기운이 볼로 → 볼이 커짐 6) 볼이 터지며 붉은 기둥, 거대한 붉은 실루엣이 솟음 → 색이 돌아온 거다이맥스 모습 + 머리 위 붉은 구름 + 포효 */
   async function dmaxFull(c) {
-    const P = c.path, pat = c.pat; await preload({ ...c, extra: [pat, c.ball] });
+    const P = c.path, pat = c.pat; await preload({ ...c, extra: [pat, c.ball, c.ballS].filter(Boolean) });
     const bt = c.bt, top = c.top, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q }), tR = rel(top.getBoundingClientRect()), mR = rel((c.monEl.querySelector('img') || c.monEl).getBoundingClientRect());
     const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.5, Math.min(k0 * 2.6, Hd * .25 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
     const tx = (mR.left + mR.width / 2) - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top, T0 = getComputedStyle(top).transform;
@@ -634,9 +634,10 @@
     const dband = c.item ? mk(`left:${bdX}px;top:${bdY}px;width:${BD}px;height:${BD}px;background:url(${c.item.url}) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px #ff2a6a);opacity:0`) : null;
     const hx = bdX + BD / 2, hy = bdY + BD / 2;   // 던지는 손 자리
     // 던지는 볼 · 커지는 다이맥스 볼
-    const sb = Wd * .085, ball = mk(`left:0;top:0;width:${sb}px;height:${sb}px;background:url(${c.ball}) center/contain no-repeat;image-rendering:pixelated;opacity:0`);
+    const sb = Wd * .085, BQ = 32 / 14, sbC = sb * BQ, ball = mk(`left:0;top:0;width:${sbC}px;height:${sbC}px;margin:${-(sbC - sb) / 2}px 0 0 ${-(sbC - sb) / 2}px;background:url(${c.ballS || c.ball}) 0 0/${c.ballS ? sbC * 10 + 'px ' + sbC + 'px' : 'contain'} no-repeat;image-rendering:pixelated;opacity:0`);   /* 경완 '배틀처럼 몬스터볼 열려서 들어가고 그 몬스터볼이 그대로 커져서 다시 나오는걸로': 배틀과 같은 플래티넘 볼 그림(32칸 10장, 0~7 돎·9 열림) */
+    const bF = (el, i, w) => { if (c.ballS) el.style.backgroundPosition = `${-i * w}px 0`; };
     const BS = Wd * .5, bigW = mk(`left:${Wd / 2 - BS / 2}px;top:${CY - BS / 2}px;width:${BS}px;height:${BS}px;opacity:0;transform:scale(.17)`), bigG = mk('inset:-18%;border-radius:50%;background:radial-gradient(circle,rgba(255,60,130,.9) 0 38%,rgba(255,20,90,.35) 52%,rgba(255,0,80,0) 70%)', 'div', bigW);
-    const bigS = mk('inset:0', 'div', bigW); bigS.innerHTML = gxBall('a'); const bigP = mk(`inset:4%;border-radius:50%;background:url(${pat}) 0 0/${BS * 1.6}px auto repeat;mix-blend-mode:screen;opacity:0;animation:gxPan 3s linear infinite`, 'div', bigW);
+    const bigS = mk(`inset:${-(BQ - 1) / 2 * 100}%;background:url(${c.ballS || c.ball}) 0 0/${c.ballS ? '1000% 100%' : 'contain'} no-repeat;image-rendering:pixelated`, 'div', bigW); bigW.after(ball); const bigP = mk(`inset:4%;border-radius:50%;background:url(${pat}) 0 0/${BS * 1.6}px auto repeat;mix-blend-mode:screen;opacity:0;animation:gxPan 3s linear infinite`, 'div', bigW);
     // 거다이맥스 모습 (아래 바닥에서 크게)
     const gY = Hd * .9, MH = Math.min(Hd * .62, Wd * .95 * c.to.h / c.to.w), MW = MH * (c.to.w / c.to.h);
     const pil = mk(`left:${Wd / 2 - Wd * .2}px;top:-10%;width:${Wd * .4}px;height:${gY + Hd * .1}px;background:linear-gradient(90deg,rgba(255,0,90,0),rgba(255,80,150,.85) 35%,#fff 50%,rgba(255,80,150,.85) 65%,rgba(255,0,90,0));filter:blur(${Wd * .01}px);opacity:0;transform-origin:50% 100%;transform:scaleX(.05);mix-blend-mode:screen`);
@@ -684,14 +685,14 @@
     if (dband) { A(dband, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.6)', offset: .6 }, { opacity: 1, transform: 'scale(1.1)' }], { duration: 500, delay: 2200 }); at(2700, () => dband.animate([{ transform: 'scale(1.1)' }, { transform: 'scale(1.35)' }, { transform: 'scale(1.1)' }], { duration: 380, iterations: 6, composite: 'replace' })); }
     // 4) 볼을 던져 포켓몬을 넣음 (2900~3700)
     const bx0 = hx - sb / 2, by0 = hy - sb / 2, bx1 = Wd / 2 - sb / 2, by1 = CY - sb / 2;
-    at(2900, () => { c.se('Battle throw'); vib(1); });
+    at(2900, () => { c.se('Battle throw'); vib(1); let i = 0; const iv = setInterval(() => { if (!live) return clearInterval(iv); bF(ball, i++ % 8, sbC); }, 65); timers.push(setTimeout(() => { clearInterval(iv); bF(ball, 9, sbC); }, 530)); });
     A(ball, [{ opacity: 1, transform: `translate(${bx0}px,${by0}px) rotate(0)` }, { opacity: 1, transform: `translate(${(bx0 + bx1) / 2}px,${Math.min(by0, by1) - Hd * .16}px) rotate(${side * -360}deg)`, offset: .5 }, { opacity: 1, transform: `translate(${bx1}px,${by1}px) rotate(${side * -720}deg)` }], { duration: 520, delay: 2900, easing: 'linear' });
     at(3430, () => { c.se('Battle recall'); vib(2); orgI.style.transition = 'filter .25s'; orgI.style.filter = RED; });
     A(flR, [{ opacity: 0 }, { opacity: .45 }, { opacity: 0 }], { duration: 420, delay: 3430 });
     A(org, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(.55)', offset: .5 }, { opacity: 0, transform: 'scale(.05)' }], { duration: 480, delay: 3480, easing: 'ease-in' });
     A(ball, [{ opacity: 1, transform: `translate(${bx1}px,${by1}px) rotate(${side * -720}deg)` }, { opacity: 1, transform: `translate(${bx1}px,${by1 - Hd * .03}px) rotate(${side * -700}deg)`, offset: .4 }, { opacity: 1, transform: `translate(${bx1}px,${by1}px) rotate(${side * -720}deg)` }], { duration: 420, delay: 3430, easing: 'ease-in-out' });
     // 5) 밴드의 붉은 기운이 볼로 → 볼이 점점 커짐 (4000~5600)
-    at(4000, () => { ball.getAnimations().forEach(a => a.cancel()); ball.style.display = 'none'; mode = 1; c.se('Psych Up'); vib(1); });
+    at(3960, () => bF(ball, 0, sbC)); at(4000, () => { ball.getAnimations().forEach(a => a.cancel()); ball.style.display = 'none'; mode = 1; c.se('Psych Up'); vib(1); });
     A(bigW, [{ opacity: 0, transform: 'scale(.17)' }, { opacity: 1, transform: 'scale(.17)' }], { duration: 120, delay: 3950 });
     A(bigW, [{ opacity: 1, transform: 'scale(.17)' }, { opacity: 1, transform: 'scale(.42)', offset: .35 }, { opacity: 1, transform: 'scale(.66)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 1500, delay: 4100, easing: 'cubic-bezier(.5,0,.6,1.4)' });
     A(bigP, [{ opacity: 0 }, { opacity: .7 }], { duration: 1200, delay: 4200 }); A(bigG, [{ transform: 'scale(.8)' }, { transform: 'scale(1.15)' }, { transform: 'scale(.95)' }], { duration: 500, delay: 4100, iterations: 4, fill: 'none' });
@@ -701,9 +702,9 @@
     A(bigW, [{ transform: 'scale(1) rotate(0)' }, { transform: 'scale(1.03) rotate(-6deg)' }, { transform: 'scale(1) rotate(6deg)' }, { transform: 'scale(1.05) rotate(-4deg)' }, { transform: 'scale(1) rotate(0)' }], { duration: 480, delay: 5650, composite: 'replace' });
     at(5650, () => { c.se('Earth1'); vib(2); }); shake(5650, 480, 6);
     // 6) 볼이 터지며 붉은 기둥 → 거대한 붉은 실루엣이 솟음 (6200~7700)
-    at(6200, () => { c.se('Explosion3'); raw('W087'); vib(3); }); shake(6200, 500, 10);
+    at(6200, () => { if (c.ballS) bigS.style.backgroundPosition = '100% 0'; c.se('Explosion3'); raw('W087'); vib(3); }); shake(6200, 500, 10);
     A(flR, [{ opacity: 0 }, { opacity: .9 }, { opacity: 0 }], { duration: 600, delay: 6200 });
-    A(bigW, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: 300, delay: 6200, easing: 'ease-out' });
+    A(bigW, [{ opacity: 1, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.08)', offset: .5 }, { opacity: 0, transform: 'scale(1.5)' }], { duration: 520, delay: 6200, easing: 'ease-out' });
     A(pil, [{ opacity: 0, transform: 'scaleX(.05)' }, { opacity: 1, transform: 'scaleX(1)', offset: .25 }, { opacity: 1, transform: 'scaleX(1.4)', offset: .7 }, { opacity: 0, transform: 'scaleX(2.4)' }], { duration: 1700, delay: 6200, easing: 'ease-out' });
     at(6250, () => { mode = 2; });
     A(shd, [{ opacity: 0, transform: 'scale(.1)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 1300, delay: 6300 });
