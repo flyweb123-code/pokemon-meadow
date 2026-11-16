@@ -2294,7 +2294,8 @@ html:not(.op) .op-only,html:not(.tests) .test-btn,html:not(.tests) .test-only,ht
 #noti .ev-map .at{position:absolute;left:50%;top:6px;transform:translateX(-50%);white-space:nowrap;font-size:12px;line-height:1.3;color:#fff;background:#2b2f4a;border:2px solid #fff;box-shadow:0 2px 0 rgba(0,0,0,.35);padding:3px 8px;border-radius:3px}
 /* v22.22 경완 '이벤트로 얻은 알은 알에 표시': 가방·부화기 칸 왼쪽 위 보라 딱지, 알 정보 '이벤트' 딱지 */
 .evtag{display:inline-block;font-style:normal;font-size:9px;line-height:1;background:#7a4ad8;color:#fff;padding:2px;margin-right:0;vertical-align:1px;letter-spacing:0;white-space:nowrap}span:has(>.evtag){white-space:nowrap;letter-spacing:-.3px}   /* v26.54 경완 '아 알을 가려서 좀 깔끔하지 못한데': 이벤트 딱지는 칸 위가 아니라 알 이름 줄. v26.55 경완 '그냥 슬롯에는 등급을 빼고 이벤트 딱지만 붙이자' */
-.ev-top{margin:0 0 4px}.ev-top .evtag{font-size:11px;padding:2px 5px}   /* v26.59 경완 '부화기 슬롯에 이벤트 딱지는 알가방처럼 등급을 빼고 등급 자리에', '밑에 설명에 있는 이벤트 딱지는 빼줘도 돼', '상세 카드 일반 알, 우수 알 적혀 있는 그 위에다가 이벤트 딱지' */
+.ev-top{margin:0 0 4px}.info>.evtag.ev-st{margin-left:6px;vertical-align:middle;font-size:11px;line-height:normal;padding:1px 6px}.info>.evtag.ev-st+.state{margin-left:3px}   /* v26.xx 경완 '부화기 위에 있는 상단 상세 카드 박스 … 이벤트 딱지를 부화 중 왼쪽에' */
+.ev-top .evtag{font-size:11px;padding:2px 5px}   /* v26.59 경완 '부화기 슬롯에 이벤트 딱지는 알가방처럼 등급을 빼고 등급 자리에', '밑에 설명에 있는 이벤트 딱지는 빼줘도 돼', '상세 카드 일반 알, 우수 알 적혀 있는 그 위에다가 이벤트 딱지' */
 .evd .evtg{display:inline-block;font-size:10px;line-height:1;background:#7a4ad8;color:#fff;padding:2px 4px;margin-right:3px;vertical-align:1px}
 </style>
 
@@ -16453,7 +16454,7 @@ function renderBag() {
   $('#bagPop').hidden = !e;
   if (e) { $('#bagDel').classList.toggle('arm', delArm === 1); $('#bagDel').textContent = delArm === 1 ? '정말?' : '버리기'; }
   if (e) { $('#bagIn').disabled = full; $('#bagIn').textContent = full ? `부화기가 꽉 찼어요` : '부화기에 넣기'; }
-  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${e.ct ? tyIcon(e.ct) : ''}${eggName(e)}</b><span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / eggNeed(e) * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${eggNeed(e)}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
+  if (e) $('#bagPick').innerHTML = `${eggHtml(e.g, 'big' + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${e.ct ? tyIcon(e.ct) : ''}${eggName(e)}</b>${e.ev ? '<i class="evtag ev-st">이벤트</i>' : ''}<span class="state">가방</span><div class="prog"><i style="width:${Math.min(100, (e.km || 0) / eggNeed(e) * 100)}%"></i></div>${fmtKm(e.km || 0)} / ${eggNeed(e)}km 쌓임<div class="egg-detail">${fmtWhen(e.t)}에 주움<span class="epl">주운 곳: ${e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '기록 없음'}</span>${themeHint(e)}</div></div>`;
 }
 // 가방: 알을 꾹 누르면(0.45초) 여러 개 고르기 모드가 켜지고 그 알이 골라진다 (v3.36 경완)
 { let lp = null, lpDone = 0;
@@ -16762,7 +16763,7 @@ function renderRun() {
   if (runEl.hidden) { if (!$('#bagPop').hidden) { $('#bagPop').hidden = true; bagSel = null; } return; }
   if (!eggNone && !S.eggs.includes(eggSel)) eggSel = S.eggs[Math.min(eggSelI, S.eggs.length - 1)] || null;   // v3.92: 부화로 빠진 알 자리(같은 칸)로 선택이 남는다 else if (eggNone) eggSel = null;
   const e = eggSel;
-  const incuH = e ? `${eggHtml(e.g, (e.km >= e.need ? 'big wob shake' : 'big') + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${e.ct ? tyIcon(e.ct) : ''}${eggName(e)}</b>${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.gc ? '알 뽑기에서 뽑은 알' : e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
+  const incuH = e ? `${eggHtml(e.g, (e.km >= e.need ? 'big wob shake' : 'big') + (e.sh ? ' shx' : ''), e.lt || e.ct)}<div class="info"><b>${e.ct ? tyIcon(e.ct) : ''}${eggName(e)}</b>${e.ev ? '<i class="evtag ev-st">이벤트</i>' : ''}${e.km >= e.need ? '<span class="state ready">부화 준비 완료</span>' : '<span class="state">부화 중</span>'}<div class="prog"><i style="width:${Math.min(100, e.km / e.need * 100)}%"></i></div>${e.km >= e.need ? `${fmtKm(e.km)} / ${e.need}km` : `${fmtKm(e.km)} / ${e.need}km · 앞으로 <b>${fmtKm(Math.max(0, e.need - e.km))}</b>km`}<div class="egg-detail"><span class="epl">${e.gc ? '알 뽑기에서 뽑은 알' : e.place || e.spN ? `${esc(eggPlace(e))} 근처` : '주운 곳 기록 없음'}</span>${themeHint(e)}</div><div class="incu-btns">${e.km >= e.need ? '<button id="eggHatch">부화시키기</button>' : ''}<button class="lk-btn" id="eggOut">가방으로 빼기</button></div></div>`
     : `<p class="incu-empty">${S.eggs.length ? '알을 눌러 보자' : '부화 중인 알이 없습니다'}</p>`;
   /* v20.35 경완 '부화 준비 중인 것만 흔들리게': 부화기·가방·알 상태 창의 알은 부화 준비된 알만 흔들림(wob shake) */
   if (renderRun.incu !== incuH || !$('#incu').firstChild) { renderRun.incu = incuH; eggKeep($('#incu'), incuH); }   /* v20.34 경완 '부화기 타입 알 효과 주기 짧게 끊김': 0.5초마다 다시 그려 알 효과(.lfx)·흔들림이 처음부터 다시 돌았다 → 바뀐 게 있을 때만 다시 그림 */
