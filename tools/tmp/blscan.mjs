@@ -13,3 +13,8 @@ for (const k in by) {
   console.log('==', k, 'start', isFinite(t0) ? K(t0) : '-', 'saved', K(S.savedAt || 0), 'grades', g.slice(1).join('/'), kms.join(' '));
   for (const l of L) console.log('   L', JSON.stringify(l));
 }
+for (const k in by) {
+  let S; try { S = JSON.parse(by[k].sort((a, b) => a.i - b.i).map(r => r.data).join('')); } catch (e) { continue; }
+  console.log('##', k, 'lgW', JSON.stringify(S.lgW || null), 'fmFix1', S.fmFix1);
+  for (const p of (S.box || []).filter(p => p.sp === 741)) console.log('   741', JSON.stringify({ id: p.id, fm: p.fm, t: K(p.t || 0), place: p.place, sh: p.shiny }));
+}
