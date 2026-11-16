@@ -227,7 +227,7 @@ const gradeOf = (rep, gm = st()?.gmax ?? 99) => { let i = 0; GRADES.forEach(([v]
 
 // ---------- 저장 ----------
 const st = () => S.gym;
-const myTypes = () => { const c = Array(19).fill(0); S.box.forEach(p => (SPECIES[p.sp]?.t || []).forEach(t => c[t]++)); return c; };
+const myTypes = () => { const c = Array(19).fill(0); S.box.forEach(p => GA.pTy(p).forEach(t => c[t]++)); return c; };
 const trName = () => (trOf().n || '').trim();
 const NK = () => trName() || '관장님';   // 경완 2026-11-12 '왜 관장님이라고 해? 닉네임 안 부르고': 강박사는 닉네임으로 부름 (닉네임 없을 때만 관장님)
 const defName = ty => `${TYPE_KO[ty]} 체육관`;   // 이름 8자 제한에 맞춰 (경완 2026-10-29)
@@ -895,7 +895,7 @@ function gInit() {
   if (!g.cands) g.cands = g.cand ? [g.cand] : []; delete g.cand;   // 지원서는 여러 장 (경완 2026-10-28 '카드 슬라이드해서 넘기는')
   return g;
 }
-const luOf = i => { const g = st(), L = (g.lu || [])[i] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)).slice(0, 6); };
+const luOf = i => { const g = st(), L = (g.lu || [])[i] || []; return L.map(id => S.box.find(p => p.id === id)).filter(P => P && GA.pTy(P).includes(g.ty)).slice(0, 6); };
 const luNow = () => luOf(st().luI | 0);
 // 배틀 시작 전에 라인업 고르기: 포켓몬 메뉴와 같은 라인업 화면에서 고르고 '이 라인업으로 결정' (경완 2026-10-30 '포켓몬 라인업 메뉴랑 동일한 레이아웃'). 다른 메뉴로 닫으면 null → 도전자 말로 돌아감
 let luRes = null;
@@ -2226,7 +2226,7 @@ function renderHome(quiet) {
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
 // 경완 2026-10-27 '관장 옆 포켓몬은 라인업에서 고를 수 있게': 고른 포켓몬이 지금 라인업에 없으면 기본으로
-const luAll = () => { const g = st(), ids = [...new Set((g.lu || []).flat())]; return ids.map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)); };   // 관장 옆 포켓몬은 라인업 전체에서 (경완 2026-10-28)
+const luAll = () => { const g = st(), ids = [...new Set((g.lu || []).flat())]; return ids.map(id => S.box.find(p => p.id === id)).filter(P => P && GA.pTy(P).includes(g.ty)); };   // 관장 옆 포켓몬은 라인업 전체에서 (경완 2026-10-28)
 function palPick() { const g = st(), L = luNow(), P = g.pal && luAll().find(p => p.id === g.pal); if (P) return P;
   return L.slice().sort((a, b) => GB().gm(b).lv - GB().gm(a).lv || GA.ivSum(b) - GA.ivSum(a))[0] || null; }
 let palRaf = 0;
@@ -3085,8 +3085,8 @@ function setup(only, re, opt) {   // opt { dr, done }: 튜토리얼 스토리에
   // v14.14 경완: 타입 화면 아래 '포켓몬 박스 확인' — 켜 두면 고른 타입의 내 포켓몬을 랭크 순으로 랭크 테두리와 함께 빈 자리에 보여 준다
   // v14.16 경완 정정: 타입을 누르면 빈 자리에 바로 미리 보기, '포켓몬 박스 확인' 버튼은 내 포켓몬 박스 전체 화면을 연다
   // v14.19 경완: 추천 타입 하나 = 그 타입 내 포켓몬 랭크 상위 6마리 점수가 가장 높은 타입, 버튼 테두리 은은하게 (타입을 한 번이라도 누르면 사라짐)
-  let recOff = false; const recTy = (() => { let bt = 0, bs = -1; for (let t = 1; t < TYPE_KO.length; t++) { if (used.has(t) || !counts[t]) continue; const sc = rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(t))).slice(0, 6).reduce((a, x) => a + (RKO[x[1]] || 0), 0); if (sc > bs) { bs = sc; bt = t; } } return bt; })();
-  const tyPv = () => { const L = dr.ty ? rkSort(S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(dr.ty))) : [];
+  let recOff = false; const recTy = (() => { let bt = 0, bs = -1; for (let t = 1; t < TYPE_KO.length; t++) { if (used.has(t) || !counts[t]) continue; const sc = rkSort(S.box.filter(P => GA.pTy(P).includes(t))).slice(0, 6).reduce((a, x) => a + (RKO[x[1]] || 0), 0); if (sc > bs) { bs = sc; bt = t; } } return bt; })();
+  const tyPv = () => { const L = dr.ty ? rkSort(S.box.filter(P => GA.pTy(P).includes(dr.ty))) : [];
     return `${dr.ty ? `<div class="gy-typv"><div class="tp-hd"><b>${TYPE_KO[dr.ty]} 타입 내 포켓몬 ${L.length}마리</b></div>${L.length ? `<div class="tp-row">${L.map(x => `<button type="button" class="tp-c" data-mp="${x[0].id}">${pvCell(x)}</button>`).join('')}</div>` : '<p>이 타입 포켓몬이 아직 없어요.</p>'}</div>` : ''}`; };
   const pvFill = () => el.querySelectorAll('img[data-pvth]').forEach(pvImg);
   const draw = () => {
@@ -3809,7 +3809,7 @@ function enter() {
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
     try { await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/manage.js', 'GymManage'); } catch (e) {}
-    if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !isTstP(P)), P = L.find(P => (SPECIES[P.sp]?.t || []).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
+    if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !isTstP(P)), P = L.find(P => GA.pTy(P).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
     save(); renderTop(); renderHome(); promoTut(k, 1); }, 900); }
   const evId = st()?.d && !window.gymEvTest ? (st().ev?.cur || evDue()) : null;
   if (st()?.d && (window.gymEvTest || evId)) { tick(); setAt(); save(); evGo(evId); } else if (st()?.d) { tick(); { setAt(); save(); } renderHome(); shutCover(); if (shutFx0) shutEnter().then(later); else later(); } else intro();   /* v16.43 자동 휴업: 셔터 내린 채로 시작 */   // 필드 체육관 아이콘 빨간 점(도전자)은 들어가기만 해선 안 꺼지고 도전자 받기를 눌러야 꺼짐 (경완 2026-10-30)
@@ -3833,8 +3833,8 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
   pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
-  lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
-  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gym/battle.js', 'GymBattle').then(() => GB().loadData?.()), luTab: (el, o) => loadJs('gym/battle.js', 'GymBattle').then(() => GB().tab(el, o || {})), luN: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.filter(id => S.box.some(p => p.id === id)).length; }, luLead: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).find(P => P && (SPECIES[P.sp]?.t || []).includes(g.ty)) || luAll()[0] || null; }, palMv: P => { const B = GB(); if (!B?.D || !B.gm) return []; try { return (B.gm(P).mv || []).map(id => B.mvOf(id)).filter(Boolean); } catch (e) { return []; } }, thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.61 경완: 이벤트 [포켓몬] = 체육관 라인업 화면, 같이 다니는 포켓몬 = 그 라인업 첫 번째   // v19.29 같이 다니는 포켓몬 고르기·울음소리
+  lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && GA.pTy(P).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
+  cry: sp => GA.cry?.(sp), ldB: () => loadJs('gym/battle.js', 'GymBattle').then(() => GB().loadData?.()), luTab: (el, o) => loadJs('gym/battle.js', 'GymBattle').then(() => GB().tab(el, o || {})), luN: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.filter(id => S.box.some(p => p.id === id)).length; }, luLead: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).find(P => P && GA.pTy(P).includes(g.ty)) || luAll()[0] || null; }, palMv: P => { const B = GB(); if (!B?.D || !B.gm) return []; try { return (B.gm(P).mv || []).map(id => B.mvOf(id)).filter(Boolean); } catch (e) { return []; } }, thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.61 경완: 이벤트 [포켓몬] = 체육관 라인업 화면, 같이 다니는 포켓몬 = 그 라인업 첫 번째   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', tyAdj: () => GA.LT_ADJ?.[st().ty] || TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
   giveEgg: (g, from) => { if (window.gymEvTest) return; GA.tyEggs?.(st().ty, g, 1, from); },
   // 숨은 상점 물건: kinds 중에서 안 가진 것 하나 (cap 골드 이하). skip = 이번 이벤트에서 이미 나온 것
@@ -3857,7 +3857,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
     if (window.gymEvTest) { const k = await new Promise(ok => { const w = document.createElement('div'); w.className = 'ev-ask'; w.innerHTML = `<div class="win"><p>운영자 시험\n<b>${esc(o.cls)} ${esc(o.nm)}</b> 배틀<small>건너뛰면 이긴 걸로(또는 진 걸로) 바로 넘어가요</small></p><div class="bt2 gy-btns"><button type="button" data-a="w">이긴 걸로</button><button type="button" data-a="l">진 걸로</button></div><div class="gy-btns one"><button type="button" class="main" data-a="b">배틀하기</button></div></div>`;
       root.appendChild(w); w.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); sfx('tap'); w.remove(); ok(b.dataset.a); }; });
       if (k === 'w') return { won: true }; if (k === 'l') return { won: false }; }
-    let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
+    let my = luNow(); if (!my.length) my = luAll().slice(0, 6); if (!my.length) my = S.box.filter(P => GA.pTy(P).includes(g.ty)).sort((a, b) => GB().gm(b).lv - GB().gm(a).lv).slice(0, 6);
     if (!my.length) return { won: true, none: 1 };
     const team = evLvBand(o.team).map(([sp, lv]) => GB().foeEntry(sp, clampN(lv, 2, 100), o.tier | 0)); document.body.classList.add('gymBattle'); let res;
     try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, foe: { tr: o.tr, cls: o.cls, nm: o.nm, team, say: o.say && { win: o.say.lose, lose: o.say.win }, hold: o.tier | 0 }, rew: o.g ? { g: o.g, r: 0, rl: 0 } : null, diff: o.tier | 0, bg: o.bg || 'in2', music: o.music || 'hgVsRoc', win: o.win || 'winTrain', noRun: true, meBackUrl: await fitSrc('trb') }); }   /* v26.29 경완 '람다 배틀 이겼는데 람다가 이겼을 때 대사': 이벤트 파일 say 는 {win: 상대가 이겼을 때, lose: 상대가 졌을 때}, 배틀 엔진 say.win 은 내가 이겼을 때 → 바꿔 넘김 */   // 이벤트 배틀은 기권 못 함 (경완 2026-11-08)
@@ -4192,12 +4192,12 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = [];
     const A0 = all(), bs = P => (SPECIES[P.sp]?.bs || []).reduce((a, b) => a + b, 0), ix = new Map(S.box.map((P, i) => [P, i])), K = { lv: P => B.gm(P).lv, cost, bs, new: P => ix.get(P) };
     const q = (el.querySelector('.tl-q input')?.value || '').trim(), qh = P => !q || (window.pkNameHit ? window.pkNameHit(nmOf(P), q) || window.pkNameHit(SPECIES[P.sp]?.n || '', q) : nmOf(P).includes(q)) || String(P.sp) === q.replace(/^0+/, '');   /* v24.06 경완 '검색 기능도': 박스처럼 이름·초성·번호 */
     const luS = new Set((S.gym?.lu || []).flat()), trS = new Set((S.gym?.tr || []).map(e => e.id)), budS = new Set((S.buds || []).map(b => b.pid)), tags = P => [luS.has(P.id) && ['lu', '라인업'], trS.has(P.id) && ['tr', '훈련장'], budS.has(P.id) && ['bd', '짝꿍']].filter(Boolean);   /* v24.06 경완 '라인업·훈련장·짝꿍 딱지' */
-    if (trlTy && !A0.some(P => (SPECIES[P.sp]?.t || []).includes(trlTy))) trlTy = 0;
-    const L = A0.filter(P => (sel.includes(P.id) && !q) || (qh(P) && (!trlTy || (SPECIES[P.sp]?.t || []).includes(trlTy)) && (!trlSh || P.shiny) && (!trlFit || (sel.length < 6 && n + cost(P) <= cap)))).sort((a, b) => trlDir * (K[trlSo](b) - K[trlSo](a)) || (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
+    if (trlTy && !A0.some(P => GA.pTy(P).includes(trlTy))) trlTy = 0;
+    const L = A0.filter(P => (sel.includes(P.id) && !q) || (qh(P) && (!trlTy || GA.pTy(P).includes(trlTy)) && (!trlSh || P.shiny) && (!trlFit || (sel.length < 6 && n + cost(P) <= cap)))).sort((a, b) => trlDir * (K[trlSo](b) - K[trlSo](a)) || (B.gm(b).lv - B.gm(a).lv) || (a.sp - b.sp));
     el.querySelectorAll('[data-so]').forEach(b => { const on = b.dataset.so === trlSo; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (trlDir > 0 ? '▼' : '▲') : ''; });
     const tb = el.querySelector('[data-f=ty]'); tb.innerHTML = trlTy ? `${tyI0(trlTy)}${TYPE_KO[trlTy]}` : '모든 타입'; tb.setAttribute('aria-pressed', !!trlTy);
     el.querySelector('[data-f=fit]').setAttribute('aria-pressed', trlFit); el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
-    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="tl-top"><span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><span class="ty">${(SPECIES[P.sp]?.t || []).map(tyI0).join('')}</span></span>${B.thumb(P)}<b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c" title="코스트">${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
+    list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="tl-top"><span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><span class="ty">${GA.pTy(P).map(tyI0).join('')}</span></span>${B.thumb(P)}<b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c" title="코스트">${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
     list.scrollTop = sc; B.fillTh(el); };
   const end = v => { el.remove(); ok(v); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
@@ -4742,7 +4742,7 @@ async function megaTut(test) {
       await say(`${sp}${pN(sp)} 이제 돌려받으마.\n${sn}${pN(sn)} 연습용이라\n같이 가져가겠네.`);
     }
     if (!open) return;
-    const L = mgCan(1), N = L.slice(0, 4).map(P => SPECIES[P.sp]?.n || ''), tyN = L.filter(P => (SPECIES[P.sp]?.t || []).includes(T0)).length;
+    const L = mgCan(1), N = L.slice(0, 4).map(P => SPECIES[P.sp]?.n || ''), tyN = L.filter(P => GA.pTy(P).includes(T0)).length;
     if (L.length) {
       const w = N.join(', ') + (L.length > 4 ? ' 등' : ''), last = N[N.length - 1];
       await say(`그럼 ${NK()}의 체육관\n라인업을 한번 볼까…`);
