@@ -3449,6 +3449,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
 const iconKeep = [];
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
 async function prepare() {
+  yaWarm();
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
   if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else { DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`))); L.push(preload(`${IMG}map/${TOWN.img}.png`), preload(KANG_OW)); }
@@ -3746,6 +3747,8 @@ window.gymYaNote = yaNote;
 const noteSrcs = P => P.flatMap(p => [...String(p.im || '').matchAll(/<img[^>]*\ssrc="([^"]+)"/g)].map(m => m[1]));
 const noteWarm = (P, ms = 4000) => Promise.race([Promise.all(noteSrcs(P).map(u => new Promise(r => { const im = new Image(); im.onload = () => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()).then(() => r(im)); im.onerror = () => r(null); im.src = u; }))), new Promise(r => setTimeout(r, ms))]);
 const YA_IM = ['up1', 'tut2', 'up3', 'up4'];
+/* 경완 2026-11-16 '체육관 로딩중일 때부터 받는게 나을듯': 특훈 알림창을 아직 안 본 계정은 출근 중 로딩 화면(prepare) 때부터 그림을 받아 둔다 (yaKeep 에 쥐고 있어 버려지지 않게) */
+let yaKeep = null; const yaWarm = () => { try { if (yaKeep || !st()?.d || tutSeen('yaN')) return; yaKeep = YA_IM.map(n => { const im = new Image(); im.src = `${IMG}yact/${n}.png`; im.decode?.().catch(() => {}); return im; }); } catch (e) {} };
 function notePager(P, ok) {
   const w = document.createElement('div'); w.className = 'gy-on';
   w.innerHTML = `<div class="win on-card"><div class="on-body"></div><div class="on-dots">${P.map(() => '<i></i>').join('')}</div><div class="on-btns"><button type="button" class="on-prev">이전</button><button type="button" class="on-ok">다음</button></div></div>`;
@@ -3936,7 +3939,6 @@ function awMvPop([P, mv, nm, ty], i, n) {
 }
 // 들어온 뒤: 지난주 보고서 → 새 배지 → 면접 지원자 알림 (하나씩)
 async function later() {
-  if (st()?.d && !tutSeen('yaN')) YA_IM.forEach(n => { const im = new Image(); im.src = `${IMG}yact/${n}.png`; im.decode?.().catch(() => {}); });   /* 특훈 알림창 그림은 들어오자마자 받아 둠 */
   await wait(700); if (!open) return; const g = st();
   if (g.rpt && !g.rpt.seen && g.rpt.k === wkOf(Date.now()) - 7 * DAY) await reportPop();   // v19.26: 지난주 것만 (v19.08 전에 쌓인 옛 보고서는 안 띄움)   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
