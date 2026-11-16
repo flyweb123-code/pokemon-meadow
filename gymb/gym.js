@@ -4089,7 +4089,21 @@ function trRollLu() { const g = st(); g.mon = g.mon || {}; const has = sp => GB(
     const P = { id: ++trTid, sp, iv: Array.from({ length: 6 }, () => 10 + Math.floor(Math.random() * 22)), fr: 70, gTst: 1 }; S.box.push(P); GB().gm(P); const e = GB().foeEntry(sp, lv);
     Object.assign(g.mon[P.id], { lv, xp: GB().xpAt(GB().growth(sp), lv), mv: e.mv, ab: e.ab, nat: e.nat }); return P.id; }).filter((id, _, A) => { const P = GB().boxOf(id), c = GB().trCost(P); A.sum = A.sum || 0; if (A.sum + c > GB().TR_CAP) { trDrop([id]); return false; } A.sum += c; return true; }); }   /* 코스트 안에서만 */
 const trDrop = L => { const g = st(); for (let i = S.box.length - 1; i >= 0; i--) if (S.box[i].gTst && L.includes(S.box[i].id)) { if (g?.mon) delete g.mon[S.box[i].id]; S.box.splice(i, 1); } };
-const trNew = ids => trMark({ ids, balls: {}, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0] });
+/* v25.xx 경완 '원래 지니고 있던 도구는 잠시 맡아두고 판 끝나면 대여 도구는 가져가고 원래 도구 다시 돌려주는 식': 들어갈 때 사본 도구를 R.it0 에 맡기고 빈손으로 */
+const trNew = ids => { const it0 = {}; ids.forEach(id => { const m = GB().gm(GB().boxOf(id)); if (m?.it) { it0[id] = m.it; m.it = ''; } });
+  return trMark({ ids, balls: {}, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0], it0, xit: {} }); };
+/* 수련탑 지닌 도구: 쌓이는 도구(개수만큼 셈, battle.js xitInstall) + 본가 도구 1칸(TR_IT1, 받으면 바꿔 낌). [키, 등급, 최대, 설명] */
+const TR_XS = [['leftovers', 1, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['shellbell', 1, 4, n => `준 대미지의 ${n}/8 회복`], ['kingsrock', 1, 3, n => `공격할 때 ${n * 10}% 확률로 풀죽음`], ['quickclaw', 1, 3, n => `${n * 10}% 확률로 먼저 움직임`], ['widelens', 0, 3, n => `기술 명중 +${n * 10}%`], ['focusband', 1, 5, n => `${n * 10}% 확률로 HP 1 남기고 버팀`]];
+const TR_TYIT = { 1: 'silkscarf', 2: 'blackbelt', 3: 'sharpbeak', 4: 'poisonbarb', 5: 'softsand', 6: 'hardstone', 7: 'silverpowder', 8: 'spelltag', 9: 'metalcoat', 10: 'charcoal', 11: 'mysticwater', 12: 'miracleseed', 13: 'magnet', 14: 'twistedspoon', 15: 'nevermeltice', 16: 'dragonfang', 17: 'blackglasses', 18: 'fairyfeather' };
+const TR_IT1 = [['lifeorb', 2], ['choiceband', 2], ['choicespecs', 2], ['choicescarf', 2], ['assaultvest', 1], ['rockyhelmet', 1]];
+const trItNm = k => GB().HOLD?.[k]?.[0] || k, trItD = k => GB().HOLD?.[k]?.[2] || '';
+/* 교체 화면 줄 안 도구 아이콘 (본가 도구 1칸 + 쌓이는 도구 ×개수 + 영양제 ×개수) */
+const trPtyIt = R => pid => { const L = [], m = GB().gm(GB().boxOf(pid)); if (m?.it) L.push([m.it, 1]); Object.entries(R.xit?.[pid] || {}).forEach(([k, n]) => n > 0 && L.push([k, n])); (R.vit?.[pid] || []).forEach((n, k) => n > 0 && L.push([TR_IC.find(([x]) => x === TR_VIT[k][0])?.[1] || 'hpup', n]));
+  return L.map(([k, n]) => `<i><img alt="" src="${IMG}item/${k}.png">${n > 1 ? `<b>${n}</b>` : ''}</i>`).join(''); };
+/* 판이 끝날 때: 빌린 도구 돌려주고 맡긴 도구 돌려받음 (사본이라 계정엔 원래 아무 영향 없음, 문장·사본 정리만) */
+async function trItBack(R, o) { const lent = R.ids.some(id => GB().gm(GB().boxOf(id))?.it) || Object.values(R.xit || {}).some(x => Object.values(x).some(n => n > 0)), kept = Object.keys(R.it0 || {}).length;
+  R.ids.forEach(id => { const m = GB().gm(GB().boxOf(id)); if (m) m.it = R.it0?.[id] || ''; }); R.xit = {};
+  if (lent || kept) await o.msgTap(lent && kept ? '빌린 도구는 수련탑에 돌려주고\n맡겨 둔 도구를 돌려받았다!' : lent ? '빌린 도구는 수련탑에 돌려주었다!' : '맡겨 둔 도구를 돌려받았다!'); }
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 정산 기준점 (도전 시작·지난 그만두기 때 레벨·경험치·층·코인) */
 const trMark = R => { R.m0 = Object.fromEntries(R.ids.map(id => { const m = GB().gm(GB().boxOf(id)); return [id, [m.lv, m.xp | 0]]; })); R.f0 = R.floor; R.c0 = R.coin | 0; R.t = Date.now(); return R; };
 /* v24.61 경완 '첨부터 꼬마돌 나오니까 불타입은 천적': 낮은 층(1~19층, 큰 우두머리 빼고)은 내 포켓몬 타입에 효과가 굉장한 타입 포켓몬이 안 나옴 */
@@ -4305,6 +4319,7 @@ async function trainTest() {
   { const gv = R ? await trGate(R) : 'new'; if (!gv) return;   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
     if (gv === 'new') { if (R) { trDrop(R.ids); R = null; trSave = null; } const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  window.gymTrR = () => R;   /* 시험용: 지금 수련탑 기록 (운영자 시연 안에서만) */
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
     for (;;) {
@@ -4315,9 +4330,9 @@ async function trainTest() {
       const tk = fk === 'tr' ? trCls(f, bio) : '', dbl = !trn && !boss && !e.shiny && alive.length >= 2 && (R.dblNext || Math.random() < trDblP(f)), team = trn ? trTeam(nmd, tk, lv, f, myT) : [e]; if (trn) R.lastTr = f; R.dblNext = 0; if (dbl) { const e2 = GB().foeEntry(trPickSp(lv, false, false, myT, bio), lv, 0); team.push(e2); }
       const me = trName() || '관장', foe = nmd ? { tr: nmd.tr, cls: nmd.cls, nm: nmd.nm, team, hold: 2, say: { win: (nmd.ln?.[1] || '').replace('{me}', me), lose: (nmd.ln?.[2] || '').replace('{me}', me) } } : tk ? { tr: tk, cls: GB().TR_KO[tk] || '트레이너', nm: pick(CLS[tk].f ? GB().NAMES_F || ['영희'] : GB().NAMES_M || ['철수']), team, hold: f >= 60 ? 1 : 0 } : { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team, appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : dbl ? '' : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
       R.balls = R.balls || {}; const T = { xp: TR.xp * (R.xpM || 1), xpF: trXpF(), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss, dbl };   /* v23.68 동료 볼 (가방) */
-      const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await trReward(R, o, ids, false, false, true); }   /* v24.35 경완 '동료 몬스터볼 처음 5개 없애고 출발 보상에서 고르기' */ : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
+      const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; if (Object.keys(R.it0 || {}).length) await o.msgTap('원래 지닌 도구는 수련탑에 맡겨 두었다!\n도전이 끝나면 돌려받는다.'); await trReward(R, o, ids, false, false, true); }   /* v24.35 경완 '동료 몬스터볼 처음 5개 없애고 출발 보상에서 고르기' */ : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
       const music = big ? 'bossBig' : boss ? 'boss' : nmd ? nmd.music || 'gymBattle' : trn ? 'train' : trBioM(bio), keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: !trn, dbl, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, diff: boss || nmd ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: !trn, win: nmd ? nmd.win || undefined : trn ? 'winTrain' : 'winWild', meFrontUrl, meBackUrl,
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: !trn, dbl, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, xit: R.xit, ptyIt: trPtyIt(R), diff: boss || nmd ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: !trn, win: nmd ? nmd.win || undefined : trn ? 'winTrain' : 'winWild', meFrontUrl, meBackUrl,
         items: trItHtml(R), badge: `<div class="bfl${boss || nmd ? ' bs' : ''}"><b class="f">${f}<em>층</em></b><b class="c"><img alt="" src="${IMG}item/relicgold.png"><span>${(R.coin | 0).toLocaleString()}</span></b></div>`,   /* v24.81 경완 '우상단, 박스 없이' → 체력 박스 글씨 그대로 A안, 코인은 금색 + 고대의 금화(1번) */ post: o => trPost(R, o, boss || !!nmd, ids, T, trn),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }], ['🧑 트레이너', () => { R.trNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
@@ -4332,12 +4347,12 @@ async function trPost(R, o, boss, ids, T, trn) {
   if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
   if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
   if (o.quit) { trSave = R; R.end = 'quit'; R.keep = R.ids.map(id => [GB().boxOf(id), GB().gm(GB().boxOf(id))]).filter(x => x[0]).map(([P, m]) => [JSON.parse(JSON.stringify(P)), JSON.parse(JSON.stringify(m))]); await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n여기까지 한 만큼 보상을 받는다.`); return false; }
-  if (!o.won) { trSave = null; R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); return false; }
+  if (!o.won) { trSave = null; R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); await trItBack(R, o); return false; }
   if (o.act) R.lead = o.act;
   if (T?.caught) await trMate(R, o, T.caught);
   if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap(trn ? '승부를 마치고\n모두 기운을 되찾았다!' : '우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
-  if (R.floor >= TR.top) { trSave = null; R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); return false; }
+  if (R.floor >= TR.top) { trSave = null; R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); await trItBack(R, o); return false; }
   const cn = boss ? 40 : trn || T?.dbl ? 20 : 10;   /* v24.87 트레이너 20, 관장·라이벌·사천왕·챔피언 40 */ R.coin = (R.coin | 0) + cn;   /* v24.70 경완 '코인은 포켓몬 쓰러트릴 때마다': 한 마리 10 (더블 20), 우두머리 40 */
   await o.msg(`수련탑 코인 ${cn}개를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
@@ -4384,7 +4399,7 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
 /* v24.73 경완 '학습장치·경험치 부적처럼 얻은 도구는 포켓로그처럼 좌상단 아이콘': 이번 도전에 쌓인 도구 아이콘 + 개수 (영양제는 종류별 합) */
 const trItHtml = R => { const L = []; if (R.sh) L.push(['expshare', R.sh, '학습장치']); const xc = Math.round(((R.xpM || 1) - 1) / .25); if (xc > 0) L.push(['expcharm', xc, '경험치 부적']);
   /* v24.95 경완 '포켓로그처럼 먹은 포켓몬마다': 영양제는 먹은 포켓몬·종류마다 칸 따로, 아이콘 왼쪽 위 구석에 그 포켓몬 얼굴 */
-  Object.entries(R.vit || {}).forEach(([id, V]) => TR_VIT.forEach(([n], k) => { const c = (V || [])[k] | 0; if (c) L.push([trIc(n), c, n, id]); }));
+  /* v25.xx 경완 '포켓몬 교체 화면 슬롯을 행 전체 1*6 으로 바꾸고 한 박스에 먹인 도구 다 보여주는': 영양제·지닌 도구는 교체 화면 줄로 옮김 (좌상단은 팀 전체 도구만) */
   return L.map(([ic, c, n, id]) => `<i title="${n}"${id ? ' class="pm"' : ''}><img alt="" src="${IMG}item/${ic}.png">${id ? `<img class="pmi" alt="" data-th="${id}">` : ''}${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
@@ -4458,6 +4473,15 @@ async function trReward(R, o, ids, boss, shop, first) {
     ...(() => { const k = Math.random() * 6 | 0, [n, st] = TR_VIT[k], ok = live.filter(id => ((R.vit?.[id] || [])[k] | 0) < 3); if (!ok.length) return [];   /* v23.63 경완 '영양제 좋아': 한 마리 능력치 ×1.1 (같은 능력치 3개까지), 이번 도전만 */
       return [[3, 1, n, `한 마리의 ${st} +10% (이번 도전만)`, async () => { const id = await who(ok, `누구에게 먹일까요? (${st})`); if (id == null) return null; const V = (R.vit = R.vit || {})[id] = R.vit[id] || [0, 0, 0, 0, 0, 0]; V[k]++; return `${nm(id)}의 ${iga(st)} 올랐다!`; }]]; })(),
     [(R.xpM || 1) < 1.7 ? 2 : 0, 1, '경험치 부적', `이번 도전 경험치 +25% (${Math.round((R.xpM || 1) * 100) + 25}%, 3개까지)`, async () => {   /* v23.63 경완 '실제 레벨이 오르니 밸런스 맞춰서': 3개(175%)까지 — 시뮬: 100층 Lv10→33 이 37 (무제한이면 53) */ R.xpM = (R.xpM || 1) + .25; return `이번 도전 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }],
+    /* v25.xx 경완 '우리도 여러개 쓸 수 있게': 쌓이는 지닌 도구 (한 마리가 여러 종류, 같은 건 개수만큼 셈) + 본가 지닌 도구 1칸 */
+    ...(() => { const X = R.xit = R.xit || {}, n = (id, k) => X[id]?.[k] | 0, out = [];
+      const give = (k, ok, q) => async () => { const id = await who(ok, q); if (id == null) return null; (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 지니게 했다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; };
+      const [k, g, mx] = TR_XS[Math.random() * TR_XS.length | 0], ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([3, g, trItNm(k), `${TR_XS.find(x => x[0] === k)[3](1)} · 한 마리가 ${mx}개까지 (쌓이면 더 세져요)`, give(k, ok, `누구에게 ${eul(trItNm(k))} 지니게 할까요?`)]);
+      const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([3, 0, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20% · 한 마리가 5개까지 (쌓이면 더 세져요)`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 지니게 할까요?`)]); }
+      const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
+      if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)} (한 마리에 하나만)`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 지니게 할까요?`); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려주고\n${eul(trItNm(k1))} 지니게 했다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 지니게 했다!`; }]);
+      [...TR_XS.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0])].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
+      return out; })(),
     [3, 0, '동료 몬스터볼 ×3', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'mon', 3, '동료 몬스터볼')],
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
     [boss ? 2 : .6, 2, '동료 하이퍼볼', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'ultra', 1, '동료 하이퍼볼')],
