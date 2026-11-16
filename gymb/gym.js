@@ -5070,7 +5070,7 @@ const DM_TID = 990014;
 function dBandPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>다이맥스밴드</h4><div class="le-get mr-get zr-get"><img alt="" src="${IMG}dbk/it/DYNAMAXBAND.png"></div><p class="gy-msg mr-d">다이맥스에 쓰는 밴드.<br>배틀 중 한 번, 포켓몬을<br>3턴 동안 거대하게 만들 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 function soupGetPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
-  const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>다이수프</h4><div class="le-get mr-get zr-get"><img alt="" src="${IMG}dbk/it/MAXSOUP.png?v=2" style="image-rendering:pixelated"></div><p class="gy-msg mr-d">거다이맥스 모습이 있는 포켓몬이 먹으면<br>거다이맥스할 수 있게 되는 수프.<br><small>창고 › 도구에 넣었어요. 상점에서도 팔아요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); confetti(); }); }
+  const p = pop(`<h4 class="pp-t mr-t"><small>연습용으로 한 그릇 받았다!</small>다이수프</h4><div class="le-get mr-get zr-get"><img alt="" src="${IMG}dbk/it/MAXSOUP.png?v=2" style="image-rendering:pixelated"></div><p class="gy-msg mr-d">거다이맥스 모습이 있는 포켓몬이 먹으면<br>거다이맥스할 수 있게 되는 수프.<br><small>튜토가 끝나면 냄비로 돌아가요. 상점에서 팔아요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); confetti(); }); }
 /* 이 체육관 라인업에서 거다이맥스 모습이 있는 포켓몬 */
 function gmaxCan() { const B = GB(), g = st(), lu = new Set((g?.lu || []).flat()), seen = new Set(), L = [];
   for (const P of S.box || []) { if (!lu.has(P.id) || isTstP(P) || seen.has(P.sp) || !B?.gmaxOk?.(P)) continue; seen.add(P.sp); L.push(P); } return L; }
@@ -5102,7 +5102,7 @@ async function dmaxTut(test) {
     else { const sp = SPECIES[M[0]]?.n || '포켓몬', mvN = B.mvOf?.(M[1][0])?.[1] || '기술';
       await say('허허, 그럼 직접 해 보는 게\n제일이지!'); await say(`연습용으로 내 ${sp}${pE(sp)}\n잠깐 빌려주마.`);
       S.box = S.box || []; g.mon = g.mon || {}; made = { id: DM_TID, sp: M[0], iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1 }; S.box.push(made); B.gm(made); Object.assign(g.mon[made.id], { mv: M[1], lv: 50, it: '', ab: M[2] }); delete g.mon[made.id].gmax; save();
-      gse('DP_DECIDE'); await say(`${sp}${pN(sp)} 거다이맥스\n모습이 있는 포켓몬이란다.`); await say(`냄비에 남은 다이수프\n한 그릇을 ${sp}에게\n먹여 보자!`); g.soup = sp0 + 1; save();   /* 연습용 한 그릇 (끝나면 soupKeep 이 되돌림) */
+      gse('DP_DECIDE'); await say(`${sp}${pN(sp)} 거다이맥스\n모습이 있는 포켓몬이란다.`); await say(`냄비에 남은 다이수프\n한 그릇을 ${sp}에게\n먹여 보자!`); hideT(true); await soupGetPop(); hideT(false); g.soup = sp0 + 1; save();   /* 경완 '받기 창 정도는 떠도 될 것 같아 어케 생겼는진 알아야하니까' */   /* 연습용 한 그릇 (끝나면 soupKeep 이 되돌림) */
       hideT(true);
       const P = made, inLu = () => (g.lu?.[g.luI | 0] || []).includes(P.id);
       busy = false; root.classList.remove('busy');
