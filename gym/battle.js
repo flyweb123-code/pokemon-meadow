@@ -1270,7 +1270,7 @@ async function smEnc(w, opts, kind) {
       rot(I.shine, C.x, C.y, t * 2, (1.1 + Math.sin(t * 7) * .1) * glowIn(t), 1); flash(t, 0, .3); trainer(t); },
   };
   D.defR = D.defB = D.def;
-  await new Promise(ok => { const t0 = performance.now(); const tick = () => { const t = (performance.now() - t0) / 1000; x.clearRect(0, 0, W, H); D[kind](t); if (t < END) requestAnimationFrame(tick); else ok(); }; tick(); });
+  await new Promise(ok => { const t0 = performance.now(); let done = 0; const tick = () => { if (!w.isConnected) return; const t = (performance.now() - t0) / 1000; x.clearRect(0, 0, W, H); D[kind](t); if (!done && t >= END) { done = 1; ok(); } requestAnimationFrame(tick); }; tick(); });   /* v26.xx 경완 '배틀 화면 넘어가기 직전에 얼굴 띠 흐르는 연출이 멈추는데 계속 되면서 자연스럽게 넘어가게': END 에 돌려주되 전환 화면(w)이 걷혀 지워질 때까지 계속 그림 */
 }
 
 // ---------- 배틀 들어가는 화면 전환 (DP·Pt 본가처럼) ----------
@@ -1393,7 +1393,7 @@ async function run(opts) {
       $b('.bt-tr.e').classList.add('back');
       if (won) { M('play', winM, { fade: .05 }); await msgTap(`${wa(foeNm)}의 승부에서 이겼다!`); }   /* v18.10 경완: 졌을 땐 원래대로 끝 곡 없음 */
       else await msgTap('승부에서 졌다…');
-      const ln = opts.foe.say?.[won ? 'win' : 'lose']; if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
+      let ln = opts.foe.say?.[won ? 'win' : 'lose']; if (typeof ln === 'function') try { const al = s => (B.btl?.[s]?.pokemon || []).filter(q => !q.fainted && q.hp > 0).length, fn = s => (B.btl?.[s]?.pokemon || []).filter(q => q.fainted || q.hp <= 0).length; ln = ln({ my: al('p1'), fo: al('p2'), myF: fn('p1'), foF: fn('p2'), turns: B.btl?.turn | 0 }); } catch (e) { ln = ''; }   /* v26.xx 대사가 함수면 배틀 결과(남은 마리·턴)로 고름 (gym.js sitSay) */ if (ln && B) await msgTap(ln);   // 상대 한마디 (본가처럼 다시 나와서)
       // 보상 (경완 2026-10-28): 한마디 뒤 골드·평판
       const W = opts.rew; if (W && B) { if (won) { await msgTap(`${W.g.toLocaleString()}G를 받았다!`); if (W.r) await msgTap(`체육관 평판이 ${W.r} 올랐다!`); } else if (W.rl) await msgTap(`체육관 평판이 ${-W.rl} 깎였다…`); }
       }
