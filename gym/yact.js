@@ -164,6 +164,13 @@ const CSS = `
 #yact .ya-dg.cd{color:#8a8794}
 #yact .ya-ov{position:absolute;inset:0;z-index:8;background:rgba(14,14,28,.45)}
 /* v26.43 경완 '그만 누르면 일시정지 창 뜨고, 그만둘건지 계속할건지 선택하게 앱 잠깐 나갔을 때도 일시정지 창 띄워줘. 계속하기 하면 다시 카운트다운하고 시작' */
+/* v26.76 경완 '특훈 이거 컨트롤러 연동되게 할 수 있어?' → '만들어줘 너가 말한 컨트롤러들이랑 8bit do': 컨트롤러가 잡히면(#yact.gp) 화면 버튼에 그 컨트롤러 버튼 글자, 창에서는 고른 버튼에 테두리(.gpf) */
+#yact.gp .mvb .tg[data-gp]::before,#yact.gp .ya-dg[data-gp]::before,#yact.gp .ya-quit[data-gp]::after{content:attr(data-gp);display:inline-block;min-width:14px;height:14px;padding:0 2px;box-sizing:border-box;border-radius:7px;background:#20202c;color:#fff;font:700 9px/14px system-ui,sans-serif;text-align:center;vertical-align:middle;pointer-events:none}
+#yact.gp .mvb .tg[data-gp]::before{margin:-2px 3px -1px -3px}
+#yact.gp .ya-dg[data-gp]::before{position:absolute;top:3px;left:50%;transform:translateX(-50%);z-index:3}
+#yact.gp .ya-top .ya-quit[data-gp]::after{margin-left:5px}
+#yact.gp .gpf{outline:3px solid #fff;outline-offset:2px;animation:yaGpf .8s ease-in-out infinite alternate}
+@keyframes yaGpf{to{outline-color:#ffd84a}}
 #yact .ya-pz{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(8,8,20,.62);pointer-events:auto}
 #yact .ya-pz[hidden]{display:none}
 #yact .ya-pz .pz-w{width:min(286px,calc(100% - 40px));padding:18px 16px 16px;border-radius:18px;border:2px solid #8a90c0;color:#f0ecff;text-align:center;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 30px rgba(120,130,255,.4);background:radial-gradient(ellipse 120% 70% at 50% 0,#3c4470 0,#1a1c3c 50%,#0a0a1a 100%)}
@@ -1677,6 +1684,7 @@ function loop(ms) {
   // 멈칫하는 동안엔 판 시간이 서고, 느린 화면일 땐 천천히 흐른다. 흔들림·숫자는 실제 시간으로
   let dt = rdt; if (R.PZ) dt = 0; else if (R.HS > 0) { R.HS -= rdt; dt = 0; } else if (R.SLOW > 0) { R.SLOW -= rdt; dt = rdt * R.SLOWK; }
   R.HSB = Math.min(.3, (R.HSB ?? .3) + rdt * .3); R.TR = Math.max(0, R.TR - rdt * 1.9); { const k = Math.exp(-rdt * 16); R.KX *= k; R.KY *= k; } R.ZM *= Math.exp(-rdt * 7); R.FLASH = Math.max(0, R.FLASH - rdt); R.VIG = Math.max(0, R.VIG - rdt * 2.4);
+  try { padPoll(); } catch (e) {} if (!R) return;
   R.T += dt; if (R.G && dt > 0) step(dt); if (R && R.run && R.G) cdUi();
   if (!R) return; draw(); R.raf = requestAnimationFrame(loop);
 }
@@ -1716,6 +1724,49 @@ function bind() {
   on(q('.ya-pz'), 'click', e => { if (e.target === e.currentTarget && !e.currentTarget.classList.contains('np')) pzGo(); });   /* 직접 '그만' 을 눌러 연 창만 바깥을 눌러 계속하기. 앱에서 돌아와 저절로 뜬 창은 버튼으로만 */
   { const hid = () => { if (document.hidden && R === r) pzOpen(1); }; on(document, 'visibilitychange', hid); on(window, 'pagehide', () => { if (R === r) pzOpen(1); }); }
   let rz = 0; on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (R === r) resize(); }, 200); });
+}
+// ---------- 컨트롤러 (웹 표준 게임패드: PS·Xbox·스위치 프로·8BitDo·백본) ----------
+// 버튼 번호는 자리 기준(0 아래 · 1 오른쪽 · 2 왼쪽 · 3 위)이라 컨트롤러마다 글자만 다르다. 기술 버튼은 화면 자리대로: 오른쪽 아래 = 아래 버튼, 오른쪽 위 = 오른쪽, 왼쪽 아래 = 왼쪽, 왼쪽 위 = 위
+const GP = { on: 0, id: '', kind: 0, pv: [], nav: '', map: [0, 1, 2, 3], G: null, joy: 0, held: {}, ctx: '' };
+const GP_L = [['A', 'B', 'X', 'Y'], ['✕', '○', '□', '△'], ['B', 'A', 'Y', 'X']], GP_ST = ['☰', 'OPT', '+'], GP_R = ['RB', 'R1', 'R'];
+const gpKind = id => /playstation|dualsense|dualshock|054c/i.test(id) ? 1 : /nintendo|switch|pro controller|joy-?con|057e|8bitdo|2dc8/i.test(id) ? 2 : 0;
+function gpGet() { let best = null; try { for (const p of navigator.getGamepads?.() || []) if (p && p.connected && p.buttons.length >= 4 && (!best || p.timestamp > best.timestamp)) best = p; } catch (e) {} return best; }
+function gpLab() {
+  const box = R.q('.ya-mvs'), L = [...box.children], lab = GP_L[GP.kind]; GP.map = [-1, -1, -1, -1];
+  if (L.length) { const C = L.map(b => { const t = b.getBoundingClientRect(); return [t.left + t.width / 2, t.top + t.height / 2]; }), cx = C.reduce((a, c) => a + c[0], 0) / C.length, cy = C.reduce((a, c) => a + c[1], 0) / C.length, rest = [];
+    C.forEach((c, i) => { const f = c[0] >= cx ? (c[1] >= cy ? 0 : 1) : (c[1] >= cy ? 2 : 3); if (GP.map[f] < 0) GP.map[f] = i; else rest.push(i); });
+    for (const i of rest) { const f = GP.map.indexOf(-1); if (f >= 0) GP.map[f] = i; } }
+  GP.map.forEach((i, f) => { if (i >= 0) { L[i].dataset.gp = lab[f]; L[i].querySelector('.tg').dataset.gp = lab[f]; } }); R.q('.ya-dg').dataset.gp = GP_R[GP.kind]; R.q('.ya-quit').dataset.gp = GP_ST[GP.kind];
+}
+function gpFocus(L, d) { L = L.filter(Boolean); if (!L.length) return null; let i = L.findIndex(b => b.classList.contains('gpf')); if (i < 0) i = 0; else if (d) { i = (i + d + L.length) % L.length; se('SELECT'); }
+  R.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); L[i].classList.add('gpf'); return L[i]; }
+function padPoll() {
+  const r = R, p = gpGet(), J = r.JOY;
+  if (!p) { if (GP.on) { GP.on = 0; GP.pv = []; r.el.classList.remove('gp'); r.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); if (GP.joy) { GP.joy = 0; if (J.id == null) J.dx = J.dy = 0; } for (const i in GP.held) delete r.HELD[i]; GP.held = {}; } return; }
+  if (!GP.on || GP.id !== p.id || !r.el.classList.contains('gp')) { GP.on = 1; GP.id = p.id; GP.kind = gpKind(p.id); GP.G = null; GP.ctx = ''; r.el.classList.add('gp'); }
+  const dn = i => { const b = p.buttons[i]; return !!b && (b.pressed || b.value > .5); }, now = p.buttons.map((b, i) => dn(i)), hit = i => now[i] && !GP.pv[i];
+  let ax = +p.axes[0] || 0, ay = +p.axes[1] || 0; if (now[14]) ax = -1; if (now[15]) ax = 1; if (now[12]) ay = -1; if (now[13]) ay = 1;
+  const mag = Math.hypot(ax, ay), nv = mag < .6 ? '' : Math.abs(ax) > Math.abs(ay) ? (ax < 0 ? 'l' : 'r') : (ay < 0 ? 'u' : 'd'), nav = nv !== GP.nav ? nv : ''; GP.nav = nv;
+  const q = r.q, vis = c => { const e = q(c); return e && !e.hidden && e.offsetParent !== null ? e : null; }, click = e => { if (e) e.click(); };
+  const A = hit(0), B = hit(1), ST = hit(9) || hit(8), step = nav === 'u' || nav === 'l' ? -1 : nav ? 1 : 0;
+  const ctx = q('.ya-tu').classList.contains('on') ? 'tu' : q('.ya-evh').classList.contains('on') ? 'evh' : r.PZ === 1 ? 'pz' : r.PZ === 2 ? 'cd' : vis('.ya-gift') ? 'gift' : vis('.ya-res') ? 'res' : vis('.ya-start') ? 'start' : r.run ? 'play' : '';
+  if (ctx !== GP.ctx) { GP.ctx = ctx; r.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); }
+  if (ctx === 'play') {
+    if (GP.G !== r.G || !q('.ya-mvs').firstChild?.dataset.gp) { GP.G = r.G; gpLab(); }
+    if (J.id == null) { const D = .22; if (mag > D) { const k = Math.min(1, (mag - D) / (1 - D)) / mag; J.dx = ax * k; J.dy = ay * k; GP.joy = 1; } else if (GP.joy) { GP.joy = 0; J.dx = J.dy = 0; } }
+    for (let f = 0; f < 4; f++) { const i = GP.map[f]; if (i < 0) continue; if (hit(f)) { useMove(i, true); r.HELD[i] = 1; GP.held[i] = 1; } else if (!now[f] && GP.held[i]) { delete r.HELD[i]; delete GP.held[i]; } }
+    if (hit(4) || hit(5) || hit(6) || hit(7)) dodge();
+    if (ST) pzOpen(0);
+  } else {
+    if (GP.joy) { GP.joy = 0; if (J.id == null) J.dx = J.dy = 0; } GP.held = {};
+    if (ctx === 'pz') { const f = gpFocus([q('.pz-go'), q('.pz-q')], step); if (A) click(f); else if (B || ST) pzGo(); }
+    else if (ctx === 'gift') { const f = gpFocus([q('.gf-ok')], 0); if (A || ST) click(f); }
+    else if (ctx === 'res') { const f = gpFocus([vis('.ya-again'), vis('.ya-back')], step); if (A) click(f); }
+    else if (ctx === 'start') { const f = gpFocus([q('.ya-go')], 0); if (A || ST) click(f); else if (B) click(q('.ya-x')); else { const d = hit(4) || nav === 'l' ? -1 : hit(5) || nav === 'r' ? 1 : 0, L = [...q('.ya-pk').querySelectorAll('.pkc')]; if (d && L.length > 1) click(L[(r.pick + d + L.length) % L.length]); } }
+    else if (ctx === 'tu') { if (A || nav === 'r') click(q('.tu-nx')); else if (nav === 'l') click(q('.tu-pv')); else if (B) click(q('.tu-x')); }
+    else if (ctx === 'evh') { if (B) click(q('.eh-x')); else if (A) click(q('.eh-go')); }
+  }
+  GP.pv = now;
 }
 function buildButtons() {
   const box = R.q('.ya-mvs'); box.innerHTML = '';
