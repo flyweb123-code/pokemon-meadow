@@ -1760,7 +1760,7 @@ const gpKind = id => /\(one\)/.test(id) ? 3 : /playstation|dualsense|dualshock|0
 const JC = { b: 0, lx: 0, ly: 0, rx: 0, ry: 0, m: 0, n: 0, st: '' };
 window.__jc2 = (b, lx, ly, rx, ry, m) => { JC.b = b >>> 0; JC.lx = lx; JC.ly = ly; JC.rx = rx; JC.ry = ry; JC.m = m | 0; JC.n++; };
 window.__jc2s = (st, m) => { JC.st = st; JC.m = m | 0; if (!JC.m) JC.b = 0; JC.n++; };
-const jcApp = () => window.webkit?.messageHandlers?.joycon2;
+const jcApp = () => { try { if ((JSON.parse(localStorage.getItem('pk-acct') || 'null') || {}).id !== 'flyweb') return null; } catch (e) { return null; } return window.webkit?.messageHandlers?.joycon2; };   // 경완 '나만 보이게 해줘' (2026-11-17): 조이콘 2 버튼은 운영자 계정(index.html opAcct 와 같은 조건)에서만
 function jcPad() {
   const b = JC.b, h = k => (b & k) !== 0, m = JC.m, one = m === 1 || m === 2;
   let F, ax, ay, sh, st;   /* F = 자리 기준 [아래, 오른쪽, 왼쪽, 위] */
