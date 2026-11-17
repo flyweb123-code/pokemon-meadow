@@ -33,6 +33,8 @@ struct GameView: UIViewRepresentable {
         // 2026-11-02 경완: 위치 권한은 게임이 튜토리얼 끝에 묻는다 (WalkTracker.askLoc)
         config.userContentController.addScriptMessageHandler(LocHandler(), contentWorld: .page, name: "loc")
         config.userContentController.addScriptMessageHandler(PermHandler(), contentWorld: .page, name: "perm")   // 권한 셋을 한 번에 (Perm)
+        // 2026-11-17 경완 '조이콘2 우회해서 연결할 방법은?': 스위치 2 조이콘을 앱이 직접 붙여 특훈에 넘긴다 (JoyCon2)
+        config.userContentController.addScriptMessageHandler(JoyCon2.shared, contentWorld: .page, name: "joycon2")
         let web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = context.coordinator
         web.isOpaque = false
@@ -42,6 +44,7 @@ struct GameView: UIViewRepresentable {
         web.scrollView.contentInsetAdjustmentBehavior = .never
         web.scrollView.delegate = context.coordinator.noScroll   // 2026-11-04 경완: 키보드가 올라올 때 화면이 밀렸다 돌아오는 출렁임 — 밀리는 즉시 0 으로
         bridge.webView = web
+        JoyCon2.shared.web = web
         // 패치가 바로 보이도록 서버에 새 버전이 있는지 매번 확인하고 받는다
         web.load(URLRequest(url: gameURL, cachePolicy: .reloadRevalidatingCacheData))
         context.coordinator.observeForeground(web)
