@@ -40,6 +40,8 @@ targets:
         NSHealthShareUsageDescription: 애플워치로 움직인 거리를 알·짝꿍에 반영하려고 건강 앱의 걷기·운동 기록을 읽어요.
         # HealthKit 권한(entitlement)이 있으면 쓰기를 안 해도 업로드 검사에서 요구한다
         NSHealthUpdateUsageDescription: 애플워치에서 한 운동을 건강 앱에 운동 기록으로 남겨요.
+        # 2026-11-17: 스위치 2 조이콘을 앱이 직접 붙인다 (JoyCon2.swift). 특훈에서 '조이콘 2 연결'을 누를 때 처음 묻는다
+        NSBluetoothAlwaysUsageDescription: 특훈에서 조이콘 2 같은 컨트롤러를 연결하려고 블루투스를 써요.
     entitlements:
       path: PokeGrow/PokeGrow.entitlements
       properties:

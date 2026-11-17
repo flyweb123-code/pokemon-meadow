@@ -164,6 +164,30 @@ const CSS = `
 #yact .ya-dg.cd{color:#8a8794}
 #yact .ya-ov{position:absolute;inset:0;z-index:8;background:rgba(14,14,28,.45)}
 /* v26.43 경완 '그만 누르면 일시정지 창 뜨고, 그만둘건지 계속할건지 선택하게 앱 잠깐 나갔을 때도 일시정지 창 띄워줘. 계속하기 하면 다시 카운트다운하고 시작' */
+/* v26.76 경완 '특훈 이거 컨트롤러 연동되게 할 수 있어?' → '만들어줘 너가 말한 컨트롤러들이랑 8bit do': 컨트롤러가 잡히면(#yact.gp) 화면 버튼에 그 컨트롤러 버튼 글자, 창에서는 고른 버튼에 테두리(.gpf) */
+#yact.gp .mvb .tg[data-gp]::before,#yact.gp .ya-dg[data-gp]::before,#yact.gp .ya-quit[data-gp]::after{content:attr(data-gp);display:inline-block;min-width:14px;height:14px;padding:0 2px;box-sizing:border-box;border-radius:7px;background:#20202c;color:#fff;font:700 9px/14px system-ui,sans-serif;text-align:center;vertical-align:middle;pointer-events:none}
+#yact.gp .mvb .tg[data-gp]::before{margin:-2px 3px -1px -3px}
+#yact.gp .ya-dg[data-gp]::before{position:absolute;top:3px;left:50%;transform:translateX(-50%);z-index:3}
+#yact.gp .ya-top .ya-quit[data-gp]::after{margin-left:5px}
+/* 조이콘 2 직접 연결 (아이폰 앱 JoyCon2.swift): 시작 화면 머리줄 버튼 + 안내 창 */
+#yact .fs .fs-jc{flex:none;height:30px;padding:0 9px;border-radius:15px;border:2px solid #8a90c0;background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05));color:#dfe2ff;font:bold 11px/1 var(--px);box-shadow:0 3px 0 rgba(0,0,0,.45);cursor:pointer}
+#yact .fs .fs-jc:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.45)}
+#yact .fs .fs-jc.on{border-color:#6fe08a;color:#b8ffc8}
+#yact .ya-jc{position:absolute;inset:0;z-index:41;display:none;align-items:center;justify-content:center;background:rgba(8,8,20,.62)}
+#yact .ya-jc.on{display:flex}
+#yact .ya-jc .jc-w{width:min(300px,calc(100% - 36px));padding:16px 16px 14px;border-radius:18px;border:2px solid #8a90c0;color:#f0ecff;text-align:center;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 30px rgba(120,130,255,.4);background:radial-gradient(ellipse 120% 70% at 50% 0,#3c4470 0,#1a1c3c 50%,#0a0a1a 100%)}
+#yact .ya-jc .jc-t{display:block;font-size:18px;letter-spacing:1px;text-shadow:0 3px 0 #0c0a1c}
+#yact .ya-jc .jc-p{margin:10px 0 12px;font-size:12.5px;line-height:1.6;color:#c8c8ee}
+#yact .ya-jc .jc-p b{color:#ffe9a0}
+#yact .ya-jc .jc-s{display:flex;gap:8px;margin-bottom:8px}
+#yact .ya-jc .jc-s span{flex:1;padding:9px 0;border-radius:10px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.07);font-size:12.5px;color:#a8a8c8}
+#yact .ya-jc .jc-s span.ok{border-color:#6fe08a;background:rgba(110,224,138,.18);color:#d8ffe0}
+#yact .ya-jc .jc-m{min-height:18px;margin:0 0 10px;font-size:12px;color:#ffb8b8}
+#yact .ya-jc .jc-m.i{color:#a8c8ff}
+#yact .ya-jc .bigb{margin:0;padding:11px 0;font-size:15px;border-radius:12px;color:#f0ecff;border-color:rgba(255,255,255,.4);background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));box-shadow:0 4px 0 rgba(0,0,0,.55)}
+#yact .ya-jc .bigb:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.55)}
+#yact.gp .gpf{outline:3px solid #fff;outline-offset:2px;animation:yaGpf .8s ease-in-out infinite alternate}
+@keyframes yaGpf{to{outline-color:#ffd84a}}
 #yact .ya-pz{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(8,8,20,.62);pointer-events:auto}
 #yact .ya-pz[hidden]{display:none}
 #yact .ya-pz .pz-w{width:min(286px,calc(100% - 40px));padding:18px 16px 16px;border-radius:18px;border:2px solid #8a90c0;color:#f0ecff;text-align:center;box-shadow:0 0 0 3px #0c0a1c,0 8px 0 3px rgba(0,0,0,.5),0 0 30px rgba(120,130,255,.4);background:radial-gradient(ellipse 120% 70% at 50% 0,#3c4470 0,#1a1c3c 50%,#0a0a1a 100%)}
@@ -354,7 +378,7 @@ const CSS = `
 #yact .ya-start.fs{left:0;top:0;transform:none;width:100%;height:100%;max-height:none;border:0;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse 120% 60% at 50% 0,#4a3c86 0,#231a4c 45%,#0c0a1c 100%);color:#f0ecff}
 /* 경완 2026-11-15 '또 훈련장 비치는데? 처음에 눌렀을 때': 시작 화면 동안(.st0)은 그 밑의 경기장 캔버스·HUD 를 아예 안 그린다 — 아이폰에서 시작 화면이 그려지기 전 한 순간 밑의 경기장(훈련장 그림)이 비쳤음. [특훈 시작]을 누르면 보임 */
 #yact.st0{background:#0c0a1c}
-#yact.st0>:not(.ya-start):not(.ya-tu):not(.ya-evh):not(.ya-load){visibility:hidden!important}
+#yact.st0>:not(.ya-start):not(.ya-tu):not(.ya-evh):not(.ya-jc):not(.ya-load){visibility:hidden!important}
 #yact.pre{bottom:var(--mh,0px)}
 #yact.pre .fs .fs-ft{padding-bottom:12px}
 #yact.pre .fs .hr-st{height:min(112px,13.5vh)}#yact.pre .fs .ya-hero{padding-bottom:8px}#yact.pre .fs .ya-pmv{margin-top:7px}#yact.pre .fs .ya-pmv span{padding:4px 4px}#yact.pre .fs .ya-bd{gap:8px;padding-bottom:6px!important}#yact.pre .fs h3{margin-bottom:6px}#yact.pre .fs .fs-ft{padding-top:8px}#yact.pre .fs .fs-ft .bigb{padding:12px 0}#yact.pre .fs .ya-op{margin-top:6px}
@@ -683,8 +707,9 @@ const HTML = `<canvas></canvas>
 <div class="ya-pad"><button class="ya-dg">대쉬</button><div class="ya-mvs"></div></div>
 <div class="ya-ban"></div><div class="ya-warn" hidden><i class="t"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i><i class="b"><b>WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · WARNING · 우두머리 접근 · </b></i></div>
 <div class="ya-ov"></div>
+<div class="ya-jc"><div class="jc-w"><b class="jc-t">조이콘 2 연결</b><p class="jc-p">조이콘 옆면 레일의 <b>작은 싱크 버튼</b>을<br>초록 불이 흐를 때까지 꾹 눌러 주세요.<br>왼쪽·오른쪽을 하나씩 눌러요.</p><div class="jc-s"><span class="l">왼쪽</span><span class="r">오른쪽</span></div><p class="jc-m"></p><button class="b3 bigb jc-x" type="button">닫기</button></div></div>
 <div class="ya-pz" hidden><div class="pz-w"><b class="pz-t">일시정지</b><p class="pz-s">그만두면 지금까지 얻은 보상만 받아요.</p><div class="pz-b"><button class="b3 bigb pz-go" type="button">계속하기</button><button class="b3 bigb pz-q" type="button">그만두기</button></div></div></div>
-<div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
+<div class="ya-win ya-start fs"><div class="ya-hero"><div class="fs-hd"><button class="fs-bk ya-x" type="button" aria-label="뒤로">◀</button><b>특훈</b><button class="fs-jc" type="button" hidden>조이콘 2</button><button class="fs-hp" type="button" aria-label="하는 법">?</button></div>
     <div class="hr-row"><div class="hr-st"><u class="a"></u><u class="b"></u><img class="hr-im" alt=""><span class="hr-ty"></span></div><div class="hr-in"><div class="hr-nl"><b class="hr-nm"></b><i class="hr-sx"></i></div><span class="hr-lv"></span><div class="ya-pmv"></div></div></div></div>
   <div class="ya-bd"><div class="ya-pk"></div>
   <div class="ya-sec"><h3>노력치 훈련<button class="ya-evq" type="button" aria-label="어떤 훈련이 좋을까">?</button></h3><div class="ya-stt"></div></div>
@@ -1677,6 +1702,7 @@ function loop(ms) {
   // 멈칫하는 동안엔 판 시간이 서고, 느린 화면일 땐 천천히 흐른다. 흔들림·숫자는 실제 시간으로
   let dt = rdt; if (R.PZ) dt = 0; else if (R.HS > 0) { R.HS -= rdt; dt = 0; } else if (R.SLOW > 0) { R.SLOW -= rdt; dt = rdt * R.SLOWK; }
   R.HSB = Math.min(.3, (R.HSB ?? .3) + rdt * .3); R.TR = Math.max(0, R.TR - rdt * 1.9); { const k = Math.exp(-rdt * 16); R.KX *= k; R.KY *= k; } R.ZM *= Math.exp(-rdt * 7); R.FLASH = Math.max(0, R.FLASH - rdt); R.VIG = Math.max(0, R.VIG - rdt * 2.4);
+  try { padPoll(); } catch (e) {} if (!R) return;
   R.T += dt; if (R.G && dt > 0) step(dt); if (R && R.run && R.G) cdUi();
   if (!R) return; draw(); R.raf = requestAnimationFrame(loop);
 }
@@ -1711,11 +1737,76 @@ function bind() {
     on(q('.fs-hp'), 'click', () => { se('DECIDE'); ti = 0; show(); tu.classList.add('on'); });
     on(tu, 'click', e => { if (e.target === tu || e.target.closest('.tu-x')) off(); else if (e.target.closest('.tu-nx')) go(1); else if (e.target.closest('.tu-pv')) go(-1); });
     let sx = null; on(tu, 'touchstart', e => { sx = e.touches[0].clientX; }, { passive: true }); on(tu, 'touchend', e => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(d) > 44 && !(d < 0 && ti === TU.length - 1)) go(d < 0 ? 1 : -1); }, { passive: true }); }
+  { /* 조이콘 2 연결 창: 아이폰 앱(joycon2 다리)이 있을 때만 버튼이 보인다. 열면 앱이 45초 동안 찾고, 붙은 쪽이 초록으로 */
+    const jb = q('.fs-jc'), jw = q('.ya-jc'), MSG = { off: '아이폰 블루투스가 꺼져 있어요. 켜고 다시 열어 주세요.', denied: '블루투스 권한이 꺼져 있어요. 설정 › 포켓에그 › Bluetooth 를 켜 주세요.' };
+    const paint = () => { if (R !== r) return; const m = JC.m; jb.classList.toggle('on', !!m); jw.querySelector('.l').classList.toggle('ok', !!(m & 5)); jw.querySelector('.r').classList.toggle('ok', !!(m & 6)); jw.querySelector('.l').textContent = m & 4 ? '프로 컨트롤러' : m & 1 ? '왼쪽 연결됨' : '왼쪽'; jw.querySelector('.r').textContent = m & 4 ? '연결됨' : m & 2 ? '오른쪽 연결됨' : '오른쪽';
+      const e = jw.querySelector('.jc-m'); e.classList.toggle('i', !MSG[JC.st]); e.textContent = MSG[JC.st] || (m ? (m === 1 || m === 2 ? '한쪽만 쓰면 가로로 쥐고 해요.' : '연결됐어요!') : JC.st === 'scan' ? '찾는 중…' : ''); };
+    if (jcApp()) { jb.hidden = false; const iv = setInterval(paint, 300); r.off.push(() => clearInterval(iv)); paint();
+      on(jb, 'click', () => { se('DECIDE'); jw.classList.add('on'); JC.st = 'scan'; paint(); try { Promise.resolve(jcApp().postMessage({ op: 'scan' })).then(st => { if (typeof st === 'string' && st !== 'idle') JC.st = st; paint(); }, () => {}); } catch (e) {} });
+      on(jw, 'click', e => { if (e.target === jw || e.target.closest('.jc-x')) { se('SELECT'); jw.classList.remove('on'); } }); } }
   on(q('.ya-quit'), 'click', () => pzOpen(0));
   on(q('.pz-go'), 'click', pzGo); on(q('.pz-q'), 'click', () => { if (R !== r || r.PZ !== 1 || !r.G) return; se('CANCEL'); q('.ya-pz').hidden = true; r.PZ = 0; duckSet(1); end(false, false, true); });
   on(q('.ya-pz'), 'click', e => { if (e.target === e.currentTarget && !e.currentTarget.classList.contains('np')) pzGo(); });   /* 직접 '그만' 을 눌러 연 창만 바깥을 눌러 계속하기. 앱에서 돌아와 저절로 뜬 창은 버튼으로만 */
   { const hid = () => { if (document.hidden && R === r) pzOpen(1); }; on(document, 'visibilitychange', hid); on(window, 'pagehide', () => { if (R === r) pzOpen(1); }); }
   let rz = 0; on(window, 'resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (R === r) resize(); }, 200); });
+}
+// ---------- 컨트롤러 (웹 표준 게임패드: PS·Xbox·스위치 프로·8BitDo·백본) ----------
+// 버튼 번호는 자리 기준(0 아래 · 1 오른쪽 · 2 왼쪽 · 3 위)이라 컨트롤러마다 글자만 다르다. 기술 버튼은 화면 자리대로: 오른쪽 아래 = 아래 버튼, 오른쪽 위 = 오른쪽, 왼쪽 아래 = 왼쪽, 왼쪽 위 = 위
+const GP = { on: 0, id: '', kind: 0, pv: [], nav: '', map: [0, 1, 2, 3], G: null, joy: 0, held: {}, ctx: '' };
+const GP_L = [['A', 'B', 'X', 'Y'], ['✕', '○', '□', '△'], ['B', 'A', 'Y', 'X'], ['▼', '▶', '◀', '▲']], GP_ST = ['☰', 'OPT', '+', '+'], GP_R = ['RB', 'R1', 'R', 'SR'];
+const gpKind = id => /\(one\)/.test(id) ? 3 : /playstation|dualsense|dualshock|054c/i.test(id) ? 1 : /nintendo|switch|pro controller|joy-?con|057e|8bitdo|2dc8/i.test(id) ? 2 : 0;
+/* 조이콘 2 (아이폰 앱이 직접 붙임): 앱이 window.__jc2(버튼 비트, lx, ly, rx, ry, 붙은 쪽 1 왼쪽·2 오른쪽·4 프로) 로 넘긴 값을 표준 배치 컨트롤러 모양으로 바꾼다.
+   한쪽만 붙었으면 가로로 쥔 것으로 본다(스틱·버튼을 90도 돌림, SL·SR = 대쉬). 버튼 비트는 커뮤니티 분석 값(JoyCon2.swift 머리 주석) */
+const JC = { b: 0, lx: 0, ly: 0, rx: 0, ry: 0, m: 0, n: 0, st: '' };
+window.__jc2 = (b, lx, ly, rx, ry, m) => { JC.b = b >>> 0; JC.lx = lx; JC.ly = ly; JC.rx = rx; JC.ry = ry; JC.m = m | 0; JC.n++; };
+window.__jc2s = (st, m) => { JC.st = st; JC.m = m | 0; if (!JC.m) JC.b = 0; JC.n++; };
+const jcApp = () => { try { if ((JSON.parse(localStorage.getItem('pk-acct') || 'null') || {}).id !== 'flyweb') return null; } catch (e) { return null; } return window.webkit?.messageHandlers?.joycon2; };   // 경완 '나만 보이게 해줘' (2026-11-17): 조이콘 2 버튼은 운영자 계정(index.html opAcct 와 같은 조건)에서만
+function jcPad() {
+  const b = JC.b, h = k => (b & k) !== 0, m = JC.m, one = m === 1 || m === 2;
+  let F, ax, ay, sh, st;   /* F = 자리 기준 [아래, 오른쪽, 왼쪽, 위] */
+  if (m === 1) { F = [h(0x08000000), h(0x01000000), h(0x02000000), h(0x04000000)]; ax = -JC.ly; ay = -JC.lx; sh = [h(0x20000000), h(0x10000000), h(0x40000000), h(0x80000000)]; st = h(0x10000) || h(0x200000); }
+  else if (m === 2) { F = [h(0x800), h(0x200), h(0x400), h(0x100)]; ax = JC.ry; ay = JC.rx; sh = [h(0x2000), h(0x1000), h(0x4000), h(0x8000)]; st = h(0x20000) || h(0x100000); }
+  else { F = [h(0x400), h(0x800), h(0x100), h(0x200)]; ax = JC.lx; ay = -JC.ly; sh = [h(0x40000000), h(0x4000), h(0x80000000), h(0x8000)]; st = h(0x20000) || h(0x10000); }
+  const B = [...F, ...sh, false, st, false, false, !one && h(0x02000000), !one && h(0x01000000), !one && h(0x08000000), !one && h(0x04000000)];
+  return { id: one ? 'Joy-Con 2 (one)' : 'Joy-Con 2 Nintendo', connected: true, timestamp: JC.n, axes: [ax, ay, 0, 0], buttons: B.map(v => ({ pressed: !!v, value: v ? 1 : 0 })) };
+}
+function gpGet() { if (JC.m) return jcPad(); let best = null; try { for (const p of navigator.getGamepads?.() || []) if (p && p.connected && p.buttons.length >= 4 && (!best || p.timestamp > best.timestamp)) best = p; } catch (e) {} return best; }
+function gpLab() {
+  const box = R.q('.ya-mvs'), L = [...box.children], lab = GP_L[GP.kind]; GP.map = [-1, -1, -1, -1];
+  if (L.length) { const C = L.map(b => { const t = b.getBoundingClientRect(); return [t.left + t.width / 2, t.top + t.height / 2]; }), cx = C.reduce((a, c) => a + c[0], 0) / C.length, cy = C.reduce((a, c) => a + c[1], 0) / C.length, rest = [];
+    C.forEach((c, i) => { const f = c[0] >= cx ? (c[1] >= cy ? 0 : 1) : (c[1] >= cy ? 2 : 3); if (GP.map[f] < 0) GP.map[f] = i; else rest.push(i); });
+    for (const i of rest) { const f = GP.map.indexOf(-1); if (f >= 0) GP.map[f] = i; } }
+  GP.map.forEach((i, f) => { if (i >= 0) { L[i].dataset.gp = lab[f]; L[i].querySelector('.tg').dataset.gp = lab[f]; } }); R.q('.ya-dg').dataset.gp = GP_R[GP.kind]; R.q('.ya-quit').dataset.gp = GP_ST[GP.kind];
+}
+function gpFocus(L, d) { L = L.filter(Boolean); if (!L.length) return null; let i = L.findIndex(b => b.classList.contains('gpf')); if (i < 0) i = 0; else if (d) { i = (i + d + L.length) % L.length; se('SELECT'); }
+  R.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); L[i].classList.add('gpf'); return L[i]; }
+function padPoll() {
+  const r = R, p = gpGet(), J = r.JOY;
+  if (!p) { if (GP.on) { GP.on = 0; GP.pv = []; r.el.classList.remove('gp'); r.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); if (GP.joy) { GP.joy = 0; if (J.id == null) J.dx = J.dy = 0; } for (const i in GP.held) delete r.HELD[i]; GP.held = {}; } return; }
+  if (!GP.on || GP.id !== p.id || !r.el.classList.contains('gp')) { GP.on = 1; GP.id = p.id; GP.kind = gpKind(p.id); GP.G = null; GP.ctx = ''; r.el.classList.add('gp'); }
+  const dn = i => { const b = p.buttons[i]; return !!b && (b.pressed || b.value > .5); }, now = p.buttons.map((b, i) => dn(i)), hit = i => now[i] && !GP.pv[i];
+  let ax = +p.axes[0] || 0, ay = +p.axes[1] || 0; if (now[14]) ax = -1; if (now[15]) ax = 1; if (now[12]) ay = -1; if (now[13]) ay = 1;
+  const mag = Math.hypot(ax, ay), nv = mag < .6 ? '' : Math.abs(ax) > Math.abs(ay) ? (ax < 0 ? 'l' : 'r') : (ay < 0 ? 'u' : 'd'), nav = nv !== GP.nav ? nv : ''; GP.nav = nv;
+  const q = r.q, vis = c => { const e = q(c); return e && !e.hidden && e.offsetParent !== null ? e : null; }, click = e => { if (e) e.click(); };
+  const A = hit(0), B = hit(1), ST = hit(9) || hit(8), step = nav === 'u' || nav === 'l' ? -1 : nav ? 1 : 0;
+  const ctx = q('.ya-tu').classList.contains('on') ? 'tu' : q('.ya-evh').classList.contains('on') ? 'evh' : r.PZ === 1 ? 'pz' : r.PZ === 2 ? 'cd' : vis('.ya-gift') ? 'gift' : vis('.ya-res') ? 'res' : vis('.ya-start') ? 'start' : r.run ? 'play' : '';
+  if (ctx !== GP.ctx) { GP.ctx = ctx; r.el.querySelectorAll('.gpf').forEach(b => b.classList.remove('gpf')); }
+  if (ctx === 'play') {
+    if (GP.G !== r.G || !q('.ya-mvs').firstChild?.dataset.gp) { GP.G = r.G; gpLab(); }
+    if (J.id == null) { const D = .22; if (mag > D) { const k = Math.min(1, (mag - D) / (1 - D)) / mag; J.dx = ax * k; J.dy = ay * k; GP.joy = 1; } else if (GP.joy) { GP.joy = 0; J.dx = J.dy = 0; } }
+    for (let f = 0; f < 4; f++) { const i = GP.map[f]; if (i < 0) continue; if (hit(f)) { useMove(i, true); r.HELD[i] = 1; GP.held[i] = 1; } else if (!now[f] && GP.held[i]) { delete r.HELD[i]; delete GP.held[i]; } }
+    if (hit(4) || hit(5) || hit(6) || hit(7)) dodge();
+    if (ST) pzOpen(0);
+  } else {
+    if (GP.joy) { GP.joy = 0; if (J.id == null) J.dx = J.dy = 0; } GP.held = {};
+    if (ctx === 'pz') { const f = gpFocus([q('.pz-go'), q('.pz-q')], step); if (A) click(f); else if (B || ST) pzGo(); }
+    else if (ctx === 'gift') { const f = gpFocus([q('.gf-ok')], 0); if (A || ST) click(f); }
+    else if (ctx === 'res') { const f = gpFocus([vis('.ya-again'), vis('.ya-back')], step); if (A) click(f); }
+    else if (ctx === 'start') { const f = gpFocus([q('.ya-go')], 0); if (A || ST) click(f); else if (B) click(q('.ya-x')); else { const d = hit(4) || nav === 'l' ? -1 : hit(5) || nav === 'r' ? 1 : 0, L = [...q('.ya-pk').querySelectorAll('.pkc')]; if (d && L.length > 1) click(L[(r.pick + d + L.length) % L.length]); } }
+    else if (ctx === 'tu') { if (A || nav === 'r') click(q('.tu-nx')); else if (nav === 'l') click(q('.tu-pv')); else if (B) click(q('.tu-x')); }
+    else if (ctx === 'evh') { if (B) click(q('.eh-x')); else if (A) click(q('.eh-go')); }
+  }
+  GP.pv = now;
 }
 function buildButtons() {
   const box = R.q('.ya-mvs'); box.innerHTML = '';
