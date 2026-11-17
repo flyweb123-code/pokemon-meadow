@@ -1047,8 +1047,7 @@ function buyTm(id, can) {
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
 let itCat = -1;   // v20.80 도구 탭 항목 필터 (-1 = 모든 항목)
-/* v26.95 경완 '체육관 도구에서 지니면 발동되는 도구 말고 직접 써야 발동되는 물건들은 다 빼줘': 진화·폼 도구(필드에서 직접 씀)는 체육관 상점에서 뺌, 필드 상점에서만 */
-const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
+const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ...(window.GA?.fTools ? [['fevo', '진화 도구'], ['fform', '폼 도구']] : []), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
 /* v26.89 경완 '필드 상점에 있는 것들 체육관 상점에도 넣어주고 둘 중 하나라도 구매하면 체육관 창고에도 들어가고 필드 가방에도': 필드 도구(진화·폼)는 필드 가방 주머니(S.items)에 들어가고 창고에도 보임 */
 const fRow = (o, own) => { const A = window.GA; return `<button type="button" class="sp-tm sp-it" data-ft="${o.id}"><img class="tm-ic it-ic" alt="" src="${A.fArt(o)}"><span class="tm-nm"><b>${esc(o.n)}</b>${own ? `<i class="tm-own">×${own}</i>` : ''}</span><span class="tm-meta"><small>${esc(A.fDesc(o))}</small></span></button>`; };
 const fSec = fm => { const A = window.GA; if (!A?.fTools) return ''; const L = A.fTools().filter(o => !!o.fm === fm).sort((a, b) => (A.fPrice(a.id) - A.fPrice(b.id)) * shopPr);
@@ -1072,7 +1071,7 @@ function shopIt(body) {
   } else
   { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.80 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
   body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
-    ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+    ${on('fevo') ? fSec(false) : ''}${on('fform') ? fSec(true) : ''}${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
     if (b.dataset.f === 'ic') { sfx('tap'); return K.fPop('항목', [[-1, '모든 항목'], ...itCats().map(([, n], i) => [i, n])], itCat, v => { itCat = v; redraw(); }); }
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
