@@ -1,6 +1,884 @@
 {
  "days": [
   {
+   "at": 1794955662226,
+   "theme": "숲속 꼬마 포켓몬 병원",
+   "note": "어제 목장에 이어 오늘은 풀밭 한쪽에 아담한 포켓몬 병원을 차렸어요! 빛나는 간판과 경광등 손수레로 입구를 꾸미고, 회복 머신·들것·키 재기 판·체중계·열매 약장으로 진료실을 채웠어요. 간판·회복 머신·경광등은 밤에도 은은하게 빛나 병원 자리를 알려 줘요.",
+   "items": [
+    {
+     "id": "hos-heal-machine",
+     "n": "포켓몬 회복 머신",
+     "k": "병원",
+     "d": "심전도 화면이 깜빡이는 하얀 회복 머신이에요. 앞 쟁반에 몬스터볼 다섯 개가 나란히 꽂혀 있고, 옆 빨간 등이 치료 중이면 반짝여요.",
+     "px": [
+      "....kkkkkkkkkkkkkPRrkk....",
+      "...kWWWWWWWWWWWWWWWWWvk...",
+      "...kWwsssssssssssssswvk...",
+      "...kWwsWWSSStSSSSSSswvk...",
+      "...kWwsWSSStSStSSSSswvk...",
+      "...kWwstttttSStttttswvk...",
+      "...kWwsSSSSSStSSSSSswvk...",
+      "...kWwttttttttttttttwvk...",
+      "...kWwwwwwwwwwwwwwwwwvk...",
+      ".kkkvvvvvvvvvvvvvvvvvvkkk.",
+      "kWORRrORRrORRrORRrORRrOOvk",
+      "kWOWWwOWWwOWWwOWWwOWWwOOvk",
+      "kWQQQQQQQQQQQQQQQQQQQQQQvk",
+      "kWwwwwwwwwwwwwwwwwwwwwwwvk",
+      "kWPPPPPPPPPPPPPPPPPPPPPPvk",
+      "kWppppppppppppppppppppppvk",
+      "kWwwwwwwwwwvvvvwwwwwwwwwvk",
+      "kWwwwwwwwwwwQQwwwwwwwwwwvk",
+      "kWwwwwwwwwwwwwwwwwwwwwwwvk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "R": "#e2625a",
+      "S": "#aee8d8",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "p": "#d87494",
+      "r": "#b23e40",
+      "s": "#62b0a0",
+      "t": "#3c7a70",
+      "u": "#867f78",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "머신 앞에 서서 몬스터볼 쟁반이 반짝이는 걸 가만히 지켜봐요",
+       "x": {
+        "at": "front",
+        "fx": "glow"
+       },
+       "l": [
+        "회복 머신 앞에 서서 몬스터볼이 반짝반짝 빛나는 걸 지켜봤다.",
+        "띠링띠링 회복 머신 소리에 맞춰 고개를 까딱였다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "머신 옆에서 전기를 살짝 흘려 화면과 빨간 등을 켜 줘요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "회복 머신에 찌릿 전기를 넣어 화면을 켰다.",
+        "전기를 너무 세게 넣어 회복 머신이 띠리리링 하고 놀랐다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "머신 옆면에 기대 따뜻한 기계 소리를 들으며 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "회복 머신에 기대 웅웅 소리를 자장가 삼아 잠들었다.",
+        "따끈한 회복 머신 옆에서 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 머신 화면 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "회복 머신 화면 위에 날아올라 앉아 아래를 내려다봤다.",
+        "회복 머신 꼭대기에 앉아 깃털을 골랐다."
+       ]
+      }
+     ],
+     "fit": "병원 입구 안쪽, 대기 벤치 맞은편",
+     "glow": 1
+    },
+    {
+     "id": "hos-sign-post",
+     "n": "병원 간판 기둥",
+     "k": "병원",
+     "d": "하얀 판에 분홍 테두리, 가운데 빨간 십자가 큼직한 병원 간판이에요. 밤이 되면 판이 은은하게 빛나 길 잃은 포켓몬에게 병원 자리를 알려 줘요.",
+     "px": [
+      ".kkkkkkkkkkkkkk.",
+      "kWWWWWWWWWWWWWwk",
+      "kWPPPPPPPPPPPpwk",
+      "kWPMMWWWWWWWWpwk",
+      "kWPWWWPPPPWWWpwk",
+      "kWPWWWRRRrWWWpwk",
+      "kWPWPPRRRrPPWpwk",
+      "kWPWRRRRRrRRWpwk",
+      "kWPWrrRRRrrrWpwk",
+      "kWPWWWRRRrWWWpwk",
+      "kWPWWWrrrrWWWpwk",
+      "kWPWWWWWWWWWWpwk",
+      "kWPpppppppppppwk",
+      "kvvvvvvvvvvvvvvk",
+      ".kkkkkQQQQkkkkk.",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "......kMOk......",
+      "....kkkMOkkk....",
+      "...kNNNNNNNQk...",
+      "...kNOOOOOOQk...",
+      "...kQQQQQQQQk...",
+      "....kkkkkkkk...."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "R": "#e2625a",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "p": "#d87494",
+      "r": "#b23e40",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 간판 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "병원 간판 꼭대기에 날아올라 앉아 숲을 둘러봤다.",
+        "간판 위에 앉아 다친 친구가 오나 망을 봤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥에 등을 기대 간판 그늘 아래서 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "병원 간판 기둥에 기대 새근새근 낮잠을 잤다.",
+        "간판 그늘 아래서 진료 순서를 기다리다 잠들었다."
+       ]
+      },
+      {
+       "w": "나는 포켓몬",
+       "a": "빛나는 간판 둘레를 천천히 빙빙 돌아요",
+       "x": {
+        "at": [
+         0.5,
+         0.25
+        ],
+        "m": "circ",
+        "fx": "glow"
+       },
+       "l": [
+        "빛나는 병원 간판 둘레를 빙글빙글 날았다.",
+        "간판 불빛을 따라 동그랗게 맴돌았다."
+       ]
+      }
+     ],
+     "fit": "병원 소품들 맨 앞, 길 쪽",
+     "glow": 1
+    },
+    {
+     "id": "hos-stretcher",
+     "n": "바퀴 달린 들것",
+     "k": "병원",
+     "d": "분홍 베개와 이불을 얹은 바퀴 달린 들것이에요. 뒤쪽 손잡이를 밀면 작은 바퀴가 또르르 굴러가요.",
+     "px": [
+      ".........................kk.",
+      "...kkkkkk...............kMOk",
+      "..kPPPPPpk..............kMOk",
+      "..kPWWPPpkkkkkkkkkkkkkkkkMOk",
+      ".kWPPPPPpWWWWWWWWWWWWWWWwMOk",
+      ".kWppppppwWWWWWwWWWWwWWWwMOk",
+      ".kWWWWWWWWwWWWWWwWWWWwWWwMOk",
+      ".kWPPPPPPPPPPPPPPPPPPPPPwMOk",
+      ".kvpppppppppppppppppppppvMOk",
+      ".kMMMMMMMMMMMMMMMMMMMMMMMMMk",
+      ".kOOOOOOOOOOOOOOOOOOOOOOOOOk",
+      "..kkNOkkkkkkkkkkkkkkkkNOkkk.",
+      "...kOOk..............kOOk...",
+      "..kQQQQk............kQQQQk..",
+      "..kQNOQk............kQNOQk..",
+      "..kQQQQk............kQQQQk..",
+      "...kkkk..............kkkk..."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "p": "#d87494",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "들것 위에 올라가 분홍 베개를 베고 누워 자요",
+       "x": {
+        "at": [
+         0.45,
+         0.45
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "들것 위 분홍 베개를 베고 새근새근 잠들었다.",
+        "폭신한 들것 이불 속에서 꾀병을 부리며 뒹굴었다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "들것 손잡이를 잡고 힘껏 밀어 또르르 굴려 줘요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "들것 손잡이를 잡고 영차 밀어 또르르 굴렸다.",
+        "친구가 누운 들것을 밀어 병원까지 데려다줬다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "들것 아래 바퀴 사이로 쏙 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide speek"
+       },
+       "l": [
+        "들것 밑으로 쏙 숨었다가 고개만 빼꼼 내밀었다.",
+        "들것 바퀴 사이에 숨어 숨바꼭질을 했다."
+       ]
+      }
+     ],
+     "fit": "회복 머신 옆, 병원 앞마당"
+    },
+    {
+     "id": "hos-first-aid-box",
+     "n": "큰 구급상자",
+     "k": "병원",
+     "d": "손잡이가 달린 하얀 구급상자예요. 빨간 십자가 한가운데 큼직하고, 분홍 잠금쇠 두 개가 뚜껑을 꼭 잡고 있어요.",
+     "px": [
+      ".......kkkkkk.......",
+      "......kOOOOOOk......",
+      ".....kQkkkkkkQk.....",
+      ".kkkkkQkkkkkkQkkkkk.",
+      "kWWWWWWWWWWWWWWWWWwk",
+      "kWWPPWWWWWWWWWWppWwk",
+      "kWWPPWWWWWWWWWWppWwk",
+      "kWvvvvvvvvvvvvvvvvwk",
+      "kWWWWWWWWPRWWWWWWWwk",
+      "kWWWWWWWWRrWWWWWWWwk",
+      "kWWWWWWPPRrRRWWWWWwk",
+      "kWWWWWWrrRrrrWWWWWwk",
+      "kWWWWWWWWRrWWWWWWWwk",
+      "kWWWWWWWWrrWWWWWWWwk",
+      "kWWWWWWWWWWWWWWWWWwk",
+      "kvvvvvvvvvvvvvvvvvvk",
+      ".kkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "R": "#e2625a",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "p": "#d87494",
+      "r": "#b23e40",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "구급상자 뒤에 쏙 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "구급상자 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "구급상자 뒤에 숨어 주사 맞을 차례를 피했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "구급상자 위에 올라가 걸터앉아 쉬어요",
+       "x": {
+        "at": "top"
+       },
+       "l": [
+        "구급상자 위에 걸터앉아 다리를 달랑달랑 흔들었다.",
+        "구급상자 손잡이 옆에 앉아 한숨 돌렸다."
+       ]
+      },
+      {
+       "w": "풀·페어리 타입",
+       "a": "상자 옆에서 기술을 써 달콤한 치료 향기를 퍼뜨려요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "구급상자 옆에서 아로마테라피로 달콤한 향기를 퍼뜨렸다.",
+        "치료 향기를 퍼뜨려 둘레 친구들 기운을 북돋웠다."
+       ]
+      }
+     ],
+     "fit": "들것 발치나 회복 머신 앞"
+    },
+    {
+     "id": "hos-height-chart",
+     "n": "키 재기 판",
+     "k": "병원",
+     "d": "알록달록 칸이 매겨진 나무 키 재기 판이에요. 가운데 은색 막대를 내려 머리에 대면 몇 칸인지 금방 알 수 있어요.",
+     "px": [
+      "....kkkkkk....",
+      "..kkAAAAACkk..",
+      ".kAAAAAAAAACk.",
+      ".kARRRCBBBBCk.",
+      ".kARRRBBBCCCk.",
+      ".kARRRCBBBBCk.",
+      ".kACCCBDDDDCk.",
+      ".kAgggCBBBBCk.",
+      ".kAgggBBBCCCk.",
+      ".kAgggCBBBBCk.",
+      ".kACCCBDDDDCk.",
+      "kkAYYYCBBBBCkk",
+      "MMMMMMMMMMMMMO",
+      "OOOOOOOOOOOOOO",
+      "kkACCCBDDDDCkk",
+      ".kASSSCBBBBCk.",
+      ".kASSSBBBCCCk.",
+      ".kASSSCBBBBCk.",
+      ".kACCCBDDDDCk.",
+      ".kAbbbCBBBBCk.",
+      ".kAbbbBBBCCCk.",
+      ".kAbbbCBBBBCk.",
+      ".kACCCBDDDDCk.",
+      ".kAPPPCBBBBCk.",
+      ".kAPPPBBBCCCk.",
+      ".kAPPPCBBBBCk.",
+      ".kACCCBDDDDCk.",
+      ".kABBBCBBBBCk.",
+      ".kCCCCCCCCCCk.",
+      "..kDDkkkkDDk..",
+      "..kDDk..kDDk..",
+      "...kk....kk..."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "M": "#e8eef4",
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "R": "#e2625a",
+      "S": "#aee8d8",
+      "Y": "#f6dc6e",
+      "b": "#6a9ad8",
+      "g": "#e8c070",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "판 앞에 등을 대고 바로 서서 키를 재요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "키 재기 판 앞에 바로 서서 키를 쟀다.",
+        "지난번보다 한 칸 자랐다며 뿌듯해했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "판 앞에서 발끝을 세우고 비틀비틀 키를 늘려 봐요",
+       "x": {
+        "at": "front",
+        "m": "wobble"
+       },
+       "l": [
+        "키 재기 판 앞에서 까치발을 들고 비틀비틀 버텼다.",
+        "한 칸이라도 더 크게 보이려고 발돋움을 했다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 판 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "키 재기 판 꼭대기에 날아올라 제일 큰 척을 했다.",
+        "판 꼭대기에 앉아 키 재는 친구들을 내려다봤다."
+       ]
+      }
+     ],
+     "fit": "병원 벽 쪽, 체중계 옆"
+    },
+    {
+     "id": "hos-weight-scale",
+     "n": "바늘 체중계",
+     "k": "병원",
+     "d": "둥근 눈금판에 빨간 바늘이 달린 옛날 체중계예요. 아래 은색 발판에 올라서면 바늘이 빙그르르 돌아가요.",
+     "px": [
+      "......kkkkkk......",
+      ".....kwwwvvvk.....",
+      "....kwwWQQWvvk....",
+      "...kwQWWWWWWQvk...",
+      "..kwWWWWWWWRrWvk..",
+      "..kwWWWWWWRWWWvk..",
+      ".kvvQWWWQQWWWQvvk.",
+      "..kvWWWWWWWWWWvk..",
+      "..kvWWWWWWWWWWvk..",
+      "...kvWWWWWWWWvk...",
+      "....kvvWWWWvvk....",
+      ".....kvvvvvvk.....",
+      "......kOOOOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      "......kMNNOk......",
+      ".kkkkkkMNNOkkkkkk.",
+      "kMMMMMMMMMMMMMMMOk",
+      "kMNONNONNONNONNNOk",
+      "kMNNONNONNONNONNOk",
+      "kQQQQQQQQQQQQQQQQk",
+      ".kQQkkkkkkkkkkQQk.",
+      "..kk..........kk.."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "Q": "#545c6a",
+      "R": "#e2625a",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "r": "#b23e40",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "은색 발판에 올라서서 바늘이 도는 걸 올려다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.88
+        ],
+        "m": "wobble"
+       },
+       "l": [
+        "체중계에 올라서서 바늘이 빙그르르 도는 걸 올려다봤다.",
+        "체중계에 올라갔다가 숫자를 보고 슬쩍 내려왔다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "발판에 쿵 올라서 바늘을 한 바퀴 휙 돌려 버려요",
+       "x": {
+        "at": [
+         0.5,
+         0.88
+        ],
+        "m": "push"
+       },
+       "l": [
+        "체중계에 쿵 올라서 바늘을 한 바퀴 휙 돌려 버렸다.",
+        "너무 무거워 체중계 바늘이 빙글빙글 헛돌았다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 둥근 눈금판 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "체중계 눈금판 위에 날아올라 앉아 바늘을 콕콕 쪼았다.",
+        "둥근 눈금판 꼭대기에 앉아 꾸벅 졸았다."
+       ]
+      }
+     ],
+     "fit": "키 재기 판 옆, 병원 벽 쪽"
+    },
+    {
+     "id": "hos-berry-cabinet",
+     "n": "열매 약장",
+     "k": "병원",
+     "d": "작은 서랍이 여섯 칸 달린 나무 약장이에요. 위 칸 유리병에는 약이 되는 빨강·파랑·분홍·노랑 열매가 가득 담겨 있어요.",
+     "px": [
+      "........kkkkkk........",
+      ".......kwwRRwwk.......",
+      ".......kWRRRrWk.......",
+      ".kkkkkkkWWRrWWkkkkkkk.",
+      "kAAAAAAAAAAAAAAAAAAACk",
+      "kADDDDDDDDDDDDDDDDDDCk",
+      "kADNNNDNNNDNNNDNNNDDCk",
+      "kADWSSDWSSDWSSDWSSDDCk",
+      "kADSRRDSbbDSPPDSYYDDCk",
+      "kADSRRDSbbDSPPDSYYDDCk",
+      "kADSRRDSbbDSPPDSYYDDCk",
+      "kACCCCCCCCCCCCCCCCCCCk",
+      "kADDDDDDDDDDDDDDDDDDCk",
+      "kAAAAAACAAAAACAAAAACCk",
+      "kAABYyBCABYyBCABYyBCCk",
+      "kACCCCCCCCCCCCCCCCCCCk",
+      "kAAAAAACAAAAACAAAAACCk",
+      "kAABYyBCABYyBCABYyBCCk",
+      "kACCCCCCCCCCCCCCCCCCCk",
+      "kADDDDDDDDDDDDDDDDDDCk",
+      "kAAAAAAAAACAAAAAAAACCk",
+      "kAABBCBBBBCABBBCBBBCCk",
+      "kAABBBBBBYCAYBBBBBBCCk",
+      "kAABBCBBBYCAYBBCBBBCCk",
+      "kAABBBBBBBCABBBBBBBCCk",
+      "kACCCCCCCCCCCCCCCCCCCk",
+      "kDDDDDDDDDDDDDDDDDDDDk",
+      ".kDDkkkkkkkkkkkkkkDDk.",
+      "..kk..............kk.."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "N": "#b4bec8",
+      "P": "#f4a6b8",
+      "R": "#e2625a",
+      "S": "#aee8d8",
+      "W": "#f6f3ec",
+      "Y": "#f6dc6e",
+      "b": "#6a9ad8",
+      "k": "#20202c",
+      "r": "#b23e40",
+      "w": "#dcd6cc",
+      "y": "#d6ae4c"
+     },
+     "acts": [
+      {
+       "w": "풀·벌레 타입",
+       "a": "약장 앞에 서서 유리병 열매 냄새를 맡고 한 알 꺼내 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "열매 약장에서 오렌열매를 한 알 꺼내 오물오물 먹었다.",
+        "유리병 열매 냄새를 킁킁 맡다가 몰래 하나 집어 먹었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "약장 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "열매 약장 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "약장 뒤에 숨어 쓴 약을 피했다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "약장 옆에서 염력을 써 서랍을 하나씩 열고 닫으며 정리해요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 약장 서랍을 하나씩 열어 열매를 정리했다.",
+        "염력으로 유리병을 띄워 줄을 맞춰 놓았다."
+       ]
+      }
+     ],
+     "fit": "병원 안쪽 벽, 회복 머신 옆"
+    },
+    {
+     "id": "hos-ambulance-cart",
+     "n": "구급 손수레",
+     "k": "병원",
+     "d": "지붕에 빨간 경광등을 단 하얀 구급 손수레예요. 분홍 띠와 십자 무늬가 그려져 있고, 손잡이를 잡고 끌면 바퀴가 덜컹덜컹 굴러요.",
+     "px": [
+      "...........kkkk............",
+      "..........kPPPPk...........",
+      "..........kRWRrk...........",
+      "..........kRRRrk...........",
+      "..........kRRRrk...........",
+      ".k..kkkkkkOOOOOOkkkkkkkk...",
+      "kMkkWWWWWWWWWWWWWWWWWWWwk..",
+      "kNkkWWssssssssWWWWPPPWWwk..",
+      "kNkkWWsWSSSSSSWWWWRRrWWwk..",
+      "kNNNWPPPPPPPPPPPPPRRrRPwk..",
+      "kNkkWppppppppppppRRRrRpwk..",
+      "kNkkWWWWWWWWWWWWWRRRrrWwk..",
+      ".k.kWWWWWWWWWWWWWWRRrWWwk..",
+      "...kWWWWWWWWWWWWWWrrrWWwk..",
+      "...kWWWWWWWWWWWWWWWWWWWwk..",
+      "...kvvvvvvvvvvvvvvvvvvvvk..",
+      "....kkQOQQQkkkkkkQOQQQkk...",
+      ".....kQQNQQk....kQQNQQk....",
+      ".....kQQQQQk....kQQQQQk....",
+      "......kQQQk......kQQQk.....",
+      ".......kkk........kkk......",
+      "..........................."
+     ],
+     "pal": {
+      "M": "#e8eef4",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "R": "#e2625a",
+      "S": "#aee8d8",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "p": "#d87494",
+      "r": "#b23e40",
+      "s": "#62b0a0",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 경광등 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "구급 손수레 경광등 위에 날아올라 앉았다.",
+        "경광등 위에 앉아 삐뽀삐뽀 흉내를 냈다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "손수레를 힘껏 밀어 덜컹덜컹 굴려 줘요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "구급 손수레를 영차 밀어 덜컹덜컹 굴렸다.",
+        "다친 친구를 태운 손수레를 힘껏 밀어 줬다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "수레 옆에서 전기를 흘려 경광등을 번쩍번쩍 켜요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "구급 손수레에 전기를 넣어 경광등을 번쩍번쩍 켰다.",
+        "경광등을 켜 놓고 신나서 수레 둘레를 뛰어다녔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "손수레 뒤에 쏙 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "구급 손수레 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "수레 바퀴 뒤에 숨어 숨바꼭질을 했다."
+       ]
+      }
+     ],
+     "fit": "병원 간판 옆, 길 가까이",
+     "glow": 1
+    },
+    {
+     "id": "hos-bandage-basket",
+     "n": "붕대 바구니",
+     "k": "병원",
+     "d": "하얀 붕대 두루마리를 소복이 담은 엮은 바구니예요. 한 줄이 옆으로 술술 풀려 바닥까지 늘어져 있어요.",
+     "px": [
+      "........kkkk........",
+      "...kkkkkwvvwkkkkk...",
+      "..kwvvwkWWWwkwvvwk..",
+      "..kWWWwkWWWwkWWWwk..",
+      "..kWWWwkWWWwkWWWwk..",
+      "..kWWWwkWWWwkWWWwk..",
+      ".kAAAAAAAAAAAAAAAAk.",
+      ".kCCCCCCCCCCCCCCCCk.",
+      ".kABCBBCBBCBBCBBCWWk",
+      ".kABBBBBBBBBBBBBBCWk",
+      ".kABBCBBCBBCBBCBBCwk",
+      ".kABBBBBBBBBBBBBBCWk",
+      ".kACBBCBBCBBCBBCBCwk",
+      ".kDDDDDDDDDDDDDDDWWk",
+      "..kDDkkkkkkkkkkDDWWk",
+      "...kk..........kkkk."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "D": "#5e3c24",
+      "W": "#f6f3ec",
+      "k": "#20202c",
+      "v": "#b2aca2",
+      "w": "#dcd6cc"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "바구니 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek"
+       },
+       "l": [
+        "붕대 바구니 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "바구니 뒤에 숨어 붕대 끝을 만지작거렸다."
+       ]
+      },
+      {
+       "w": "벌레 타입",
+       "a": "바구니 옆에서 실을 뿜어 풀린 붕대를 다시 돌돌 감아요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "실을 뿜어 풀린 붕대를 다시 돌돌 감아 놓았다.",
+        "실뿜기로 붕대를 감다가 제 몸까지 칭칭 감았다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "늘어진 붕대 끝을 톡톡 건드리며 장난쳐요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "늘어진 붕대 끝을 톡톡 건드리며 장난을 쳤다.",
+        "붕대 끝을 잡아당겼다가 술술 풀려서 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "구급상자 옆, 들것 발치"
+    },
+    {
+     "id": "hos-waiting-bench",
+     "n": "분홍 대기 벤치",
+     "k": "병원",
+     "d": "나무 등받이에 분홍 쿠션을 깐 기다란 대기 벤치예요. 진료 순서를 기다리는 포켓몬 셋이 나란히 앉을 수 있어요.",
+     "px": [
+      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+      ".kNNNNNNNNNNNNNNNNNNNNNNNOk.",
+      ".kNAAAAAAAAAAAAAAAAAAAAACOk.",
+      ".kNABBBBBBBBBBBBBBBBBBBBCOk.",
+      ".kNCCCCCCCCCCCCCCCCCCCCCCOk.",
+      ".kNkkkkkkkkkkkkkkkkkkkkkkOk.",
+      ".kNAAAAAAAAAAAAAAAAAAAAACOk.",
+      ".kNABBBBBBBBBBBBBBBBBBBBCOk.",
+      ".kNCCCCCCCCCCCCCCCCCCCCCCOk.",
+      ".kNkkkkkkkkkkkkkkkkkkkkkkOk.",
+      "kPPPPPPPPpPPPPPPPPpPPPPPPPpk",
+      "kPPPPPPPPpPPPPPPPPpPPPPPPPpk",
+      "kqqqqqqqqpqqqqqqqqpqqqqqqqqk",
+      "kBBBBBBBBBBBBBBBBBBBBBBBBBBk",
+      ".kNNOkkkkkkkOOOOkkkkkkkNOOk.",
+      "..kOOk......kkkk......kOOk..",
+      "..kOOk................kOOk..",
+      "..kOOk................kOOk..",
+      ".kQQQQk..............kQQQQk.",
+      "..kkkk................kkkk.."
+     ],
+     "pal": {
+      "A": "#e2b47a",
+      "B": "#b8814a",
+      "C": "#8c5a34",
+      "N": "#b4bec8",
+      "O": "#7e8896",
+      "P": "#f4a6b8",
+      "Q": "#545c6a",
+      "k": "#20202c",
+      "p": "#d87494",
+      "q": "#a64c6c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "분홍 쿠션에 앉아 순서를 기다리다 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": [
+         0.5,
+         0.62
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "대기 벤치 분홍 쿠션에 앉아 순서를 기다리다 꾸벅꾸벅 졸았다.",
+        "벤치에 앉아 이름이 불리기를 얌전히 기다렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "벤치 아래로 쏙 숨었다가 옆으로 고개를 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide speek"
+       },
+       "l": [
+        "대기 벤치 밑에 숨었다가 고개만 빼꼼 내밀었다.",
+        "주사가 무서워 벤치 밑에 쏙 숨었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 벤치 등받이 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "대기 벤치 등받이에 날아올라 앉아 꼬리깃을 흔들었다.",
+        "등받이 위에 앉아 진료실 쪽을 기웃거렸다."
+       ]
+      }
+     ],
+     "fit": "회복 머신 맞은편, 병원 입구 옆"
+    }
+   ]
+  },
+  {
    "at": 1794869267433,
    "theme": "숲속 꼬마 목장",
    "note": "어제 찻집에 이어 오늘은 풀밭 한쪽에 아담한 목장을 꾸렸어요! 빨간 헛간과 사일로를 뒤에 세우고, 여물통·우유 양동이·버터 교유기·편자 던지기로 놀 거리를 채웠어요. 양수기 바퀴는 빙글빙글 돌고 워낭은 땡그랑 흔들리며, 헛간 랜턴은 밤에 목장 길을 따뜻하게 밝혀요.",
