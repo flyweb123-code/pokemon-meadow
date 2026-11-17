@@ -1047,7 +1047,16 @@ function buyTm(id, can) {
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
 let itCat = -1;   // v20.80 도구 탭 항목 필터 (-1 = 모든 항목)
-const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
+const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ...(window.GA?.fTools ? [['fevo', '진화 도구'], ['fform', '폼 도구']] : []), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
+/* v26.89 경완 '필드 상점에 있는 것들 체육관 상점에도 넣어주고 둘 중 하나라도 구매하면 체육관 창고에도 들어가고 필드 가방에도': 필드 도구(진화·폼)는 필드 가방 주머니(S.items)에 들어가고 창고에도 보임 */
+const fRow = (o, own) => { const A = window.GA; return `<button type="button" class="sp-tm sp-it" data-ft="${o.id}"><img class="tm-ic it-ic" alt="" src="${A.fArt(o)}"><span class="tm-nm"><b>${esc(o.n)}</b>${own ? `<i class="tm-own">×${own}</i>` : ''}</span><span class="tm-meta"><small>${esc(A.fDesc(o))}</small></span></button>`; };
+const fSec = fm => { const A = window.GA; if (!A?.fTools) return ''; const L = A.fTools().filter(o => !!o.fm === fm).sort((a, b) => (A.fPrice(a.id) - A.fPrice(b.id)) * shopPr);
+  return `<p class="sp-sub">${fm ? '폼 도구 · 필드에서 포켓몬에게 써요' : '진화 도구 · 필드에서 포켓몬에게 써요'}</p><div class="sp-list">${L.map(o => fRow(o).replace('</button>', `<em>${gold(A.fPrice(o.id))}</em></button>`)).join('')}</div>`; };
+function fBuy(id) { const A = window.GA, o = A.fItem(id); if (!o) return; const P = A.fPrice(id), I = A.fOwn(), n = I[id] | 0, g = st();
+  pop(`<h4 class="mi-h${n ? ' has-own' : ''}"><img class="tm-ic it-ic" alt="" src="${A.fArt(o)}">${esc(o.n)}${n ? GB().bagN?.(n) || '' : ''}</h4><p class="gy-msg mi-d">${esc(A.fDesc(o))}</p><div class="gy-btns"><button data-a="x">닫기</button><button class="main" data-a="buy">${gold(P)} 사기</button></div>`, (a, close) => {
+    close(); if (a !== 'buy') return; if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
+    I[id] = (I[id] | 0) + 1; const h = A.F2G?.[id]; if (h) { g.itm = g.itm || {}; g.itm[h] = (g.itm[h] | 0) + 1; K.newMark?.('it', h); } else K.newMark?.('ft', id);
+    K.glog('tr', `도구 <b>${esc(o.n)}</b>${K.jong(o.n) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(o.n)}${K.jong(o.n) ? '을' : '를'} 창고와 필드 가방에 넣었어요.`); }); }
 function shopIt(body) {
   const g = st(), H = GB().HOLD, ty = g.ty; g.itm = g.itm || {};
   // 분류별로 (경완 2026-10-31 '기존 도구들도 민트처럼 항목 분류', 열매 추가). 분류 안에서는 가격순, 타입 강화는 체육관 타입 먼저
@@ -1062,17 +1071,18 @@ function shopIt(body) {
   } else
   { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.80 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
   body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
-    ${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+    ${on('fevo') ? fSec(false) : ''}${on('fform') ? fSec(true) : ''}${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
     if (b.dataset.f === 'ic') { sfx('tap'); return K.fPop('항목', [[-1, '모든 항목'], ...itCats().map(([, n], i) => [i, n])], itCat, v => { itCat = v; redraw(); }); }
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
     if (b.dataset.soup) { sfx('tap'); return soupBuy(); }
+    if (b.dataset.ft) { sfx('tap'); return fBuy(b.dataset.ft); }
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
       return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
         g.mint = g.mint || {}; g.mint[mk] = (g.mint[mk] || 0) + 1; K.newMark?.('mint', mk); K.glog('tr', `도구 <b>${esc(nm)}</b>${K.jong(nm) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(nm)}${K.jong(nm) ? '을' : '를'} 창고에 넣었어요.`); }, '', n); }
     const id = b.dataset.it; if (!id || GB().itHave(id)) return; sfx('tap'); const x = H[id];
     GB().itInfo(id, `${gold(x[1])} 사기`, () => { if (!buy(x[1])) return say(`골드가 모자라요. ${x[1].toLocaleString()}G가 필요해요.`);
-      if (GB().itHave(id)) return; g.itm[id] = 1; K.newMark?.('it', id); K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }, '', g.itm[id] || 0); };
+      if (GB().itHave(id)) return; g.itm[id] = 1; { const A = window.GA, fk = A?.F2G && Object.keys(A.F2G).find(k => A.F2G[k] === id); if (fk) { const I = A.fOwn(); I[fk] = (I[fk] | 0) + 1; } }   /* v26.89 예리한손톱·예리한이빨은 필드 가방에도 */ K.newMark?.('it', id); K.glog('tr', `도구 <b>${esc(x[0])}</b>${K.jong(x[0]) ? '을' : '를'} 샀다.`); K.save(); redraw(); say(`${esc(x[0])}${K.jong(x[0]) ? '을' : '를'} 창고에 넣었어요.`); }, '', g.itm[id] || 0); };
 }
 // v20.45 영양제 (노력치 +10, 300G): 상점 도구 탭 민트 밑, 창고(g.vit)에 쌓였다가 노력치 설정 창에서 먹임. 슬롯엔 창고 수 안 보임 (경완)
 function evShop() { if (!GB().evOn?.()) return ''; const B = GB();

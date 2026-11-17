@@ -4273,8 +4273,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bt-fl b{display:flex;align-items:center;gap:3px;font-weight:400}
 .bt .bt-fl .f em{font-style:normal;font-size:8px;margin-left:1px}
 .bt .bt-fl .bs .f{color:#f89880}
-.bt .bt-fl .c span{color:#f8d850;text-shadow:1px 1px 0 #5a3a00}   /* 경완 '코인 숫자 색상이랑 층 색상이랑 구분' */
+.bt .bt-fl .c span{color:#c0d4f0;text-shadow:1px 1px 0 #303c58}.bt .bt-fl .g span{color:#f8d850;text-shadow:1px 1px 0 #5a3a00}   /* 경완 '코인 숫자 색상이랑 층 색상이랑 구분' → v26.92 경완 '고대의 은화로 가자 골드랑 헷갈리니까': 코인 = 은화·은빛 숫자, 골드 = 금빛 숫자 */
 .bt .bt-fl .c img{width:13px;height:9px;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(48,56,48,.5))}
+.bt .bt-fl .cr span.up{animation:trHudUp .45s steps(4,end)}@keyframes trHudUp{0%{transform:scale(1)}40%{transform:scale(1.35) translateY(-2px)}100%{transform:scale(1)}}   /* v26.94 골드·코인 바뀌면 숫자 쾅 */
+.bt .bt-fl .cr{display:flex;align-items:center;gap:8px}.bt .bt-fl .g{gap:0}.bt .bt-fl .g .coin{width:8px;height:8px;box-shadow:inset -2px -2px 0 #d08a00,inset 2px 2px 0 #fff2a0,0 0 0 1px #6a4400;filter:drop-shadow(1px 1px 0 rgba(48,56,48,.5))}   /* v26.91 경완 '수련탑 코인 왼쪽에 우리 골드 아이콘' (골드 숫자는 흰 글씨, 코인은 금색 글씨로 구분) */
 .bt .bp-tr{display:grid;grid-template-columns:1fr;gap:6px;padding:24px 8px 8px;box-sizing:border-box;align-content:center;height:100%}
 .bt .bp-tr .bb{position:relative;left:auto;top:auto;width:auto;min-height:36px}
 .bt.mob .bp-yn.bp-tr{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:minmax(40px,58px);gap:7px;padding:14px 14px}
