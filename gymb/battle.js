@@ -1343,7 +1343,8 @@ async function run(opts) {
   /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
   if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
-  if (opts.xit) { xitInstall(btl.dex); btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) { pk.m.xit = { ...x }; pk.m.xitR = x; } }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
+  if (opts.xitT) btl.xitT = { ...opts.xitT }; if (opts.xit || opts.xitT) xitInstall(btl.dex);   /* v26.91 팀 전체 도구(열매주머니·회복의부적) */
+  if (opts.xit) { btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) { pk.m.xit = { ...x }; pk.m.xitR = x; } }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f <= 0) { pk.hp = 0; pk.fainted = true; pk.status = 'fnt'; pk.side.pokemonLeft--; } else if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });   /* v26.82 경완 '기절한 포켓몬 사라지는 오류': 수련탑 기절 포켓몬도 교체 화면에 (기절로) 남게, 뒤쪽에 넣어 줌 */
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
@@ -1769,11 +1770,13 @@ async function handle(a) {
       if (eat) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${eul(it)} 먹었다!`); break; }
       if (/Focus Sash|Focus Band/.test(a[3])) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${it}${jong(it) ? '으로' : '로'} 버텼다!`); break; }
       if (/Air Balloon/.test(a[3])) { await msg(`${n}의 풍선이 터졌다!`); break; }
+      if (/Mini Black Hole/.test(from)) { await msg(`${n}의 ${eun(it)} 미니블랙홀에 빨려 들어갔다!`); break; }
       if (/White Herb|Mental Herb|Power Herb/.test(a[3])) { await itemFx(sideOf(a[2])); await msg(`${eun(n)} ${eul(it)} 사용했다!`); break; }
       break; }
     case '-item': { const n = who(a[2]), it = itKo(a[3]), from = (a.find(x => /^\[from\] /.test(x)) || '').slice(7);
       if (/Air Balloon/.test(a[3])) await msg(`${eun(n)} 풍선으로 떠 있다!`);
       else if (/Frisk/.test(from)) await msg(`${eun(n)} ${eul(it)} 가지고 있다!`);
+      else if (/Mini Black Hole/.test(from)) await msg(`${eun(n)} 미니블랙홀로 ${eul(it)} 빨아들였다!`);
       else await msg(`${eun(n)} ${eul(it)} 얻었다!`); break; }
     case '-clearallboost': await msg('모든 능력 변화가 원래대로 돌아왔다!'); break;
     case '-clearboost': await msg(`${who(a[2])}의 능력 변화가 원래대로 돌아왔다!`); break;
@@ -2573,15 +2576,20 @@ function xitInstall(dex) { const C = dex.data.Conditions; if (C.xitside) return;
   def('gripclaw', { onSourceDamagingHit(d, t, src, mv) { if (!mv?.flags?.contact || src.item || !t.item || t.side === src.side || !this.randomChance(N(src, 'gripclaw'), 10)) return; const it = t.takeItem(src); if (!it) return; src.setItem(it.id); this.add('-item', src, it.name, '[from] item: Grip Claw', '[of] ' + t); } });
   { const NW = (pk, st, r) => { const n = dex.natures.get(pk.set?.nature || ''), k = N(pk, 'souldew'); if (!k || !n) return; if (n.plus === st) return this_ => this_.chainModify((1.1 + .1 * k) / 1.1); if (n.minus === st) return this_ => this_.chainModify(Math.max(.1, .9 - .1 * k) / .9); };
     const h = {}; [['Atk', 'atk'], ['Def', 'def'], ['SpA', 'spa'], ['SpD', 'spd'], ['Spe', 'spe']].forEach(([E, st]) => { h['onModify' + E + 'Priority'] = 1; h['onModify' + E] = function (v, pk) { const f = NW(pk, st); if (f) return f(this); }; }); def('souldew', h); }
+  /* v26.91 경완 '1번' (포켓로그 도구 1번 묶음): 초점렌즈(급소 랭크 +1), 미니블랙홀(매 턴 끝 상대 도구 하나를 빨아옴 — 빈손이면 지니고, 아니면 사라짐), 회복의부적(우리 편 회복 +10%씩, 팀 전체 xitT), 열매주머니(열매 먹을 때 30%씩 안 줄어듦, 팀 전체 xitT) */
+  def('scopelens', { onModifyCritRatio(cr) { return cr + N(this.effectState.target, 'scopelens'); } });
+  def('minibh', { onResidualOrder: 28, onResidual(pk) { if (!N(pk, 'minibh') || pk.fainted) return; const t = pk.side.foe.active.find(x => x && !x.fainted && x.item); if (!t) return; const it = t.takeItem(pk); if (!it) return;
+    if (!pk.item) { pk.setItem(it.id); this.add('-item', pk, it.name, '[from] item: Mini Black Hole', '[of] ' + t); } else this.add('-enditem', t, it.name, '[from] item: Mini Black Hole'); } });
+  C.xithc = { name: 'xithc', onTryHealPriority: -1, onTryHeal(d) { const n = this.xitT?.healingcharm | 0; if (n && typeof d === 'number' && d > 0) return Math.floor(d * (1 + .1 * n)); } };
   /* v26.88 경완 '그 열매들 수련탑에도 넣어': 쌓이는 열매 = 본래 열매 핸들러를 그대로 빌려 씀 (부를 동안만 도구 칸에 그 열매를 넣고, 먹으면 개수 하나 줄이고 원래 도구로 되돌림). 한 턴에 하나만 (포켓로그처럼 턴마다 하나) */
   Object.entries(dex.data.Items).forEach(([k, it]) => { if (!it.isBerry || it.isNonstandard) return; const h = {};
     for (const [ev, fn] of Object.entries(it)) { if (!/^on[A-Z]/.test(ev) || /^on(Eat|TryEatItem|TakeItem|Start|End)$/.test(ev)) continue; if (typeof fn !== 'function') { h[ev] = fn; continue; }
       h[ev] = function (...A) { const st = this.effectState, pk = st.target; if (!pk || N(pk, k) <= 0 || st.t === this.turn) return; const o0 = pk.item, s0 = pk.itemState; pk.item = k; pk.itemState = { id: k, target: pk };
-        let r; try { r = fn.apply(this, A); } finally { const ate = pk.item !== k; pk.item = o0; pk.itemState = s0; if (ate) { st.t = this.turn; pk.m.xit[k] = N(pk, k) - 1; if (pk.m.xitR) pk.m.xitR[k] = Math.max(0, (pk.m.xitR[k] | 0) - 1); if (N(pk, k) <= 0) pk.removeVolatile('xit' + k); } } return r; }; }
+        let r; try { r = fn.apply(this, A); } finally { const ate = pk.item !== k; pk.item = o0; pk.itemState = s0; if (ate) { st.t = this.turn; if (this.randomChance(3 * (this.xitT?.berrypouch | 0), 10)) return r; pk.m.xit[k] = N(pk, k) - 1; if (pk.m.xitR) pk.m.xitR[k] = Math.max(0, (pk.m.xitR[k] | 0) - 1); if (N(pk, k) <= 0) pk.removeVolatile('xit' + k); } } return r; }; }
     def(k, h); });
-  C.xitside = { name: 'xitside', onSwitchIn(pk) { for (const k in pk.m.xit || {}) if (N(pk, k) > 0) pk.addVolatile('xit' + k); } };
+  C.xitside = { name: 'xitside', onSwitchIn(pk) { for (const k in pk.m.xit || {}) if (N(pk, k) > 0) pk.addVolatile('xit' + k); if (this.xitT?.healingcharm) pk.addVolatile('xithc'); } };
 }
-function xitStart(btl) { const sd = btl.p1; if (!sd.pokemon.some(pk => pk.m.xit)) return; sd.addSideCondition('xitside', sd.active[0]); sd.active.forEach(pk => { if (pk) for (const k in pk.m.xit || {}) if ((pk.m.xit[k] | 0) > 0) pk.addVolatile('xit' + k); }); }
+function xitStart(btl) { const sd = btl.p1; if (!sd.pokemon.some(pk => pk.m.xit) && !btl.xitT?.healingcharm) return; sd.addSideCondition('xitside', sd.active[0]); sd.active.forEach(pk => { if (pk) { for (const k in pk.m.xit || {}) if ((pk.m.xit[k] | 0) > 0) pk.addVolatile('xit' + k); if (btl.xitT?.healingcharm) pk.addVolatile('xithc'); } }); }
 const HOLD = {
   leftovers: ["먹다남은음식", 4000, "지니게 하면 매 턴 끝날 때마다 HP가 조금씩 회복된다.", 0],
   blacksludge: ["검은오물", 2500, "독 타입이 지니면 매 턴 HP가 회복된다. 다른 타입은 HP가 줄어든다.", 0],
@@ -2681,6 +2689,7 @@ const HOLD = {
   quickpowder: ["스피드파우더", 3000, "메타몽이 지니면 스피드가 2배가 된다.", 0],
   deepseatooth: ["심해의이빨", 3000, "진주몽이 지니면 특수공격이 2배가 된다.", 0],
   deepseascale: ["심해의비늘", 3000, "진주몽이 지니면 특수방어가 2배가 된다.", 0],
+  leek: ["대파", 3000, "파오리·창파나이트가 지니면 급소에 맞기 쉬워진다.", 0],   /* v26.91 경완 '1번' (수련탑 포켓로그 도구 1번 묶음) */
   souldew: ["마음의물방울", 8000, "라티아스·라티오스가 지니면 에스퍼·드래곤 타입 기술의 위력이 오른다.", 0],
   adamantorb: ["금강옥", 8000, "디아루가가 지니면 강철·드래곤 타입 기술의 위력이 오른다.", 0],
   lustrousorb: ["백옥", 8000, "펄기아가 지니면 물·드래곤 타입 기술의 위력이 오른다.", 0],
@@ -2773,7 +2782,7 @@ function foeItems(team, tier, skip, out) {
 // 상점·창고 분류 (경완 2026-10-31 '민트처럼 항목 분류')
 const IT_CAT = [['heal', '회복', ['leftovers', 'blacksludge', 'shellbell']], ['atk', '공격 강화', ['choiceband', 'choicespecs', 'lifeorb', 'expertbelt', 'muscleband', 'wiseglasses', 'metronome', 'loadeddice', 'punchingglove', 'throatspray', 'weaknesspolicy', 'blunderpolicy', 'boosterenergy']],
   ['def', '방어·스피드', ['choicescarf', 'assaultvest', 'eviolite', 'rockyhelmet', 'focusband', 'lightclay', 'focussash', 'airballoon', 'heavydutyboots', 'safetygoggles', 'utilityumbrella', 'covertcloak', 'clearamulet', 'abilityshield', 'protectivepads']], ['acc', '명중·급소', ['scopelens', 'widelens', 'zoomlens', 'brightpowder', 'kingsrock', 'quickclaw', 'razorclaw', 'razorfang']],
-  ['herb', '허브', ['whiteherb', 'mentalherb', 'powerherb', 'mirrorherb']], ['switch', '교체', ['ejectbutton', 'ejectpack', 'redcard', 'shedshell']], ['weather', '날씨·필드', ['damprock', 'heatrock', 'icyrock', 'smoothrock', 'terrainextender', 'electricseed', 'grassyseed', 'mistyseed', 'psychicseed']], ['react', '맞으면 발동', ['absorbbulb', 'cellbattery', 'luminousmoss', 'snowball', 'adrenalineorb', 'roomservice']], ['etc', '특수', ['bigroot', 'flameorb', 'toxicorb', 'bindingband', 'gripclaw', 'laggingtail', 'stickybarb', 'ironball', 'floatstone', 'destinyknot', 'ringtarget']], ['type', '타입 강화', Object.keys(HOLD).filter(k => HOLD[k][3])], ['berry', '열매', Object.keys(HOLD).filter(k => /berry$/.test(k))], ['sp', '전용 도구', ['lightball', 'thickclub', 'metalpowder', 'quickpowder', 'deepseatooth', 'deepseascale', 'souldew', 'adamantorb', 'lustrousorb', 'griseousorb']]];
+  ['herb', '허브', ['whiteherb', 'mentalherb', 'powerherb', 'mirrorherb']], ['switch', '교체', ['ejectbutton', 'ejectpack', 'redcard', 'shedshell']], ['weather', '날씨·필드', ['damprock', 'heatrock', 'icyrock', 'smoothrock', 'terrainextender', 'electricseed', 'grassyseed', 'mistyseed', 'psychicseed']], ['react', '맞으면 발동', ['absorbbulb', 'cellbattery', 'luminousmoss', 'snowball', 'adrenalineorb', 'roomservice']], ['etc', '특수', ['bigroot', 'flameorb', 'toxicorb', 'bindingband', 'gripclaw', 'laggingtail', 'stickybarb', 'ironball', 'floatstone', 'destinyknot', 'ringtarget']], ['type', '타입 강화', Object.keys(HOLD).filter(k => HOLD[k][3])], ['berry', '열매', Object.keys(HOLD).filter(k => /berry$/.test(k))], ['sp', '전용 도구', ['lightball', 'thickclub', 'metalpowder', 'quickpowder', 'deepseatooth', 'deepseascale', 'leek', 'souldew', 'adamantorb', 'lustrousorb', 'griseousorb']]];
 /* 경완 2026-11-12 메가스톤 (이름난 체육관 강박사 튜토리얼에서 메가링을 받으면 상점 도구 탭 '메가스톤'): MEGA_ST {도구: [종 번호, X·Y·Z]}, 그림 gym/img/dbk/it */
 const MEGA_ST = {"abomasite":[460,""],"absolite":[359,""],"absolitez":[359,"Z"],"aerodactylite":[142,""],"aggronite":[306,""],"alakazite":[65,""],"altarianite":[334,""],"ampharosite":[181,""],"audinite":[531,""],"banettite":[354,""],"barbaracite":[689,""],"baxcalibrite":[998,""],"beedrillite":[15,""],"blastoisinite":[9,""],"blazikenite":[257,""],"cameruptite":[323,""],"chandelurite":[609,""],"charizarditex":[6,"X"],"charizarditey":[6,"Y"],"chesnaughtite":[652,""],"chimechite":[358,""],"clefablite":[36,""],"crabominite":[740,""],"darkranite":[491,""],"delphoxite":[655,""],"diancite":[719,""],"dragalgite":[691,""],"dragoninite":[149,""],"drampanite":[780,""],"eelektrossite":[604,""],"emboarite":[500,""],"excadrite":[530,""],"falinksite":[870,""],"feraligite":[160,""],"floettite":[670,""],"froslassite":[478,""],"galladite":[475,""],"garchompite":[445,""],"garchompitez":[445,"Z"],"gardevoirite":[282,""],"gengarite":[94,""],"glalitite":[362,""],"glimmoranite":[970,""],"golisopite":[768,""],"golurkite":[623,""],"greninjite":[658,""],"gyaradosite":[130,""],"hawluchanite":[701,""],"heatranite":[485,""],"heracronite":[214,""],"houndoominite":[229,""],"kangaskhanite":[115,""],"latiasite":[380,""],"latiosite":[381,""],"lopunnite":[428,""],"lucarionite":[448,""],"lucarionitez":[448,"Z"],"magearnite":[801,""],"malamarite":[687,""],"manectite":[310,""],"mawilite":[303,""],"medichamite":[308,""],"meganiumite":[154,""],"meowsticite":[678,""],"metagrossite":[376,""],"mewtwonitex":[150,"X"],"mewtwonitey":[150,"Y"],"pidgeotite":[18,""],"pinsirite":[127,""],"pyroarite":[668,""],"raichunitex":[26,"X"],"raichunitey":[26,"Y"],"sablenite":[302,""],"salamencite":[373,""],"sceptilite":[254,""],"scizorite":[212,""],"scolipite":[545,""],"scovillainite":[952,""],"scraftinite":[560,""],"sharpedonite":[319,""],"skarmorite":[227,""],"slowbronite":[80,""],"staraptite":[398,""],"starminite":[121,""],"steelixite":[208,""],"swampertite":[260,""],"tatsugirinite":[978,""],"tyranitarite":[248,""],"venusaurite":[3,""],"victreebelite":[71,""],"zeraorite":[807,""],"zygardite":[718,""]}, MEGA_P = 8000;
 /* 경완 2026-11-13 '종족 강함으로 차등': 메가진화 뒤 종족값 합계로 값 — 550 미만 5,000G · 550~599 7,000G · 600~699 9,000G · 700 이상 12,000G (tools 없이 psim Dex 로 뽑아 박아 둠) */
