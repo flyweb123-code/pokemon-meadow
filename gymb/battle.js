@@ -1343,7 +1343,7 @@ async function run(opts) {
   /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
   if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
-  if (opts.xit) { xitInstall(btl.dex); btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) pk.m.xit = { ...x }; }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
+  if (opts.xit) { xitInstall(btl.dex); btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) { pk.m.xit = { ...x }; pk.m.xitR = x; } }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f <= 0) { pk.hp = 0; pk.fainted = true; pk.status = 'fnt'; pk.side.pokemonLeft--; } else if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });   /* v26.82 경완 '기절한 포켓몬 사라지는 오류': 수련탑 기절 포켓몬도 교체 화면에 (기절로) 남게, 뒤쪽에 넣어 줌 */
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
@@ -2569,6 +2569,12 @@ function xitInstall(dex) { const C = dex.data.Conditions; if (C.xitside) return;
   def('widelens', { onSourceModifyAccuracyPriority: -2, onSourceModifyAccuracy(acc) { if (typeof acc === 'number') return this.chainModify(1 + .1 * N(this.effectState.target, 'widelens')); } });
   def('focusband', { onDamagePriority: -40, onDamage(d, pk, src, eff) { if (eff?.effectType === 'Move' && d >= pk.hp && this.randomChance(N(pk, 'focusband'), 10)) { this.add('-activate', pk, 'item: Focus Band'); return pk.hp - 1; } } });
   Object.entries(TR_XIT_TY).forEach(([k, ty]) => def(k, { onBasePowerPriority: 15, onBasePower(bp, pk, t, mv) { if (mv.type === ty) return this.chainModify(1 + .2 * N(pk, k)); } }));
+  /* v26.88 경완 '그 열매들 수련탑에도 넣어': 쌓이는 열매 = 본래 열매 핸들러를 그대로 빌려 씀 (부를 동안만 도구 칸에 그 열매를 넣고, 먹으면 개수 하나 줄이고 원래 도구로 되돌림). 한 턴에 하나만 (포켓로그처럼 턴마다 하나) */
+  Object.entries(dex.data.Items).forEach(([k, it]) => { if (!it.isBerry || it.isNonstandard) return; const h = {};
+    for (const [ev, fn] of Object.entries(it)) { if (!/^on[A-Z]/.test(ev) || /^on(Eat|TryEatItem|TakeItem|Start|End)$/.test(ev)) continue; if (typeof fn !== 'function') { h[ev] = fn; continue; }
+      h[ev] = function (...A) { const st = this.effectState, pk = st.target; if (!pk || N(pk, k) <= 0 || st.t === this.turn) return; const o0 = pk.item, s0 = pk.itemState; pk.item = k; pk.itemState = { id: k, target: pk };
+        let r; try { r = fn.apply(this, A); } finally { const ate = pk.item !== k; pk.item = o0; pk.itemState = s0; if (ate) { st.t = this.turn; pk.m.xit[k] = N(pk, k) - 1; if (pk.m.xitR) pk.m.xitR[k] = Math.max(0, (pk.m.xitR[k] | 0) - 1); if (N(pk, k) <= 0) pk.removeVolatile('xit' + k); } } return r; }; }
+    def(k, h); });
   C.xitside = { name: 'xitside', onSwitchIn(pk) { for (const k in pk.m.xit || {}) if (N(pk, k) > 0) pk.addVolatile('xit' + k); } };
 }
 function xitStart(btl) { const sd = btl.p1; if (!sd.pokemon.some(pk => pk.m.xit)) return; sd.addSideCondition('xitside', sd.active[0]); sd.active.forEach(pk => { if (pk) for (const k in pk.m.xit || {}) if ((pk.m.xit[k] | 0) > 0) pk.addVolatile('xit' + k); }); }
@@ -2626,6 +2632,22 @@ const HOLD = {
   rawstberry: ["복분열매", 1000, "화상을 입으면 먹고 낫는다.", 0],
   aspearberry: ["배리열매", 1000, "얼면 먹고 녹는다.", 0],
   persimberry: ["시몬열매", 1000, "혼란에 빠지면 먹고 낫는다.", 0],
+  /* v26.88 경완 '본가에 있는 열매 싹 다 넣어' (배틀에서 효과 있는 것만 — 경완 카드 '배틀 열매만'): 빠졌던 15종 */
+  leppaberry: ["과사열매", 1500, "기술의 PP가 0이 되면 먹고 PP를 10 회복한다.", 0],
+  figyberry: ["무화열매", 2000, "HP가 1/4 이하가 되면 먹고 최대 HP의 1/3을 회복한다. 매운맛을 싫어하는 성격이면 혼란에 빠진다.", 0],
+  wikiberry: ["위키열매", 2000, "HP가 1/4 이하가 되면 먹고 최대 HP의 1/3을 회복한다. 떫은맛을 싫어하는 성격이면 혼란에 빠진다.", 0],
+  magoberry: ["마고열매", 2000, "HP가 1/4 이하가 되면 먹고 최대 HP의 1/3을 회복한다. 단맛을 싫어하는 성격이면 혼란에 빠진다.", 0],
+  aguavberry: ["아바열매", 2000, "HP가 1/4 이하가 되면 먹고 최대 HP의 1/3을 회복한다. 쓴맛을 싫어하는 성격이면 혼란에 빠진다.", 0],
+  iapapaberry: ["파야열매", 2000, "HP가 1/4 이하가 되면 먹고 최대 HP의 1/3을 회복한다. 신맛을 싫어하는 성격이면 혼란에 빠진다.", 0],
+  lansatberry: ["랑사열매", 3000, "HP가 1/4 이하가 되면 먹고 급소에 맞히기 쉬워진다.", 0],
+  starfberry: ["스타열매", 3000, "HP가 1/4 이하가 되면 먹고 능력치 하나가 크게 오른다.", 0],
+  micleberry: ["미클열매", 3000, "HP가 1/4 이하가 되면 먹고 다음 기술이 잘 맞는다.", 0],
+  custapberry: ["이스티열매", 3000, "HP가 1/4 이하가 되면 먹고 다음 한 번은 먼저 움직인다.", 0],
+  enigmaberry: ["의문열매", 2500, "효과가 굉장한 기술에 맞으면 먹고 최대 HP의 1/4을 회복한다.", 0],
+  jabocaberry: ["자보카열매", 2000, "물리 기술에 맞으면 먹고 공격한 포켓몬에게 최대 HP의 1/8 대미지를 준다.", 0],
+  rowapberry: ["애터열매", 2000, "특수 기술에 맞으면 먹고 공격한 포켓몬에게 최대 HP의 1/8 대미지를 준다.", 0],
+  keeberry: ["악키열매", 2000, "물리 기술에 맞으면 먹고 방어가 오른다.", 0],
+  marangaberry: ["타라프열매", 2000, "특수 기술에 맞으면 먹고 특수방어가 오른다.", 0],
   liechiberry: ["치리열매", 3000, "HP가 1/4 이하가 되면 먹고 공격이 오른다.", 0],
   ganlonberry: ["용아열매", 3000, "HP가 1/4 이하가 되면 먹고 방어가 오른다.", 0],
   salacberry: ["캄라열매", 3000, "HP가 1/4 이하가 되면 먹고 스피드가 오른다.", 0],
