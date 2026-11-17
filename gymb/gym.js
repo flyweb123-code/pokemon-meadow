@@ -4203,7 +4203,8 @@ const trDrop = L => { const g = st(); for (let i = S.box.length - 1; i >= 0; i--
 const trNew = ids => { const it0 = {}; ids.forEach(id => { const m = GB().gm(GB().boxOf(id)); if (m?.it) { it0[id] = m.it; m.it = ''; } });
   return trMark({ ids, balls: {}, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0], it0, xit: {} }); };
 /* 수련탑 지닌 도구: 쌓이는 도구(개수만큼 셈, battle.js xitInstall) + 본가 도구 1칸(TR_IT1, 받으면 바꿔 낌). [키, 등급, 최대, 설명] */
-const TR_XS = [['leftovers', 3 * 1.2 / 5, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['shellbell', 3 * 1.2 / 5, 4, n => `준 대미지의 ${n}/8 회복`], ['kingsrock', 3 * 1.2 / 5, 3, n => `공격할 때 ${n * 10}% 확률로 풀죽음`], ['quickclaw', 3, 3, n => `${n * 10}% 확률로 먼저 움직임`], ['widelens', 7, 3, n => `기술 명중 +${n * 10}%`], ['focusband', 5 * 1.2 / 5, 5, n => `${n * 10}% 확률로 HP 1 남기고 버팀`]];
+const TR_XS = [['leftovers', 3, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['shellbell', 3, 4, n => `준 대미지의 ${n}/8 회복`], ['kingsrock', 3, 3, n => `공격할 때 ${n * 10}% 확률로 풀죽음`], ['quickclaw', 3, 3, n => `${n * 10}% 확률로 먼저 움직임`], ['widelens', 7, 3, n => `기술 명중 +${n * 10}%`], ['focusband', 5, 5, n => `${n * 10}% 확률로 HP 1 남기고 버팀`]];
+const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband']);   /* v26.84 포켓로그 로그 등급 = 에픽 */
 const TR_TYIT = { 1: 'silkscarf', 2: 'blackbelt', 3: 'sharpbeak', 4: 'poisonbarb', 5: 'softsand', 6: 'hardstone', 7: 'silverpowder', 8: 'spelltag', 9: 'metalcoat', 10: 'charcoal', 11: 'mysticwater', 12: 'miracleseed', 13: 'magnet', 14: 'twistedspoon', 15: 'nevermeltice', 16: 'dragonfang', 17: 'blackglasses', 18: 'fairyfeather' };
 const TR_IT1 = [['lifeorb', 2], ['choiceband', 2], ['choicespecs', 2], ['choicescarf', 2], ['assaultvest', 1], ['rockyhelmet', 1]];
 const trItNm = k => GB().HOLD?.[k]?.[0] || k, trItD = k => GB().HOLD?.[k]?.[2] || '';
@@ -4513,10 +4514,10 @@ const trItHtml = R => { const L = []; if (R.sh) L.push(['expshare', R.sh, '학�
   return L.map(([ic, c, n, id]) => `<i title="${n}"${id ? ' class="pm"' : ''}><img alt="" src="${IMG}item/${ic}.png">${id ? `<img class="pmi" alt="" data-th="${id}">` : ''}${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
-const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418'];
+const TR_RC = ['#5cc27a,#2f9a52', '#62aef0,#2f7cd0', '#f0b040,#c88418', '#f07070,#c83a3a', '#c080f0,#8040c8'];   /* v26.84 경완 '레어 등급 위로는 에픽, 전설': 에픽 빨강·전설 보라 (포켓로그 로그볼·마스터볼 색 차례) */
 /* v24.14 보상 그림 = 본가 도구 (gym/img/item, 없던 것은 PokeAPI sprites/items 에서 받아 넣음) · 등급별 볼 (흔함 몬스터볼·좋음 슈퍼볼·귀함 하이퍼볼) */
 const TR_IC = [['상처약', 'potion'], ['좋은상처약', 'superpotion'], ['고급상처약', 'hyperpotion'], ['회복약', 'maxpotion'], ['기력의조각', 'revive'], ['기력의덩어리', 'maxrevive'], ['학습장치', 'expshare'], ['맥스업', 'hpup'], ['타우린', 'protein'], ['사포닌', 'iron'], ['리보플라빈', 'calcium'], ['키토산', 'zinc'], ['알칼로이드', 'carbos'], ['경험치 부적', 'expcharm'], ['동료 몬스터볼', 'pokeball'], ['동료 슈퍼볼', 'greatball'], ['동료 하이퍼볼', 'ultraball'], ['동료 마스터볼', 'masterball'], ['강박사 야식', 'bigmalasada']];
-const trIc = n => (TR_IC.find(([k]) => n.startsWith(k)) || [, 'pokeball'])[1], TR_BX = ['pokeball', 'greatball', 'ultraball'];
+const trIc = n => (TR_IC.find(([k]) => n.startsWith(k)) || [, 'pokeball'])[1], TR_BX = ['pokeball', 'greatball', 'ultraball', 'luxuryball', 'masterball'];
 const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;background:rgba(8,10,24,0);transition:background .35s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
 .trbx.on{background:rgba(8,10,24,.62)}.trbx.out{background:rgba(8,10,24,0);transition:background .25s}.trbx.out .trb-c,.trbx.out h3{opacity:0;transition:opacity .2s}
 .trbx h3{margin:0;color:#fff;font-size:16px;text-align:center;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-8px);transition:opacity .3s .15s,transform .3s .15s}.trbx.on h3{opacity:1;transform:none}
@@ -4556,7 +4557,7 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}`;
 const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X) => new Promise(ok => {   /* X = { coin, rr, shop: [[이름, 값, 살 수 있음]] } 아래 상점 줄 (v24.70) */   /* c[5] 그림 이름·c[6] 딱지 글자 (v24.68 강박사 상자) */
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
-  const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['일반', '우수', '레어'];   /* v26.82 경완 '보상 카드 등급은 일반, 우수, 레어' */
+  const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['일반', '우수', '레어', '에픽', '전설'];   /* v26.82 경완 '보상 카드 등급은 일반, 우수, 레어' */
   const el = document.createElement('div'); el.className = 'trbx';
   el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em><img alt="" src="${IMG}item/${c[5] || trIc(c[2])}.png"><b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div><p class="trb-tip">${esc(tip)}</p>${X ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicgold.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
@@ -4574,35 +4575,34 @@ async function trReward(R, o, ids, boss, shop, first) {
   const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
   const cur = id => Math.round(hp(id) * mx(id));
   /* v23.56 경완 '상처약은 본가처럼 절댓값으로 쓸 포켓몬 선택, 기력의덩어리도 한 마리만, 도구는 본가 기준': 상처약 20·좋은상처약 60·고급상처약 120·회복약 가득, 기력의조각 절반·기력의덩어리 가득 (한 마리) */
-  const who = async (L, q, tg) => { if (o.pickMon) return o.pickMon(q, ids.filter(id => P(id)).map(id => ({ id, hp: cur(id), mhp: mx(id), ok: L.includes(id), tag: tg?.(id) })));   /* v24.55 경완 '도구 쓸 때 교체 화면과 같은 목록' */ const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };
-  const tgH = (ic, a, b) => `<i><img alt="" src="${IMG}item/${ic}.png"></i><em>${a}/${b}</em>`;   /* v26.82 경완 '도구별로 최대 개수랑 현재 개수만 알아보기 쉽게' */
+  const who = async (L, q, tg) => { if (o.pickMon) return o.pickMon(q, ids.filter(id => P(id)).map(id => ({ id, hp: cur(id), mhp: mx(id), ok: L.includes(id) })));   /* v24.55 경완 '도구 쓸 때 교체 화면과 같은 목록' */ const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };
   const heal = n => async () => { const id = await who(live.filter(id => hp(id) > 0 && hp(id) < .999), '누구에게 쓸까요?'); if (id == null) return null; const a = cur(id), M = mx(id), b = Math.min(M, a + n); R.hp[id] = b / M; o.se?.('KAIFUKU'); return `${nm(id)}의 HP가 ${b - a} 회복됐다!`; };   /* 본가: 회복 도구 SE_KAIFUKU */
   const rev = f => async () => { const id = await who(ids.filter(id => hp(id) <= 0), '누구를 살릴까요?'); if (id == null) return null; R.hp[id] = f; o.se?.('KAIFUKU'); return `${eun(nm(id))} 기운을 차렸다!`; };
-  const U = boss ? 3 : 1, H = hurt.length ? 1 : 0, D = down.length ? 1 : 0, C = [   // [무게, 등급(0 일반 1 우수 2 레어), 이름, 설명, 고르면, 그림, 딱지, 개수 표시]
+  const U = boss ? 3 : 1, H = hurt.length ? 1 : 0, D = down.length ? 1 : 0, C = [   // [무게, 등급(0 일반 1 우수 2 레어 3 에픽 4 전설), 이름, 설명, 고르면, 그림, 딱지, 개수 표시]
     [4 * H, 0, '상처약', 'HP를 20 회복', heal(20)], [3 * H, 0, '좋은상처약', 'HP를 60 회복', heal(60)], [2 * H, 1, '고급상처약', 'HP를 120 회복', heal(120)], [U * H, 2, '회복약', 'HP를 모두 회복', heal(1e9)],
     [4 * D, 1, '기력의조각', '기절한 포켓몬 하나를 HP 절반으로', rev(.5)], [U * D, 2, '기력의덩어리', '기절한 포켓몬 하나를 HP 가득', rev(1)],
     [(R.sh | 0) < 5 ? 3 : 0, 1, '학습장치', '배틀에 안 나간 포켓몬도 경험치를 20%씩 받아요', async () => { R.sh = Math.min(5, (R.sh | 0) + 1); return `학습장치를 손에 넣었다!\n배틀에 안 나간 포켓몬도\n경험치를 ${R.sh * 20}% 받는다!`; }, 0, 0, `${R.sh | 0} / 5`],   /* v23.57 경완 '포켓로그처럼 학습장치': 하나에 20%, 5개까지 (이번 도전만) */
     ...(() => { const k = Math.random() * 6 | 0, [n, st] = TR_VIT[k], ok = live.filter(id => ((R.vit?.[id] || [])[k] | 0) < 3); if (!ok.length) return [];   /* v23.63 경완 '영양제 좋아': 한 마리 능력치 ×1.1 (같은 능력치 3개까지), 이번 도전만 */
-      return [[3, 1, n, `한 마리의 ${st} +10% (이번 도전만)`, async () => { const id = await who(ok, `누구에게 먹일까요? (${st})`, id => tgH(trIc(n), (R.vit?.[id] || [])[k] | 0, 3)); if (id == null) return null; const V = (R.vit = R.vit || {})[id] = R.vit[id] || [0, 0, 0, 0, 0, 0]; V[k]++; return `${nm(id)}의 ${iga(st)} 올랐다!`; }]]; })(),
+      return [[3, 1, n, `한 마리의 ${st} +10% (이번 도전만)`, async () => { const id = await who(ok, `누구에게 먹일까요? (${st})`); if (id == null) return null; const V = (R.vit = R.vit || {})[id] = R.vit[id] || [0, 0, 0, 0, 0, 0]; V[k]++; return `${nm(id)}의 ${iga(st)} 올랐다!`; }]]; })(),
     [(R.xpM || 1) < 1.7 ? 2 : 0, 1, '경험치 부적', '이번 도전 경험치 +25%', async () => {   /* v23.63 경완 '실제 레벨이 오르니 밸런스 맞춰서': 3개(175%)까지 — 시뮬: 100층 Lv10→33 이 37 (무제한이면 53) */ R.xpM = (R.xpM || 1) + .25; return `이번 도전 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }, 0, 0, `${Math.round(((R.xpM || 1) - 1) / .25)} / 3`],
     /* v25.xx 경완 '우리도 여러개 쓸 수 있게': 쌓이는 지닌 도구 (한 마리가 여러 종류, 같은 건 개수만큼 셈) + 본가 지닌 도구 1칸 */
     ...(() => { const X = R.xit = R.xit || {}, n = (id, k) => X[id]?.[k] | 0, out = [];
-      const give = (k, ok, q, mx) => async () => { const id = await who(ok, q, id => tgH(trIc(trItNm(k)), n(id, k), mx)); if (id == null) return null; (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 빌려주었다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; };
+      const give = (k, ok, q, mx) => async () => { const id = await who(ok, q); if (id == null) return null; (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 빌려주었다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; };
       /* v26.82 경완 '초반에 타입 강화 도구 너무 많이 나오는데 포켓로그 도구 엔진 참고한 거 맞나?' → 포켓로그 modifierPool 등급·무게 그대로: 타입 강화(울트라 9)·넓은렌즈(울트라 7)·선제공격손톱(울트라 3), 먹다남은음식·조개껍질방울·왕의징표석(로그 3)·기합의띠(로그 5).
          우리는 등급이 셋이라 울트라·로그 = 레어, 로그는 포켓로그 확률 비(1.2/5)만큼 무게를 줄임. 레어는 10층부터. 설명은 '대여', 개수는 아래 딱지로 */
       const DS = ' (이번 도전 동안 대여)';
-      TR_XS.forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
+      TR_XS.forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
       const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([9 * .3, 2, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20%${DS}`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 빌려줄까요?`, 5), 0, 0, '마리당 최대 5개']); }
       const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
-      if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`, id => tgH(trIc(trItNm(k1)), m(id)?.it === k1 ? 1 : 0, 1)); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, 0, 0, '마리당 1개']);
+      if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, 0, 0, '마리당 1개']);
       [...TR_XS.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0])].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
       return out; })(),
     [3, 0, '동료 몬스터볼 ×3', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'mon', 3, '동료 몬스터볼')],
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
     [boss ? 2 : .6, 2, '동료 하이퍼볼', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'ultra', 1, '동료 하이퍼볼')],
-    [boss ? .4 : 0, 2, '동료 마스터볼', '반드시 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'master', 1, '동료 마스터볼')],
+    [boss ? .4 : 0, 4, '동료 마스터볼', '반드시 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'master', 1, '동료 마스터볼')],
     [first ? 0 : .6, 0, '강박사 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'mail']];   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
-  if (shop) { const PR = [30, 60, 120], L = C.filter(c => c[0] > 0 && !/강박사 상자|경험치 부적/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
+  if (shop) { const PR = [30, 60, 120, 200, 400], L = C.filter(c => c[0] > 0 && !/강박사 상자|경험치 부적/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
     for (;;) { const i = await o.choose(`수련탑 상점 · 코인 ${R.coin | 0}`, [...L.map(c => [c[2], `${c[3]} · ${PR[c[1]]}코인`, TR_RC[c[1]]]), ['나가기', '', '#9aa0b4,#6c7288']]); const c = L[i]; if (!c) break;
       if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; L.splice(i, 1); if (t) await o.msgTap(t); }
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
@@ -4611,9 +4611,9 @@ async function trReward(R, o, ids, boss, shop, first) {
   if (first) { L.push([1, 1, '동료 몬스터볼 ×5', '야생 포켓몬에게 던지면 이번 도전에만 함께할 동료가 돼요', async () => { trBallAdd(R, 'mon', 5, '동료 몬스터볼'); return ''; }]); pool0 = pool0.filter(c => !/동료/.test(c[2])); }   /* v24.35 출발 선물 하나는 늘 동료 몬스터볼 ×5 */
   /* v24.90 경완 '보상 나오는 것도 포켓로그는 웨이브에 따라 다를 텐데, 지금은 2층부터 하이퍼볼이 나와버리네': 포켓로그처럼 카드마다 등급을 먼저 뽑고(흔함 75%·좋음 19%·귀함 6%, 1024 중 >255·>60) 그 등급 안에서 무게로.
      층 문턱: 귀함은 10층부터(우두머리·정해진 트레이너 층은 보장), 하이퍼볼 20층부터, 마스터볼은 50층부터 우두머리 층만. 정해진 트레이너 층 = 포켓로그 고정 배틀처럼 등급 보장(귀함1·좋음2, 100층부터 귀함2·좋음1), 우두머리 층 = 귀함 1장 보장 */
-  const fl = R.floor | 0, fx = TR_FIX(fl), GU = first ? [] : fx ? (fl >= 100 ? [2, 2, 1] : [2, 1, 1]) : boss ? [2] : [];
-  const gate = c => !(c[1] === 2 && fl < 10 && !GU.length) && !(/하이퍼볼/.test(c[2]) && fl < 20) && !(/마스터볼/.test(c[2]) && !(boss && fl >= 50));
-  const tier = () => { const r = Math.random() * 1024; return r > 255 ? 0 : r > 60 ? 1 : 2; };
+  const fl = R.floor | 0, fx = TR_FIX(fl), GU = first ? [] : fx ? (fl >= 100 ? [2, 2, 1] : [2, 1, 1]) : boss ? (fl >= 50 && fl % 50 === 0 ? [4, 2] : [2]) : [];   /* v26.84 50층마다 큰 우두머리 = 전설 카드 한 장 보장 (마스터볼 자리) */
+  const gate = c => !(c[1] >= 2 && fl < 10 && !GU.length) && !(/하이퍼볼/.test(c[2]) && fl < 20) && !(/마스터볼/.test(c[2]) && !(boss && fl >= 50));
+  const tier = () => { const r = Math.random() * 1024 | 0; return r > 255 ? 0 : r > 60 ? 1 : r > 12 ? 2 : r ? 3 : 4; };   /* v26.84 경완 '레어 위로 에픽, 전설': 포켓로그 1024 굴림 그대로 (일반 75%·우수 19%·레어 4.7%·에픽 1.1%·전설 0.1%) */
   const draw3 = () => { let pool = pool0.filter(gate); L.length = first ? 1 : 0; for (let i = 0; L.length < 3 && pool.length; i++) { let tq = GU[i] ?? tier(), C2 = [];
       for (; tq >= 0 && !(C2 = pool.filter(c => c[1] === tq)).length; tq--);   /* 그 등급이 비면 한 단계 아래 */ if (!C2.length) C2 = pool;
       const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k]); } };
