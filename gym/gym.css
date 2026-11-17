@@ -4723,3 +4723,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .gy-boxw .pk .tgs .tg.tg-lu,.gy-boxw .pk .tg.tg-lu{background:#2f6fd0!important;color:#fff!important}
 .gy-boxw .bw-tyf button.bw-luf{display:block;flex:none;height:auto;min-width:0;padding:5px 12px!important;border:3px solid var(--frame);border-radius:0;background:#fff;color:var(--win-ink);opacity:1;font-size:13px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
 .gy-boxw .bw-tyf button.bw-luf.on{background:var(--frame);color:var(--win)}
+
+/* v26.80 경완 '이 라인업으로 결정 옆에 몬스터볼 아이콘 본가 몬스터볼 그림으로' → 1번 '정렬 좀 맞춰줘': 플래티넘 배틀 볼(gym/img/ball/mon.png 첫 칸, 14px 볼)을 2배로. 볼 가운데를 글자 가운데(버튼 앞면 가운데)에 맞춤 */
+.lu-act .lu-go .lu-ball{width:28px;height:28px;background:url(../gym/img/ball/mon.png) -18px -18px/640px 64px no-repeat;image-rendering:pixelated;transform:translateY(-.5px);filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
+.lu-act .lu-go:active .lu-ball{transform:translateY(-.5px)}
