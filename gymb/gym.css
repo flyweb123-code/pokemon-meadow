@@ -4751,3 +4751,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v26.81 체육관 정보 화면: 프로필 무대가 자리 잡을 때까지 몸통 가림 (gym.js mecWait) */
 #gym .gy-infos>.gy-body.if-wait{visibility:hidden}
+/* v26.82 경완 '도구별로 최대 개수랑 현재 개수만 알아보기 쉽게': 수련탑 도구 줄 포켓몬 고르기 = 그 도구 아이콘 + 지금/최대 */
+.bt .pty .pty-it.pty-n{flex-wrap:nowrap;gap:5px;align-items:center}
+.bt .pty .pty-it.pty-n em{font:700 12px/1 var(--px);font-style:normal;color:var(--win-ink,#303040);white-space:nowrap}
