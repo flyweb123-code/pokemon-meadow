@@ -4429,6 +4429,8 @@ const trGate = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.bo
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 끝날 때(그만두기·쓰러짐·꼭대기) 정산 화면 — 지난 기준점부터 오른 층·레벨·경험치·코인·동료 */
 /* v26.91 경완 '배틀 끝날 때마다 골드 받게 해주고 … 얻는 골드 양은 밸런스 맞춰줘': 이기면 야생 15·트레이너(더블) 30·우두머리 60 G × (1 + 층/100).
    1분 기준 ≈ 미니게임(장애물 넘기 33G)과 비슷하게 — 야생 한 판 ≈ 30초, 트레이너 ≈ 1분, 우두머리 ≈ 2분. 수련탑이 아직 시연이라 TR_PAY 를 켜기 전엔 화면 표시만 (본 계정 골드는 안 건드림) */
+/* v26.94 경완 '골드 꾸러미 먹었는데 골드 안 올라가는 오류': 층 표시(.bt-fl)는 배틀 시작 때 한 번만 그려져 다음 배틀까지 숫자가 그대로였음 → 골드·코인이 바뀌는 곳마다 바로 고쳐 쓰고 살짝 튐 */
+const trHud = (R, k) => document.querySelectorAll('.bt .bt-fl').forEach(fl => { [['g', R.gold], ['c', R.coin]].forEach(([c, v]) => { const sp = fl.querySelector(`.${c} > span`); if (!sp) return; const t = (v | 0).toLocaleString(); if (sp.textContent === t) return; sp.textContent = t; if (c === k || !k) { sp.classList.remove('up'); void sp.offsetWidth; sp.classList.add('up'); } }); });
 const TR_PAY = false, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));
 const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), m0 = R.m0 || {}, up = Math.max(0, R.floor - (R.f0 || 1)), coin = Math.max(0, (R.coin | 0) - (R.c0 | 0)), gold = Math.max(0, (R.gold | 0) - (R.g0 | 0));
   const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
@@ -4482,8 +4484,8 @@ async function trPost(R, o, boss, ids, T, trn) {
   if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap(trn ? '승부를 마치고\n모두 기운을 되찾았다!' : '우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
   if (R.floor >= TR.top) { trSave = null; R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); await trItBack(R, o); return false; }
-  const cn = boss ? 40 : trn || T?.dbl ? 20 : 10;   /* v24.87 트레이너 20, 관장·라이벌·사천왕·챔피언 40 */ R.coin = (R.coin | 0) + cn;   /* v24.70 경완 '코인은 포켓몬 쓰러트릴 때마다': 한 마리 10 (더블 20), 우두머리 40 */
-  const gd = trGold(R.floor, boss, trn || T?.dbl); R.gold = (R.gold | 0) + gd; if (TR_PAY) addG(gd, 'tower');
+  const cn = boss ? 40 : trn || T?.dbl ? 20 : 10;   /* v24.87 트레이너 20, 관장·라이벌·사천왕·챔피언 40 */ R.coin = (R.coin | 0) + cn; trHud(R, 'c');   /* v24.70 경완 '코인은 포켓몬 쓰러트릴 때마다': 한 마리 10 (더블 20), 우두머리 40 */
+  const gd = trGold(R.floor, boss, trn || T?.dbl); R.gold = (R.gold | 0) + gd; if (TR_PAY) addG(gd, 'tower'); trHud(R, 'g');
   await o.msg(`수련탑 코인 ${cn}개와\n${gd.toLocaleString()}골드를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
   R.floor++;
@@ -4503,10 +4505,10 @@ async function trMyst(R, o, card) {
      v24.68 경완 '강박사 상자도 보상 화면처럼 연출': 열면 보상 화면(trBoxPick)처럼 상자가 떨어져 터지고 결과 카드 한 장, 강박사 대사만 대사창에 */
   const show = (g, nm, d, ic, lb) => trBoxPick([[0, g, nm, d, null, ic, lb]], '강박사의 상자를 열었다!', 0, '눌러서 닫기');
   if (r < .15) { R.balls = R.balls || {}; R.balls.ultra = (R.balls.ultra | 0) + 2; await show(2, '동료 하이퍼볼 ×2', '쪽지: "비상용. 쓰지 마. -강박사"', 'ultraball', '대박'); }
-  else if (r < .3) { R.coin = (R.coin | 0) + 80; await show(2, '수련탑 코인 80개', '강박사의 비상금인 것 같다…', 'nugget', '대박'); }
+  else if (r < .3) { R.coin = (R.coin | 0) + 80; trHud(R, 'c'); await show(2, '수련탑 코인 80개', '강박사의 비상금인 것 같다…', 'nugget', '대박'); }
   else if (r < .45) { R.ids.forEach(id => { R.hp[id] = 1; }); await show(1, '따뜻한 김', '쓰러진 포켓몬까지 모두 기운을 되찾았다!', 'maxrevive', '좋음'); }
   else if (r < .6) { R.amb = 1; await show(1, '화난 포켓몬!', '상자 안에서 튀어나왔다! 이기면 귀한 보상', 'kingsrock', '배틀'); await o.msgTap('(멀리서) 강박사: "그러게 열지 말랬잖니!\n이기면 귀한 걸 줄게!"'); }
-  else if (r < .73) { const n = Math.ceil((R.coin | 0) / 2); R.coin = (R.coin | 0) - n; await show(0, '"벌금" 쪽지', n ? `수련탑 코인 ${n}개를 빼앗겼다…` : '낼 코인도 없다…', 'mail', '꽝'); await o.msgTap(n ? '강박사: "남의 상자를 열었으니 벌금이다!"' : '강박사: "벌금…은 낼 코인도 없구나."\n강박사가 측은한 눈으로 쳐다본다.'); }
+  else if (r < .73) { const n = Math.ceil((R.coin | 0) / 2); R.coin = (R.coin | 0) - n; trHud(R); await show(0, '"벌금" 쪽지', n ? `수련탑 코인 ${n}개를 빼앗겼다…` : '낼 코인도 없다…', 'mail', '꽝'); await o.msgTap(n ? '강박사: "남의 상자를 열었으니 벌금이다!"' : '강박사: "벌금…은 낼 코인도 없구나."\n강박사가 측은한 눈으로 쳐다본다.'); }
   else if (r < .87) { live.forEach(id => { R.hp[id] = Math.max(.01, (R.hp[id] ?? 1) * .7); }); await show(0, '강박사의 양말 한 짝', '지독한 냄새에 모두 HP가 30% 줄었다…', 'blacksludge', '꽝'); }
   else { R.balls = R.balls || {}; let n = 0; for (const k in R.balls) { const t = Math.ceil((R.balls[k] | 0) / 2); R.balls[k] -= t; n += t; } await show(0, '고오스가 튀어나왔다!', n ? `가방을 뒤져 동료 볼 ${n}개를 훔쳐 갔다…` : '가방이 텅 비어서 그냥 웃고 갔다', 'spelltag', '꽝'); }
 }
@@ -4607,7 +4609,7 @@ async function trReward(R, o, ids, boss, shop, first) {
     [(R.xpM || 1) < 1.7 ? 2 : 0, 1, '경험치 부적', '이번 도전 경험치 +25%', async () => {   /* v23.63 경완 '실제 레벨이 오르니 밸런스 맞춰서': 3개(175%)까지 — 시뮬: 100층 Lv10→33 이 37 (무제한이면 53) */ R.xpM = (R.xpM || 1) + .25; return `이번 도전 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }, 0, 0, `${Math.round(((R.xpM || 1) - 1) / .25)} / 3`],
     /* v26.92 경완 '중간중간 보상 아이템으로 골드 꾸러미 등장하게 밸런스 맞춰서': 이 층 야생 배틀 골드(trGold)의 4·10·25배 — 일반·우수·레어 (레어는 10층부터). 한 판 보상 골드의 2~3할쯤 */
     /* v26.93 경완 '골드 확률도 밸런스 맞춰줘': 무게 2·1·.5 → 1·.5·.25 — 상자 셋 중 골드 꾸러미가 끼는 판 35% → 약 20% (다섯 층에 한 번꼴), 늘 골랐을 때 한 층 평균 ≈ 야생 배틀 골드 1번어치 (몬테카를로 20만 번) */
-    ...[[1, 0, 4], [.5, 1, 10], [.25, 2, 25]].map(([w, gg, x]) => { const gv = trGold(R.floor, 0, 0) * x; return [w, gg, '골드 꾸러미', `${gv.toLocaleString()}골드`, async () => { R.gold = (R.gold | 0) + gv; if (TR_PAY) addG(gv, 'tower'); o.se?.('DP_REGI'); return `골드 꾸러미를 열었다!\n${gv.toLocaleString()}골드를 얻었다!`; }]; }),
+    ...[[1, 0, 4], [.5, 1, 10], [.25, 2, 25]].map(([w, gg, x]) => { const gv = trGold(R.floor, 0, 0) * x; return [w, gg, '골드 꾸러미', `${gv.toLocaleString()}골드`, async () => { R.gold = (R.gold | 0) + gv; if (TR_PAY) addG(gv, 'tower'); trHud(R, 'g'); o.se?.('REGI'); return `골드 꾸러미를 열었다!\n${gv.toLocaleString()}골드를 얻었다!`; }]; }),
     /* v25.xx 경완 '우리도 여러개 쓸 수 있게': 쌓이는 지닌 도구 (한 마리가 여러 종류, 같은 건 개수만큼 셈) + 본가 지닌 도구 1칸 */
     ...(() => { const X = R.xit = R.xit || {}, n = (id, k) => X[id]?.[k] | 0, out = [];
       const give = (k, ok, q, mx) => async () => { const id = await who(ok, q); if (id == null) return null; (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 빌려주었다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; };
@@ -4635,7 +4637,7 @@ async function trReward(R, o, ids, boss, shop, first) {
     [first ? 0 : .6, 0, '강박사 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'mail']];   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
   if (shop) { const PR = [30, 60, 120, 200, 400], L = C.filter(c => c[0] > 0 && !/강박사 상자|경험치 부적|골드 꾸러미/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
     for (;;) { const i = await o.choose(`수련탑 상점 · 코인 ${R.coin | 0}`, [...L.map(c => [c[2], `${c[3]} · ${PR[c[1]]}코인`, TR_RC[c[1]]]), ['나가기', '', '#9aa0b4,#6c7288']]); const c = L[i]; if (!c) break;
-      if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; L.splice(i, 1); if (t) await o.msgTap(t); }
+      if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; trHud(R); L.splice(i, 1); if (t) await o.msgTap(t); }
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
   /* v24.70 경완 '매층 보상 창이 상점, 코인으로 구매' (포켓로그식): 위 카드 3장 중 하나는 공짜, 아래 줄은 코인으로 몇 번이든 사고, 코인 내고 카드 다시 뽑기 (층마다 10·20·30…) */
   const L = []; let pool0 = C.filter(c => c[0] > 0);
@@ -4659,8 +4661,8 @@ async function trReward(R, o, ids, boss, shop, first) {
   for (let again = 0; ; again = again < 0 ? 0 : 1) { balLive();   /* 다시 뽑기(-1) 는 떨어지는 연출부터 */
     const X = SH && { coin: R.coin | 0, rr: 10 * (rr + 1), shop: SH.map(([n, pr, , ok]) => [n, pr, ok(), BK(n) ? bagN(BK(n)) : null]) };
     const a = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again, [X ? '' : '하나만 가져갈 수 있어요', L.some(c => /^마리당/.test(c[7] || '')) ? '도구는 이번 도전 동안 빌려줘요 · 끝나면 돌려받아요' : ''].filter(Boolean).join('\n'), X);   /* v26.87 경완 '위 카드 하나는 공짜 아래는 코인으로 이 문구는 없애줘도 될듯' */
-    if (a && a.t === 'rr') { const c = 10 * (rr + 1); if ((R.coin | 0) < c) continue; R.coin -= c; rr++; draw3(); again = -1; continue; }
-    if (a && a.t === 'buy') { const S0 = SH[a.i]; if (!S0 || (R.coin | 0) < S0[1] || !S0[3]()) continue; const t = await S0[4](); if (t === null) continue; R.coin -= S0[1]; o.se?.('KAIFUKU'); continue; }
+    if (a && a.t === 'rr') { const c = 10 * (rr + 1); if ((R.coin | 0) < c) continue; R.coin -= c; trHud(R); rr++; draw3(); again = -1; continue; }
+    if (a && a.t === 'buy') { const S0 = SH[a.i]; if (!S0 || (R.coin | 0) < S0[1] || !S0[3]()) continue; const t = await S0[4](); if (t === null) continue; R.coin -= S0[1]; trHud(R); o.se?.('KAIFUKU'); continue; }
     const t = await L[a]?.[4]?.(); if (t === null) continue; break; }   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
