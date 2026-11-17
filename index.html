@@ -1705,7 +1705,8 @@ button.mvchip{cursor:pointer}button.mvchip:active{transform:translate(1px,1px);b
 
 
 
-.egg.lt17 svg{position:relative;z-index:1}.egg.lt17 .lfx{z-index:0;inset:-20% -30%}.egg.lt17{--la:lfDk}.egg.lt17 .lfx i{width:52%;clip-path:none;filter:blur(2.5px);background:radial-gradient(circle,#2a0c3c 0 30%,rgba(60,16,80,.75) 52%,transparent 72%);animation-duration:2.6s;animation-timing-function:ease-in-out}
+.egg.lt17 svg{position:relative;z-index:1}.egg.lt svg.epc{position:absolute}   /* v26.82 경완 '효과 있는 타입 알 부화시킬 때 알 스프라이트 깨지는 오류' → '드래곤 에픽 알이었고 두드릴 때 깨졌어': 드래곤·악 타입 알은 svg 를 relative 로 올려서 금 간 윗조각(.epc)도 relative 가 되어 아래로 밀려 그려졌음 */
+.egg.lt17 .lfx{z-index:0;inset:-20% -30%}.egg.lt17{--la:lfDk}.egg.lt17 .lfx i{width:52%;clip-path:none;filter:blur(2.5px);background:radial-gradient(circle,#2a0c3c 0 30%,rgba(60,16,80,.75) 52%,transparent 72%);animation-duration:2.6s;animation-timing-function:ease-in-out}
 .egg.lt17 .lfx i:nth-child(1){left:6%;top:44%}.egg.lt17 .lfx i:nth-child(2){right:6%;top:30%}.egg.lt17 .lfx i:nth-child(3){left:22%;top:8%;width:44%}.egg.lt17 .lfx i:nth-child(4){right:22%;top:56%;width:44%}
 @keyframes lfDk{0%{opacity:0;transform:translateY(15%) scale(.6)}35%{opacity:.95;transform:translateY(0) scale(1.05)}70%{opacity:.7;transform:translate(6%,-22%) scale(1.25)}100%{opacity:0;transform:translate(-4%,-42%) scale(1.45)}}
 .egg.big{width:72px;height:88px}
