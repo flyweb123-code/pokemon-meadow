@@ -4727,3 +4727,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v26.80 경완 '이 라인업으로 결정 옆에 몬스터볼 아이콘 본가 몬스터볼 그림으로' → 1번 '정렬 좀 맞춰줘': 플래티넘 배틀 볼(gym/img/ball/mon.png 첫 칸, 14px 볼)을 2배로. 볼 가운데를 글자 가운데(버튼 앞면 가운데)에 맞춤 */
 .lu-act .lu-go .lu-ball{width:28px;height:28px;background:url(../gym/img/ball/mon.png) -18px -18px/640px 64px no-repeat;image-rendering:pixelated;transform:translateY(-.5px);filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
 .lu-act .lu-go:active .lu-ball{transform:translateY(-.5px)}
+
+/* v26.81 체육관 정보 화면: 프로필 무대가 자리 잡을 때까지 몸통 가림 (gym.js mecWait) */
+#gym .gy-infos>.gy-body.if-wait{visibility:hidden}
