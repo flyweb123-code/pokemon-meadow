@@ -4204,6 +4204,10 @@ const trNew = ids => { const it0 = {}; ids.forEach(id => { const m = GB().gm(GB(
   return trMark({ ids, balls: {}, key: ids.join(','), floor: 1, lv1: Math.min(...ids.map(id => GB().gm(GB().boxOf(id)).lv)), hp: {}, lead: ids[0], it0, xit: {} }); };
 /* 수련탑 지닌 도구: 쌓이는 도구(개수만큼 셈, battle.js xitInstall) + 본가 도구 1칸(TR_IT1, 받으면 바꿔 낌). [키, 등급, 최대, 설명] */
 const TR_XS = [['leftovers', 3, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['shellbell', 3, 4, n => `준 대미지의 ${n}/8 회복`], ['kingsrock', 3, 3, n => `공격할 때 ${n * 10}% 확률로 풀죽음`], ['quickclaw', 3, 3, n => `${n * 10}% 확률로 먼저 움직임`], ['widelens', 7, 3, n => `기술 명중 +${n * 10}%`], ['focusband', 5, 5, n => `${n * 10}% 확률로 HP 1 남기고 버팀`]];
+/* v26.88 경완 '도구가 너무 없는데 열매나 이런건 없어?' → '그 열매들 수련탑에도 넣어': 포켓로그 BERRY(일반 등급) 처럼 카드 한 장에 열매 하나 무작위, 마리당 같은 열매 3개까지, 먹으면 하나씩 줄어듦 (battle.js xitInstall).
+   뽑기 무게: 포켓로그처럼 자뭉·리샘·과사가 잘 나오고, 상태 이상 하나만 고치는 열매·타입 반감 열매는 적게 */
+const TR_BER_W = k => /^(sitrus|lum|leppa)berry$/.test(k) ? 3 : /^(cheri|chesto|pecha|rawst|aspear|persim)berry$/.test(k) || /^(chilan|chople|coba|kebia|shuca|charti|tanga|kasib|babiri|occa|passho|rindo|wacan|payapa|yache|haban|colbur|roseli)berry$/.test(k) ? .4 : 1;
+const TR_BK = new Set();   /* 나온 열매 (카드 그림 TR_IC 에 넣을 것) */
 const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband']);   /* v26.86 포켓로그 로그 등급 = 에픽 */
 const TR_TYIT = { 1: 'silkscarf', 2: 'blackbelt', 3: 'sharpbeak', 4: 'poisonbarb', 5: 'softsand', 6: 'hardstone', 7: 'silverpowder', 8: 'spelltag', 9: 'metalcoat', 10: 'charcoal', 11: 'mysticwater', 12: 'miracleseed', 13: 'magnet', 14: 'twistedspoon', 15: 'nevermeltice', 16: 'dragonfang', 17: 'blackglasses', 18: 'fairyfeather' };
 const TR_IT1 = [['lifeorb', 2], ['choiceband', 2], ['choicespecs', 2], ['choicescarf', 2], ['assaultvest', 1], ['rockyhelmet', 1]];
@@ -4592,11 +4596,13 @@ async function trReward(R, o, ids, boss, shop, first) {
       /* v26.82 경완 '초반에 타입 강화 도구 너무 많이 나오는데 포켓로그 도구 엔진 참고한 거 맞나?' → 포켓로그 modifierPool 등급·무게 그대로: 타입 강화(울트라 9)·넓은렌즈(울트라 7)·선제공격손톱(울트라 3), 먹다남은음식·조개껍질방울·왕의징표석(로그 3)·기합의띠(로그 5).
          우리는 등급이 셋이라 울트라·로그 = 레어, 로그는 포켓로그 확률 비(1.2/5)만큼 무게를 줄임. 레어는 10층부터. 설명은 '대여', 개수는 아래 딱지로 */
       const DS = '';   /* v26.85 경완 'C 좋다': 대여는 카드마다 말고 아래 안내 글에 한 번만 (TR_RENT) */
+      { const BL = Object.keys(GB().HOLD || {}).filter(k => /berry$/.test(k)), bk = (() => { let r = Math.random() * BL.reduce((t, k) => t + TR_BER_W(k), 0); return BL.find(k => (r -= TR_BER_W(k)) < 0) || BL[0]; })();
+        const okb = bk && live.filter(id => n(id, bk) < 3); if (okb?.length) out.push([3, 0, trItNm(bk), trItD(bk), give(bk, okb, `누구에게 ${eul(trItNm(bk))} 빌려줄까요?`, 3), 0, 0, '마리당 최대 3개']); if (bk) TR_BK.add(bk); }
       TR_XS.forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
       const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([9 * .3, 2, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20%${DS}`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 빌려줄까요?`, 5), 0, 0, '마리당 최대 5개']); }
       const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
       if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, 0, 0, '마리당 최대 1개']);
-      [...TR_XS.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0])].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
+      [...TR_XS.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0]), ...TR_BK].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
       return out; })(),
     [3, 0, '동료 몬스터볼 ×3', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'mon', 3, '동료 몬스터볼')],
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
