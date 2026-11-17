@@ -4210,7 +4210,10 @@ const TR_XS = [['leftovers', 3, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['s
    뽑기 무게: 포켓로그처럼 자뭉·리샘·과사가 잘 나오고, 상태 이상 하나만 고치는 열매·타입 반감 열매는 적게 */
 const TR_BER_W = k => /^(sitrus|lum|leppa)berry$/.test(k) ? 3 : /^(cheri|chesto|pecha|rawst|aspear|persim)berry$/.test(k) || /^(chilan|chople|coba|kebia|shuca|charti|tanga|kasib|babiri|occa|passho|rindo|wacan|payapa|yache|haban|colbur|roseli)berry$/.test(k) ? .4 : 1;
 const TR_BK = new Set();   /* 나온 열매 (카드 그림 TR_IC 에 넣을 것) */
-const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband']);   /* v26.86 포켓로그 로그 등급 = 에픽 */
+const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband', 'gripclaw', 'souldew']);
+/* v26.90 경완 '포켓로그에 있는 것만 일단 넣어줘': 포켓로그 로그 등급 끈기갈고리손톱(무게 5, 5개)·마음의물방울(7, 10개) → 쌓이는 도구, 종 전용 능력 강화(울트라 12 = 전기구슬·굵은뼈·금속파우더·스피드파우더 / 그레이트 2 = 심해의이빨·심해의비늘)는 그 종이 있을 때만, 본가 도구 1칸 */
+const TR_XS2 = [['gripclaw', 5, 5, n => `닿는 공격 때 ${n * 10}% 확률로 상대 도구를 빼앗음`], ['souldew', 7, 10, n => `성격 보정이 ${n * 10}% 더 세짐`]];
+const TR_SB = [['lightball', [25], 2], ['thickclub', [104, 105], 2], ['metalpowder', [132], 2], ['quickpowder', [132], 2], ['deepseatooth', [366], 1], ['deepseascale', [366], 1]];   /* v26.86 포켓로그 로그 등급 = 에픽 */
 const TR_TYIT = { 1: 'silkscarf', 2: 'blackbelt', 3: 'sharpbeak', 4: 'poisonbarb', 5: 'softsand', 6: 'hardstone', 7: 'silverpowder', 8: 'spelltag', 9: 'metalcoat', 10: 'charcoal', 11: 'mysticwater', 12: 'miracleseed', 13: 'magnet', 14: 'twistedspoon', 15: 'nevermeltice', 16: 'dragonfang', 17: 'blackglasses', 18: 'fairyfeather' };
 const TR_IT1 = [['lifeorb', 2], ['choiceband', 2], ['choicespecs', 2], ['choicescarf', 2], ['assaultvest', 1], ['rockyhelmet', 1]];
 const trItNm = k => GB().HOLD?.[k]?.[0] || k, trItD = k => GB().HOLD?.[k]?.[2] || '';
@@ -4600,11 +4603,13 @@ async function trReward(R, o, ids, boss, shop, first) {
       const DS = '';   /* v26.85 경완 'C 좋다': 대여는 카드마다 말고 아래 안내 글에 한 번만 (TR_RENT) */
       { const BL = Object.keys(GB().HOLD || {}).filter(k => /berry$/.test(k)), bk = (() => { let r = Math.random() * BL.reduce((t, k) => t + TR_BER_W(k), 0); return BL.find(k => (r -= TR_BER_W(k)) < 0) || BL[0]; })();
         const okb = bk && live.filter(id => n(id, bk) < 3); if (okb?.length) out.push([3, 0, trItNm(bk), trItD(bk), give(bk, okb, `누구에게 ${eul(trItNm(bk))} 빌려줄까요?`, 3), 0, 0, '마리당 최대 3개']); if (bk) TR_BK.add(bk); }
-      TR_XS.forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
+      [...TR_XS, ...TR_XS2].forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
       const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([9 * .3, 2, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20%${DS}`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 빌려줄까요?`, 5), 0, 0, '마리당 최대 5개']); }
+      { const sb = TR_SB.map(([k, sp, g]) => [k, g, live.filter(id => sp.includes(P(id)?.sp) && m(id)?.it !== k)]).filter(x => x[2].length), x = sb.length && pick(sb);   /* 그 종이 라인업에 있을 때만 */
+        if (x) { const [kk, gg, ok3] = x; out.push([(gg === 2 ? 12 : 2) * .3, gg, trItNm(kk), trItD(kk), async () => { const id = await who(ok3, `누구에게 ${eul(trItNm(kk))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = kk; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(kk))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(kk))} 빌려주었다!`; }, 0, 0, '마리당 최대 1개']); TR_BK.add(kk); } }
       const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
       if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, 0, 0, '마리당 최대 1개']);
-      [...TR_XS.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0]), ...TR_BK].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
+      [...TR_XS.map(x => x[0]), ...TR_XS2.map(x => x[0]), ...Object.values(TR_TYIT), ...TR_IT1.map(x => x[0]), ...TR_BK].forEach(k => { const nm0 = trItNm(k); if (!TR_IC.some(([x]) => x === nm0)) TR_IC.unshift([nm0, k]); });   /* 보상 카드 그림 */
       return out; })(),
     [3, 0, '동료 몬스터볼 ×3', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'mon', 3, '동료 몬스터볼')],
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
