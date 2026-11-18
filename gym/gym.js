@@ -1652,7 +1652,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.42: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>${STK_MS[stk] ? `<p class="rg-ms">${stk}연승 달성 보너스 +${STK_MS[stk].toLocaleString()}G</p>` : ''}` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
@@ -1671,7 +1671,7 @@ function resultPop(c, res, gold, rep, R) {
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
-    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
+    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in">${STK_MS[stk] ? `<em class="sk-ms">+${STK_MS[stk].toLocaleString()}G</em>` : ''}<b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };   /* v27.23 경완 '텍스트로 넣기 보다는 연승 딱지 위에 +골드 텍스트 추가해서': 고비 보너스(STK_MS)는 연승 딱지 위 노란 딱지로 (v27.18 골드 상자 밑 .rg-ms 줄은 지움) */
 async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = null) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
