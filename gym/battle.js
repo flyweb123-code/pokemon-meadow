@@ -481,7 +481,7 @@ const ZT_ID = { '10000000voltthunderbolt': 'TENMILLIONVOLTTHUNDERBOLT' };
 async function gmFx(s, X, kind, ty) {
   const m = monEl(s); if (!m || !B) return; const pan = panOf(s), DBK = await dbkLoad();
   const swap = () => { m._tok = (m._tok || 0) + 1; showMon(s, X, true); playAnim(s, X); paintHb(s, X); gkBg(); };
-  if (DBK && X && !((kind === 'mega' || kind === 'z' || kind === 'dmax') && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
+  if (DBK && X && !((kind === 'mega' || kind === 'z' || kind === 'dmax' || kind === 'tera' && window.GymDBK?.teraFull) && s[0] === 'e') && (kind === 'mega' || kind === 'z' || kind === 'tera' || kind === 'dmax')) {   /* 경완 2026-11-12 '도전자 메가진화는 연출 없이 간단하게 빛나면서 바뀜' → 상대 메가진화는 아래 간단 연출 */
     try {
       { const mt = $b('.bt-msg .t'); if (mt) mt.textContent = ''; }   // 장면 동안 앞 대사는 지움
       if (kind === 'mega') { const c = await dxCtx(s, X, frontOf(X, X.fmPrev), frontOf(X, X.fm), `${IMG}dbk/it/mega-bracelet.png`)   /* 경완 '키스톤은 메가링' → 경완이 준 메가바클 그림 (2026-11-12) */, st = toID(ty || ''); if (st) { const z = await dxImg(`${IMG}dbk/it/${st}.png`); if (z) c.stone = { url: `${IMG}dbk/it/${st}.png`, w: z.w * 1.6, h: z.h * 1.6 }; }
@@ -494,6 +494,7 @@ async function gmFx(s, X, kind, ty) {
         if (GymDBK.zFull) { await Promise.race([loadEss(), wait(1500)]); c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.zName = mvKo(zid) || 'Z기술'; await GymDBK.zFull(c); return; }   /* 경완 2026-11-13: Z기술 전체 화면 연출 (본가·애니 고증) */
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
+        if (GymDBK.teraFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.icon = TERA_I[ty] ? `${IMG}dbk/Tera/ty/${TERA_I[ty]}.png` : ''; c.tyKo = TYK[ty] || ''; c.onSwap = () => teraOn(s, ty); await GymDBK.teraFull(c); teraOn(s, ty); return; }   /* 경완 2026-11-19 '본가 테라스탈 연출 찾아보고 메진 거다이 수준으로': 오브에 힘 모음 → 던짐 → 결정이 감쌈 → 깨지며 보석 관 */
         await GymDBK.tera(c); teraOn(s, ty); return; }
       if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballS = new URL(`${IMG}ball/mon.png`, location.href).href; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
         if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.gxTop = gxTop; c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
@@ -521,6 +522,11 @@ async function gmFx(s, X, kind, ty) {
     if (zE) au.classList.add('gz'); const gk = zE ? 'zf' : kind; m.classList.add('gm-' + gk); await wait(dIn); ph = 1; await wait(260); if (X?.gmPend) { X.gmPend = 0; swap(); fit(); }
     ph = 2; t0 = performance.now(); au.classList.add('out'); setTimeout(() => { live = 0; const im = cl?.querySelector('img'); if (im && im.style.filter.includes(fid)) im.style.filter = m._patF || ''; flt.remove(); au.remove(); }, 650); if (kind === 'mega' || zE) { se('KIRAN', { pan }); se('KOUKA_H', { pan }); vib(2); mgMark(); } await wait(kind === 'mega' || zE ? 1100 : 420); m.classList.remove('gm-' + gk); if (trE) { trE.classList.remove('mgin'); trE.className = trWas; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'z') { se('KOUKA_M', { pan }); m.classList.add('gm-z'); await wait(B.fast ? 400 : 1000); m.classList.remove('gm-z'); return; }
+  if (kind === 'tera' && s[0] === 'e' && window.GymDBK?.teraMini) {   /* 경완 2026-11-19: 도전자 테라스탈은 메가·거다이맥스처럼 화면 안 커지고 그 자리에서 — 트레이너 들어옴 → 결정 조각이 감쌈 → 깨지며 보석 관 */
+    const tr = $b('.bt-tr.e'), trW = tr?.className; if (tr) { tr.classList.remove('away'); tr.classList.add('mgin'); await wait(B.fast ? 250 : 600); }
+    const top = $b('.bt-top'), r = m.querySelector('img')?.getBoundingClientRect() || m.getBoundingClientRect(), t0 = top.getBoundingClientRect(), z = t0.width / (top.offsetWidth || t0.width);
+    se('SUIKOMU', { pan }); m.classList.add('gm-tera'); el.classList.add('tmon'); await GymDBK.teraMini(top, (r.left + r.width / 2 - t0.left) / z, (r.top + r.height / 2 - t0.top) / z, r.width / z, r.height / z, ty, n => dxSe(n, pan)); m.classList.remove('gm-tera'); el?.classList.remove('tmon');
+    teraOn(s, ty); se('KIRAN', { pan }); vib(2); await wait(B.fast ? 400 : 900); if (tr) { tr.classList.remove('mgin'); tr.className = trW; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
   if (kind === 'dmax' && s[0] === 'e') {   /* v25.35 경완 '도전자가 하는 다이맥스는 메가·Z기술처럼 화면 커지지 않고 간단하게 (근데 볼에 들어갔다가 커진 후 나오는 연출이긴 해야됨)': 트레이너 들어옴 → 볼로 돌아감 → 볼이 붉게 빛나며 기운을 빨아들이고 커짐 → 붉게 번쩍 터지며 나옴 (크기는 그대로) → 하늘 배경·구름 */
     const tr = $b('.bt-tr.e'), trW = tr?.className, F = B.fast ? .5 : 1, fx = $b('.bt-fx'), x = 176 + slx(s), y = 46 + sly(s);
@@ -540,13 +546,34 @@ async function gmFx(s, X, kind, ty) {
 }
 // 배틀 중 무늬 ([DBK] Dynamax [003] UI.rb / Terastallization [002] UI.rb): 그림 위에 무늬를 불투명도 150 으로 겹쳐 흘림. 다이맥스는 1.5배
 /* v23.78 경완 '테라스탈 오버레이 효과랑 포켓몬 스프라이트 움직임이랑 안 맞아': 무늬를 따로 겹친 칸(그림을 가면으로)으로 두면 움직이는 gif·공격 모션을 못 따라감 → 그림 자체에 SVG 필터로 입힘 (그림이 움직이는 대로 같이 감) */
-function patOn(s, cls, url, size) { const m = monEl(s), img = m?.querySelector('.clip img'); if (!img) return; m.querySelector('.dpat')?.remove(); stPatDefs();
+function patOn(s, cls, url, size, tint) { const m = monEl(s), img = m?.querySelector('.clip img'); if (!img) return; m.querySelector('.dpat')?.remove(); stPatDefs();
   const host = document.getElementById('btStPat')?.querySelector('defs'); if (!host) return; const [w, h] = size.split(' ').map(parseFloat), id = 'btPat_' + s; document.getElementById(id)?.remove();
   const f = document.createElementNS('http://www.w3.org/2000/svg', 'filter'); f.id = id; f.setAttribute('color-interpolation-filters', 'sRGB'); f.setAttribute('x', 0); f.setAttribute('y', 0); f.setAttribute('width', 1); f.setAttribute('height', 1);
   f.innerHTML = `<feImage href="${url}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="i"/><feTile in="i" result="t"/><feComposite in="t" in2="SourceAlpha" operator="in" result="m"/><feComponentTransfer in="m" result="o"><feFuncA type="linear" slope=".588"><animate attributeName="slope" values=".5;.7;.5" dur="2.4s" repeatCount="indefinite"/></feFuncA></feComponentTransfer><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="o"/></feMerge>`;
+  /* 경완 '크리스탈 그래픽 좀 짜치는데 본가 참고해서': 테라스탈 몸 = 타입 색 유리빛 + 무늬 + 흰 결정 테두리 (본가처럼 몸 전체가 보석처럼) */
+  if (tint) f.innerHTML = `<feFlood flood-color="${tint}" result="c"/><feComposite in="c" in2="SourceAlpha" operator="in" result="ct"/><feBlend in="ct" in2="SourceGraphic" mode="screen" result="g0"/><feComposite in="g0" in2="SourceGraphic" operator="arithmetic" k2=".26" k3=".8" result="g"/>`
+    + `<feImage href="${url}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="i"/><feTile in="i" result="t"/><feComposite in="t" in2="SourceAlpha" operator="in" result="m"/><feComponentTransfer in="m" result="o"><feFuncA type="linear" slope=".4"><animate attributeName="slope" values=".3;.52;.3" dur="2.4s" repeatCount="indefinite"/></feFuncA></feComponentTransfer>`
+    + `<feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="er"/><feComposite in="SourceAlpha" in2="er" operator="out" result="rim"/><feFlood flood-color="#fff" flood-opacity=".85" result="w"/><feComposite in="w" in2="rim" operator="in" result="rw"/>`
+    + `<feMerge><feMergeNode in="g"/><feMergeNode in="o"/><feMergeNode in="rw"/></feMerge>`;
   host.appendChild(f); m._patF = `url(#${id})`; img.style.filter = m._patF; }
 const patOff = s => { const m = monEl(s), img = m?.querySelector('.clip img'); if (!m) return; m.querySelector('.dpat')?.remove(); if (m._patF && img) img.style.filter = ''; m._patF = null; };
-function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px'); stPat(s, ''); }
+function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px', window.GymDBK?.tyCol ? `rgb(${GymDBK.tyCol(ty)[0].join(',')})` : ''); stPat(s, ''); tcOn(s, ty); if (s[0] === 'p') gkBg(); }
+/* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 본가처럼 테라스탈한 동안 머리 위에 타입 모양 테라 보석 관(GymDBK.teraCrown) + 몸에 반짝이·빛 쓸기. 그림이 움직이는 대로 매 프레임 머리(gxTop) 위에 */
+const TC = {};
+function tcOff(s) { const st = TC[s]; if (!st) return; st.live = 0; st.el.remove(); delete TC[s]; }
+let TCF = null; function tcFace() { if (!TCF) { TCF = {}; fetch(IMG + 'pk/face.json').then(r => r.json()).then(d => { TCF = d; }).catch(() => {}); } }   /* 종마다 얼굴 상자 (경완이 편집 페이지로 고친 값, 관장 카드 mecFace 와 같은 파일) */
+function tcOn(s, ty) { tcOff(s); tcFace(); const m = monEl(s), mw = m?.closest('.bt-mw'); if (!mw || !window.GymDBK?.crownUrl) return;
+  const el = document.createElement('div'); el.className = 'bt-tcr'; el.innerHTML = `<i class="cr" style="background-image:url(&quot;${GymDBK.crownUrl(ty)}&quot;)"></i>${'<b></b>'.repeat(4)}`; mw.appendChild(el);
+  const st = TC[s] = { el, live: 1 }, cr = el.firstChild, tw = [...el.querySelectorAll('b')], [li] = GymDBK.tyCol(ty); el.style.setProperty('--tl', `rgb(${li.join(',')})`);
+  const loop = () => { if (!st.live) return; requestAnimationFrame(loop); if (document.hidden) return; const img = m.querySelector('.clip img'); if (!img || !img.offsetWidth || m.classList.contains('faint') || !m.classList.contains('tera')) { el.style.opacity = 0; if (!m.classList.contains('tera')) tcOff(s); return; }
+    let R = mw.getBoundingClientRect(), q = R.width / (mw.offsetWidth || 256) || 1, r = img.getBoundingClientRect(), w = r.width / q, h = r.height / q, G = gxTop(img), cw = Math.max(44, Math.min(150, w * .9))   /* 경완 '왕관은 포켓몬 머리 위에 크게': 본가처럼 몸 폭만큼 */, x = (r.left - R.left) / q + w * G.x, y = (r.top - R.top) / q + h * G.y;
+    const F = s[0] !== 'p' && G.b && m._sp && TCF?.[m._sp];   /* 경완 '머리에 맞추는 것만 수정': 상대(앞모습)는 맨 위 픽셀(날개·뿔 끝) 말고 face.json 얼굴 상자 위에 */
+    if (F) { const [b0, b1, b2, b3] = G.b, fl = /matrix\(-/.test(getComputedStyle(img).transform), fx = fl ? 1 - (F[0] + F[2]) / 2 : (F[0] + F[2]) / 2; x = (r.left - R.left) / q + w * (b0 + (b2 - b0) * fx); y = (r.top - R.top) / q + h * (b1 + (b3 - b1) * F[1]); cw = Math.max(40, Math.min(cw, w * (b2 - b0) * (F[2] - F[0]) * 1.25)); }   /* 관 폭 = 얼굴 폭쯤 (몸 폭이면 큰 종은 얼굴을 덮음) */
+    const top = 2; { const room = y + cw * .84 * .2 - top; if (cw * .84 > room) cw = Math.max(40, room / .84); }   /* 경완 '배틀화면에서 왕관이 배틀박스 가리지 않게': 관은 늘 체력 박스 밑(gym.css .bt:has(.bt-tcr) .bt-hb), 화면 위로 넘칠 때만 줄임 */
+    let cy = Math.max(top, F ? y - cw * .84 * .92 : y + h * .2 - cw * .84 * .95);   /* 경완 '이거 왕관이니까 포켓몬들 머리 위에 얹어줘': 받침 띠가 머리 꼭대기에 걸치게 */
+    el.style.opacity = getComputedStyle(m).opacity; cr.style.cssText = `background-image:${cr.style.backgroundImage};width:${cw}px;height:${cw * .84}px;left:${x - cw / 2}px;top:${cy}px`;
+    tw.forEach((b, i) => { if (!b._t || performance.now() > b._t) { b._t = performance.now() + 900 + Math.random() * 1400; b.style.left = (r.left - R.left) / q + w * (.2 + Math.random() * .6) + 'px'; b.style.top = (r.top - R.top) / q + h * (G.y + (1 - G.y) * (.1 + Math.random() * .7)) + 'px'; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); } }); };
+  requestAnimationFrame(loop); }
 function dmaxOn(s, X) { const m = monEl(s); m.classList.add('dmx'); patOn(s, 'dp', `${IMG}dbk/pat/${X?.sp === 898 ? 'CALYREX' : 'dynamax'}.png`, '400px 96px'); stPat(s, ''); gxOn(s); }
 function dmaxOff(s) { const m = monEl(s); m.classList.remove('dmx'); patOff(s); gxOff(s); }
 /* 경완 2026-11-14 '거다이맥스 후 배틀화면: 내 포켓몬은 커지고 거다이맥스처럼 빨간 구름 드리운 상태, 상대 포켓몬은 커진만큼 작아져있고, 배경이 하늘 혹은 실내일 경우 천장까지 보이는 배경으로'
@@ -569,10 +596,10 @@ function gxOn(s) { const m = monEl(s), mw = m?.closest('.bt-mw'); if (!mw || !wi
 const GXC = {pikachu: [[.35,.3], [.5,.3]], eevee: [[.25,.12,.8], [.3,.1,.8]], alcremie: [[.5,.12,.8], [.5,.12,.8]], meowth: [[.3,.3,.8], [.8,.2,.8]], venusaur: [[.5,.02], [.5,.02]], charizard: [[.82,.45,.8], [.15,.45,.8]], blastoise: [[.2,.1,.8], [.75,.06,.8]], gengar: [[.55,.02], [.5,.02]], butterfree: [[.5,.45,.5], [.5,.45,.5]], machamp: [[.5,.52,.9], [.5,.55,.9]], kingler: [[.45,.2,.8], [.45,.25,.8]], lapras: [[.65,.08,.8], [.45,.05,.8]], snorlax: [[.4,.02,.8], [.45,.02,.8]], garbodor: [[.4,.05], [.55,.05]], melmetal: [[.5,.08,.7], [.5,.08,.7]], rillaboom: [[.45,.3,.7], [.5,.3,.7]], cinderace: [[.4,.05,.7], [.45,.05,.7]], inteleon: [[.5,.4,.8], [.5,.4,.8]], corviknight: [[.5,.35,.8], [.5,.35,.8]], orbeetle: [[.6,.5,.8], [.45,.5,.8]], drednaw: [[.45,.12,.8], [.8,.15,.8]], coalossal: [[.45,.02], [.45,.02]], flapple: [[.5,.25,.7], [.5,.25,.7]], appletun: [[.5,.25,.7], [.5,.25,.7]], sandaconda: [[.5,.05,.8], [.5,.05,.8]], centiskorch: [[.92,.6,.7], [.08,.6,.7]], hatterene: [[.3,.1,.8], [.6,.1,.8]], grimmsnarl: [[.45,.05,.8], [.5,.05,.8]], copperajah: [[.75,.02,.8], [.35,.02,.8]], duraludon: [[.45,.3,.8], [.5,.3,.8]], toxtricity: [[.65,.08,.8], [.2,.05,.8]], toxtricitylowkey: [[.65,.08,.8], [.2,.05,.8]], urshifu: [[.5,.08,.8], [.5,.08,.8]], urshifurapidstrike: [[.55,.08,.8], [.5,.05,.8]]};   /* 경완 2026-11-15 '거다이 폼마다 구름 위치가 다를텐데' + 본가 거다이맥스 그림 34장: 폼별 구름 자리 [앞 그림, 뒷모습] = [가로, 세로(실제 그림 테두리 안 비율), 크기] */
 const GXC_UP = 80, GXC_L = 96, GXT = {};   /* GXC_L: 옆으로 늘린 길이 (경완 '레이아웃 개판' — 꼬리 옆 구름이 캔버스 왼쪽에서 잘림) */
    /* 구름 캔버스를 위로 늘린 길이, 그림별 실제 맨 위 줄(비율) */
-function gxTop(img, I) { const u = img.currentSrc || img.src; if (u in GXT && !I) return GXT[u]; if (!I) GXT[u] = { y: .07, x: .5 }; I = I || img; try { const w = I.naturalWidth, h = I.naturalHeight; if (!w || !h) return GXT[u]; const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(I, 0, 0); const d = x.getImageData(0, 0, w, h).data, A = (i, y) => d[(y * w + i) * 4 + 3] > 40;
+function gxTop(img, I) { const u = img.currentSrc || img.src; if (u in GXT && !I) return GXT[u]; if (!I) GXT[u] = { y: .07, x: .5 }; I = I || img; try { const w = I.naturalWidth, h = I.naturalHeight; if (!w || !h) { const g = GXT[u]; if (I === img) delete GXT[u]; return g; }   /* 그림이 아직 안 받아졌을 때 기본값이 굳어 다시 안 재던 것 */ const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(I, 0, 0); const d = x.getImageData(0, 0, w, h).data, A = (i, y) => d[(y * w + i) * 4 + 3] > 40;
   let y0 = -1, y1 = -1; for (let y = 0; y < h && y0 < 0; y++) for (let i = 0; i < w; i++) if (A(i, y)) { y0 = y; break; } for (let y = h - 1; y >= 0 && y1 < 0; y--) for (let i = 0; i < w; i++) if (A(i, y)) { y1 = y; break; } if (y0 < 0) return GXT[u];
   const band = y0 + Math.max(3, Math.round((y1 - y0) * .18)); let sx = 0, n = 0; for (let y = y0; y <= band; y++) for (let i = 0; i < w; i++) if (A(i, y)) { sx += i; n++; }   /* 경완 2026-11-15 '구름 위치는 본가 거다이맥스 폼 이미지 보고': 맨 위 18% 줄(머리·볏)의 가운데 위에 구름 */
-  GXT[u] = { y: y0 / h, x: n ? sx / n / w : .5 };
+  { let x0 = w, x1 = -1; for (let y = y0; y <= y1; y++) for (let i = 0; i < w; i++) if (A(i, y)) { if (i < x0) x0 = i; if (i > x1) x1 = i; } GXT[u] = { y: y0 / h, x: n ? sx / n / w : .5, b: [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h] }; }   /* b = 보이는 그림 상자 (테라 관이 face.json 얼굴 상자를 그림 위에 놓을 때) */
   const nm = (u.match(/([a-z]+)gmax\.gif/) || [])[1] || '', [k, bk] = GXC[nm] ? [nm, 0] : nm[0] === 'b' && GXC[nm.slice(1)] ? [nm.slice(1), 1] : nm.slice(0, 2) === 'bs' && GXC[nm.slice(2)] ? [nm.slice(2), 1] : nm[0] === 's' && GXC[nm.slice(1)] ? [nm.slice(1), 0] : ['', 0], o = k && GXC[k][bk];
   if (o) { let x0 = w, x1 = -1; for (let y = y0; y <= y1; y++) for (let i = 0; i < w; i++) if (A(i, y)) { if (i < x0) x0 = i; if (i > x1) x1 = i; } GXT[u] = { x: (x0 + (x1 - x0) * o[0]) / w, y: (y0 + (y1 - y0) * o[1]) / h, s: o[2] || 1, o: 1 }; } } catch (e) { if (I === img && !GXT[u].cr) { GXT[u].cr = 1; const J = new Image(); J.crossOrigin = 'anonymous'; J.onload = () => gxTop(img, J); J.src = u; } } return GXT[u]; }   /* 다른 주소 그림(쇼다운 스프라이트)은 캔버스가 막혀 머리 자리를 못 재던 것 → CORS 로 다시 받아 잼 (경완 '왕관 … 머리 위에 얹어줘') */
 function gxOff(s, now) { const st = GX[s]; if (st) { if (now) { st.live = 0; st.cb.remove(); st.cf.remove(); } else st.to = 0; delete GX[s]; } if (!now) setTimeout(gxLay, 0); }
@@ -672,7 +699,7 @@ function showMon(side, A, on = true) {
     if (cl) { cl.style.left = so ? -so[0] * k + 'px' : ''; cl.style.top = so ? so[1] * k + 'px' : ''; }
     if (side[0] === 'p') { const u = A.gif; gifTop(u).then(g => { if (!g || m._gif !== u) return; const y = 144 - (g.h - g.t - (so?.[1] || 0)) * k, TF = B?.dbl ? (side === 'p2' ? 80 : 64) : GIF_TOP; let dy = 0; if (y < TF) { dy = Math.round(TF - y);   /* v24.99 더블: 내 쪽 큰 포켓몬(리자몽)이 상대 포켓몬을 가리지 않게 머리 높이를 낮춤 (오른쪽 p2 는 상대 왼쪽 포켓몬 발밑 아래까지) */ m.style.top = (48 + dy) + 'px'; } hbAvoid(m, g, k, so, 'p', dy); }); }
     else { const u = A.gif; gifTop(u).then(g => { if (g && m._gif === u) hbAvoid(m, g, k, so, 'e', 0); }); }
-    m._gif = A.gif; }
+    m._gif = A.gif; m._sp = A.gif === gifUrl(A.sp, side[0] === 'p', A.shiny, A.g === 'F') ? A.sp : 0; }
   else if (A) {
     m._gif = null; m.classList.remove('gf'); { const cl = m.querySelector('.clip'); if (cl) cl.style.left = cl.style.top = ''; } const a = anOf(A), sheet = !!a, fm = FMA[A.fm] ? A.fm : ''; img.onerror = () => { img.onerror = null; setSrc(img, pkSrc(A.sp, { b: side[0] === 'p', s: A.shiny })); }; setSrc(img, fm ? `${IMG}pk/${fmDir(fm)}/${fm}${side[0] === 'p' ? 'b' : ''}${A.shiny ? 's' : ''}.png?v=${VER}` : pkSrc(A.sp, { b: side[0] === 'p', s: A.shiny, f: A.g === 'F' })); img.alt = '';
     m.classList.toggle('pl2', sheet); img.style.transform = '';
@@ -724,8 +751,10 @@ async function sendOut(side, A, quick) {
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(16);
   m.classList.remove('ball'); await wait(200); } try { GA.cry?.(A.sp, 0, 1, CRY_K); } catch (e) {} playAnim(side, A);
   if (A.shiny) await shinyFx(side);   // 색이 다른 포켓몬은 나올 때 반짝반짝 (본가)
-  paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); await wait(450);
+  paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); reTera(side, A); await wait(450);
 }
+/* 테라스탈한 포켓몬이 교체로 들어갔다 다시 나오면 엔진에선 그대로 테라 → 화면도 결정 무늬·관을 다시 (교체 때 patOff·tcOff 로 지워졌던 것) */
+function reTera(s, X) { const t = B?.tP?.[s[0] + X.i]; if (!t) return; X.tera = t; teraOn(s, t); paintHb(s, X); }
 async function shinyFx(side) {
   const m = monEl(side); se('REAPOKE', { pan: panOf(side) });
   for (let i = 0; i < 7; i++) { const k = document.createElement('i'); k.className = 'bt-shn'; k.style.setProperty('--a', (i * 51) + 'deg'); k.style.animationDelay = (i * 60) + 'ms'; m.appendChild(k); setTimeout(() => k.remove(), 1100); }
@@ -776,7 +805,9 @@ function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; gkBg(); re
 // 경완 2026-11-12: 메가진화(기믹) 버튼을 켜면 아래 화면 바탕색이 그 색으로, 메가진화한 포켓몬이 나와 있는 동안 계속, 다른 포켓몬으로 바꾸면 원래 색
 function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || B.gkUsed || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || ''), dx = Object.keys(B.gmx || {}).some(k => k[0] === 'p' && B.gmx[k]);   /* 경완 2026-11-15 '다이맥스 아이콘 메가진화·Z기술처럼 하단 배경에 마크': 다이맥스 중엔 계속 */
   const zw = el.classList.contains('gkbg-zmove');
-  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg || k === 'dynamax' && dx));
+  const tt = sel === 'terastallize' ? B.gkTy : !sel && X?.tera && monEl('p')?.classList.contains('tera') ? X.tera : '';   /* 경완 2026-11-19 '해당 타입 테라스탈 표시가 메가진화 마크처럼 배경에서 돌아가게, z기술처럼 배경은 해당 타입 색상으로': 켰을 때·테라스탈한 동안 */
+  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg || k === 'dynamax' && dx || k === 'terastallize' && !!tt && !mg && !dx));
+  if (tt) { const ti = TY_EN.indexOf(tt); if (ti > 0) el.dataset.zt = ti; el.classList.toggle('gkst', tt === 'Stellar'); if (TERA_I[tt]) el.style.setProperty('--ti', `url("${new URL(`${IMG}dbk/Tera/ty/${TERA_I[tt]}.png`, location.href).href}")`); }
   if (zw && !el.classList.contains('gkbg-zmove')) { el.classList.add('gkz-out'); clearTimeout(gkBg.t); gkBg.t = setTimeout(() => el?.classList.remove('gkz-out'), 900); } else if (el.classList.contains('gkbg-zmove')) el.classList.remove('gkz-out'); }   /* Z 바탕이 꺼질 땐 Z 그림 그대로 흐려지며 사라지게 */
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
@@ -842,7 +873,9 @@ function movePanel(req, ak = 0) {
       if (b.dataset.gk) { B.gkSel = B.gkSel === b.dataset.gk ? null : b.dataset.gk; vib(1); if (B.gkSel && /^mega/.test(B.gkSel)) { se('SUIKOMU'); setTimeout(() => se('KIRAN'), 260); vib(2); }   /* 경완 2026-11-12 '메가진화 버튼 누를 때 뭔가 변하는 듯한 효과음': 켤 때 기운 빨아들이는 소리 → 반짝 */
         if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }
         if (b.dataset.gk === 'dynamax') { dSwap(p, R, mv, b); return; }   /* 경완 2026-11-15 '거다이맥스도 버튼 눌렀을 때 들썩이는 거 없이, 버튼이 빛나면서 소리 나면서 바뀌게' */   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
-        if (/^(mega|terastallize)/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
+        if (b.dataset.gk === 'terastallize') { B.gkTy = R.canTerastallize || ''; p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg();   /* 경완 2026-11-19 '테라스탈 눌렀을 때도 소리 나면서 버튼 활성화 되게': 거다이맥스 버튼처럼 빛나며 소리 */
+          if (B.gkSel) { b.classList.remove('gkfl'); void b.offsetWidth; b.classList.add('gkfl'); setTimeout(() => b.classList.remove('gkfl'), 800); se('SUIKOMU'); setTimeout(() => se('KIRAKIRA2'), 200); setTimeout(() => se('KIRAN'), 380); vib(2); } return; }
+        if (/^mega/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
         return movePanel(req, ak).then(res); }
       if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req, ak).then(res));
       res(+b.dataset.i);
@@ -1675,7 +1708,7 @@ async function handle(a) {
       const src = s[0] === 'p' ? B.my[i] : B.foe[i], pk = B.o[s[0]][i];
       const old = A(s);
       if (old && !old.fnt) { await msg(s[0] === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
-      monEl(s).classList.remove('dmx', 'tera'); patOff(s); B.gmx[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
+      monEl(s).classList.remove('dmx', 'tera'); patOff(s); tcOff(s); setTimeout(gkBg, 0); B.gmx[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
@@ -1738,7 +1771,7 @@ async function handle(a) {
     case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s[0] === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
       if (s[0] === 'p') B.zUseP = 1; await gmFx(s, A(s), 'z', zi); const zt = Math.max(1, TY_EN.indexOf(zi?.type || 'Normal')); zAura(s, true, 0, zt); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower', ZT_FL[zt])]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
-    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
+    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) { X.tera = a[3]; (B.tP = B.tP || {})[s[0] + X.i] = a[3]; } await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);
         if (gx) { const gf = toID(PSim.Dex.species.get(X.pk?.baseSpecies?.name || X.fm || '').baseSpecies || '') + 'gmax'; if (GMJ[gf]) { X.fm0 = X.fm; X.fm = gf; X.gif = await pickGif(s, X); } }
         B.gmx[s] = gx ? 2 : 1; const dmM = window.GymBGM?.name !== 'dmax' ? 'dmax' : null; if (dmM && !B.dmPrev) B.dmPrev = window.GymBGM?.name || null;   /* 경완 '다이맥스 끝날 때까지만 이어지게. 끝나면 원래 배틀 노래로 돌아오게 (난천 아님)': 원래 곡 B.dmPrev 기억 → dmBack */   /* 경완 'bgm 넣어놓음 폴더에' → 소드실드 체육관 곡(bgm.js SONG.dmax) */ if (dmM) M('stop', .4);   /* 경완 '다이맥스 할 때랑 하는 동안 소드실드 체육관 배틀 bgm' → 곡을 못 구해 '일단 그럼 우리도 다른 bgm 으로': 배틀에서 처음 다이맥스하는 순간 챔피언 배틀 곡으로 바꿔 끝까지 */ await gmFx(s, X, 'dmax'); if (dmM && B) M('play', dmM, { fade: .3 }); stPat(s, X.st); await msg(`${eun(n)} ${gx ? '거다이맥스' : '다이맥스'}했다!`); break; }
