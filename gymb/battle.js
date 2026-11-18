@@ -1176,7 +1176,36 @@ function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에�
   if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
+/* v27.16 AI 3단계 (경완 '지금 AI 2단계까지 있잖아. 좀 더 높은 3단계도 만들 수 있나?'): 고를 수 있는 기술·교체마다 지금 배틀을 몰래 복사해 두 턴 미리 돌려 봄(무작위 2번) → 남은 체력 비율 차이가 가장 좋은 수. 실패하면 2단계 고르기 */
+const aiMirror = b => new Proxy(b, { get: (t, k) => k === 'p1' ? t.p2 : k === 'p2' ? t.p1 : typeof t[k] === 'function' ? t[k].bind(t) : t[k] });
+/* psim.js 는 줄여 놓아 클래스 이름이 D·j 처럼 바뀜 → 복사본 참조 '[D:p1a]' 를 쇼다운이 읽는 '[Pokemon:p1a]' 로 */
+let AI_REF = null;
+const aiRefFix = (btl, t) => { if (!AI_REF) { const d = btl.dex, nm = o => o?.constructor?.name; AI_REF = {}; [[btl, 'Battle'], [btl.field, 'Field'], [btl.p1, 'Side'], [btl.p1.pokemon[0], 'Pokemon'], [d.conditions.get('brn'), 'Condition'], [d.abilities.get('intimidate'), 'Ability'], [d.items.get('leftovers'), 'Item'], [d.moves.get('tackle'), 'Move'], [d.species.get('pikachu'), 'Species']].forEach(([o, k]) => { const n = nm(o); if (n && n !== k) AI_REF[n] = k; }); }
+  return Object.keys(AI_REF).length ? t.replace(/"\[([A-Za-z_$][\w$]*)(:|\])/g, (m, n, e) => AI_REF[n] ? '"[' + AI_REF[n] + e : m) : t; };
+function aiLook(btl) {
+  const side = btl.p2, req = side.activeRequest; if (!req || req.wait || req.teamPreview || btl.gameType !== 'singles') return null;
+  const base = aiChoice(btl, 2); if (!base) return null;
+  const cands = []; if (req.forceSwitch) return base;
+  (req.active?.[0]?.moves || []).forEach((m, i) => { if (!m.disabled && m.pp > 0) cands.push('move ' + (i + 1)); });
+  if (!req.active?.[0]?.trapped) req.side.pokemon.forEach((p, i) => { if (!p.active && !/fnt/.test(p.condition)) cands.push('switch ' + (i + 1)); });
+  if (cands.length < 2) return base;
+  const r1 = btl.p1.activeRequest, opp = [];
+  try { if (r1 && !r1.wait && !r1.forceSwitch) { opp.push(aiChoice(aiMirror(btl), 2)); } } catch (e) { return base; }
+  if (!opp.length) opp.push(null);
+  let js; try { js = btl.toJSON(); if (typeof js === 'string') js = JSON.parse(js); js.sides.forEach((sd, i) => { sd.activeRequest = btl.sides[i].activeRequest ? JSON.parse(JSON.stringify(btl.sides[i].activeRequest)) : null; }); js = aiRefFix(btl, JSON.stringify(js)); } catch (e) { return base; }
+  const val = b => { const hp = sd => sd.pokemon.reduce((a, p) => a + (p.fainted ? 0 : p.hp / p.maxhp + .35), 0); return hp(b.p2) - hp(b.p1); };
+  const step = b => { const q1 = b.p1.activeRequest, q2 = b.p2.activeRequest, a1 = q1 && !q1.wait ? aiChoice(aiMirror(b), 2) : null, a2 = q2 && !q2.wait ? aiChoice(b, 2) : null; if (a1 && a2) b.makeChoices(a1, a2); else if (a1) b.choose('p1', a1); else if (a2) b.choose('p2', a2); else return 0; return 1; };
+  /* 한 턴 = 내 수(c)·상대 수(o, 2단계 AI 가 고를 만한 수), 뒤 한 턴은 양쪽 다 2단계 AI 로 이어 돌려 자리 좋고 나쁨까지 봄 (시뮬: 상대 모든 수 최솟값·두 턴 이어 돌리기는 오히려 약했음) */
+  const run = (c, o, seed) => { const b = PSim.Battle.fromJSON(js); b.resetRNG([seed, seed * 7 + 3, seed * 13 + 5, seed * 31 + 11].map(x => x % 65536)); b.send = () => {};
+    if (o) b.makeChoices(o, c); else b.choose('p2', c);
+    for (let k = 0, t = 0; k < 8 && !b.ended; k++) { const fs = b.p1.activeRequest?.forceSwitch || b.p2.activeRequest?.forceSwitch; if (!fs && t++ >= 1) break; if (!step(b)) break; }
+    return b.ended ? (b.winner === btl.p2.name ? 99 : -99) : val(b); };
+  let bestC = base, bestV = -1e9;
+  try { for (const c of cands) { let v = (run(c, opp[0], 101 + btl.turn * 17) + run(c, opp[0], 211 + btl.turn * 17)) / 2; if (c === base) v += .04; if (v > bestV) { bestV = v; bestC = c; } } } catch (e) { return base; }
+  return bestC;
+}
 function aiChoice(btl, diff) {
+  if (diff >= 3) { const c = aiLook(btl); if (c) return c; diff = 2; }
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const foe = btl.p1.active[0], me = side.active[0];
   const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;

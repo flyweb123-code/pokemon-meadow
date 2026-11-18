@@ -71,6 +71,7 @@ const CSS = `
 #gym .ev-luw.tired .lu-slot[data-p]{filter:grayscale(1) brightness(.92);opacity:.55}#gym .ev-luw.tired>h3::after{content:'모두 지쳐 있어요 · 포켓몬 센터에서 회복해요';word-break:keep-all;display:block;margin:6px -72px 0 0;line-height:1.4;padding:8px 10px;border-radius:8px;background:#3c3c4c;color:#fff;font-size:13px;font-weight:700;text-align:center}   /* 졌을 때: 슬롯 흐리게 */
 #gym .ev-bag{position:absolute;right:12px;top:calc(92px + env(safe-area-inset-top,0px));z-index:960;border:0;border-radius:8px;background:rgba(16,16,24,.72);color:#fff;font-size:13px;font-weight:700;padding:7px 12px;box-shadow:0 3px 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22);transition:opacity .25s,transform .05s,box-shadow .05s;-webkit-tap-highlight-color:transparent}
 #gym .ev-pk,#gym .ev-bag{width:4.9em;padding-left:0;padding-right:0;text-align:center}   /* 가방 = 포켓몬 버튼 크기 (경완 2026-11-08) */
+#gym .ev-fld.fvis .ev-bag{display:none}   /* v27.16 친구 체육관 놀러가기: 가방(이벤트 물건)은 없음 */
 #gym .ev-bag:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.5),inset 0 0 0 2px rgba(255,255,255,.22)}
 #gym .ev-quit{background:rgba(196,40,44,.9);box-shadow:0 3px 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)}#gym .ev-quit:active{box-shadow:0 0 0 #6a1014,inset 0 0 0 2px rgba(255,255,255,.25)!important}
 #gym .ev-bagw .win{max-width:340px}#gym .ev-bagw h4{margin:0;font-size:16px}#gym .ev-bagw .bg-h{margin:2px 0 0;font-size:12px;font-weight:700;color:#707084;text-align:left}
@@ -595,7 +596,7 @@ function field(I, o) {
   el.addEventListener('touchstart', e => { if (e.target.closest('.ev-pad,.ev-a,.evf-b,.tw-map')) e.preventDefault(); }, { passive: false });
   el.querySelector('.ev-pk').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.pkQ = true; };   // 같이 다니는 포켓몬 바꾸기·넣어 두기 (경완 2026-11-08)
   el.querySelector('.ev-bag').onclick = e => { e.stopPropagation(); if (el.classList.contains('lock')) return; I.sfx?.('tap'); F.bgQ = true; };   // 가방: 주운 아이템 보기 (경완 2026-11-08)
-  el.querySelector('.ev-quit').onclick = async e => { e.stopPropagation(); I.sfx?.('tap'); F.lock(true); const y = await F.ask('이벤트를 멈추고 체육관에서 나갈까요?', '다음에 들어오면 이 장 처음부터 이어서 해요.', '나가기', '계속하기'); if (y) F.quitQ = true; else F.lock(false); };
+  el.querySelector('.ev-quit').onclick = async e => { e.stopPropagation(); I.sfx?.('tap'); F.lock(true); const y = await F.ask(F.quitT || '이벤트를 멈추고 체육관에서 나갈까요?', F.quitT ? (F.quitS || '') : '다음에 들어오면 이 장 처음부터 이어서 해요.', '나가기', '계속하기')   /* v27.16 친구 체육관 놀러가기도 같은 필드 (F.quitT) */; if (y) F.quitQ = true; else F.lock(false); };
   const KEY = { ArrowUp: 'u', ArrowDown: 'd', ArrowLeft: 'l', ArrowRight: 'r' };
   const kd = e => { if (e.key === 'Shift' || e.key === 'x') F.run = true; if (KEY[e.key]) { e.preventDefault(); if (!el.classList.contains('lock') && !e.repeat) press(KEY[e.key]); } else if (e.key === ' ' || e.key === 'Enter' || e.key === 'z') { if (!el.classList.contains('lock') && !e.repeat && performance.now() - (F.unT || 0) > 400) F.aQ = true; } };
   const ku = e => { if (KEY[e.key] === F.hold) press(null); if (e.key === 'Shift' || e.key === 'x') F.run = false; };

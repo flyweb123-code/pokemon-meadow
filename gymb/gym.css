@@ -4782,3 +4782,54 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.tmon .bt-hb{z-index:7}   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
 
 .bt-tcr .cr{image-rendering:pixelated;background-position:center bottom}   /* PixelLab 도트 관 */
+
+/* v27.16 친구 체육관 놀러가기 알림창 (경완 '완주했을 때는 승패 여부 디자인 된 알림창으로', '친구가 놀러 왔어요 창도 디자인 좀 해줘') — gym.js fvEndPop·fvInPop */
+#gym .gy-pop .win:has(.fve),#gym .gy-pop .win:has(.fvp){padding:0;overflow:hidden;max-width:340px}
+#gym .fve,#gym .fvp{display:flex;flex-direction:column;text-align:center}
+#gym .fve-hd,#gym .fvp-hd{position:relative;overflow:hidden;padding:16px 12px 12px;color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--tc) 82%,#fff),var(--tc) 55%,color-mix(in srgb,var(--tc) 70%,#000));border-bottom:3px solid #20202c;text-shadow:0 2px 0 rgba(0,0,0,.28)}
+#gym .fve-hd::after,#gym .fvp-hd::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 2px,transparent 2px 4px);pointer-events:none}
+#gym .fve-bd{position:relative;z-index:1;display:block;width:56px;height:56px;margin:0 auto 4px;image-rendering:pixelated;filter:drop-shadow(0 3px 0 rgba(0,0,0,.3))}
+#gym .fve-hd b{position:relative;z-index:1;display:block;font-size:28px;line-height:1.1;letter-spacing:2px}
+#gym .fve-hd small,#gym .fvp-hd small{position:relative;z-index:1;display:block;margin-top:3px;font-size:12px;opacity:.92}
+#gym .fve.won .fve-bd{animation:fveBd .8s cubic-bezier(.3,1.7,.5,1) .1s both}
+#gym .fve.won .fve-hd b{animation:fveT .6s cubic-bezier(.3,1.8,.5,1) .3s both}
+#gym .fve.lost .fve-hd{background:linear-gradient(180deg,#6a7088,#454a5e 55%,#33374a)}
+#gym .fve.lost .fve-bd{filter:grayscale(.7) brightness(.85) drop-shadow(0 3px 0 rgba(0,0,0,.3))}
+#gym .fve-sp{position:absolute;inset:0;z-index:0;pointer-events:none}
+#gym .fve.won .fve-sp{background:radial-gradient(circle at 18% 30%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 80% 22%,#fff 0 2px,transparent 3px),radial-gradient(circle at 70% 75%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 28% 78%,#fff 0 2px,transparent 3px),radial-gradient(circle at 50% 12%,#fff 0 1.5px,transparent 2.5px),radial-gradient(ellipse 60% 55% at 50% 45%,rgba(255,255,255,.35),transparent 70%);animation:fveTw 1.4s steps(2,end) infinite}
+#gym .fve-m{margin:12px 14px 2px;font-size:15px}#gym .fve-m b{color:var(--tc)}#gym .fve.lost .fve-m b{color:#454a5e}
+#gym .fve-rd{list-style:none;display:flex;justify-content:center;align-items:flex-end;flex-wrap:wrap;gap:4px 2px;margin:10px 10px 4px;padding:0}
+#gym .fve-rd li{position:relative;display:flex;flex-direction:column;align-items:center;width:44px;opacity:0;animation:fveIn .35s cubic-bezier(.3,1.6,.5,1) var(--d) both}
+#gym .fve-rd li+li::before{content:"";position:absolute;left:-6px;top:20px;width:8px;height:3px;background:#c8c4d0}
+#gym .fve-f{display:block;width:40px;height:40px;border:2px solid #20202c;border-radius:50%;overflow:hidden;background:#f2efe8;box-shadow:inset 0 -6px 0 rgba(0,0,0,.06)}
+#gym .fve-f img{display:block;width:60px;height:60px;margin:1px 0 0 -12px;image-rendering:pixelated;object-fit:cover;object-position:top}
+#gym .fve-rd li.ld .fve-f{width:46px;height:46px;border-color:var(--tc);border-width:3px}#gym .fve-rd li.ld{width:52px}
+#gym .fve-rd li.ld .fve-f img{width:66px;height:66px;margin:1px 0 0 -13px}
+#gym .fve-rd em{position:absolute;top:24px;right:0;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#3aa05a;border:2px solid #fff;box-shadow:0 0 0 1px #20202c}
+#gym .fve-rd li.ld em{top:30px}#gym .fve-rd li.no em{background:#d0402a}#gym .fve-rd li.no:not(.ld) em{display:none}
+#gym .fve-rd li.no .fve-f img{filter:grayscale(1) opacity(.55)}
+#gym .fve-rd small{margin-top:3px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:10px;color:var(--dim)}
+#gym .fve-g{display:flex;align-items:center;justify-content:space-between;margin:8px 14px 0;padding:7px 12px;border:2px solid #20202c;background:linear-gradient(#fff8d8,#ffeeb0);font-size:13px;animation:fveIn .35s cubic-bezier(.3,1.6,.5,1) .9s both}
+#gym .fve-g b{display:flex;align-items:center;font-size:17px;color:#8a5a00}
+#gym .fve-n{margin:10px 14px 0;font-size:12.5px;line-height:1.5;color:var(--dim)}#gym .fve-n span{display:block;margin-top:2px;font-size:11px;opacity:.8}
+#gym .fve .gy-btns,#gym .fvp .gy-btns{margin:12px 14px 14px}
+@keyframes fveBd{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fveT{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fveTw{50%{opacity:.45}}
+@keyframes fveIn{0%{transform:translateY(8px) scale(.7);opacity:0}100%{transform:none;opacity:1}}
+#gym .fvp-hd img{position:relative;z-index:1;display:block;width:40px;height:40px;margin:0 auto 3px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 rgba(0,0,0,.3))}
+#gym .fvp-hd b{position:relative;z-index:1;display:block;font-size:20px;letter-spacing:1px}
+#gym .fvp-l0{list-style:none;display:flex;flex-direction:column;gap:7px;margin:12px 12px 0;padding:0;max-height:46vh;overflow-y:auto}
+#gym .fvp-l0 li{position:relative;display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:9px;padding:7px 9px;border:2px solid #20202c;background:#fff;text-align:left;box-shadow:0 3px 0 rgba(0,0,0,.12);animation:fveIn .35s cubic-bezier(.3,1.6,.5,1) var(--d) both}
+#gym .fvp-l0 li.w{background:linear-gradient(90deg,#fff1ec,#fff 60%)}#gym .fvp-l0 li.l{background:linear-gradient(90deg,#eef4ff,#fff 60%)}
+#gym .fvp-f{display:block;width:46px;height:46px;border:2px solid #20202c;border-radius:50%;overflow:hidden;background:#f2efe8}
+#gym .fvp-f img{display:block;width:66px;height:66px;margin:1px 0 0 -12px;image-rendering:pixelated;object-fit:cover;object-position:top}
+#gym .fvp-t{min-width:0;display:flex;flex-direction:column;gap:1px}
+#gym .fvp-t b{display:flex;align-items:baseline;gap:6px;font-size:14px}#gym .fvp-t b small{font-size:10.5px;font-weight:400;color:var(--dim)}
+#gym .fvp-t>span{font-size:12.5px;line-height:1.35}#gym .fvp-l0 li.w .fvp-t>span{color:#c0392b;font-weight:700}#gym .fvp-l0 li.l .fvp-t>span{color:#2c6ab8}
+#gym .fvp-pp{display:flex;align-items:center;gap:3px;margin-top:3px}
+#gym .fvp-pp i{width:7px;height:7px;border:1.5px solid #20202c;background:#ddd8e2}#gym .fvp-pp i.on{background:#3aa05a}
+#gym .fvp-pp i.ld{width:9px;height:9px;transform:rotate(45deg);margin-left:2px}#gym .fvp-pp i.ld.on{background:#d0402a}
+#gym .fvp-st{display:grid;place-items:center;width:44px;height:44px;border:2.5px solid currentColor;border-radius:50%;font-style:normal;font-size:12px;font-weight:700;transform:rotate(-12deg);color:#9a96a4}
+#gym .fvp-l0 li.w .fvp-st{color:#d0402a;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3.5px #d0402a}#gym .fvp-l0 li.l .fvp-st{color:#2c6ab8;box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3.5px #2c6ab8}
+#gym .fvp-more{margin:8px 0 0;font-size:11.5px;color:var(--dim)}
