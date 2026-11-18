@@ -566,11 +566,13 @@
     g.drawImage(img, x0, 0, sw, 160, 0, top, 256, 160 * z);
     const H = top + E;   // 새로 그릴 위쪽 높이
     if (kind === 'out') {   // 하늘: 맨 윗줄 색 → 위로 갈수록 짙은 하늘색, 원래 배경 윗줄을 뒤집어 늘린 결(본가 DP 배경처럼 가로 줄무늬)
-      const deep = mixC(c0, [Math.min(c0[0], 60) * .6, Math.min(c0[1], 120) * .7, Math.max(c0[2] * .9, 120)], .6), gr = g.createLinearGradient(0, top, 0, -E);
-      gr.addColorStop(0, cs(c0)); gr.addColorStop(.35, cs(mixC(c0, deep, .45))); gr.addColorStop(1, cs(deep)); g.fillStyle = gr; g.fillRect(0, -E, 256, H + 1);
-      g.save(); g.globalAlpha = .45; g.translate(0, top); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
-      g.save(); g.globalAlpha = .18; g.translate(0, top - H * .45); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
-      const cl = mixC(c0, [255, 255, 255], .7); for (let i = 0; i < 7; i++) { const y = top - H * (.15 + i * .12), x = (i * 97 + 30) % 256, w = 60 + (i * 37) % 70; const rg = g.createRadialGradient(x, y, 1, x, y, w); rg.addColorStop(0, `rgba(${cl[0]},${cl[1]},${cl[2]},${.32 - i * .03})`); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.save(); g.translate(x, y); g.scale(1, .12); g.translate(-x, -y); g.fillStyle = rg; g.beginPath(); g.arc(x, y, w, 0, 7); g.fill(); g.restore(); }
+      /* 경완 '거다이맥스 하면 하늘을 좀 더 본가처럼 검붉은? 검보라? 느낌으로 그라데이션': 지평선 붉은 노을 → 검붉은 → 맨 위 검보라 (소드실드 다이맥스 하늘) */
+      const gr = g.createLinearGradient(0, top, 0, -E);
+      gr.addColorStop(0, cs(mixC(c0, [232, 70, 110], .55))); gr.addColorStop(.18, 'rgb(176,34,78)'); gr.addColorStop(.45, 'rgb(98,16,60)'); gr.addColorStop(.75, 'rgb(46,10,44)'); gr.addColorStop(1, 'rgb(22,6,30)'); g.fillStyle = gr; g.fillRect(0, -E, 256, H + 1);
+      g.save(); g.globalAlpha = .16; g.globalCompositeOperation = 'luminosity'; g.translate(0, top); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
+      g.save(); g.globalAlpha = .07; g.globalCompositeOperation = 'luminosity'; g.translate(0, top - H * .45); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 24, 0, 0, 256, H * .55); g.restore();
+      { const tg = g.createLinearGradient(0, top, 0, 192); tg.addColorStop(0, 'rgb(196,92,132)'); tg.addColorStop(.55, 'rgb(222,160,186)'); tg.addColorStop(1, 'rgb(236,196,212)'); g.save(); g.globalCompositeOperation = 'multiply'; g.fillStyle = tg; g.fillRect(0, top, 256, 192 - top); g.restore(); }   /* 원래 배경(풀밭·하늘 줄)도 붉은 어스름이 내려앉게 */
+      const cl = [255, 70, 120]; for (let i = 0; i < 7; i++) { const y = top - H * (.15 + i * .12), x = (i * 97 + 30) % 256, w = 60 + (i * 37) % 70; const rg = g.createRadialGradient(x, y, 1, x, y, w); rg.addColorStop(0, `rgba(${cl[0]},${cl[1]},${cl[2]},${.32 - i * .03})`); rg.addColorStop(1, 'rgba(255,255,255,0)'); g.save(); g.translate(x, y); g.scale(1, .12); g.translate(-x, -y); g.fillStyle = rg; g.beginPath(); g.arc(x, y, w, 0, 7); g.fill(); g.restore(); }
     } else {   // 실내: 벽이 조금 더 이어지고 → 몰딩 → 원근 천장(보·조명). 동굴: 어두운 바위 천장 + 고드름 바위
       const wallH = Math.min(H * .32, 26), yc = top - wallH;
       g.save(); g.translate(0, top); g.scale(1, -1); g.drawImage(sm, 0, 0, sm.width, 12, 0, 0, 256, wallH + 1); g.restore();
