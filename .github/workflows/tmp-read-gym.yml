@@ -1,0 +1,36 @@
+# 임시: 경완 체육관 고용 트레이너 자리 읽기 (읽기만, 끝나면 지움)
+name: tmp read gym 2
+on:
+  push:
+    branches: [claude/project-thread-ak9l4o]
+    paths: ['.github/workflows/tmp-read-gym.yml']
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Read
+        run: |
+          npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT acct, code, saved, parts, at FROM save WHERE acct IN ('flyweb','test')" | jq -c '.[0].results'
+          for a in flyweb test; do
+            npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT p.i, p.data FROM save_part p JOIN account a ON a.id = p.acct AND a.code = p.code WHERE p.acct = '$a' ORDER BY p.i" > /tmp/$a.json || true
+            node -e '
+              const r = require("/tmp/'$a'.json")[0].results; if (!r.length) { console.log("'$a' none"); process.exit(0); }
+              const S = JSON.parse(r.map(x => x.data).join("")); const g = S.gym || {};
+              const hits = []; const walk = (o, p) => { if (!o || typeof o !== "object") return; if (o.nm === "건우" || o.tr === "waiter" || o.k === "waiter") hits.push([p, JSON.stringify(Object.fromEntries(Object.entries(o).filter(([k]) => k !== "team")))]); for (const k in o) walk(o[k], p + "." + k); }; walk(g, "gym");
+              hits.slice(0, 20).forEach(h => console.log(h[0], h[1])); console.log("log", JSON.stringify((g.log || []).filter(l => /건우|웨이터/.test(l[2])).slice(-8)));'
+          done
