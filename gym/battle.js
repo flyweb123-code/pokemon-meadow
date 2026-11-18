@@ -362,8 +362,8 @@ function buildUI() {
       <div class="bt-bg"></div><i class="bt-terr"></i><i class="bt-dim"></i>
       <i class="bt-pl e"></i><i class="bt-pl p"></i>
       <i class="bt-tr e"></i><i class="bt-tr p"></i>
-      <div class="bt-mw e s2" data-sl="1"><div class="bt-mon e s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw e" data-sl="0"><div class="bt-mon e"><div class="clip"><img alt=""></div></div></div>
+      <div class="bt-mw e s2" data-sl="1"><div class="bt-mon e s2"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p" data-sl="0"><div class="bt-mon p"><div class="clip"><img alt=""></div></div></div>
       <div class="bt-mw p s2" data-sl="1"><div class="bt-mon p s2"><div class="clip"><img alt=""></div></div></div>
       <i class="bt-wx"></i><div class="bt-lvw" hidden></div><div class="bt-shw" hidden></div>
@@ -495,8 +495,8 @@ async function gmFx(s, X, kind, ty) {
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
         await GymDBK.tera(c); teraOn(s, ty); return; }
-      if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
-        if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
+      if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballS = new URL(`${IMG}ball/mon.png`, location.href).href; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
+        if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.gxTop = gxTop; c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
           c.bgImg = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = c.bg.url; setTimeout(() => r(i.complete && i.naturalWidth ? i : null), 1500); }); c.bgX = -parseFloat(getComputedStyle($b('.bt-bg')).backgroundPosition) || 0;
           await GymDBK.dmaxFull(c); await wait(B.fast ? 300 : 1300); return; }
         await GymDBK.dynamax(c); swap(); dmaxOn(s, X); return; }
@@ -584,7 +584,7 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
 const SEL = (k, s) => `.bt-${k}.${s[0]}${s[1] ? '.s2' : ':not(.s2)'}`;   /* v24.21 더블 배틀: 자리 p·p2·e·e2 (두 번째 자리 = .s2, 화면 자리는 data-sl) */
-const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: 4, e: -6, e2: -14 }, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
+const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: 4, e: -14, e2: -6 } /* v27.24 경완 '상대방 포켓몬 두번째에 나온 포켓몬 (오른쪽에 있는 포켓몬이) 처음 나온 포켓몬보다 앞쪽에 있어야': 오른쪽(e2)이 앞(아래·위에 그림) */, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
 function monEl(side) { return $b(SEL('mon', side)); }
 /* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
 /* v24.51 경완 'Z파워 두를 때 불꽃 효과 타입별로': 원본(Gen 9 팩 zpower·기운 불꽃)은 주황 → 타입별 색 필터 (그림 자체엔 안 걸고 효과 칸에만) */
