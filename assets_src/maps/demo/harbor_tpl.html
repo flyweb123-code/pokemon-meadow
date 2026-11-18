@@ -126,6 +126,7 @@ IMG.onload = () => {
   // 물가를 따라 박자 어긋나게: 해변 물가 위치(대각선)를 위상으로
   const ph = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) ph[y * w + x] = (x * .55 + y * .35) * .09;
   const deep = []; for (let y = 150; y < h; y++) for (let x = 0; x < w; x++) if (kind[y * w + x] === 1 && dSea[y * w + x] > 10 && dw[y * w + x] > 6) deep.push([x, y]);
+  const band = []; for (let y = 121; y < h - 4; y++) for (let x = 0; x < w; x++) { const k = y * w + x; if (kind[k] === 1 && dSea[k] >= 2 && dSea[k] <= 36 && dw[k] > 2) band.push(k); }
   const rip = Array.from({ length: 80 }, () => newRip(true));
   function newRip(first) { const [x, y] = deep[(Math.random() * deep.length) | 0]; return { x, y, t0: performance.now() - (first ? Math.random() * 5000 : 0), dur: 3800 + Math.random() * 2600, len: 2 + ((Math.random() * 4) | 0), sp: .6 + Math.random() * .7 }; }
   const glint = Array.from({ length: 14 }, () => ({ p: deep[(Math.random() * deep.length) | 0], o: Math.random() * 6.28 }));
@@ -140,6 +141,12 @@ IMG.onload = () => {
     const F = Math.floor(now / 125); if (F === lastF) return requestAnimationFrame(frame); lastF = F;   // 8장/초 도트 박자
     const t = F / 8; g.clearRect(0, 0, w, h);
     const P = (x, y, c) => { g.fillStyle = c; g.fillRect(x, y, 1, 1); };
+    // 0) 얕은 물·중간 물·깊은 물 사이 도트 경계선이 물가 쪽으로 밀려왔다 물러남 (경완 '이 안쪽 도트 경계선도 좀 움직여야할듯?')
+    //    그림의 바다 색을 1~2칸 바깥(깊은 쪽)에서 빌려 와 칠함 → 띠가 통째로 숨 쉬듯, 물가에서 먼 띠일수록 박자가 늦어 안쪽으로 밀려드는 느낌
+    for (const k of band) { const x = k % w, y = (k / w) | 0, o = Math.round(1 + 1.1 * Math.sin(t * .95 - dSea[k] * .2 + x * .035));
+      if (o <= 0) continue; const Y = Math.min(h - 1, y + o), K = Y * w + x; if (kind[K] !== 1) continue;
+      const i = K * 4, j = k * 4; if (D[i] === D[j] && D[i + 1] === D[j + 1] && D[i + 2] === D[j + 2]) continue;
+      P(x, y, `rgb(${D[i]},${D[i + 1]},${D[i + 2]})`); }
     for (let y = 120; y < h; y++) for (let x = 0; x < w; x++) {
       const k = y * w + x, kd = kind[k];
       // 1) 해변 파도: 앞머리 f = 물가에서 +3(바다 쪽) ~ −3(모래 위). 밀려올 땐 빠르게, 빠질 땐 천천히
