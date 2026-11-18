@@ -522,6 +522,14 @@ function sfList(g = st(), D = dzOf(g.d)) {
   const L = g.sf.filter(inGym), used = new Set(), out = new Map();
   for (const s of L) { const p = s.gp && s.gp[2] === D.id && D.toV(s.gp[1]) != null && D.toVx(s.gp[0]) != null ? [D.toVx(s.gp[0]), D.toV(s.gp[1])] : null; if (p && trTile(D, p[0], p[1], used)) { used.add(p[0] + ',' + p[1]); out.set(s, [s, p[0], p[1], faceTo(D, p[0], p[1])]); } }
   for (const s of L) { if (out.has(s)) continue; const q = D.slots.find(q => trTile(D, q[0], q[1], used)); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], q[2]]); }
+  /* v26.98 경완 '나 트레이너 3명 고용했는데 체육관에 2명밖에 안 보임': 체육관이 작은 단계(안 넓힌 맵)면 기본 자리가 고용 수보다 적어 남은 트레이너가 안 그려졌음 → 길 가까운 빈 칸에 세운다 */
+  const rest = L.filter(s => !out.has(s));
+  if (rest.length) { const C = [], pd = (x, y) => { let m = 1e9; for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]], cx = clampN(x, Math.min(a[0], b[0]), Math.max(a[0], b[0])), cy = clampN(y, Math.min(a[1], b[1]), Math.max(a[1], b[1])); m = Math.min(m, Math.abs(cx - x) + Math.abs(cy - y)); } return m; };
+    for (let y = 0; y < D.h; y++) for (let x = 0; x < D.w; x++) { try { if (trTile(D, x, y, used)) C.push([x, y, pd(x, y) + (y < D.leader[1] ? 3 : 0)]);   /* 관장 뒤 줄은 나중에 */ } catch (e) {} }
+    C.sort((a, b) => a[2] - b[2] || a[1] - b[1]);
+    const dk = new Set(); try { const pos = g.dpos || {}; (g.dp || []).forEach(k => { const p = pos[k]; if (p && p[2] === D.id && D.toV(p[1]) != null && D.toVx(p[0]) != null) dCells(k, D.toVx(p[0]), D.toV(p[1])).forEach(c => dk.add(c[0] + ',' + c[1])); }); } catch (e) {}   /* 직접 놓은 꾸미기 칸은 피함 */
+    for (const s of rest) { const near = q => used.has(q[0] + ',' + q[1]) || dk.has(q[0] + ',' + q[1]) || [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]].some(([dx, dy]) => used.has(q[0] + dx + ',' + (q[1] + dy)));
+      const q = C.find(q => !near(q)) || C.find(q => !used.has(q[0] + ',' + q[1])); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], faceTo(D, q[0], q[1])]); } }
   return L.filter(s => out.has(s)).map(s => out.get(s));
 }
 // 트레이너 자리 고르기 모드: 맵의 칸을 누르면 그 트레이너가 거기 선다 (꾸미기 놓기와 같은 방식)
