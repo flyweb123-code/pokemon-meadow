@@ -1,0 +1,40 @@
+name: tmp ghost check
+on:
+  push:
+    branches: [claude/project-thread-7bxa63]
+    paths: ['.github/workflows/tmp-ghost.yml']
+jobs:
+  chk:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: Dump
+        run: |
+          npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT s.acct, s.code, s.at, p.i, p.data FROM save s JOIN save_part p ON p.acct=s.acct AND p.code=s.code WHERE s.acct='flyweb' ORDER BY p.i" > /tmp/all.json
+          cat > /tmp/a.js <<'JS'
+          const R = JSON.parse(require('fs').readFileSync('/tmp/all.json','utf8'))[0].results, A = {};
+          for (const r of R) (A[r.acct + '|' + r.code] ||= { at: r.at, d: [] }).d[r.i] = r.data;
+          for (const [k, v] of Object.entries(A)) { const S = JSON.parse(v.d.join('')), box = S.box || [];
+            const used = new Set([...(S.mons || []).map(m => m.pid), ...(S.buds || []).map(b => b.pid)]), gj = JSON.stringify(S.gym || {}, (k, v) => k === 'mon' || k === 'log' || k === 'days' ? undefined : v);
+            console.log(k, 'at', new Date(v.at).toISOString(), 'box', box.length, 'evoGhost', S.evoGhost, 'errs', JSON.stringify((S.errs || []).filter(e => /빈 포켓몬/.test(e[2])).map(e => e[2])));
+            const ghost = box.filter(p => p.g == null && !p.place && !p.fr && !p.km && !p.nm);
+            for (const p of ghost) console.log('G', p.id, p.sp, new Date(p.t || 0).toISOString(), p.shiny ? 'S' : '-', used.has(p.id) ? 'used' : '-', new RegExp(`\\b${p.id}\\b`).test(gj) ? 'gym' : '-', (S.gym?.mon || {})[p.id] ? 'gmon' + ((S.gym.mon[p.id].lv) || '') : '-', box.filter(q => q.sp === p.sp).length);
+            const loose = box.filter(p => p.g == null && !p.place);
+            console.log('noPlace', loose.length, JSON.stringify(loose.map(p => [p.id, p.sp, p.fr || 0, p.km || 0])));
+          }
+          JS
+          node /tmp/a.js
