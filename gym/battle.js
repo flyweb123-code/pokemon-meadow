@@ -42,7 +42,7 @@ function loadData() {
     fetch(`gym/data.json?v=${VER}`).then(r => { if (!r.ok) throw new Error('data'); return r.json(); }),
     getJ(`${IMG}pk/fem.json`), getJ(`${IMG}pk/anim.json`), getJ('gym/mvfx.json'), getJ('gym/desc.json'), getJ(`${IMG}pk/fm/fm.json`), getJ(`${IMG}pk/rf/rf.json`), getJ(`${IMG}pk/fa/fa.json`), getJ('gym/egg.json'), getJ(`${IMG}pk/bwa.json`), getJ(`${IMG}pk/off.json`), getJ(`${IMG}pk/gm/gm.json?`)
     , evyLoad()
-  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off, gmj]) => { BWA = bw || {}; GMJ = gmj && !gmj.then ? gmj : {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = { ...AB_D2, ...(ds?.ab || {}) }; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); mgStAdd(); zcAdd(); mgthLoad(); }).catch(e => { dataP = null; throw e; }));
+  ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off, gmj]) => { BWA = bw || {}; GMJ = gmj && !gmj.then ? gmj : {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = { ...AB_D2, ...(ds?.ab || {}) }; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); mgStAdd(); zcAdd(); mgthLoad(); try { fmMig(); } catch (e) {} }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
@@ -1043,7 +1043,7 @@ function psSet(o) {
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
-function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, evs: evSet(m), fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...(m.tera ? { tera: m.tera } : {}), ...(m.gmax ? { gmax: 1 } : {}), ...((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})() }; }
+function myEntry(P) { const m = gm(P); return { pid: P.id, sp: P.sp, nm: nmOf(P), lv: m.lv, mv: m.mv, ab: m.ab, nat: m.nat, it: m.it, iv: P.iv, evs: evSet(m), fr: P.fr || 0, g: P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '', shiny: !!P.shiny, ...(m.tera ? { tera: m.tera } : {}), ...(m.gmax ? { gmax: 1 } : {}), ...(FM_HSP.has(P.sp) ? (f => f ? { fm: f.ps, fmIt: m.it } : {})(fmOfIt(P)) : ((b = BFM[P.sp]?.[P.fm ?? ''] ?? BFM[P.sp]?.['']) => b ? Array.isArray(b) ? { fm: b[0], fmIt: b[1], fmAb: b[2] } : { fm: b } : {})()) }; }
 // 상대 포켓몬: 그 레벨에 배우는 기술 중 무작위 4개
 function foeEntry(sp, lv, tier = 0) {
   const r = Math.random, ab = D.sp[sp]?.ab || ['noability'], nats = NATS(), g = SPECIES[sp]?.g;
@@ -2752,7 +2752,50 @@ function mgStAdd() { for (const [id, [n, x]] of Object.entries(MEGA_ST)) { const
 const mgOn = () => !!(S.gym?.mgRing || (S.gym?.shelf || []).some(x => x?.mgRing) || window.gymMgOn);   // 메가링은 관장 것 (어느 체육관에서 받았든)   // 메가링을 받은 관장만 상점에 메가스톤
 const mgSt = sp => Object.keys(MEGA_ST).filter(id => MEGA_ST[id][0] === sp);   // 이 종이 쓸 수 있는 메가스톤
 const mgBoxSp = () => new Set((S.box || []).map(P => P.sp));   /* 경완 2026-11-13: 상점 메가스톤은 내 포켓몬 박스 전체 중 메가진화할 수 있는 포켓몬 것만 (튜토리얼 시험 포켓몬도 박스에 있어 그 스톤 보임) */
-const itCatL = () => mgOn() ? [...IT_CAT, ['mega', '메가스톤', (B => Object.keys(MEGA_ST).filter(id => HOLD[id] && B.has(MEGA_ST[id][0])))(mgBoxSp()).sort((a, b) => MEGA_ST[a][0] - MEGA_ST[b][0] || a.localeCompare(b))]] : IT_CAT;
+/* v26.97 경완 '지녀야 폼 바뀌는거 본가 기준으로 바꿔줘': 지니면 폼이 바뀌는 도구 (플레이트·카세트·큰 구슬·녹슨 검/방패·가면). 배틀 폼은 지닌 도구로 정함 (myEntry FM_IT), 지니거나 떼면 필드 모습도 같이 (fmSync) */
+Object.assign(HOLD, {
+  flameplate: ["불구슬플레이트", 5000, "불꽃 타입 기술의 위력이 올라간다. 아르세우스가 지니면 불꽃 타입이 된다.", 0],
+  splashplate: ["물방울플레이트", 5000, "물 타입 기술의 위력이 올라간다. 아르세우스가 지니면 물 타입이 된다.", 0],
+  meadowplate: ["초록플레이트", 5000, "풀 타입 기술의 위력이 올라간다. 아르세우스가 지니면 풀 타입이 된다.", 0],
+  zapplate: ["우뢰플레이트", 5000, "전기 타입 기술의 위력이 올라간다. 아르세우스가 지니면 전기 타입이 된다.", 0],
+  icicleplate: ["고드름플레이트", 5000, "얼음 타입 기술의 위력이 올라간다. 아르세우스가 지니면 얼음 타입이 된다.", 0],
+  fistplate: ["주먹플레이트", 5000, "격투 타입 기술의 위력이 올라간다. 아르세우스가 지니면 격투 타입이 된다.", 0],
+  toxicplate: ["맹독플레이트", 5000, "독 타입 기술의 위력이 올라간다. 아르세우스가 지니면 독 타입이 된다.", 0],
+  earthplate: ["대지플레이트", 5000, "땅 타입 기술의 위력이 올라간다. 아르세우스가 지니면 땅 타입이 된다.", 0],
+  skyplate: ["푸른하늘플레이트", 5000, "비행 타입 기술의 위력이 올라간다. 아르세우스가 지니면 비행 타입이 된다.", 0],
+  mindplate: ["이상한플레이트", 5000, "에스퍼 타입 기술의 위력이 올라간다. 아르세우스가 지니면 에스퍼 타입이 된다.", 0],
+  insectplate: ["비단벌레플레이트", 5000, "벌레 타입 기술의 위력이 올라간다. 아르세우스가 지니면 벌레 타입이 된다.", 0],
+  stoneplate: ["암석플레이트", 5000, "바위 타입 기술의 위력이 올라간다. 아르세우스가 지니면 바위 타입이 된다.", 0],
+  spookyplate: ["원령플레이트", 5000, "고스트 타입 기술의 위력이 올라간다. 아르세우스가 지니면 고스트 타입이 된다.", 0],
+  dracoplate: ["용의플레이트", 5000, "드래곤 타입 기술의 위력이 올라간다. 아르세우스가 지니면 드래곤 타입이 된다.", 0],
+  dreadplate: ["공포플레이트", 5000, "악 타입 기술의 위력이 올라간다. 아르세우스가 지니면 악 타입이 된다.", 0],
+  ironplate: ["강철플레이트", 5000, "강철 타입 기술의 위력이 올라간다. 아르세우스가 지니면 강철 타입이 된다.", 0],
+  pixieplate: ["정령플레이트", 5000, "페어리 타입 기술의 위력이 올라간다. 아르세우스가 지니면 페어리 타입이 된다.", 0],
+  dousedrive: ["아쿠아카세트", 4000, "게노세크트가 지니면 테크노버스터가 물 타입이 된다.", 0],
+  shockdrive: ["번개카세트", 4000, "게노세크트가 지니면 테크노버스터가 전기 타입이 된다.", 0],
+  burndrive: ["블레이즈카세트", 4000, "게노세크트가 지니면 테크노버스터가 불꽃 타입이 된다.", 0],
+  chilldrive: ["프리즈카세트", 4000, "게노세크트가 지니면 테크노버스터가 얼음 타입이 된다.", 0],
+  adamantcrystal: ["큰금강옥", 18000, "디아루가가 지니면 오리진폼이 되고 강철·드래곤 타입 기술의 위력이 오른다.", 0],
+  lustrousglobe: ["큰백옥", 18000, "펄기아가 지니면 오리진폼이 되고 물·드래곤 타입 기술의 위력이 오른다.", 0],
+  griseouscore: ["큰백금옥", 18000, "기라티나가 지니면 오리진폼이 되고 고스트·드래곤 타입 기술의 위력이 오른다.", 0],
+  rustedsword: ["녹슨검", 25000, "자시안이 지니면 검왕의 모습이 된다.", 0],
+  rustedshield: ["녹슨방패", 22000, "자마젠타가 지니면 방패왕의 모습이 된다.", 0],
+  wellspringmask: ["우물의가면", 8000, "오거폰이 지니면 우물의가면 모습이 되고 기술의 위력이 오른다.", 0],
+  hearthflamemask: ["화덕의가면", 8000, "오거폰이 지니면 화덕의가면 모습이 되고 기술의 위력이 오른다.", 0],
+  cornerstonemask: ["주춧돌의가면", 8000, "오거폰이 지니면 주춧돌의가면 모습이 되고 기술의 위력이 오른다.", 0],
+});
+const FM_HSP = new Set([493, 649, 483, 484, 487, 888, 889, 1017]), FM_IT = {};
+for (const sp of FM_HSP) for (const [f, b] of Object.entries(BFM[sp] || {})) if (Array.isArray(b) && HOLD[b[1]]) FM_IT[b[1]] = { sp, f, ps: b[0] };
+const fmOfIt = P => { const f = FM_IT[gm(P).it]; return f && f.sp === P.sp ? f : null; };
+function fmSync(P) { if (!P || !FM_HSP.has(P.sp)) return; const f = fmOfIt(P); if (f) P.fm = f.f; else delete P.fm; try { GA.fmSync?.(P); } catch (e) {} }
+/* v26.97 필드에서 쓰던 폼 도구 → 체육관 창고로 (플레이트 = 17장, 카세트 = 4개), 필드에서 이미 바꾼 폼은 그 도구를 지닌 채로 (지니던 도구는 창고로) */
+function fmMig() { const g = S.gym; if (!g || g.fmMig) return; const I = window.GA?.fOwn?.() || {}; g.itm = g.itm || {}; const add = k => { g.itm[k] = (g.itm[k] | 0) + 1; };
+  const of = sp => Object.keys(FM_IT).filter(k => FM_IT[k].sp === sp), T = { plate: of(493), drive: of(649), adcry: ['adamantcrystal'], lsglb: ['lustrousglobe'], grcore: ['griseouscore'], rsword: ['rustedsword'], rshield: ['rustedshield'], mwell: ['wellspringmask'], mhearth: ['hearthflamemask'], mcorner: ['cornerstonemask'] };
+  for (const [t, L] of Object.entries(T)) if (I[t] > 0) { L.forEach(add); delete I[t]; }
+  for (const P of S.box || []) { if (!FM_HSP.has(P.sp) || !P.fm) continue; const it = BFM[P.sp]?.[P.fm]?.[1]; if (!it || !HOLD[it]) { delete P.fm; continue; } const m = gm(P); if (m.it === it) continue;
+    if (m.it) add(m.it); m.it = it; if (g.itm[it] > 0 && !--g.itm[it]) delete g.itm[it]; }
+  g.fmMig = 1; GA.save(); }
+const itCatL = () => (C => mgOn() ? [...C, ['mega', '메가스톤', (B => Object.keys(MEGA_ST).filter(id => HOLD[id] && B.has(MEGA_ST[id][0])))(mgBoxSp()).sort((a, b) => MEGA_ST[a][0] - MEGA_ST[b][0] || a.localeCompare(b))]] : C)((L => L.length ? [...IT_CAT, ['form', '폼 도구', L]] : IT_CAT)(Object.keys(FM_IT).filter(k => mgBoxSp().has(FM_IT[k].sp))));   /* v26.97 경완 '해당 포켓몬 있을 때만 보이게': 폼 도구는 박스에 그 종이 있을 때만 */
 /* 경완 2026-11-14 Z크리스탈 (인기 체육관 강박사 튜토리얼에서 Z링과 체육관 타입 것을 받음): 체육관 타입 번호(TY_EN 순서) → 도구 id. 상점에선 안 팔고, 인기 체육관이 될 때마다 그 타입 것 하나 (몇 번이든 쓸 수 있음) */
 const ZC_ST = ['', 'normaliumz', 'fightiniumz', 'flyiniumz', 'poisoniumz', 'groundiumz', 'rockiumz', 'buginiumz', 'ghostiumz', 'steeliumz', 'firiumz', 'wateriumz', 'grassiumz', 'electriumz', 'psychiumz', 'iciumz', 'dragoniumz', 'darkiniumz', 'fairiumz'], ZC_T = Object.fromEntries(ZC_ST.map((id, t) => [id, t]).filter(([id]) => id));
 function zcAdd() { ZC_ST.forEach((id, t) => { if (!id || HOLD[id]) return; const k = TYPE_KO[t]; HOLD[id] = [`${k}Z`, 0, `${k} 타입 기술을 Z기술로 바꾼다. 한 배틀에 한 번 쓸 수 있다. 트레이너에게 Z링이 있어야 한다.`, 0]; }); }
@@ -2793,10 +2836,10 @@ function itInfo(id, lab, act, foot = '', own) {
 function giveIt(P, id) {
   const g = S.gym, m = gm(P); g.itm = g.itm || {}; if (!(g.itm[id] > 0)) return;
   g.itm[id]--; if (!g.itm[id]) delete g.itm[id];
-  const old = m.it; if (old) g.itm[old] = (g.itm[old] || 0) + 1; m.it = id; GA.save(); se('DECIDE'); itRef();
+  const old = m.it; if (old) g.itm[old] = (g.itm[old] || 0) + 1; m.it = id; fmSync(P); GA.save(); se('DECIDE'); itRef();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}에게 ${esc(HOLD[id][0])}${jong(HOLD[id][0]) ? '을' : '를'} 지니게 했다!${old ? `<br><small>${esc(HOLD[old]?.[0] || '')}${jong(HOLD[old]?.[0] || '') ? '은' : '는'} 창고로 돌아갔어요.</small>` : ''}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c());
 }
-function takeIt(P) { const g = S.gym, m = gm(P), id = m.it; if (!id) return; g.itm = g.itm || {}; g.itm[id] = (g.itm[id] || 0) + 1; delete m.it; GA.save(); itRef(); }
+function takeIt(P) { const g = S.gym, m = gm(P), id = m.it; if (!id) return; g.itm = g.itm || {}; g.itm[id] = (g.itm[id] || 0) + 1; delete m.it; fmSync(P); GA.save(); itRef(); }
 function itRef() { try { if (tabEl?.isConnected && !tabEl.hidden && tabEl.querySelector('.lu-grid')) drawTab(); bxRefresh?.(); } catch (e) {} }   /* v24.80 경완 '샹델라한테 도구 지니게 했는데 바로 슬롯에 반영 안 되고 나갔다 들어오니까 생김': 뒤의 라인업 칸·박스도 바로 다시 그림 */
 /* v25.02 경완 '추천 성격에 민트 뜨잖아 누르면 상점으로 넘어가지 않고 그냥 그 창에서 살건지 말건지 물어보고 사면 바로 성격 바뀌고 추천 성격 슬롯 없어지게', '추천 도구도 마찬가지 살건지 물어보고 사면 바로 지녀지게, 기존에 가지고 있던 도구는 창고로' */
 /* 알림(먹었다·지니게 했다)을 띄운 뒤 카드를 다시 그리면 카드가 알림을 덮었음 → 알림을 맨 위로 다시 붙임 */
@@ -3153,5 +3196,5 @@ function vitPick(i, done) {
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
-window.GymBattle = { MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, FM_IT, fmSync, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
 })();
