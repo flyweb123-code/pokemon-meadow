@@ -33,3 +33,16 @@ for y in range(140,215):
         if lum(c)<120: continue
         po[x,y]=c; break
 out.save(sys.argv[2])
+# 4) 오른쪽 아래 바다: 250 얕은 물이 끝나는 곳부터는 350 깊은 바다로 (밝기 차 이음매 없앰)
+out=Image.open(sys.argv[2]); po=out.load()
+for x in range(116,180):
+  y0=None
+  for y in range(170,296):
+    if all(lum(pa[x,y+k])<118 and pa[x,y+k][2]>pa[x,y+k][0]+40 for k in range(4)): y0=y; break
+  if y0 is None: continue
+  for y in range(y0,300):
+    sy=min(299,y+DY)
+    if y+DY>299: sy=276+((y+DY-300)%12)
+    if y==y0 and x%2: continue
+    po[x,y]=pb[x,sy]
+out.save(sys.argv[2])
