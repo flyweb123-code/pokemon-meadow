@@ -110,7 +110,7 @@ const IMG = new Image(); IMG.src = 'HARBOR_IMG';
 IMG.onload = () => {
   const bg = $('#bgC').getContext('2d'); bg.drawImage(IMG, 0, 0);
   const D = bg.getImageData(0, 0, 180, 300).data, w = 180, h = 300, at = (x, y) => (y * w + x) * 4;
-  const isSea = (x, y) => { const i = at(x, y); return y > 120 && D[i + 3] && (D[i + 2] > D[i] + 40 || (D[i] > 225 && D[i + 1] > 235 && D[i + 2] > 235)); };
+  /* 흰 물거품만 바다로, 해변 조개 흰 점(fffaf2)은 빼기 (경완 '해변 안쪽에 아주 작게 파도 부딪히는 효과 생기는거 없애줘') */ const isSea = (x, y) => { const i = at(x, y); return y > 120 && D[i + 3] && (D[i + 2] > D[i] + 40 || (D[i] > 225 && D[i + 1] > 235 && D[i + 2] > 235 && D[i + 2] >= D[i] - 3)); };
   const isSand = (x, y) => { const i = at(x, y); return y > 126 && D[i + 3] && D[i] > 185 && D[i + 1] > 140 && D[i] - D[i + 2] > 35; };
   const isRock = (x, y) => { const i = at(x, y); return y > 140 && D[i + 3] && Math.abs(D[i] - D[i + 2]) < 20 && D[i] < 200 && !isSea(x, y); };
   // 물가 거리: 바다 쪽 +, 모래 쪽 − (해변 물가 기준), 벽·바위 물가는 따로
