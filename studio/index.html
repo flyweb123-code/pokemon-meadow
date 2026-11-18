@@ -573,7 +573,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '4.08';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '4.09';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1379,6 +1379,8 @@ function zZoom(z) { const v = $('#zV'), wr = v?.querySelector('.zfw'); if (!wr) 
 /* v27.17 경완 '작업실 소품 눌렀을 때 나오는 상세카드에서 하단 초록색 원 범위 표시해주고 크기 마우스로 끌어서 조절할 수 있게 해줘': 게임 맵 편집의 땅에 닿는 자리(초록 원)를 그림 위에 그대로. 원을 끌면 옮기고, 둘레 점을 끌면 크기. 놓으면 그 소품 종류 전체에 저장(배치 LAYOUT.fp) */
 function zFoot(z, src, w, h) { const fk = z._fk, wr = $('#zV .zfw'); let note = $('#zFp'); if (!fk || !A?.foot || !wr) { note?.remove(); return; }
   if (!note) { note = document.createElement('div'); note.id = 'zFp'; note.className = 'small mute zfp'; $('#zV').after(note); }
+  { const art = A.footArt?.(fk); if (art && art.w && art.h && (art.bg || Math.abs(art.w / art.h - w / h) > .02 * w / h)) {   /* 경완 '작업실에서 땅 범위 편집한거랑 게임 필드에서 보이는 땅 범위랑 다르지?': 카드 그림(아이콘)이 게임 맵 그림과 모양이 다르면 게임 맵 그림으로 바꿔 그 위에 원을 그린다 (연못·꽃밭·모닥불은 바탕에서 오려 낸 그림) */
+    const k = Math.min(1.5, 70 / art.h, 118 / art.w); w = art.w * k; h = art.h * k; src = art.src; wr.style.width = w + 'px'; wr.style.height = h + 'px'; wr.innerHTML = `<img alt="" src="${src}" style="width:${w}px;height:${h}px;image-rendering:pixelated">`; } }
   A.foot(fk, src).then(R => { if (!R?.F || !wr.isConnected) { note.textContent = ''; return; } let F = { ...R.F };
     const e = document.createElement('i'); e.className = 'zft' + (R.ov ? ' ov' : ''); e.title = '끌어서 옮기기'; wr.append(e);
     for (const [c, dx, dy] of [['n', 0, -1], ['s', 0, 1], ['w', -1, 0], ['e', 1, 0]]) { const d = document.createElement('b'); d.className = 'zfh ' + c; d.dataset.dx = dx; d.dataset.dy = dy; d.title = '끌어서 크기 조절'; e.append(d); }
