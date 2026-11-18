@@ -1,5 +1,5 @@
 /* 포켓에그 상자 지키기 시험 — 이 파일을 내려받아 활용해 생기는 법적 책임은 내려받아 활용한 사람에게 있습니다.
-   v27.04 경완 '이런 오류 또 안 생기게 하려면': 진화·놓아주기·필드 내보내기 뒤 앱을 다시 켜도 상자가 그대로인지 본다
+   v27.06 경완 '이런 오류 또 안 생기게 하려면': 진화·놓아주기·필드 내보내기 뒤 앱을 다시 켜도 상자가 그대로인지 본다
    (v27.01 진화 버그 = 켤 때마다 migrateBox 가 도감에 있고 상자에 없는 종을 빈 개체로 다시 만들던 것).
    돌리기: node tools/test/box-keep.js   (playwright 필요, 저장소 루트에서) — 본 게임·베타 둘 다, 실패하면 exit 1 */
 const { chromium } = require('playwright'), http = require('http'), fs = require('fs'), path = require('path');
