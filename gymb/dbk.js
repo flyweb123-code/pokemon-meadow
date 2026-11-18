@@ -719,6 +719,10 @@
     A(pil, [{ opacity: 0, transform: 'scaleX(.05)' }, { opacity: 1, transform: 'scaleX(1)', offset: .25 }, { opacity: 1, transform: 'scaleX(1.4)', offset: .7 }, { opacity: 0, transform: 'scaleX(2.4)' }], { duration: 1700, delay: 6200, easing: 'ease-out' });
     at(6250, () => { mode = 2; });
     A(shd, [{ opacity: 0, transform: 'scale(.1)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 1300, delay: 6300 });
+    /* 경완 2026-11-19 '포켓몬 중앙에 나와서 커질 때 뒤에 있는 상대 배틀 포켓몬 커지는 거 맞춰서 같이 작아지고 배경도 커졌을 때 배경으로 바뀌게, 그 다음 자연스럽게 배틀 화면으로':
+       커지기 시작할 때 배틀 화면을 미리 거다이맥스 배치로 바꿈(onSwap → gxLay: 상대 .45 로 줄어듦·하늘/천장 이어 그린 배경, CSS 1.4초 전환이 커지는 1.5초와 같이 감). 뒤가 보이게 어둠을 걷고, 내 쪽 배틀 그림은 장면이 끝날 때까지 숨김 */
+    const mw = c.monEl.closest('.bt-mw'); let swapped = 0, zOut = 0; const doSwap = () => { if (swapped) return; swapped = 1; try { c.onSwap?.(); } catch (e) {} };
+    at(6300, () => { if (mw) mw.style.visibility = 'hidden'; doSwap(); zOut = 1; tAnim.push(A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 1500, easing: 'cubic-bezier(.3,.7,.4,1)' })); tAnim.push(A(bgF, [{ opacity: 1 }, { opacity: 0 }], { duration: 1500 })); at(1500, () => { top.style.webkitMaskImage = top.style.maskImage = ''; }); A(dim, [{ opacity: .9 }, { opacity: .3 }], { duration: 1400, easing: 'ease-in-out' });   /* 카메라가 뒤로 물러나듯 위 화면이 원래 크기로 → 줄어드는 상대·하늘까지 보이는 배경이 드러남 */ A(hex, [{ opacity: .14 }, { opacity: .06 }], { duration: 1400 }); });
     A(gm, [{ opacity: 0, transform: 'scale(.06)' }, { opacity: 1, transform: 'scale(.3)', offset: .2 }, { opacity: 1, transform: 'scale(.8)', offset: .75 }, { opacity: 1, transform: 'scale(1)' }], { duration: 1500, delay: 6300, easing: 'cubic-bezier(.3,.7,.4,1)' });
     at(6300, () => { const ks = performance.now(); const tk = () => { if (!live) return; const u = Math.min(1, (performance.now() - ks) / 1500); gm.dataset.k = Math.max(.06, 1 - Math.pow(1 - u, 2.2)); if (u < 1) requestAnimationFrame(tk); }; tk(); c.se('Psych Up'); });
     [6500, 6900, 7300].forEach(t => at(t, () => { raw('W087'); vib(1); })); shake(6400, 1500, 5);
@@ -732,10 +736,10 @@
     // 8) 원래 화면으로
     const END = 10800;
     return new Promise(res => { let done = false;
-      const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => clearTimeout(t)); if (mon) mon.style.visibility = '';
+      const fin = () => { if (done) return; done = true; doSwap(); timers.forEach(t => clearTimeout(t)); if (mon) mon.style.visibility = ''; if (mw) { mw.style.visibility = ''; mw.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: 'ease-out' }); }   /* 줄어든 상대·바뀐 배경은 그대로, 내 거다이맥스 뒷모습만 장면이 걷힐 때 같이 나타남 */
         top.style.webkitMaskImage = top.style.maskImage = '';
-        const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
-        tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { live = 0; back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
+        const back = [...(zOut ? [] : [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' })]), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
+        tAnim.forEach(a => a.cancel()); back.push(A(bgF, zOut ? [{ opacity: 0 }, { opacity: 0 }] : [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { live = 0; back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
       const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
       setTimeout(() => { lk.remove(); fin(); }, END - 500); });
   }
