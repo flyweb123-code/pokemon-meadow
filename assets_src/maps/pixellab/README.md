@@ -36,3 +36,15 @@
 - 놀이공원: 250 은 매점 차양·만국기·가로등·화단이 나옴(큰 놀이기구 없음, 위쪽에 야자수 두 그루). 350 은 울타리+만국기만 있고 바닥이 거의 빈 벽돌.
 - 화산: 250 은 현무암 절벽+용암 줄, 바닥이 거의 단색 재. 350 은 용암 폭포 두 줄이 바닥까지 흘러내리고 바닥이 큰 자갈 무늬. 용암 강은 절벽 밑 띠 정도로만 나옴.
 - 동굴: 두 장 다 어둡고 밋밋함. 250 은 종유석 천장+파란 수정 몇 개+작은 웅덩이, 350 은 바닥이 타일처럼 보이고 웅덩이가 사라짐. 손보기가 가장 필요함.
+
+## 2차: 화산(10월 시안) · 동굴(밝은 밑그림 v2)
+설정은 위와 같음 (Pixen 180x300, High top-down, Highly detailed, Lineless, 투명 배경 끔).
+| 맵 | init | 프롬프트 | 결과 |
+|---|---|---|---|
+| volcano2 | `../init/init_volcano_oct.png` | volcanic crater interior, columnar basalt cliffs, lava falls, glowing lava river with a stone bridge, hot spring pool, ash and basalt ground, pokemon style pixel art, top-down | `volcano2_250.png`, `volcano2_350.png` |
+| cave2 | `../init/init_cave_v2.png` | bright underground cave floor, stalactite ceiling, clusters of glowing blue and purple crystals lighting the floor, mossy patches, glowing mushrooms, small underground pool on the right, pokemon style pixel art, top-down | `cave2_250.png`, `cave2_250b.png`(250 다시 한 번), `cave2_350.png` |
+
+- 생성 횟수: 화산 2 + 동굴 3 = **5 generations** (동굴 350 이 타일 바닥처럼 나와 250 으로 한 번 더).
+- 두 init 모두 투명 칸이 없어 하늘 줄 정리 없음. 원본 = raw/ 의 같은 이름 (손대지 않아 같은 파일).
+- `preview_sheet2.png`: 윗줄 화산 init/250/350, 아랫줄 동굴 init/250/250b/350.
+- 메모: volcano2_250 = 현무암 기둥 벽으로 둘러싼 분화구, 용암 강·돌다리·온천이 다 나왔지만 시안의 길·바닥 소품은 사라지고 바닥이 갈색 흙. volcano2_350 = 대각선 용암 강과 아래 온천 물이 크게 나왔지만 바닥 전체가 돌벽 타일처럼 보임. cave2_250 = 이끼·버섯·수정 많고 밝음, 오른쪽 웅덩이는 가장자리에 조금, 왼쪽 아래 흰 덩어리 있음. cave2_250b = 종유석 천장·수정·오른쪽 위 웅덩이가 깔끔, 바닥이 큰 돌판 무늬. cave2_350 = 바닥이 타일처럼 나옴.
