@@ -4660,6 +4660,14 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-hb .gkd-ic{display:inline-block;width:10px;height:10px;margin:0 0 0 2px;vertical-align:-1px;background:url(../gym/img/dbk/icon_dynamax.png) center/contain no-repeat;image-rendering:pixelated}
 .bt-hb.gkd .nm{max-width:74px}
 
+/* v25.35 경완 '도전자가 하는 다이맥스는 메가·Z기술처럼 화면 커지지 않고 간단하게 (볼에 들어갔다가 커진 후 나오는 연출)': battle.js gmFx eDmax */
+.bt-fx .ball.pb.gxb{animation:gxbGlow .5s ease-in-out infinite alternate;z-index:3}
+@keyframes gxbGlow{from{filter:drop-shadow(0 0 2px #ff2d6a) drop-shadow(0 0 6px #ff2d6a)}to{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 12px #ff2d6a) brightness(1.25)}}
+.bt-fx .gxp{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:radial-gradient(#fff 0 25%,#ff4a86 45%,rgba(255,40,100,0) 72%)}
+.bt-fx .gxfl{position:absolute;left:-60px;right:-60px;top:-120px;bottom:-40px;background:radial-gradient(circle at var(--x) var(--y),rgba(255,255,255,.95),rgba(255,60,110,.75) 30%,rgba(255,30,90,0) 70%);pointer-events:none;z-index:4}
+.bt-mon.gxin .clip{animation:gxIn .7s cubic-bezier(.2,.8,.3,1.2) both}
+@keyframes gxIn{0%{transform:scale(.25);opacity:.2}55%{transform:scale(1.06);opacity:1}100%{transform:none}}
+
 /* v25.38 경완: 상세카드 기술 줄 '특별한 기술' 버튼 (추천 기술 왼쪽, 금빛) */
 #gym .mv-egb{background:#fff6dc;border-color:#e0b860;color:#9a6a10}
 /* v25.39 경완: 상세카드 추천 기술 확인 창 — 지금 기술 ▼ 바꾼 후 (바뀐 칸 금테 + 추천 딱지), 닫기·바꾸기 */
