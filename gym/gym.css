@@ -4734,5 +4734,4 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v27.18 경완 연승 고비 보너스 줄 (결과창 골드 상자 밑) */
 #gym .rs-stk2 .sk-ms{position:absolute;right:-2px;bottom:calc(100% + 4px);font-style:normal;font-size:13px;font-weight:800;line-height:1;padding:4px 8px;border-radius:8px;background:#ffd23a;color:#a8260e;white-space:nowrap;box-shadow:0 2px 0 #c8901a;transform:scale(0);transform-origin:70% 100%}
 #gym .rs-stk2.go .sk-ms{animation:skMsIn .45s cubic-bezier(.3,1.8,.5,1) .35s forwards}
-#gym .rs-gold.ms{padding-right:84px;padding-left:4px}   /* 고비 보너스 딱지가 골드 상자 오른쪽에 걸쳐서, 골드 숫자는 왼쪽으로 비켜 둠 */
 @keyframes skMsIn{0%{transform:translateY(6px) scale(0)}100%{transform:scale(1)}}

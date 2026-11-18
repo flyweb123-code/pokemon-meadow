@@ -1652,7 +1652,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.42: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold${STK_MS[stk] && sb ? ' ms' : ''}"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
