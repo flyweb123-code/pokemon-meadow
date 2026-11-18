@@ -3929,6 +3929,7 @@ function enter() {
   { const k = window.gymSimOn ? window.gymDblTest : null; window.gymDblTest = null; if (k) setTimeout(() => dblTest(), 900); }   /* v24.94 운영자 더블 배틀 시험 */
   { const k = window.gymSimOn ? window.gymMegaTest : null, f = !!window.gymMegaFoe; window.gymMegaTest = null; window.gymMegaFoe = 0; if (k != null) setTimeout(() => megaTest(k, f), 900); }
   { const k = window.gymSimOn ? window.gymDmaxTest : null, f = !!window.gymDmaxFoe, bg = window.gymDmaxBg; window.gymDmaxTest = null; window.gymDmaxFoe = 0; if (k != null) setTimeout(() => dmaxTest(k, f, bg), 900); }   /* 경완 2026-11-15 '거다이맥스 연출 시연 볼 수 있는 거 운영자 모드에, 우리 배틀 엔진으로' */
+  { const k = window.gymSimOn ? window.gymTeraTest : null, f = !!window.gymTeraFoe, ty = window.gymTeraTy || '', bg = window.gymTeraBg; window.gymTeraTest = null; window.gymTeraFoe = 0; if (k != null) setTimeout(() => teraTest(k, ty, f, bg), 900); }   /* 경완 2026-11-19 '테라스탈 연출 운영자 모드에 우리 게임 엔진 써서' */
   { const k = window.gymSimOn ? window.gymMegaTut : null; window.gymMegaTut = null; if (k) setTimeout(async () => { const g = st(); if (!g?.d) return;   // 운영자 승급 튜토리얼 (가상 체육관, 노력치 시험엔 훈련 중인 포켓몬 하나)
     try { await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/manage.js', 'GymManage'); } catch (e) {}
     if (k >= 2 && !(g.tr || []).length) { const L = (S.box || []).filter(P => !isTstP(P)), P = L.find(P => GA.pTy(P).includes(g.ty)) || L[0]; if (P) { const now = Date.now(); if (g.tlog) delete g.tlog[P.id]; g.tr.push({ id: P.id, t: now, d: dayStart(now), h: 0, j: now, l0: GB().gm(P).lv, x: 0, mv: [] }); } }
@@ -4727,6 +4728,20 @@ async function megaTest(k, foe) {
 /* 경완 2026-11-15 운영자 '거다이맥스 시험': 시뮬(나가면 되돌림) 안에서 관장 강석과 연습 배틀. 내 포켓몬(시험 포켓몬 gTst, 거다이맥스 가능)이 다이맥스 버튼으로 거다이맥스 / 도전자 쪽은 상대 거다이맥스 포켓몬 한 마리가 바로 거다이맥스 */
 const GMAX_T = [[6, ['flamethrower', 'airslash', 'dragonpulse', 'solarbeam'], 'blaze'], [25, ['thunderbolt', 'irontail', 'quickattack', 'grassknot'], 'static'], [94, ['shadowball', 'sludgebomb', 'focusblast', 'thunderbolt'], 'cursedbody'], [131, ['surf', 'icebeam', 'thunderbolt', 'psychic'], 'waterabsorb'],
   [143, ['bodyslam', 'crunch', 'earthquake', 'heavyslam'], 'thickfat'], [68, ['closecombat', 'knockoff', 'stoneedge', 'bulletpunch'], 'guts'], [9, ['hydropump', 'icebeam', 'darkpulse', 'flashcannon'], 'torrent'], [3, ['energyball', 'sludgebomb', 'earthpower', 'sleeppowder'], 'overgrow']];
+const TERA_T = [[6, 'Fire'], [25, 'Electric'], [94, 'Ghost'], [131, 'Ice'], [143, 'Normal'], [68, 'Fighting'], [9, 'Water'], [3, 'Grass']];   /* GMAX_T 와 같은 차례, 기본 테라 타입 = 자기 타입 */
+async function teraTest(k, ty, foe, bg) {   /* 시뮬(나가면 저장 되돌림) 안 연습 배틀. 시험 포켓몬 gTst, 끝나면 지움 */
+  const M = GMAX_T[k | 0] || GMAX_T[0], T = ty || (TERA_T[k | 0] || TERA_T[0])[1]; if (!open || !st()?.d) return;
+  await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
+  S.box = S.box || []; const g = st(); g.mon = g.mon || {}; const made = [];
+  const mk = (id, sp, mv, ab, tt) => { const P = { id, sp, iv: [31, 31, 31, 31, 31, 31], fr: 120, gTst: 1, sex: 'm' }; S.box.push(P); made.push(P); GB().gm(P); Object.assign(g.mon[P.id], { mv, lv: 52, it: '', ab, ...(tt ? { tera: tt } : {}) }); return P; };
+  const my = foe ? [mk(990021, 445, ['earthquake', 'dragonclaw', 'stoneedge', 'swordsdance'], 'roughskin'), mk(990022, 248, ['stoneedge', 'crunch', 'earthquake', 'dragondance'], 'sandstream')] : [mk(990021, M[0], M[1], M[2], T), mk(990022, 448, ['aurasphere', 'flashcannon', 'extremespeed', 'swordsdance'], 'innerfocus', 'Steel')];
+  const fe = (sp, nm, lv, mv, ab) => ({ sp, nm, lv, mv, ab, nat: 'adamant', iv: [24, 24, 24, 24, 24, 24], g: 'M' });
+  const team = foe ? [{ ...fe(M[0], SPECIES[M[0]]?.n || '', 52, M[1], M[2]), tera: T }] : [fe(95, '롱스톤', 44, ['rockslide', 'dig', 'screech', 'stealthrock'], 'sturdy'), fe(408, '두개도스', 45, ['headsmash', 'zenheadbutt', 'crunch', 'firepunch'], 'moldbreaker'), { ...fe(409, '램펄드', 47, ['headsmash', 'earthquake', 'firepunch', 'icebeam'], 'moldbreaker'), tera: 'Rock' }];
+  document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  try { await GB().run({ meFrontUrl: await fitSrc('tr'), my, foe: { tr: 'leader_roark', cls: '관장', nm: '강석', team, hold: 2, say: foe ? { win: '테라스탈까지 막아 내다니!', lose: '보석처럼 빛나는 힘, 봤지?' } : { win: '보석처럼 빛나는 포켓몬이라니… 대단했어!', lose: '바위처럼 단단하게 버텼지!' } }, practice: true, diff: 2, bg: bg || 'plain', music: 'gymBattle', gmk: { tera: 1 }, meBackUrl: await fitSrc('trb') }); }
+  catch (e) { console.error(e); }
+  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); dropMgT(); made.forEach(P => { delete g.mon[P.id]; }); save(); bgmPlay('gym'); }
+}
 async function dmaxTest(k, foe, bg) {
   const M = GMAX_T[k | 0] || GMAX_T[0]; if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM');
