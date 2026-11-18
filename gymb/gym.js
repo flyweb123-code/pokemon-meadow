@@ -2475,14 +2475,14 @@ function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비�
   if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0, 0, 0]; } }; c.onerror = () => { im._trim = [0, 0, 0, 0]; }; c.src = im.src; }
   return [0, 0, 0, 0]; }
 const mecSt = sp => { const o = SPECIES[sp]; return !!o && !!(o.leg || o.my || (o.bs || []).reduce((x, y) => x + y, 0) >= 580); };   // 전설·환상·종족값 580 이상 = 센 포켓몬 (왼쪽 자리)
-let MEC_FACE = null, mecFq = null;
+let MEC_FACE = null, mecFq = null; const MEC_BAT = new Set([41, 42, 169]);
 function mecFace(again) { if (MEC_FACE) return MEC_FACE; if (!mecFq) mecFq = fetch('gym/img/pk/face.json').then(r => r.json()).then(d => { MEC_FACE = d; }).catch(() => { MEC_FACE = {}; }); mecFq.then(() => again?.()); return null; }
 function mecLay(stg) {
   const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
+    return { e, st: e.dataset.st === '1', fly: MEC_BAT.has(+e.dataset.sp), bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
@@ -2498,7 +2498,7 @@ function mecLay(stg) {
   const bd0 = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];
   const ov0 = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
-    A.forEach(a => { a.h0 = LH * a.r; }); const tiny0 = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)); let tiny, big, fr = 0, okk = false;
+    A.forEach(a => { a.h0 = LH * a.r; }); const tiny0 = S.filter(a => a.h0 < LH * .55 && !a.fly && S.indexOf(a) >= Math.min(2, n - 1)); let tiny, big, fr = 0, okk = false;
     /* 경완 '동혁이 관장 카드 보면 이상해꽃 한쪽 눈이 가려져있고 킬라플로르 얼굴 안 보이고 크로뱃 얼굴도 거의 가려져있는데': 중간 크기 포켓몬이 많으면 뒤쪽 호 한 줄에 다 서서 서로 얼굴을 덮음 → 작은 쪽 1~2마리를 앞쪽 호(관장 양옆 앞)로 내린 배치도 후보로 */
     for (const wide of [0, 1]) for (let nf = 0; !okk && (nf <= Math.min(2, n - 3 - tiny0.length) || !nf); nf++) {   /* 먼저 예전 후보만, 그걸로 가림이 남을 때만 앞줄 내리기·먼 자리 바꾸기까지 (아이폰 계산 시간) */ if (!wide && nf) break; const rest = S.filter(a => !tiny0.includes(a)), fx = nf > 0 ? rest.slice(-nf).filter(a => S.indexOf(a) >= 2) : []; if (nf && fx.length < nf) break; tiny = [...tiny0, ...fx]; big = S.filter(a => !tiny.includes(a)); fr = fx.length;
     /* 경완 11-11 '배치 규칙을 어떻게 해야하나' (비키면 다른 데서 가려짐): 큰 포켓몬마다 왼쪽·오른쪽을 바꾼 후보 배치를 모두 만들어 보고
@@ -2521,6 +2521,7 @@ function mecLay(stg) {
         const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로, 가운데일수록 뒤 */
         big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });
         tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
+        A.forEach(a => { if (!a.fly) return; const f = FC0?.[a.e.dataset.sp] || [0, .3, 1, .6], fy = a.b + a.h * (1 - (f[1] + f[3]) / 2); a.b += Math.max(0, Math.min(LB + LH * .85 - fy, H - M - a.h - a.b)); });   /* 경완 '관장 카드에서 주뱃 골뱃 크로뱃은 관장 머리 정도까지 살짝 띄워줘도 돼': 얼굴 가운데가 관장 머리 높이까지 (무대 위로는 안 넘게) */
         [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; });   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~) (경완 '한카리아스가 더 앞인데 뒤로') */
         return true; };
       const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH], trH = [cx - LW * .3, LB + LH * .72, cx + LW * .3, LB + LH]; let s = 0;
