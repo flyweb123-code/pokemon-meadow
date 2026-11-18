@@ -4756,3 +4756,10 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v26.82 경완 '도구별로 최대 개수랑 현재 개수만 알아보기 쉽게': 수련탑 도구 줄 포켓몬 고르기 = 그 도구 아이콘 + 지금/최대 */
 .bt .pty .pty-it.pty-n{flex-wrap:nowrap;gap:5px;align-items:center}
 .bt .pty .pty-it.pty-n em{font:700 12px/1 var(--px);font-style:normal;color:var(--win-ink,#303040);white-space:nowrap}
+/* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 테라스탈한 동안 머리 위 테라 보석 관 + 몸 위 반짝이 (battle.js tcOn) */
+.bt-tcr{position:absolute;left:0;top:0;width:0;height:0;z-index:3;pointer-events:none;transition:opacity .2s}
+.bt-tcr .cr{position:absolute;display:block;background:center/contain no-repeat;transform-origin:50% 90%;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff));animation:tcrB 2.4s ease-in-out infinite}
+.bt-tcr b{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 2px var(--tl,#fff));opacity:0}
+.bt-tcr b.on{animation:tcrS .8s ease-out}
+@keyframes tcrB{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff)) brightness(1)}50%{transform:translateY(-1.5px);filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 7px var(--tl,#fff)) brightness(1.25)}}
+@keyframes tcrS{0%{opacity:0;transform:scale(.2) rotate(0)}45%{opacity:1;transform:scale(1.1) rotate(45deg)}100%{opacity:0;transform:scale(.2) rotate(90deg)}}
