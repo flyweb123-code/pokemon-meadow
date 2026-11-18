@@ -1,0 +1,18 @@
+# v27.06 경완 '이런 오류 또 안 생기게 하려면': 게임 화면을 바꾸는 PR 마다 상자 지키기 시험 (진화·놓아주기·필드 뒤 다시 켜도 상자 그대로)
+name: Box keep test
+
+on:
+  pull_request:
+    paths: ['index.html', 'beta.html', 'tools/test/box-keep.js']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm i --no-save --no-package-lock playwright@1.48.2 && npx playwright install --with-deps chromium
+      - run: node tools/test/box-keep.js
