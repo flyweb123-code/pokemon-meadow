@@ -118,10 +118,10 @@ def beach():
   c.blot(110,130,8,'#6a8a6a',3)
   # 부둣가 돌 축대 + 계선주 (바다와 경계)
   QY=156
-  for x in range(W):
+  for x in range(112):
     for y in range(QY-4,QY+4): c.px(x,y,'#7a7266' if ((x//6)+(y//4))%2 else '#6a6258')
     c.px(x,QY-5,'#d0c8b8')
-  for bx in range(14,W,26): c.rect(bx,QY-9,4,5,'#3a3a44'); c.rect(bx-1,QY-10,6,2,'#4a4a55')
+  for bx in range(14,100,26): c.rect(bx,QY-9,4,5,'#3a3a44'); c.rect(bx-1,QY-10,6,2,'#4a4a55')
   # 바다 (아래 넓게)
   SEA=['#5cb4e2','#4aa2da','#3a90d0','#2f7fc4','#256aae']
   for x in range(W):
@@ -138,15 +138,35 @@ def beach():
   c.rect(20,146,13,4,'#3a3a44'); c.rect(22,138,9,8,'#fff2a8'); c.rect(23,139,2,6,'#ffffff')
   c.rect(21,134,11,4,'#c03a3c'); c.rect(25,131,3,3,'#3a3a44')
   # 오른쪽 나무 부두 + 배 두 척
-  for y in range(QY,270): c.rect(132,y,18,1,'#a8744a' if (y%4) else '#7d5233')
-  for y in range(QY+6,272,10): c.rect(131,y,1,5,'#5c3b22'); c.rect(150,y,1,5,'#5c3b22')
+  for y in range(QY,270): c.rect(66,y,18,1,'#a8744a' if (y%4) else '#7d5233')
+  for y in range(QY+6,272,10): c.rect(65,y,1,5,'#5c3b22'); c.rect(84,y,1,5,'#5c3b22')
   def boat(cx,cy,col):
     for y in range(cy-6,cy+6):
       w=16-abs(y-cy)
       c.rect(cx-w//2,y,w+10,1,col if y<cy else '#ffffff')
     c.rect(cx+3,cy-18,1,12,'#5a4030')
     for k in range(10): c.rect(cx+4,cy-17+k,max(1,int(8-k*0.7)),1,'#f4f0ea')
-  boat(112,240,'#e8584a'); boat(166,205,'#3c6ab0')
+  boat(96,236,'#e8584a'); boat(46,262,'#3c6ab0')
+  # 오른쪽 모래 해변: 포장 끝에서 모래로, 해변 물가는 축대보다 아래
+  def sh(x): return 182+round(math.sin(x*.07)*4+math.sin(x*.19)*2)
+  def se(y): return 104+round(math.sin(y*.15)*3+(y-110)*.08)
+  for y in range(112,H):
+    for x in range(W):
+      if x>=se(y):
+        if y<sh(x):
+          k=(x*31+y*17)%23
+          c.px(x,y,'#e8d39a' if k>3 else ('#cbb075' if k>1 else '#f4e6bc'))
+          if y>=sh(x)-6: c.px(x,y,'#c9b37a')
+        elif y<sh(x)+4: c.px(x,y,'#ffffff')
+  for y in range(112,H):   # 포장·모래 경계 돌 턱
+    x=se(y)
+    if y<sh(x): c.px(x,y,'#8a8276'); c.px(x+1,y,'#d8cfa8')
+  for i in range(10):
+    x,y=120+R.random()*55,120+R.random()*55
+    if y<sh(int(x))-8: c.px(x,y,'#f2a07a'); c.px(x+1,y,'#f2a07a'); c.px(x,y+1,'#f5f0e8')
+  # 파라솔 하나
+  c.rect(150,126,1,16,'#6a5040')
+  for k in range(6): c.rect(150-8+k,120+k,17-2*k,1,'#f0b030' if k%2 else '#ffffff')
   # 바다 반짝 자리
   for i in range(30):
     x,y=R.random()*W,175+R.random()*120; c.rect(x,y,3,1,'#9ad8f4')
