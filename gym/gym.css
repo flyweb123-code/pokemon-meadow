@@ -4744,3 +4744,28 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-stk2.go .sk-ms{animation:skMsIn .45s cubic-bezier(.3,1.8,.5,1) .35s forwards}
 @keyframes skMsIn{0%{transform:translateY(6px) scale(0)}100%{transform:scale(1)}}
 #gym .rs-rep .rr-top{display:grid;grid-template-columns:1fr auto 1fr;column-gap:8px}#gym .rs-rep .rr-top>span{justify-self:end}#gym .rs-rep .rr-top>.rr-n{grid-column:2}   /* v27.23 경완 '기록창 평판 부분 평판 숫자가 가운데 오게끔': 평판 글자는 왼쪽 칸, 숫자는 가운데 칸 (+N 은 원래대로 숫자 옆에 붙음) */
+
+/* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 테라스탈한 동안 머리 위 테라 보석 관 + 몸 위 반짝이 (battle.js tcOn) */
+.bt-tcr{position:absolute;left:0;top:0;width:0;height:0;z-index:3;pointer-events:none;transition:opacity .2s}
+.bt-tcr .cr{position:absolute;display:block;background:center/contain no-repeat;transform-origin:50% 90%;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff));animation:tcrB 2.4s ease-in-out infinite}
+.bt-tcr b{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 2px var(--tl,#fff));opacity:0}
+.bt-tcr b.on{animation:tcrS .8s ease-out}
+@keyframes tcrB{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff)) brightness(1)}50%{transform:translateY(-1.5px);filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 7px var(--tl,#fff)) brightness(1.25)}}
+@keyframes tcrS{0%{opacity:0;transform:scale(.2) rotate(0)}45%{opacity:1;transform:scale(1.1) rotate(45deg)}100%{opacity:0;transform:scale(.2) rotate(90deg)}}
+/* 경완 2026-11-19 '테라스탈 표시가 메가진화 마크처럼 배경에서 돌아가게, z기술처럼 배경은 해당 타입 색상으로' (battle.js gkBg: el.dataset.zt = 테라 타입, --ti = 테라 보석 아이콘) */
+.bt.mob.gkbg-terastallize .bt-bot{background-image:linear-gradient(#eefaff,#bfe9ff 55%,#e4f6ff);background-blend-mode:normal}
+.bt.mob.gkbg-terastallize .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#f2fbff,#a8e0ff 55%,#e2f5ff);animation:none}
+.bt.mob.gkbg-terastallize .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(60,190,255,.95))}
+.bt.mob.gkbg-terastallize .gk-mark{opacity:.92;background-image:var(--ti);width:96px;height:96px;margin:-48px 0 0 -48px;filter:drop-shadow(0 0 6px rgba(255,255,255,.95)) drop-shadow(0 0 14px var(--zg,#5cc8e8));animation:gkMark 4.5s linear infinite}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot{background-color:var(--zl)}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(var(--zl),var(--zm) 55%,var(--zl))}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
+.bt.mob.gkst.gkbg-terastallize .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(100deg,#ffd6de,#ffeec2 20%,#fdfcc4 38%,#d4f8dc 55%,#cfeaff 72%,#e6d8ff 88%,#ffd6f2)}
+.bt.mob.gkst.gkbg-terastallize .gk-mark{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #c8a8ff)}
+.bt .bb.gkb.terastallize.gkfl::after{border-color:#9fe6ff;box-shadow:0 0 14px 4px rgba(60,190,255,.85)}
+.bt-tcr{z-index:1}
+
+.bt.tmon .bt-hb{z-index:7}
+.bt:has(.bt-tcr) .bt-hb{z-index:7}   /* 경완 '배틀화면에서 왕관이 배틀박스 가리지 않게': 관(.bt-tcr)은 늘 체력 박스 밑으로 */   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
+
+.bt-tcr .cr{background-position:center bottom;filter:none!important;animation:tcrB2 2.4s ease-in-out infinite}@keyframes tcrB2{50%{transform:translateY(-1.5px)}}   /* v27.26 3D 결정 관: 그림에 빛 번짐이 이미 있어 CSS 빛은 뺌 (경완 '디자인이 좀 달라지는건 왜') */
