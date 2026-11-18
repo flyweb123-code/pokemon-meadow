@@ -820,7 +820,7 @@ const mvBox = (i, d, pp, maxpp, dis, eff = true) => { const ty = d[2] || 1; retu
 const GK_NM = { mega: '메가진화', zmove: 'Z기술', dynamax: '다이맥스', terastallize: '테라스탈' };
 function gkOpts(R) { const G = B?.gmk || {}, o = [];
   if (G.mega && (R.canMegaEvo || R.canMegaEvoX || R.canMegaEvoY)) o.push(R.canMegaEvoX ? 'megax' : R.canMegaEvoY ? 'megay' : 'mega');
-  if (G.z && R.canZMove) o.push('zmove'); if (G.dmax && R.canDynamax) o.push('dynamax'); if (G.tera && R.canTerastallize) o.push('terastallize'); return o; }
+  if (G.z && R.canZMove) o.push('zmove'); if (G.dmax && R.canDynamax) o.push('dynamax'); if (G.tera && R.canTerastallize) o.push('terastallize'); const T = B?.gkTurn || []; return o.filter(k => !T.includes(k.replace(/^mega[xy]$/, 'mega'))); }   /* v26.43 더블: 한 턴에 같은 기믹은 한 자리만 (쇼다운도 두 번째는 거절) */
 // 기믹이 켜졌을 때 기술 칸: Z기술·다이맥스 기술 이름·위력으로
 function gkMove(R, i, m, d, gk) {
   const bm = PSim.Dex.moves.get(m.id), dx = R.maxMoves && (gk === 'dynamax' || !R.canDynamax) ? R.maxMoves.maxMoves?.[i] : null;
@@ -1131,19 +1131,20 @@ function foeUseItem(btl, ch) {
   else if (k === 'rev') { p.fainted = false; p.faintQueued = false; p.subFainted = false; p.status = ''; p.hp = 1; p.sethp(v >= 7 ? H : Math.floor(H / 2)); btl.add('-dxrevive', 'p2: ' + p.name); }
   else if (k === 'x') { const n = p.boostBy({ [v]: 2 }); btl.add('-boost', p, v, n); }
 }
-function aiGmk(btl, c) {
-  const G = B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[0], me = side.active[0], foe = btl.p1.active[0];
-  if (!c || !/^move \d+$/.test(c) || !G || !R || !me) return c;
-  const i = +c.slice(5) - 1, m = R.moves?.[i]; if (m) B.gmBase.e = m.id;
+function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': k = 자리(더블), tk = 이번 턴에 이미 쓴 기믹 */
+  const G = B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[k], me = side.active[k], mt = /^move (\d+)( -?\d+)?$/.exec(c || ''), tn = mt?.[2] ? +mt[2] : 0, foe = (tn > 0 && btl.p1.active[tn - 1] && !btl.p1.active[tn - 1].fainted ? btl.p1.active[tn - 1] : btl.p1.active.find(q => q && !q.fainted));
+  if (!mt || !G || !R || !me) return c;
+  const i = +mt[1] - 1, m = R.moves?.[i]; if (m) B.gmBase[k ? 'e2' : 'e'] = m.id;
+  const ok = q => !tk || !tk.includes(q), put = q => { if (tk) tk.push(q); return c + ' ' + q; };
   const left = side.pokemon.filter(p => !p.fainted).length, ace = left === 1 || side.pokemon.indexOf(me) === side.pokemon.length - 1 || me.position === 0 && side.pokemon[side.pokemon.length - 1] === me, hpR = me.hp / me.maxhp;
-  if (G.mega && (R.canMegaEvo || R.canMegaEvoX || R.canMegaEvoY)) return c + (R.canMegaEvoX ? ' megax' : R.canMegaEvoY ? ' megay' : ' mega');
-  if (G.z && R.canZMove?.[i] && PSim.Dex.moves.get(m.id).category !== 'Status' && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) return c + ' zmove';
+  if (G.mega && ok('mega') && (R.canMegaEvo || R.canMegaEvoX || R.canMegaEvoY)) { if (tk) tk.push('mega'); return c + (R.canMegaEvoX ? ' megax' : R.canMegaEvoY ? ' megay' : ' mega'); }
+  if (G.z && ok('zmove') && R.canZMove?.[i] && PSim.Dex.moves.get(m.id).category !== 'Status' && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) return put('zmove');
   /* v24.51 도전자 Z기술: 고른 기술이 Z가 안 되면, Z크리스탈로 바뀌는 공격 기술 중 상대에게 안 막히는(무효·반감 아님) 것으로 바꿔서 Z기술 */
-  if (G.z && !G.meOnly && R.canZMove && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) { const ft = foe.getTypes?.() || foe.types || [];
+  if (G.z && !G.meOnly && !B.dbl && R.canZMove && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) { const ft = foe.getTypes?.() || foe.types || [];
     const j = R.canZMove.findIndex((z, k) => { if (!z || !R.moves?.[k] || R.moves[k].disabled) return false; const dm = PSim.Dex.moves.get(R.moves[k].id); return dm.category !== 'Status' && PSim.Dex.getImmunity(dm.type, ft) && PSim.Dex.getEffectiveness(dm.type, ft) >= 0; });
     if (j >= 0) { B.gmBase.e = R.moves[j].id; return `move ${j + 1} zmove`; } }
-  if (G.dmax && !G.meOnly && R.canDynamax && (left === 1 || (ace && hpR > .5))) return c + ' dynamax';
-  if (G.tera && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return c + ' terastallize';   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
+  if (G.dmax && ok('dynamax') && !G.meOnly && R.canDynamax && (left === 1 || (ace && hpR > .5))) return put('dynamax');
+  if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
 function aiChoice(btl, diff) {
@@ -1481,17 +1482,18 @@ async function chooseD(req) {
       if (!req.side.pokemon.some((m, i) => !m.active && !/fnt/.test(m.condition) && !used.includes(i))) { out.push('pass'); continue; }
       await msg('다음 포켓몬을 골라 주세요.', 0); const i = await partyPanel(req, true, used); used.push(i); out.push('switch ' + (i + 1)); }
     return out.join(', '); }
-  const S2 = ['p', 'p2'], ch = [], used = [];
+  const S2 = ['p', 'p2'], ch = [], used = []; B.gkTurn = []; B.gkUsed = null;
   for (let k = 0; k < req.active.length; k++) {
     const R = req.active[k], X = B.act[S2[k]];
     if (!X || X.fnt || /fnt/.test(req.side.pokemon[k]?.condition || '')) { ch.push('pass'); continue; }
     if (R.moves.length === 1 && R.moves[0].pp == null) { ch.push('move 1'); continue; }
     for (;;) {
       const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
-      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { i = await movePanel(req, k); if (i == null) break;
+      if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { B.gkSel = null; i = await movePanel(req, k); if (i == null) break;
           const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
-        if (i == null) continue;
-        ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '')); break; }
+        if (i == null) { B.gkSel = null; continue; }
+        { const g = B.gkSel; B.gkSel = null; B.gmBase[S2[k]] = R.moves[i]?.id; if (g) { B.gkTurn.push(g.replace(/^mega[xy]$/, 'mega')); if (!k) B.gkUsed = g; }   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': 고른 기믹을 그 자리 기술에 붙임 */
+          ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '') + (g ? ' ' + g : '')); } break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
       if (a === 'bag') { if (B.train && !B.wild) { await msg('안 돼! 남의 포켓몬을 뺏으면\n도둑이야!'); continue; }   /* v24.87 수련탑 트레이너 층 */ if (B.train?.balls) { const two = ['e', 'e2'].filter(q => B.act[q] && !B.act[q].fnt).length > 1; if (two) { await msg('야생 포켓몬이 둘이라\n볼을 던질 틈이 없다!'); continue; }
@@ -1517,7 +1519,9 @@ function aiD(btl, diff) {
   if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
     const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
     const x = o.sort((a, b) => fit(b) - fit(a))[0]; used.push(x.i); return 'switch ' + (x.i + 1); }).join(', '); }
-  return req.active.map((R, k) => { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
+  const tk = [];
+  return req.active.map((R, k) => aiGmk(btl, aiD1(R, k), k, tk)).join(', ');
+  function aiD1(R, k) { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
     if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
     const mv = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
     const al = side.active[1 - k], alOk = al && !al.fainted, mHp = me.hp / me.maxhp, foeHit = Math.max(0, ...foes.map(F => Math.max(0, ...(F.q.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(F.q, me, btl.dex.moves.get(y.id)))))) / Math.max(1, me.hp);
@@ -1544,7 +1548,7 @@ function aiD(btl, diff) {
     if (diff === 0) while (c < sc.length - 1 && Math.random() >= 5 / 8) c++;
     else if (diff === 1) while (c < sc.length - 1 && sc[c].s > 0 && sc[c + 1].s > 0 && Math.random() < sc[c + 1].s / sc[c].s * .5) c++;
     return 'move ' + (sc[c].o.i + 1) + (sc[c].n ? ' ' + sc[c].n : '');
-  }).join(', ');
+  }
 }
 // 이름표 "p1a: 피카츄" → 편
 const sideOf = id => (id.startsWith('p1') ? 'p' : 'e') + (id[2] === 'b' ? '2' : '');   /* v24.21 더블: p1b·p2b = 두 번째 자리 */
@@ -2745,10 +2749,12 @@ const IT_CAT = [['heal', '회복', ['leftovers', 'blacksludge', 'shellbell']], [
   ['def', '방어·스피드', ['choicescarf', 'assaultvest', 'eviolite', 'rockyhelmet', 'focusband', 'lightclay', 'focussash', 'airballoon', 'heavydutyboots', 'safetygoggles', 'utilityumbrella', 'covertcloak', 'clearamulet', 'abilityshield', 'protectivepads']], ['acc', '명중·급소', ['scopelens', 'widelens', 'zoomlens', 'brightpowder', 'kingsrock', 'quickclaw', 'razorclaw', 'razorfang']],
   ['herb', '허브', ['whiteherb', 'mentalherb', 'powerherb', 'mirrorherb']], ['switch', '교체', ['ejectbutton', 'ejectpack', 'redcard', 'shedshell']], ['weather', '날씨·필드', ['damprock', 'heatrock', 'icyrock', 'smoothrock', 'terrainextender', 'electricseed', 'grassyseed', 'mistyseed', 'psychicseed']], ['react', '맞으면 발동', ['absorbbulb', 'cellbattery', 'luminousmoss', 'snowball', 'adrenalineorb', 'roomservice']], ['etc', '특수', ['bigroot', 'flameorb', 'toxicorb', 'bindingband', 'gripclaw', 'laggingtail', 'stickybarb', 'ironball', 'floatstone', 'destinyknot', 'ringtarget']], ['type', '타입 강화', Object.keys(HOLD).filter(k => HOLD[k][3])], ['berry', '열매', Object.keys(HOLD).filter(k => /berry$/.test(k))], ['sp', '전용 도구', ['lightball', 'thickclub', 'metalpowder', 'quickpowder', 'deepseatooth', 'deepseascale', 'leek', 'souldew', 'adamantorb', 'lustrousorb', 'griseousorb']]];
 /* 경완 2026-11-12 메가스톤 (이름난 체육관 강박사 튜토리얼에서 메가링을 받으면 상점 도구 탭 '메가스톤'): MEGA_ST {도구: [종 번호, X·Y·Z]}, 그림 gym/img/dbk/it */
-const MEGA_ST = {"abomasite":[460,""],"absolite":[359,""],"absolitez":[359,"Z"],"aerodactylite":[142,""],"aggronite":[306,""],"alakazite":[65,""],"altarianite":[334,""],"ampharosite":[181,""],"audinite":[531,""],"banettite":[354,""],"barbaracite":[689,""],"baxcalibrite":[998,""],"beedrillite":[15,""],"blastoisinite":[9,""],"blazikenite":[257,""],"cameruptite":[323,""],"chandelurite":[609,""],"charizarditex":[6,"X"],"charizarditey":[6,"Y"],"chesnaughtite":[652,""],"chimechite":[358,""],"clefablite":[36,""],"crabominite":[740,""],"darkranite":[491,""],"delphoxite":[655,""],"diancite":[719,""],"dragalgite":[691,""],"dragoninite":[149,""],"drampanite":[780,""],"eelektrossite":[604,""],"emboarite":[500,""],"excadrite":[530,""],"falinksite":[870,""],"feraligite":[160,""],"floettite":[670,""],"froslassite":[478,""],"galladite":[475,""],"garchompite":[445,""],"garchompitez":[445,"Z"],"gardevoirite":[282,""],"gengarite":[94,""],"glalitite":[362,""],"glimmoranite":[970,""],"golisopite":[768,""],"golurkite":[623,""],"greninjite":[658,""],"gyaradosite":[130,""],"hawluchanite":[701,""],"heatranite":[485,""],"heracronite":[214,""],"houndoominite":[229,""],"kangaskhanite":[115,""],"latiasite":[380,""],"latiosite":[381,""],"lopunnite":[428,""],"lucarionite":[448,""],"lucarionitez":[448,"Z"],"magearnite":[801,""],"malamarite":[687,""],"manectite":[310,""],"mawilite":[303,""],"medichamite":[308,""],"meganiumite":[154,""],"meowsticite":[678,""],"metagrossite":[376,""],"mewtwonitex":[150,"X"],"mewtwonitey":[150,"Y"],"pidgeotite":[18,""],"pinsirite":[127,""],"pyroarite":[668,""],"raichunitex":[26,"X"],"raichunitey":[26,"Y"],"sablenite":[302,""],"salamencite":[373,""],"sceptilite":[254,""],"scizorite":[212,""],"scolipite":[545,""],"scovillainite":[952,""],"scraftinite":[560,""],"sharpedonite":[319,""],"skarmorite":[227,""],"slowbronite":[80,""],"staraptite":[398,""],"starminite":[121,""],"steelixite":[208,""],"swampertite":[260,""],"tatsugirinite":[978,""],"tyranitarite":[248,""],"venusaurite":[3,""],"victreebelite":[71,""],"zeraorite":[807,""],"zygardite":[718,""]}, MEGA_P = 8000;
+/* v27.15 경완 '플라엣테는 영원의꽃 플라엣테만 메가진화' → '응 본가처럼': 영원의꽃을 얻는 길이 없으니 플라엣테나이트는 상점·상대·특훈에서 뺌 (MEGA_OFF). 이미 가진 사람의 도구 칸·그림은 MEGA_ALL 로 그대로 */
+const MEGA_OFF = new Set(['floettite']);
+const MEGA_ALL = {"abomasite":[460,""],"absolite":[359,""],"absolitez":[359,"Z"],"aerodactylite":[142,""],"aggronite":[306,""],"alakazite":[65,""],"altarianite":[334,""],"ampharosite":[181,""],"audinite":[531,""],"banettite":[354,""],"barbaracite":[689,""],"baxcalibrite":[998,""],"beedrillite":[15,""],"blastoisinite":[9,""],"blazikenite":[257,""],"cameruptite":[323,""],"chandelurite":[609,""],"charizarditex":[6,"X"],"charizarditey":[6,"Y"],"chesnaughtite":[652,""],"chimechite":[358,""],"clefablite":[36,""],"crabominite":[740,""],"darkranite":[491,""],"delphoxite":[655,""],"diancite":[719,""],"dragalgite":[691,""],"dragoninite":[149,""],"drampanite":[780,""],"eelektrossite":[604,""],"emboarite":[500,""],"excadrite":[530,""],"falinksite":[870,""],"feraligite":[160,""],"floettite":[670,""],"froslassite":[478,""],"galladite":[475,""],"garchompite":[445,""],"garchompitez":[445,"Z"],"gardevoirite":[282,""],"gengarite":[94,""],"glalitite":[362,""],"glimmoranite":[970,""],"golisopite":[768,""],"golurkite":[623,""],"greninjite":[658,""],"gyaradosite":[130,""],"hawluchanite":[701,""],"heatranite":[485,""],"heracronite":[214,""],"houndoominite":[229,""],"kangaskhanite":[115,""],"latiasite":[380,""],"latiosite":[381,""],"lopunnite":[428,""],"lucarionite":[448,""],"lucarionitez":[448,"Z"],"magearnite":[801,""],"malamarite":[687,""],"manectite":[310,""],"mawilite":[303,""],"medichamite":[308,""],"meganiumite":[154,""],"meowsticite":[678,""],"metagrossite":[376,""],"mewtwonitex":[150,"X"],"mewtwonitey":[150,"Y"],"pidgeotite":[18,""],"pinsirite":[127,""],"pyroarite":[668,""],"raichunitex":[26,"X"],"raichunitey":[26,"Y"],"sablenite":[302,""],"salamencite":[373,""],"sceptilite":[254,""],"scizorite":[212,""],"scolipite":[545,""],"scovillainite":[952,""],"scraftinite":[560,""],"sharpedonite":[319,""],"skarmorite":[227,""],"slowbronite":[80,""],"staraptite":[398,""],"starminite":[121,""],"steelixite":[208,""],"swampertite":[260,""],"tatsugirinite":[978,""],"tyranitarite":[248,""],"venusaurite":[3,""],"victreebelite":[71,""],"zeraorite":[807,""],"zygardite":[718,""]}, MEGA_ST = Object.fromEntries(Object.entries(MEGA_ALL).filter(([k]) => !MEGA_OFF.has(k))), MEGA_P = 8000;
 /* 경완 2026-11-13 '종족 강함으로 차등': 메가진화 뒤 종족값 합계로 값 — 550 미만 5,000G · 550~599 7,000G · 600~699 9,000G · 700 이상 12,000G (tools 없이 psim Dex 로 뽑아 박아 둠) */
 const MEGA_PR = {"abomasite":7000,"absolite":7000,"absolitez":7000,"aerodactylite":9000,"aggronite":9000,"alakazite":9000,"altarianite":7000,"ampharosite":9000,"audinite":5000,"banettite":7000,"barbaracite":9000,"baxcalibrite":12000,"beedrillite":5000,"blastoisinite":9000,"blazikenite":9000,"cameruptite":7000,"chandelurite":9000,"charizarditex":9000,"charizarditey":9000,"chesnaughtite":9000,"chimechite":7000,"clefablite":7000,"crabominite":7000,"darkranite":12000,"delphoxite":9000,"diancite":12000,"dragalgite":7000,"dragoninite":12000,"drampanite":7000,"eelektrossite":9000,"emboarite":9000,"excadrite":9000,"falinksite":7000,"feraligite":9000,"floettite":9000,"froslassite":7000,"galladite":9000,"garchompite":12000,"garchompitez":12000,"gardevoirite":9000,"gengarite":9000,"glalitite":7000,"glimmoranite":9000,"golisopite":9000,"golurkite":7000,"greninjite":9000,"gyaradosite":9000,"hawluchanite":9000,"heatranite":12000,"heracronite":9000,"houndoominite":9000,"kangaskhanite":7000,"latiasite":12000,"latiosite":12000,"lopunnite":7000,"lucarionite":9000,"lucarionitez":9000,"magearnite":12000,"malamarite":7000,"manectite":7000,"mawilite":5000,"medichamite":5000,"meganiumite":9000,"meowsticite":7000,"metagrossite":12000,"mewtwonitex":12000,"mewtwonitey":12000,"pidgeotite":7000,"pinsirite":9000,"pyroarite":9000,"raichunitex":7000,"raichunitey":7000,"sablenite":5000,"salamencite":12000,"sceptilite":9000,"scizorite":9000,"scolipite":7000,"scovillainite":7000,"scraftinite":7000,"sharpedonite":7000,"skarmorite":7000,"slowbronite":7000,"staraptite":7000,"starminite":9000,"steelixite":9000,"swampertite":9000,"tatsugirinite":7000,"tyranitarite":12000,"venusaurite":9000,"victreebelite":7000,"zeraorite":12000,"zygardite":12000};
-function mgStAdd() { for (const [id, [n, x]] of Object.entries(MEGA_ST)) { const k = SPECIES[n]?.n; if (!k || HOLD[id]) continue; HOLD[id] = [`${k}나이트${x}`, MEGA_PR[id] || MEGA_P, `${k}에게 지니게 하면 배틀 중 메가진화할 수 있다. 트레이너에게 메가링이 있어야 한다.`, 0]; } }
+function mgStAdd() { for (const [id, [n, x]] of Object.entries(MEGA_ALL)) { const k = SPECIES[n]?.n; if (!k || HOLD[id]) continue; HOLD[id] = [`${k}나이트${x}`, MEGA_PR[id] || MEGA_P, `${k}에게 지니게 하면 배틀 중 메가진화할 수 있다. 트레이너에게 메가링이 있어야 한다.`, 0]; } }
 const mgOn = () => !!(S.gym?.mgRing || (S.gym?.shelf || []).some(x => x?.mgRing) || window.gymMgOn);   // 메가링은 관장 것 (어느 체육관에서 받았든)   // 메가링을 받은 관장만 상점에 메가스톤
 const mgSt = sp => Object.keys(MEGA_ST).filter(id => MEGA_ST[id][0] === sp);   // 이 종이 쓸 수 있는 메가스톤
 const mgBoxSp = () => new Set((S.box || []).map(P => P.sp));   /* 경완 2026-11-13: 상점 메가스톤은 내 포켓몬 박스 전체 중 메가진화할 수 있는 포켓몬 것만 (튜토리얼 시험 포켓몬도 박스에 있어 그 스톤 보임) */
@@ -2799,7 +2805,7 @@ const itCatL = () => (C => mgOn() ? [...C, ['mega', '메가스톤', (B => Object
 /* 경완 2026-11-14 Z크리스탈 (인기 체육관 강박사 튜토리얼에서 Z링과 체육관 타입 것을 받음): 체육관 타입 번호(TY_EN 순서) → 도구 id. 상점에선 안 팔고, 인기 체육관이 될 때마다 그 타입 것 하나 (몇 번이든 쓸 수 있음) */
 const ZC_ST = ['', 'normaliumz', 'fightiniumz', 'flyiniumz', 'poisoniumz', 'groundiumz', 'rockiumz', 'buginiumz', 'ghostiumz', 'steeliumz', 'firiumz', 'wateriumz', 'grassiumz', 'electriumz', 'psychiumz', 'iciumz', 'dragoniumz', 'darkiniumz', 'fairiumz'], ZC_T = Object.fromEntries(ZC_ST.map((id, t) => [id, t]).filter(([id]) => id));
 function zcAdd() { ZC_ST.forEach((id, t) => { if (!id || HOLD[id]) return; const k = TYPE_KO[t]; HOLD[id] = [`${k}Z`, 0, `${k} 타입 기술을 Z기술로 바꾼다. 한 배틀에 한 번 쓸 수 있다. 트레이너에게 Z링이 있어야 한다.`, 0]; }); }
-const itImg = id => MEGA_ST[id] ? `${IMG}dbk/it/${id}.png` : ZC_T[id] ? `${IMG}dbk/it/${id.toUpperCase()}.png` : `${IMG}item/${id}.png`;
+const itImg = id => MEGA_ALL[id] ? `${IMG}dbk/it/${id}.png` : ZC_T[id] ? `${IMG}dbk/it/${id.toUpperCase()}.png` : `${IMG}item/${id}.png`;
 const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="button" class="sp-tm sp-it" data-it="${id}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${esc(x[2])}</small>${note ? `<em class="it-note">${note}</em>` : ''}</span></button>`; };
 // 도구는 종류마다 하나만 (경완 2026-10-29): 창고에 있거나 누가 지니고 있으면 가진 것
 const itWho = id => { const M = S.gym?.mon || {}; for (const k in M) if (M[k]?.it === id) { const P = boxOf(+k || k); if (P) return P; } return null; };
@@ -3197,4 +3203,9 @@ function vitPick(i, done) {
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
 window.GymBattle = { MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, FM_IT, fmSync, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+  /* v27.21 경완 '미니뿡 배틀하다가 필드로 팅겼는데 왜': 오류 기록 없이 앱이 다시 켜짐(아이폰 게임 화면이 죽어 다시 불러옴) → 배틀 중·끝난 직후 상태를 pk-btl 에 적어 두고, 숨겨지지 않은 채 다시 켜지면 index.html 이 서버 오류 기록으로 보냄 */
+  { const R0 = window.GymBattle.run, K = 'pk-btl', put = o => { try { localStorage.setItem(K, JSON.stringify(o)); } catch (e) {} };
+    window.GymBattle.run = async o => { const me = (o?.my || []).map(p => p?.sp | 0), fo = (o?.foe?.team || []).map(p => p?.sp | 0), b0 = { t0: Date.now(), dbl: o?.dbl ? 1 : 0, gk: Object.keys(o?.gmk || {}).join(','), pr: o?.practice ? 1 : 0, me, fo, nm: String(o?.foe?.nm || '').slice(0, 20) }; put(b0);
+      try { return await R0(o); } finally { put({ ...b0, t1: Date.now(), tn: B?.btl?.turn | 0 }); } };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) return; try { const x = JSON.parse(localStorage.getItem(K) || 'null'); if (x) put({ ...x, hid: Date.now() }); } catch (e) {} }); }
 })();

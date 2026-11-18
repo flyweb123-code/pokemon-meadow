@@ -4756,3 +4756,29 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v26.82 경완 '도구별로 최대 개수랑 현재 개수만 알아보기 쉽게': 수련탑 도구 줄 포켓몬 고르기 = 그 도구 아이콘 + 지금/최대 */
 .bt .pty .pty-it.pty-n{flex-wrap:nowrap;gap:5px;align-items:center}
 .bt .pty .pty-it.pty-n em{font:700 12px/1 var(--px);font-style:normal;color:var(--win-ink,#303040);white-space:nowrap}
+/* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 테라스탈한 동안 머리 위 테라 보석 관 + 몸 위 반짝이 (battle.js tcOn) */
+.bt-tcr{position:absolute;left:0;top:0;width:0;height:0;z-index:3;pointer-events:none;transition:opacity .2s}
+.bt-tcr .cr{position:absolute;display:block;background:center/contain no-repeat;transform-origin:50% 90%;filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff));animation:tcrB 2.4s ease-in-out infinite}
+.bt-tcr b{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 2px var(--tl,#fff));opacity:0}
+.bt-tcr b.on{animation:tcrS .8s ease-out}
+@keyframes tcrB{0%,100%{transform:translateY(0);filter:drop-shadow(0 0 1px #fff) drop-shadow(0 0 4px var(--tl,#fff)) brightness(1)}50%{transform:translateY(-1.5px);filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 7px var(--tl,#fff)) brightness(1.25)}}
+@keyframes tcrS{0%{opacity:0;transform:scale(.2) rotate(0)}45%{opacity:1;transform:scale(1.1) rotate(45deg)}100%{opacity:0;transform:scale(.2) rotate(90deg)}}
+
+/* v27.18 경완 연승 고비 보너스 줄 (결과창 골드 상자 밑) */
+#gym .rg-ms{margin:-4px 0 8px;text-align:center;font-size:14px;font-weight:800;color:#ef4a2c;opacity:0;transform:translateY(6px) scale(.5);animation:rrbIn .4s cubic-bezier(.3,1.8,.5,1) .9s forwards}
+/* 경완 2026-11-19 '테라스탈 표시가 메가진화 마크처럼 배경에서 돌아가게, z기술처럼 배경은 해당 타입 색상으로' (battle.js gkBg: el.dataset.zt = 테라 타입, --ti = 테라 보석 아이콘) */
+.bt.mob.gkbg-terastallize .bt-bot{background-image:linear-gradient(#eefaff,#bfe9ff 55%,#e4f6ff);background-blend-mode:normal}
+.bt.mob.gkbg-terastallize .bt-bot::before{opacity:1;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(#f2fbff,#a8e0ff 55%,#e2f5ff);animation:none}
+.bt.mob.gkbg-terastallize .bt-bot::after{opacity:.6;filter:drop-shadow(0 0 6px rgba(60,190,255,.95))}
+.bt.mob.gkbg-terastallize .gk-mark{opacity:.92;background-image:var(--ti);width:96px;height:96px;margin:-48px 0 0 -48px;filter:drop-shadow(0 0 6px rgba(255,255,255,.95)) drop-shadow(0 0 14px var(--zg,#5cc8e8));animation:gkMark 4.5s linear infinite}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot{background-color:var(--zl)}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(var(--zl),var(--zm) 55%,var(--zl))}
+.bt.mob[data-zt].gkbg-terastallize .bt-bot::after{filter:drop-shadow(0 0 6px var(--zg))}
+.bt.mob.gkst.gkbg-terastallize .bt-bot::before{background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,255,255,.85),rgba(255,255,255,0) 70%),linear-gradient(100deg,#ffd6de,#ffeec2 20%,#fdfcc4 38%,#d4f8dc 55%,#cfeaff 72%,#e6d8ff 88%,#ffd6f2)}
+.bt.mob.gkst.gkbg-terastallize .gk-mark{filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px #c8a8ff)}
+.bt .bb.gkb.terastallize.gkfl::after{border-color:#9fe6ff;box-shadow:0 0 14px 4px rgba(60,190,255,.85)}
+.bt-tcr{z-index:1}
+
+.bt.tmon .bt-hb{z-index:7}   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
+
+.bt-tcr .cr{image-rendering:pixelated;background-position:center bottom}   /* PixelLab 도트 관 */

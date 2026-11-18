@@ -2716,8 +2716,12 @@ function reset() {
 }
 const dropY = () => Math.min(topY() - (TU.dh || 140), GY - 300);
 const aimX = () => ax; const cxl = x => { const I = IMG[cur], r = I ? Math.max(I.w, I.h) * I.k * .45 : 30; return Math.max(r, Math.min(W - r, x)); };
+/* 경완 2026-11-18 '기울이지 말고 그냥 처음에 나오는 위치를 중간에서 살짝살짝 좌우로 바꿔가면서' (v27.00 의 5번에 한 번 기울기 대신): 다음 포켓몬이 판 가운데에서 좌우로 SHIFT_A0~A0+A1 px 비켜 나옴 → 막 누르면 그대로 어긋나 떨어짐. 놓을 때 판 가운데에서 SHIFT_SNAP px 안이면 딱 가운데(자석) */
+const SHIFT_A0 = 14, SHIFT_A1 = 18, SHIFT_SNAP = 5;
+function shiftNext() { ax = W / 2 + (Math.random() < .5 ? -1 : 1) * (SHIFT_A0 + SHIFT_A1 * Math.random()); }
+function shiftSnap() { if (Math.abs(ax - W / 2) < SHIFT_SNAP) ax = W / 2; }
 function release() {
-  if (mode !== 'aim' || dead || charm || selK || (drag && drag.p) || (hv && hv.fly && !hv.fired)) return; const I = IMG[cur]; if (!I) return; const sm = armed === 'small' ? .62 : 1, x = aimX(), y = relY != null ? relY : Math.min(dropY(), aimYd == null ? 1e9 : aimYd); relY = null;
+  if (mode !== 'aim' || dead || charm || selK || (drag && drag.p) || (hv && hv.fly && !hv.fired)) return; shiftSnap(); const I = IMG[cur]; if (!I) return; const sm = armed === 'small' ? .62 : 1, x = aimX(), y = relY != null ? relY : Math.min(dropY(), aimYd == null ? 1e9 : aimYd); relY = null;
   const b = world.createBody({ type: 'dynamic', position: V(m(x), m(y)), angle: rot, angularDamping: I.kind === 'round' ? 5 : 2, linearDamping: TU.fd || 1.6, bullet: true });
   const ss = sm * I.k;
   const p = { n: cur, I, b, s: ss, H: I.H, t: now0, landed: false, gone: false, miss: false };
@@ -2732,7 +2736,7 @@ function release() {
   else if (armed === 'fly') { p.fly = { t: now0, x0: flyPlan.x0, y0: flyPlan.y0, x1: x, y1: y, a: rot }; b.setStatic(); fxAll(b, f => f.setSensor(true)); p.soft = 1; }
   else if (armed === 'goo') { p.sticky = 1; p.weld = 1; b.setGravityScale(.4); b.setLinearDamping(2.6); b.setAngularDamping(6); fxAll(b, f => { f.setFriction(3); f.setRestitution(0); }); }   /* 경완: 훨씬 끈적하게 — 닿자마자 달라붙음 */
   else if (armed === 'psy') { p.psy = 1; b.setLinearVelocity(V(0, 0)); b.setGravityScale(.15); b.setLinearDamping(3); b.setAngularDamping(8); }
-  wobEnd(); armed = null; abDraw(); SFX.drop(); dropN++; wob = { n: dropN, p, t: now0, td: 0, pd: 0, p0: null, lt: 0, base: P.filter(q => q !== p && q.landed && !q.miss && !q.gone).map(q => ({ q, x: q.b.getPosition().x, a: q.b.getAngle() })) }; wob.top = wob.base.reduce((t, o) => !t || o.q.b.getPosition().y < t.q.b.getPosition().y ? o : t, null); if (wob.top) wob.top.y0 = wob.top.q.b.getPosition().y; mode = 'fall'; waitT = now0; cur = nxt; nxt = nxt2; nxt2 = nxt3; nxt3 = pick(); nxDraw(1); drag = null; rot = 0;
+  wobEnd(); armed = null; abDraw(); SFX.drop(); dropN++; wob = { n: dropN, p, t: now0, td: 0, pd: 0, p0: null, lt: 0, base: P.filter(q => q !== p && q.landed && !q.miss && !q.gone).map(q => ({ q, x: q.b.getPosition().x, a: q.b.getAngle() })) }; wob.top = wob.base.reduce((t, o) => !t || o.q.b.getPosition().y < t.q.b.getPosition().y ? o : t, null); if (wob.top) wob.top.y0 = wob.top.q.b.getPosition().y; mode = 'fall'; waitT = now0; cur = nxt; nxt = nxt2; nxt2 = nxt3; nxt3 = pick(); nxDraw(1); drag = null; rot = 0; shiftNext();
 }
 const onGround = b => { for (let ce = b.getContactList(); ce; ce = ce.next) if (ce.other && ce.other.isGround && ce.contact.isTouching()) return true; return false; };
 function landCheck() {
@@ -3293,7 +3297,7 @@ function loop(t) { const dt = Math.min(.05, (t - last) / 1000); last = t; introF
 
 // ---------- HUD ----------
 const HEART = on => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'><path fill='#20202c' d='M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z'/><path fill='${on ? '#ff5a5a' : '#6a6a80'}' d='M1 1h2v1h1V1h2v2H5v1H4v1H3V4H2V3H1z'/></svg>`)}")`;
-function hud() { $('sc').textContent = sc.toLocaleString() + '점'; { const gd = Math.round(Math.floor(sc / (window.__GPP || 9)) * (pv('pick') ? 1.1 : 1)), e = $('hg'); if (gd !== hud.g) { if (hud.g != null && gd > hud.g) { e.classList.remove('up'); void e.offsetWidth; e.classList.add('up'); } hud.g = gd; e.querySelector('b').textContent = gd.toLocaleString(); } }   /* 경완: 점수판에 골드도 (장애물 넘기처럼, 모든 미니게임) */ $('best').textContent = best ? `최고 기록 ${Math.max(best, sc).toLocaleString()}점` : '';
+function hud() { $('sc').textContent = sc.toLocaleString() + '점'; { const gd = Math.round(Math.floor(sc / (window.__GPP || 9) * ((() => { try { return parent.mgGoldX?.('stack', sc) || 1; } catch (e) { return 1; } })())) * (pv('pick') ? 1.1 : 1))   /* v27.18: 점수 배수(부모 mgGoldX, 끝날 때 지급과 같게) */, e = $('hg'); if (gd !== hud.g) { if (hud.g != null && gd > hud.g) { e.classList.remove('up'); void e.offsetWidth; e.classList.add('up'); } hud.g = gd; e.querySelector('b').textContent = gd.toLocaleString(); } }   /* 경완: 점수판에 골드도 (장애물 넘기처럼, 모든 미니게임) */ $('best').textContent = best ? `최고 기록 ${Math.max(best, sc).toLocaleString()}점` : '';
   const h = Math.max(0, (GY - BASE_H - (P ? topY() : GY - BASE_H)) / 40); $('ht').innerHTML = `<b>${h.toFixed(1)}</b>m`; }   /* 경완: 마리 수는 빼고 높이만 */
 function abDraw() {
   const sk = SK[ty], c = $('abc'), x = c.getContext('2d'), I = IMG[A.H[ty - 1]]; x.clearRect(0, 0, 84, 84); { const n = A.H[ty - 1], B = pmdBox(n), s = Math.min(3, 70 / B[2], 74 / B[1]); pmdDraw(x, n, 'Idle', 0, 42, 42 + (B[2] * s) / 2 - (B[2] - B[5]) * s, s, true); }

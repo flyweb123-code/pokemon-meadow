@@ -4730,3 +4730,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* v26.81 체육관 정보 화면: 프로필 무대가 자리 잡을 때까지 몸통 가림 (gym.js mecWait) */
 #gym .gy-infos>.gy-body.if-wait{visibility:hidden}
+
+/* v27.18 경완 연승 고비 보너스 줄 (결과창 골드 상자 밑) */
+#gym .rg-ms{margin:-4px 0 8px;text-align:center;font-size:14px;font-weight:800;color:#ef4a2c;opacity:0;transform:translateY(6px) scale(.5);animation:rrbIn .4s cubic-bezier(.3,1.8,.5,1) .9s forwards}

@@ -913,7 +913,9 @@ const FR_W = [[2, 1, 1], [3, 2, 1], [4, 3, 2], [5, 4, 3]];
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 // 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
 // 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
-const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(.5, .05 * (n - 1)));   // v14.97 경완: 골드 연승 보너스 2연승 +5% · 연승마다 +5% · 11연승부터 +50%
+/* v27.18 경완 '전체적으로 배수를 올리기보다는 좀 더 연승했을 때 받는 금액을 올리는건 어때' → '그렇게 패치해줘': 연승마다 +10% (11연승부터 +100%) + 고비 보너스 STK_MS (5·10·15·20연승). 실제 기록(3주 482판)으로 이긴 판 골드 ×1.59. 예전 v14.97: +5%·최대 +50% */
+const STK_MS = { 5: 200, 10: 600, 15: 1200, 20: 2000 };
+const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(1, .1 * (n - 1))) + (STK_MS[n] || 0);
 const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 /* v25.84 경완 '연승 보정 지수형으로 올라가야', '천장이랑 바닥 있으니까 상한 빼줘': 예전 = 연승×0.6 (최대 +10). 지금 = 1.25^연승 − 1 (3연승 +1, 5연승 +2, 8연승 +5, 10연승 +8, 12연승 +14…), 상한 없음(등급 레벨 천장 lvCeil 이 막음, 99 는 계산 안전용) */
@@ -924,7 +926,7 @@ const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 
    단계 lsE = 연패 수 − 1 (2연패 1 … 5연패 4, g.lstk 는 5 까지만 쌓임). 레벨은 최대 −2 (예전 −8), 강함 보정·종족값 바닥은 연패 중에도 켬.
    대신 단계마다: 개체값 상한 31 − 6×단계, 노력치 등급 −1.5×단계, AI·도구 단계 −(단계÷2), 상성 포켓몬 비율 ×(1 − .2×단계), 마리 수 −(단계÷2, 최소 3), 메가·Z 확률 ×(1 − .25×단계).
    이기면 바로 0 이 아니라 한 단계씩 풀림. 이름 있는 트레이너는 레벨·개체값·노력치·메가·Z 만, 승급 심사·전설의 체육관은 보정 없음 */
-const lsLv = n => (n | 0) < 2 ? 0 : Math.min(2, (n | 0) - 1), LS_MAX = 5, lsE = g => isLeg(g) ? 0 : clampN((g.lstk | 0) - 1, 0, 4);
+const lsLv = n => (n | 0) < 2 ? 0 : Math.min(2, (n | 0) - 1), LS_MAX = 5, /* v27.12 경완 '등급이 높아질수록 연패 보정이 덜 들어가야할듯' (카드 '완만하게 줄이기'): 연패 보정 최대 단계가 등급별 — 떠오르는까지 4, 이름난 3, 인기 2, 명문 1, 전설 0 */ LS_CAP = [4, 4, 4, 3, 2, 1, 0], lsE = g => isLeg(g) ? 0 : clampN((g.lstk | 0) - 1, 0, LS_CAP[clampN(gradeOf(g.rep || 0).i, 0, 6)]);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
@@ -1650,7 +1652,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.42: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>${STK_MS[stk] ? `<p class="rg-ms">${stk}연승 달성 보너스 +${STK_MS[stk].toLocaleString()}G</p>` : ''}` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
