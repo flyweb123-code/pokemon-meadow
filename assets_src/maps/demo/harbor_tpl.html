@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noai, noimageai">
+<title>항구 도시 필드 시연</title>
+<!-- 포켓에그 시연 페이지. 내려받아 활용한 사람이 법적 책임을 진다. -->
+<style>
+:root{--bg:#f3efe6;--card:#fffdf8;--ink:#2b2a28;--sub:#6d6a63;--line:#ddd5c6;--acc:#2f7fd0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1c20;--card:#25262b;--ink:#ecebe6;--sub:#a3a29c;--line:#3a3b41;--acc:#6fb0f0}}
+:root[data-theme="dark"]{--bg:#1b1c20;--card:#25262b;--ink:#ecebe6;--sub:#a3a29c;--line:#3a3b41;--acc:#6fb0f0}
+html,body{height:auto!important;overflow-y:auto!important;touch-action:pan-y!important;overscroll-behavior:auto!important}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding:16px}
+h1{font-size:19px;margin:0 0 4px}p.s{margin:0 0 12px;color:var(--sub);font-size:13.5px}
+.wrap{max-width:400px;margin:0 auto}
+.stage{position:relative;width:360px;height:600px;margin:0 auto;overflow:hidden;border-radius:10px;background:#000;max-width:100%}
+.stage canvas{position:absolute;left:0;top:0;width:360px;height:600px;image-rendering:pixelated}
+/*GAME_CSS*/
+#skyFx{z-index:1}
+#bgC{z-index:2}#waveC{z-index:3}#zoneC{z-index:4;opacity:0;transition:opacity .3s}.zones #zoneC{opacity:.55}
+#night{z-index:1000}
+.pan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px auto 0;max-width:360px}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.lb{font-size:12.5px;color:var(--sub);margin-top:4px}
+button{font:inherit;font-size:14px;border:0;border-radius:9px;padding:7px 11px;background:#e7e0d2;color:#2b2a28;box-shadow:0 3px 0 #b9ae99;cursor:pointer}
+button:active{transform:translateY(3px);box-shadow:none}
+button.on{background:var(--acc);color:#fff;box-shadow:0 3px 0 #1e5a98}
+input[type=range]{width:100%}
+.lg{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13px;margin-top:6px}.lg i{width:14px;height:14px;border-radius:3px;display:inline-block;margin-top:3px}
+#hr{font-variant-numeric:tabular-nums}
+</style></head><body><div class="wrap">
+<h1>항구 도시 필드 시연</h1>
+<p class="s">초원 필드의 하늘 엔진(하늘 색·해·달·별·구름·밤 그늘)을 게임 코드 그대로 붙이고, 바다 파도는 코드로 움직여요.</p>
+<div class="stage" id="st">
+  <canvas id="skyC" width="480" height="60" style="height:120px"></canvas><div id="skyFx"></div>
+  <canvas id="bgC" width="180" height="300"></canvas>
+  <canvas id="waveC" width="180" height="300"></canvas>
+  <canvas id="zoneC" width="180" height="300"></canvas>
+  <div id="night"></div>
+</div>
+<div class="pan">
+  <div class="lb">시간 <b id="hr"></b></div>
+  <input type="range" id="tm" min="0" max="23.9" step="0.1">
+  <div class="row"><button data-h="6">해돋이</button><button data-h="12">한낮</button><button data-h="17.9">노을</button><button data-h="22">밤</button><button id="ff">하루 빨리 돌리기</button><button id="now">지금 시각</button></div>
+  <div class="lb">날씨 (하늘만)</div>
+  <div class="row"><button data-w="clear" class="on">맑음</button><button data-w="cloud">구름</button><button data-w="rain">비</button></div>
+  <div class="lb">다니는 구역</div>
+  <div class="row"><button id="zb">구역 지도 겹쳐 보기</button></div>
+  <div class="lg" id="lg" hidden>
+    <i style="background:#5a5a5a"></i><span>도시 길: 땅 포켓몬. 해변으로는 계단으로만</span>
+    <i style="background:#ff8c00"></i><span>돌계단: 도시와 해변을 잇는 유일한 길</span>
+    <i style="background:#ffdc00"></i><span>해변: 모래성이당·바다그다 같은 해변 포켓몬은 여기에만</span>
+    <i style="background:#0078ff"></i><span>바다: 물고기 포켓몬은 늘 여기 몸을 담금</span>
+  </div>
+  <div class="lb" style="margin-top:10px">포켓몬별로 갈 수 있는 곳 (게임 mv 값 기준)</div>
+  <div class="lg">
+    <b>헤엄 swim</b><span>바다만 (물고기 포켓몬 포함, 초원 연못처럼 몸 담근 모습)</span>
+    <b>물뭍 amph</b><span>바다 ↔ 해변 ↔ 계단 ↔ 도시 (초원에서 땅·연못 오가던 포켓몬)</span>
+    <b>걷기 walk</b><span>도시·계단·해변 (해변 전용 모래성이당·바다그다 무리는 해변만)</span>
+    <b>떠다님 hover</b><span>도시·계단·해변, 바다 위로는 못 감 (초원 연못은 지나갔음)</span>
+    <b>날기 fly</b><span>갈모매 같은 바다새는 바다 위도, 나머지는 땅 위만</span>
+  </div>
+</div>
+</div>
+<script>
+/* ---- 게임(beta.html) 원본 줄 ---- */
+const $ = s => document.querySelector(s);
+const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+const W = 360, XL = 0, XR = 360; let CLOCK_OFF = 0;
+const tintCv = c => c;
+const MAP_SKY = { y0: 36, dy: 26, cl: 22 };   /* 항구: 하늘 띠가 지붕 위 40px 쯤이라 해·달 길·구름 높이만 낮춤 (초원은 92·46·56) */
+const SPR = {};
+/*GAME_JS*/
+/* ---- 시연 조작 ---- */
+let H = new Date().getHours() + new Date().getMinutes() / 60, WX = 'clear', ff = 0;
+const hour = () => H, weather = () => WX;
+function stars() { const sf = $('#skyFx'); sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 34).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join(''); sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; moonSt = -1; }
+function sky() {   /* beta.html sky() 앞부분 그대로: 밤 그늘 색 → 하늘 → 해·달·별·구름 */
+  const h = hour(); let i = 0; while (i < SKY.length - 2 && h >= SKY[i + 1][0]) i++; const [h0, c0] = SKY[i], [h1, c1] = SKY[i + 1], k = Math.min(1, Math.max(0, (h - h0) / (h1 - h0))), e = k * k * (3 - 2 * k);
+  const wx = weather(), wk = wx === 'rain' ? .8 : wx === 'cloud' ? .92 : 1;
+  const c = c0.map((v, j) => v + (c1[j] - v) * e), lum = (c[0] + c[1] + c[2]) / 765, wk2 = 1 - (wx === 'rain' ? .08 + .12 * clamp((lum - .34) / .66, 0, 1) : 1 - wk) * lum, col = c.map(v => Math.round(v * wk2));
+  $('#night').style.backgroundColor = `rgb(${col.join(',')})`;
+  const dark = clamp((1 - (col[0] + col[1] + col[2]) / 765) * 1.6, 0, 1);
+  drawSky(h, col, wx); skyBodies(h, wx, dark); DARK = dark;
+  $('#hr').textContent = `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.floor(h % 1 * 60)).padStart(2, '0')}`; $('#tm').value = h;
+}
+let DARK = 0;
+document.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { ff = 0; H = +b.dataset.h; sky(); });
+document.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { WX = b.dataset.w; document.querySelectorAll('[data-w]').forEach(x => x.classList.toggle('on', x === b)); skyKey = ''; sky(); });
+$('#tm').oninput = e => { ff = 0; H = +e.target.value; sky(); };
+$('#ff').onclick = () => { ff = !ff; $('#ff').classList.toggle('on', !!ff); };
+$('#now').onclick = () => { ff = 0; $('#ff').classList.remove('on'); H = new Date().getHours() + new Date().getMinutes() / 60; sky(); };
+$('#zb').onclick = () => { const on = $('#st').classList.toggle('zones'); $('#zb').classList.toggle('on', on); $('#lg').hidden = !on; };
+
+/* ---- 항구 바다 파도 (새 코드) ----
+   그림에서 바다·모래·벽을 읽어 물가 거리 지도를 만들고, 한 박자 8장(도트처럼 끊어서)으로:
+   1) 해변: 파도가 모래 위로 3칸까지 밀려 올라왔다 빠지고(물거품 띠 + 젖은 모래), 물가를 따라 박자가 조금씩 어긋나 줄지어 밀려옴
+   2) 축대·바위 앞: 물높이가 출렁이는 밝은 줄, 바위 둘레 물거품이 부서졌다 모임
+   3) 깊은 바다: 잔물결 줄이 생겼다 길어지며 천천히 흘러가 사라지고, 낮엔 햇빛 반짝임 */
+const IMG = new Image(); IMG.src = 'HARBOR_IMG';
+IMG.onload = () => {
+  const bg = $('#bgC').getContext('2d'); bg.drawImage(IMG, 0, 0);
+  const D = bg.getImageData(0, 0, 180, 300).data, w = 180, h = 300, at = (x, y) => (y * w + x) * 4;
+  const isSea = (x, y) => { const i = at(x, y); return y > 120 && D[i + 3] && (D[i + 2] > D[i] + 40 || (D[i] > 225 && D[i + 1] > 235 && D[i + 2] > 235)); };
+  const isSand = (x, y) => { const i = at(x, y); return y > 126 && D[i + 3] && D[i] > 185 && D[i + 1] > 140 && D[i] - D[i + 2] > 35; };
+  const isRock = (x, y) => { const i = at(x, y); return y > 140 && D[i + 3] && Math.abs(D[i] - D[i + 2]) < 20 && D[i] < 200 && !isSea(x, y); };
+  // 물가 거리: 바다 쪽 +, 모래 쪽 − (해변 물가 기준), 벽·바위 물가는 따로
+  const ds = new Float32Array(w * h).fill(99), dw = new Float32Array(w * h).fill(99), kind = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) kind[y * w + x] = isSea(x, y) ? 1 : isSand(x, y) ? 2 : isRock(x, y) ? 3 : 0;
+  const bfs = (dist, seedOk, pass) => { const q = []; for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const k = y * w + x; if (seedOk(x, y, k)) { dist[k] = 0; q.push(k); } }
+    for (let qi = 0; qi < q.length; qi++) { const k = q[qi], x = k % w, y = (k / w) | 0; for (const [X, Y] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) { if (X < 0 || Y < 0 || X >= w || Y >= h) continue; const K = Y * w + X; if (pass(K) && dist[K] > dist[k] + 1) { dist[K] = dist[k] + 1; if (dist[K] < 14) q.push(K); } } } };
+  const nb = (x, y, t) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => kind[(y + b) * w + x + a] === t);
+  const dSea = new Float32Array(w * h).fill(99), dSand = new Float32Array(w * h).fill(99);
+  bfs(dSea, (x, y, k) => kind[k] === 1 && nb(x, y, 2), K => kind[K] === 1);     // 바다 안 해변까지 거리
+  bfs(dSand, (x, y, k) => kind[k] === 2 && nb(x, y, 1), K => kind[K] === 2);    // 모래 안 물가까지 거리
+  bfs(dw, (x, y, k) => kind[k] === 1 && (nb(x, y, 0) || nb(x, y, 3)), K => kind[K] === 1);   // 축대·바위 물가
+  // 물가를 따라 박자 어긋나게: 해변 물가 위치(대각선)를 위상으로
+  const ph = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) ph[y * w + x] = (x * .55 + y * .35) * .09;
+  const deep = []; for (let y = 150; y < h; y++) for (let x = 0; x < w; x++) if (kind[y * w + x] === 1 && dSea[y * w + x] > 10 && dw[y * w + x] > 6) deep.push([x, y]);
+  const rip = Array.from({ length: 46 }, () => newRip(true));
+  function newRip(first) { const [x, y] = deep[(Math.random() * deep.length) | 0]; return { x, y, t0: performance.now() - (first ? Math.random() * 5000 : 0), dur: 3800 + Math.random() * 2600, len: 2 + ((Math.random() * 4) | 0), sp: .6 + Math.random() * .7 }; }
+  const glint = Array.from({ length: 14 }, () => ({ p: deep[(Math.random() * deep.length) | 0], o: Math.random() * 6.28 }));
+  // 바다 뜸: 바다 기본 색 위에 칠할 색 (게임 바다 팔레트에서)
+  const FOAM = '#f4f8f8', FOAM2 = '#dff0f4', SHAL = '#7dcade', SHAL2 = '#63b2d2', WET = 'rgba(150,100,50,.28)', RIP = '#3e96c3', RIP2 = '#5aaed4';
+  const g = $('#waveC').getContext('2d');
+  // 4×4 베이어: 반쯤 덮이는 곳은 체크 무늬로 (게임 디더와 같은 결)
+  const BY = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+  let lastF = -1;
+  function frame(now) {
+    if (ff) { H = (H + .035) % 24; sky(); }
+    const F = Math.floor(now / 125); if (F === lastF) return requestAnimationFrame(frame); lastF = F;   // 8장/초 도트 박자
+    const t = F / 8; g.clearRect(0, 0, w, h);
+    const P = (x, y, c) => { g.fillStyle = c; g.fillRect(x, y, 1, 1); };
+    for (let y = 120; y < h; y++) for (let x = 0; x < w; x++) {
+      const k = y * w + x, kd = kind[k];
+      // 1) 해변 파도: 앞머리 f = 물가에서 +3(바다 쪽) ~ −3(모래 위). 밀려올 땐 빠르게, 빠질 땐 천천히
+      const s = (t / 4.2 + ph[k]) % 1, up = s < .38 ? Math.sin(s / .38 * Math.PI / 2) : Math.cos((s - .38) / .62 * Math.PI / 2), f = 3 - up * 6.2;
+      if (kd === 2 && dSand[k] < 5) {
+        const d = -dSand[k] - .5;                       // 모래 쪽은 음수
+        if (d > f + 1) { P(x, y, (BY[y & 3][x & 3] < 9 - up * 6) ? SHAL : SHAL2); }
+        else if (d > f - .2) P(x, y, (x + F) % 3 ? FOAM : FOAM2);
+        else if (d > f - 2.2 && s > .38 && d > -4) { if (BY[y & 3][x & 3] < 8) P(x, y, WET); }    // 빠진 뒤 젖은 모래
+      } else if (kd === 1 && dSea[k] < 7) {
+        const d = dSea[k];
+        if (Math.abs(d - f) < .7 && f > -.5) P(x, y, (x + y + F) % 4 ? FOAM : FOAM2);
+        else if (d < f && f > 0 && BY[y & 3][x & 3] < 6) P(x, y, SHAL);
+        else if (d > 4 && d < 6.5 && Math.abs(d - 4.5 - Math.sin(t * 1.3 + ph[k] * 6) * 1.2) < .5 && BY[y & 3][x & 3] < 8) P(x, y, SHAL2);   // 뒤따라오는 다음 물결
+      }
+      // 2) 축대·바위 앞 출렁임
+      if (kd === 1 && dw[k] < 3) {
+        const b = Math.sin(t * 2.1 + x * .23 + y * .11);
+        if (dw[k] === 0 && b > -.2) P(x, y, b > .6 ? FOAM : SHAL);
+        else if (dw[k] === 1 && b > .55) P(x, y, (x + F) & 1 ? FOAM2 : SHAL);
+        else if (dw[k] === 2 && b > .85 && (x + y + F) % 3 === 0) P(x, y, FOAM2);
+      }
+    }
+    // 3) 깊은 바다 잔물결·반짝임
+    for (let i = 0; i < rip.length; i++) { const r = rip[i], a = (now - r.t0) / r.dur; if (a >= 1) { rip[i] = newRip(); continue; }
+      const L = Math.max(1, Math.round(r.len * Math.sin(a * Math.PI))), x0 = Math.round(r.x + a * r.sp * 6);
+      for (let j = 0; j < L; j++) { const X = x0 + j - (L >> 1); if (X >= 0 && X < w && kind[r.y * w + X] === 1) P(X, r.y, a > .3 && a < .7 && j === 0 ? RIP2 : RIP); } }
+    if (DARK < .5) for (const q of glint) { const v = Math.sin(t * 1.7 + q.o); if (v > .82) { const [x, y] = q.p; P(x, y, '#e8fbff'); if (v > .94) { P(x - 1, y, '#9ad8ee'); P(x + 1, y, '#9ad8ee'); P(x, y - 1, '#9ad8ee'); } } }
+    if (Math.random() < .004) q2();
+    requestAnimationFrame(frame);
+  }
+  function q2() { const q = glint[(Math.random() * glint.length) | 0]; q.p = deep[(Math.random() * deep.length) | 0]; }
+  requestAnimationFrame(frame);
+  // 구역 지도 (zones.py 와 같은 규칙, 그림에서 바로)
+  const z = $('#zoneC').getContext('2d'), ZI = new Image(); ZI.src = 'ZONES_IMG'; ZI.onload = () => z.drawImage(ZI, 0, 0);
+};
+stars(); sky();
+</script></body></html>
