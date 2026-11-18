@@ -61,30 +61,42 @@ def volcano():
     cx,cy=R.random()*W,70+R.random()*225; r=2+R.random()*3
     c.blot(cx,cy,r,'#2b2328',r*.7); c.px(cx-1,cy-1,'#5b4f58')
   return c.im
-# ---------- 동굴 ----------
+# ---------- 동굴 (v2: 더 밝게, 결정 무리·빛 웅덩이·이끼·지하 물웅덩이 크게) ----------
 def cave():
   c=C(); R=random.Random(7)
-  ground(c,'#4a5160',['#434a58','#535b6a','#3d4350'],['#363c48','#626a7a','#2f3440'],62,2)
-  WALL=['#0c0e14','#141822','#1c2230','#262d3d','#323a4c']
+  ground(c,'#5c6478',['#535b6e','#687088','#4c5366'],['#444b5c','#7a8298','#3f4556'],62,2)
+  WALL=['#141824','#1c2232','#262e42','#323c54','#425070']
   for x in range(W): grad(c,x,0,edge(x,62),WALL)
-  # 종유석 (위에서 내려옴)
-  for i in range(22):
-    x=R.random()*W; L=6+R.random()*20; w=2+R.random()*3
+  for x in range(W):   # 벽 밑 밝은 테두리
+    e=edge(x,62); c.px(x,e-1,'#5a6a8c'); c.px(x,e,'#36405a')
+  for i in range(24):   # 종유석
+    x=R.random()*W; L=8+R.random()*22; w=2+R.random()*4
     for y in range(int(L)):
-      ww=max(1,round(w*(1-y/L)))
-      c.rect(x-ww//2,y,ww,1,'#2a3142' if y<L*.6 else '#3c4559')
-  # 벽 밑 석순·돌무더기
-  for i in range(16):
-    x=R.random()*W; L=4+R.random()*9; b=edge(int(x)%W,62)
-    for y in range(int(L)): ww=max(1,round(3*(1-y/L))); c.rect(x-ww//2,b-y,ww,1,'#3a4255')
-  # 빛나는 결정 (움직임: 반짝) 자리
-  for (x,y) in [(18,56),(70,50),(150,54),(166,120),(12,210),(160,268)]:
-    for k in range(5): c.px(x,y-k,'#7fe0ff'); 
-    c.px(x-1,y-1,'#4fb0e0'); c.px(x+1,y-2,'#4fb0e0')
-  # 지하 물웅덩이 (움직임 자리: 한 색) — 오른쪽 아래 구석
-  c.blot(150,215,22,'#2a5a8c',9)
-  # 이끼 자리
-  for i in range(10): c.blot(R.random()*W,75+R.random()*220,4+R.random()*5,'#4c6a4e')
+      ww=max(1,round(w*(1-y/L))); c.rect(x-ww//2,y,ww,1,'#3a4560' if y<L*.6 else '#56638a')
+  for i in range(14):   # 석순
+    x=R.random()*W; L=5+R.random()*10; bb=edge(int(x)%W,62)
+    for y in range(int(L)): ww=max(1,round(4*(1-y/L))); c.rect(x-ww//2,bb-y,ww,1,'#56638a' if y>L*.5 else '#3e4866')
+  def glow(cx,cy,r,col):   # 결정 둘레 빛 (바닥이 밝아짐)
+    for y in range(-r,r+1):
+      for x in range(-r,r+1):
+        d=(x*x+y*y*2.2)**.5/r
+        if d<1 and ((x+y)&1 or d<.55): c.px(cx+x,cy+y,col)
+  def crystal(cx,cy,h,col,hi):
+    for (dx,hh) in [(0,h),(-3,int(h*.6)),(3,int(h*.7)),(-5,int(h*.35)),(5,int(h*.4))]:
+      for y in range(hh):
+        w=2 if y<hh-2 else 1
+        c.rect(cx+dx,cy-y,w,1,hi if y>hh*.5 else col)
+  CR=[(20,70,'#5fd0ff','#c8f4ff'),(150,74,'#b07cff','#ead8ff'),(34,150,'#5fd0ff','#c8f4ff'),(164,168,'#5fd0ff','#c8f4ff'),(12,262,'#b07cff','#ead8ff'),(168,282,'#5fd0ff','#c8f4ff'),(96,96,'#7cf0c8','#d8fff0')]
+  for (x,y,col,hi) in CR: glow(x,y-2,14,'#6a7896')
+  for (x,y,col,hi) in CR: crystal(x,y,9+(x%5),col,hi)
+  # 지하 물웅덩이 (움직임 자리: 한 색) 오른쪽
+  c.blot(150,222,24,'#3a7ab8',10); c.blot(150,221,18,'#4a90cc',7)
+  for k in range(-24,25):
+    if abs(k)<22: c.px(150+k,231-abs(k)//6,'#2a4a6a')
+  # 이끼·빛 버섯
+  for i in range(12): c.blot(R.random()*W,75+R.random()*220,4+R.random()*6,'#4e7a58')
+  for i in range(10):
+    x,y=R.random()*W,80+R.random()*210; c.px(x,y,'#e8f87a'); c.px(x+1,y,'#e8f87a'); c.px(x,y+1,'#8a7a5a')
   return c.im
 # ---------- 항구 도시 (바다 아래 넓게, 등대, 부두) ----------
 def beach():
