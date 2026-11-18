@@ -1652,7 +1652,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.42: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>${STK_MS[stk] ? `<p class="rg-ms">${stk}연승 달성 보너스 +${STK_MS[stk].toLocaleString()}G</p>` : ''}` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
@@ -1671,7 +1671,7 @@ function resultPop(c, res, gold, rep, R) {
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
-    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
+    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in">${STK_MS[stk] ? `<em class="sk-ms">+${STK_MS[stk].toLocaleString()}G</em>` : ''}<b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };   /* v27.23 경완 '텍스트로 넣기 보다는 연승 딱지 위에 +골드 텍스트 추가해서': 고비 보너스(STK_MS)는 연승 딱지 위 노란 딱지로 (v27.18 골드 상자 밑 .rg-ms 줄은 지움) */
 async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = null) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
@@ -2482,7 +2482,7 @@ function mecLay(stg) {
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], fl: (sp => (GA.lift?.(sp) || 0) > 0 || (SPECIES[sp]?.t || []).includes(3) || (GB()?.D?.sp?.[sp]?.ab || []).some(x => /levitate/i.test(x)))(+e.dataset.sp), r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
+    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
@@ -2529,10 +2529,7 @@ function mecLay(stg) {
       const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
       /* 경완 '저런 경우가 안 나오게 규칙을': 관장 바로 뒤 가운데 포켓몬은 얼굴이 관장 머리에 가리면 더 비켜 선 자리(몸 폭 .3·.45)도 후보로 (조금 벌점) */
       ords.forEach((ord, oi) => { for (const co of ord.length % 2 ? [0, .3, .45] : [0]) for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord, co)) continue; const sc = score() + (oi ? .4 : 0) + (co ? co : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord, co]; } } });
-      /* v27.25 경완 '관장카드 프로필에서 날갯짓 하거나 떠있는 포켓몬들은 공중에 좀 띄워도 되니까 얼굴 잘 보이게': 나는·뜨는 포켓몬(GA.lift)은 얼굴이 가리면 몸 키의 60%까지 띄워 보고 점수가 나아지는 높이로 (띄운 만큼 조금 벌점) */
-      const lift = () => { let base = score(); A.filter(a => a.fl).sort((x, y) => x.z - y.z).forEach(a => { const b0 = a.b, top = Math.min(H - M - a.h, b0 + a.h * .6); let bb = b0, bsc = base;
-        for (let u = 3; b0 + u <= top; u += 3) { a.b = b0 + u; const s2 = score() + u / LH * .6; if (s2 < bsc - .05) { bsc = s2; bb = a.b; } } a.b = bb; base = bsc; }); return base; };
-      if (best) { place(...best); { const s0 = score(); bs += lift() - s0; } const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
+      if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
         if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
     if (!ok) k *= .96; }
   if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
