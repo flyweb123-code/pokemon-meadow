@@ -116,7 +116,7 @@ IMG.onload = () => {
   // 물가를 따라 박자 어긋나게: 해변 물가 위치(대각선)를 위상으로
   const ph = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) ph[y * w + x] = (x * .55 + y * .35) * .09;
   const deep = []; for (let y = 150; y < h; y++) for (let x = 0; x < w; x++) if (kind[y * w + x] === 1 && dSea[y * w + x] > 10 && dw[y * w + x] > 6) deep.push([x, y]);
-  const rip = Array.from({ length: 46 }, () => newRip(true));
+  const rip = Array.from({ length: 80 }, () => newRip(true));
   function newRip(first) { const [x, y] = deep[(Math.random() * deep.length) | 0]; return { x, y, t0: performance.now() - (first ? Math.random() * 5000 : 0), dur: 3800 + Math.random() * 2600, len: 2 + ((Math.random() * 4) | 0), sp: .6 + Math.random() * .7 }; }
   const glint = Array.from({ length: 14 }, () => ({ p: deep[(Math.random() * deep.length) | 0], o: Math.random() * 6.28 }));
   // 바다 뜸: 바다 기본 색 위에 칠할 색 (게임 바다 팔레트에서)
@@ -153,6 +153,15 @@ IMG.onload = () => {
         else if (dw[k] === 2 && b > .85 && (x + y + F) % 3 === 0) P(x, y, FOAM2);
       }
     }
+    // 2.5) 먼바다 너울: 왼쪽 아래에서 해변(오른쪽 위) 쪽으로 밀려가는 물마루 줄 (경완 '바다 안쪽도 좀 더 파도 움직임이 있어야 할 것 같은데')
+    //      물마루 = 밝은 1~2줄 + 군데군데 흰 물보라, 바로 뒤 골 = 살짝 짙은 줄. 줄은 끊긴 조각으로(고른 띠가 아니게), 해변 가까이선 약해짐
+    //      물마루는 해변 물가와 나란히(오른쪽 아래로 기운 줄), 물가 쪽(오른쪽 위)으로 다가감
+    for (const [x, y] of deep) { const k = y * w + x, u = y * .9 - x * .45 + Math.sin(x * .16 + t * .9) * 1.6, v = u + t * 4.2, row = Math.floor(v / 24), c = ((v / 24) % 1 + 1) % 1,
+        n = Math.sin(x * .21 + row * 2.3) + Math.sin(x * .07 - row * 1.1) * .7;
+      if (n < .15) continue; const fade = Math.min(1, (dSea[k] - 10) / 14);
+      if (c < .045) P(x, y, n > 1.25 && fade > .6 && (x + F) % 4 ? FOAM2 : RIP2);
+      else if (c < .09 && n > .5 && fade > .3) P(x, y, RIP);
+      else if (c > .93 && fade > .4 && BY[y & 3][x & 3] < 6) P(x, y, '#1f63a0'); }
     // 3) 깊은 바다 잔물결·반짝임
     for (let i = 0; i < rip.length; i++) { const r = rip[i], a = (now - r.t0) / r.dur; if (a >= 1) { rip[i] = newRip(); continue; }
       const L = Math.max(1, Math.round(r.len * Math.sin(a * Math.PI))), x0 = Math.round(r.x + a * r.sp * 6);
