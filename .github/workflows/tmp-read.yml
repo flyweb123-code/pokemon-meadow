@@ -25,10 +25,12 @@ jobs:
       - name: read
         run: |
           q(){ npx wrangler d1 execute pokegrow --remote -y --json --command "$1"; }
-          echo ==ERR; q "SELECT k,msg,where_,ver,beta,n,at0,at,st,issue,substr(ctx,1,3000) AS ctx FROM err WHERE codes LIKE '%AED4P7MD%' ORDER BY at DESC LIMIT 15"
-          echo ==ERRRECENT; q "SELECT k,msg,where_,ver,n,at,st,codes FROM err ORDER BY at DESC LIMIT 15"
-          echo ==BAL; q "SELECT id,kind,ver,beta,t,at,substr(d,1,600) AS d FROM bal WHERE code='AED4P7MD' ORDER BY at DESC LIMIT 25"
-          q "SELECT i,data FROM save_part WHERE code='AED4P7MD' ORDER BY i" > /tmp/sp.json || true
-          jq -r '.[0].results | map(.data) | join("")' /tmp/sp.json > /tmp/s.json || true
-          echo ==SAVE; ls -la /tmp/s.json; jq -c '{ver:.ver, savedAt:.savedAt, errs:.errs, gymKeys:(.gym|keys?)}' /tmp/s.json || head -c 500 /tmp/s.json
-          echo ==SAVEMETA; q "SELECT code, at, length(data) FROM save WHERE code='AED4P7MD'" || true
+          echo ==ACCT; q "SELECT id,code,dev,at FROM account WHERE code='AED4P7MD'"
+          echo ==BAK; q "SELECT slot,saved,dex,box,gold,at FROM bak WHERE code='AED4P7MD' ORDER BY at DESC LIMIT 12"
+          echo ==SAVEROW; q "SELECT saved,parts,at FROM save WHERE code='AED4P7MD'"
+          q "SELECT i,data FROM save_part WHERE code='AED4P7MD' ORDER BY i" > /tmp/sp.json
+          jq -r '.[0].results | map(.data) | join("")' /tmp/sp.json > /tmp/s.json
+          echo ==LOG; jq -c '.gym.log[:25][] | [(.[0]/1000|floor), .[1], .[2][:140]]' /tmp/s.json
+          echo ==Q; jq -c '.gym.q' /tmp/s.json | head -c 3000; echo
+          echo ==LU; jq -c '{lu:.gym.lu, luI:.gym.luI, at:.gym.at, d:.gym.d, gmax:.gym.gmax, rep:.gym.rep, stk:.gym.stk, lstk:.gym.lstk, ms:.gym.ms, mg:.gym.mgRing, z:.gym.zRing, mons:(.mons|length), box:(.box|length), tr:.tr}' /tmp/s.json | head -c 3000; echo
+          echo ==TOP; jq -c 'to_entries | map({k:.key, n:(.value|tostring|length)}) | sort_by(-.n) | .[:15]' /tmp/s.json
