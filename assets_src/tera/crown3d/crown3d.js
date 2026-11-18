@@ -71,13 +71,14 @@ const M = {
       add(shp(s > 0 ? P : P.slice().reverse(), .55, .22), w(), [0, 0, 0], [0, s * .25, 0]); add(ico(.3, 0), wl(), [s * 2.15, -.55, .1]); add(ico(.2, 0), wl(), [s * 1.55, -.6, .2]);
       const Q = [[.1, .35], [.45, .85], [1.05, .95], [1.4, .55], [1.3, .1], [1.1, .3], [1.0, .6], [.6, .6], [.2, .25]].map(([x, y]) => [x * s, y]); add(shp(s > 0 ? Q : Q.slice().reverse(), .4, .16), wl(), [0, .25, .35], [0, s * .2, 0]); });
     add(drop(.35, .9, 7), wl(), [0, .75, .2]); },
-  Grass() { // 해바라기
-    base('#5ad046'); const pet = () => gm('#e8f050', { op: .93, ek: .25 }), pg = () => gm('#9ae040', { op: .93, ek: .2 });
-    add(tube([[0, -1.85, 0], [.05, -1.2, 0], [0, -.5, 0]], .16, 10), gm('#3aa83a', { op: .95 }));
-    [-1, 1].forEach(s => add(shp([[0, 0], [.5, .3], [1.1, .2], [.6, -.2]].map(([x, y]) => [x * s, y]), .12, .1), gm('#4ac040', { op: .95 }), [s * .1, -1.45, 0], [0, 0, s * .3]));
-    const cy = .55; for (let i = 0; i < 16; i++) { const a = i * Math.PI * 2 / 16; add(jit(new THREE.ConeGeometry(.32, 1.15, 4), .02), i % 2 ? pet() : pg(), [Math.cos(a) * 1.35, cy + Math.sin(a) * 1.35, -.05], [0, 0, a - Math.PI / 2], [1, 1, .45]); }
-    add(jit(new THREE.CylinderGeometry(.95, 1.0, .45, 14), .03), gm('#e8781a', { op: .97, ek: .25 }), [0, cy, .1], [Math.PI / 2, 0, 0]);
-    for (let i = 0; i < 12; i++) { const a = i * 2.4, q = Math.sqrt(i / 12) * .7; add(ico(.17, 0), gm('#b04a0a', { op: 1, tr: 0 }), [Math.cos(a) * q, cy + Math.sin(a) * q, .38]); } },
+  Grass() { // 해바라기: 넓은 꽃잎 두 겹 + 깎인 주황 공 가운데 + 아래 잎 공
+    base('#5ad046'); const lf = () => gm('#4ad050', { op: .9, ek: .25 });
+    add(ico(1.05, 1), lf(), [0, -.95, -.1]);
+    for (let i = 0; i < 7; i++) { const a = i * Math.PI * 2 / 7 + .3; add(shp([[0, 0], [.35, .45], [0, 1.1], [-.35, .45]], .12, .08), lf(), [Math.cos(a) * .7, -1.0 + Math.sin(a) * .55, .45], [0, 0, a - Math.PI / 2]); }
+    const cy = .75, pet = (c) => gm(c, { op: .9, ek: .3 }), P = [[0, 0], [.42, .4], [.36, 1.0], [0, 1.4], [-.36, 1.0], [-.42, .4]];
+    for (let i = 0; i < 12; i++) { const a = i * Math.PI * 2 / 12; add(shp(P, .16, .1), pet('#e8f040'), [Math.cos(a) * .55, cy + Math.sin(a) * .55, -.15], [.25 * Math.sin(a), -.25 * Math.cos(a), a - Math.PI / 2]); }
+    for (let i = 0; i < 10; i++) { const a = i * Math.PI * 2 / 10 + .3; add(shp(P, .14, .08), pet('#c8f060'), [Math.cos(a) * .45, cy + Math.sin(a) * .45, .05], [.3 * Math.sin(a), -.3 * Math.cos(a), a - Math.PI / 2], [.78, .78, .78]); }
+    add(ico(.78, 1), gm('#f08a20', { op: .95, ek: .35, tr: .2 }), [0, cy, .3]); },
   Electric() { // 전구 + 안에 번개
     base('#ffd21e', -2.05, 1.0, 1);
     for (let i = 0; i < 3; i++) add(jit(new THREE.TorusGeometry(.62 - i * .04, .13, 5, 14), .01), GOLD(), [0, -1.0 - i * .28, 0], [Math.PI / 2, 0, 0]);
@@ -91,14 +92,14 @@ const M = {
     for (let i = 0; i < 6; i++) { const a = Math.PI / 2 + i * Math.PI / 3, d = (q) => [Math.cos(a) * q, cy + Math.sin(a) * q, 0];
       add(oct(1), ic(), d(.95), [0, 0, a + Math.PI / 4], [.55, .55, .3]); add(oct(1), iw(), d(1.75), [0, 0, a + Math.PI / 4], [.32, .32, .22]);
       [-1, 1].forEach(s => { const b = d(1.25), ba = a + s * .95; add(oct(1), ic(), [b[0] + Math.cos(ba) * .4, b[1] + Math.sin(ba) * .4, 0], [0, 0, ba + Math.PI / 4], [.22, .22, .14]); }); } },
-  Fighting() { // 큰 주먹 결정 + 하늘색 회오리
-    base('#e8503a'); const r = () => gm('#e8402a', { op: .92, ek: .3 });
-    const F = [[-1.05, -1.55], [-1.15, .2], [-1.0, 1.25], [-.55, 1.55], [-.1, 1.45], [.35, 1.6], [.8, 1.4], [1.1, .9], [1.15, -.3], [.9, -1.55]];
-    add(shp(F, 1.1, .4, 2), r(), [0, .05, 0], [0, .15, 0]);
-    [[-.75, 1.25], [-.25, 1.4], [.25, 1.45], [.72, 1.25]].forEach(([x, y]) => add(ico(.32, 0), r(), [x, y, .55]));
-    add(shp([[-1.2, .2], [-.2, .0], [.3, .25], [.1, .55], [-1.1, .65]], .5, .2), gm('#ff6a4a', { op: .93, ek: .3 }), [0, -.15, .7]);
-    const cy = gm('#5ae8ff', { op: .85, ek: .6, em: '#2ad0ff' });
-    [[-.9, .0, .35, 1.55], [-.3, .25, .3, 1.4], [.35, -.15, .25, 1.25]].forEach(([y, tilt, rr, R0]) => add(new THREE.TorusGeometry(R0, rr * .28, 5, 30, Math.PI * 1.7), cy, [0, y, 0], [Math.PI / 2 + tilt, 0, 1 + y * 2])); },
+  Fighting() { // 아래로 좁아지는 큰 주먹 결정 + 아래를 감는 하늘색 회오리 띠
+    base('#e8503a'); const r = () => gm('#f0405a', { op: .9, ek: .3 });
+    const F = [[-.15, -1.75], [-1.05, -.2], [-1.35, .7], [-1.3, 1.35], [-.95, 1.75], [-.35, 1.85], [.25, 1.8], [.85, 1.6], [1.25, 1.15], [1.3, .55], [1.7, .35], [1.65, -.1], [1.05, -.35], [.35, -1.35]];
+    add(shp(F, 1.2, .45, 2), r(), [0, .05, 0], [0, .2, 0]);
+    [[-.9, 1.5], [-.35, 1.65], [.2, 1.62], [.75, 1.42]].forEach(([x, y]) => add(ico(.36, 0), gm('#ff6a80', { op: .9, ek: .3 }), [x, y, .62], [0, 0, 0], [1, .8, .8]));
+    add(shp([[-1.2, .75], [-.1, .55], [.6, .8], [.35, 1.05], [-1.15, 1.15]], .45, .18), gm('#ff8a9a', { op: .9, ek: .3 }), [0, 0, .78], [0, .2, 0]);
+    const cy = gm('#5ae8ff', { op: .85, ek: .7, em: '#2ad0ff', tr: .3 });
+    [0, Math.PI].forEach(ph => { const P = []; for (let i = 0; i <= 60; i++) { const t = i / 60, a = ph + t * Math.PI * 4.2, rr = 1.9 - t * .9; P.push([Math.cos(a) * rr, -1.75 + t * 2.0, Math.sin(a) * rr * .8]); } add(tube(P, .1, 120, 5), cy, [0, 0, 0], [0, 0, 0], [1, 1, 1]); }); },
   Poison() { // 해골 + 뒤로 엇갈린 뼈
     base('#b45ae6'); const pu = () => gm('#c890f0', { op: .9, ek: .2 }), dk = () => gm('#5a1a8a', { op: 1, ek: .3, tr: 0 }), bn = () => gm('#e8d8ff', { op: .92, ek: .15 });
     [[1, 1], [-1, 1]].forEach(([s]) => { add(jit(new THREE.CylinderGeometry(.17, .17, 4.2, 6), .02), bn(), [0, .25, -.6], [0, 0, s * .75]);
@@ -107,11 +108,13 @@ const M = {
     add(lathe([[0, -1.1], [.75, -1.05], [.85, -.45], [0, -.3]], 8), pu(), [0, -.05, 0]);
     [-1, 1].forEach(s => add(ico(.42, 0), dk(), [s * .55, .45, 1.0], [0, 0, 0], [1, .9, .5])); add(oct(.2), dk(), [0, -.05, 1.05], [0, 0, 0], [1, 1.2, .5]);
     for (let i = 0; i < 4; i++) add(jit(new THREE.BoxGeometry(.24, .3, .2), .01), bn(), [-.39 + i * .26, -.75, .72]); },
-  Ground() { // 반 지구(넓은 돔) + 양옆 둥근 돌
-    base('#e0aa3a', -2.05, 1.2, 1); const g = () => gm('#e8b040', { op: .95, ek: .2 }), o = () => gm('#ff8a2a', { op: .95, ek: .3 });
-    add(lathe([[0, 1.15], [1.0, 1.15], [1.7, .85], [2.1, .35], [2.25, -.2], [2.1, -.65], [1.4, -1.0], [0, -1.05]], 14), g(), [0, -.4, 0], [.35, 0, 0]);
-    for (let i = 0; i < 10; i++) { const a = i * Math.PI * 2 / 10; add(oct(.22), gm('#fff0b0', { op: .95 }), [Math.cos(a) * 1.45, .55 + Math.sin(a) * .5 * .35 - .05, Math.sin(a) * 1.45 * .94 - .4 + .45], [0, 0, 0], [1, 1, .6]); }
-    [-1, 1].forEach(s => { add(ico(.62, 1), o(), [s * 2.65, -.15, 0]); add(ico(.38, 0), o(), [s * 2.25, .9, -.2]); }); },
+  Ground() { // 넓은 윗면(땅 표면 모자이크)이 있는 거꾸로 된 그릇 + 양옆 주황 둥근 돌
+    base('#e0aa3a', -2.05, .85, 1); const g = () => gm('#f0c050', { op: 1, ek: .25, tr: .15 }), o = () => gm('#ff8030', { op: .95, ek: .35, tr: .2 });
+    const T = new THREE.Group(); T.rotation.x = .75; T.position.set(0, -.1, 0); G.add(T);
+    add(lathe([[0, -1.3], [.85, -1.3], [1.5, -1.05], [2.35, .75], [2.3, .95], [0, .95]], 20), g(), [0, 0, 0], [0, 0, 0], [1, 1, 1], T);
+    const top = jit(new THREE.IcosahedronGeometry(2.25, 2), .08); const sf = add(top, gm('#f0b848', { op: 1, ek: .2, tr: 0 }), [0, .98, 0], [0, 0, 0], [1, .12, 1], T);
+    const cc = sf.geometry.attributes.color, ps = sf.geometry.attributes.position; for (let i = 0; i < ps.count; i += 3) { const x = ps.getX(i), z = ps.getZ(i), land = Math.sin(x * 2.1 + 1) + Math.cos(z * 2.4 - .5) + Math.sin((x + z) * 1.3) > .5; const v = land ? [.55, .3, .08] : [1.25, 1.1, .7]; for (let k = 0; k < 3; k++) cc.setXYZ(i + k, ...v); } cc.needsUpdate = true;
+    add(ico(.85, 1), o(), [2.45, .95, .3]); add(ico(.7, 1), o(), [-2.3, -.45, .4]); add(ico(.38, 1), o(), [-1.25, -1.25, .9]); add(ico(.32, 1), o(), [1.3, -1.3, .9]); },
   Flying() { // 풍선 묶음
     base('#9ab8ff'); const bl = [['#4ae070', -1.2, .35, -.2], ['#ff4a5a', 0, .85, 0], ['#4ae070', 1.2, .35, -.2], ['#7ab0ff', .05, -.05, -.6]];
     bl.forEach(([c, x, y, z]) => { add(ico(.85, 1, .06), gm(c, { op: .9, ek: .25 }), [x, y, z], [0, 0, 0], [1, 1.15, 1]); add(oct(.14), gm(c, { op: 1 }), [x, y - 1.0, z]);
@@ -138,18 +141,21 @@ const M = {
     add(tube([[0, -.4, 0], [.3, -1.0, .1], [-.2, -1.45, .2], [-.75, -1.35, .2], [-.9, -1.0, .1]], .28, 24, 7), g());
     [-1, 1].forEach(s => add(tube([[s * 1.15, .55, 0], [s * 1.7, .35, .1], [s * 1.85, .85, .1]], .16, 12, 6), g()));
     [-1, 1].forEach(s => add(ico(.27, 0), gm('#2a0a5a', { op: 1, ek: .2, tr: 0 }), [s * .42, .75, 1.05], [0, 0, 0], [.8, 1.2, .5])); },
-  Dragon() { // 붉은 큰 날개 둘 + 가운데 뾰족한 용 머리
-    base('#7a5cff'); const rw = () => gm('#ff3a4a', { op: .9, ek: .3 });
-    [-1, 1].forEach(s => { const P = [[.3, -.6], [1.1, -.3], [1.9, -.5], [2.3, .2], [2.6, 1.7], [2.0, 1.3], [1.6, 1.9], [1.1, 1.0], [.4, .7]].map(([x, y]) => [x * s, y]); add(shp(s > 0 ? P : P.slice().reverse(), .25, .12), rw(), [0, 0, -.3], [0, -s * .45, 0]); });
-    const hd = () => gm('#c8e0ff', { op: .9, ek: .25 }); add(ico(.85, 0), hd(), [0, .2, .2], [0, 0, 0], [1, 1.25, .8]);
-    [[-.45, 1.0, .35], [.45, 1.0, -.35], [0, 1.25, 0], [-.75, .55, .8], [.75, .55, -.8]].forEach(([x, y, rz]) => add(jit(new THREE.ConeGeometry(.22, 1.0, 5), .02), hd(), [x, y, .2], [0, 0, rz]));
-    add(jit(new THREE.ConeGeometry(.42, 1.1, 6), .02), hd(), [0, -.75, .35], [Math.PI, 0, 0]); },
-  Dark() { // 가시 많은 둥근 관 + 비웃는 얼굴
-    base('#d84a5a'); const sp = () => gm('#ffd0d4', { op: .9, ek: .2 }), rr = () => gm('#e84a5a', { op: .92, ek: .3 });
-    for (let i = 0; i < 18; i++) { const a = i * Math.PI * 2 / 18, L = i % 2 ? 1.1 : 1.6; add(jit(new THREE.ConeGeometry(.28, L, 4), .02), i % 3 ? sp() : rr(), [Math.cos(a) * (1.05 + L / 2), .5 + Math.sin(a) * (1.05 + L / 2), -.2], [0, 0, a - Math.PI / 2]); }
-    add(ico(1.15, 1), gm('#f0e0e4', { op: .92, ek: .15 }), [0, .5, 0], [0, 0, 0], [1, 1, .7]);
-    [-1, 1].forEach(s => add(shp([[0, 0], [.45, .18], [.4, .32], [-.02, .12]].map(([x, y]) => [x * s, y]), .1, .04), gm('#ffd020', { op: 1, ek: .8, tr: 0 }), [s * .2, .7, .8], [0, 0, -s * .2]));
-    add(shp([[-.6, .0], [-.3, -.12], [-.15, .02], [0, -.15], [.15, .02], [.3, -.12], [.65, .1], [.4, -.4], [0, -.5], [-.4, -.38]], .1, .04), gm('#ff3a5a', { op: 1, ek: .6, tr: 0 }), [0, .25, .82]); },
+  Dragon() { // 높이 솟은 붉은 날개 둘 + 가운데 가시 돋은 하늘색 결정 + 분홍 기둥
+    base('#2ae0c0'); const rw = () => gm('#ff3a50', { op: .9, ek: .3 });
+    [-1, 1].forEach(s => { const P = [[.45, -1.2], [1.05, -1.1], [1.75, -.2], [2.15, 1.2], [2.55, 2.6], [1.95, 2.0], [1.55, 2.15], [1.25, .9], [.6, .1]].map(([x, y]) => [x * s, y]); add(shp(s > 0 ? P : P.slice().reverse(), .3, .14), rw(), [0, 0, -.3], [0, -s * .4, s * .05]); });
+    add(lathe([[0, -1.85], [.45, -1.8], [.3, -1.0], [.38, -.6], [0, -.5]], 8), gm('#ffb0c0', { op: .9, ek: .2 }));
+    const hd = () => gm('#b8ecff', { op: .88, ek: .45, em: '#80d0ff' }); add(ico(.62, 1), hd(), [0, .55, .3]);
+    for (let i = 0; i < 9; i++) { const a = Math.PI / 2 + (i - 4) * .38, L = i === 4 ? 1.1 : .75 + (i % 2) * .2; add(jit(new THREE.ConeGeometry(.17, L, 5), .02), hd(), [Math.cos(a) * (.5 + L / 2), .55 + Math.sin(a) * (.5 + L / 2), .3], [0, 0, a - Math.PI / 2]); }
+    [-1, 1].forEach(s => add(jit(new THREE.ConeGeometry(.15, .6, 5), .02), hd(), [s * .55, .0, .35], [0, 0, s * 2.3])); },
+  Dark() { // 길고 가는 가시가 사방으로 난 별 결정 여러 개가 뭉친 모양 + 노란 별
+    base('#d84a5a'); const pk = () => gm('#ff9ab0', { op: .9, ek: .5, em: '#ff4a6a', tr: .35 });
+    const spk = (cx, cy, cz, L, sc, m) => { const ic = new THREE.IcosahedronGeometry(1, 0), p = ic.attributes.position, seen = new Set(); add(ico(.5 * sc, 0), m(), [cx, cy, cz]);
+      for (let i = 0; i < p.count; i++) { const v = V3(p.getX(i), p.getY(i), p.getZ(i)).normalize(), k = v.toArray().map(x => x.toFixed(2)).join(); if (seen.has(k)) continue; seen.add(k); const l = L * sc * (.7 + rnd() * .5), q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), v);
+        const c = new THREE.Mesh(jit(new THREE.ConeGeometry(.2 * sc, l, 4), .005), m()); c.position.set(cx + v.x * l / 2, cy + v.y * l / 2, cz + v.z * l / 2); c.quaternion.copy(q); faceCol(c.geometry); c.material.vertexColors = true; G.add(c); } };
+    spk(-.35, .35, 0, 1.9, 1, pk); spk(.45, -.35, .25, 1.6, .85, pk); spk(-.1, -.9, -.2, 1.3, .7, pk);
+    add(shp(star(.75, .32), .25, .1), gm('#ffe030', { op: 1, ek: .8, tr: 0 }), [1.2, 1.45, .2], [0, -.2, .2]); },
+
   Steel() { // 큰 도끼: 자루 + 크고 투명한 날
     base('#d8dee8'); add(jit(new THREE.CylinderGeometry(.15, .17, 3.9, 6), .01), SILVER(), [0, -.2, 0]);
     add(shp([[.1, .3], [.9, .0], [1.8, -.1], [2.05, .6], [2.1, 1.6], [1.85, 2.1], [.9, 1.75], [.1, 1.55]], .38, .2, 2), gm('#ffffff', { op: .85, ek: .1 }), [0, -.15, 0], [0, -.35, 0]);
