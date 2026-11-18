@@ -4780,3 +4780,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-tcr{z-index:1}
 
 .bt.tmon .bt-hb{z-index:7}   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
+
+.bt-tcr .cr{image-rendering:pixelated;background-position:center bottom}   /* PixelLab 도트 관 */

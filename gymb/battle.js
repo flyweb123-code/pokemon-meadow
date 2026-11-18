@@ -747,8 +747,10 @@ async function sendOut(side, A, quick) {
   ballPoof(side); se('BOWA2', { pan: panOf(side) }); m.classList.add('on'); await wait(16);
   m.classList.remove('ball'); await wait(200); } try { GA.cry?.(A.sp, 0, 1, CRY_K); } catch (e) {} playAnim(side, A);
   if (A.shiny) await shinyFx(side);   // 색이 다른 포켓몬은 나올 때 반짝반짝 (본가)
-  paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); await wait(450);
+  paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); reTera(side, A); await wait(450);
 }
+/* 테라스탈한 포켓몬이 교체로 들어갔다 다시 나오면 엔진에선 그대로 테라 → 화면도 결정 무늬·관을 다시 (교체 때 patOff·tcOff 로 지워졌던 것) */
+function reTera(s, X) { const t = B?.tP?.[s[0] + X.i]; if (!t) return; X.tera = t; teraOn(s, t); paintHb(s, X); }
 async function shinyFx(side) {
   const m = monEl(side); se('REAPOKE', { pan: panOf(side) });
   for (let i = 0; i < 7; i++) { const k = document.createElement('i'); k.className = 'bt-shn'; k.style.setProperty('--a', (i * 51) + 'deg'); k.style.animationDelay = (i * 60) + 'ms'; m.appendChild(k); setTimeout(() => k.remove(), 1100); }
@@ -1768,7 +1770,7 @@ async function handle(a) {
     case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s[0] === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
       if (s[0] === 'p') B.zUseP = 1; await gmFx(s, A(s), 'z', zi); const zt = Math.max(1, TY_EN.indexOf(zi?.type || 'Normal')); zAura(s, true, 0, zt); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower', ZT_FL[zt])]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
-    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) X.tera = a[3]; await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
+    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) { X.tera = a[3]; (B.tP = B.tP || {})[s[0] + X.i] = a[3]; } await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);
         if (gx) { const gf = toID(PSim.Dex.species.get(X.pk?.baseSpecies?.name || X.fm || '').baseSpecies || '') + 'gmax'; if (GMJ[gf]) { X.fm0 = X.fm; X.fm = gf; X.gif = await pickGif(s, X); } }
         B.gmx[s] = gx ? 2 : 1; const dmM = window.GymBGM?.name !== 'dmax' ? 'dmax' : null; if (dmM && !B.dmPrev) B.dmPrev = window.GymBGM?.name || null;   /* 경완 '다이맥스 끝날 때까지만 이어지게. 끝나면 원래 배틀 노래로 돌아오게 (난천 아님)': 원래 곡 B.dmPrev 기억 → dmBack */   /* 경완 'bgm 넣어놓음 폴더에' → 소드실드 체육관 곡(bgm.js SONG.dmax) */ if (dmM) M('play', dmM, { fade: .3 });   /* 경완 '거다이맥스 연출 나올 때도 적절한 bgm': 연출 시작부터 챔피언 배틀 곡 */   /* 경완 '다이맥스 할 때랑 하는 동안 소드실드 체육관 배틀 bgm' → 곡을 못 구해 '일단 그럼 우리도 다른 bgm 으로': 배틀에서 처음 다이맥스하는 순간 챔피언 배틀 곡으로 바꿔 끝까지 */ await gmFx(s, X, 'dmax'); stPat(s, X.st); await msg(`${eun(n)} ${gx ? '거다이맥스' : '다이맥스'}했다!`); break; }
