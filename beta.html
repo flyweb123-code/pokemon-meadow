@@ -9683,7 +9683,7 @@ const frMeGet = async () => { if (!frMe) { frMe = await frAsk({ op: 'me' }); try
 if (window.GA) Object.assign(window.GA, {
   fvPost: o => { S.frFv = [...(S.frFv || []), o].slice(-40); save(); frPush().catch(() => {}); },
   fvIn: () => { const L = []; if (!frMe) return L; for (const code of S.friends || []) { const c = frCards[code], seen = (S.fvSeen || {})[code] || 0; if (!Array.isArray(c?.fv)) continue;
-    c.fv.forEach(o => { if (o && o.to === frMe && +o.t > seen) L.push({ code, nm: String(c.n || '친구').slice(0, 8), t: +o.t, w: o.w | 0, l: o.l | 0, n: o.n | 0, sl: typeof o.sl === 'string' ? o.sl.slice(0, 20) : '' }); }); }
+    c.fv.forEach(o => { if (o && o.to === frMe && +o.t > seen) L.push({ code, nm: String(c.n || '친구').slice(0, 8), t: +o.t, w: o.w | 0, l: o.l | 0, n: o.n | 0, k: o.k | 0, sl: typeof o.sl === 'string' ? o.sl.slice(0, 20) : '', sx: c.sex === 'f' ? 'f' : 'm', fit: typeof c.fit === 'string' ? c.fit.slice(0, 40) : '' }); }); }
     return L.sort((a, b) => a.t - b.t); },
   fvSeen: () => { const L = window.GA.fvIn(); S.fvSeen ||= {}; L.forEach(o => { S.fvSeen[o.code] = Math.max(S.fvSeen[o.code] || 0, o.t); }); save(); },
 });

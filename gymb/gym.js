@@ -2448,7 +2448,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop,.fvp-l0';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop,.fvp-l0,.fve';
 const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.42)
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
@@ -4134,7 +4134,7 @@ async function visit(F, code) {
   if (!D.free) return visitOld(F, code, team);
   open = true; busy = true; root.hidden = false; root.classList.add('visit', 'busy'); root.classList.remove('gview'); GA.gymIn(); openTab(null); evLvId = null;
   const fN = String(F.n || '친구').slice(0, 8), fF = F.sex === 'f', ev0 = g.ev ? JSON.stringify(g.ev) : null, R = fvRec(code), out = { w: 0, l: 0, s: [], sl: '' }, nmL = t => String(t).replace(/관장님/g, fN + ' 관장님');
-  const SF = (G.vc?.sf || []).map(o => fvSf(o, D)).filter(Boolean).slice(0, 6), gNm = String(G.nm || defName(G.ty)).slice(0, 10);
+  const SF = (G.vc?.sf || []).map(o => fvSf(o, D)).filter(Boolean).slice(0, 6), gNm = String(G.nm || defName(G.ty)).slice(0, 10); out.k = SF.length;
   let A = null, Fd = null, S = null;
   try {
     await Promise.all([loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData()), loadJs('gymb/ev.js', 'GymEv')]);
@@ -4188,10 +4188,11 @@ async function visit(F, code) {
       A.music('gym');
       if (!res || res.cut) return say('(배틀이 중간에 멈춰 버렸다... 다시 말 걸어 보자.)', me0);
       if (res.quit) return say('벌써 가는 거야? 다음에 또 와!', who);
-      if (!res.won) { R.l++; out.l++; out.sl = '관장'; save(); await say(['좋은 승부였어!', '트레이너들은 오늘 이긴 걸로 해 둘게. 다시 도전해!'], who); return lose(); }
+      const endPop = won => fvEndPop({ won, fN, gNm, ty: G.ty, gi, ldr: tr, sf: SPS.map(s => ({ tr: s.fv.tr, nm: sWho(s), ok: beat(s) })), g: SPS.filter(beat).reduce((a, s) => a + FV_SG[s.fv.lq], 0) + (won ? FV_LG : 0), w: R.w, l: R.l });
+      if (!res.won) { R.l++; out.l++; out.sl = '관장'; save(); await say('좋은 승부였어!', who); await endPop(false); return lose(); }
       R.w++; R.c = fvDay(); out.w++; mark(); if (!window.gymEvTest) GA.addGold?.(FV_LG, 'fvisit'); renderGoldG(); save();
-      await say([`대단해! ${trName() || '너'}의 승리야!`, `오늘은 여기까지! 내일 또 도전하러 와.`], who);
-      await say([`(상금 ${FV_LG.toLocaleString()}G 를 받았다!)`, `(${fN}의 체육관에서 ${R.w}승 ${R.l}패)`], me0); };
+      await say(`대단해! ${trName() || '너'}의 승리야!`, who); await endPop(true);
+      await say('오늘은 여기까지! 내일 또 도전하러 와.', who); };
     /* 한 판 이기고 나서 다른 트레이너 시야에 내가 있으면 바로 이어서 (로켓단 이벤트 chain 과 같음) */
     const chain = async () => { for (let n = 0; n < 6; n++) { const s = SPS.find(s => !s.done && Fd.sees(s)); if (!s) return; if (n) await A.wait(400); await fight(s, 'come'); if (!s.done) return; } };
     for (;;) {
@@ -4206,7 +4207,7 @@ async function visit(F, code) {
     Fd.lock(true); A.music(null); await A.black(true); await Fd.close();
   } catch (err) { console.error(err); GA.toast?.('친구 체육관에 들어가지 못했어요'); }
   // 친구에게 남김: 다음에 친구가 자기 체육관에 들어가면 알림창 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로 OO가 놀러와서 이겼다/졌다')
-  if ((out.w || out.l || out.s.length) && !window.gymEvTest) try { GA.fvPost?.({ to: code, t: Date.now(), w: out.w, l: out.l, n: out.s.length, sl: out.sl || undefined }); } catch (er) {}
+  if ((out.w || out.l || out.s.length) && !window.gymEvTest) try { GA.fvPost?.({ to: code, t: Date.now(), w: out.w, l: out.l, n: out.s.length, k: out.k || undefined, sl: out.sl || undefined }); } catch (er) {}
   if (ev0 == null) delete g.ev; else g.ev = JSON.parse(ev0); save();   // 같이 다니는 포켓몬 바꾸기가 g.ev 에 남기는 것 되돌림
   gymLoad.show('필드로 돌아가는 중', '', true); await wait(600); A?.black?.(false);
   try { window.GymBGM?.free(); } catch (er) {}
@@ -4215,10 +4216,28 @@ async function visit(F, code) {
   try { menuDots(); } catch (er) {}
   await wait(200); gymLoad.hide();
 }
-/* 친구가 내 체육관에 놀러 와서 배틀한 결과 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로'): 들어올 때 한 번, 저절로 뜨는 창이라 버튼으로만 닫힘 */
+/* 관장까지 배틀 끝낸 결과창 (경완 '완주했을 때는 승패 여부 디자인 된 알림창으로 뜨게 해주고'): 저절로 뜨는 창(.fve) — 친구 체육관 배지·도전 길(트레이너 → 관장)·오늘 받은 상금 */
+const fvTrImg = (tr, sx) => /^\.\.\/fit\//.test(tr || '') ? `${IMG}fit/${tr.slice(7)}.png` : `${IMG}tr/${tr || (sx === 'f' ? 'pt_f' : 'pt_m')}.png`;
+function fvEndPop(o) {
+  const tc = GA.TYPE_C?.[o.ty] || '#e8742c', all = [...o.sf, { tr: o.ldr, nm: `관장 ${o.fN}`, ok: o.won, ld: 1 }];
+  const road = all.map((x, i) => `<li class="${x.ok ? 'ok' : 'no'}${x.ld ? ' ld' : ''}" style="--d:${.35 + i * .12}s"><i class="fve-f"><img alt="" src="${fvTrImg(x.tr)}"></i><em>${x.ok ? '✓' : x.ld ? '✕' : ''}</em><small>${esc(x.ld ? '관장' : x.nm.split(' ').pop())}</small></li>`).join('');
+  const html = `<div class="fve ${o.won ? 'won' : 'lost'}" style="--tc:${tc}"><div class="fve-hd"><i class="fve-sp"></i><img class="fve-bd" alt="" src="${bdImg(o.ty, o.gi + 1)}"><b>${o.won ? '완주!' : '아쉽다…'}</b><small>${esc(o.gNm)}</small></div>
+    <p class="fve-m">${o.won ? `관장 <b>${esc(o.fN)}</b>${jong(o.fN) ? '을' : '를'} 이겼어요!` : `관장 <b>${esc(o.fN)}</b>에게 졌어요`}</p>
+    <ol class="fve-rd">${road}</ol>
+    ${o.g ? `<div class="fve-g"><span>오늘 받은 상금</span><b><i class="coin"></i>${o.g.toLocaleString()}G</b></div>` : ''}
+    <p class="fve-n">${o.won ? '완주는 하루 한 번! 내일 또 도전할 수 있어요.' : '이긴 트레이너는 오늘 그대로예요.<br>관장에게 다시 도전해 보세요!'}<span>${esc(o.fN)}의 체육관 ${o.w}승 ${o.l}패</span></p>
+    <div class="gy-btns one"><button class="main" data-a="ok">확인</button></div></div>`;
+  return new Promise(ok => { pop(html, (a, close) => { close(); ok(); }); if (o.won) { confetti(); setTimeout(() => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {} }, 120); } });
+}
+/* 친구가 내 체육관에 놀러 와서 배틀한 결과 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로', '친구가 놀러 왔어요 창도 디자인 좀 해줘'): 들어올 때 한 번, 저절로 뜨는 창이라 버튼으로만 닫힘 — 친구마다 트레이너 그림·결과 도장·도전 칸 */
+const fvAgo = t => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.floor(m / 60)}시간 전` : `${Math.floor(m / 1440)}일 전`; };
 async function fvInPop() { const L = GA.fvIn?.() || []; if (!L.length) return;
-  const rows = L.slice(-6).map(o => `<li><b>${esc(o.nm)}</b>${jong(o.nm) ? '이' : '가'} 놀러 와서 ${o.w ? '<em class="fvp-w">관장인 나를 이겼어요!</em>' : o.sl ? `<em class="fvp-l">${o.sl === '관장' ? '나한테' : esc(o.sl) + '에게'} 졌어요</em>` : '<em>둘러보고 갔어요</em>'}${o.n ? `<small>트레이너 ${o.n}명 이김</small>` : ''}</li>`).join('');
-  await new Promise(ok => pop(`<h4>친구가 놀러 왔어요</h4><ul class="fvp-l0">${rows}</ul><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }));
+  const g = st(), tc = GA.TYPE_C?.[g.ty] || '#e8742c', win = L.filter(o => o.w).length;
+  const rows = L.slice(-5).reverse().map((o, i) => { const k = Math.max(o.k, o.n), pips = k ? `<span class="fvp-pp">${Array.from({ length: k }, (_, j) => `<i class="${j < o.n ? 'on' : ''}"></i>`).join('')}<i class="ld ${o.w ? 'on' : ''}"></i></span>` : '';
+    const msg = o.w ? '관장인 나를 이겼어요!' : o.sl === '관장' ? '나한테 졌어요' : o.sl ? `${esc(o.sl)}에게 졌어요` : '둘러보고 갔어요';
+    return `<li class="${o.w ? 'w' : o.sl ? 'l' : 'v'}" style="--d:${.3 + i * .1}s"><i class="fvp-f"><img alt="" src="${fvTrImg(o.fit && fitOf(o.fit, o.sx === 'f') ? `../fit/${o.fit}_${o.sx}` : '', o.sx)}"></i>
+      <div class="fvp-t"><b>${esc(o.nm)}<small>${fvAgo(o.t)}</small></b><span>${msg}</span>${pips}</div><em class="fvp-st">${o.w ? '승리' : o.sl ? '패배' : '방문'}</em></li>`; }).join('');
+  await new Promise(ok => pop(`<div class="fvp" style="--tc:${tc}"><div class="fvp-hd"><img alt="" src="${bdImg(g.ty, (g.gmax | 0) + 1)}"><b>친구가 놀러 왔어요</b><small>${esc(g.nm || defName(g.ty))}${win ? ` · 관장 패배 ${win}번` : ''}</small></div><ul class="fvp-l0">${rows}</ul>${L.length > 5 ? `<p class="fvp-more">그 밖에 ${L.length - 5}번 더 놀러 왔어요</p>` : ''}<div class="gy-btns one"><button class="main" data-a="ok">확인</button></div></div>`, (a, close) => { close(); ok(); }));
   GA.fvSeen?.(); }
 /* 예전 방식 (빈 바닥 정보가 없는 맵): 문에서 관장 앞까지 저절로 걸어가 연습 배틀 */
 async function visitOld(F, code) {
