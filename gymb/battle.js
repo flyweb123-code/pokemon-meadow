@@ -618,6 +618,7 @@ const anOf = A => A && (FMA[A.fm] || ANIM[A.sp]);
 function gifUrl(sp, b, sh, f, fm) {
   { const G = fm ? GMJ[fm] : null; if (G) { const L = G[2], u = p => `${IMG}pk/gm/${p}${fm}.gif?v=1`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.89 메가진화·거다이맥스 움직이는 그림 */
   { const L = fm ? BWA.fm?.[fm] : null; if (L) { const u = p => `${IMG}pk/bw/${p}${fm}.gif?v=4`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.78 경완 '폼 체인지도 다 움직이는 걸로': 배틀 폼(마이티폼·들킨 모습 등) EeveeExpo 움직이는 그림 */
+  if (fm === 'floetteeternal') fm = 'floette';   /* v27.13 영원의꽃 킬라플로르는 보통 킬라플로르 그림 */
   if (+sp >= 650 && (!fm || fm === toID(D?.sp?.[sp]?.id || ''))) return bwUrl(sp, b, sh, f);   /* 배틀 중 바뀐 폼은 예전 그림 */
   if (RFA[fm] || rfKey(sp)) return null;   /* 지역 폼은 gif 없이 저장소 그림 */
   if (FM_G[fm]) return `${G5}s${FM_G[fm]}${b ? '-b' : ''}${sh ? '-s' : ''}.gif`;
@@ -1036,7 +1037,7 @@ function yesNo(q) {
 // ---------- 쇼다운 세트 ----------
 const toID = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function psSet(o) {
-  const dx = PSim.Dex, sp = dx.species.get(o.fm || D.sp[o.sp]?.id || String(o.sp));
+  const dx = PSim.Dex, sp = (s0 => s0.id === 'floette' && toID(o.it || '') === 'floettite' ? dx.species.get('floetteeternal') : s0)(dx.species.get(o.fm || D.sp[o.sp]?.id || String(o.sp)));   /* v27.13 경완 '더블 배틀에서 킬라플로르 메가진화 안됐다': 쇼다운 킬라플로르나이트는 영원의꽃 킬라플로르만 메가진화 → 나이트를 지니면 영원의꽃으로 */
   const iv = o.iv || [20, 20, 20, 20, 20, 20];
   let ab = o.ab; if (o.fm) { const b0 = dx.species.get(D.sp[o.sp]?.id || String(o.sp)), k = Object.keys(b0.abilities || {}).find(k => toID(b0.abilities[k]) === toID(ab)); if (k && sp.abilities) ab = toID(sp.abilities[k] || sp.abilities[0]); }  if (o.fmAb) ab = o.fmAb;   // v16.91 퍼펙트폼 = 50% 지가르데 + 스웜체인지 (반 이하면 퍼펙트로)   // 영물폼은 특성도 그 칸의 영물폼 특성
   return { name: o.nm, species: sp.name, level: o.lv, moves: o.mv, ability: ab, nature: dx.natures.get(o.nat || 'hardy').name, item: o.fmIt ? dx.items.get(o.fmIt).name : o.it && (HOLD[o.it] || dx.items.get(o.it).megaStone || dx.items.get(o.it).zMove) ? dx.items.get(o.it).name : '', ...(o.tera ? { teraType: o.tera } : {}), ...(o.gmax ? { gigantamax: true } : {}),   /* v21.89 메가스톤·Z크리스탈·테라 타입·거다이맥스 */
