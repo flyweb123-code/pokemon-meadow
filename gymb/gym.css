@@ -4779,6 +4779,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt .bb.gkb.terastallize.gkfl::after{border-color:#9fe6ff;box-shadow:0 0 14px 4px rgba(60,190,255,.85)}
 .bt-tcr{z-index:1}
 
-.bt.tmon .bt-hb{z-index:7}   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
+.bt.tmon .bt-hb{z-index:7}
+.bt:has(.bt-tcr) .bt-hb{z-index:7}   /* 경완 '배틀화면에서 왕관이 배틀박스 가리지 않게': 관(.bt-tcr)은 늘 체력 박스 밑으로 */   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
 
 .bt-tcr .cr{background-position:center bottom}   /* v27.26 직접 그린 결정 관 */

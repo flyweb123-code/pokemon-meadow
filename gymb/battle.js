@@ -566,8 +566,8 @@ function tcOn(s, ty) { tcOff(s); const m = monEl(s), mw = m?.closest('.bt-mw'); 
   const st = TC[s] = { el, live: 1 }, cr = el.firstChild, tw = [...el.querySelectorAll('b')], [li] = GymDBK.tyCol(ty); el.style.setProperty('--tl', `rgb(${li.join(',')})`);
   const loop = () => { if (!st.live) return; requestAnimationFrame(loop); if (document.hidden) return; const img = m.querySelector('.clip img'); if (!img || !img.offsetWidth || m.classList.contains('faint') || !m.classList.contains('tera')) { el.style.opacity = 0; if (!m.classList.contains('tera')) tcOff(s); return; }
     let R = mw.getBoundingClientRect(), q = R.width / (mw.offsetWidth || 256) || 1, r = img.getBoundingClientRect(), w = r.width / q, h = r.height / q, G = gxTop(img), cw = Math.max(44, Math.min(150, w * .9))   /* 경완 '왕관은 포켓몬 머리 위에 크게': 본가처럼 몸 폭만큼 */, x = (r.left - R.left) / q + w * G.x, y = (r.top - R.top) / q + h * G.y;
-    const top = 2;   /* 경완 '왕관은 포켓몬 머리 위에 크게': 화면 위로 넘치면 그만큼만 줄임. 위 체력 박스와 겹치면 관이 박스 뒤로 (박스를 가리지 않게) */
-    { const room = y + cw * .84 * .12 - top; if (cw * .84 > room) cw = Math.max(40, room / .84); } let cy = Math.max(top, y - cw * .84 * .9);
+    const top = 2; { const room = y + cw * .84 * .2 - top; if (cw * .84 > room) cw = Math.max(40, room / .84); }   /* 경완 '배틀화면에서 왕관이 배틀박스 가리지 않게': 관은 늘 체력 박스 밑(gym.css .bt:has(.bt-tcr) .bt-hb), 화면 위로 넘칠 때만 줄임 */
+    let cy = Math.max(top, y - cw * .84 * .9);
     el.style.opacity = getComputedStyle(m).opacity; cr.style.cssText = `background-image:${cr.style.backgroundImage};width:${cw}px;height:${cw * .84}px;left:${x - cw / 2}px;top:${cy}px`;
     tw.forEach((b, i) => { if (!b._t || performance.now() > b._t) { b._t = performance.now() + 900 + Math.random() * 1400; b.style.left = (r.left - R.left) / q + w * (.2 + Math.random() * .6) + 'px'; b.style.top = (r.top - R.top) / q + h * (G.y + (1 - G.y) * (.1 + Math.random() * .7)) + 'px'; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on'); } }); };
   requestAnimationFrame(loop); }
