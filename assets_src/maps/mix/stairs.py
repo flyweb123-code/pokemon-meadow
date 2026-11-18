@@ -6,8 +6,8 @@ H=lambda s:tuple(int(s[i:i+2],16) for i in (0,2,4))+(255,)
 TOP,TREAD,EDGE,RISE,RISE2,SIDE,SH=H('dbd2c4'),H('d0c5b8'),H('c8beb2'),H('9a928a'),H('7b8080'),H('656c77'),H('dfa06b')
 X0,X1=136,149   # 계선주 130·152 사이
 y=110
-for i in range(4):   # 계단 4칸, 아래로 갈수록 한 칸씩 넓어짐
-  l,r=X0-i//2,X1+i//2
+for i in range(4):   # 계단 4칸, 폭은 그대로
+  l,r=X0,X1   # 경완 '넓어지지 않게'
   for x in range(l,r+1):
     p[x,y]=TOP; p[x,y+1]=TREAD; p[x,y+2]=EDGE if (x+i)%5 else TREAD
     p[x,y+3]=RISE if (x+i)%7 else RISE2
