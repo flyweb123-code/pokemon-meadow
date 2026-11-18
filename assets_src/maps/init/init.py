@@ -86,34 +86,55 @@ def cave():
   # 이끼 자리
   for i in range(10): c.blot(R.random()*W,75+R.random()*220,4+R.random()*5,'#4c6a4e')
   return c.im
-# ---------- 항구 해변 ----------
+# ---------- 항구 해변 (바다 아래쪽, 넓게) ----------
 def beach():
   c=C(); R=random.Random(9)
-  ground(c,'#e8d39a',['#e0c88c','#efdcaa','#dcc286'],['#cbb075','#f4e6bc','#c4a66a'],60,3)
-  SEA=['#2f7fc4','#3a90d0','#4aa2da','#5cb4e2']
+  ground(c,'#e8d39a',['#e0c88c','#efdcaa','#dcc286'],['#cbb075','#f4e6bc','#c4a66a'],50,3)
+  # 뒤 띠: 낮은 방파제 돌담 + 야자수 줄
   for x in range(W):
-    sh=edge(x,62)+round(math.sin(x*.05)*3)
-    grad(c,x,30,sh-4,SEA)
-    for y in range(sh-4,sh): c.px(x,y,'#ffffff')      # 파도 거품 (움직임 자리)
-    for y in range(sh,sh+4): c.px(x,y,'#c9b37a')      # 젖은 모래
-  # 수평선 띠 조금 짙게
-  for x in range(W): c.px(x,30,'#235f9a'); c.px(x,31,'#2a6eb0')
-  # 부두 (오른쪽 위로 바다에 나무 부두)
-  for y in range(28,72):
-    c.rect(140,y,16,1,'#a8744a' if (y%4) else '#7d5233')
-  for y in range(28,72,8): c.rect(139,y,1,4,'#5c3b22'); c.rect(156,y,1,4,'#5c3b22')
-  # 부두 기둥 머리·밧줄 말뚝
-  for (x,y) in [(140,30),(155,30),(140,48),(155,48)]: c.rect(x-1,y,3,3,'#5c3b22')
-  # 조개·불가사리·돌
-  for i in range(18):
-    x,y=R.random()*W,80+R.random()*215
+    for y in range(38,50): c.px(x,y,'#9a8e80' if ((x//5)+(y//4))%2 else '#8a7e70')
+    c.px(x,37,'#c8bca8'); c.px(x,50,'#6a6058')
+  for px0 in (10,52,98,144,172):
+    for y in range(16,46): c.px(px0+(46-y)//8,y,'#8a6038'); c.px(px0+1+(46-y)//8,y,'#6e4a2a')
+    tx=px0+4
+    for a in range(7):
+      t=3.3+a*0.47
+      for r in range(13): c.px(tx+math.cos(t)*r,16+math.sin(t)*r*.6+r*r*.03,'#3c9a4a' if r%3 else '#2e7a3a')
+  # 바다: 아래 절반 가까이 (y 150~300)
+  SEA=['#5cb4e2','#4aa2da','#3a90d0','#2f7fc4','#256aae']
+  for x in range(W):
+    sh=150+round(math.sin(x*.045)*6+math.sin(x*.13)*2)
+    for y in range(sh-6,sh): c.px(x,y,'#c9b37a')      # 젖은 모래
+    for y in range(sh,sh+4): c.px(x,y,'#ffffff')      # 파도 거품 (움직임 자리)
+    grad(c,x,sh+4,H,SEA)
+  # 부두: 오른쪽 모래에서 바다로
+  for y in range(120,262):
+    c.rect(132,y,18,1,'#a8744a' if (y%4) else '#7d5233')
+  for y in range(150,264,10): c.rect(131,y,1,5,'#5c3b22'); c.rect(150,y,1,5,'#5c3b22')
+  for (x,y) in [(132,122),(149,122),(132,200),(149,200),(132,258),(149,258)]: c.rect(x-1,y,3,3,'#5c3b22')
+  # 작은 배 (부두 옆)
+  for y in range(232,244):
+    w=14-abs(y-238)
+    c.rect(112-w//2,y,w+10,1,'#e8584a' if y<238 else '#ffffff')
+  # 바다 반짝 자리·물속 돌
+  for i in range(30):
+    x,y=R.random()*W,175+R.random()*120; c.rect(x,y,3,1,'#9ad8f4')
+  for (x,y,r) in [(30,230,6),(70,275,4)]: c.blot(x,y,r,'#3a7aa8',r*.6)
+  # 조개·불가사리
+  for i in range(16):
+    x,y=R.random()*W,60+R.random()*85
     col=R.choice(['#f5f0e8','#f2a07a','#e8826a','#b9a27a'])
     c.px(x,y,col); c.px(x+1,y,col); c.px(x,y+1,col)
-  # 야자수 자리 (왼쪽 위 모래)
-  for y in range(64,90): c.px(14+ (y-64)//6,y,'#8a6038'); c.px(15+(y-64)//6,y,'#6e4a2a')
-  for a in range(6):
-    t=a*1.05
-    for r in range(12): c.px(14+math.cos(t)*r,64+math.sin(t)*r*.5,'#3c9a4a' if r%3 else '#2e7a3a')
+  # 등대: 왼쪽 바다 바위 위 (빛 도는 건 코드로)
+  c.blot(26,196,16,'#5a5a62',8); c.blot(26,194,12,'#74747e',6)
+  for y in range(128,192):
+    t=(y-128)/64; w=int(8+t*6)
+    for x in range(26-w//2,26+w//2+1):
+      band=((y-128)//10)%2
+      c.px(x,y,('#e8484a' if band else '#f4f0ea') if x<26+w//2-1 else ('#b83234' if band else '#cfc8c0'))
+  c.rect(20,124,13,4,'#3a3a44'); c.rect(22,116,9,8,'#fff2a8'); c.rect(23,117,2,6,'#ffffff')
+  c.rect(21,112,11,4,'#c03a3c'); c.rect(25,109,3,3,'#3a3a44')
+  c.rect(23,170,3,5,'#3a3a44'); c.rect(28,150,3,4,'#3a3a44')
   return c.im
 # ---------- 놀이공원 (큰 놀이기구 없음) ----------
 def park():
