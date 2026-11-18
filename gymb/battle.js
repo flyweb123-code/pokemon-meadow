@@ -525,7 +525,7 @@ async function gmFx(s, X, kind, ty) {
   if (kind === 'tera' && s[0] === 'e' && window.GymDBK?.teraMini) {   /* 경완 2026-11-19: 도전자 테라스탈은 메가·거다이맥스처럼 화면 안 커지고 그 자리에서 — 트레이너 들어옴 → 결정 조각이 감쌈 → 깨지며 보석 관 */
     const tr = $b('.bt-tr.e'), trW = tr?.className; if (tr) { tr.classList.remove('away'); tr.classList.add('mgin'); await wait(B.fast ? 250 : 600); }
     const top = $b('.bt-top'), r = m.querySelector('img')?.getBoundingClientRect() || m.getBoundingClientRect(), t0 = top.getBoundingClientRect(), z = t0.width / (top.offsetWidth || t0.width);
-    se('SUIKOMU', { pan }); m.classList.add('gm-tera'); await GymDBK.teraMini(top, (r.left + r.width / 2 - t0.left) / z, (r.top + r.height / 2 - t0.top) / z, r.width / z, r.height / z, ty, n => dxSe(n, pan)); m.classList.remove('gm-tera');
+    se('SUIKOMU', { pan }); m.classList.add('gm-tera'); el.classList.add('tmon'); await GymDBK.teraMini(top, (r.left + r.width / 2 - t0.left) / z, (r.top + r.height / 2 - t0.top) / z, r.width / z, r.height / z, ty, n => dxSe(n, pan)); m.classList.remove('gm-tera'); el?.classList.remove('tmon');
     teraOn(s, ty); se('KIRAN', { pan }); vib(2); await wait(B.fast ? 400 : 900); if (tr) { tr.classList.remove('mgin'); tr.className = trW; } try { if (X) GA.cry?.(X.sp, 0, 1, CRY_K); } catch (e) {} return; }
   if (kind === 'tera') { se('KOUKA_M', { pan }); m.classList.add('gm-tera'); await wait(B.fast ? 500 : 1100); m.classList.remove('gm-tera'); teraOn(s, ty); return; }
   if (kind === 'dmax' && s[0] === 'e') {   /* v25.35 경완 '도전자가 하는 다이맥스는 메가·Z기술처럼 화면 커지지 않고 간단하게 (근데 볼에 들어갔다가 커진 후 나오는 연출이긴 해야됨)': 트레이너 들어옴 → 볼로 돌아감 → 볼이 붉게 빛나며 기운을 빨아들이고 커짐 → 붉게 번쩍 터지며 나옴 (크기는 그대로) → 하늘 배경·구름 */
@@ -546,13 +546,18 @@ async function gmFx(s, X, kind, ty) {
 }
 // 배틀 중 무늬 ([DBK] Dynamax [003] UI.rb / Terastallization [002] UI.rb): 그림 위에 무늬를 불투명도 150 으로 겹쳐 흘림. 다이맥스는 1.5배
 /* v23.78 경완 '테라스탈 오버레이 효과랑 포켓몬 스프라이트 움직임이랑 안 맞아': 무늬를 따로 겹친 칸(그림을 가면으로)으로 두면 움직이는 gif·공격 모션을 못 따라감 → 그림 자체에 SVG 필터로 입힘 (그림이 움직이는 대로 같이 감) */
-function patOn(s, cls, url, size) { const m = monEl(s), img = m?.querySelector('.clip img'); if (!img) return; m.querySelector('.dpat')?.remove(); stPatDefs();
+function patOn(s, cls, url, size, tint) { const m = monEl(s), img = m?.querySelector('.clip img'); if (!img) return; m.querySelector('.dpat')?.remove(); stPatDefs();
   const host = document.getElementById('btStPat')?.querySelector('defs'); if (!host) return; const [w, h] = size.split(' ').map(parseFloat), id = 'btPat_' + s; document.getElementById(id)?.remove();
   const f = document.createElementNS('http://www.w3.org/2000/svg', 'filter'); f.id = id; f.setAttribute('color-interpolation-filters', 'sRGB'); f.setAttribute('x', 0); f.setAttribute('y', 0); f.setAttribute('width', 1); f.setAttribute('height', 1);
   f.innerHTML = `<feImage href="${url}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="i"/><feTile in="i" result="t"/><feComposite in="t" in2="SourceAlpha" operator="in" result="m"/><feComponentTransfer in="m" result="o"><feFuncA type="linear" slope=".588"><animate attributeName="slope" values=".5;.7;.5" dur="2.4s" repeatCount="indefinite"/></feFuncA></feComponentTransfer><feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="o"/></feMerge>`;
+  /* 경완 '크리스탈 그래픽 좀 짜치는데 본가 참고해서': 테라스탈 몸 = 타입 색 유리빛 + 무늬 + 흰 결정 테두리 (본가처럼 몸 전체가 보석처럼) */
+  if (tint) f.innerHTML = `<feFlood flood-color="${tint}" result="c"/><feComposite in="c" in2="SourceAlpha" operator="in" result="ct"/><feBlend in="ct" in2="SourceGraphic" mode="screen" result="g0"/><feComposite in="g0" in2="SourceGraphic" operator="arithmetic" k2=".26" k3=".8" result="g"/>`
+    + `<feImage href="${url}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="i"/><feTile in="i" result="t"/><feComposite in="t" in2="SourceAlpha" operator="in" result="m"/><feComponentTransfer in="m" result="o"><feFuncA type="linear" slope=".4"><animate attributeName="slope" values=".3;.52;.3" dur="2.4s" repeatCount="indefinite"/></feFuncA></feComponentTransfer>`
+    + `<feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="er"/><feComposite in="SourceAlpha" in2="er" operator="out" result="rim"/><feFlood flood-color="#fff" flood-opacity=".85" result="w"/><feComposite in="w" in2="rim" operator="in" result="rw"/>`
+    + `<feMerge><feMergeNode in="g"/><feMergeNode in="o"/><feMergeNode in="rw"/></feMerge>`;
   host.appendChild(f); m._patF = `url(#${id})`; img.style.filter = m._patF; }
 const patOff = s => { const m = monEl(s), img = m?.querySelector('.clip img'); if (!m) return; m.querySelector('.dpat')?.remove(); if (m._patF && img) img.style.filter = ''; m._patF = null; };
-function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px'); stPat(s, ''); tcOn(s, ty); }
+function teraOn(s, ty) { const m = monEl(s); m.classList.add('tera'); patOn(s, 'tp', `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`, '300px 300px', window.GymDBK?.tyCol ? `rgb(${GymDBK.tyCol(ty)[0].join(',')})` : ''); stPat(s, ''); tcOn(s, ty); if (s[0] === 'p') gkBg(); }
 /* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 본가처럼 테라스탈한 동안 머리 위에 타입 모양 테라 보석 관(GymDBK.teraCrown) + 몸에 반짝이·빛 쓸기. 그림이 움직이는 대로 매 프레임 머리(gxTop) 위에 */
 const TC = {};
 function tcOff(s) { const st = TC[s]; if (!st) return; st.live = 0; st.el.remove(); delete TC[s]; }
@@ -794,7 +799,9 @@ function panel(html) { const p = $b('.bt-panel'); p.innerHTML = html; gkBg(); re
 // 경완 2026-11-12: 메가진화(기믹) 버튼을 켜면 아래 화면 바탕색이 그 색으로, 메가진화한 포켓몬이 나와 있는 동안 계속, 다른 포켓몬으로 바꾸면 원래 색
 function gkBg() { if (!el || !B) return; const X = B.act?.p, sel = (B.gkSel || B.gkUsed || '').replace(/^mega[xy]$/, 'mega'), mg = /mega/.test(X?.fm || ''), dx = Object.keys(B.gmx || {}).some(k => k[0] === 'p' && B.gmx[k]);   /* 경완 2026-11-15 '다이맥스 아이콘 메가진화·Z기술처럼 하단 배경에 마크': 다이맥스 중엔 계속 */
   const zw = el.classList.contains('gkbg-zmove');
-  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg || k === 'dynamax' && dx));
+  const tt = sel === 'terastallize' ? B.gkTy : !sel && X?.tera && monEl('p')?.classList.contains('tera') ? X.tera : '';   /* 경완 2026-11-19 '해당 타입 테라스탈 표시가 메가진화 마크처럼 배경에서 돌아가게, z기술처럼 배경은 해당 타입 색상으로': 켰을 때·테라스탈한 동안 */
+  ['mega', 'zmove', 'dynamax', 'terastallize'].forEach(k => el.classList.toggle('gkbg-' + k, sel ? sel === k : k === 'mega' && mg || k === 'dynamax' && dx || k === 'terastallize' && !!tt && !mg && !dx));
+  if (tt) { const ti = TY_EN.indexOf(tt); if (ti > 0) el.dataset.zt = ti; el.classList.toggle('gkst', tt === 'Stellar'); if (TERA_I[tt]) el.style.setProperty('--ti', `url("${new URL(`${IMG}dbk/Tera/ty/${TERA_I[tt]}.png`, location.href).href}")`); }
   if (zw && !el.classList.contains('gkbg-zmove')) { el.classList.add('gkz-out'); clearTimeout(gkBg.t); gkBg.t = setTimeout(() => el?.classList.remove('gkz-out'), 900); } else if (el.classList.contains('gkbg-zmove')) el.classList.remove('gkz-out'); }   /* Z 바탕이 꺼질 땐 Z 그림 그대로 흐려지며 사라지게 */
 function idlePanel() { panel(`<div class="bp-idle"></div>`); el?.classList.remove('idle'); }
 function mainPanel(A) {
@@ -860,7 +867,9 @@ function movePanel(req, ak = 0) {
       if (b.dataset.gk) { B.gkSel = B.gkSel === b.dataset.gk ? null : b.dataset.gk; vib(1); if (B.gkSel && /^mega/.test(B.gkSel)) { se('SUIKOMU'); setTimeout(() => se('KIRAN'), 260); vib(2); }   /* 경완 2026-11-12 '메가진화 버튼 누를 때 뭔가 변하는 듯한 효과음': 켤 때 기운 빨아들이는 소리 → 반짝 */
         if (b.dataset.gk === 'zmove') { zSwap(p, R, mv); return; }
         if (b.dataset.gk === 'dynamax') { dSwap(p, R, mv, b); return; }   /* 경완 2026-11-15 '거다이맥스도 버튼 눌렀을 때 들썩이는 거 없이, 버튼이 빛나면서 소리 나면서 바뀌게' */   /* 경완 2026-11-13: Z기술은 판 전체를 다시 그리지 않고 바뀌는 기술 칸만 빛나며 바뀜 (들썩임 없앰) */
-        if (/^(mega|terastallize)/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
+        if (b.dataset.gk === 'terastallize') { B.gkTy = R.canTerastallize || ''; p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg();   /* 경완 2026-11-19 '테라스탈 눌렀을 때도 소리 나면서 버튼 활성화 되게': 거다이맥스 버튼처럼 빛나며 소리 */
+          if (B.gkSel) { b.classList.remove('gkfl'); void b.offsetWidth; b.classList.add('gkfl'); setTimeout(() => b.classList.remove('gkfl'), 800); se('SUIKOMU'); setTimeout(() => se('KIRAKIRA2'), 200); setTimeout(() => se('KIRAN'), 380); vib(2); } return; }
+        if (/^mega/.test(b.dataset.gk)) { p.querySelectorAll('.gkb').forEach(x => x.classList.toggle('on', x.dataset.gk === B.gkSel)); gkBg(); return; }   // 경완 2026-11-12: 메가진화·테라는 기술 칸이 안 바뀌니 다시 그리지 않음 (버튼 전체가 내려갔다 올라오던 것)
         return movePanel(req, ak).then(res); }
       if (b.dataset.info) return moveInfo(mv[+b.dataset.info]).then(() => movePanel(req, ak).then(res));
       res(+b.dataset.i);
@@ -1696,7 +1705,7 @@ async function handle(a) {
       const src = s[0] === 'p' ? B.my[i] : B.foe[i], pk = B.o[s[0]][i];
       const old = A(s);
       if (old && !old.fnt) { await msg(s[0] === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
-      monEl(s).classList.remove('dmx', 'tera'); patOff(s); tcOff(s); B.gmx[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
+      monEl(s).classList.remove('dmx', 'tera'); patOff(s); tcOff(s); setTimeout(gkBg, 0); B.gmx[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
