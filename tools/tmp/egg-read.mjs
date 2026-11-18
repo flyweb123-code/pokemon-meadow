@@ -1,16 +1,16 @@
 import fs from 'fs';
 const rows = f => JSON.parse(fs.readFileSync(f, 'utf8'))[0].results;
-const show = (tag, S) => {
-  console.log('=== ' + tag, 'eggV', S.eggV, 'keys', Object.keys(S).filter(k => /egg|hatch|gc|bag|inc|tick/i.test(k)).join(','));
-  for (const p of (S.box || [])) if (p.sp === 23) console.log('EKANS', JSON.stringify({ ...p, iv: p.iv, sum: (p.iv || []).reduce((a, b) => a + b, 0), when: new Date(p.t).toISOString() }));
-  const g4 = (S.box || []).filter(p => p.g >= 4).map(p => [p.sp, p.g, p.place, new Date(p.t).toISOString().slice(0, 16)]);
-  console.log('G4+ box', JSON.stringify(g4));
-  console.log('recentHatch', JSON.stringify(S.recentHatch));
-  /* 알은 내용 빼고 등급·장소·표시만 */
-  const eg = e => ({ g: e.g, place: e.place, spN: e.spN, gc: e.gc, ct: e.ct, lt: e.lt, gk: e.gk, nt: e.nt, t: e.t && new Date(e.t).toISOString().slice(0, 16), keys: Object.keys(e).join(',') });
-  console.log('bag eggs', JSON.stringify((S.bag || []).map(eg)));
-  console.log('incu eggs', JSON.stringify((S.eggs || []).map(eg)));
-};
-const p = rows('/tmp/p.json'); show('LIVE', JSON.parse(p.map(r => r.data).join('')));
+const eg = e => [e.id, e.g, e.place, e.gc ? 'gc' : '', e.ct || '', e.lt || '', e.t && new Date(e.t).toISOString().slice(0, 16), e.km, e.need].join('|');
+const live = JSON.parse(rows('/tmp/p.json').map(r => r.data).join(''));
 const bp = rows('/tmp/bp.json'), by = {}; for (const r of bp) (by[r.slot] ||= []).push(r.data);
-for (const [s, a] of Object.entries(by)) { try { const S = JSON.parse(a.join('')); const e = (S.box || []).filter(p => p.sp === 23).map(p => [p.g, p.place, new Date(p.t).toISOString().slice(0, 16)]); console.log('BAK', s, 'ekans', JSON.stringify(e)); } catch (x) { console.log('BAK', s, 'parse fail', x.message); } }
+const sets = { ...Object.fromEntries(Object.entries(by).filter(([s]) => s >= 'd2026-11-16').map(([s, a]) => [s, JSON.parse(a.join(''))])), LIVE: live };
+for (const [s, S] of Object.entries(sets)) {
+  console.log('##', s, 'savedAt', S.savedAt && new Date(S.savedAt).toISOString(), 'eid', S.eid, 'box', S.box.length);
+  console.log(' incu', JSON.stringify(S.eggs.map(eg)));
+  console.log(' bag', JSON.stringify(S.bag.map(eg)));
+  console.log(' ga', JSON.stringify({ pt: S.ga?.pt, pity: S.ga?.pity, t: S.ga?.t, in: (S.ga?.in || []).length }));
+}
+const ids = new Set(sets['d2026-11-18'].box.map(p => p.id));
+console.log('NEW in LIVE', JSON.stringify(live.box.filter(p => !ids.has(p.id)).map(p => [p.id, p.sp, p.g, p.place, new Date(p.t).toISOString().slice(0, 19), (p.iv || []).reduce((a, b) => a + b, 0)])));
+console.log('hatchQ', JSON.stringify(live.hatchQ || null), 'log tail', JSON.stringify((live.log || live.logs || []).slice(-15)));
+console.log('keys', Object.keys(live).join(','));
