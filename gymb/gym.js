@@ -4217,10 +4217,12 @@ async function visit(F, code) {
   await wait(200); gymLoad.hide();
 }
 /* 관장까지 배틀 끝낸 결과창 (경완 '완주했을 때는 승패 여부 디자인 된 알림창으로 뜨게 해주고'): 저절로 뜨는 창(.fve) — 친구 체육관 배지·도전 길(트레이너 → 관장)·오늘 받은 상금 */
+/* 트레이너 그림은 원래 크기(1배)로, 얼굴이 동그라미 안에 오게 위로 올림 (경완 '스프라이트 무너짐': 64·80px 그림을 60px 로 줄여 픽셀이 뭉개졌음) */
+const FV_FACE = 'onload="this.style.top=(this.naturalHeight>70?-10:-2)+\'px\'"';
 const fvTrImg = (tr, sx) => /^\.\.\/fit\//.test(tr || '') ? `${IMG}fit/${tr.slice(7)}.png` : `${IMG}tr/${tr || (sx === 'f' ? 'pt_f' : 'pt_m')}.png`;
 function fvEndPop(o) {
   const tc = GA.TYPE_C?.[o.ty] || '#e8742c', all = [...o.sf, { tr: o.ldr, nm: `관장 ${o.fN}`, ok: o.won, ld: 1 }];
-  const road = all.map((x, i) => `<li class="${x.ok ? 'ok' : 'no'}${x.ld ? ' ld' : ''}" style="--d:${.35 + i * .12}s"><i class="fve-f"><img alt="" src="${fvTrImg(x.tr)}"></i><em>${x.ok ? '✓' : x.ld ? '✕' : ''}</em><small>${esc(x.ld ? '관장' : x.nm.split(' ').pop())}</small></li>`).join('');
+  const road = all.map((x, i) => `<li class="${x.ok ? 'ok' : 'no'}${x.ld ? ' ld' : ''}" style="--d:${.35 + i * .12}s"><i class="fve-f"><img alt="" ${FV_FACE} src="${fvTrImg(x.tr)}"></i><em>${x.ok ? '✓' : x.ld ? '✕' : ''}</em><small>${esc(x.ld ? '관장' : x.nm.split(' ').pop())}</small></li>`).join('');
   const html = `<div class="fve ${o.won ? 'won' : 'lost'}" style="--tc:${tc}"><div class="fve-hd"><i class="fve-sp"></i><img class="fve-bd" alt="" src="${bdImg(o.ty, o.gi + 1)}"><b>${o.won ? '완주!' : '아쉽다…'}</b><small>${esc(o.gNm)}</small></div>
     <p class="fve-m">${o.won ? `관장 <b>${esc(o.fN)}</b>${jong(o.fN) ? '을' : '를'} 이겼어요!` : `관장 <b>${esc(o.fN)}</b>에게 졌어요`}</p>
     <ol class="fve-rd">${road}</ol>
@@ -4232,12 +4234,12 @@ function fvEndPop(o) {
 /* 친구가 내 체육관에 놀러 와서 배틀한 결과 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로', '친구가 놀러 왔어요 창도 디자인 좀 해줘'): 들어올 때 한 번, 저절로 뜨는 창이라 버튼으로만 닫힘 — 친구마다 트레이너 그림·결과 도장·도전 칸 */
 const fvAgo = t => { const m = Math.max(0, Math.round((Date.now() - t) / 60000)); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.floor(m / 60)}시간 전` : `${Math.floor(m / 1440)}일 전`; };
 async function fvInPop() { const L = GA.fvIn?.() || []; if (!L.length) return;
-  const g = st(), tc = GA.TYPE_C?.[g.ty] || '#e8742c', win = L.filter(o => o.w).length;
+  const g = st(), tc = GA.TYPE_C?.[g.ty] || '#e8742c';
   const rows = L.slice(-5).reverse().map((o, i) => { const k = Math.max(o.k, o.n), pips = k ? `<span class="fvp-pp">${Array.from({ length: k }, (_, j) => `<i class="${j < o.n ? 'on' : ''}"></i>`).join('')}<i class="ld ${o.w ? 'on' : ''}"></i></span>` : '';
     const msg = o.w ? '관장인 나를 이겼어요!' : o.sl === '관장' ? '나한테 졌어요' : o.sl ? `${esc(o.sl)}에게 졌어요` : '둘러보고 갔어요';
-    return `<li class="${o.w ? 'w' : o.sl ? 'l' : 'v'}" style="--d:${.3 + i * .1}s"><i class="fvp-f"><img alt="" src="${fvTrImg(o.fit && fitOf(o.fit, o.sx === 'f') ? `../fit/${o.fit}_${o.sx}` : '', o.sx)}"></i>
+    return `<li class="${o.w ? 'w' : o.sl ? 'l' : 'v'}" style="--d:${.3 + i * .1}s"><i class="fvp-f"><img alt="" ${FV_FACE} src="${fvTrImg(o.fit && fitOf(o.fit, o.sx === 'f') ? `../fit/${o.fit}_${o.sx}` : '', o.sx)}"></i>
       <div class="fvp-t"><b>${esc(o.nm)}<small>${fvAgo(o.t)}</small></b><span>${msg}</span>${pips}</div><em class="fvp-st">${o.w ? '승리' : o.sl ? '패배' : '방문'}</em></li>`; }).join('');
-  await new Promise(ok => pop(`<div class="fvp" style="--tc:${tc}"><div class="fvp-hd"><img alt="" src="${bdImg(g.ty, (g.gmax | 0) + 1)}"><b>친구가 놀러 왔어요</b><small>${esc(g.nm || defName(g.ty))}${win ? ` · 관장 패배 ${win}번` : ''}</small></div><ul class="fvp-l0">${rows}</ul>${L.length > 5 ? `<p class="fvp-more">그 밖에 ${L.length - 5}번 더 놀러 왔어요</p>` : ''}<div class="gy-btns one"><button class="main" data-a="ok">확인</button></div></div>`, (a, close) => { close(); ok(); }));
+  await new Promise(ok => pop(`<div class="fvp" style="--tc:${tc}"><div class="fvp-hd"><b>친구가 놀러 왔어요</b></div><ul class="fvp-l0">${rows}</ul>${L.length > 5 ? `<p class="fvp-more">그 밖에 ${L.length - 5}번 더 놀러 왔어요</p>` : ''}<div class="gy-btns one"><button class="main" data-a="ok">확인</button></div></div>`, (a, close) => { close(); ok(); }));
   GA.fvSeen?.(); }
 /* 예전 방식 (빈 바닥 정보가 없는 맵): 문에서 관장 앞까지 저절로 걸어가 연습 배틀 */
 async function visitOld(F, code) {
