@@ -10568,7 +10568,7 @@ function toolAsk(P, { c, it }) {   // 도구를 쓸지 한 번 더 묻는다 (�
 }
 // v5.85 경완: 필드의 가방 아이콘 → 상점처럼 따로 뜨는 가방 창. 아이템은 쓰기 전에 창 위 창으로 한 번 더 묻는다
 // v7.48 경완: 가방에 새 아이템·도구가 생기면 빨간 점 (필드 가방 아이콘·가방 탭·칸). 그 탭을 보면 사라짐
-function itemNewK(k) { const I = itemsOf(), Z = S.itemSeen || (S.itemSeen = {}); return ITEMS.filter(o => (!k || o.k === k) && (I[o.id] || 0) > (Z[o.id] || 0)).map(o => o.id); }
+function itemNewK(k) { const I = itemsOf(), Z = S.itemSeen || (S.itemSeen = {}); return ITEMS.filter(o => !o.hold && (!k || o.k === k) && (I[o.id] || 0) > (Z[o.id] || 0)).map(o => o.id); }
 function itemSeeTab(k) { const I = itemsOf(), Z = S.itemSeen || (S.itemSeen = {}), N = itemNewK(k); for (const o of ITEMS) if (o.k === k) Z[o.id] = I[o.id] || 0; if (N.length) { N.forEach(id => ibagFresh.add(id)); save(); } }
 function itemSeenClamp() { const I = itemsOf(), Z = S.itemSeen; if (Z) for (const id in Z) if ((I[id] || 0) < Z[id]) Z[id] = I[id] || 0; }   // 쓰거나 버려 줄면 본 개수도 줄여서 다시 생기면 점
 let ibagFresh = new Set();
@@ -10618,7 +10618,7 @@ function renderIBag() {
   if (ibagTab === 'bgm') return renderMBag();
   if (ibagTab === 'fit') return renderFitBag();
   itemSeenClamp(); itemSeeTab(ibagTab);
-  const I = itemsOf(), L = ITEMS.filter(o => I[o.id] > 0); if (ibagSel && !(I[ibagSel] > 0)) ibagSel = null;
+  const I = itemsOf(), L = ITEMS.filter(o => I[o.id] > 0 && !o.hold);   /* v26.98 경완 '필드 가방에는 안 보이게 해도 될듯': 체육관에서 지니는 폼 도구는 필드 가방에 안 보임 */ if (ibagSel && !(I[ibagSel] > 0)) ibagSel = null;
   const sec = (k, t, f) => { const R = L.filter(o => o.k === k && (!f || f(o))); return R.length ? `<h4 class="bag-h">${t}</h4><div class="shop-inv">` + R.map(o => `<button class="vin itm" data-it="${o.id}" aria-current="${ibagMul ? ibagPick.has(o.id) : ibagSel === o.id}">${ibagMul ? '<i class="ichk"></i>' : ''}${ibagFresh.has(o.id) ? '<i class="nd" aria-label="새로 생김"></i>' : ''}<span class="vpic"><img src="${ITEM_ART[o.a]}" alt=""${o.tk != null ? '' : ' data-fit'}></span><i class="icnt">${I[o.id]}</i><span class="vname">${o.n}</span></button>`).join('') + '</div>' : ''; };   /* v20.00 경완: 가방 도구·아이템 그림도 상점처럼 크기 맞춤 (artFit) */
   // v5.88 경완: 가방도 아래 탭(아이템·진화 도구)으로 나눈다
   document.querySelectorAll('#ibagTabs [data-bt]').forEach(b => { b.setAttribute('aria-selected', b.dataset.bt === ibagTab); const on = itemNewK(b.dataset.bt).length > 0, d = b.querySelector('.dot'); if (on && !d) b.insertAdjacentHTML('beforeend', '<i class="dot" aria-label="새로 생김"></i>'); else if (!on && d) d.remove(); });
@@ -10898,7 +10898,7 @@ ibagEl.addEventListener('click', e => {
   if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; ibagFSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-all]') && ibagTab === 'field') { const K = fbagList().map(([k]) => k); if (K.every(k => ibagPick.has(k))) ibagPick.clear(); else K.forEach(k => ibagPick.add(k)); renderIBag(); return; }
-  if (e.target.closest('#ibagBar [data-all]')) { const I = itemsOf(), T = ITEMS.filter(o => o.k === ibagTab && I[o.id] > 0); if (T.every(o => ibagPick.has(o.id))) ibagPick.clear(); else T.forEach(o => ibagPick.add(o.id)); renderIBag(); return; }
+  if (e.target.closest('#ibagBar [data-all]')) { const I = itemsOf(), T = ITEMS.filter(o => o.k === ibagTab && I[o.id] > 0 && !o.hold); if (T.every(o => ibagPick.has(o.id))) ibagPick.clear(); else T.forEach(o => ibagPick.add(o.id)); renderIBag(); return; }
   if (e.target.closest('#ibagBar [data-toss]')) { const ids = ibagMul ? [...ibagPick] : ibagSel ? [ibagSel] : []; if (ids.length) ibagToss(ids); return; }
   if (e.target.closest('#ibagBar [data-use]') && ITEM[ibagSel]) ibagAsk(ITEM[ibagSel]);
   if (e.target.closest('#ibagBar [data-fuse]') && ITEM[ibagSel]?.fm) fmItemUse(ITEM[ibagSel]);
