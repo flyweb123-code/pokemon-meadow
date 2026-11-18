@@ -35,6 +35,9 @@ jobs:
             const twins = Object.values(sameT).filter(x => x.length > 1);
             const maxId = Math.max(0, ...box.map(p => p.id || 0));
             console.log(k, 'at', new Date(v.at).toISOString(), 'box', box.length, 'eid', S.eid, 'maxId', maxId, 'dupIds', dup.length, JSON.stringify(dup.slice(0, 10).map(([id, n]) => [id, n, box.filter(p => p.id == id).map(p => p.sp + (p.t ? '@' + new Date(p.t).toISOString().slice(0,16) : ''))])), 'twins(t+iv)', twins.length, JSON.stringify(twins.slice(0, 10)), 'ver', S.ver || S.appVer || '');
+            const ghost = box.filter(p => p.g == null && !p.place && !p.fr && !p.km && !p.nm).map(p => p.id + ':' + p.sp + '@' + new Date(p.t || 0).toISOString().slice(5, 16) + (p.shiny ? 'S' : ''));
+            console.log('  ghosts', ghost.length, JSON.stringify(ghost.slice(-40)));
           }
           JS
           node /tmp/a.js
+
