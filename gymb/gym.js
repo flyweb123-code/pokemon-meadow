@@ -2493,14 +2493,17 @@ function mecLay(stg) {
   let LH = L0, LB = 14, ok = false, G = null;
   const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
   const FC0 = mecFace(() => stg.isConnected && mecLay(stg));
+  const LK = [W, H, trF, !!FC0, A.map(a => [a.e.dataset.sp, a.bw, a.bh, a.off, a.ob, a.r, a.st])].join('|'); if (stg._lk?.k === LK) { G = stg._lk.G; ok = true; }   /* 그림이 하나씩 들어올 때마다 다시 불려도 같은 입력이면 계산을 건너뜀 */
   const fb0 = a => { const f = FC0?.[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
   const bd0 = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];
   const ov0 = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
-    A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
+    A.forEach(a => { a.h0 = LH * a.r; }); const tiny0 = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)); let tiny, big, fr = 0, okk = false;
+    /* 경완 '동혁이 관장 카드 보면 이상해꽃 한쪽 눈이 가려져있고 킬라플로르 얼굴 안 보이고 크로뱃 얼굴도 거의 가려져있는데': 중간 크기 포켓몬이 많으면 뒤쪽 호 한 줄에 다 서서 서로 얼굴을 덮음 → 작은 쪽 1~2마리를 앞쪽 호(관장 양옆 앞)로 내린 배치도 후보로 */
+    for (const wide of [0, 1]) for (let nf = 0; !okk && (nf <= Math.min(2, n - 3 - tiny0.length) || !nf); nf++) {   /* 먼저 예전 후보만, 그걸로 가림이 남을 때만 앞줄 내리기·먼 자리 바꾸기까지 (아이폰 계산 시간) */ if (!wide && nf) break; const rest = S.filter(a => !tiny0.includes(a)), fx = nf > 0 ? rest.slice(-nf).filter(a => S.indexOf(a) >= 2) : []; if (nf && fx.length < nf) break; tiny = [...tiny0, ...fx]; big = S.filter(a => !tiny.includes(a)); fr = fx.length;
     /* 경완 11-11 '배치 규칙을 어떻게 해야하나' (비키면 다른 데서 가려짐): 큰 포켓몬마다 왼쪽·오른쪽을 바꾼 후보 배치를 모두 만들어 보고
        프레임 안에 들어오는 것 중 점수가 가장 낮은 것 — 얼굴 가림(앞 포켓몬 몸·관장) ×10, 센 포켓몬이 오른쪽 +1.5, 좌우 치우침 */
-    for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
+    for (let bo = 0; bo <= .6 + 1e-9; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
       const place = (mk, ord, co = 0) => {
         // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜). 어느 쪽으로 갈지는 mk 의 i 번째 비트
         let le = cx, re = cx, pL = null, pR = null;
@@ -2510,7 +2513,7 @@ function mecLay(stg) {
           const pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
           if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
         // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
-        let tl = cx - LW * .15, tr = cx + LW * .15;
+        let tl = cx - LW * (fr ? .45 : .15), tr = cx + LW * (fr ? .45 : .15);   /* 앞으로 내린 중간 크기 포켓몬은 관장 몸 바깥부터 */
         tiny.forEach(a => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, a.h0))); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
           if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
         const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) return false;
@@ -2520,18 +2523,19 @@ function mecLay(stg) {
         tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
         [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; });   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~) (경완 '한카리아스가 더 앞인데 뒤로') */
         return true; };
-      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH]; let s = 0;
+      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH], trH = [cx - LW * .3, LB + LH * .72, cx + LW * .3, LB + LH]; let s = 0;
         A.forEach(a => { const fa = fb0(a); if (fa) { if (a.z < 25) s += 10 * Math.max(0, ov0(fa, trB) - .1); A.forEach(b => { if (b.z > a.z) s += 10 * Math.max(0, ov0(fa, bd0(b)) - .1); }); }
           const ba = bd0(a); let cv = a.z < 25 ? ov0(ba, trB) : 0; A.forEach(b => { if (b.z > a.z) cv += ov0(ba, bd0(b)); }); s += 3 * Math.max(0, cv - .35);   // 몸도 거의 다 가려지면 벌점
-          if (a.st && a.x > cx + 6) s += 1.5; });   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
+          if (a.st && a.x > cx + 6) s += 1.5; if (a.z > 25) s += 10 * Math.max(0, ov0(trH, bd0(a)) - .1); });   /* 앞에 선 포켓몬이 관장 얼굴을 덮으면 벌점 */   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
         const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); return s + Math.abs((cx - lo) - (hi - cx)) / W * 3; };
       let best = null, bs = Infinity;   // 크기 순서 그대로 + 이웃한 둘을 바꾼 순서도 (조금 벌점)
-      const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
+      const ords = [big]; for (let i = 0; i < big.length; i++) for (let j = i + 1; j < big.length; j++) if (j === i + 1 ? i > 0 : wide) { const o = [...big]; [o[i], o[j]] = [o[j], o[i]]; ords.push(o); }
       /* 경완 '저런 경우가 안 나오게 규칙을': 관장 바로 뒤 가운데 포켓몬은 얼굴이 관장 머리에 가리면 더 비켜 선 자리(몸 폭 .3·.45)도 후보로 (조금 벌점) */
       ords.forEach((ord, oi) => { for (const co of ord.length % 2 ? [0, .3, .45] : [0]) for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord, co)) continue; const sc = score() + (oi ? .4 : 0) + (co ? co : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord, co]; } } });
       if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
-        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
-    if (!ok) k *= .96; }
+        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5) okk = true; break; } } }
+    ok = okk || k < .8; if (!ok) k *= .96; }
+  if (G) stg._lk = { k: LK, G };
   if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
   if (G) { const trB = [cx - trF[0] * LH * .42, LB, cx + trF[0] * LH * .42, LB + LH]; let fc = 0;   // 가장 많이 가려진 얼굴 비율 (검사용 data-fc)
     A.forEach(a => { const fa = fb0(a); if (!fa) return; let c = a.z < 25 ? ov0(fa, trB) : 0; A.forEach(b => { if (b.z > a.z) c += ov0(fa, bd0(b)); }); fc = Math.max(fc, c); }); stg.dataset.fc = fc.toFixed(2); stg.dataset.k = (LH / L0).toFixed(2); }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
