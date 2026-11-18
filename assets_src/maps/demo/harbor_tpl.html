@@ -43,6 +43,8 @@ input[type=range]{width:100%}
   <div class="row"><button data-h="6">해돋이</button><button data-h="12">한낮</button><button data-h="17.9">노을</button><button data-h="22">밤</button><button id="ff">하루 빨리 돌리기</button><button id="now">지금 시각</button></div>
   <div class="lb">날씨 (하늘만)</div>
   <div class="row"><button data-w="clear" class="on">맑음</button><button data-w="cloud">구름</button><button data-w="rain">비</button></div>
+  <div class="lb">먼바다 너울 시안</div>
+  <div class="row" id="sws"></div>
   <div class="lb">다니는 구역</div>
   <div class="row"><button id="zb">구역 지도 겹쳐 보기</button></div>
   <div class="lg" id="lg" hidden>
@@ -84,11 +86,19 @@ function sky() {   /* beta.html sky() 앞부분 그대로: 밤 그늘 색 → �
   $('#hr').textContent = `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.floor(h % 1 * 60)).padStart(2, '0')}`; $('#tm').value = h;
 }
 let DARK = 0;
+const SWS = {   /* 너울 시안: on 켬, sp 다가오는 빠르기, gap 줄 사이, cut 끊김(클수록 조각이 짧고 드묾), th 물마루 굵기, foam 흰 물보라, two 둘째 줄, trough 뒤 골, dith 체크 무늬로 옅게, col 물마루 색, rip 잔물결 수 */
+  A: { on: 1, sp: 2.6, gap: 34, cut: .9, th: .035, foam: 0, two: 0, trough: 0, dith: 1, col: '#3e96c3', rip: 60, t: 'A 아주 은은하게' },
+  B: { on: 1, sp: 3.2, gap: 30, cut: .6, th: .04, foam: 0, two: 0, trough: 0, dith: 0, col: '#3e96c3', rip: 60, t: 'B 은은하게' },
+  C: { on: 1, sp: 3.6, gap: 28, cut: .45, th: .04, foam: 1, two: 0, trough: 0, dith: 0, col: '#5aaed4', rip: 50, t: 'C 중간 (흰 물보라 조금)' },
+  D: { on: 0, rip: 80, t: 'D 너울 없이 잔물결만' },
+  E: { on: 1, sp: 4.2, gap: 24, cut: .15, th: .045, foam: 1, two: 1, trough: 1, dith: 0, rip: 80, t: '지난 판 (센 너울)' } };
+let SW = SWS.B;
 document.querySelectorAll('[data-h]').forEach(b => b.onclick = () => { ff = 0; H = +b.dataset.h; sky(); });
 document.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { WX = b.dataset.w; document.querySelectorAll('[data-w]').forEach(x => x.classList.toggle('on', x === b)); skyKey = ''; sky(); });
 $('#tm').oninput = e => { ff = 0; H = +e.target.value; sky(); };
 $('#ff').onclick = () => { ff = !ff; $('#ff').classList.toggle('on', !!ff); };
 $('#now').onclick = () => { ff = 0; $('#ff').classList.remove('on'); H = new Date().getHours() + new Date().getMinutes() / 60; sky(); };
+for (const [k, v] of Object.entries(SWS)) { const b = document.createElement('button'); b.textContent = v.t; b.className = SW === v ? 'on' : ''; b.onclick = () => { SW = v; document.querySelectorAll('#sws button').forEach(x => x.classList.toggle('on', x === b)); }; $('#sws').append(b); }
 $('#zb').onclick = () => { const on = $('#st').classList.toggle('zones'); $('#zb').classList.toggle('on', on); $('#lg').hidden = !on; };
 
 /* ---- 항구 바다 파도 (새 코드) ----
@@ -156,14 +166,15 @@ IMG.onload = () => {
     // 2.5) 먼바다 너울: 왼쪽 아래에서 해변(오른쪽 위) 쪽으로 밀려가는 물마루 줄 (경완 '바다 안쪽도 좀 더 파도 움직임이 있어야 할 것 같은데')
     //      물마루 = 밝은 1~2줄 + 군데군데 흰 물보라, 바로 뒤 골 = 살짝 짙은 줄. 줄은 끊긴 조각으로(고른 띠가 아니게), 해변 가까이선 약해짐
     //      물마루는 해변 물가와 나란히(오른쪽 아래로 기운 줄), 물가 쪽(오른쪽 위)으로 다가감
-    for (const [x, y] of deep) { const k = y * w + x, u = y * .9 - x * .45 + Math.sin(x * .16 + t * .9) * 1.6, v = u + t * 4.2, row = Math.floor(v / 24), c = ((v / 24) % 1 + 1) % 1,
+    //      너울 시안 (경완 '너울이 너무 심한데 시안 좀 몇개 보여줘봐'): SW 값으로 세기만 바꿈
+    if (SW.on) for (const [x, y] of deep) { const k = y * w + x, u = y * .9 - x * .45 + Math.sin(x * .16 + t * .9) * 1.6, v = u + t * SW.sp, row = Math.floor(v / SW.gap), c = ((v / SW.gap) % 1 + 1) % 1,
         n = Math.sin(x * .21 + row * 2.3) + Math.sin(x * .07 - row * 1.1) * .7;
-      if (n < .15) continue; const fade = Math.min(1, (dSea[k] - 10) / 14);
-      if (c < .045) P(x, y, n > 1.25 && fade > .6 && (x + F) % 4 ? FOAM2 : RIP2);
-      else if (c < .09 && n > .5 && fade > .3) P(x, y, RIP);
-      else if (c > .93 && fade > .4 && BY[y & 3][x & 3] < 6) P(x, y, '#1f63a0'); }
+      if (n < SW.cut) continue; const fade = Math.min(1, (dSea[k] - 10) / 14);
+      if (c < SW.th) { if (SW.dith && BY[y & 3][x & 3] > 7) continue; P(x, y, SW.foam && n > 1.25 && fade > .6 && (x + F) % 4 ? FOAM2 : SW.col || RIP2); }
+      else if (SW.two && c < SW.th * 2 && n > .5 && fade > .3) P(x, y, RIP);
+      else if (SW.trough && c > .93 && fade > .4 && BY[y & 3][x & 3] < 6) P(x, y, '#1f63a0'); }
     // 3) 깊은 바다 잔물결·반짝임
-    for (let i = 0; i < rip.length; i++) { const r = rip[i], a = (now - r.t0) / r.dur; if (a >= 1) { rip[i] = newRip(); continue; }
+    for (let i = 0; i < Math.min(rip.length, SW.rip); i++) { const r = rip[i], a = (now - r.t0) / r.dur; if (a >= 1) { rip[i] = newRip(); continue; }
       const L = Math.max(1, Math.round(r.len * Math.sin(a * Math.PI))), x0 = Math.round(r.x + a * r.sp * 6);
       for (let j = 0; j < L; j++) { const X = x0 + j - (L >> 1); if (X >= 0 && X < w && kind[r.y * w + X] === 1) P(X, r.y, a > .3 && a < .7 && j === 0 ? RIP2 : RIP); } }
     if (DARK < .5) for (const q of glint) { const v = Math.sin(t * 1.7 + q.o); if (v > .82) { const [x, y] = q.p; P(x, y, '#e8fbff'); if (v > .94) { P(x - 1, y, '#9ad8ee'); P(x + 1, y, '#9ad8ee'); P(x, y - 1, '#9ad8ee'); } } }
