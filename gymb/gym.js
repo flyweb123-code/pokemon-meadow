@@ -2339,6 +2339,7 @@ function renderHome(quiet) {
   if (g.fit) fitSrc('ow').then(u => { if (meE.el.isConnected) meE.el.style.backgroundImage = `url(${u})`; });
   palEnt(D);
   guyEnt = ent({ ow: GUY_OW, x: D.guy[0], y: D.guy[1], f: 'd', onTap: () => { sfx('tap'); if (!busy) guyAsk(); } });
+  if (!window.gymSimOn && !window.gymEvTest) vcSnap(g, D);   /* v27.16 친구 체육관 놀러가기: 친구 카드에 고용 트레이너 자리·꾸미기 */
   if (!quiet) homeSay();
 }
 // 관장 뒤 포켓몬 (경완 2026-10-27): 기본은 지금 라인업에서 레벨이 가장 높은 포켓몬, 눌러서 바꿀 수 있다 (g.pal)
@@ -2447,7 +2448,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop,.fvp-l0';
 const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.42)
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
@@ -4069,6 +4070,7 @@ async function later() {
   if (g.rpt && !g.rpt.seen && g.rpt.k === wkOf(Date.now()) - 7 * DAY) await reportPop();   // v19.26: 지난주 것만 (v19.08 전에 쌓인 옛 보고서는 안 띄움)   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
+  if (open && !window.gymSimOn && !window.gymEvTest) await fvInPop();   /* v27.16 친구가 놀러 와서 이겼다/졌다 */
   await unlockChk();
   if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
   /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
@@ -4095,15 +4097,131 @@ async function exit(tx = '퇴근하는 중') {
 }
 
 
-// ---------- 친구 체육관 놀러 가기 (v11.78 경완 '친구 체육관 놀러가서 배틀', 베타): 내가 도전자가 되어 친구 체육관 문으로 들어가 친구 관장과 배틀 ----------
-// F = 친구 카드 { n 이름, sex, gym: { nm, ty, d 맵, gi 크기, fit 옷, lu: [배틀 개체 sp·nm·lv·mv·ab·nat·it·iv·g·shiny] } } (beta.html frCard 가 만들어 CloudKit 에 올린다)
-// 연습 배틀처럼 경험치·골드·평판은 그대로. 승패만 S.gym.fv[친구 코드] 에 남긴다
+// ---------- 친구 체육관 놀러 가기 (v11.78 경완 '친구 체육관 놀러가서 배틀', 베타) ----------
+/* v27.16 경완 2026-11-19 '친구 체육관 놀러가서 돌아다니기도 하고 배틀할 수도 있는 시스템': 친구가 지금 운영 중인 체육관을 이벤트 필드 엔진(ev.js field, 본가 걸음)으로 직접 걸어 다닌다.
+   경완 '본가처럼 고용 트레이너 앞 지나가면 저절로 말 걸리고 배틀 걸리게', '고용 트레이너들 AI는 고용 트레이너 등급 따라가주고, 라인업도 고용 트레이너 상세카드에 나오는 라인업 그대로',
+   '관장 도전은 고용 트레이너들을 다 이겨야 가능. 관장한테 말 걸면 아직 배틀하지 않은 고용 트레이너가 와서 자기부터 이겨야한다고 말 검', '이김 여부는 다음날 리셋',
+   '고용 트레이너들 이길 때마다 골드 보상', '재도전은 가능하나 관장까지 전체 완주는 하루 한 번만', '관장 이겼을 때도 보상'.
+   F = 친구 카드 { n 이름, sex, gym: { nm, ty, d 맵, gi 크기, fit 옷, lu 관장 라인업, vc: { gi, sf [고용 트레이너 {id,cls,nm,tr,ow,lq,team,x,y,f}], dc [꾸미기 [k,x,y]] } } }
+   내 기록 S.gym.fv[친구 코드] = { w, l, d 오늘(한국 날짜), b [오늘 이긴 트레이너 id], c 관장까지 이긴 날 } */
 const FV_HI = ['어서 와! 내 체육관에 온 걸 환영해.', '왔구나! 기다리고 있었어.', '드디어 왔네! 내 포켓몬들 실력 좀 볼래?'];
 const FV_WIN = ['내가 이겼다! 다음에 또 와!', '훈련을 더 하고 다시 도전해 줘!'], FV_LOSE = ['졌다… 대단한데!', '내 체육관을 이기다니! 다음엔 안 질 거야.'];
+const FV_SG = [60, 80, 100, 120], FV_LG = 300;   // 고용 트레이너 이길 때 골드(라인업 등급 보통·좋음·뛰어남·최고) · 관장 이길 때 골드 — 친구마다 하루 한 번씩만
+const FV_AI = [0, 1, 2, 2], FV_LAI = 3;   // 고용 트레이너 AI = 라인업 등급 따라, 관장 = 3단계
+const FV_SIGHT = 4;
+const fvDay = (t = Date.now()) => Math.floor((t + 9 * H) / DAY);   // 한국 날짜 (자정 KST 에 바뀜)
+const fvRec = code => { const g = st(), R = (g.fv ||= {})[code] ||= { w: 0, l: 0 }, d = fvDay(); if (R.d !== d) { R.d = d; R.b = []; } R.b ||= []; return R; };
+const FV_PRE = ['관장님께 가려면 나부터 이겨야지!', '여긴 그냥 못 지나가!', '체육관 트레이너의 실력, 보여 주마!', '관장님 체육관에 도전하러 왔구나? 그럼 나랑 먼저!', '오, 도전자다! 한 판 붙자!'];
+const FV_LOST = ['으윽… 졌다.', '이렇게 셀 줄이야!', '관장님께 혼나겠다…', '좋은 배틀이었어!'];
+const FV_DONE = ['관장님은 저 안쪽에 계셔. 힘내!', '다음엔 안 질 거야!', '오늘은 졌지만 내일 또 붙자!', '우리 관장님은 나보다 훨씬 세다고!'];
+const FV_BLK = ['잠깐! 관장님께 도전하려면 나부터 이겨야지!', '거기 서! 아직 나랑은 안 싸웠잖아?', '관장님께 가기 전에 나를 넘어야 해!'];
 const fvMon = o => o && SPECIES[o.sp] && Array.isArray(o.mv) && o.mv.length ? { sp: +o.sp, nm: String(o.nm || SPECIES[o.sp].n).slice(0, 12), lv: clampN(o.lv | 0, 1, 100), mv: o.mv.filter(m => typeof m === 'string').slice(0, 4),
   ab: typeof o.ab === 'string' ? o.ab : undefined, nat: typeof o.nat === 'string' ? o.nat : undefined, it: typeof o.it === 'string' ? o.it : undefined,
   iv: Array.isArray(o.iv) && o.iv.length === 6 ? o.iv.map(v => clampN(v | 0, 0, 31)) : undefined, g: o.g === 'F' || o.g === 'M' ? o.g : '', shiny: !!o.shiny } : null;
+const fvSf = (o, D) => o && CLS[o.tr] && Array.isArray(o.team) && o.team.length && D.free?.[o.y]?.[o.x] === '1' ? { id: String(o.id), cls: String(o.cls || GB()?.TR_KO?.[o.tr] || '트레이너').slice(0, 10), nm: String(o.nm || '').slice(0, 8), tr: o.tr, ow: CLS[o.tr].ow, lq: clampN(o.lq | 0, 0, 3),
+  team: o.team.slice(0, 6).filter(m => SPECIES[m?.[0]]).map(m => [+m[0], clampN(m[1] | 0, 2, 100)]), x: o.x | 0, y: o.y | 0, f: 'udlr'.includes(o.f) ? o.f : 'd' } : null;
+/* 내 체육관 모습을 친구 카드용으로 (renderHome 때마다): 서 있는 고용 트레이너와 자리, 꾸미기 */
+function vcSnap(g, D) { try { const vc = { gi: bigOf(g), sf: sfList(g, D).map(([s, x, y, f]) => ({ id: s.id, cls: s.cls, nm: s.nm, tr: s.tr, ow: s.ow, lq: s.lq | 0, team: (s.team || []).slice(0, 6).map(m => [m[0], m[1]]), x, y, f })), dc: decoList(g, D).map(([k, x, y]) => [k, x, y]) };
+  if (JSON.stringify(vc) !== JSON.stringify(g.vc)) { g.vc = vc; save(); } } catch (e) { console.error(e); } }
 async function visit(F, code) {
+  const G = F?.gym, g = st();
+  if (open || busy) return;
+  const team = (G?.lu || []).map(fvMon).filter(Boolean).slice(0, 6);
+  if (!G?.d || !team.length) { GA.toast?.('친구 체육관에 아직 라인업이 없어요'); gymLoad.hide(); return; }
+  if (!g?.d || ![0, 1, 2].some(i => luOf(i).length)) { gymLoad.hide(); alert('친구 체육관에 도전하려면 내 체육관을 열고 라인업을 먼저 짜 주세요.'); return; }
+  if (!root) build();
+  const gi = clampN((G.vc?.gi ?? G.gi) | 0, 0, STAGES - 1), D = dzOf(G.d, gi);
+  if (!D.free) return visitOld(F, code, team);
+  open = true; busy = true; root.hidden = false; root.classList.add('visit', 'busy'); root.classList.remove('gview'); GA.gymIn(); openTab(null); evLvId = null;
+  const fN = String(F.n || '친구').slice(0, 8), fF = F.sex === 'f', ev0 = g.ev ? JSON.stringify(g.ev) : null, R = fvRec(code), out = { w: 0, l: 0, s: [], sl: '' }, nmL = t => String(t).replace(/관장님/g, fN + ' 관장님');
+  const SF = (G.vc?.sf || []).map(o => fvSf(o, D)).filter(Boolean).slice(0, 6), gNm = String(G.nm || defName(G.ty)).slice(0, 10);
+  let A = null, Fd = null, S = null;
+  try {
+    await Promise.all([loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData()), loadJs('gymb/ev.js', 'GymEv')]);
+    try { ['gymBattle', 'train', 'winTrain', 'winGym', 'gym'].forEach(n => window.GymBGM?.prep(n)); } catch (er) {}
+    A = window.GymEv?.tools?.(EV_API, { id: 'fvisit' }); if (!A) throw new Error('no ev');
+    A.blackNow(); root.classList.add('on'); gymLoad.hide();
+    const img = await mapSrc(D), col = D.free.map(r => [...r].map(c => c === '1' ? '.' : '#').join(''));
+    Fd = A.field({ nm: gNm, img, w: D.w, h: D.h, col, warps: [{ x: D.door[0], y: D.door[1], d: 'd', id: 'out' }] });
+    Fd.el.classList.add('fvis'); Fd.quitT = `${fN}의 체육관에서 나갈까요?`;
+    (D.stat || []).forEach(([x, y]) => Fd.block.add(x + ',' + y));
+    for (const [k, x, y] of G.vc?.dc || []) { const o = DECO[k]; if (!o || D.free[y]?.[x] == null) continue; const e = Fd.pic(`${IMG}deco/t/${k}.png`, x, y + 1 - o.h / 16, o.w, o.h); e.style.zIndex = y * 10 + 9; dCells(k, x, y).forEach(c => Fd.block.add(c[0] + ',' + c[1])); }
+    const ldOw = G.fit && fitOf(G.fit, fF) ? `${IMG}fit/ow9/${G.fit}_${fF ? 'f' : 'm'}.png` : (fF ? 'pt_f' : 'pt_m');
+    const ldr = Fd.npc(ldOw, D.leader[0], D.leader[1], 'd', { who: 'ldr' });
+    const guy = Fd.npc(GUY_OW, D.guy[0], D.guy[1], 'd', { who: 'guy' });
+    const SPS = SF.map((o, i) => Object.assign(Fd.npc(o.ow, o.x, o.y, o.f, { sight: FV_SIGHT, fv: o, i, home: null }), { h0: [o.x, o.y, o.f] }));
+    const beat = s => R.b.includes(s.fv.id), clr = () => R.c === fvDay();
+    const mark = () => SPS.forEach(s => { s.done = beat(s) || clr(); });
+    mark();
+    const sy = D.door[1] - 1, me = Fd.me = Fd.npc(myOw(), D.door[0], sy, 'u'); EV_API.fitMe(me);
+    Fd.cam(me.x, me.y); A.music('gym'); await A.black(false); await Fd.show();
+    S = A.talk(); S.hide(true);   /* 따라다니는 포켓몬은 안 둠: 큰 포켓몬이 관장·나를 가림 */
+    const me0 = trName() || '나', who = `관장 ${fN}`, sWho = s => `${s.fv.cls} ${s.fv.nm}`;
+    const say = async (L, w) => { for (const t of [].concat(L)) await S.say(t, { who: w }); S.hide(true); };
+    await A.title(gNm, `관장 ${fN}`, `${TYPE_KO[G.ty] || ''} 체육관`.trim());
+    if (clr()) await say(`(오늘은 이미 ${fN}의 체육관을 끝까지 이겼다.\n천천히 구경하고 가자.)`, me0);
+    // 지면: 본가처럼 눈앞이 캄캄 → 입구에서 다시 (이긴 트레이너는 오늘 그대로)
+    const lose = async () => { await A.black(true, '눈앞이 캄캄해졌다...!', `${fN}의 체육관 입구로 돌아갔다...`, true); me.x = D.door[0]; me.y = sy; me.turn('u'); if (Fd.pl) { Fd.pl.x = me.x; Fd.pl.y = me.y; Fd.pl.put?.(); } SPS.forEach(s => { s.x = s.h0[0]; s.y = s.h0[1]; s.turn(s.h0[2]); }); Fd.cam(me.x, me.y); A.music('gym'); await A.black(false); };
+    // 고용 트레이너 배틀: 나를 보면 '!' → 걸어와서 한마디 → 배틀. come = 시야로 만남, blk = 관장 앞을 막으러 옴
+    const fight = async (s, how) => {
+      Fd.lock(true); A.music('eyeElite'); Fd.bub(s, '!', 900); gse('DP_REGI', .6); await A.wait(950);
+      if (how === 'blk') await Fd.approach(s); else if (Fd.sees(s) > 1) await Fd.come(s); else { s.face(me); me.face(s); }
+      await say(nmL(how === 'blk' ? pick(FV_BLK) : pick(FV_PRE)), sWho(s));
+      const o = s.fv, won = await A.battle({ tr: o.tr, cls: o.cls, nm: o.nm, team: o.team, tier: FV_AI[o.lq], say: { win: '내가 이겼다!', lose: nmL(pick(FV_LOST)) }, music: 'train', win: 'winTrain', bg: pick(['in1', 'in2', 'in3']) });
+      A.music('gym');
+      if (!won) { out.l++; out.sl = sWho(s); R.l++; save(); await say(['역시 관장님 체육관 트레이너답지?', '다시 도전하고 싶으면 언제든 와!'].slice(0, 1 + (Math.random() < .5)), sWho(s)); await lose(); return; }
+      R.b.push(o.id); s.done = true; out.s.push(o.id); const gd = window.gymEvTest ? 0 : (GA.addGold?.(FV_SG[o.lq], 'fvisit') || 0); renderGoldG(); save();
+      await A.wait(250); A.se('DP_KAIFUKU'); await A.wait(600);
+      await say([`(상금 ${FV_SG[o.lq].toLocaleString()}G 를 받았다!)`], me0); await say(nmL(pick(FV_DONE)), sWho(s));
+      if (how !== 'come') await Fd.goTo(s, s.h0.slice(0, 2)); s.turn(s.h0[2]); return gd; };
+    const lead = async () => {
+      ldr.face(me);
+      if (clr()) return say(['오늘은 이미 나를 이겼잖아!', '내일 다시 도전하러 와. 기다릴게!'], who);
+      const left = SPS.filter(s => !beat(s));
+      if (left.length) { await say(pick(FV_HI), who); const s = left[0]; await fight(s, 'blk'); return; }
+      await say([pick(FV_HI), `내 포켓몬 ${team.length}마리와 승부다!`], who);
+      const my = (await (async () => { await luPick(); return luNow(); })()); if (!my.length) return;
+      const tr = fitOf(G.fit, fF) ? `../fit/${G.fit}_${fF ? 'f' : 'm'}` : (fF ? 'pt_f' : 'pt_m');
+      document.body.classList.add('gymBattle'); let res;
+      try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, foe: { tr, cls: '관장', nm: fN, team: team.map(o => ({ ...o, iv: o.iv || [31, 31, 31, 31, 31, 31] })), say: { win: pick(FV_LOSE), lose: pick(FV_WIN) }, hold: 2 }, rew: { g: FV_LG, r: 0, rl: 0 }, diff: FV_LAI, bg: pick(['in1', 'in2', 'in3']), music: 'gymBattle', win: 'winGym', meBackUrl: await fitSrc('trb') }); }
+      finally { document.body.classList.remove('gymBattle'); }
+      A.music('gym');
+      if (!res || res.cut) return say('(배틀이 중간에 멈춰 버렸다... 다시 말 걸어 보자.)', me0);
+      if (res.quit) return say('벌써 가는 거야? 다음에 또 와!', who);
+      if (!res.won) { R.l++; out.l++; out.sl = '관장'; save(); await say(['좋은 승부였어!', '트레이너들은 오늘 이긴 걸로 해 둘게. 다시 도전해!'], who); return lose(); }
+      R.w++; R.c = fvDay(); out.w++; mark(); if (!window.gymEvTest) GA.addGold?.(FV_LG, 'fvisit'); renderGoldG(); save();
+      await say([`대단해! ${trName() || '너'}의 승리야!`, `오늘은 여기까지! 내일 또 도전하러 와.`], who);
+      await say([`(상금 ${FV_LG.toLocaleString()}G 를 받았다!)`, `(${fN}의 체육관에서 ${R.w}승 ${R.l}패)`], me0); };
+    /* 한 판 이기고 나서 다른 트레이너 시야에 내가 있으면 바로 이어서 (로켓단 이벤트 chain 과 같음) */
+    const chain = async () => { for (let n = 0; n < 6; n++) { const s = SPS.find(s => !s.done && Fd.sees(s)); if (!s) return; if (n) await A.wait(400); await fight(s, 'come'); if (!s.done) return; } };
+    for (;;) {
+      const r = await Fd.play({
+        step: () => chain(),
+        talk: async s => { if (s.who === 'ldr') return lead(); if (s.who === 'guy') return say(clr() ? ['오늘 완주를 축하드려요!', `${fN} 관장님 체육관, 어떠셨어요?`] : SPS.length ? [`${fN} 관장님 체육관에 오신 걸 환영해요!`, `트레이너 ${SPS.length}명을 모두 이겨야 관장님께 도전할 수 있어요.`, `오늘 ${SPS.filter(beat).length}명 이겼어요. 내일이 되면 처음부터예요!`] : [`${fN} 관장님 체육관에 오신 걸 환영해요!`, '관장님은 저 안쪽에 계세요. 힘내세요!'], '안내원');
+          if (s.fv) { if (!s.done) { await fight(s, 'talk'); return s.done ? chain() : undefined; } return say(nmL(clr() ? '오늘은 관장님까지 이겼구나! 대단해.' : pick(FV_DONE)), sWho(s)); } },
+        warp: async w => { if (w.id === 'out') { if (await S.ask(`${fN}의 체육관에서 나갈까요?`, { who: me0 })) { S.hide(true); return 'quit'; } S.hide(true); } },
+      });
+      if (r === 'quit' || r === undefined) break;
+    }
+    Fd.lock(true); A.music(null); await A.black(true); await Fd.close();
+  } catch (err) { console.error(err); GA.toast?.('친구 체육관에 들어가지 못했어요'); }
+  // 친구에게 남김: 다음에 친구가 자기 체육관에 들어가면 알림창 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로 OO가 놀러와서 이겼다/졌다')
+  if ((out.w || out.l || out.s.length) && !window.gymEvTest) try { GA.fvPost?.({ to: code, t: Date.now(), w: out.w, l: out.l, n: out.s.length, sl: out.sl || undefined }); } catch (er) {}
+  if (ev0 == null) delete g.ev; else g.ev = JSON.parse(ev0); save();   // 같이 다니는 포켓몬 바꾸기가 g.ev 에 남기는 것 되돌림
+  gymLoad.show('필드로 돌아가는 중', '', true); await wait(600); A?.black?.(false);
+  try { window.GymBGM?.free(); } catch (er) {}
+  root.querySelectorAll('.ev-fld,.ev-ask,.gy-kang.tw-talk,.ev-black,.ev-ttl').forEach(x => x.remove());
+  clearEnts(); busy = false; open = false; root.classList.remove('on', 'visit', 'busy', 'dhide'); root.hidden = true; GA.gymOut();
+  try { menuDots(); } catch (er) {}
+  await wait(200); gymLoad.hide();
+}
+/* 친구가 내 체육관에 놀러 와서 배틀한 결과 (경완 '이겼으면 해당 친구 체육관 들어왔을 때 알림창으로'): 들어올 때 한 번, 저절로 뜨는 창이라 버튼으로만 닫힘 */
+async function fvInPop() { const L = GA.fvIn?.() || []; if (!L.length) return;
+  const rows = L.slice(-6).map(o => `<li><b>${esc(o.nm)}</b>${jong(o.nm) ? '이' : '가'} 놀러 와서 ${o.w ? '<em class="fvp-w">관장인 나를 이겼어요!</em>' : o.sl ? `<em class="fvp-l">${o.sl === '관장' ? '나한테' : esc(o.sl) + '에게'} 졌어요</em>` : '<em>둘러보고 갔어요</em>'}${o.n ? `<small>트레이너 ${o.n}명 이김</small>` : ''}</li>`).join('');
+  await new Promise(ok => pop(`<h4>친구가 놀러 왔어요</h4><ul class="fvp-l0">${rows}</ul><div class="gy-btns"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); }));
+  GA.fvSeen?.(); }
+/* 예전 방식 (빈 바닥 정보가 없는 맵): 문에서 관장 앞까지 저절로 걸어가 연습 배틀 */
+async function visitOld(F, code) {
   const G = F?.gym, g = st();
   if (open || busy) return;
   const team = (G?.lu || []).map(fvMon).filter(Boolean).slice(0, 6);
