@@ -25,4 +25,5 @@ jobs:
           sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
       - name: Read
         run: |
-          npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT k,msg,where_,ver,beta,n,codes,datetime(at0/1000,'unixepoch') a0,datetime(at/1000,'unixepoch') a1,st,issue,substr(ctx,1,3000) ctx FROM err ORDER BY at DESC LIMIT 12"
+          npx wrangler d1 execute pokegrow --remote -y --json --command "SELECT ctx FROM err WHERE k='a6d3feb435ebca86ff01ea75'" > o.json
+          jq -r '.[0].results[0].ctx' o.json | fold -w 2000
