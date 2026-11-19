@@ -1,6 +1,1055 @@
 {
  "days": [
   {
+   "at": 1795042071740,
+   "theme": "숲속 꼬마 학교",
+   "note": "병원에 이어 오늘은 풀밭 한쪽에 작은 학교를 세웠어요! 빨간 지붕 종 문과 깃대로 운동장을 꾸미고, 책상·주판·신발장·급식 손수레로 교실을, 철봉·사육장·강낭콩 선반·스쿨버스로 학교 둘레를 채웠어요.",
+   "items": [
+    {
+     "id": "sch-bell-gate",
+     "n": "학교 종 문",
+     "k": "학교",
+     "d": "빨간 지붕을 얹은 나무 문틀에 반짝이는 놋쇠 종이 매달려 있어요. 아래 늘어진 밧줄을 잡아당기면 땡땡땡 수업 시작을 알려요.",
+     "px": [
+      "kSSSSSSSSSSSSSSSSSSSSk",
+      "SRRRRRRRRRRRRRRRRRRRrr",
+      "kAAAAAAAAAAAAAAAAAAADk",
+      "kABBBBBBBBBBBBBBBBBBDk",
+      "kEEEEEEEEEEEEEEEEEEEEk",
+      ".kABDkkkkkQOkkkkkABDk.",
+      ".kABDk...kQOk...kABDk.",
+      ".kADDk..kHGggk..kADDk.",
+      ".kABDk.kHWGGggk.kABDk.",
+      ".kABDk.kHHGGggk.kABDk.",
+      ".kABDkkHWGGGGggkkABDk.",
+      ".kADDkkHHGGGGggkkADDk.",
+      ".kABDkkHGGGGGggkkABDk.",
+      ".kABDkHGGGGGGGGgkABDk.",
+      ".kABDggggggggggggABDk.",
+      ".kADDkkkkkggkkkkkADDk.",
+      ".kABDk....kkkTk.kABDk.",
+      ".kABDkkkkk..kUk.kABDk.",
+      ".kABDYYYYzk.kTk.kABDk.",
+      ".kADDYzzzzk.kTk.kADDk.",
+      ".kABDYzzZzk.kUk.kABDk.",
+      ".kABDzzzzzk.kTk.kABDk.",
+      ".kABDkkkkk..kTk.kABDk.",
+      ".kADDk.....kTTTkkADDk.",
+      ".kABDk.....kTTUkkABDk.",
+      ".kABDk......kkk.kABDk.",
+      ".kEEEk..........kEEEk.",
+      "..kkk............kkk.."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "Q": "#565e6c",
+      "O": "#808a98",
+      "R": "#d85a4a",
+      "S": "#f08a6a",
+      "r": "#9c3a34",
+      "G": "#e0b040",
+      "H": "#f6dc7a",
+      "g": "#a8782a",
+      "W": "#fff6d0",
+      "T": "#d8c49a",
+      "U": "#a8946a",
+      "Y": "#f4ead2",
+      "Z": "#e0d2b2",
+      "z": "#9a8a6e",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "밧줄을 붙잡고 힘껏 당겨 종을 땡땡 흔들어요",
+       "x": {
+        "at": [
+         0.6,
+         0.85
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "종 밧줄을 힘껏 당겨 땡땡땡 수업 시작을 알렸다.",
+        "너무 세게 당겨서 종이 한참 동안 땡그랑 흔들렸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "종 문 빨간 지붕 위에 날아올라 앉아 운동장을 내려다봤다.",
+        "지붕 위에 앉았다가 종소리에 깜짝 놀라 깃털을 부풀렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "종 아래에 서서 고개를 들고 종이 흔들리는 걸 지켜봐요",
+       "x": {
+        "at": "front",
+        "fx": "swing"
+       },
+       "l": [
+        "종 문 아래에서 흔들리는 종을 올려다봤다.",
+        "땡땡 울리는 종소리에 맞춰 고개를 까딱였다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 에스퍼 타입",
+       "a": "종 옆에서 기술을 써 종을 울려요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "기술을 써서 종을 땡땡 울렸다.",
+        "종을 울리고는 다들 모이라는 듯 뿌듯해했다."
+       ]
+      }
+     ],
+     "fit": "운동장 입구, 길 옆"
+    },
+    {
+     "id": "sch-desk-chair",
+     "n": "꼬마 책상과 의자",
+     "k": "학교",
+     "d": "쇠다리에 나무 상판을 얹은 옛날 교실 책상과 걸상이에요. 상판에는 펼친 공책과 몽당연필이 놓여 있어요.",
+     "px": [
+      "..kkkkk......kkkkk.......",
+      ".kAAAADk....kWWPWWkkkkk..",
+      ".kABBBDk.kkkkwwPwwyYYYPk.",
+      ".kADDDDkkAAAAAAAAAAAAAABk",
+      ".kABBBDkkDDDDDDDDDDDDDDDk",
+      ".kABBBDk.kMMMMMMMMMMMMOk.",
+      ".kABBBDk.kNNNNNNNNNNNNOk.",
+      ".kOkkkOk.kNQQQQQQQQQQQOk.",
+      ".kOkkkOkkkOOOOOOOOOOOOOk.",
+      "kAAAAAAAAkONkkkkkkkkkNOk.",
+      "kDDDDDDDDkONk.......kNOk.",
+      ".kONkkQOkkONk.......kNOk.",
+      ".kONkkQOkkONk.......kNOk.",
+      ".kONkkQOkkONk.......kNOk.",
+      ".kOQQQQOkkONk.......kNOk.",
+      ".kONkkQOkkONkkkkkkkkkNOk.",
+      ".kONkkQOkkQOOOOOOOOOOOQk.",
+      ".kONkkQOkQQQkkkkkkkkkQQQk",
+      "..kk..kk.kkk.........kkk."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "M": "#eef2f6",
+      "N": "#b8c2cc",
+      "O": "#808a98",
+      "Q": "#565e6c",
+      "W": "#fbf7ec",
+      "w": "#d8d0c0",
+      "P": "#7aa0d8",
+      "Y": "#f0c84a",
+      "y": "#f4b8a0",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "걸상 앞에 서서 공책을 들여다보며 공부하는 척해요",
+       "x": {
+        "at": [
+         0.2,
+         0.9
+        ]
+       },
+       "l": [
+        "걸상 앞에 서서 공책을 진지하게 들여다봤다.",
+        "공책에 낙서를 해 놓고 시치미를 뚝 뗐다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "책상 위로 올라가 공책을 베개 삼아 낮잠을 자요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Sleep"
+       },
+       "l": [
+        "책상 위에 올라가 공책을 베고 새근새근 잠들었다.",
+        "수업 시간에 책상 위에서 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "책상 옆에서 기술을 써 몽당연필을 둥둥 띄워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 연필을 띄워 공책에 글씨를 썼다.",
+        "연필을 둥둥 띄우다가 책상 밑으로 떨어뜨렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "책상 다리에 기대 앉아 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "책상 다리에 기대 앉아 꾸벅꾸벅 졸았다.",
+        "책상 그늘에 기대 쉬는 시간을 즐겼다."
+       ]
+      }
+     ],
+     "fit": "칠판 앞이나 나무 그늘 아래, 두세 개 나란히"
+    },
+    {
+     "id": "sch-flagpole",
+     "n": "운동장 깃대",
+     "k": "학교",
+     "d": "운동장 한가운데 선 높은 쇠 깃대예요. 꼭대기 금빛 꼭지 아래 몬스터볼 무늬 교기가 바람에 펄럭이고, 돌 받침에 줄이 묶여 있어요.",
+     "px": [
+      "..kkk...............",
+      ".kHGGk..............",
+      ".kGGGk..............",
+      ".kMNOkkkkkkkkkkkkkk.",
+      ".kMNOfffffFeffffeffk",
+      ".kMNOfFFFFFeFFFFeFFk",
+      ".kMNOfFFFFRRRRRFeFFk",
+      ".kMNOfFFFFRSRRRFeFFF",
+      ".kMNOfFFFFRRRRRFeFFF",
+      ".kMNOfFFFFkkWkkFeFFk",
+      ".kMNOfFFFFFWWWFFeFFF",
+      ".kMNOfFFFFFeFFFFeFFk",
+      ".kMNOfFFFFFeFFFFeFk.",
+      ".kMNOeeeeeeeeeeeeeek",
+      ".kMNOTkkkkkkkkkkkkk.",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOTk.............",
+      ".kMNOUk.............",
+      "kkMNOkk.............",
+      "YYYYYYzk............",
+      "YZZZZZzk............",
+      "zzzzzzzk............",
+      "YYYYYYzk............",
+      "zzzzzzzk............"
+     ],
+     "pal": {
+      "M": "#eef2f6",
+      "N": "#b8c2cc",
+      "O": "#808a98",
+      "Q": "#565e6c",
+      "G": "#e0b040",
+      "H": "#f6dc7a",
+      "F": "#5a8ad8",
+      "f": "#8ab4f0",
+      "e": "#3a64a8",
+      "W": "#fbf7ec",
+      "R": "#e2625a",
+      "S": "#f4a090",
+      "T": "#e8dcc0",
+      "U": "#a8946a",
+      "Y": "#d6d2c8",
+      "Z": "#a8a49a",
+      "z": "#6e6a64",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "깃발 앞에 떠서 날갯짓으로 바람을 일으켜 교기를 펄럭여요",
+       "x": {
+        "at": [
+         0.6,
+         0.3
+        ],
+        "m": "flap"
+       },
+       "l": [
+        "깃발 앞에서 힘껏 날갯짓해 교기를 펄럭펄럭 휘날렸다.",
+        "날갯짓 바람으로 깃발을 흔들고 뿌듯하게 내려왔다."
+       ]
+      },
+      {
+       "w": "비행 타입",
+       "a": "서 있던 자리에서 날아올라 깃대 꼭대기 금빛 꼭지에 앉아요",
+       "x": {
+        "at": [
+         0.18,
+         0.06
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "깃대 꼭대기에 날아올라 앉아 운동장 전체를 내려다봤다.",
+        "깃대 꼭지에 앉아 바람 방향을 살폈다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 벌레 타입",
+       "a": "깃대를 붙잡고 위로 쭉쭉 올라가요",
+       "x": {
+        "at": [
+         0.18,
+         0.9
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "깃대를 붙잡고 영차영차 꼭대기까지 올라갔다.",
+        "깃대를 반쯤 오르다 미끄러져 내려와 다시 도전했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "깃대 아래 서서 펄럭이는 깃발을 올려다봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "깃대 아래 서서 펄럭이는 교기를 올려다봤다.",
+        "깃발 그림자를 따라 빙글빙글 돌며 놀았다."
+       ]
+      }
+     ],
+     "fit": "운동장 가운데, 넓은 빈터"
+    },
+    {
+     "id": "sch-shoe-locker",
+     "n": "신발장",
+     "k": "학교",
+     "d": "현관에 놓인 열두 칸짜리 나무 신발장이에요. 칸마다 알록달록한 실내화가 한 켤레씩 들어 있고, 딱 한 칸만 비어 있어요.",
+     "px": [
+      "AAAAAAAAAAAAAAAAAAAAAAAA",
+      "kAAAAABAAAABAAAABAAAABDk",
+      "kAeeeeBeeeeBeeeeBeeeeBDk",
+      "kAEEEEBEEEEBEEEEBEEEEBDk",
+      "kAREEPDYEEPDPEERDWEEYBDk",
+      "kARRPPBYYPPBPPRRBWWYYBDk",
+      "kAssssBssssBssssBssssBDk",
+      "kABBBBBBBBBBBBBBBBBBBBDk",
+      "kAeeeeBeeeeBeeeeBeeeeBDk",
+      "kAEEEEBEEEEBEEEEBEEEEBDk",
+      "kAPEEYBREEWBEEEEBWEEPBDk",
+      "kAPPYYBRRWWBEEEEBWWPPBDk",
+      "kAssssBssssBEEEEBssssBDk",
+      "kABBBBBBBBBBBBBBBBBBBBDk",
+      "kAeeeeBeeeeBeeeeBeeeeBDk",
+      "kAEEEEDEEEEDEEEEDEEEEBDk",
+      "kAREEYBPEEWBYEEWBWEERBDk",
+      "kARRYYBPPWWBYYWWBWWRRBDk",
+      "kAssssBssssBssssBssssBDk",
+      "kDDDDDDDDDDDDDDDDDDDDDDk",
+      "kEEEEEEEEEEEEEEEEEEEEEEk",
+      ".kkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "e": "#3e2818",
+      "R": "#e2625a",
+      "P": "#7aa0d8",
+      "Y": "#f0c84a",
+      "W": "#f4f0e6",
+      "s": "#2c1c12",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "비어 있는 칸에 쏙 들어가 고개만 내밀어요",
+       "x": {
+        "at": [
+         0.6,
+         0.6
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "신발장 빈 칸에 쏙 들어가 고개만 빼꼼 내밀었다.",
+        "신발장 칸에 숨어 있다가 짠 하고 튀어나왔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "신발장 앞에 서서 알록달록한 실내화를 하나하나 구경해요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "신발장 앞에서 알록달록한 실내화를 하나하나 구경했다.",
+        "제 발에 맞는 실내화를 찾느라 한참 서성였다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "신발장 옆면에 기대 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "신발장 옆에 기대 앉아 꾸벅꾸벅 졸았다.",
+        "현관 신발장에 기대 친구를 기다렸다."
+       ]
+      },
+      {
+       "w": "작은 나는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 신발장 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "신발장 위에 날아올라 앉아 현관을 내려다봤다.",
+        "신발장 꼭대기에서 오가는 친구들에게 인사했다."
+       ]
+      }
+     ],
+     "fit": "학교 현관, 교실 건물 앞"
+    },
+    {
+     "id": "sch-lunch-cart",
+     "n": "급식 손수레",
+     "k": "학교",
+     "d": "점심시간이면 복도를 달려오는 은빛 급식 손수레예요. 큰 국솥과 하얀 밥통, 알록달록한 식판이 실려 있어요.",
+     "px": [
+      "...kMMMQMMMk................",
+      "..kNNNNNNNNNk..kkkkkk.......",
+      ".kOOOOOOOOOOOkkWwWWWWk......",
+      "..kMNNNNNNNOkkWWWWWwWWk.kk..",
+      "..kMMMNNNNNOkkMNNNNNNOkkRRk.",
+      ".kQMNNNNNNNOQkMNNNNNNOkPPPPk",
+      "..kMNNNNNNNOkkMNNNNNNOkYYYYk",
+      "..kMNNNNNNNOkkMNNNNNNOkyyyyk",
+      "..kMNNNNNNNOkkMNNNNNNOkYYYNN",
+      ".kkOOOOOOOOOkkOOOOOOOOkyyyyO",
+      "kMMMMMMMMMMMMMMMMMMMMMMMMMOO",
+      "kQQQQQQQQQQQQQQQQQQQQQQQQQQO",
+      ".kNNNNNNNNNNNNNNNNNNNNNNNQkO",
+      ".kNOrrrrrrrrrrrrrrrrrrrqOQkk",
+      ".kNOrSSSSSSSSSSSSSSSSSSqOQk.",
+      ".kNOrRRRRRRRRRRRRRRRRRRqOQk.",
+      ".kNOqqqqqqqqqqqqqqqqqqqqOQk.",
+      "kQQQQQQQQQQQQQQQQQQQQQQQQQQk",
+      ".kkkOQQkkkkkkkkkkkkkkkOQQkk.",
+      "...kQNQk.............kQNQk..",
+      "...kQQQk.............kQQQk..",
+      "....kkk...............kkk..."
+     ],
+     "pal": {
+      "M": "#eef2f6",
+      "N": "#b8c2cc",
+      "O": "#808a98",
+      "Q": "#565e6c",
+      "W": "#fbf7ec",
+      "w": "#e2dccc",
+      "Y": "#f0c84a",
+      "y": "#c49a30",
+      "P": "#7aa0d8",
+      "R": "#e2625a",
+      "r": "#f08a7a",
+      "q": "#a83c38",
+      "S": "#f4a090",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "손수레 앞에 줄을 서서 밥을 받아 맛있게 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "급식 손수레 앞에서 밥을 받아 냠냠 먹었다.",
+        "국을 한 그릇 더 받아 싹싹 비웠다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "국솥 옆에서 불꽃 기술로 식은 국을 다시 데워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "불꽃으로 식은 국을 다시 보글보글 데웠다.",
+        "국을 너무 데워서 솥뚜껑이 달그락거렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "손수레 위로 올라가 밥통 안을 빼꼼 들여다봐요",
+       "x": {
+        "at": "top",
+        "m": "climb peek"
+       },
+       "l": [
+        "손수레 위에 올라가 밥통 안을 빼꼼 들여다봤다.",
+        "밥통 옆에 올라가 밥알 하나를 몰래 집어 먹었다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "손잡이를 잡고 손수레를 밀어 줘요",
+       "x": {
+        "at": [
+         0.95,
+         0.6
+        ],
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "급식 손수레 손잡이를 잡고 영차 밀어 줬다.",
+        "손수레를 밀고 복도를 씽 달렸다."
+       ]
+      }
+     ],
+     "fit": "교실 건물 앞이나 식당 자리"
+    },
+    {
+     "id": "sch-iron-bars",
+     "n": "높낮이 철봉",
+     "k": "학교",
+     "d": "낮은 칸부터 높은 칸까지 키 순서대로 세 칸이 이어진 운동장 철봉이에요. 기둥 꼭대기는 빨간 모자, 아래는 파란 페인트를 칠했어요.",
+     "px": [
+      "..................kkk......kkk",
+      ".................kSRqk....kSRq",
+      ".................kMNOkkkkkkMNO",
+      ".................kMNOMMMMMMMNO",
+      ".........kkk.....kMNOOOOOOOMNO",
+      "........kSRqk....kMNOkkkkkkMNO",
+      "........kMNOkkkkkkMNOk....kMNO",
+      "........kMNOMMMMMMMNOk....kMNO",
+      "........kMNOOOOOOOMNOk....kMNO",
+      "........kMNOkkkkkkMNOk....kMNO",
+      "kkk.....kMNOk....kMNOk....kMNO",
+      "SRqk....kMNOk....kMNOk....kMNO",
+      "MNOkkkkkkMNOk....kMNOk....kMNO",
+      "MNOMMMMMMMNOk....kMNOk....kMNO",
+      "MNOOOOOOOMNOk....kMNOk....kMNO",
+      "MNOkkkkkkMNOk....kMNOk....kMNO",
+      "MNOk....kMNOk....kMNOk....kMNO",
+      "MNOk....kMNOk....kMNOk....kMNO",
+      "MNOk....kMNOk....kMNOk....kMNO",
+      "MNOk....kMNOk....kMNOk....kMNO",
+      "MNOk....kMNOk....kMNOk....kMNO",
+      "pPQk....kpPQk....kpPQk....kpPQ",
+      "PPQk....kPPQk....kPPQk....kPPQ",
+      "PPQk....kPPQk....kPPQk....kPPQ"
+     ],
+     "pal": {
+      "M": "#eef2f6",
+      "N": "#b8c2cc",
+      "O": "#808a98",
+      "Q": "#565e6c",
+      "R": "#e2625a",
+      "S": "#f4a090",
+      "q": "#a83c38",
+      "P": "#5a8ad8",
+      "p": "#8ab4f0",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "가운데 철봉에 매달려 턱걸이하듯 오르내려요",
+       "x": {
+        "at": [
+         0.5,
+         0.3
+        ],
+        "m": "bob"
+       },
+       "l": [
+        "철봉에 매달려 턱걸이를 열 번이나 했다.",
+        "철봉에 매달려 오르내리다 손이 미끄러져 쿵 떨어졌다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 가장 높은 철봉에 앉아요",
+       "x": {
+        "at": [
+         0.82,
+         0.12
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "제일 높은 철봉에 날아올라 앉아 깃털을 골랐다.",
+        "높은 철봉 위에서 운동장을 내려다보며 쉬었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "낮은 철봉 위에 올라가 양팔을 벌리고 균형을 잡아요",
+       "x": {
+        "at": [
+         0.18,
+         0.5
+        ],
+        "m": "climb wobble"
+       },
+       "l": [
+        "낮은 철봉 위에 올라가 비틀비틀 균형을 잡았다.",
+        "철봉 위에서 균형을 잡다 폴짝 뛰어내렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "낮은 철봉 기둥에 기대 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "낮은 철봉 기둥에 기대 앉아 꾸벅꾸벅 졸았다.",
+        "철봉 그늘에 기대 땀을 식혔다."
+       ]
+      }
+     ],
+     "fit": "운동장 가장자리, 모래밭 옆"
+    },
+    {
+     "id": "sch-pet-hutch",
+     "n": "토끼 사육장",
+     "k": "학교",
+     "d": "빨간 지붕을 얹은 나무 사육장이에요. 철망 창 안에 폭신한 건초와 당근이 있고, 옆 작은 문엔 하트 이름표가 붙어 있어요.",
+     "px": [
+      "...kSSSSSSSSSSSSSSSSSSk...",
+      "..kSRrRRRrRRRrRRRrRRRrRk..",
+      ".kSRRrRRRrRRRrRRRrRRRrRRk.",
+      "kRRRRrRRRrRRRrRRRrRRRrRRRk",
+      "qqqqqqqqqqqqqqqqqqqqqqqqqq",
+      "kDDDDDDDDDDDDDDDDDDDDDDDDk",
+      "kABBBBBBBBBBBBBBBBBPpPBBDk",
+      "kABHHHHHHHHHHHHHBAAAAADBDk",
+      "kABHeNeeNeeNeeNHBABDBBDBDk",
+      "kABHNNNNNNNNNNNHBABDBBDBDk",
+      "kABHeNccNeeNeeNHBABDBBDBDk",
+      "kABHeNcCCCxNeeNHBAGDBBDBDk",
+      "kABHNNNNCCCNNNNHBABDBBDBDk",
+      "kABHYNyYNYYNYYNHBABDBBDBDk",
+      "kABHYNYYNYYNYYNHBABDBBDBDk",
+      "kABHHHHHHHHHHHHHBABDBBDBDk",
+      "kABBBBBBBBBBBBBBBEEEEEEBDk",
+      "kABBBBBBBBBBBBBBBBBBBBBBDk",
+      "kEEEEEEEEEEEEEEEEEEEEEEEEk",
+      ".kBDkkkkkkkkkkkkkkkkkkBDk.",
+      ".kDDk................kDDk.",
+      ".kDDk................kDDk."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "R": "#d85a4a",
+      "S": "#f08a6a",
+      "r": "#b0443c",
+      "q": "#8c3430",
+      "H": "#6e6a64",
+      "e": "#4a3424",
+      "Y": "#e8cc6a",
+      "y": "#b8963e",
+      "C": "#f08a3a",
+      "x": "#c0602a",
+      "c": "#8cc860",
+      "N": "#b8c2cc",
+      "G": "#e0b040",
+      "P": "#f4a6b8",
+      "p": "#d87494",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "작은 문으로 사육장 안에 들어가 건초 위에 앉아요",
+       "x": {
+        "at": "in",
+        "m": "hide peek"
+       },
+       "l": [
+        "사육장에 들어가 폭신한 건초 위에 동그랗게 앉았다.",
+        "사육장 철망 사이로 빼꼼 고개를 내밀었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "철망 창 앞에 서서 안에 든 당근을 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "사육장 당근을 아삭아삭 맛있게 먹었다.",
+        "철망 너머 당근을 먹고 입맛을 다셨다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "사육장 옆에서 기술을 써 건초를 새로 채워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "기술로 싱싱한 풀을 자라게 해 사육장 건초를 채웠다.",
+        "사육장 친구들 먹으라고 풀을 듬뿍 키워 줬다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "사육장 빨간 지붕 위에 날아올라 앉았다.",
+        "사육장 지붕 위에서 햇볕을 쬐며 졸았다."
+       ]
+      }
+     ],
+     "fit": "학교 뒤뜰, 꽃밭 옆"
+    },
+    {
+     "id": "sch-abacus",
+     "n": "큰 주판",
+     "k": "학교",
+     "d": "수학 시간에 쓰는 커다란 나무 주판이에요. 네 줄 쇠막대에 빨강·노랑·파랑·초록 구슬이 끼워져 있어 손으로 밀면 또르륵 굴러가요.",
+     "px": [
+      "kAAAAAAAAAAAAAAAAAAAAAAAAk",
+      "kABDBBBBBBBBBBBBBBBBBBABDk",
+      "kABDEEEEEEEEEEEEEEEEEEABDk",
+      "kABDrRkrRkrRkkkkkkkkkkABDk",
+      "kABDRRORRORROOOOOOOOOOABDk",
+      "kADDRqkRqkRqkkkkkkkkkkABDk",
+      "kABDkkkkkkyYkyYkkkkkkkABDk",
+      "kABDOOOOOOYYOYYOOOOOOOADDk",
+      "kABDkkkkkkYykYykkkkkkkABDk",
+      "kABDkkkpPkpPkpPkkkkkkkABDk",
+      "kADDOOOPPOPPOPPOOOOOOOABDk",
+      "kABDkkkPukPukPukkkkkkkABDk",
+      "kABDkkkkkkkkkgGkgGkkkkADDk",
+      "kABDOOOOOOOOOGGOGGOOOOABDk",
+      "kABDkkkkkkkkkGgkGgkkkkABDk",
+      "kABDAAAAAAAAAAAAAAAAAAABDk",
+      "kABDBBBBBBBBBBBBBBBBBBABDk",
+      "kEEEEEEEEEEEEEEEEEEEEEEEEk",
+      ".kkBDkkkkkkkkkkkkkkkkBDkk.",
+      "..kDDk..............kDDk..",
+      "..kDDk..............kDDk..",
+      ".kEEEEk............kEEEEk."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "O": "#808a98",
+      "R": "#e2625a",
+      "r": "#f4a090",
+      "q": "#a83c38",
+      "Y": "#f0c84a",
+      "y": "#c49a30",
+      "P": "#5a8ad8",
+      "p": "#8ab4f0",
+      "u": "#3a64a8",
+      "G": "#6cb86a",
+      "g": "#3e8048",
+      "W": "#f4f0e6",
+      "w": "#ffffff",
+      "v": "#b8b2a6",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "주판 앞에 서서 구슬을 톡톡 밀어 또르륵 굴려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "주판 구슬을 톡톡 밀어 또르륵 굴렸다.",
+        "주판알을 굴려 하나, 둘, 셋 셈을 했다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "주판 옆에서 기술을 써 구슬을 저절로 움직여 셈을 해요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "염력으로 주판알을 척척 움직여 셈을 끝냈다.",
+        "주판알을 둥둥 띄웠다가 줄이 엉켜 머리를 긁적였다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "주판 틀 위에 올라가 비틀비틀 균형을 잡아요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "주판 틀 위에 올라가 비틀비틀 균형을 잡았다.",
+        "주판 꼭대기를 살금살금 끝에서 끝까지 건넜다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "주판 다리에 기대 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "주판 다리에 기대 앉아 셈하다 잠이 들었다.",
+        "주판에 기대 숫자를 세다 꾸벅꾸벅 졸았다."
+       ]
+      }
+     ],
+     "fit": "칠판 옆이나 책상 줄 앞"
+    },
+    {
+     "id": "sch-school-bus",
+     "n": "꼬마 스쿨버스",
+     "k": "학교",
+     "d": "아침마다 포켓몬들을 태우러 오는 샛노란 스쿨버스예요. 창문 다섯 개와 접이 문, 까만 띠를 두르고 둥근 바퀴 두 개로 서 있어요.",
+     "px": [
+      "...kkkkkkkkkkkkkkkkkkkkkkkkkkkkk....",
+      "..kLLLLLLEEEEEEEEEEELLLLLLLLLLLLk...",
+      ".kYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYk..",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLk.",
+      "kLYggggYggggYggggYggggYggggYGHHGYyk.",
+      "kLYwwGGYwGGGYwwGGYwGGGYwwGGYwHHGYyk.",
+      "kLYGGGGYwGGGYGGGGYwGGGYGGGGYGHHGYyk.",
+      "kLYGGGGYGGGGYGGGGYGGGGYGGGGYGHHGYyk.",
+      "kLYYYYYYYYYYYYYYYYYYYYYYYYYYGHHGYLyk",
+      "kLYYYYYYYYYYYYYYYYYYYYYYYYYYHHHHYYyk",
+      "kLEEEEEEEEEEEEEEEEEEEEEEEEEEGHHGYYWk",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLLLLGHHGYYWk",
+      "RLEEEEEEEEEEEEEEEEEEEEEEEEEEGHHGYYyk",
+      "RLYYYYYYYYYYYYYYYYYYYYYYYYYYGHHGYYyk",
+      "kLYYYYYYYYYYYYYYYYYYYYYYYYYYGHHGYYyk",
+      "NNNNyyyQyyyyyyyyyyyyyyyyyyQyyyyNNNNN",
+      "OyyyQQOQQQQQQQQQQQQQQQQQQOQQQQyyyyOO",
+      "kkkkkQNNNQkkkkkkkkkkkkkkQNNNQkkkkkkk",
+      "....kQNNNQk............kQNNNQk......",
+      "....kQQQQQk............kQQQQQk......",
+      ".....kkQkk..............kkQkk.......",
+      ".......k..................k........."
+     ],
+     "pal": {
+      "M": "#eef2f6",
+      "N": "#b8c2cc",
+      "O": "#808a98",
+      "Q": "#565e6c",
+      "Y": "#f2c040",
+      "L": "#fadc78",
+      "y": "#c08e26",
+      "E": "#3a3440",
+      "G": "#8cc4e8",
+      "g": "#5a8eb8",
+      "H": "#4a6c90",
+      "w": "#e8f6ff",
+      "W": "#fff6c8",
+      "R": "#e2625a",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "버스에 올라타 창문으로 얼굴을 내밀고 밖을 내다봐요",
+       "x": {
+        "at": [
+         0.3,
+         0.3
+        ],
+        "m": "win"
+       },
+       "l": [
+        "스쿨버스 창문으로 얼굴을 내밀고 바깥을 구경했다.",
+        "버스 창가에 앉아 친구들에게 손을 흔들었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "버스 앞에 서서 문이 열리길 기다려요",
+       "x": {
+        "at": [
+         0.82,
+         0.95
+        ]
+       },
+       "l": [
+        "스쿨버스 문 앞에서 차례를 기다렸다.",
+        "버스 문이 열리자 신이 나서 폴짝 뛰었다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 버스 지붕 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "스쿨버스 지붕 위에 날아올라 앉아 깃털을 골랐다.",
+        "버스 지붕에 앉아 등교하는 친구들을 내려다봤다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "버스 앞에서 전기를 흘려 전조등을 반짝 켜 줘요",
+       "x": {
+        "at": [
+         0.95,
+         0.8
+        ],
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "스쿨버스에 전기를 넣어 전조등을 반짝 켰다.",
+        "전기를 넣었더니 버스가 빵빵 경적을 울려 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "학교 입구, 길 옆 넓은 자리"
+    },
+    {
+     "id": "sch-bean-shelf",
+     "n": "강낭콩 관찰 선반",
+     "k": "학교",
+     "d": "자연 시간에 키우는 강낭콩 화분 세 개가 나무 선반에 나란히 놓여 있어요. 화분마다 싹 키가 달라서 누가 더 컸는지 비교해 봐요.",
+     "px": [
+      "..........kkkGGk.....kk...",
+      ".....kk..kLLGkgk..kkkGGk..",
+      "..kkkGGk..kGGkk..kLLGkgk..",
+      ".kLLGkgWk..kGk.k..kGGkkWk.",
+      "..kGGkkBk..kGkkWk..kGkkBk.",
+      "..kkGkkBk.kkGkkBk.kkGkkBk.",
+      ".kTttttTkkTttttTkkTttttTk.",
+      ".krrrrrqkkpppppukkvvvvvyk.",
+      ".krRRRRqkkpPPPPukkvYYYYyk.",
+      ".kRRRRRqkkPPPPPukkYYYYYyk.",
+      "kkqqqqqqkkuuuuuukkyyyyyykk",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAD",
+      "EEEEEEEEEEEEEEEEEEEEEEEEEE",
+      "kkBDkkkkkkkkkkkkkkkkkkBDkk",
+      ".kDDkkkkkkkkkkkkkkkkkkDDk.",
+      ".kDDDDDDDDDDDDDDDDDDDDDDk.",
+      ".kDDkkkkkkkkkkkkkkkkkkDDk.",
+      ".kDDk................kDDk."
+     ],
+     "pal": {
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "R": "#e2625a",
+      "r": "#f4a090",
+      "q": "#a83c38",
+      "P": "#5a8ad8",
+      "p": "#8ab4f0",
+      "u": "#3a64a8",
+      "Y": "#f0c84a",
+      "v": "#fae28a",
+      "y": "#c49a30",
+      "T": "#6e4a30",
+      "t": "#8c6040",
+      "G": "#6cb86a",
+      "g": "#3e8048",
+      "L": "#a8dc7a",
+      "W": "#fbf7ec",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "풀 타입",
+       "a": "선반 옆에서 기술을 써 강낭콩 싹을 쑥쑥 키워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 강낭콩 싹을 쑥쑥 키웠다.",
+        "강낭콩을 너무 키워서 덩굴이 선반을 휘감았다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "선반 앞에서 물을 살짝 뿜어 화분에 물을 줘요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "강낭콩 화분에 물을 살살 뿌려 줬다.",
+        "물을 너무 세게 뿜어 화분 흙이 튀었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "선반 앞에 서서 어느 싹이 제일 컸는지 비교해 봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "강낭콩 싹을 하나하나 비교하며 키를 재 봤다.",
+        "제일 큰 강낭콩 싹을 보고 눈을 반짝였다."
+       ]
+      },
+      {
+       "w": "작은 벌레 타입",
+       "a": "선반 위로 올라가 강낭콩 잎 위에 앉아 쉬어요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "선반에 올라가 강낭콩 잎 위에서 쉬었다.",
+        "강낭콩 잎을 몰래 한 입 갉아 먹었다."
+       ]
+      }
+     ],
+     "fit": "교실 창가나 사육장 옆"
+    }
+   ]
+  },
+  {
    "at": 1794955662226,
    "theme": "숲속 꼬마 포켓몬 병원",
    "note": "어제 목장에 이어 오늘은 풀밭 한쪽에 아담한 포켓몬 병원을 차렸어요! 빛나는 간판과 경광등 손수레로 입구를 꾸미고, 회복 머신·들것·키 재기 판·체중계·열매 약장으로 진료실을 채웠어요. 간판·회복 머신·경광등은 밤에도 은은하게 빛나 병원 자리를 알려 줘요.",

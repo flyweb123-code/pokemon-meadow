@@ -755,6 +755,206 @@
   /* 경완 2026-11-19 '본가 테라스탈 연출 찾아보고 메진 거다이 수준으로 연출 만들어줘봐 포켓몬 위에 오버레이 되는 타입 크리스탈 연출까지'
      본가 흐름: 트레이너가 테라스탈오브에 힘을 모음 → 머리 위로 던짐 → 오브가 포켓몬 위에서 터지며 결정이 포켓몬을 감쌈 → 결정이 깨지며
      보석처럼 빛나는 몸 + 머리 위 타입 모양 테라 보석 관(테라스탈 왕관)으로 나옴. 소리·흔들림·진동은 메가진화·거다이맥스와 같은 틀 */
+  const TCR = {   /* 타입별 테라 보석 관 모양: [가운데 x, 폭, 높이, 기울기(도)] (100×80 칸, 바닥 y=72) */
+    Normal: [[50, 18, 46, 0], [32, 14, 30, -16], [68, 14, 30, 16]], Fire: [[50, 16, 60, 0], [33, 14, 42, -22], [67, 14, 42, 22], [22, 10, 24, -40], [78, 10, 24, 40]],
+    Water: [[50, 14, 56, 0], [36, 12, 40, -34], [64, 12, 40, 34], [24, 10, 26, -62], [76, 10, 26, 62]], Grass: [[50, 22, 46, 0], [30, 22, 36, -38], [70, 22, 36, 38]],
+    Electric: [[50, 16, 58, 14], [36, 12, 34, -20], [64, 12, 34, 30]], Ice: [[50, 10, 62, 0], [40, 9, 48, -8], [60, 9, 48, 8], [30, 8, 36, -18], [70, 8, 36, 18], [21, 7, 24, -30], [79, 7, 24, 30]],
+    Fighting: [[40, 22, 38, -8], [60, 22, 38, 8]], Poison: [[50, 16, 50, 0], [34, 13, 32, -24], [66, 13, 32, 24]], Ground: [[50, 30, 30, 0], [28, 22, 22, -12], [72, 22, 22, 12]],
+    Flying: [[34, 22, 40, -52], [66, 22, 40, 52], [50, 12, 36, 0]], Psychic: [[50, 12, 58, 0], [36, 10, 40, -14], [64, 10, 40, 14]], Bug: [[40, 8, 54, -22], [60, 8, 54, 22], [50, 16, 28, 0]],
+    Rock: [[50, 28, 40, 0], [30, 22, 30, -18], [70, 22, 30, 18]], Ghost: [[50, 14, 54, -8], [34, 12, 38, -26], [66, 12, 38, 18]], Dragon: [[36, 12, 58, -24], [64, 12, 58, 24], [50, 14, 30, 0]],
+    Dark: [[50, 12, 58, 0], [36, 10, 46, -18], [64, 10, 46, 18]], Steel: [[50, 14, 46, 0], [34, 14, 40, 0], [66, 14, 40, 0], [20, 12, 30, 0], [80, 12, 30, 0]], Fairy: [[50, 18, 46, 0], [32, 18, 38, -40], [68, 18, 38, 40], [24, 14, 22, -72], [76, 14, 22, 72]],
+    Stellar: [[50, 14, 58, 0], [34, 12, 42, -24], [66, 12, 42, 24], [22, 10, 28, -48], [78, 10, 28, 48]] };
+  const STL = [[255, 120, 140], [255, 200, 100], [250, 250, 130], [120, 240, 150], [110, 200, 255], [190, 140, 255]];
+  /* 결정 하나 (아래가 넓고 위가 뾰족한 여섯모 기둥, 왼쪽 면 밝게·오른쪽 면 짙게·흰 테두리) */
+  /* 경완 2026-11-19 '크리스탈 그래픽들 좀 짜치는데, 본가 그래픽 참고해서 비슷하게 퀄리티 높여서': 본가 테라 결정처럼 진한 타입 색 보석 — 면마다 그라데이션(밝은 윗면·짙은 아랫면), 가운데 능선, 흰 반사 줄, 끝 반짝 */
+  const TJ = { Normal: ['#ffffff', '#dcdee6', '#9396a6'], Fire: ['#fff3b0', '#ff7a2a', '#c41e16'], Water: ['#dcf5ff', '#3fa0ff', '#1640c4'], Grass: ['#eaffb4', '#58d046', '#147a28'], Electric: ['#fffcc4', '#ffd21e', '#d48400'], Ice: ['#f2ffff', '#8ee8f4', '#35a2d6'],
+    Fighting: ['#ffd4ac', '#e8602a', '#962810'], Poison: ['#f6ccff', '#b44ee0', '#661896'], Ground: ['#fff2bc', '#e0b050', '#946420'], Flying: ['#f0f2ff', '#9ab0ff', '#5064e0'], Psychic: ['#ffd8ee', '#ff5aa8', '#bc1868'], Bug: ['#f6ffb4', '#a8d21e', '#5a8610'],
+    Rock: ['#fff6d4', '#c8a860', '#7c5c2c'], Ghost: ['#e6dcff', '#7a5ad8', '#36228c'], Dragon: ['#dcd4ff', '#6a50ff', '#2616ac'], Dark: ['#dcd4dc', '#6a5a6a', '#261c2c'], Steel: ['#ffffff', '#b8c8d8', '#66788c'], Fairy: ['#ffeaf6', '#ff9ad0', '#d44c88'] };
+  const STJ = [['#ffe0e6', '#ff6a8a', '#c8204a'], ['#fff2c8', '#ffb43c', '#c86a00'], ['#fffcd0', '#f4e43c', '#a89400'], ['#e0ffe8', '#4ee08a', '#108a48'], ['#e0f4ff', '#44b4ff', '#1458c8'], ['#ece0ff', '#a070ff', '#5a24c8']];
+  const tjOf = (t, i = 0) => t === 'Stellar' ? STJ[i % 6] : TJ[t] || TJ.Normal;
+  let UID = 0;
+  function shardP(x, w, h, rot, C, by = 72, op = 1) { const u = 'tq' + (++UID), l = x - w / 2, r = x + w / 2, ml = x - w * .16, mr = x + w * .16, s = h * .3, tp = by - h, [hi, md, dk] = C;
+    return `<defs><linearGradient id="${u}l" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${hi}"/><stop offset=".45" stop-color="${md}"/><stop offset="1" stop-color="${dk}"/></linearGradient><linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="${hi}"/><stop offset="1" stop-color="${md}"/></linearGradient><linearGradient id="${u}r" x1="1" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="${md}"/><stop offset="1" stop-color="${dk}"/></linearGradient></defs>`
+      + `<g transform="rotate(${rot} ${x} ${by})" opacity="${op}"><polygon points="${l},${by} ${ml},${by + 2.5} ${x},${tp} ${l},${tp + s}" fill="url(#${u}l)"/><polygon points="${ml},${by + 2.5} ${mr},${by + 2.5} ${x},${tp}" fill="url(#${u}c)"/><polygon points="${mr},${by + 2.5} ${r},${by} ${r},${tp + s} ${x},${tp}" fill="url(#${u}r)"/>`
+      + `<polygon points="${l + w * .12},${tp + s * 1.15} ${l + w * .26},${tp + s * .75} ${l + w * .26},${by - h * .2} ${l + w * .12},${by - h * .12}" fill="rgba(255,255,255,.7)"/><polygon points="${x},${tp} ${x - w * .1},${tp + s * .55} ${x},${tp + s * .4} ${x + w * .1},${tp + s * .55}" fill="rgba(255,255,255,.9)"/>`
+      + `<polygon points="${l},${by} ${ml},${by + 2.5} ${mr},${by + 2.5} ${r},${by} ${r},${tp + s} ${x},${tp} ${l},${tp + s}" fill="none" stroke="rgba(255,255,255,.92)" stroke-width="1.1" stroke-linejoin="round"/><polyline points="${ml},${by + 2.5} ${x},${tp} ${mr},${by + 2.5}" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".7"/></g>`; }
+  function teraCrown(t) { const L = TCR[t] || TCR.Normal, [hi, md, dk] = tjOf(t), u = 'tc' + (++UID);
+    const sh = L.slice().sort((a, b) => a[2] - b[2]).map((s, i) => shardP(s[0], s[1], s[2], s[3], tjOf(t, i * 2))).join('');
+    const band = `<defs><linearGradient id="${u}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${hi}"/><stop offset=".5" stop-color="${md}"/><stop offset="1" stop-color="${dk}"/></linearGradient><radialGradient id="${u}g" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="${hi}"/><stop offset=".75" stop-color="${md}"/><stop offset="1" stop-color="${dk}"/></radialGradient><radialGradient id="${u}h" cx=".5" cy=".6" r=".5"><stop offset="0" stop-color="${md}" stop-opacity=".55"/><stop offset="1" stop-color="${md}" stop-opacity="0"/></radialGradient></defs>`
+      + `<path d="M20,70 Q50,64 80,70 L74,79 Q50,74 26,79 Z" fill="url(#${u}b)" stroke="rgba(255,255,255,.95)" stroke-width="1.2" stroke-linejoin="round"/><path d="M24,72 Q50,67 76,72" fill="none" stroke="rgba(255,255,255,.6)" stroke-width=".8"/>`
+      + `<polygon points="50,60 57,64.5 57,73.5 50,78 43,73.5 43,64.5" fill="url(#${u}g)" stroke="#fff" stroke-width="1.2"/><polygon points="50,60 57,64.5 50,68 43,64.5" fill="rgba(255,255,255,.55)"/>`
+      + `<polygon points="31,70 35,67.5 39,70 35,75" fill="url(#${u}g)" stroke="#fff" stroke-width=".9"/><polygon points="61,70 65,67.5 69,70 65,75" fill="url(#${u}g)" stroke="#fff" stroke-width=".9"/>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 82"><ellipse cx="50" cy="52" rx="44" ry="32" fill="url(#${u}h)"/>${sh}${band}</svg>`; }
+  /* 경완 '테라스탈 결정 그래픽은 여전히 본가랑 너무 다른데 첨부한 이미지에 담긴 테라 크리스탈들 참고해서 pixellab으로 만들어도 돼': 관·조각·큰 결정 = PixelLab 도트(gym/img/dbk/Tera/px, 원본 assets_src/tera/pixellab). 조각·큰 결정은 무색 → 타입 색(tjOf)을 밝기대로 입힘 */
+  const TPX = 'gym/img/dbk/Tera/px/';
+  const crownUrl = t => `gym/img/dbk/Tera/cr/${String(t || 'Normal').toLowerCase()}.webp`;   /* v27.26 경완 '첨부 이미지 참고해서 너가 직접 … 결정 느낌과 반짝이는 느낌 고퀄로': 직접 그린 결정 관 (assets_src/tera/crown/gen.js) */
+  const TJC = {}, hx2 = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  function tjTint(f, t, i = 0) { const C = tjOf(t, i), k = f + '|' + C.join(); if (TJC[k]) return TJC[k];
+    return (TJC[k] = new Promise(ok => { const im = new Image(); im.onload = () => { try { const w = im.naturalWidth, h = im.naturalHeight, cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, w, h), D = d.data, [hi, md, dk] = C.map(hx2);
+      for (let p = 0; p < D.length; p += 4) { if (!D[p + 3]) continue; const v = (D[p] * .3 + D[p + 1] * .55 + D[p + 2] * .15) / 255, u = Math.max(0, Math.min(1, (v - .35) / .6)); let c; if (u < .5) { const q = u / .5; c = dk.map((x, j) => x + (md[j] - x) * q); } else { const q = (u - .5) / .5; c = md.map((x, j) => x + (hi[j] - x) * q); } if (v > .93) { const q = (v - .93) / .07; c = c.map(x => x + (255 - x) * q); } D[p] = c[0]; D[p + 1] = c[1]; D[p + 2] = c[2]; }
+      g.putImageData(d, 0, 0); ok(cv.toDataURL()); } catch (e) { ok(TPX + f); } }; im.onerror = () => ok(TPX + f); im.src = TPX + f; })); }
+  const tjPrep = async T => ({ sh: await Promise.all([1, 2, 3, 4, 5, 6].map(k => tjTint(`shard_${k}.png`, T, k - 1))), cl: await tjTint('cluster_1.png', T, 0) });
+  const tjBg = u => `background:url("${u}") center/contain no-repeat;image-rendering:pixelated;`;
+  /* 깨지는 결정 조각 (흩어지는 파편): 두 면 그라데이션 + 반사 */
+  const chip = (C, w, h) => { const u = 'tp' + (++UID), [hi, md, dk] = C; return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="100%" height="100%" style="overflow:visible"><defs><linearGradient id="${u}a" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="${hi}"/><stop offset="1" stop-color="${md}"/></linearGradient><linearGradient id="${u}b" x1="1" y1="0" x2=".5" y2="1"><stop offset="0" stop-color="${md}"/><stop offset="1" stop-color="${dk}"/></linearGradient></defs><polygon points="0,${h * .7} ${w * .45},0 ${w * .5},${h * .55}" fill="url(#${u}a)"/><polygon points="0,${h * .7} ${w * .5},${h * .55} ${w * .7},${h}" fill="${md}"/><polygon points="${w * .45},0 ${w},${h * .35} ${w * .7},${h} ${w * .5},${h * .55}" fill="url(#${u}b)"/><polygon points="${w * .18},${h * .5} ${w * .4},${h * .12} ${w * .43},${h * .3}" fill="rgba(255,255,255,.75)"/><polygon points="0,${h * .7} ${w * .45},0 ${w},${h * .35} ${w * .7},${h}" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="${Math.max(.8, w * .045)}" stroke-linejoin="round"/></svg>`; };
+  /* 포켓몬 전체를 감싸는 큰 결정 (가운데 기둥 + 둘레 기둥들) */
+  function bigGem(t, w, h) { const P = [[50, 30, 96, 0], [30, 24, 74, -14], [70, 24, 74, 14], [16, 18, 50, -30], [84, 18, 50, 30], [40, 16, 56, -4], [60, 16, 56, 4]];
+    const g = P.slice().sort((a, b) => a[2] - b[2]).map((s, i) => shardP(s[0], s[1], s[2], s[3], tjOf(t, i), 99)).join('');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 102" width="${w}" height="${h}" preserveAspectRatio="none" style="overflow:visible">${g}</svg>`; }
+  const HDX = {};   /* 그림 맨 위(머리) 가운데 x (0~1) */
+  async function headX(u) { if (u in HDX) return HDX[u]; let v = .5; try { const im = new Image(); im.crossOrigin = 'anonymous'; im.src = u; await im.decode(); const w = im.naturalWidth, h = im.naturalHeight, cv = document.createElement('canvas'); cv.width = w; cv.height = h; const x = cv.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, w, h).data, A = (i, y) => d[(y * w + i) * 4 + 3] > 40;
+    let y0 = -1, y1 = -1; for (let y = 0; y < h && y0 < 0; y++) for (let i = 0; i < w; i++) if (A(i, y)) { y0 = y; break; } for (let y = h - 1; y >= 0 && y1 < 0; y--) for (let i = 0; i < w; i++) if (A(i, y)) { y1 = y; break; }
+    if (y0 >= 0) { const band = y0 + Math.max(3, Math.round((y1 - y0) * .18)); let sx = 0, n = 0; for (let y = y0; y <= band; y++) for (let i = 0; i < w; i++) if (A(i, y)) { sx += i; n++; } if (n) v = sx / n / w; } } catch (e) {} return (HDX[u] = v); }
+
+  async function teraFull(c) {
+    const P = c.path, T = c.type || 'Normal', [tO, tB] = tyCol(T), ST = T === 'Stellar', TL = rgba(mixC(tO, [255, 255, 255], .5), 1), TD = rgba(tB, 1);
+    await preload({ ...c, extra: [P + 'particle.png', P + 'burst.png', c.icon, c.pat].filter(Boolean) }); const TX = await tjPrep(T);
+    const bt = c.bt, top = c.top, R0 = bt.getBoundingClientRect(), Wd = bt.offsetWidth, Hd = bt.offsetHeight, q = R0.width / Wd || 1, rel = r => ({ left: (r.left - R0.left) / q, top: (r.top - R0.top) / q, width: r.width / q, height: r.height / q }), tR = rel(top.getBoundingClientRect()), mR = rel((c.monEl.querySelector('img') || c.monEl).getBoundingClientRect());
+    const k0 = tR.width / 256, mhU = mR.height / k0, zt = Math.max(k0 * 1.5, Math.min(k0 * 2.6, Hd * .25 / mhU)), mcx = (mR.left + mR.width / 2 - tR.left) / k0, mcy = (mR.top + mR.height * .5 - tR.top) / k0;
+    const tx = (mR.left + mR.width / 2) - mcx * zt, ty = Hd * .5 - mcy * zt - tR.top;   /* 메가진화와 같은 화면 키우기 */
+    const T0 = getComputedStyle(top).transform, tAnim = [], timers = [], A = (el, kf, o) => el.animate(kf, { fill: 'forwards', easing: 'ease-out', ...o });
+    const hide = [...bt.querySelectorAll('.bt-hb,.bt-pty,.bt-bot,.bt-mid,.bt-msg')];
+    const root = document.createElement('div'); root.className = 'dx-scene tff'; root.style.cssText = 'position:absolute;inset:0;z-index:80;overflow:hidden;pointer-events:auto;contain:strict;transform:scale(1.08)';
+    const mk = (css, tag = 'div') => { const e = document.createElement(tag); e.style.cssText = 'position:absolute;pointer-events:none;' + css; root.appendChild(e); return e; };
+    const mon = c.monEl.querySelector('img'), opp = c.opp, side = opp ? 1 : -1, PR = 'conic-gradient(from 0deg,#ff8ab0,#ffd88a,#fff8a0,#9cffc4,#8ad8ff,#b49cff,#ff8ae0,#ff8ab0)';
+    // 층: 어두운 바탕(타입 색이 비치는 보랏빛 어둠) · 프리즘 빛살 · 반짝이
+    const dim = mk(`inset:0;background:radial-gradient(circle at 50% 50%,${rgba(tB, .3)} 0 18%,rgba(10,6,30,.92) 62%,rgba(2,0,10,.98));opacity:0`);
+    const prism = mk(`left:50%;top:50%;width:${Math.hypot(Wd, Hd) * 1.4}px;height:${Math.hypot(Wd, Hd) * 1.4}px;margin:${-Math.hypot(Wd, Hd) * .7}px 0 0 ${-Math.hypot(Wd, Hd) * .7}px;border-radius:50%;background:${PR};-webkit-mask:repeating-conic-gradient(#000 0 5deg,transparent 5deg 15deg),radial-gradient(circle,transparent 8%,#000 20%,transparent 60%);-webkit-mask-composite:source-in;mask:repeating-conic-gradient(#000 0 5deg,transparent 5deg 15deg),radial-gradient(circle,transparent 8%,#000 20%,transparent 60%);mask-composite:intersect;mix-blend-mode:screen;opacity:0`);
+    const glow = mk(`left:50%;top:${Hd * .52}px;width:${Wd * .9}px;height:${Wd * .9}px;margin:${-Wd * .45}px 0 0 ${-Wd * .45}px;border-radius:50%;background:radial-gradient(circle,#fff 0 14%,${rgba(mixC(tO, [255, 255, 255], .4), .85)} 30%,${rgba(tB, .4)} 50%,${rgba(tB, 0)} 70%);opacity:0;transform:scale(.2)`);
+    // 가운데 원래 앞모습
+    const mw = c.mon.w / 2, mh = c.mon.h / 2, mz = Math.min(Hd * .34 / mh, Wd * .74 / mw), MW = mw * mz, MH = mh * mz, CYc = Hd * .52;
+    const OB = await opBox(c.mon.url), BX = Wd / 2 - MW * (opp ? (OB.x0 + OB.x1) / 2 : 1 - (OB.x0 + OB.x1) / 2), BY = CYc - MH * (OB.y0 + OB.y1) / 2;   /* 경완 '포켓몬이랑 결정 나올 때 가운데 정렬 맞춰줘': 그림 칸 말고 보이는 몸(투명 뺀 범위) 가운데를 화면 가운데에 — 결정·빛도 그 자리 */
+    const box = mk(`left:${BX}px;top:${BY}px;width:${MW}px;height:${MH}px;opacity:0`), im = document.createElement('img'); im.src = c.mon.url; im.alt = ''; im.style.cssText = `position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}`; box.appendChild(im);
+    const HX = await headX(c.mon.url), hx = (opp ? HX : 1 - HX) * MW + BX, hy = BY + MH * OB.y0;   /* 머리 위 자리 (그림 투명한 곳 뺌) */
+    const gx = BX + MW * (opp ? (OB.x0 + OB.x1) / 2 : 1 - (OB.x0 + OB.x1) / 2), gy = BY + MH * (OB.y0 + OB.y1) / 2, GW = MW * (OB.x1 - OB.x0), GH = MH * (OB.y1 - OB.y0);
+    // 테라스탈 뒤 몸: 결정 무늬(그림 모양 가면) + 빛이 쓸고 지나감
+    const pat = document.createElement('i'); pat.style.cssText = `position:absolute;inset:0;pointer-events:none;opacity:0;background:url(${c.pat}) 0 0/${MW * 1.2}px ${MW * 1.2}px repeat;mix-blend-mode:${ST ? 'screen' : 'normal'};-webkit-mask:url("${c.mon.url}") 0 0/100% 100%;mask:url("${c.mon.url}") 0 0/100% 100%;${opp ? '' : 'transform:scaleX(-1);'}`; box.appendChild(pat);
+    const swp = document.createElement('i'); swp.style.cssText = `position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.95) 45%,${rgba(mixC(tO, [255, 255, 255], .6), .6)} 52%,transparent 64%) -200% 0/250% 100% no-repeat;-webkit-mask:url("${c.mon.url}") 0 0/100% 100%;mask:url("${c.mon.url}") 0 0/100% 100%;${opp ? '' : 'transform:scaleX(-1);'}`; box.appendChild(swp);
+    const WH = `brightness(0) invert(1) drop-shadow(0 0 ${Wd * .02}px #fff) drop-shadow(0 0 ${Wd * .05}px ${TL})`, NORM = `brightness(1) invert(0) drop-shadow(0 0 ${Wd * .012}px rgba(255,255,255,.8)) drop-shadow(0 0 ${Wd * .035}px ${rgba(tO, .7)})`;
+    // 트레이너 컷인 띠 (무지갯빛)
+    const bandH = Hd * .3, band = mk(`left:-10%;right:-10%;top:${Hd * .66}px;height:${bandH}px;background:linear-gradient(${opp ? 'to left' : 'to right'},rgba(255,255,255,.95),rgba(200,240,255,.88) 35%,rgba(255,200,240,.55) 60%,rgba(140,120,255,0));transform:skewY(-8deg) translateX(${side * 110}%);opacity:0;box-shadow:0 0 30px rgba(160,220,255,.85)`);
+    const tw = c.tr.w / 2, th = c.tr.h / 2, tz = bandH * 1.25 / th, TW = tw * tz, TH = th * tz, trX = opp ? Wd - TW - Wd * .02 : Wd * .02, trY = Hd * .66 + bandH - TH;
+    const trn = mk(`left:${trX}px;top:${trY}px;width:${TW}px;height:${TH}px;background:url(${c.tr.url}) left center/${c.tr.w / 2 * tz}px ${TH}px no-repeat;image-rendering:pixelated;${opp ? '' : 'transform:scaleX(-1);'}opacity:0`);
+    const OS = Wd * .15, oX = opp ? trX + TW * .1 : trX + TW * .62, oY = trY + TH * .14;   /* 테라스탈오브: 트레이너 손 위 */
+    const orbH = mk(`left:${oX - OS * .9}px;top:${oY - OS * .9}px;width:${OS * 2.8}px;height:${OS * 2.8}px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.95) 0 12%,rgba(200,240,255,.6) 26%,rgba(255,170,240,.25) 45%,transparent 66%);opacity:0;mix-blend-mode:screen`);
+    const orbR = mk(`left:${oX - OS * .45}px;top:${oY - OS * .45}px;width:${OS * 1.9}px;height:${OS * 1.9}px;border-radius:50%;background:${PR};-webkit-mask:radial-gradient(circle,transparent 46%,#000 50%,#000 56%,transparent 60%);mask:radial-gradient(circle,transparent 46%,#000 50%,#000 56%,transparent 60%);opacity:0;filter:blur(1px)`);
+    const orb = mk(`left:${oX}px;top:${oY}px;width:${OS}px;height:${OS}px;background:url(${c.item?.url || P + 'it/TERAORB.png'}) center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 10px #bfe8ff);opacity:0`);
+    // 오브로 모이는 결정 빛 (작은 육각 반짝이)
+    const spk = Array.from({ length: 22 }, (_, i) => mk(`left:0;top:0;width:${Wd * .045}px;height:${Wd * .045}px;background:${['#fff', '#bfe8ff', '#ffd0f4', '#fff6b0', TL][i % 5]};clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);opacity:0;mix-blend-mode:screen;filter:drop-shadow(0 0 4px #fff)`));
+    // 결정 조각 (날아와 감싸고, 깨지며 흩어짐)
+    const NS = 16, shards = Array.from({ length: NS }, (_, i) => { const w = Wd * (.07 + (i % 4) * .025), h = w * (1.4 + (i % 3) * .3), e = mk(`left:0;top:0;width:${w}px;height:${h}px;opacity:0;filter:drop-shadow(0 0 4px rgba(255,255,255,.85))`); e.style.cssText += ';' + tjBg(TX.sh[i % 6]); return { e, w, h }; });
+    const gemW = Math.max(GW * 1.35, Wd * .34), gemH = Math.max(GH * 1.3, Hd * .2), gem = mk(`left:${gx - gemW / 2}px;top:${gy + GH * .62 - gemH}px;width:${gemW}px;height:${gemH}px;opacity:0;transform-origin:50% 100%;filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 16px ${TL})`); gem.style.cssText += ';' + tjBg(TX.cl).replace('center/contain', 'center bottom/contain');
+    // 금(깨지는 선)
+    const crk = mk(`left:${gx - gemW / 2}px;top:${gy + GH * .62 - gemH}px;width:${gemW}px;height:${gemH}px;opacity:0`, 'div'); { const L = [[50, 12, 44, 30, 54, 46, 40, 62, 50, 80], [44, 30, 28, 36, 18, 52], [54, 46, 72, 40, 84, 54], [40, 62, 26, 72], [50, 80, 64, 88], [54, 46, 60, 64, 74, 72]];
+      crk.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" style="overflow:visible">${L.map(p => `<polyline points="${p.join(' ')}" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" style="filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px ${TL})"/>`).join('')}</svg>`; }
+    const leak = mk(`left:${gx - Wd * .5}px;top:${gy - Wd * .5}px;width:${Wd}px;height:${Wd}px;border-radius:50%;background:repeating-conic-gradient(from 10deg,rgba(255,255,255,.75) 0 3deg,transparent 3deg 22deg);-webkit-mask:radial-gradient(circle,#000 12%,transparent 58%);mask:radial-gradient(circle,#000 12%,transparent 58%);opacity:0;mix-blend-mode:screen`);
+    // 테라 보석 관 + 테라 마크
+    const CRW = Math.max(Wd * .3, Math.min(Wd * .52, GW * .95)), CRH = CRW * .84, crown = mk(`left:${hx - CRW / 2}px;top:${hy - CRH * .86}px;width:${CRW}px;height:${CRH}px;background:url("${crownUrl(T)}") center bottom/contain no-repeat;opacity:0;transform-origin:50% 90%`);
+    const ttl = mk(`left:0;right:0;top:${Math.min(Hd * .86, BY + MH * OB.y1 + Hd * .06)}px;display:flex;justify-content:center;align-items:center;gap:${Wd * .02}px;opacity:0`); ttl.innerHTML = `${c.icon ? `<i style="width:${Wd * .1}px;height:${Wd * .1}px;background:url(${c.icon}) center/contain no-repeat;filter:drop-shadow(0 0 6px #fff)"></i>` : ''}<b style="font:900 ${Wd * .07}px/1 'Galmuri11',system-ui,sans-serif;color:#fff;letter-spacing:.06em;-webkit-text-stroke:${Wd * .006}px ${TD};paint-order:stroke;text-shadow:0 0 10px ${TL},0 0 22px ${TL}">${c.tyKo ? c.tyKo + ' ' : ''}테라스탈!</b>`;
+    const flash = mk('inset:0;background:#fff;opacity:0');
+    const ds = top.parentNode, bgF = document.createElement('div'); bgF.className = 'mgf-bg'; bgF.style.cssText = `position:absolute;inset:-6%;z-index:0;pointer-events:none;background:url(${c.bg.url}) ${-(256 * Hd * 1.12 / 150 - Wd * 1.12) / 2}px 0/${512 * Hd * 1.12 / 150}px ${192 * Hd * 1.12 / 150}px no-repeat;image-rendering:pixelated;filter:blur(3px) brightness(.55) saturate(1.2);opacity:0`; ds.insertBefore(bgF, ds.firstChild);
+    const MK = 'linear-gradient(to bottom,transparent,#000 14%,#000 84%,transparent),linear-gradient(to right,transparent,#000 10%,#000 90%,transparent)';
+    top.style.webkitMaskImage = top.style.maskImage = MK; top.style.webkitMaskComposite = 'source-in'; top.style.maskComposite = 'intersect';
+    bt.appendChild(root);
+    const at = (t, f) => timers.push(setTimeout(() => { try { f(); } catch (e) {} }, t));
+    const hz = () => { try { window.GA?.haptic?.(2); } catch (e) {} }, vib = n => { const k = [1, 2, 4, 7][n] || 2; for (let i = 0; i < k; i++) timers.push(setTimeout(hz, i * 70)); };
+    const shake = (t, d, amp) => at(t, () => { A(root, Array.from({ length: 9 }, (_, i) => ({ transform: i === 8 ? 'scale(1.08)' : `translate(${(Math.random() - .5) * amp * 2}px,${(Math.random() - .5) * amp * 2}px) scale(1.08)` })), { duration: d, easing: 'linear', fill: 'none' }); for (let k = 0; k < d; k += 80) timers.push(setTimeout(hz, k)); });
+    // 1) 위 화면을 그 포켓몬 쪽으로 (0~900)
+    hide.forEach(e => tAnim.push(A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350 })));
+    tAnim.push(A(top, [{ transform: T0 === 'none' ? 'none' : T0 }, { transform: `translate(${tx}px,${ty}px) scale(${zt})` }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    tAnim.push(A(bgF, [{ opacity: 0, transform: 'scale(1.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 900, easing: 'cubic-bezier(.7,0,.2,1)' }));
+    at(0, () => c.se('fog2')); at(600, () => vib(1));
+    // 2) 어두워지며 가운데 앞모습 (850~1500)
+    A(dim, [{ opacity: 0 }, { opacity: .9 }], { duration: 600, delay: 850 });
+    A(box, [{ opacity: 0, transform: 'scale(.8) translateY(10px)' }, { opacity: 1, transform: 'scale(1.04)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 600, delay: 950 });
+    at(950, () => { c.se('Battle throw'); if (mon) mon.style.visibility = 'hidden'; });
+    // 3) 트레이너 컷인 + 테라스탈오브 (1700~2600)
+    A(band, [{ opacity: 1, transform: `skewY(-8deg) translateX(${side * 110}%)` }, { opacity: 1, transform: 'skewY(-8deg) translateX(0)' }], { duration: 420, delay: 1700, easing: 'cubic-bezier(.2,.9,.3,1.1)' });
+    A(trn, [{ opacity: 0, transform: `${opp ? '' : 'scaleX(-1) '}translateX(${side * 70}px)` }, { opacity: 1, transform: `${opp ? '' : 'scaleX(-1) '}translateX(0)` }], { duration: 450, delay: 1780 });
+    at(1720, () => c.se('Battle recall'));
+    A(orb, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: 1, transform: 'scale(1.5)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 480, delay: 2250 });
+    at(2250, () => { c.se('DX Action'); vib(1); });
+    // 4) 오브에 테라스탈 에너지가 모임 (2600~3500): 반짝이가 사방에서 오브로, 무지개 고리가 돌며 커짐
+    A(orbH, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.15)' }], { duration: 900, delay: 2550, easing: 'ease-in' });
+    A(orbR, [{ opacity: 0, transform: 'rotate(0) scale(.6)' }, { opacity: 1, transform: 'rotate(360deg) scale(1.2)' }], { duration: 900, delay: 2550, easing: 'linear' });
+    at(2550, () => { c.se('Charge'); orb.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 300, iterations: 3, composite: 'replace' }); });
+    const ox = oX + OS / 2, oy = oY + OS / 2;
+    spk.forEach((p, i) => { const a = i / spk.length * Math.PI * 2, r = Wd * (.35 + Math.random() * .2), w = Wd * .0225;
+      A(p, [{ opacity: 0, transform: `translate(${ox + Math.cos(a) * r - w}px,${oy + Math.sin(a) * r - w}px) rotate(0) scale(1.4)` }, { opacity: 1, offset: .25 }, { opacity: 1, transform: `translate(${ox - w}px,${oy - w}px) rotate(180deg) scale(.2)` }], { duration: 620, delay: 2600 + (i % 11) * 70, easing: 'cubic-bezier(.6,0,1,.6)' }); });
+    [2700, 2950, 3200].forEach((t, j) => at(t, () => { c.se('Ice5'); vib(j > 1 ? 2 : 1); }));
+    // 5) 머리 위로 던짐 → 포켓몬 위에서 오브가 터짐 (3500~4000)
+    const apX = gx, apY = Math.max(Hd * .08, gy - GH * .5 - Hd * .1);
+    at(3480, () => { c.se('Battle throw'); [orbH, orbR].forEach(e => { e.getAnimations().forEach(a => a.cancel()); e.style.opacity = 0; }); orb.getAnimations().forEach(a => a.cancel());
+      const dx = apX - ox, dy = apY - oy; orb.animate([{ transform: 'translate(0,0) rotate(0) scale(1)', opacity: 1 }, { transform: `translate(${dx * .5}px,${dy - Hd * .12}px) rotate(400deg) scale(1.2)`, opacity: 1, offset: .55 }, { transform: `translate(${dx}px,${dy}px) rotate(720deg) scale(1.4)`, opacity: 1 }], { duration: 520, fill: 'forwards', easing: 'cubic-bezier(.3,.1,.5,1)' }); });
+    [band, trn].forEach(e => A(e, [{ opacity: 1 }, { opacity: 0 }], { duration: 350, delay: 3550 }));
+    at(4000, () => { c.se('Saint7'); c.se('Ice5'); vib(2); orb.animate([{ opacity: 1, filter: 'brightness(1)' }, { opacity: 0, filter: 'brightness(4)' }], { duration: 220, fill: 'forwards' });
+      const b = mk(`left:${apX - Wd * .3}px;top:${apY - Wd * .3}px;width:${Wd * .6}px;height:${Wd * .6}px;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,rgba(200,240,255,.7) 32%,transparent 62%);mix-blend-mode:screen`); A(b, [{ opacity: 1, transform: 'scale(.3)' }, { opacity: 0, transform: 'scale(2)' }], { duration: 600 });
+      const rain = mk(`left:${gx - GW * .7}px;top:${apY}px;width:${GW * 1.4}px;height:${gy + GH * .6 - apY}px;background:linear-gradient(to bottom,rgba(255,255,255,.9),${rgba(mixC(tO, [255, 255, 255], .5), .5)} 60%,transparent);-webkit-mask:repeating-linear-gradient(to right,#000 0 6%,transparent 6% 14%);mask:repeating-linear-gradient(to right,#000 0 6%,transparent 6% 14%);mix-blend-mode:screen;transform-origin:50% 0`); A(rain, [{ opacity: 0, transform: 'scaleY(.1)' }, { opacity: 1, transform: 'scaleY(1)', offset: .4 }, { opacity: 0, transform: 'scaleY(1)' }], { duration: 900, easing: 'ease-out' }); });
+    // 6) 결정 조각이 날아와 포켓몬을 감쌈 (4100~5300) — 포켓몬은 하얗게
+    at(4100, () => im.animate([{ filter: NORM }, { filter: WH }], { duration: 500, fill: 'forwards' }));
+    A(glow, [{ opacity: 0, transform: 'scale(.2)' }, { opacity: .7, transform: 'scale(1)' }], { duration: 1200, delay: 4100, easing: 'ease-in' });
+    shards.forEach((s, i) => { const a = -Math.PI / 2 + (i / NS - .5) * Math.PI * 2 * .95, rr = Math.hypot(Wd, Hd) * .7, fx = gx + Math.cos(a) * GW * .48 * 1.05 - s.w / 2, fy = gy + Math.sin(a) * GH * .5 - s.h / 2, rot = a * 180 / Math.PI + 90;
+      s.fx = fx; s.fy = fy; s.rot = rot; s.a = a;
+      A(s.e, [{ opacity: 0, transform: `translate(${gx + Math.cos(a) * rr - s.w / 2}px,${gy + Math.sin(a) * rr - s.h / 2}px) rotate(${rot + 240}deg) scale(1.5)` }, { opacity: 1, offset: .3 }, { opacity: 1, transform: `translate(${fx}px,${fy}px) rotate(${rot}deg) scale(1)` }], { duration: 520, delay: 4150 + i * 55, easing: 'cubic-bezier(.3,.6,.4,1.15)' });
+      if (i % 3 === 0) at(4150 + i * 55 + 480, () => { c.se('Sword2'); hz(); }); });
+    at(5050, () => { c.se('Ice5'); vib(2); });
+    A(gem, [{ opacity: 0, transform: 'scale(.6,.3)' }, { opacity: 1, transform: 'scale(1.06,1.04)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 450, delay: 5000, easing: 'cubic-bezier(.2,1.2,.4,1)' });
+    A(box, [{ opacity: 1 }, { opacity: .55 }], { duration: 400, delay: 5050 });   /* 결정 안에 갇혀 비쳐 보임 */
+    A(prism, [{ opacity: 0, transform: 'rotate(0) scale(.7)' }, { opacity: .55, transform: 'rotate(60deg) scale(1)' }], { duration: 1300, delay: 5000, easing: 'linear' });
+    at(5200, () => { const g = mk(`left:${gx - gemW / 2}px;top:${gy + GH * .62 - gemH}px;width:${gemW}px;height:${gemH}px;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.95) 48%,transparent 60%) -150% 0/250% 100% no-repeat;-webkit-mask:url("${TX.cl}") center bottom/contain no-repeat;mask:url("${TX.cl}") center bottom/contain no-repeat;mix-blend-mode:screen`);
+      g.animate([{ backgroundPosition: '-150% 0' }, { backgroundPosition: '250% 0' }], { duration: 600, fill: 'forwards' }); c.se('Ice5'); });
+    // 7) 금이 가며 흔들림, 틈으로 빛이 샘 (5600~6500)
+    at(5600, () => { crk.style.opacity = 1; [...crk.querySelectorAll('polyline')].forEach((l, j) => l.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 220, delay: [0, 120, 260, 420, 560, 680][j], fill: 'forwards', easing: 'ease-out' })); });
+    [5600, 5860, 6120, 6330].forEach((t, j) => at(t, () => { c.se(j % 2 ? 'Sword2' : 'Ice5'); vib(1 + (j > 1)); }));
+    A(leak, [{ opacity: 0, transform: 'rotate(0) scale(.5)' }, { opacity: .9, transform: 'rotate(25deg) scale(1.2)' }], { duration: 900, delay: 5650, easing: 'ease-in' });
+    A(glow, [{ opacity: .7, transform: 'scale(1)' }, { opacity: 1, transform: 'scale(1.5)' }], { duration: 900, delay: 5600, easing: 'ease-in' });
+    shake(5650, 300, 2); shake(5980, 300, 4); shake(6250, 300, 7);
+    // 8) 결정이 깨짐 → 테라스탈한 모습 (6550~)
+    A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .45 }, { opacity: 0 }], { duration: 600, delay: 6520, easing: 'linear' });
+    at(6560, () => { c.se('Explosion3'); c.se('Earth1'); c.se('Ice5'); vib(3); gem.style.opacity = 0; crk.style.opacity = 0; leak.style.opacity = 0; [gem, crk, leak, glow].forEach(e => e.getAnimations().forEach(a => a.cancel())); glow.style.opacity = 0;
+      im.getAnimations().forEach(a => a.cancel()); im.style.filter = WH; box.getAnimations().forEach(a => a.cancel()); box.style.opacity = 1;
+      shards.forEach((s, i) => { s.e.getAnimations().forEach(a => a.cancel()); const d = Math.hypot(Wd, Hd) * (.6 + Math.random() * .4), a = s.a + (Math.random() - .5) * .5;
+        s.e.animate([{ opacity: 1, transform: `translate(${s.fx}px,${s.fy}px) rotate(${s.rot}deg) scale(1)` }, { opacity: 1, offset: .6 }, { opacity: 0, transform: `translate(${s.fx + Math.cos(a) * d}px,${s.fy + Math.sin(a) * d + Hd * .15}px) rotate(${s.rot + (i % 2 ? 1 : -1) * (300 + Math.random() * 300)}deg) scale(.7)` }], { duration: 900 + Math.random() * 300, fill: 'forwards', easing: 'cubic-bezier(.1,.7,.4,1)' }); });
+      for (let i = 0; i < 26; i++) { const w = Wd * (.02 + Math.random() * .03), p = mk(`left:0;top:0;width:${w}px;height:${w * 1.4}px;opacity:0`); p.style.cssText += ';' + tjBg(TX.sh[i % 6]); const a = Math.random() * Math.PI * 2, d = Wd * (.3 + Math.random() * .5);
+        p.animate([{ opacity: 1, transform: `translate(${gx}px,${gy}px) rotate(0) scale(1)` }, { opacity: 0, transform: `translate(${gx + Math.cos(a) * d}px,${gy + Math.sin(a) * d}px) rotate(${Math.random() * 720}deg) scale(.4)` }], { duration: 700 + Math.random() * 500, fill: 'forwards', easing: 'cubic-bezier(.1,.8,.3,1)' }); } });
+    at(6640, () => { im.animate([{ filter: WH }, { filter: NORM }], { duration: 900, fill: 'forwards' }); pat.animate([{ opacity: 0 }, { opacity: .62 }], { duration: 700, fill: 'forwards' }); pat.animate([{ backgroundPosition: '0 0' }, { backgroundPosition: `${MW * 1.2}px ${MW * .4}px` }], { duration: 9000, iterations: Infinity });
+      box.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(.95)', offset: .55 }, { transform: 'scale(1)' }], { duration: 650, fill: 'forwards', easing: 'cubic-bezier(.2,1.4,.4,1)' }); });
+    A(prism, [{ opacity: .55, transform: 'rotate(60deg) scale(1)' }, { opacity: 1, transform: 'rotate(90deg) scale(1.05)', offset: .1 }, { opacity: .7, transform: 'rotate(220deg) scale(1.1)' }], { duration: 4000, delay: 6560, easing: 'linear' });
+    at(6600, () => A(dim, [{ opacity: .9 }, { opacity: 1 }], { duration: 400 }));
+    at(6700, () => { for (let i = 0; i < 3; i++) { const r = mk(`left:${gx - Wd * .2}px;top:${gy - Wd * .2}px;width:${Wd * .4}px;height:${Wd * .4}px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:radial-gradient(circle,transparent 58%,#fff 60%,${TL} 66%,transparent 72%)`); A(r, [{ opacity: 1, transform: 'scale(.4) rotate(0)' }, { opacity: 0, transform: `scale(${4 + i * 1.6}) rotate(${30 + i * 15}deg)` }], { duration: 900 + i * 220, delay: i * 140, easing: 'cubic-bezier(.1,.7,.3,1)' }); } });
+    shake(6600, 650, 12);
+    // 9) 머리 위 테라 보석 관이 빛나며 내려앉음, 빛이 몸을 쓸고 지나감, 울음 (7000~)
+    A(crown, [{ opacity: 0, transform: `translateY(${-Hd * .12}px) scale(.3) rotate(-20deg)` }, { opacity: 1, transform: 'translateY(0) scale(1.25) rotate(4deg)', offset: .6 }, { opacity: 1, transform: 'scale(1) rotate(0)' }], { duration: 600, delay: 7000, easing: 'cubic-bezier(.2,1.3,.4,1)' });
+    at(7000, () => { c.se('Saint7'); c.se('Ice5'); vib(1); }); at(7150, () => (c.cryBig || c.cry)());
+    at(7600, () => { crown.animate([{ filter: 'drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px ' + TL + ') brightness(1)' }, { filter: 'drop-shadow(0 0 6px #fff) drop-shadow(0 0 18px ' + TL + ') brightness(1.5)' }, { filter: 'drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px ' + TL + ') brightness(1)' }], { duration: 900, iterations: 3 }); swp.style.opacity = 1; swp.animate([{ backgroundPosition: '-200% 0' }, { backgroundPosition: '200% 0' }], { duration: 900, iterations: 2, delay: 0, easing: 'ease-in-out' }); });
+    at(7300, () => { for (let i = 0; i < 12; i++) { const w = Wd * .04, p = mk(`left:0;top:0;width:${w}px;height:${w}px;background:#fff;clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);opacity:0;filter:drop-shadow(0 0 4px ${TL})`); const x = gx + (Math.random() - .5) * GW * 1.1, y = gy + (Math.random() - .5) * GH * 1.1;
+      p.animate([{ opacity: 0, transform: `translate(${x}px,${y}px) scale(.2) rotate(0)` }, { opacity: 1, transform: `translate(${x}px,${y}px) scale(1.2) rotate(45deg)`, offset: .5 }, { opacity: 0, transform: `translate(${x}px,${y}px) scale(.2) rotate(90deg)` }], { duration: 700, delay: i * 180, fill: 'forwards' }); } });
+    A(ttl, [{ opacity: 0, transform: 'scale(1.8)', letterSpacing: '.5em' }, { opacity: 1, transform: 'scale(1)', offset: .6 }, { opacity: 1, transform: 'scale(1)' }], { duration: 600, delay: 7700, easing: 'cubic-bezier(.2,1.3,.4,1)' });
+    at(7700, () => c.se('Saint7'));
+    // 10) 원래 화면으로
+    const END = 10600;
+    return new Promise(res => { let done = false;
+      const fin = () => { if (done) return; done = true; try { c.onSwap?.(); } catch (e) {} timers.forEach(t => clearTimeout(t)); if (mon) mon.style.visibility = '';
+        top.style.webkitMaskImage = top.style.maskImage = '';
+        const back = [A(top, [{ transform: `translate(${tx}px,${ty}px) scale(${zt})` }, { transform: T0 === 'none' ? 'none' : T0 }], { duration: 420, easing: 'cubic-bezier(.5,0,.2,1)' }), ...hide.map(e => A(e, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })), A(root, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 })];
+        tAnim.forEach(a => a.cancel()); back.push(A(bgF, [{ opacity: 1 }, { opacity: 1 }], { duration: 420 })); Promise.all(back.map(a => a.finished.catch(() => {}))).then(() => { back.forEach(a => a.cancel()); root.remove(); bgF.remove(); top.style.webkitMaskImage = top.style.maskImage = top.style.webkitMaskComposite = top.style.maskComposite = ''; res(); }); };
+      const lk = document.createElement('div'); lk.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:transparent;touch-action:none'; const eat = e => { e.stopPropagation(); if (e.cancelable) e.preventDefault(); }; ['pointerdown', 'pointerup', 'click', 'touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(t => lk.addEventListener(t, eat, { passive: false })); document.body.appendChild(lk);
+      setTimeout(() => { lk.remove(); fin(); }, END - 500); });
+  }
+  /* 상대(도전자) 테라스탈: 화면은 안 커지고 그 자리에서 — 결정 조각이 모여 감싸고 깨짐 (메가·거다이맥스 도전자 간단 연출과 같은 결) */
+  async function teraMini(host, x, y, w, h, T, se) { const TX = await tjPrep(T); const [tO, tB] = tyCol(T), ST = T === 'Stellar', box = document.createElement('div'); box.className = 'tmini'; box.style.cssText = `position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;z-index:6`; host.appendChild(box);
+    const mk = css => { const e = document.createElement('div'); e.style.cssText = 'position:absolute;pointer-events:none;' + css; box.appendChild(e); return e; };
+    const gw = w * 1.3, gh = h * 1.25, gem = mk(`left:${x - gw / 2}px;top:${y + h * .55 - gh}px;width:${gw}px;height:${gh}px;opacity:0;transform-origin:50% 100%;filter:drop-shadow(0 0 3px #fff)`); gem.style.cssText += ';' + tjBg(TX.cl).replace('center/contain', 'center bottom/contain');
+    const N = 10, S = Array.from({ length: N }, (_, i) => { const sw = w * (.16 + (i % 3) * .05), sh = sw * 1.5, e = mk(`left:0;top:0;width:${sw}px;height:${sh}px;opacity:0`); e.style.cssText += ';' + tjBg(TX.sh[i % 6]); return { e, sw, sh, a: -Math.PI / 2 + (i / N - .5) * Math.PI * 1.9 }; });
+    S.forEach((s, i) => { const fx = x + Math.cos(s.a) * w * .5 - s.sw / 2, fy = y + Math.sin(s.a) * h * .5 - s.sh / 2, r = s.a * 180 / Math.PI + 90; s.fx = fx; s.fy = fy; s.r = r;
+      s.e.animate([{ opacity: 0, transform: `translate(${x + Math.cos(s.a) * w * 1.6}px,${y + Math.sin(s.a) * h * 1.6}px) rotate(${r + 200}deg)` }, { opacity: 1, transform: `translate(${fx}px,${fy}px) rotate(${r}deg)` }], { duration: 380, delay: i * 40, fill: 'forwards', easing: 'cubic-bezier(.3,.6,.4,1.15)' }); });
+    setTimeout(() => { se('Sword2'); gem.animate([{ opacity: 0, transform: 'scale(.6,.3)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300, fill: 'forwards', easing: 'cubic-bezier(.2,1.2,.4,1)' }); }, 700);
+    setTimeout(() => se('Ice5'), 1000);
+    return new Promise(res => setTimeout(() => { se('Ice5'); se('Earth1'); gem.getAnimations().forEach(a => a.cancel()); gem.style.opacity = 0;
+      S.forEach((s, i) => { s.e.getAnimations().forEach(a => a.cancel()); const d = w * (1.2 + Math.random()); s.e.animate([{ opacity: 1, transform: `translate(${s.fx}px,${s.fy}px) rotate(${s.r}deg)` }, { opacity: 0, transform: `translate(${s.fx + Math.cos(s.a) * d}px,${s.fy + Math.sin(s.a) * d + h * .3}px) rotate(${s.r + (i % 2 ? 300 : -300)}deg) scale(.6)` }], { duration: 650, fill: 'forwards', easing: 'cubic-bezier(.1,.7,.4,1)' }); });
+      const f = mk(`left:${x - w}px;top:${y - w}px;width:${w * 2}px;height:${w * 2}px;border-radius:50%;background:radial-gradient(circle,#fff 0 20%,${rgba(mixC(tO, [255, 255, 255], .5), .7)} 36%,transparent 66%)`); f.animate([{ opacity: 1, transform: 'scale(.4)' }, { opacity: 0, transform: 'scale(1.6)' }], { duration: 500, fill: 'forwards' });
+      setTimeout(() => box.remove(), 900); res(); }, 1350)); }
+
   { const st = document.createElement('style'); st.textContent = '@keyframes dxPatL{to{background-position:-800px 0}}@keyframes gxPan{to{background-position:-2400px 0}}@keyframes dxPatT{25%{background-position:200px 6px}50%{background-position:400px -4px}75%{background-position:600px 5px}to{background-position:800px 0}}'; document.head.appendChild(st); }
-  window.GymDBK = { mega, megaFull, zmove, zFull, tera, dynamax, dmaxFull, gxBg, gxRing, tyCol };
+  window.GymDBK = { mega, megaFull, zmove, zFull, tera, teraFull, teraMini, teraCrown, crownUrl, dynamax, dmaxFull, gxBg, gxRing, tyCol };
 })();
