@@ -522,6 +522,14 @@ function sfList(g = st(), D = dzOf(g.d)) {
   const L = g.sf.filter(inGym), used = new Set(), out = new Map();
   for (const s of L) { const p = s.gp && s.gp[2] === D.id && D.toV(s.gp[1]) != null && D.toVx(s.gp[0]) != null ? [D.toVx(s.gp[0]), D.toV(s.gp[1])] : null; if (p && trTile(D, p[0], p[1], used)) { used.add(p[0] + ',' + p[1]); out.set(s, [s, p[0], p[1], faceTo(D, p[0], p[1])]); } }
   for (const s of L) { if (out.has(s)) continue; const q = D.slots.find(q => trTile(D, q[0], q[1], used)); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], q[2]]); }
+  /* v26.98 경완 '나 트레이너 3명 고용했는데 체육관에 2명밖에 안 보임': 체육관이 작은 단계(안 넓힌 맵)면 기본 자리가 고용 수보다 적어 남은 트레이너가 안 그려졌음 → 길 가까운 빈 칸에 세운다 */
+  const rest = L.filter(s => !out.has(s));
+  if (rest.length) { const C = [], pd = (x, y) => { let m = 1e9; for (let i = 1; i < D.path.length; i++) { const [a, b] = [D.path[i - 1], D.path[i]], cx = clampN(x, Math.min(a[0], b[0]), Math.max(a[0], b[0])), cy = clampN(y, Math.min(a[1], b[1]), Math.max(a[1], b[1])); m = Math.min(m, Math.abs(cx - x) + Math.abs(cy - y)); } return m; };
+    for (let y = 0; y < D.h; y++) for (let x = 0; x < D.w; x++) { try { if (trTile(D, x, y, used)) C.push([x, y, pd(x, y) + (y < D.leader[1] ? 3 : 0)]);   /* 관장 뒤 줄은 나중에 */ } catch (e) {} }
+    C.sort((a, b) => a[2] - b[2] || a[1] - b[1]);
+    const dk = new Set(); try { const pos = g.dpos || {}; (g.dp || []).forEach(k => { const p = pos[k]; if (p && p[2] === D.id && D.toV(p[1]) != null && D.toVx(p[0]) != null) dCells(k, D.toVx(p[0]), D.toV(p[1])).forEach(c => dk.add(c[0] + ',' + c[1])); }); } catch (e) {}   /* 직접 놓은 꾸미기 칸은 피함 */
+    for (const s of rest) { const near = q => used.has(q[0] + ',' + q[1]) || dk.has(q[0] + ',' + q[1]) || [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]].some(([dx, dy]) => used.has(q[0] + dx + ',' + (q[1] + dy)));
+      const q = C.find(q => !near(q)) || C.find(q => !used.has(q[0] + ',' + q[1])); if (!q) continue; used.add(q[0] + ',' + q[1]); out.set(s, [s, q[0], q[1], faceTo(D, q[0], q[1])]); } }
   return L.filter(s => out.has(s)).map(s => out.get(s));
 }
 // 트레이너 자리 고르기 모드: 맵의 칸을 누르면 그 트레이너가 거기 선다 (꾸미기 놓기와 같은 방식)
@@ -905,7 +913,9 @@ const FR_W = [[2, 1, 1], [3, 2, 1], [4, 3, 2], [5, 4, 3]];
 const REW = d => ({ ...REW0[d], g: GYMB().GYM_G[d] ?? REW0[d].g });
 // 연승 보너스 (경완 2026-10-29 '연승하면 평판 더 오르게'): 막을 때마다 g.stk +1, 내가 지면 0
 // 연승이 쌓일수록 지수적으로 (경완 2026-10-29 '구간 말고 지수적으로, 대신 난이도 밸런스'): 1.3^(n-2), 2연승 +1 · 5연승 +2 · 8연승 +5 · 10연승 +8 · 12연승 +14 · 15연승 이상 +30
-const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(.5, .05 * (n - 1)));   // v14.97 경완: 골드 연승 보너스 2연승 +5% · 연승마다 +5% · 11연승부터 +50%
+/* v27.18 경완 '전체적으로 배수를 올리기보다는 좀 더 연승했을 때 받는 금액을 올리는건 어때' → '그렇게 패치해줘': 연승마다 +10% (11연승부터 +100%) + 고비 보너스 STK_MS (5·10·15·20연승). 실제 기록(3주 482판)으로 이긴 판 골드 ×1.59. 예전 v14.97: +5%·최대 +50% */
+const STK_MS = { 5: 200, 10: 600, 15: 1200, 20: 2000 };
+const stkGold = (n, g) => n < 2 ? 0 : Math.round(g * Math.min(1, .1 * (n - 1))) + (STK_MS[n] || 0);
 const stkBonus = n => n < 2 ? 0 : Math.min(30, Math.max(n - 1, Math.round(1.3 ** (n - 2))));   // 연승마다 적어도 +1씩은 오른다 (경완 2026-10-29): 2연승 +1 · 3연승 +2 … 10연승 +9 · 11연승 +11 · 12연승 +14 · 15연승 +30
 // 그만큼 연승 중엔 도전자도 세진다: 연승 0.6 마다 레벨 +1 (최대 +10). 고용 트레이너가 막을 때도 같은 레벨로 싸운다
 /* v25.84 경완 '연승 보정 지수형으로 올라가야', '천장이랑 바닥 있으니까 상한 빼줘': 예전 = 연승×0.6 (최대 +10). 지금 = 1.25^연승 − 1 (3연승 +1, 5연승 +2, 8연승 +5, 10연승 +8, 12연승 +14…), 상한 없음(등급 레벨 천장 lvCeil 이 막음, 99 는 계산 안전용) */
@@ -916,7 +926,7 @@ const stkLv = n => Math.min(99, Math.round(Math.pow(1.25, Math.max(0, n | 0)) - 
    단계 lsE = 연패 수 − 1 (2연패 1 … 5연패 4, g.lstk 는 5 까지만 쌓임). 레벨은 최대 −2 (예전 −8), 강함 보정·종족값 바닥은 연패 중에도 켬.
    대신 단계마다: 개체값 상한 31 − 6×단계, 노력치 등급 −1.5×단계, AI·도구 단계 −(단계÷2), 상성 포켓몬 비율 ×(1 − .2×단계), 마리 수 −(단계÷2, 최소 3), 메가·Z 확률 ×(1 − .25×단계).
    이기면 바로 0 이 아니라 한 단계씩 풀림. 이름 있는 트레이너는 레벨·개체값·노력치·메가·Z 만, 승급 심사·전설의 체육관은 보정 없음 */
-const lsLv = n => (n | 0) < 2 ? 0 : Math.min(2, (n | 0) - 1), LS_MAX = 5, lsE = g => isLeg(g) ? 0 : clampN((g.lstk | 0) - 1, 0, 4);
+const lsLv = n => (n | 0) < 2 ? 0 : Math.min(2, (n | 0) - 1), LS_MAX = 5, /* v27.12 경완 '등급이 높아질수록 연패 보정이 덜 들어가야할듯' (카드 '완만하게 줄이기'): 연패 보정 최대 단계가 등급별 — 떠오르는까지 4, 이름난 3, 인기 2, 명문 1, 전설 0 */ LS_CAP = [4, 4, 4, 3, 2, 1, 0], lsE = g => isLeg(g) ? 0 : clampN((g.lstk | 0) - 1, 0, LS_CAP[clampN(gradeOf(g.rep || 0).i, 0, 6)]);
 // 평판 규칙은 고정 (경완 2026-10-29 '수치 말고 도전자 난이도로 밸런스, 규칙성이 느껴지게'): 막으면 +1 (이름 있는 트레이너 +2) + 연승 보너스, 지면 -1.
 // 고용 트레이너가 막아도 같은 규칙 (연승 보너스 포함, 인기인은 기본 평판 ×1.5)
 const repWin = r => r;
@@ -951,19 +961,23 @@ const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_tra
 /* v24.51 경완 '3,000에서 멈추게 해주고 3,000에 닿으면 필드에 아르세우스가 내려오는 스토리 연출 후 내 포켓몬 박스에 아르세우스': 전설의 체육관 평판 꼭대기 LEG_TOP.
    닿으면(계정에 한 번: 박스에 그 아르세우스가 있거나 어느 체육관이든 g.arc) 체육관에서 땅울림·안내원 → 필드로 나가 GA.arcScene (index/beta.html). test = 운영자 시뮬 버튼 (아무것도 안 남김) */
 const LEG_TOP = 3000;
-const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !tutSeen('arc') && !!GA.arcScene && !GA.arcGot?.() && !window.gymSimOn; };
+/* v27.43 경완 '평판 3,000 되면 아르세우스 강림하고 해당 타입 플레이트 받는 걸로 하자' + 카드 '체육관마다 플레이트 받기': 타입 체육관마다(g.arcP) 3,000 에 닿으면 강림 → 그 타입 플레이트 (창고 g.itm).
+   아르세우스는 계정에 처음 한 번만 박스로, 두 번째 체육관부터는 짧은 강림. 노말은 플레이트가 없어 ARC_NG 골드. 예전에 이미 아르세우스를 받은 체육관도 플레이트는 아직이라 다음 배틀 뒤에 짧은 강림으로 받음 */
+const PL_ST = ['', '', 'fistplate', 'skyplate', 'toxicplate', 'earthplate', 'stoneplate', 'insectplate', 'spookyplate', 'ironplate', 'flameplate', 'splashplate', 'meadowplate', 'zapplate', 'mindplate', 'icicleplate', 'dracoplate', 'dreadplate', 'pixieplate'], ARC_NG = 5000;
+const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !g.arcP && !!GA.arcScene && !window.gymSimOn; };
 async function arcGo(test) {
   const g = st(); if (busy || !open) return; busy = true; root.classList.add('busy'); const GW = '<span class="gy-who">안내원</span>';
+  const first = test ? test === 1 : !tutSeen('arc') && !GA.arcGot?.(), pid = PL_ST[g.ty] || '', pl = pid ? { id: pid, nm: GB()?.HOLD?.[pid]?.[0] || '플레이트', ty: TYPE_KO[g.ty] || '' } : null;
   /* v24.55 경완 '쿠구궁 할 때 테두리 빈틈으로 뒷 화면 안 보이게, 효과음도': 흔들 때 화면을 살짝 키워(1.05배) 가장자리가 안 드러나게 + 플래티넘 지진 소리. 아르세우스 연출은 개그 없이 */
   const quake = (k = 1) => { try { GA.rumble?.(2, 3); window.GymBGM?.se('DP_W089', { gain: .7 + .3 * k }); const a = 4 * k, F = [[0, 0], [-a, a / 2], [a, -a / 2], [-a * .7, -a / 3], [a * .8, a / 2], [-a / 2, a / 3], [a / 2, -a / 4], [0, 0]].map(([x, y], i, A) => ({ translate: `${x}px ${y}px`, scale: i && i < A.length - 1 ? '1.05' : '1' })); root.animate(F, { duration: 1300, easing: 'linear' }); } catch (e) {} };
   try { openTab(null); try { window.GymBGM?.stop(1.2); window.GymBGM?.sePrep?.(['DP_W089']); } catch (e) {}
     await talk(`<b>${esc(g.nm || '체육관')}</b>의 평판이<br><b>3,000</b>에 닿았다!`);
     await wait(500); quake(.8); dlg('<b>쿠구구구구…</b>'); await wait(1900); quake(1.25); dlg('<b>쿠구구구구구…!!</b>'); await wait(1900);
-    await talk(GW + '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!');
+    await talk(GW + (first ? '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!' : '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 다시 갈라지고 있어요!'));
     await talk(GW + '어서 가 보세요.<br>체육관은 제가 지키고 있을게요.');
   } catch (e) { console.error(e); } finally { busy = false; root.classList.remove('busy'); }
-  await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0 });
-  if (ok && !test && S.gym) { S.gym.arc = 1; GA.save?.(); }
+  await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0, first: first ? 1 : 0, pl, gold: pl ? 0 : ARC_NG });
+  if (ok && !test && S.gym === g) { g.arcP = 1; if (first) g.arc = 1; if (pl) { g.itm = g.itm || {}; g.itm[pid] = (g.itm[pid] | 0) + 1; } else GA.addGold?.(ARC_NG, 'gym'); GA.save?.(); }
 }
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : LEG_TOP; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
@@ -1015,19 +1029,19 @@ function myAvg() { const g = st(), L = luNow().map(P => (GB()?.gm?.(P) || g.mon?
 let spCache = null;
 const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
 let spCacheL = null;
-function pickSp(types, lv, tg, w0) {
+function pickSp(types, lv, tg, w0, ex) {   /* v27.35 경완 '중복 포켓몬은 데려오지 않게': ex = 이미 팀에 든 종 (다 막히면 폭을 넓히고, 그래도 없을 때만 겹침) */
   if (!spCache) spCache = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && !o.leg && !o.my && !o.baby && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   if (!spCacheL) spCacheL = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && (o.leg || o.my) && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   const tgt = tg || spTgt(lv), P = tgt > 600 ? spCache.concat(spCacheL) : spCache;   // 강함 보정으로 600 넘으면 전설·환상도 (전설 등급만)
-  for (const w of w0 ? [w0, 55, 90, 140, 400] : [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
-  return 19;
+  for (const w of w0 ? [w0, 55, 90, 140, 400] : [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t))) && !ex?.has(x.n)); if (L.length) return pick(L).n; }
+  return ex?.size ? pickSp(types, lv, tg, w0) : 19;
 }
 // v17.73 경완 '종종 본가랑 다르게 반전 킥 한 마리': tw 면 에이스(마지막) 말고 한 칸을 트레이너 종류와 상관없는 타입으로
 const TW_P = .2;
 function mkTeam(types, lvB, n, sb, ct, q, tw) {
   const T = types.length ? types : [rndI(1, 18), rndI(1, 18)], TC = ct?.length ? (types.length ? types.filter(x => ct.includes(x)) : ct) : [];
   const twI = tw && types.length && n >= 2 ? rndI(0, n - 2) : -1, TO = Array.from({ length: 18 }, (_, k) => k + 1).filter(x => !types.includes(x));
-  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([i === twI ? pick(TO) : TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0), lv]; });
+  const U = new Set(); return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100), sp = pickSp([i === twI ? pick(TO) : TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0, 0, U); U.add(sp); return [sp, lv]; });
 }
 /* v17.31 경완 '보정 최댓값을 등급별로' + '하나만 센 포켓몬 넣고 나머지 약하게 넣는 허점': 라인업 강함 보정.
    기준 = 종족값 합계가 가장 높은 3마리(종족값 평균·레벨 평균). 약한 포켓몬을 섞어도 기준이 안 내려간다.
@@ -1361,7 +1375,7 @@ function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), sc = sfScout(), W = SF_TIER.map(([p], i) => i ? p * (1 + sc) : p), Wt = W.reduce((a, b) => a + b, 0), ti = (() => { let r = Math.random() * Wt; for (let i = 0; i < W.length; i++) { if ((r -= W[i]) < 0) return i; } return 0; })(), tq = SF_TIER[ti][1], types = ty ? [ty] : C.t;
   const tr2 = trait;   /* v25.76 경완 '그냥 무작위로 바꿔줘': 라인업과 상관없이 특성 13개 중 무작위 */
-  const team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25), l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
+  const U = new Set(), team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100), sp = pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25, U); U.add(sp); return [sp, l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
   const wage = sfWage(ti, tr2, tv / 100);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 5, lq: ti, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
@@ -1642,7 +1656,7 @@ async function bsStart(gi) {
 function resultPop(c, res, gold, rep, R) {
   const won = !!res?.won, stk = st().stk | 0, sb = won ? Math.max(0, rep - Math.min(rep, repWin(R?.r || 0))) : 0,   /* v15.42: 평판이 문턱에서 막히면 기본 점수부터 채우고 남는 만큼만 연승 보너스 (기본 점수가 -로 보이던 것) */ gb = won && gold ? Math.min(gold, stkGold(stk, R?.g || 0)) : 0, g0 = gold - gb;
   return new Promise(ok => { const p = pop(`<div class="rs-hd ${won ? 'won' : 'lost'}"><i class="rs-ray"></i><b>${won ? '승리!' : res?.quit ? '기권했다' : '패배…'}</b><small>${esc(c.cls)} ${esc(c.nm)}${won ? '에게 이겼다' : '에게 졌다'}</small></div>
-      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
+      ${won ? `<div class="rs-gold"><i class="coin"></i><b class="rg-n">+0</b><span>G</span>${gb ? `<em class="rg-b">+${gb.toLocaleString()}G</em>` : ''}</div>` : ''}${repBox(rep, sb, stk)}
       <div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => { close(); ok(); });
     p.classList.add('rs-pop'); if (won) p.classList.add('rs-w');
     (async () => {
@@ -1661,7 +1675,7 @@ function resultPop(c, res, gold, rep, R) {
 // 평판 오르내림 연출 (경완 2026-10-28 '평판 오르고 떨어지는 거 연출'): 숫자 세기 + 막대 + 튀는 +N/-N, 등급이 바뀌면 배지 반짝
 const repBox = (rep, sb = 0, stk = 0) => { const r1 = st().rep || 0, r0 = Math.max(0, r1 - rep), G = gradeOf(r0), pc = r => clampN((r - gradeOf(r).lo) / Math.max(1, gradeOf(r).hi - gradeOf(r).lo), 0, 1) * 100, base = rep - sb;
   return `<div class="rs-rep ${rep > 0 ? 'up' : rep < 0 ? 'dn' : ''}" data-r0="${r0}" data-r1="${r1}"><div class="rr-top"><span>평판</span><b class="rr-n">${r0}</b><em class="rr-d">${base >= 0 ? '+' : ''}${base}</em>${sb ? `<em class="rr-b">+${sb}</em>` : ''}</div>
-    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in"><b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };
+    <div class="rr-g"><span class="rr-bd">${gEmb(G.i)}</span><span class="rr-gn">${G.n}</span><i class="gy-bar"><i style="width:${pc(r0)}%"></i></i></div>${sb ? `<div class="rs-stk2"><i class="sk-ray"></i><div class="sk-in">${STK_MS[stk] ? `<em class="sk-ms">+${STK_MS[stk].toLocaleString()}G</em>` : ''}<b>${stk}<small>연승!</small></b>${'<i class="sk-sp"></i>'.repeat(8)}</div></div>` : ''}</div>`; };   /* v27.23 경완 '텍스트로 넣기 보다는 연승 딱지 위에 +골드 텍스트 추가해서': 고비 보너스(STK_MS)는 연승 딱지 위 노란 딱지로 (v27.18 골드 상자 밑 .rg-ms 줄은 지움) */
 async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = null) {
   const el = p?.querySelector('.rs-rep'); if (!el || !rep) return;
   const r0 = +el.dataset.r0, r1 = +el.dataset.r1, n = el.querySelector('.rr-n'), bar = el.querySelector('.gy-bar>i'), g0 = gradeOf(r0).i, d = el.querySelector('.rr-d');
@@ -1672,7 +1686,9 @@ async function repAnim(p, rep, sb = 0, gx = null, gp = null, gT = 0, onMrg = nul
       if (G.i !== +el.dataset.gi) { el.dataset.gi = G.i; el.querySelector('.rr-bd').innerHTML = gEmb(G.i); el.querySelector('.rr-gn').textContent = G.n; }
       k < 1 ? requestAnimationFrame(f) : done(); }; requestAnimationFrame(f); }); };
   const tk = (x, v) => { if (!x || x.textContent === v) return; x.innerHTML = '<span class="tk">' + v + '</span>'; };   // 시안: 숫자 바뀔 때마다 아래에서 살짝 올라오며 바뀜 (곡선 대신 일정한 간격)
-  const pin = () => { const L = n.offsetLeft + n.offsetWidth + 8; let x = L; for (const e of [d, el.querySelector('.rr-b')]) { if (!e) continue; e.style.left = x + 'px'; e.style.top = n.offsetTop + (n.offsetHeight - e.offsetHeight) / 2 + 'px'; if (e.classList.contains('keep') || el.classList.contains('dshow') && e === d || e.classList.contains('on')) x += e.offsetWidth + 6; } }; const pinT = setInterval(() => { if (!el.isConnected) return clearInterval(pinT); pin(); }, 16);   // 시안: 평판 숫자 자리는 고정, +N 들은 숫자 옆에 붙음
+  let sh = 0; const pin = () => { const lb = el.querySelector('.rr-top>span'), on = e => e.classList.contains('keep') || el.classList.contains('dshow') && e === d || e.classList.contains('on'), W = [d, el.querySelector('.rr-b')].filter(e => e && on(e) && !/\b(tot|mrg|into)\b/.test(e.className)).reduce((a, e) => a + e.offsetWidth + 8, 0); sh += (-W / 2 - sh) * .22; if (Math.abs(W / 2 + sh) < .4) sh = -W / 2; n.style.translate = sh.toFixed(1) + 'px 0';   /* v27.42 +N 이 떠 있는 만큼 숫자가 왼쪽으로 비켜 감 → 합쳐지면 가운데로 */
+    if (lb) { lb.style.right = 'auto'; lb.style.left = n.offsetLeft + sh - lb.offsetWidth - 8 + 'px'; }
+    const L = n.offsetLeft + sh + n.offsetWidth + 8; let x = L; for (const e of [d, el.querySelector('.rr-b')]) { if (!e) continue; e.style.left = x + 'px'; e.style.top = n.offsetTop + (n.offsetHeight - e.offsetHeight) / 2 + 'px'; if (e.classList.contains('keep') || el.classList.contains('dshow') && e === d || e.classList.contains('on')) x += e.offsetWidth + 6; } }; const pinT = setInterval(() => { if (!el.isConnected) return clearInterval(pinT); pin(); }, 16);   // 시안: 평판 숫자 자리는 고정, +N 들은 숫자 옆에 붙음
   el.dataset.gi = g0; await wait(300); if (gp) { await gp; await wait(60); } if (!el.isConnected) return;   // 경완 2026-11-03: 평판은 골드가 다 오른 뒤에
   el.classList.add('go'); const rm = r1 - sb, cb = !!(el.querySelector('.rs-stk2') && sb && rm !== r0);
   if (!cb) el.classList.add('dshow');   // v14.97 경완: 기본 점수 +N 은 평판이 오르기 시작할 때 같이 떠서 오르는 만큼 센다
@@ -1741,7 +1757,7 @@ const LEG_CH = { 2: '챔피언을 꺾었다지?<br>이번 심사는 내가 못 �
 const LEG_TP = ['잘 간직하게!', '주머니가 반짝거리겠어!', '이러다 보석상을 차리겠구먼!', '테라스탈 색이 하나 더 늘었네!', '내 샹들리에보다 훨씬 곱구먼.', '어느 체육관에서든 쓸 수 있단다!'];
 const LEG_END = ['이 체육관도 오늘부터 진짜 무대란다.<br>그 누구도 닿지 못한 평판 3,000,<br>여기서도 노려 보게!', '전설이 됐다고 끝이 아닌 건 알지?<br>평판 3,000의 벽은 이 체육관에도<br>똑같이 서 있단다!', '자, 여기서도 평판 3,000을 향해<br>달려 보게! 관장이 직접 이긴 만큼만<br>오르는 진짜 승부란다.', '평판 3,000에 닿으면 무슨 일이<br>일어날지, 이 체육관에서<br>먼저 알게 될지도 모르겠구먼!'];
 /* 첫 전설(강박사 심사) 마지막 말: 전설부터는 평판 상한 없음·관장이 직접 이겨야만 오름 */
-const LEG_END1 = [['k', '그리고 하나 더.<br>전설의 체육관에는<br>아직 그 위가 있단다.'], ['k', '<b>평판 3,000</b>.<br>지금껏 그 누구도 닿지 못한<br>숫자지.'], ['k', '거기에 닿으면 어떤 일이 일어날지는<br>아무도 모른단다.<br>나도, 리그도 말일세.'], ['k', '고용한 트레이너가 막아 줘도<br>평판은 오르지 않아. 오직 자네가<br>직접 이긴 만큼만 오른단다.'], ['k', '이제부터가 진짜<br>관장 실력을 보여 주는 무대지.<br>도전자들도 만만치 않을 걸세!'], ['k', '그 누구도 보지 못한 곳까지<br>자네가 한번 가 보게!'], ['k', '나는 연구소에서 랭킹판을<br>매일 새로고침하고 있으마. 허허!'], ['g', '(…연구는 언제 하시는 거지.)']];
+const LEG_END1 = /* v27.36 경완 '6번 시작할 때 아 참! 그리고 하나 더 로 수정해주고, 히든 등급이 있다는 식으로 멘트 수정해봐. 어떤 일이 일어날 지는 모르지만 엄청난 일이라는 점으로' */ [['k', '아 참! 그리고 하나 더.<br>전설의 체육관이 끝이라고<br>생각했다면 오산이란다.'], ['k', '실은 전설 위에<br><b>숨겨진 등급</b>이 하나 더 있지.<br>리그에서도 소문으로만 도는 등급이란다.'], ['k', '<b>평판 3,000</b>.<br>지금껏 그 누구도 닿지 못한<br>숫자지.'], ['k', '거기에 닿으면 무슨 일이 일어날지는<br>나도, 리그도 모른단다.'], ['k', '다만 한 가지는 확실하네.<br>분명 <b>엄청난 일</b>이 벌어질 걸세!'], ['k', '고용한 트레이너가 막아 줘도<br>평판은 오르지 않아. 오직 자네가<br>직접 이긴 만큼만 오른단다.'], ['k', '이제부터가 진짜<br>관장 실력을 보여 주는 무대지.<br>도전자들도 만만치 않을 걸세!'], ['k', '그 누구도 보지 못한 곳까지<br>자네가 한번 가 보게!'], ['k', '나는 연구소에서 랭킹판을<br>매일 새로고침하고 있으마. 허허!'], ['g', '(…연구는 언제 하시는 거지.)']];
 function legLines(N, E, ty) {
   const T = legLines0(N, E, ty), nth = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟'][N] || N;
   if (LEGK_ON && N >= 2 && LEG_CH[N] && Array.isArray(T.in)) T.in = [T.in[0], LEG_CH[N], ...T.in.slice(1)];
@@ -2465,14 +2481,14 @@ function mecTrim(im, again) {   // 그림 첫 장면에서 투명한 좌우 비�
   if (!im._trq) { im._trq = 1; const c = new Image(); c.crossOrigin = 'anonymous'; c.onload = () => { try { im._trim = rd(c); again?.(); } catch (e) { im._trim = [0, 0, 0, 0]; } }; c.onerror = () => { im._trim = [0, 0, 0, 0]; }; c.src = im.src; }
   return [0, 0, 0, 0]; }
 const mecSt = sp => { const o = SPECIES[sp]; return !!o && !!(o.leg || o.my || (o.bs || []).reduce((x, y) => x + y, 0) >= 580); };   // 전설·환상·종족값 580 이상 = 센 포켓몬 (왼쪽 자리)
-let MEC_FACE = null, mecFq = null;
+let MEC_FACE = null, mecFq = null; const MEC_BAT = new Set([41, 42, 169]);
 function mecFace(again) { if (MEC_FACE) return MEC_FACE; if (!mecFq) mecFq = fetch('gym/img/pk/face.json').then(r => r.json()).then(d => { MEC_FACE = d; }).catch(() => { MEC_FACE = {}; }); mecFq.then(() => again?.()); return null; }
 function mecLay(stg) {
   const W = stg.clientWidth, H = +(stg.dataset.h0 ||= stg.clientHeight); if (!W || !H) return;   // 처음 무대 높이 기준 (아래에서 높이를 줄여도 다시 계산할 때 안 쪼그라들게)
   const cx = W / 2, BB = 34, FB = 4, M = 4;
   const A = [...stg.querySelectorAll('.mec-pk')].map(e => { const sp = e.querySelector(':scope>span>img,:scope>span>i'); if (!sp || !sp.offsetHeight) return null; const sh = sp.tagName === 'I' && !sp.classList.contains('fa') ? .72 : 1;
     const t = mecTrim(sp, () => stg.isConnected && mecLay(stg)), bw0 = sp.offsetWidth * sh;   // 경완 '포켓몬 사이 여백은 너무 많아지지 않게': 그림의 투명한 좌우 여백을 빼고 실제 보이는 폭으로 줄 세움, 위아래 여백도 빼고 보이는 키로 비율 (경완 '에레키블이 관장보다 작아?')
-    return { e, st: e.dataset.st === '1', bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
+    return { e, st: e.dataset.st === '1', fly: MEC_BAT.has(+e.dataset.sp), bw: bw0 * (1 - t[0] - t[1]), off: bw0 * (t[0] - t[1]) / 2, bh: sp.offsetHeight * sh * (1 - t[2] - t[3]), ob: sp.offsetHeight * sh * t[3], r: Math.pow(Math.max(.1, (+e.dataset.h || 10) / 17), .6)   /* 경완 11-11 '관장 키를 1.7m 기준으로' + '크고 작음은 맞추되 너무 작아지지 않게': 키 비율을 0.6제곱으로 눌러 차이를 완만하게 (2배 키 → 1.5배) */ }; });
   if (!A.length || A.some(a => !a)) return;
   const trI = stg.querySelector('.mec-tr'), tt = trI ? mecTrim(trI, () => stg.isConnected && mecLay(stg)) : [0, 0, 0, 0], tv = 1 - tt[2] - tt[3];
   const trF = tv > .3 && tv < 1 ? [(1 - tt[0] - tt[1]) / tv, tv] : [36 / 66, 66 / 80];   // [보이는 폭/키, 보이는 키/그림 키] (pt_m: 36·66 / 80)
@@ -2483,14 +2499,17 @@ function mecLay(stg) {
   let LH = L0, LB = 14, ok = false, G = null;
   const HMIN = Math.max(24, Math.round(L0 * Math.pow(3 / 17, .6)));   /* 경완 11-11 '아무리 작아도 지금 콩둘기 수준보다 작아지진 않게': 콩둘기(0.3m)가 관장 기본 크기일 때 키가 최소 (넘쳐서 같이 줄 때도 그대로) */
   const FC0 = mecFace(() => stg.isConnected && mecLay(stg));
+  const LK = [W, H, trF, !!FC0, A.map(a => [a.e.dataset.sp, a.bw, a.bh, a.off, a.ob, a.r, a.st])].join('|'); if (stg._lk?.k === LK) { G = stg._lk.G; ok = true; }   /* 그림이 하나씩 들어올 때마다 다시 불려도 같은 입력이면 계산을 건너뜀 */
   const fb0 = a => { const f = FC0?.[a.e.dataset.sp]; if (!f) return null; const fl = a.x > cx + 6, x0 = a.x - a.w / 2, u0 = fl ? 1 - f[2] : f[0], u1 = fl ? 1 - f[0] : f[2]; return [x0 + u0 * a.w, a.b + a.h * (1 - f[3]), x0 + u1 * a.w, a.b + a.h * (1 - f[1])]; };
   const bd0 = a => [a.x - a.w * .4, a.b, a.x + a.w * .4, a.b + a.h * .92];
   const ov0 = (p, q) => !p || !q ? 0 : Math.max(0, Math.min(p[2], q[2]) - Math.max(p[0], q[0])) * Math.max(0, Math.min(p[3], q[3]) - Math.max(p[1], q[1])) / ((p[2] - p[0]) * (p[3] - p[1]) || 1);
   for (let k = 1, it = 0; it < 40 && !ok; it++) { LH = L0 * k; const LW = trF[0] * LH, pfH = 33 * LH / 66, C = 2 + pfH * .5, RY = pfH * .36; LB = Math.round(C - pfH * .08);
-    A.forEach(a => { a.h0 = LH * a.r; }); const tiny = S.filter(a => a.h0 < LH * .55 && S.indexOf(a) >= Math.min(2, n - 1)), big = S.filter(a => !tiny.includes(a));
+    A.forEach(a => { a.h0 = LH * a.r; }); const tiny0 = S.filter(a => a.h0 < LH * .55 && !a.fly && S.indexOf(a) >= Math.min(2, n - 1)); let tiny, big, fr = 0, okk = false;
+    /* 경완 '동혁이 관장 카드 보면 이상해꽃 한쪽 눈이 가려져있고 킬라플로르 얼굴 안 보이고 크로뱃 얼굴도 거의 가려져있는데': 중간 크기 포켓몬이 많으면 뒤쪽 호 한 줄에 다 서서 서로 얼굴을 덮음 → 작은 쪽 1~2마리를 앞쪽 호(관장 양옆 앞)로 내린 배치도 후보로 */
+    for (const wide of [0, 1]) for (let nf = 0; !okk && (nf <= Math.min(2, n - 3 - tiny0.length) || !nf); nf++) {   /* 먼저 예전 후보만, 그걸로 가림이 남을 때만 앞줄 내리기·먼 자리 바꾸기까지 (아이폰 계산 시간) */ if (!wide && nf) break; const rest = S.filter(a => !tiny0.includes(a)), fx = nf > 0 ? rest.slice(-nf).filter(a => S.indexOf(a) >= 2) : []; if (nf && fx.length < nf) break; tiny = [...tiny0, ...fx]; big = S.filter(a => !tiny.includes(a)); fr = fx.length;
     /* 경완 11-11 '배치 규칙을 어떻게 해야하나' (비키면 다른 데서 가려짐): 큰 포켓몬마다 왼쪽·오른쪽을 바꾼 후보 배치를 모두 만들어 보고
        프레임 안에 들어오는 것 중 점수가 가장 낮은 것 — 얼굴 가림(앞 포켓몬 몸·관장) ×10, 센 포켓몬이 오른쪽 +1.5, 좌우 치우침 */
-    for (let bo = 0; bo <= .6 + 1e-9 && !ok; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
+    for (let bo = 0; bo <= .6 + 1e-9; bo += .05) { const Ht = 1, R = 68 * LH / 66;   // R = 발판 반폭
       const place = (mk, ord, co = 0) => {
         // 뒤쪽 호: 가장 큰 것부터 가운데 → 바깥 (홀수면 첫째가 관장 바로 뒤에서 살짝 비켜). 어느 쪽으로 갈지는 mk 의 i 번째 비트
         let le = cx, re = cx, pL = null, pR = null;
@@ -2500,7 +2519,7 @@ function mecLay(stg) {
           const pv = sd < 0 ? pL : pR, ov = pv ? Math.min(.8, .2 + bo) * Math.min(a.w, pv.w) : -Math.min(LW * .25, a.w * .15);
           if (sd < 0) { a.x = (pv ? le : cx) - a.w / 2 + ov; le = a.x - a.w / 2; pL = a; } else { a.x = (pv ? re : cx) + a.w / 2 - ov; re = a.x + a.w / 2; pR = a; } });
         // 앞쪽 호: 작은 포켓몬은 관장 다리 양옆 앞
-        let tl = cx - LW * .15, tr = cx + LW * .15;
+        let tl = cx - LW * (fr ? .45 : .15), tr = cx + LW * (fr ? .45 : .15);   /* 앞으로 내린 중간 크기 포켓몬은 관장 몸 바깥부터 */
         tiny.forEach(a => { a.h = Math.max(HMIN, Math.min(a.bh * k, Math.max(HMIN, a.h0))); a.s = a.h / a.bh; a.w = a.bw * a.s; const sd = tr - cx <= cx - tl ? 1 : -1, ov = Math.min(.5, .25 + bo) * a.w;
           if (sd > 0) { a.x = tr + a.w / 2 - ov; tr = a.x + a.w / 2; } else { a.x = tl - a.w / 2 + ov; tl = a.x - a.w / 2; } });
         const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); if (hi - lo > W - M * 2) return false;
@@ -2508,20 +2527,22 @@ function mecLay(stg) {
         const RS = Math.max(R, ...big.map(a => Math.abs(a.x - cx) + 4));   /* 경완 11-11 '타원 뒷변으로 갈수록 스프라이트도 뒤로': 줄 끝까지를 타원 반폭으로, 가운데일수록 뒤 */
         big.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / RS); a.b = C + RY * Math.sqrt(1 - u * u); });
         tiny.forEach(a => { const u = Math.min(1, Math.abs(a.x - cx) / R); a.b = Math.max(Ht, C - RY * Math.sqrt(1 - u * u)); });
+        A.forEach(a => { if (!a.fly) return; const f = FC0?.[a.e.dataset.sp] || [0, .3, 1, .6], fy = a.b + a.h * (1 - (f[1] + f[3]) / 2); a.b += Math.max(0, Math.min(LB + LH * .85 - fy, H - M - a.h - a.b)); });   /* 경완 '관장 카드에서 주뱃 골뱃 크로뱃은 관장 머리 정도까지 살짝 띄워줘도 돼': 얼굴 가운데가 관장 머리 높이까지 (무대 위로는 안 넘게) */
         [...A].sort((x, y) => y.b - x.b || Math.abs(x.x - cx) - Math.abs(y.x - cx)).forEach((a, j, Z) => { const bk = Z.filter(x => x.b >= LB).length; a.z = j < bk ? 1 + j * 2 : 27 + (j - bk) * 2; });   /* 깊이 순서대로 z (관장 25 뒤는 1~, 앞은 27~) (경완 '한카리아스가 더 앞인데 뒤로') */
         return true; };
-      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH]; let s = 0;
+      const score = () => { const trB = [cx - LW * .42, LB, cx + LW * .42, LB + LH], trH = [cx - LW * .3, LB + LH * .72, cx + LW * .3, LB + LH]; let s = 0;
         A.forEach(a => { const fa = fb0(a); if (fa) { if (a.z < 25) s += 10 * Math.max(0, ov0(fa, trB) - .1); A.forEach(b => { if (b.z > a.z) s += 10 * Math.max(0, ov0(fa, bd0(b)) - .1); }); }
           const ba = bd0(a); let cv = a.z < 25 ? ov0(ba, trB) : 0; A.forEach(b => { if (b.z > a.z) cv += ov0(ba, bd0(b)); }); s += 3 * Math.max(0, cv - .35);   // 몸도 거의 다 가려지면 벌점
-          if (a.st && a.x > cx + 6) s += 1.5; });   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
+          if (a.st && a.x > cx + 6) s += 1.5; if (a.z > 25) s += 10 * Math.max(0, ov0(trH, bd0(a)) - .1); });   /* 앞에 선 포켓몬이 관장 얼굴을 덮으면 벌점 */   /* 경완 '전설이나 종족값 높은 애들은 가급적 관장과 같은 왼쪽을 보는 자리' */
         const lo = Math.min(...A.map(a => a.x - a.w / 2)), hi = Math.max(...A.map(a => a.x + a.w / 2)); return s + Math.abs((cx - lo) - (hi - cx)) / W * 3; };
       let best = null, bs = Infinity;   // 크기 순서 그대로 + 이웃한 둘을 바꾼 순서도 (조금 벌점)
-      const ords = [big, ...big.slice(1, -1).map((_, j) => { const o = [...big]; [o[j + 1], o[j + 2]] = [o[j + 2], o[j + 1]]; return o; })];
+      const ords = [big]; for (let i = 0; i < big.length; i++) for (let j = i + 1; j < big.length; j++) if (j === i + 1 ? i > 0 : wide) { const o = [...big]; [o[i], o[j]] = [o[j], o[i]]; ords.push(o); }
       /* 경완 '저런 경우가 안 나오게 규칙을': 관장 바로 뒤 가운데 포켓몬은 얼굴이 관장 머리에 가리면 더 비켜 선 자리(몸 폭 .3·.45)도 후보로 (조금 벌점) */
       ords.forEach((ord, oi) => { for (const co of ord.length % 2 ? [0, .3, .45] : [0]) for (let mk = 0; mk < 1 << ord.length; mk++) { if (!place(mk, ord, co)) continue; const sc = score() + (oi ? .4 : 0) + (co ? co : 0); if (sc < bs - 1e-9) { bs = sc; best = [mk, ord, co]; } } });
       if (best) { place(...best); const sc = bs + (1 - k) * 12;   /* 경완 '여전히 대짱이 얼굴 가려지는데': 가림이 남으면 다 같이 조금씩 줄여 가며 더 나은 배치를 찾고, 줄인 만큼 벌점 */
-        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5 || k < .8) ok = true; break; } }
-    if (!ok) k *= .96; }
+        if (!G || sc < G.sc) G = { sc, LH, LB, v: A.map(a => [a.x, a.b, a.z, a.h, a.s, a.w]) }; if (bs < 1.5) okk = true; break; } } }
+    ok = okk || k < .8; if (!ok) k *= .96; }
+  if (G) stg._lk = { k: LK, G };
   if (G) { LH = G.LH; LB = G.LB; A.forEach((a, i) => { [a.x, a.b, a.z, a.h, a.s, a.w] = G.v[i]; }); }
   if (G) { const trB = [cx - trF[0] * LH * .42, LB, cx + trF[0] * LH * .42, LB + LH]; let fc = 0;   // 가장 많이 가려진 얼굴 비율 (검사용 data-fc)
     A.forEach(a => { const fa = fb0(a); if (!fa) return; let c = a.z < 25 ? ov0(fa, trB) : 0; A.forEach(b => { if (b.z > a.z) c += ov0(fa, bd0(b)); }); fc = Math.max(fc, c); }); stg.dataset.fc = fc.toFixed(2); stg.dataset.k = (LH / L0).toFixed(2); }   // 넘치면 관장·포켓몬 모두 같이 조금씩 줄임 (경완 '크기 비율이 왜 또 바뀌지': 큰 포켓몬만 줄이면 안 됨)
@@ -3109,10 +3130,10 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['arc', '평판 3,000 연출 (아르세우스)'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['arc', '평판 3,000 연출 (아르세우스)'], ['arc2', '평판 3,000 연출 (두 번째 체육관부터)'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
-    if (a === 'arc') return arcGo(1);   /* 운영자: 평판 3,000 연출만 (박스·저장 안 건드림) */
+    if (a === 'arc') return arcGo(1); if (a === 'arc2') return arcGo(2);   /* 운영자: 평판 3,000 연출만 (박스·저장 안 건드림) */
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
     if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.31 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }

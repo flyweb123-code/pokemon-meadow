@@ -254,7 +254,7 @@ body.szmode #mapI>:not(#szPane){display:none!important}body.szmode #mapI{display
 #zoom .zre{display:grid;gap:6px;padding-top:10px;border-top:1px solid var(--line)}#zoom .zre h4{margin:0}#zoom .zre .react{display:grid;gap:4px}
 #zoom{position:fixed;z-index:60;width:334px;height:440px;overflow:auto;flex-direction:column;background:var(--panel);border:1px solid var(--chipb);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.45);padding:12px;display:flex;gap:10px}
 #zoom .zh{display:flex;align-items:center;gap:8px}#zoom .zh b{flex:1;font-family:var(--px);font-weight:400;color:var(--acc)}
-#zoom>*{flex:none}#zoom .zv{flex:1 1 90px;min-height:90px;height:auto;display:grid;place-items:center;background:repeating-conic-gradient(#2b2e37 0 25%,#262932 0 50%) 0 0/12px 12px;border-radius:4px;overflow:hidden}
+#zoom .zfw{position:relative;display:grid;place-items:center;transition:transform .08s}#zoom .zft{position:absolute;translate:-50% -50%;border:calc(2px / var(--zk,1)) dashed #7cf08a;border-radius:50%;background:rgba(124,240,138,.22);cursor:move;touch-action:none;box-sizing:border-box}#zoom .zft.ov{border-style:solid}#zoom .zft.drag{background:rgba(124,240,138,.36)}#zoom .zfh{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;scale:calc(1 / var(--zk,1));border-radius:50%;background:#7cf08a;border:1px solid #1d3b22;box-sizing:border-box}#zoom .zfh.n{left:50%;top:0;cursor:ns-resize}#zoom .zfh.s{left:50%;top:100%;cursor:ns-resize}#zoom .zfh.w{left:0;top:50%;cursor:ew-resize}#zoom .zfh.e{left:100%;top:50%;cursor:ew-resize}#zoom .zfh.ne{left:85.4%;top:14.6%;cursor:nesw-resize}#zoom .zfh.sw{left:14.6%;top:85.4%;cursor:nesw-resize}#zoom .zfh.nw{left:14.6%;top:14.6%;cursor:nwse-resize}#zoom .zfh.se{left:85.4%;top:85.4%;cursor:nwse-resize}#zoom .zfp .chip{margin-left:4px;padding:1px 8px}#zoom>*{flex:none}#zoom .zv{flex:1 1 90px;min-height:90px;height:auto;display:grid;place-items:center;background:repeating-conic-gradient(#2b2e37 0 25%,#262932 0 50%) 0 0/12px 12px;border-radius:4px;overflow:hidden}
 #zoom .zv img{image-rendering:pixelated;max-width:none}
 #zoom .zv .fl{background-size:600% 100%;image-rendering:pixelated}#zoom .zv .fl.anim{animation:zfl 1.05s steps(6) infinite}@keyframes zfl{to{background-position:120% 0}}
 #zoom label{display:grid;grid-template-columns:3.2em minmax(0,1fr) 3.4em;align-items:center;gap:8px;font-size:12.5px}
@@ -573,7 +573,7 @@ select{background:var(--chip);border:1px solid var(--chipb);border-radius:4px;mi
 <script>
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const STUDIO_VER = '4.06';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
+const STUDIO_VER = '4.09';   // 작업실 버전: 작업실 화면을 고쳐 올릴 때마다 올린다 (1.0 = 처음 올린 판)
 const BETA = (() => { try { return localStorage.getItem('st-beta') === '1'; } catch (e) { return false; } })();   // v3.13 경완: 작업실에서 베타 게임(beta.html, 새 기능 시험판)을 불러와 보기
 const GAME = BETA ? '../beta.html' : '../index.html', REPO = 'flyweb123-code/pokemon-meadow', CANDEPLOY = GAME !== 'game.html';
 const ICO = {
@@ -1368,7 +1368,34 @@ function zPaint(z, src, L, fr) {
   z.querySelectorAll('[data-l]').forEach(i => { const v = i.dataset.l === 's' ? Math.round(L.s * 100) : L[i.dataset.l]; i.value = v; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%'; });
   if (!src) { $('#zV').innerHTML = '<span class="ph">●</span>'; return; }
   const im = new Image(); im.onload = () => { const base = Math.min(3, 70 / im.naturalHeight, 118 * (fr || 1) / im.naturalWidth), w = im.naturalWidth / (fr || 1) * base * L.s, h = im.naturalHeight * base * L.s;
-    $('#zV').innerHTML = fr ? `<span class="fl anim" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`; }; im.src = src; }
+    $('#zV').innerHTML = `<div class="zfw" style="width:${w}px;height:${h}px">` + (fr ? `<span class="fl anim" style="display:block;background-image:url(${src});width:${w}px;height:${h}px"></span>` : `<img alt="" src="${src}" style="width:${w}px;height:${h}px">`) + '</div>'; zZoom(z); zFoot(z, src, w, h); }; im.src = src; }
+/* 경완 '작업실 소품 상세카드에서 마우스 휠로 미리보는거 확대 축소 할 수 있게 해줘': 미리보기 칸 위에서 휠 = 마우스 자리 기준 확대·축소 (0.5~8배), 두 번 누르면 원래대로. 다시 그려도 배율 그대로, 다른 카드를 열면 1배 */
+function zZoom(z) { const v = $('#zV'), wr = v?.querySelector('.zfw'); if (!wr) return; const m = z._zm || (z._zm = { k: 1, ox: 50, oy: 50 }); wr.style.transformOrigin = `${m.ox}% ${m.oy}%`; wr.style.transform = m.k === 1 ? '' : `scale(${m.k})`; wr.style.setProperty('--zk', m.k);
+  if (v._zw) return; v._zw = 1;
+  v.addEventListener('wheel', ev => { const W = v.querySelector('.zfw'); if (!W) return; ev.preventDefault(); const M = z._zm || (z._zm = { k: 1, ox: 50, oy: 50 }), r = W.getBoundingClientRect();
+    if (M.k === 1) { M.ox = Math.min(100, Math.max(0, (ev.clientX - r.left) / r.width * 100)); M.oy = Math.min(100, Math.max(0, (ev.clientY - r.top) / r.height * 100)); }
+    M.k = Math.min(8, Math.max(.5, M.k * Math.exp(-ev.deltaY * .0015))); if (Math.abs(M.k - 1) < .04) M.k = 1; zZoom(z); }, { passive: false });
+  v.addEventListener('dblclick', ev => { if (ev.target.closest('.zft')) return; z._zm = { k: 1, ox: 50, oy: 50 }; zZoom(z); }); }
+/* v27.17 경완 '작업실 소품 눌렀을 때 나오는 상세카드에서 하단 초록색 원 범위 표시해주고 크기 마우스로 끌어서 조절할 수 있게 해줘': 게임 맵 편집의 땅에 닿는 자리(초록 원)를 그림 위에 그대로. 원을 끌면 옮기고, 둘레 점을 끌면 크기. 놓으면 그 소품 종류 전체에 저장(배치 LAYOUT.fp) */
+function zFoot(z, src, w, h) { const fk = z._fk, wr = $('#zV .zfw'); let note = $('#zFp'); if (!fk || !A?.foot || !wr) { note?.remove(); return; }
+  if (!note) { note = document.createElement('div'); note.id = 'zFp'; note.className = 'small mute zfp'; $('#zV').after(note); }
+  { const art = A.footArt?.(fk); if (art && art.w && art.h && (art.bg || Math.abs(art.w / art.h - w / h) > .02 * w / h)) {   /* 경완 '작업실에서 땅 범위 편집한거랑 게임 필드에서 보이는 땅 범위랑 다르지?': 카드 그림(아이콘)이 게임 맵 그림과 모양이 다르면 게임 맵 그림으로 바꿔 그 위에 원을 그린다 (연못·꽃밭·모닥불은 바탕에서 오려 낸 그림) */
+    const k = Math.min(1.5, 70 / art.h, 118 / art.w); w = art.w * k; h = art.h * k; src = art.src; wr.style.width = w + 'px'; wr.style.height = h + 'px'; wr.innerHTML = `<img alt="" src="${src}" style="width:${w}px;height:${h}px;image-rendering:pixelated">`; } }
+  A.foot(fk, src).then(R => { if (!R?.F || !wr.isConnected) { note.textContent = ''; return; } let F = { ...R.F };
+    const e = document.createElement('i'); e.className = 'zft' + (R.ov ? ' ov' : ''); e.title = '끌어서 옮기기'; wr.append(e);
+    for (const [c, dx, dy] of [['n', 0, -1], ['s', 0, 1], ['w', -1, 0], ['e', 1, 0]]) { const d = document.createElement('b'); d.className = 'zfh ' + c; d.dataset.dx = dx; d.dataset.dy = dy; d.title = '끌어서 크기 조절'; e.append(d); }
+    const put = () => Object.assign(e.style, { left: F.x * w + 'px', top: F.y * h + 'px', width: Math.max(6, F.w * w) + 'px', height: Math.max(4, F.h * h) + 'px' });
+    const say = () => { note.innerHTML = `초록 원 = 땅에 닿는 자리 (맵 편집에서 겹침을 보는 범위). 원을 끌면 옮기고, 점을 끌면 크기가 바뀌어요.${R.ov ? ' <button class="chip" id="zFp0">원래대로</button>' : ''}`; };
+    put(); say();
+    e.onpointerdown = ev => { ev.preventDefault(); ev.stopPropagation(); const hd = ev.target.closest('.zfh'), r = wr.getBoundingClientRect(), k = r.width / w || 1, F0 = { ...F }, x0 = ev.clientX, y0 = ev.clientY; e.setPointerCapture(ev.pointerId); e.classList.add('drag');
+      const mv = m => { const ux = (m.clientX - x0) / k / w, uy = (m.clientY - y0) / k / h;
+        if (!hd) { F.x = Math.min(1, Math.max(0, F0.x + ux)); F.y = Math.min(1.1, Math.max(0, F0.y + uy)); }
+        else { const dx = +hd.dataset.dx, dy = +hd.dataset.dy; if (dx) F.w = Math.min(1.6, Math.max(.04, F0.w + 2 * dx * ux)); if (dy) F.h = Math.min(1.2, Math.max(.03, F0.h + 2 * dy * uy)); }
+        put(); };
+      const up = () => { e.removeEventListener('pointermove', mv); e.removeEventListener('pointerup', up); e.removeEventListener('pointercancel', up); e.classList.remove('drag');
+        if (['x', 'y', 'w', 'h'].every(q => Math.abs(F[q] - F0[q]) < .002)) return; A.setFoot(fk, F); R.ov = true; e.classList.add('ov'); say(); toast('땅 자리를 바꿨어요 · 이 소품 종류 모두 같이 바뀌어요'); };
+      e.addEventListener('pointermove', mv); e.addEventListener('pointerup', up); e.addEventListener('pointercancel', up); };
+    note.onclick = ev => { if (ev.target.id !== 'zFp0') return; ev.stopPropagation(); A.setFoot(fk, null); R.ov = false; F = { ...(R.A || F) }; e.classList.remove('ov'); put(); say(); toast('땅 자리를 그림에서 잰 값으로 되돌렸어요'); }; }); }
 function zSliders(z, apply) { let t = 0; z.oninput = e => { const i = e.target.closest('[data-l]'); if (!i) return; const v = +i.value; i.nextElementSibling.textContent = i.dataset.l === 'h' ? v + '°' : v + '%';
   clearTimeout(t); t = setTimeout(() => apply({ [i.dataset.l]: i.dataset.l === 's' ? v / 100 : v }), 90); }; }
 // v2.4 경완: 소품 세부 창 아래 버튼 = [새로운 소품으로 저장] [삭제]. 전체 소품에서 삭제하면 그 종류가 게임 데이터에서 빠진다 (한 번 더 물어봄)
@@ -1380,7 +1407,7 @@ function openScZoom(k, el, C) {
   z.innerHTML = `<div class="zh"><b>${esc(n)}</b><button class="chip" id="zX" aria-label="닫기">✕</button></div><div class="zv" id="zV"></div>
     <div class="small mute">맵에 ${c}개 있어요. 맵에 놓은 뒤 모서리를 끌어 크기를 바꿀 수 있어요.</div>
     <div class="zb"><button class="btn" id="zAdd">맵 가운데에 놓기</button><button class="chip del" id="zDel">삭제</button></div>`;
-  zReact(z, k); zoomPos(z, el); zPaint(z, src, { s: 1, h: 0, c: 100, b: 100 }, 0);
+  z._zm = null; z._fk = A.fpKey?.(k); zReact(z, k); zoomPos(z, el); zPaint(z, src, { s: 1, h: 0, c: 100, b: 100 }, 0);
   z.onclick = e => { const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'zX') closeZoom();
     else if (b.id === 'zAdd') { if (!editing) setEdit(true); A.add(k); renderDock(); const s = A.selInfo?.(); dockMark(s); if (s) openInst(s); toast(`${n}을(를) 맵 가운데에 놓았어요. 끌어서 옮겨요`); }
@@ -1396,7 +1423,7 @@ function openZoom(k, el) {
       : nol ? '<div class="small mute">이 소품은 아직 크기·색을 바꿀 수 없어요.</div>' : `${SL}<div class="small mute">크기·색을 정한 뒤 맵에 추가하면 그 모양으로 놓여요. 끌어다 놓으면 원래 모양이에요.</div>`}
     <div class="zb">${mine || nol ? '<button class="btn w" id="zAdd">맵 가운데에 놓기</button>' : '<button class="btn" id="zAdd">이 모양으로 맵에 추가</button><button class="chip" id="zR0">원래대로</button>'}
       ${nol ? '' : '<button class="chip" id="zNew">새로운 소품으로 저장</button>'}<button class="chip del${nol ? '' : ''}" id="zDel"${nol ? ' style="grid-column:1/-1"' : ''}>삭제</button></div>${ZB_SAVE}`;
-  zReact(z, k); zoomPos(z, el);
+  z._zm = null; z._fk = nol && k === 'mush' ? null : A.fpKey?.(k); zReact(z, k); zoomPos(z, el);
   const L0 = { s: 1, h: 0, c: 100, b: 100 }; let LKz = { ...L0 };
   const paint = () => { if (mine) { const K = A.kind(k); zPaint(z, A.lookIcon(k), { ...K.lk, s: K.lk.s }, 0); } else zPaint(z, (nol ? '' : A.lookIcon(k, LKz)) || row[2], LKz, 0); };
   paint();
@@ -1427,7 +1454,7 @@ function openInst(s, el) {
     <div class="small mute">${s.key === 'sc' ? `크기 ${Math.round((s.sz || 1) * 100)}%. 맵에서 모서리를 끌어 크기를 바꾼 뒤 [저장]하면 이 소품은 앞으로 이 크기로 놓여요.` : !look ? '이 소품은 크기·색을 바꿀 수 없어요. 맵에서 끌어서 옮겨요.' : s.kind ? `"${esc(s.kindName)}" 소품이에요. 여기서 바꾸면 맵의 이 소품 하나만 따로 바뀌어요.` : '맵에 있는 이 소품 하나만 바뀌어요. 전체 소품에는 그대로예요.'}</div>
     <div class="zb">${look ? '<button class="chip w" id="zReset">원래대로</button>' : ''}${sv ? '<button class="btn" id="zFix"' + (s.own ? '' : ' disabled') + ' title="이 크기·색을 이 소품 종류의 기본으로">저장</button><button class="chip" id="zKind" title="이 크기·색 그대로 전체 소품에 새 소품으로">다른 이름으로 저장</button>' : ''}<button class="chip del${sv ? ' w' : ' w'}" id="zDel"${s.del ? '' : ' disabled title="하나뿐인 소품이라 지울 수 없어요"'}>${s.del ? '삭제' : '삭제 (하나뿐인 소품)'}</button></div>
     ${ZB_SAVE}`;
-  zReact(z, s.key, s.key === 'sc' ? (() => { try { return A.layout().sc?.[s.i]?.[0]; } catch (e) { return null; } })() : null); zoomPos(z, el);
+  z._zm = null; z._fk = s.key === 'path' ? null : A.fpKey?.(s.key, s.i); zReact(z, s.key, s.key === 'sc' ? (() => { try { return A.layout().sc?.[s.i]?.[0]; } catch (e) { return null; } })() : null); zoomPos(z, el);
   const fire = s.key === 'fire' || s.key === 'fires', fr = fire ? 6 : 0, paint = () => look ? zPaint(z, fire ? null : A.selIcon(), A.selLook(), fr) : zPaint(z, A.insts?.().find(o => o.key === s.key && o.i === s.i)?.icon || '', { s: 1, h: 0, c: 100, b: 100 }, 0);
   const fireP = () => A.fireArt ? A.fireArt(look ? A.selLook() : null).then(src => { if (src && zoomK === 'inst') { zPaint(z, src, look ? A.selLook() : { s: 1, h: 0, c: 100, b: 100 }, 6); } }) : null;   // v2.25 경완: 모닥불도 미리보기 (불꽃이 타오름)
   paint(); if (fire) { $('#zV').innerHTML = ''; fireP(); } else if (['pond', 'bed', 'ponds', 'beds'].includes(s.key)) A.oneThumb?.(s.key.replace(/s$/, ''), s.key.endsWith('s') ? s.i : -1).then(u => { if (u && zoomK === 'inst') zPaint(z, u, { s: 1, h: 0, c: 100, b: 100 }, 0); }).catch(() => {});   // v3.64 경완: 연못·꽃밭 상세 카드도 칸 그림 그대로 else if (s.key === 'mush') $('#zV').innerHTML = '<span class="ph" style="font-size:40px">🍄</span>';
