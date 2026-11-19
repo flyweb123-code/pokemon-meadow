@@ -1001,7 +1001,7 @@ function fitList() { const g = st() || {}; g.fits = g.fits || {}; const F = new 
 const fitHas = k => !!(k && (st()?.fits?.[k] || (Array.isArray(S.fits) && S.fits.includes(k))));
 const legFitK = (t = st()?.ty) => { const k = LEG_FIT[t]?.[myF() ? 'f' : 'm']; return k && fitOf(k) ? k : ''; };
 const legFitDue = () => { const g = st(), k = g?.d && isLeg(g) && legFitK(g.ty); return !!k && !fitHas(k) && !window.gymSimOn && !window.gymEvTest; };
-const LF_ADJ = '명예의';   /* 경완 '전설의 독 타입 관장 옷 이런 식으로 수식어, 전설은 좀 과한 듯' → 받기 전 이름 = '명예의 독 관장 옷' */
+const LF_ADJ = '명예로운';   /* 경완 '명예로운 으로 가자' */   /* 경완 '전설의 독 타입 관장 옷 이런 식으로 수식어, 전설은 좀 과한 듯' → 받기 전 이름 = '명예의 독 관장 옷' */
 const lfNm = t => `${LF_ADJ} ${TYPE_KO[t] || ''} 관장 옷`;
 const lfImg = k => `${IMG}fit/${k}_${myF() ? 'f' : 'm'}.png`;
 // 전설 의상 받는 창: 빛 무대 위 실루엣 → 번쩍 하고 옷이 보임 → 팡파르. test = 운영자 시험 (아무것도 안 남김)
