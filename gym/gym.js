@@ -1025,19 +1025,19 @@ function myAvg() { const g = st(), L = luNow().map(P => (GB()?.gm?.(P) || g.mon?
 let spCache = null;
 const spOff = sp => !!GA.SP_OFF?.has(+sp);   // 작업실에서 끈 포켓몬은 도전자·지원자 팀에 안 나옴 (경완 2026-10-28)
 let spCacheL = null;
-function pickSp(types, lv, tg, w0) {
+function pickSp(types, lv, tg, w0, ex) {   /* v27.35 경완 '중복 포켓몬은 데려오지 않게': ex = 이미 팀에 든 종 (다 막히면 폭을 넓히고, 그래도 없을 때만 겹침) */
   if (!spCache) spCache = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && !o.leg && !o.my && !o.baby && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   if (!spCacheL) spCacheL = Object.entries(SPECIES).filter(([n, o]) => +n <= 1025 && (o.leg || o.my) && o.bs).map(([n, o]) => ({ n: +n, t: o.t || [], b: o.bs.reduce((a, c) => a + c, 0) }));
   const tgt = tg || spTgt(lv), P = tgt > 600 ? spCache.concat(spCacheL) : spCache;   // 강함 보정으로 600 넘으면 전설·환상도 (전설 등급만)
-  for (const w of w0 ? [w0, 55, 90, 140, 400] : [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t)))); if (L.length) return pick(L).n; }
-  return 19;
+  for (const w of w0 ? [w0, 55, 90, 140, 400] : [55, 90, 140, 400]) { const L = P.filter(x => !spOff(x.n) && Math.abs(x.b - tgt) <= w && (!types.length || x.t.some(t => types.includes(t))) && !ex?.has(x.n)); if (L.length) return pick(L).n; }
+  return ex?.size ? pickSp(types, lv, tg, w0) : 19;
 }
 // v17.73 경완 '종종 본가랑 다르게 반전 킥 한 마리': tw 면 에이스(마지막) 말고 한 칸을 트레이너 종류와 상관없는 타입으로
 const TW_P = .2;
 function mkTeam(types, lvB, n, sb, ct, q, tw) {
   const T = types.length ? types : [rndI(1, 18), rndI(1, 18)], TC = ct?.length ? (types.length ? types.filter(x => ct.includes(x)) : ct) : [];
   const twI = tw && types.length && n >= 2 ? rndI(0, n - 2) : -1, TO = Array.from({ length: 18 }, (_, k) => k + 1).filter(x => !types.includes(x));
-  return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp([i === twI ? pick(TO) : TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0), lv]; });
+  const U = new Set(); return Array.from({ length: n }, (_, i) => { const lv = clampN(lvB + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100), sp = pickSp([i === twI ? pick(TO) : TC.length && Math.random() < q ? pick(TC) : pick(T)], lv, sb && sb > spTgt(lv) ? sb : 0, 0, U); U.add(sp); return [sp, lv]; });
 }
 /* v17.31 경완 '보정 최댓값을 등급별로' + '하나만 센 포켓몬 넣고 나머지 약하게 넣는 허점': 라인업 강함 보정.
    기준 = 종족값 합계가 가장 높은 3마리(종족값 평균·레벨 평균). 약한 포켓몬을 섞어도 기준이 안 내려간다.
@@ -1371,7 +1371,7 @@ function mkCand(now) {
   const ty = st().ty, KS = Object.keys(CLS).filter(x => !PAIR_K.has(x) && ty && (!CLS[x].t.length || CLS[x].t.includes(ty))), k = pick(KS.length ? KS : Object.keys(CLS).filter(x => !PAIR_K.has(x))), /* v15.48 경완: 지원 트레이너는 체육관 타입에 맞는 직업으로 */ C = CLS[k], avg = myAvg(), lv = Math.max(5, avg + rndI(-6, 3)), n = rndI(2, 4), trait = pick(Object.keys(TRAITS).filter(t => t !== 'effort' || evOnG()));   /* v21.97 경완 '동네 체육관일 땐 노력치 안 풀렸으니 노력치 특성 트레이너는 지원 안 함' */
   const tv = rndI(0, 100), sc = sfScout(), W = SF_TIER.map(([p], i) => i ? p * (1 + sc) : p), Wt = W.reduce((a, b) => a + b, 0), ti = (() => { let r = Math.random() * Wt; for (let i = 0; i < W.length; i++) { if ((r -= W[i]) < 0) return i; } return 0; })(), tq = SF_TIER[ti][1], types = ty ? [ty] : C.t;
   const tr2 = trait;   /* v25.76 경완 '그냥 무작위로 바꿔줘': 라인업과 상관없이 특성 13개 중 무작위 */
-  const team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100); return [pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25), l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
+  const U = new Set(), team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100), sp = pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25, U); U.add(sp); return [sp, l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
   const wage = sfWage(ti, tr2, tv / 100);
   return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 5, lq: ti, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
