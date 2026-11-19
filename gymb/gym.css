@@ -4789,8 +4789,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt-tcr .cr{background-position:center bottom;filter:none!important;animation:tcrB2 2.4s ease-in-out infinite}@keyframes tcrB2{50%{transform:translateY(-1.5px)}}   /* v27.26 3D 결정 관: 그림에 빛 번짐이 이미 있어 CSS 빛은 뺌 (경완 '디자인이 좀 달라지는건 왜') */
 #gym .rs-rep .rr-top{display:flex;justify-content:center}#gym .rs-rep .rr-top>span{position:absolute;white-space:nowrap;right:calc(50% + 1.25em * 22 / 13 + 8px);bottom:1px}   /* v27.42 경완 '평판숫자 원래 보너스 숫자 나올 때 움직였다가 중간으로 돌아왔잖아 그거 되돌려주고 움직이기 전이랑 돌아왔을 때의 검정 숫자가 가운데 정렬': 흐름엔 숫자만(가운데), 평판 글자는 숫자 왼쪽에 붙임, +N 이 떠 있는 동안 숫자+N 묶음이 가운데로 오게 숫자가 비켜 갔다 돌아옴 (gym.js repAnim pin) */
 /* v27.54 경완 '받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로': 전설 관장 의상 — 보상 줄 작은 그림(받기 전 실루엣) + 받는 창(무대 조명 아래 실루엣 → 번쩍 → 옷) */
-#gym .pk-lf{display:inline-grid;place-items:center;width:26px;height:32px;overflow:hidden;vertical-align:middle;margin:0 6px 0 -2px}
-#gym .pk-lf img{width:36px;height:36px;max-width:none;image-rendering:pixelated}
+#gym .pk-lf{position:relative;display:inline-block;width:26px;height:26px;vertical-align:middle;margin:0 6px 0 -2px}
+#gym .pk-lf img{position:absolute;left:50%;top:50%;width:32px;height:32px;margin:-18px 0 0 -16px;max-width:none;image-rendering:pixelated}   /* 경완 '혜택 슬롯 박스 내 정렬 맞춰달라구': 다른 줄 아이콘(26px 칸) 가운데에 몸이 오게 */
 #gym .pk-lf.sil img{filter:brightness(0);opacity:.5}#gym .bsw-ben .pk-lf.sil img{filter:brightness(0) invert(1);opacity:.4}
 #gym .pk-ben .lf .pk-ic{background:none;box-shadow:none}#gym .pk-ben .lf .pk-ic::before{display:none}#gym .pk-ben .lf .pk-lf{margin:0}
 #gym .gy-perk .pk-lf{margin:0 6px 0 0}#gym .gy-perk ul li:has(.pk-lf){list-style:none;margin-left:-16px}
