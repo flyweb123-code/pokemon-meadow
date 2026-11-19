@@ -494,7 +494,8 @@ async function gmFx(s, X, kind, ty) {
         if (GymDBK.zFull) { await Promise.race([loadEss(), wait(1500)]); c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.zName = mvKo(zid) || 'Z기술'; await GymDBK.zFull(c); return; }   /* 경완 2026-11-13: Z기술 전체 화면 연출 (본가·애니 고증) */
         await GymDBK.zmove(c); return; }
       if (kind === 'tera') { const c = await dxCtx(s, X, frontOf(X, X.fm), frontOf(X, X.fm), `${IMG}dbk/it/TERAORB.png`); c.type = ty; c.pat = `${IMG}dbk/pat/tera_pattern_${String(ty || '').toUpperCase()}.png`;
-        if (GymDBK.teraFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.icon = TERA_I[ty] ? `${IMG}dbk/Tera/ty/${TERA_I[ty]}.png` : ''; c.tyKo = TYK[ty] || ''; c.onSwap = () => teraOn(s, ty); await GymDBK.teraFull(c); teraOn(s, ty); return; }   /* 경완 2026-11-19 '본가 테라스탈 연출 찾아보고 메진 거다이 수준으로': 오브에 힘 모음 → 던짐 → 결정이 감쌈 → 깨지며 보석 관 */
+        if (GymDBK.teraFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.icon = TERA_I[ty] ? `${IMG}dbk/Tera/ty/${TERA_I[ty]}.png` : ''; c.tyKo = TYK[ty] || ''; c.onSwap = () => teraOn(s, ty); const bm = window.GymBGM?.name; M('stop', .25); M('play', 'evLegend');   /* 경완 '다이맥스랑 bgm 다르게하고 메진처럼 테라스탈 할 때만 나오게': 메가진화(shinka)처럼 연출 동안만 아르세우스 강림 곡, 끝나면 원래 배틀 곡 */
+          await GymDBK.teraFull(c); M('stop', .5); if (bm && B) setTimeout(() => { if (B && window.GymBGM?.name == null) M('play', bm); }, 550); teraOn(s, ty); return; }   /* 경완 2026-11-19 '본가 테라스탈 연출 찾아보고 메진 거다이 수준으로': 오브에 힘 모음 → 던짐 → 결정이 감쌈 → 깨지며 보석 관 */
         await GymDBK.tera(c); teraOn(s, ty); return; }
       if (kind === 'dmax') { const c = await dxCtx(s, X, frontOf(X, X.fm0 ?? X.fm), frontOf(X, X.fm), `${IMG}dbk/it/DYNAMAXBAND.png`); c.ball = c.ballOpen = `${IMG}dbk/it/poke-ball.png`; c.ballS = new URL(`${IMG}ball/mon.png`, location.href).href; c.ballW = c.ballH = 48; c.pat = `${IMG}dbk/pat/dynamax.png`; c.calyrex = X.sp === 898;
         if (GymDBK.dmaxFull) { c.bt = el; c.top = $b('.bt-top'); c.monEl = m; c.gmax = B.gmx?.[s] === 2; c.trB = s[0] === 'p' ? B.trBU : null; c.raw = n => se(n, { pan }); c.gxTop = gxTop; c.onSwap = () => { swap(); dmaxOn(s, X); };   /* 경완 2026-11-14 '거다이맥스도 메가·Z기술처럼 전체화면, 본가 소드실드 연출 비슷하게' */
@@ -579,8 +580,7 @@ function dmaxOff(s) { const m = monEl(s); m.classList.remove('dmx'); patOff(s); 
 /* 경완 2026-11-14 '거다이맥스 후 배틀화면: 내 포켓몬은 커지고 거다이맥스처럼 빨간 구름 드리운 상태, 상대 포켓몬은 커진만큼 작아져있고, 배경이 하늘 혹은 실내일 경우 천장까지 보이는 배경으로'
    → 카메라가 뒤로 물러난 듯: 배경을 줄이고 잘린 위쪽을 하늘·천장으로 이어 그린 캔버스(GymDBK.gxBg), 다이맥스한 쪽은 크게·다른 쪽은 작게(.bt.gx-p / .gx-e), 머리 위 붉은 구름 고리(GymDBK.gxRing, 포켓몬 뒤·앞 두 캔버스) */
 const GX = {};
-function tSong(s) { if (!B) return; const nm = window.GymBGM?.name; (B.tS = B.tS || {})[s] = 1; if (nm === 'dmax') return; if (!B.dmPrev) B.dmPrev = nm || null; M('play', 'dmax', { fade: .3 }); }   /* 경완 '테라스탈 연출 나올 때도 bgm 바꿔주고': 다이맥스와 같은 소드실드 관장 곡, 연출 시작부터 테라 포켓몬이 들어가거나 쓰러질 때까지 */
-function dmBack() { if (!B || !B.dmPrev || Object.values(B.gmx || {}).some(v => v) || Object.values(B.tS || {}).some(v => v)) return; const p = B.dmPrev; B.dmPrev = null; if (window.GymBGM?.name === 'dmax') M('play', p, { fade: .5 }); }   /* 어느 쪽도 다이맥스가 아니면 다이맥스 전 배틀 곡으로 */
+function dmBack() { if (!B || !B.dmPrev || Object.values(B.gmx || {}).some(v => v)) return; const p = B.dmPrev; B.dmPrev = null; if (window.GymBGM?.name === 'dmax') M('play', p, { fade: .5 }); }   /* 어느 쪽도 다이맥스가 아니면 다이맥스 전 배틀 곡으로 */
 function gxLay() { if (!el || !B) return; const on = k => Object.keys(B.gmx || {}).some(s => s[0] === k && B.gmx[s]); el.classList.toggle('gx-p', on('p')); el.classList.toggle('gx-e', on('e'));
   const any = on('p') || on('e'), cur = el.querySelector('.bt-gxbg');
   if (!any) { if (cur) { cur.classList.remove('on'); setTimeout(() => { if (!el?.classList.contains('gx-p') && !el?.classList.contains('gx-e')) cur.remove(); }, 1500); } return; }
@@ -755,7 +755,7 @@ async function sendOut(side, A, quick) {
   paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); reTera(side, A); await wait(450);
 }
 /* 테라스탈한 포켓몬이 교체로 들어갔다 다시 나오면 엔진에선 그대로 테라 → 화면도 결정 무늬·관을 다시 (교체 때 patOff·tcOff 로 지워졌던 것) */
-function reTera(s, X) { const t = B?.tP?.[s[0] + X.i]; if (!t) return; X.tera = t; teraOn(s, t); paintHb(s, X); tSong(s); }
+function reTera(s, X) { const t = B?.tP?.[s[0] + X.i]; if (!t) return; X.tera = t; teraOn(s, t); paintHb(s, X); }
 async function shinyFx(side) {
   const m = monEl(side); se('REAPOKE', { pan: panOf(side) });
   for (let i = 0; i < 7; i++) { const k = document.createElement('i'); k.className = 'bt-shn'; k.style.setProperty('--a', (i * 51) + 'deg'); k.style.animationDelay = (i * 60) + 'ms'; m.appendChild(k); setTimeout(() => k.remove(), 1100); }
@@ -1387,7 +1387,7 @@ async function run(opts) {
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '', ptyIt: opts.ptyIt || null   /* 수련탑: 교체 화면 줄마다 지닌 도구 */ };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
-  const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
+  const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka'); if (opts.gmk?.tera) M('prep', 'evLegend');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   if (!opts.bgmKeep) await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);   /* v24.14 수련탑: 같은 곡이면 이어지는 배틀에서 곡을 다시 틀지 않음 */
   const encDone = opts.chain ? () => {} : await encounter(opts);   /* v23.10 훈련하기: 다음 층은 배틀 화면 그대로 상대만 바뀜 */
@@ -1714,7 +1714,7 @@ async function handle(a) {
       const src = s[0] === 'p' ? B.my[i] : B.foe[i], pk = B.o[s[0]][i];
       const old = A(s);
       if (old && !old.fnt) { await msg(s[0] === 'p' ? `돌아와! ${old.nm}!` : `${eun(B.foeNm)} ${eul(old.nm)} 되돌렸다!`, 0); await recall(s); }
-      monEl(s).classList.remove('dmx', 'tera'); patOff(s); tcOff(s); setTimeout(gkBg, 0); B.gmx[s] = 0; if (B.tS) B.tS[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
+      monEl(s).classList.remove('dmx', 'tera'); patOff(s); tcOff(s); setTimeout(gkBg, 0); B.gmx[s] = 0; gxOff(s, 1); gxLay(); dmBack();   /* v21.89 다이맥스·테라스탈 모습은 들어가면 풀림 */
       const sp = PSim.Dex.species.get(det[0]).num || src.sp;
       const X = B.act[s] = { i, pk, nm: src.nm, sp, tsp: SPECIES[src.sp]?.rb === sp ? src.sp : sp, fm: toID(det[0]) === 'minior' && hp * 2 > mhp ? 'miniormeteor' : toID(det[0]),   // 메테오나 (리밋실드): 체력 절반 넘으면 껍질 모습으로 나온다   /* v17.46 경완: tsp = 타입 아이콘용 번호 (쇼다운 num 은 가라르 또도가스도 110 이라 지역 폼은 내 번호로) */
       lv: +(det.find(d => /^L\d+/.test(d)) || 'L100').slice(1), g: det.includes('F') ? 'F' : det.includes('M') ? 'M' : '', shiny: det.includes('shiny'), hp, mhp, st: stOf(a[4]), fnt: false };
@@ -1757,7 +1757,7 @@ async function handle(a) {
       { const h = !sil && HEAL_FX[from.replace(/^(item|ability|move): /, '')]; if (h) await (h[0] === '_' ? moveFx(s, 'recover', false, h) : moveFx(s, h)); }
       await drainHp(s, X, hp); if (!sil) await msg(healMsg(who(a[2]), from)); break; }
     case '-sethp': { const s = sideOf(a[2]), X = A(s); if (!X) break; const [hp] = hpOf(a[3]); await drainHp(s, X, hp); if (a.includes('[from] move: Pain Split') && !a.includes('[silent]')) await msg('서로의 체력을 나눠 가졌다!'); break; }   /* v21.30 고통나누기 문장 */
-    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); dmBack(); } if (B.tS?.[s]) { B.tS[s] = 0; dmBack(); } X.fntS = true; (B.dbl ? [s[0], s[0] + '2'] : [s]).forEach(hbBalls); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
+    case 'faint': { const s = sideOf(a[2]), X = A(s); if (!X) break; X.fnt = true; await faint(s, X); if (B.gmx?.[s]) { B.gmx[s] = 0; gxOff(s); dmBack(); } X.fntS = true; (B.dbl ? [s[0], s[0] + '2'] : [s]).forEach(hbBalls); await msg(`${who(a[2]) === nmIn(a[2]) ? eun(X.nm) : '상대 ' + eun(X.nm)} 쓰러졌다!`); if (s[0] === 'e') await expGain(X); break; }
     case '-immune': await gap(); await msg(`${who(a[2])}에게는 효과가 없는 것 같다…`); break;
     case '-miss': await gap(); await msg(a[3] ? `${who(a[3])}에게는 맞지 않았다!` : `${who(a[2])}의 공격은 빗나갔다!`); break;
     case '-fail': await wait(750); if (a.some(x => /^\[from\] ability: /.test(x))) { await msg(a[3] === 'unboost' ? `${who(a[2])}의 능력은 떨어지지 않는다!` : `${who(a[2])}에게는 효과가 없는 것 같다…`); break; } if (a.includes('[weak]')) { await msg('그러나 대타를 만들기에는 체력이 부족했다!'); break; } { const fw = (a.find(x => /^\[from\] /.test(x)) || '').slice(7); const T = { 'Primordial Sea': '강한 비 때문에 불꽃 타입 공격이 사라져 버렸다!', 'Desolate Land': '강한 햇살 때문에 물 타입 공격이 증발해 버렸다!' }; if (T[fw]) { await msg(T[fw]); break; } } await msg('그러나 실패했다!'); break;   /* v21.30: 체력 부족한 대타·시작의바다·끝의대지 문장 */   /* v20.75: 클리어바디·정신력 등 특성으로 막으면 그 문장 */   // 기술 이름을 읽을 틈 (경완 2026-10-29 '내던지기 > 그러나 실패했다! 너무 빨라')
@@ -1777,7 +1777,7 @@ async function handle(a) {
     case '-zpower': { const s = sideOf(a[2]), L = B.btl.log; let zi = null; for (let j = B.li; j < Math.min(L.length, B.li + 6); j++) { const x = L[j].split('|'); if (x[1] === 'move' && x[2] === a[2]) { const zid = toID(x[3]), zm = PSim.Dex.moves.get(zid); zi = { id: zid, type: zm.type, item: B.btl[s[0] === 'p' ? 'p1' : 'p2'].active[0]?.item }; break; } }
       if (s[0] === 'p') B.zUseP = 1; await gmFx(s, A(s), 'z', zi); const zt = Math.max(1, TY_EN.indexOf(zi?.type || 'Normal')); zAura(s, true, 0, zt); await Promise.all([msg(`${eun(who(a[2]))} Z파워를 몸에 둘렀다!`, 0), essFx(s, 'zpower', ZT_FL[zt])]); if (!B) break; $b('.bt-msg .cur').hidden = false; await new Promise(r => { B.tapWake = r; }); if (B) { B.tapWake = null; $b('.bt-msg .cur').hidden = true; } break; }   /* 경완 2026-11-13: 대사와 함께 Gen 9 팩 Z파워 두르기 연출 (Common:ZPower) */
     case '-zbroken': await msg(`${eun(who(a[2]))} 지키기를 뚫고 공격을 받았다!`); break;
-    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) { X.tera = a[3]; (B.tP = B.tP || {})[s[0] + X.i] = a[3]; } tSong(s); await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
+    case '-terastallize': { const s = sideOf(a[2]), X = A(s); if (X) { X.tera = a[3]; (B.tP = B.tP || {})[s[0] + X.i] = a[3]; } await gmFx(s, X, 'tera', a[3]); if (X) paintHb(s, X); await msg(`${eun(who(a[2]))} 테라스탈하여 ${TYK[a[3]] || a[3]} 타입이 되었다!`); break; }
     case '-start': if (a[3] === 'Dynamax') { const s = sideOf(a[2]), X = A(s); if (!X) break; const gx = a[4] === 'Gmax', n = who(a[2]);
         if (gx) { const gf = toID(PSim.Dex.species.get(X.pk?.baseSpecies?.name || X.fm || '').baseSpecies || '') + 'gmax'; if (GMJ[gf]) { X.fm0 = X.fm; X.fm = gf; X.gif = await pickGif(s, X); } }
         B.gmx[s] = gx ? 2 : 1; const dmM = window.GymBGM?.name !== 'dmax' ? 'dmax' : null; if (dmM && !B.dmPrev) B.dmPrev = window.GymBGM?.name || null;   /* 경완 '다이맥스 끝날 때까지만 이어지게. 끝나면 원래 배틀 노래로 돌아오게 (난천 아님)': 원래 곡 B.dmPrev 기억 → dmBack */   /* 경완 'bgm 넣어놓음 폴더에' → 소드실드 체육관 곡(bgm.js SONG.dmax) */ if (dmM) M('play', dmM, { fade: .3 });   /* 경완 '거다이맥스 연출 나올 때도 적절한 bgm': 연출 시작부터 챔피언 배틀 곡 */   /* 경완 '다이맥스 할 때랑 하는 동안 소드실드 체육관 배틀 bgm' → 곡을 못 구해 '일단 그럼 우리도 다른 bgm 으로': 배틀에서 처음 다이맥스하는 순간 챔피언 배틀 곡으로 바꿔 끝까지 */ await gmFx(s, X, 'dmax'); stPat(s, X.st); await msg(`${eun(n)} ${gx ? '거다이맥스' : '다이맥스'}했다!`); break; }
