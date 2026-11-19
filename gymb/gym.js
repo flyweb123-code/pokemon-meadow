@@ -367,7 +367,7 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' },   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
 };
 // 전설의 체육관 타입 → 받는 관장 의상 (주인공 성별마다 하나, 그림이 있는 타입만. 새 의상을 그리면 여기에 더한다)
-const LEG_FIT = { fighting: { m: 'lf_bruno', f: 'lf_bea' }, poison: { m: 'lf_roxie', f: 'lf_janine' } };
+const LEG_FIT = { 2: { m: 'lf_bruno', f: 'lf_bea' }, 4: { m: 'lf_roxie', f: 'lf_janine' } };   // 키 = 타입 번호 (2 격투, 4 독)
 // 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
 const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
 const myF = () => trOf().sex === 'f';
@@ -1005,8 +1005,8 @@ const LF_ADJ = '명예로운';   /* 경완 '명예로운 으로 가자' */   /* 
 const lfNm = t => `${LF_ADJ} ${TYPE_KO[t] || ''} 관장 옷`;
 const lfImg = k => `${IMG}fit/${k}_${myF() ? 'f' : 'm'}.png`;
 // 전설 의상 받는 창: 빛 무대 위 실루엣 → 번쩍 하고 옷이 보임 → 팡파르. test = 운영자 시험 (아무것도 안 남김)
-function legFitPop(test) { const g = st(), k = test ? (legFitK(g?.ty) || legFitK('fighting')) : legFitDue() && legFitK(g.ty); if (!k) return Promise.resolve();
-  const t = Object.keys(LEG_FIT).find(x => Object.values(LEG_FIT[x]).includes(k)), O = OUTFITS[k];
+function legFitPop(test) { const g = st(), k = test ? (legFitK(g?.ty) || legFitK(2)) : legFitDue() && legFitK(g.ty); if (!k) return Promise.resolve();
+  const t = +Object.keys(LEG_FIT).find(x => Object.values(LEG_FIT[x]).includes(k)), O = OUTFITS[k];
   if (!test) { g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); else if (!Array.isArray(S.fits)) S.fits = [k]; glog('fit', `전설 승급 보상으로 <b>${esc(O.n)}</b>을 받았다!`); save(); }
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`<div class="lf-hd"><i class="lf-beam"></i><i class="lf-halo"></i><i class="lf-spot"></i><div class="lf-fig"><img alt="" src="${lfImg(k)}"></div>${[[20, 28], [78, 22], [14, 62], [86, 58], [28, 84], [72, 82]].map(([x, y], i) => `<i class="lf-sp" style="left:${x}%;top:${y}%;--d:${(i * .17).toFixed(2)}s"></i>`).join('')}</div>

@@ -4774,9 +4774,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v27.54 경완 '받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로': 전설 관장 의상 — 보상 줄 작은 그림(받기 전 실루엣) + 받는 창(무대 조명 아래 실루엣 → 번쩍 → 옷) */
 #gym .pk-lf{display:inline-grid;place-items:center;width:26px;height:32px;overflow:hidden;vertical-align:middle;margin:0 6px 0 -2px}
 #gym .pk-lf img{width:36px;height:36px;max-width:none;image-rendering:pixelated}
-#gym .pk-lf.sil img{filter:brightness(0);opacity:.5}
+#gym .pk-lf.sil img{filter:brightness(0);opacity:.5}#gym .bsw-ben .pk-lf.sil img{filter:brightness(0) invert(1);opacity:.4}
 #gym .pk-ben .lf .pk-ic{background:none;box-shadow:none}#gym .pk-ben .lf .pk-ic::before{display:none}#gym .pk-ben .lf .pk-lf{margin:0}
-#gym .gy-perk .pk-lf{margin:0 6px 0 0}
+#gym .gy-perk .pk-lf{margin:0 6px 0 0}#gym .gy-perk ul li:has(.pk-lf){list-style:none;margin-left:-16px}
 #gym .gy-pop.lf-pop .win{border-color:#8a5a00}
 #gym .lf-hd{position:relative;height:184px;display:grid;place-items:center;overflow:hidden;margin:-6px -6px 2px;border-radius:6px;background:radial-gradient(ellipse at 50% 70%,#4a2c6a 0,#1e1234 55%,#0c0818 100%)}
 #gym .lf-hd::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
