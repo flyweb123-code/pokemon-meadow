@@ -12,7 +12,7 @@
 //
 // 받는 말 (손님·주인 → 방)
 //   {t:'chat', m}                 채팅 (100글자, 1초에 한 번). 최근 50개는 방에 남는다 (주인이 없을 때 방명록)
-//   {t:'tr', x, y, d, w}          내 트레이너 자리 (x,y 필드 좌표, d 방향 0아래 1위 2옆, w 걷는 중, f 왼쪽 보기)
+//   {t:'tr', x, y, d, w}          내 트레이너 자리 (x,y 필드 좌표, d 방향 0아래 1위 2옆, w 걷는 중, f 왼쪽 보기), pm 데려온 포켓몬, wh 휘슬 횟수 (v27.48)
 //   {t:'act', k, u, x, y}         손님 → 주인 포켓몬에게 (k pet·wash·feed u=포켓몬 uid / berry x,y 땅에 열매). 주인이 없으면 모아 뒀다가 들어올 때 hi.pend 로
 //   {t:'field', d}                주인만: 지금 필드 모습 (문자열 JSON). 방이 기억했다가 새 손님에게
 //   {t:'mons', L}                 주인만: 포켓몬 자리 [[uid,x,y,...]] — 손님이 있을 때만 보낸다
@@ -128,7 +128,7 @@ export class FieldRoom {
       }
       case 'tr': {
         const was = !!(a.o && a.p?.out);
-        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000, r: Array.isArray(m.r) && m.r.length === 2 ? [m.r[0] | 0, m.r[1] | 0] : 0, h: m.h ? 1 : 0 };   // r = 탄 소품 [번호, 자리], h = 후프링 들기 (v16.04)   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
+        a.p = { x: num(m.x), y: num(m.y), d: m.d | 0, w: m.w ? 1 : 0, f: m.f ? 1 : 0, k: String(m.k || '').slice(0, 40), out: m.out ? 1 : 0, j: (m.j | 0) % 1000, r: Array.isArray(m.r) && m.r.length === 2 ? [m.r[0] | 0, m.r[1] | 0] : 0, h: m.h ? 1 : 0, pm: m.pm && typeof m.pm === 'object' && (m.pm.s | 0) > 0 ? { u: Math.abs(m.pm.u | 0), s: m.pm.s | 0, n: maskText(String(m.pm.n || '').replace(/[\u0000-\u001f<>]/g, '').slice(0, 12)), x: m.pm.x === 'f' ? 'f' : m.pm.x === 'm' ? 'm' : '', h: m.pm.h ? 1 : 0 } : 0, wh: (m.wh | 0) % 1000 };   /* v27.48 경완: pm = 손님이 데려온 포켓몬 {u 번호, s 종, n 이름, x 성별, h 이로치}, wh = 휘슬 분 횟수 */   // r = 탄 소품 [번호, 자리], h = 후프링 들기 (v16.04)   // j = 점프 횟수 (바뀌면 다른 화면에서 뜀)
         ws.serializeAttachment(a);
         if (a.o && was !== !!a.p.out) this.cast({ t: 'own', on: !!a.p.out }, ws);   // 주인이 필드에 나옴/들어감
         return this.cast({ t: 'tr', c: a.c, ...a.p, ts: +m.ts || 0 }, ws);   // ts = 보낸 기기 시각 (받는 쪽 보간 버퍼)
