@@ -4776,7 +4776,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .pk-lf img{position:absolute;left:50%;top:50%;width:32px;height:32px;margin:-18px 0 0 -16px;max-width:none;image-rendering:pixelated}   /* 경완 '혜택 슬롯 박스 내 정렬 맞춰달라구': 다른 줄 아이콘(26px 칸) 가운데에 몸이 오게 */
 #gym .pk-lf.sil img{filter:brightness(0);opacity:.5}#gym .bsw-ben .pk-lf.sil img{filter:brightness(0) invert(1);opacity:.4}
 #gym .pk-ben .lf .pk-ic{background:none;box-shadow:none}#gym .pk-ben .lf .pk-ic::before{display:none}#gym .pk-ben .lf .pk-lf{margin:0}
-#gym .gy-perk .pk-lf{margin:0 6px 0 0}#gym .gy-perk ul li:has(.pk-lf){list-style:none;margin-left:-16px}
+#gym .gy-perk .pk-lf{margin:0 6px 0 0}#gym .gy-perk ul li:has(.pk-lf){list-style:none;margin-left:-16px;margin-top:8px}   /* 경완 '등급표에서 알 스프라이트랑 관장 옷이랑 좀 떨어지게' */
 #gym .gy-pop.lf-pop .win{border-color:#8a5a00}
 #gym .lf-hd{position:relative;height:184px;display:grid;place-items:center;overflow:hidden;margin:-6px -6px 2px;border-radius:6px;background:radial-gradient(ellipse at 50% 70%,#4a2c6a 0,#1e1234 55%,#0c0818 100%)}
 #gym .lf-hd::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
