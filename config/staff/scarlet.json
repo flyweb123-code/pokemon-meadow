@@ -1,6 +1,1022 @@
 {
  "days": [
   {
+   "at": 1795128482508,
+   "theme": "숲속 꼬마 사진관",
+   "note": "오늘은 숲속 꼬마 사진관이에요. 사진기·조명·배경막·포토판을 한 세트로 놓으면 포켓몬들이 줄 서서 기념사진을 찍는 마당이 돼요. 반사 우산 조명과 사진 부스는 밤에 둘레를 밝혀요.",
+   "items": [
+    {
+     "id": "photo-tripod-camera",
+     "n": "삼각대 나무 사진기",
+     "k": "사진관",
+     "d": "검은 천을 뒤집어쓴 옛날 나무 상자 사진기가 세 다리 삼각대 위에 서 있어요. 놋쇠 렌즈가 반짝이고, 찰칵 소리와 함께 하얀 빛이 번쩍해요.",
+     "px": [
+      "....kkkkkkkkkkkk....",
+      "...knnnnnnnnnnnnk...",
+      "...kNNNmNNNNmNNNk...",
+      "...kNNNmNNmNmNNNk...",
+      "..kkNNNmNNNNmNNNkk..",
+      ".kAAAAAAAAAAAAAAADk.",
+      ".kAAAAAAAAHAAAAAADk.",
+      ".kAWQQBBHHHHGBBEBDk.",
+      ".kAQQQBHHWQQGGBEBDk.",
+      ".kABDBBHWWQQQgBEBDk.",
+      ".kABDBHHQQQQQggEBDk.",
+      ".kABDBBHQQQqqgBEBDk.",
+      ".kABDBBGGQQqggBEBDk.",
+      ".kABBBBBGggggBBBBDk.",
+      ".kEEEEEEEEgEEEEEEEk.",
+      "..kkkkWWOOOOOOkkkk..",
+      ".....kSSSSSSSSk.....",
+      "......kADBDkBDk.....",
+      "......kADBDkBDk.....",
+      ".....kADkBDkkBDk....",
+      ".....kADkBDkkBDk....",
+      "....kADkkBDkkBDk....",
+      "....kADkkBDk.kBDk...",
+      "...kADk.kBDk.kBDk...",
+      "...kADk.kBDk.kBDk...",
+      "..kADk..kBDk..kBDk..",
+      "..kADk...kk...kBDk..",
+      "...kk..........kk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "N": "#3c3a52",
+      "n": "#5e5c7c",
+      "m": "#2a2838",
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "Q": "#2c3e5c",
+      "q": "#1c2a40",
+      "W": "#e4f2ff",
+      "G": "#e0b040",
+      "H": "#f6dc7a",
+      "g": "#a8782a",
+      "O": "#a0a8b4",
+      "S": "#656d7a"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "사진기 앞에 서서 렌즈를 똑바로 보고 포즈를 잡아요",
+       "x": {
+        "at": "far",
+        "fx": "glow"
+       },
+       "l": [
+        "사진기 앞에서 포즈를 잡았다. 찰칵! 하고 플래시가 번쩍했다.",
+        "렌즈를 똑바로 보다가 번쩍 빛에 눈을 깜빡였다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "사진기 뒤로 가서 검은 천 속에 쏙 들어가 숨어요",
+       "x": {
+        "at": "top",
+        "m": "hide",
+        "back": true
+       },
+       "l": [
+        "사진기 검은 천 속에 쏙 들어가 사진사 흉내를 냈다.",
+        "검은 천 속에 숨어 있다가 얼굴만 빼꼼 내밀었다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "사진기 옆에서 전기 기술을 써 플래시를 대신 번쩍여 줘요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "전기를 찌릿 보내 플래시를 대신 번쩍여 줬다.",
+        "너무 세게 번쩍여서 사진이 하얗게 날아갔다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 검은 천 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "사진기 검은 천 위에 날아올라 앉았다.",
+        "사진기 위에 앉아 렌즈 쪽을 기웃기웃 내려다봤다."
+       ]
+      }
+     ],
+     "fit": "사진관 앞마당, 포토판·배경막 맞은편"
+    },
+    {
+     "id": "photo-faceboard",
+     "n": "얼굴 구멍 포토판",
+     "k": "사진관",
+     "d": "하늘색 그림판에 빨강·노랑 옷을 입은 꼬마 두 명이 그려져 있고, 얼굴 자리가 동그랗게 뚫려 있어요. 뒤에서 얼굴을 쏙 내밀면 기념사진 완성!",
+     "px": [
+      ".kkkkkkkkkkkHHkkkkkkkkkkk.",
+      "kAAAAAAAAAAHHHHAAAAAAAAADk",
+      "kABBBBBBBBBBBBBBBBBBBBBBDk",
+      "kABUUUUUUUUUUUUUUUUUUUUBDk",
+      "kABTTTTTTTTTTTTTTTTyYYTBDk",
+      "kABTTTTkkkTTTTTTkkkYYYTBDk",
+      "kABSSSk...kSSSSk...kYYSBDk",
+      "kABSSk.....kSSk.....kSSBDk",
+      "kABSSk.....kSSk.....kSSBDk",
+      "kABSSk.....kSSk.....kSSBDk",
+      "kABSSSk...kSSSSk...kSSSBDk",
+      "kABSSSSkkkSSSSSSkkkSSSSBDk",
+      "kABSrrrrrrrrbyyyyyyyyaSBDk",
+      "kABSrRRWWWRRbyYYYYYYYaSBDk",
+      "kABSrRRRRRRRbyYYYRYYYaSBDk",
+      "kABSrRRRWRRRbyYYRYRYYaSBDk",
+      "kABSrRRRWRRRbyYYYRYYYaSBDk",
+      "kABSrRRRRRRRbyYYYYYYYaSBDk",
+      "kABBBBRRRRRBBBBYYYYYBBBBDk",
+      "kEEEEEEEREEEEEEEEYEEEEEEEk",
+      ".kkkABDkkkkkkkkkkkkABDkkk.",
+      "...kABDk..........kABDk...",
+      "...kABDk..........kBBDk...",
+      "..kkABDkk........kkBBDkk..",
+      ".kEEEEEEEk......kEEEEEEEk.",
+      "..kkkkkkk........kkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "S": "#9cd0e8",
+      "T": "#bfe2f0",
+      "U": "#e0f2f8",
+      "Y": "#f2c84a",
+      "y": "#f8e08a",
+      "R": "#d85a4a",
+      "r": "#f08a6a",
+      "W": "#fff6e4",
+      "H": "#f6dc7a",
+      "a": "#c89a30",
+      "b": "#a03a34"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "포토판 뒤로 돌아가 구멍으로 얼굴을 쏙 내밀어요",
+       "x": {
+        "at": [
+         0.31,
+         0.45
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "포토판 뒤로 돌아가 구멍으로 얼굴을 쏙 내밀었다.",
+        "빨간 옷 꼬마 얼굴 자리에 얼굴을 넣고 활짝 웃었다."
+       ],
+       "l2": [
+        "둘이서 포토판 구멍에 나란히 얼굴을 내밀고 웃었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "포토판 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "speek",
+        "back": true
+       },
+       "l": [
+        "포토판 뒤에 숨어 있다가 옆으로 빼꼼 고개를 내밀었다.",
+        "포토판 뒤에서 차례를 기다리며 두리번거렸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 포토판 꼭대기 별 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "포토판 꼭대기 별 장식 위에 날아올라 앉았다.",
+        "포토판 위에 앉아 사진 찍는 친구들을 구경했다."
+       ]
+      }
+     ],
+     "fit": "사진기 맞은편, 길가"
+    },
+    {
+     "id": "photo-umbrella-light",
+     "n": "반사 우산 조명",
+     "k": "사진관",
+     "glow": 1,
+     "d": "하얀 우산을 거꾸로 단 사진관 조명이에요. 우산 안쪽 전구가 켜지면 부드러운 빛이 둘레를 환하게 비춰요.",
+     "px": [
+      "........kk........",
+      "......kkOOkk......",
+      "....kkWWrrwwkk....",
+      "...kVVVrrWrwwwk...",
+      "..kWVWrWrWWrwwwk..",
+      "..kWWrWWrWWWrwwk..",
+      ".kWWrWWWrWWWWrwwk.",
+      ".kWrWWWWrWWWWWrwk.",
+      ".krwwwwwrwwwwwwrk.",
+      "kwwwwwwwwwwwwwwwwk",
+      ".kkkkkkLLYYkkkkkk.",
+      "......kYYYYk......",
+      "......kYYyyk......",
+      "......kSSSSk......",
+      ".......kOSk.......",
+      ".......kOSk.......",
+      ".......kOSk.......",
+      ".......kaSk.......",
+      "......kSSSSk......",
+      ".......kOSk.......",
+      ".......kOSk.......",
+      ".......kOSk.......",
+      ".......kOSk.......",
+      "......kkOSkk......",
+      "....kkOOOSSSkk....",
+      "...kOOkkOSkkSSk...",
+      "..kOkk.kOk..kkSk..",
+      "...k....k.....k..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#f6f4ec",
+      "w": "#cfcabc",
+      "V": "#ffffff",
+      "r": "#a4a6b4",
+      "O": "#b4bcc8",
+      "S": "#6a7280",
+      "Y": "#fff2a0",
+      "L": "#fffbe0",
+      "y": "#f0c850",
+      "a": "#e6eaf0"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "조명 앞에 서서 따뜻한 빛을 받으며 눈을 가늘게 떠요",
+       "x": {
+        "at": "front",
+        "fx": "glow"
+       },
+       "l": [
+        "조명 빛을 받으며 눈을 가늘게 떴다.",
+        "환한 조명 앞에서 털을 단정히 골랐다."
+       ]
+      },
+      {
+       "w": "나는 벌레 타입 / 날갯짓하는 포켓몬",
+       "a": "전구 둘레를 빙빙 날아다녀요",
+       "x": {
+        "at": [
+         0.5,
+         0.42
+        ],
+        "m": "circ",
+        "fx": "glow"
+       },
+       "l": [
+        "조명 전구 둘레를 빙빙 날아다녔다.",
+        "반짝이는 전구에 이끌려 우산 아래를 맴돌았다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "조명대에 기대 전기를 보내 전구를 더 밝게 켜요",
+       "x": {
+        "at": "under",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "조명대에 전기를 보내 전구를 더 환하게 켰다.",
+        "전구가 번쩍 밝아지자 뿌듯하게 볼을 찌릿였다."
+       ]
+      }
+     ],
+     "fit": "배경막 양옆, 밤에 사진관 마당"
+    },
+    {
+     "id": "photo-backdrop",
+     "n": "별무늬 배경막 걸이",
+     "k": "사진관",
+     "d": "은빛 쇠 기둥 두 개 사이에 분홍에서 보라로 물드는 천이 드리워져 있어요. 작은 별이 반짝여서 누가 서도 멋진 사진이 나와요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kLLLLLLLLLLLLLLLLLLLLLLLLLLk",
+      "kSSSSSSSSSSSSSSSSSSSSSSSSSSk",
+      ".kLOppppppppppppppppppppOSk.",
+      ".kLOQPPPPPPPPPPPPPPPPPPQOSk.",
+      ".kLOPfPPPPfPPPPfPPPPfPPPOSk.",
+      ".kLOPfPPPPfPPPPfPPPPfPPPOSk.",
+      ".kLOPfPPPPfPPPPfPPPPWPPPOSk.",
+      ".kLOPfPPPWfPPPPfPPPPfPPPOSk.",
+      ".kLOPfPPWWWPPPPfPPPPfPPPOSk.",
+      ".kLOPfPPPWfPPPPfPPPPfPPPOSk.",
+      ".kLOQfQQQQfQQQQfQQQQfQQQOSk.",
+      ".kLOQfQQQQfQQQQfQWQQfQQQOSk.",
+      ".kLOQfWQQQfQQQQfWWWQfQQQOSk.",
+      ".kLOQfQQQQfQQQQfQWQQfQQQOSk.",
+      ".kLOQfQQQQfQQWQfQQQQfQQQOSk.",
+      ".kLORfRRRRfRRRRfRRRRfRRROSk.",
+      ".kLORfRRRRfRRRRfRRRRfRRROSk.",
+      ".kLORfRRRRfRRRRfRRRRfRRROSk.",
+      ".kLORfRRRRfRRRRfRRRRfRRROSk.",
+      ".kLOkkRRRkkRRRkkRRRkkRRROSk.",
+      ".kLOk.kkk..kkk..kkk..kkkOSk.",
+      ".kLOkk................kkOSk.",
+      "kOOOOOk..............kOOOOOk",
+      "SSSSSSk..............kSSSSSS",
+      "kkkkkk................kkkkkk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "O": "#b0b8c4",
+      "L": "#e0e6ee",
+      "S": "#666e7c",
+      "P": "#f2b4c4",
+      "p": "#f8d4dc",
+      "Q": "#d8a0d0",
+      "R": "#a888c8",
+      "f": "#c48cb0",
+      "W": "#fff8e8"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "배경막 앞 가운데에 서서 멋진 포즈를 잡아요",
+       "x": {
+        "at": "front",
+        "fx": "glow"
+       },
+       "l": [
+        "별무늬 배경막 앞에 서서 멋지게 포즈를 잡았다.",
+        "배경막 앞에서 이쪽저쪽 자세를 바꿔 봤다."
+       ],
+       "l2": [
+        "배경막 앞에 둘이 나란히 서서 기념사진을 찍었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "드리운 천 뒤로 들어가 숨었다가 고개를 빼꼼 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "배경막 천 뒤에 숨었다가 빼꼼 고개를 내밀었다.",
+        "천 뒤로 쏙 들어가 술래가 오기를 기다렸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 위쪽 쇠막대에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "배경막 쇠막대 위에 날아올라 앉았다.",
+        "쇠막대 위에 앉아 천이 살랑이는 걸 내려다봤다."
+       ]
+      }
+     ],
+     "fit": "사진관 앞마당 한가운데"
+    },
+    {
+     "id": "photo-velvet-chair",
+     "n": "빨간 벨벳 사진 의자",
+     "k": "사진관",
+     "d": "금빛 테두리를 두른 빨간 벨벳 의자예요. 단추가 콕콕 박힌 등받이에 앉으면 누구나 귀족처럼 보여요.",
+     "px": [
+      ".......kHHk.......",
+      ".....kkHHGGkk.....",
+      "....kGGGGGGGGk....",
+      "...kGrrRRRRRGGk...",
+      "..kGGrRRqRRRRGGk..",
+      "..kGRRqRRRRqRaGk..",
+      "..kGrRRRRRRRRaGk..",
+      "..kGrRRRRqRRRaGk..",
+      ".kkGrRRRRRRRRaGkk.",
+      "kHHHrRqRRRRqRaHHHk",
+      "kGGgRRRRRRRRRaGGgk",
+      "kGGgrrrrrrrrrrGGgk",
+      "kGGgRRRRRRRRRRGGgk",
+      "kGGgaaaaaaaaaaGGgk",
+      "kGHHHHHHHHHHHHHHgk",
+      ".kggggggggggggggk.",
+      "..kGgkkkkkkkkGgk..",
+      "..kGgk......kGgk..",
+      "..kGgk......kGgk..",
+      "..kGgk......kGgk..",
+      ".kGgk........kgGk.",
+      "..kk..........kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "G": "#e0b040",
+      "H": "#f6dc7a",
+      "g": "#a8782a",
+      "R": "#c8464a",
+      "r": "#e8706a",
+      "q": "#7a2430",
+      "a": "#8c2c34"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬 / 보통 크기 포켓몬",
+       "a": "의자에 올라가 등받이에 기대 점잖게 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.58
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "벨벳 의자에 올라가 점잖게 앉아 사진을 기다렸다.",
+        "의자에 앉아 턱을 치켜들고 귀족 흉내를 냈다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "푹신한 방석 위에서 몸을 말고 새근새근 자요",
+       "x": {
+        "at": [
+         0.5,
+         0.58
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "푹신한 벨벳 방석 위에서 몸을 말고 잠들었다.",
+        "사진 찍을 차례를 기다리다 의자에서 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "의자 옆에 서서 등받이에 앞발을 올리고 근엄하게 포즈를 잡아요",
+       "x": {
+        "at": "side"
+       },
+       "l": [
+        "의자 옆에 서서 등받이에 손을 얹고 근엄하게 포즈를 잡았다.",
+        "의자가 너무 작아서 옆에 서서 사진을 찍었다."
+       ]
+      }
+     ],
+     "fit": "배경막 앞"
+    },
+    {
+     "id": "photo-film-roll",
+     "n": "큰 필름 통",
+     "k": "사진관",
+     "d": "포켓몬만 한 노란 필름 통에서 갈색 필름이 길게 풀려 나와 있어요. 필름 칸마다 지난 추억이 작게 찍혀 있어요.",
+     "px": [
+      "....kOOOOk................",
+      "...kkSSSSkk...............",
+      "..kOLLLLLLOk..............",
+      ".kyyYYYYYYYak.............",
+      ".kyyYYYYYYaak.............",
+      ".kyyYYYYYYaak.............",
+      ".kyyYYYYYYaak.............",
+      ".krRRRRRRRRbk.............",
+      ".krRRRRRRRRbk..........kk.",
+      ".krRWWWWWRRbk.........kFFk",
+      ".krRRRRRRRRbkkkkkkkkkkkkFk",
+      ".krRRRRRRRRbddddddddddddFk",
+      ".kyyYYYYYYaaFfFfFfFfFfFfFk",
+      ".kyyYYYYYYaaFPePFPPPFPePFk",
+      ".kyyYYYYYYaaFPPPFPePFPPPFk",
+      ".kOOOOOOOOOOFfFfFfFfFfFfFk",
+      ".kSSSSSSSSSSFFFFFFFFFFFFFk",
+      "..kkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "O": "#b4bcc8",
+      "L": "#e6eaf0",
+      "S": "#6a7280",
+      "Y": "#f0bc44",
+      "y": "#f8d880",
+      "R": "#d4544a",
+      "r": "#ec7a6a",
+      "W": "#fff2d8",
+      "F": "#4a3428",
+      "f": "#e8d8b0",
+      "P": "#a8805c",
+      "a": "#c08a2c",
+      "b": "#98363a",
+      "d": "#6a4c38",
+      "e": "#e0b880"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "풀려 나온 필름 위를 끝에서 끝까지 조심조심 걸어요",
+       "x": {
+        "at": [
+         0.7,
+         0.75
+        ],
+        "m": "walk"
+       },
+       "l": [
+        "풀려 나온 필름 위를 끝에서 끝까지 조심조심 걸었다.",
+        "필름 칸에 찍힌 사진을 하나씩 들여다보며 걸었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "필름 통 뚜껑 위에 올라가 앉아요",
+       "x": {
+        "at": [
+         0.25,
+         0.1
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "노란 필름 통 꼭대기에 올라가 앉았다.",
+        "필름 통 위에서 동그란 뚜껑을 톡톡 두드렸다."
+       ]
+      },
+      {
+       "w": "격투 타입 / 노말 타입",
+       "a": "필름 통을 밀어 필름이 더 풀려 나오게 해요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "필름 통을 힘껏 밀어 필름을 더 풀어냈다.",
+        "필름 통을 밀었더니 필름이 데구르르 풀려 나왔다."
+       ]
+      }
+     ],
+     "fit": "사진관 입구 옆, 길가"
+    },
+    {
+     "id": "photo-shop-sign",
+     "n": "사진기 모양 간판",
+     "k": "사진관",
+     "d": "까만 사진기 모양 큰 간판이 나무 기둥 꼭대기에 달려 있어요. 빨간 띠 가운데 렌즈가 반짝이고, 아래엔 하트 그림 작은 팻말이 흔들려요.",
+     "px": [
+      "....kkkk............",
+      "...knnnnk....kkk....",
+      ".kkkNNNNkkkkkVWWkkk.",
+      "knnnnnnnnnnnnnnnnnmk",
+      "knNWWNNNHHHHNNNNNNmk",
+      "knNWWNNHHHHGGNNNNNmk",
+      "krrrrrHHQWQQGgrrrrrk",
+      "kRRRRRHHWQQQggRRRRRk",
+      "kaaaaaHHQQQqggaaaaak",
+      "knNNNNHGQQqQggNNNNmk",
+      "knNNNNNGGggggNNNNNmk",
+      "knNNNNNNggggNNNNNNmk",
+      "kmmmmmmmmmmmmmmmmmmk",
+      ".kkkkkkkkADkkkkkkkk.",
+      "........kADkkkkk....",
+      "........kADDDDDDk...",
+      "........kADOkkOk....",
+      "........kATTTTTDk...",
+      "........kAAARAADk...",
+      "........kAAARRADk...",
+      "........kAAAAaADk...",
+      "........kADDDDDDk...",
+      "........kADkkkkk....",
+      "........kADk........",
+      "........kADk........",
+      "........kADk........",
+      "......kkkADkkk......",
+      ".....kLLLLLLLLk.....",
+      ".....kSSSSSSSSk.....",
+      "......kkkkkkkk......"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "N": "#3c3a52",
+      "n": "#5e5c7c",
+      "m": "#2a2838",
+      "W": "#fff6e4",
+      "V": "#ffffff",
+      "R": "#d85a4a",
+      "r": "#f08a6a",
+      "G": "#e0b040",
+      "H": "#f6dc7a",
+      "g": "#a8782a",
+      "Q": "#2c3e5c",
+      "q": "#1c2a40",
+      "A": "#e8bf86",
+      "D": "#8c5a34",
+      "T": "#f6dcb0",
+      "O": "#a0a8b4",
+      "L": "#d8dee6",
+      "S": "#656d7a",
+      "a": "#9c3a34"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 간판 꼭대기 셔터 버튼 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "사진기 간판 꼭대기에 날아올라 앉았다.",
+        "간판 위에 앉아 사진관에 오는 손님들을 내려다봤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥에 등을 기대고 서서 쉬어요",
+       "x": {
+        "at": "under"
+       },
+       "l": [
+        "사진관 간판 기둥에 등을 기대고 쉬었다.",
+        "간판 기둥에 기대어 손님이 오기를 기다렸다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "기둥을 툭 쳐서 작은 팻말을 흔들어요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "간판 기둥을 툭 쳐서 하트 팻말을 흔들었다.",
+        "기둥을 쳤더니 팻말이 한참 동안 달랑달랑 흔들렸다."
+       ]
+      }
+     ],
+     "fit": "사진관 입구, 길 모퉁이"
+    },
+    {
+     "id": "photo-print-line",
+     "n": "사진 말리는 줄",
+     "k": "사진관",
+     "d": "나무 기둥 두 개 사이 줄에 갓 뽑은 사진들이 빨래집게로 매달려 말라 가요. 바람이 불면 사진들이 팔랑팔랑 흔들려요.",
+     "px": [
+      "kkkk......................kkkk",
+      "AAAAk....................kAAAA",
+      "DDDDk....................kDDDD",
+      "kABllkkkk............kkkkllBDk",
+      "kABkklcclkkkkkkkkkkkkllcckkBDk",
+      "kABk.kccklllccllllcclkkcckkBDk",
+      "kABkkWWWwkkkcckkkkcckkWWWwkBDk",
+      "kABkkWSSwkkWWWwkkWWWwkWPPwkBDk",
+      "kABkkWSGwkkWPPwkkWSSwkWPGwkBDk",
+      "kABkkWGSwkkWPYwkkWSRwkWGPwkBDk",
+      "kABkkWWWwkkWYPwkkWRSwkWWWwkBDk",
+      "kABkkwwwwkkWWWwkkWWWwkwwwwkBDk",
+      "kABk.kkkk.kwwwwkkwwwwkkkkkkBDk",
+      "kABk.......kkkk..kkkk.....kBDk",
+      "kABk......................kBDk",
+      "kABk......................kBDk",
+      "kABk......................kBDk",
+      "kABk......................kBDk",
+      "kABk......................kBDk",
+      "EEEEk....................kEEEE",
+      "EEEEk....................kEEEE",
+      "kkkk......................kkkk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "E": "#5e3c24",
+      "l": "#e8e0cc",
+      "c": "#d8a060",
+      "W": "#fff8ec",
+      "w": "#d4ccb8",
+      "S": "#9cd0e8",
+      "P": "#f2b4c4",
+      "G": "#7cb860",
+      "Y": "#f2c84a",
+      "R": "#d85a4a"
+     },
+     "acts": [
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 줄 가운데에 앉아 흔들흔들 균형을 잡아요",
+       "x": {
+        "at": "top",
+        "m": "fly wobble",
+        "fx": "swing"
+       },
+       "l": [
+        "사진 줄 가운데에 날아와 앉아 흔들흔들 균형을 잡았다.",
+        "줄에 앉았더니 사진들이 같이 팔랑팔랑 흔들렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "줄 아래를 끝에서 끝까지 걸으며 매달린 사진을 하나씩 올려다봐요",
+       "x": {
+        "at": "under",
+        "m": "walk"
+       },
+       "l": [
+        "줄에 매달린 사진을 하나씩 올려다보며 걸었다.",
+        "사진 속에서 자기 얼굴을 찾아내고 깡충 뛰었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬 / 비행 타입",
+       "a": "줄 앞에서 날갯짓으로 바람을 일으켜 사진을 말려요",
+       "x": {
+        "at": "front",
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓으로 바람을 일으켜 젖은 사진을 말려 줬다.",
+        "너무 세게 부채질해서 사진들이 빙글빙글 돌았다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "줄 옆에서 따뜻한 기운을 내 사진을 보송보송 말려요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "따뜻한 열기로 사진을 보송보송 말려 줬다.",
+        "사진이 다 마르자 뿌듯하게 콧김을 내뿜었다."
+       ]
+      }
+     ],
+     "fit": "사진관 옆 마당, 해 잘 드는 곳"
+    },
+    {
+     "id": "photo-booth",
+     "n": "즉석 사진 부스",
+     "k": "사진관",
+     "glow": 1,
+     "d": "빨간 지붕에 꼬마전구가 줄지어 반짝이는 민트색 사진 부스예요. 커튼 안에 들어가 앉으면 잠시 뒤 네 컷 사진이 옆 구멍으로 나와요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkk.",
+      "krrrrrrrrrrrrrrrrrrrrrrk",
+      "kRRRRRRRRRRRRRRRRRRRRRRk",
+      "kRRYRRYRRYRRYRRYRRYRRYRk",
+      "kRRRRRRRRRRRRRRRRRRRRRRk",
+      "kaaaaaaaaaaaaaaaaaaaaaak",
+      "ktTTTTTTTTTTTTTTTTTTTTbk",
+      "ktTOOLOOOLOOOLTTTTTTTTbk",
+      "ktTcCecCecCecCTWWWWWwTbk",
+      "ktTcCecCecCecCTWSSSSwTbk",
+      "ktTcCecCecCecCTWSYYSwTbk",
+      "ktTcCecCecCecCTWfSSSwTbk",
+      "ktTcCecCecCecCTWWWWWwTbk",
+      "ktTcCecCecCecCTWSSSSwTbk",
+      "ktTcCecCecCecCTWSYYSwTbk",
+      "ktTcCecCecCecCTWfSSSwTbk",
+      "ktTcCecCecCecCTWWWWWwTbk",
+      "ktTcCecCecCecCTWSSSSwTbk",
+      "ktTcCecCecCecCTWSYYSwTbk",
+      "ktTcCecCecCecCTWfSSSwTbk",
+      "ktTcCecCecCecCTWWWWWwTbk",
+      "ktTcCecCecCecCTwwwwwwTbk",
+      "ktTcCecCecCecCTTTTTTTTbk",
+      "ktTcCecCecCecCTTLLLLTTbk",
+      "ktTcCecCecCecCTTOhhOTTbk",
+      "ktTcCecCecCecCTTOOOOTTbk",
+      "ktTheeehhhccchTTTTTTTTbk",
+      "ktThhhhhhhhhhhTThhhhTTbk",
+      "ktThhhhhhhhhhhTTTTTTTTbk",
+      "kddddddddddddddddddddddk",
+      "dddddddddddddddddddddddd",
+      "kkkkkkkkkkkkkkkkkkkkkkkk"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "R": "#d85a4a",
+      "r": "#f08a6a",
+      "Y": "#fff2a0",
+      "T": "#7cc4b8",
+      "t": "#a8e0d4",
+      "C": "#d8586a",
+      "c": "#f08a98",
+      "O": "#b4bcc8",
+      "L": "#e6eaf0",
+      "h": "#2a2838",
+      "W": "#fff8ec",
+      "w": "#d4ccb8",
+      "S": "#9cd0e8",
+      "a": "#9c3a34",
+      "b": "#4e9488",
+      "d": "#356a62",
+      "e": "#a03a4c",
+      "f": "#7cb860"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬 / 보통 크기 포켓몬",
+       "a": "커튼을 젖히고 부스 안에 들어가 숨어요",
+       "x": {
+        "at": [
+         0.34,
+         0.85
+        ],
+        "m": "hide",
+        "back": true,
+        "fx": "glow"
+       },
+       "l": [
+        "사진 부스 커튼 안에 쏙 들어갔다. 잠시 뒤 번쩍번쩍 네 번 빛났다.",
+        "부스 안에 들어가 한참 동안 표정을 바꿔 가며 사진을 찍었다."
+       ],
+       "l2": [
+        "둘이 사진 부스에 같이 들어가 네 컷 사진을 찍었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "부스 옆 사진 나오는 구멍 앞에서 사진이 나오길 기다려요",
+       "x": {
+        "at": [
+         0.74,
+         0.95
+        ]
+       },
+       "l": [
+        "사진 나오는 구멍 앞에서 사진이 나오길 두근두근 기다렸다.",
+        "갓 나온 네 컷 사진을 보고 깔깔 웃었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "커튼 아래로 고개를 빼꼼 내밀어 밖을 엿봐요",
+       "x": {
+        "at": [
+         0.34,
+         0.85
+        ],
+        "m": "peek",
+        "back": true
+       },
+       "l": [
+        "부스 커튼 밑으로 빼꼼 고개를 내밀어 밖을 엿봤다.",
+        "커튼 사이로 눈만 내놓고 두리번거렸다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 꼬마전구 지붕 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "반짝이는 꼬마전구 지붕 위에 날아올라 앉았다.",
+        "사진 부스 지붕 위에서 전구 불빛을 쪼아 봤다."
+       ]
+      }
+     ],
+     "fit": "사진관 마당 구석, 밤에도 환한 곳"
+    },
+    {
+     "id": "photo-heart-arch",
+     "n": "하트 꽃 포토 아치",
+     "k": "사진관",
+     "d": "나무 기둥 두 개 위에 덩굴과 분홍·하얀 꽃으로 엮은 하트 모양 아치예요. 하트 아래를 지나가거나 그 안에 서면 사랑스러운 사진이 찍혀요.",
+     "px": [
+      "........kWk.k...kPkk........",
+      ".....kkkWYWkak.kPYPVkk......",
+      "....kPvVVWVaYakVvPVVVWkk....",
+      "...kPYPVVvUVaPvVVUVvWYWVk...",
+      "..kVUPVvkkkUPYPVVkkaVWvVVk..",
+      "..kVVvkk...kkPVkkkaYakVVVk..",
+      ".kVvVk.......kWk..kak.kvVVk.",
+      ".kVWVk......kWYWk..k..kPVVk.",
+      ".kWYWDk......kWk.....kPYPDk.",
+      ".kAWBDk.......k......kAPBDk.",
+      ".kDDDDk..............kDDDDk.",
+      ".kABBDk..............kABBDk.",
+      "kPABBDk..............kvBBvk.",
+      "PYPBBVk.............kVABBVk.",
+      "kPVDDDVk............kPVDDDVk",
+      ".kvBBvWk...........kPYPBBDvk",
+      ".kABBWYWk...........kPABBDk.",
+      "kVABBVWk............kVABBVWk",
+      ".kVDDDvk............kvVDDWYW",
+      ".kABPDk..............kABBDWk",
+      ".kAPYPk..............kAWBDk.",
+      "kvABPVk.............kVWYWvk.",
+      ".kDDDDk..............kDWDDk.",
+      ".kABBDk..............kABBDk.",
+      ".kABBDk..............kABBDk.",
+      ".kABBDk..............kABBDk.",
+      ".kDDDDk..............kDDDDk.",
+      ".kABBDk..............kABBDk.",
+      ".kABBDk..............kABBDk.",
+      "kLLLLLLk............kLLLLLLk",
+      "kOOOOOOk............kOOOOOOk",
+      ".kkkkkk..............kkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "A": "#e8bf86",
+      "B": "#c08a52",
+      "D": "#8c5a34",
+      "V": "#6aa84e",
+      "v": "#447a38",
+      "U": "#94c870",
+      "P": "#f08aa8",
+      "W": "#fff4f0",
+      "Y": "#f6d050",
+      "O": "#a8a49a",
+      "L": "#d4d0c4",
+      "a": "#f6c0d0"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "하트 아치 아래를 끝에서 끝까지 천천히 지나가요",
+       "x": {
+        "at": [
+         0.5,
+         0.95
+        ],
+        "m": "through"
+       },
+       "l": [
+        "하트 꽃 아치 아래를 천천히 지나갔다.",
+        "아치를 지나가며 꽃향기를 킁킁 맡았다."
+       ],
+       "l2": [
+        "둘이서 나란히 하트 아치 아래를 지나갔다."
+       ]
+      },
+      {
+       "w": "풀 타입 / 페어리 타입",
+       "a": "아치 가운데에 서서 기술을 써 꽃잎을 흩날려요",
+       "x": {
+        "at": [
+         0.5,
+         0.95
+        ],
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "하트 아치 가운데에서 꽃잎을 흩날렸다.",
+        "꽃잎이 흩날리자 아치가 더 화사해졌다."
+       ]
+      },
+      {
+       "w": "나는 벌레 타입",
+       "a": "아치 꽃 둘레를 빙빙 날며 꿀을 모아요",
+       "x": {
+        "at": [
+         0.5,
+         0.2
+        ],
+        "m": "circ"
+       },
+       "l": [
+        "하트 아치 꽃 둘레를 빙빙 날며 꿀을 모았다.",
+        "분홍 꽃에 앉았다 하얀 꽃으로 옮겨 다녔다."
+       ]
+      },
+      {
+       "w": "작은 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 하트 가운데 오목한 자리에 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.14
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "하트 아치 가운데 오목한 자리에 날아와 앉았다.",
+        "아치 꼭대기에 앉아 꽃 사이로 고개를 내밀었다."
+       ]
+      }
+     ],
+     "fit": "사진관 앞 길, 꽃밭 옆"
+    }
+   ]
+  },
+  {
    "at": 1795042071740,
    "theme": "숲속 꼬마 학교",
    "note": "병원에 이어 오늘은 풀밭 한쪽에 작은 학교를 세웠어요! 빨간 지붕 종 문과 깃대로 운동장을 꾸미고, 책상·주판·신발장·급식 손수레로 교실을, 철봉·사육장·강낭콩 선반·스쿨버스로 학교 둘레를 채웠어요.",
