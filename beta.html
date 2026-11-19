@@ -45,7 +45,7 @@ body.mapEdit .scmb,body.mapEdit .prop.scsp>.scmp{display:none}body.mapEdit .prop
 #items .prop.rdGlow{filter:drop-shadow(1px 0 0 rgba(255,236,150,.9)) drop-shadow(-1px 0 0 rgba(255,236,150,.9)) drop-shadow(0 1px 0 rgba(255,236,150,.9)) drop-shadow(0 -1px 0 rgba(255,236,150,.9)) drop-shadow(0 0 3px rgba(255,210,80,.7))!important}#items .prop.nightf.rdGlow{filter:url(#nightF) drop-shadow(1px 0 0 rgba(255,236,150,.9)) drop-shadow(-1px 0 0 rgba(255,236,150,.9)) drop-shadow(0 1px 0 rgba(255,236,150,.9)) drop-shadow(0 -1px 0 rgba(255,236,150,.9)) drop-shadow(0 0 3px rgba(255,210,80,.7))!important}   /* v16.32 경완: '타기' 테두리는 소품 그림 자체에 → 흔들리는 소품을 그대로 따라감 */
 #propHot.on.soft{animation:photS 1.3s ease-in-out infinite alternate}@keyframes photS{from{opacity:.25}to{opacity:.65}}   /* v16.09 경완: '타기' 버튼이 뜨면 그 소품 테두리가 살짝 빛남 */
 .vjump.vride{bottom:calc(var(--vpad-b, 170px) + 100px);width:auto;min-width:72px;padding:0 12px}   /* v16.04 경완: 탈 수 있는 소품 근처에서 '타기' */
-.berrybar #btnHoop{display:none}body.visitMode .berrybar #btnHoop{display:grid}#btnHoop:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
+.berrybar #btnHoop{display:none}body.visitMode .berrybar #btnHoop{display:grid}.berrybar #btnWhistle{display:none}body.visitMode.vcOn .berrybar #btnWhistle{display:grid}#btnWhistle:active,#btnWhistle.on{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}#btnWhistle.on svg{animation:vcWh .35s steps(4,end)}@keyframes vcWh{0%,100%{rotate:0deg}30%{rotate:-14deg}65%{rotate:8deg}}/* v27.48 경완 '후프링 버튼 위에 휘슬 버튼' */.vcp .fr-gwin{padding:14px 14px 12px}.vcp-t{margin:0;text-align:center;font-size:17px;font-weight:700}.vcp-s{margin:3px 0 10px;text-align:center;font-size:12px;color:var(--dim)}.vcp-g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-height:min(46vh,330px);overflow-y:auto;padding:2px}.vcp-c{position:relative;font:inherit;border:3px solid var(--inner);background:#fff;padding:6px 4px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;min-width:0;color:var(--win-ink);cursor:pointer}.vcp-c .ph{display:flex;align-items:flex-end;justify-content:center;min-height:56px}.vcp-c img{max-height:60px;max-width:100%;image-rendering:pixelated;object-fit:contain}.vcp-c .vcp-n{font-size:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vcp-c.on{border-color:var(--cursor);background:var(--card)}.vcp-c.on::after{content:'✓';position:absolute;right:3px;top:1px;font-size:12px;font-weight:700;color:var(--cursor)}.vcp .vcp-go:disabled{opacity:.45}.vlg{color:var(--dim);font-size:.9em}#btnHoop:active{transform:translate(2px,2px);box-shadow:inset 0 0 0 3px var(--win),inset 0 0 0 5px var(--inner)}
 .vt.jp .vt-s{animation:vtJump .38s cubic-bezier(.3,.7,.4,1)}.vt.jp::before{animation:vtJs .38s cubic-bezier(.3,.7,.4,1)}@keyframes vtJump{45%{translate:0 -24px}}@keyframes vtJs{45%{scale:.55;opacity:.6}}
 .vpad{position:fixed;z-index:6200;left:14px;bottom:var(--vpad-b, 170px);width:132px;height:132px;display:grid;grid-template:repeat(3,44px)/repeat(3,44px);touch-action:none;user-select:none;-webkit-user-select:none}
 .vpad[hidden]{display:none}
@@ -117,7 +117,7 @@ body.vOut #dlg{visibility:hidden}
 @keyframes vfIn{from{opacity:0}}
 
 /* 놀러가기 창 안 (?visit) */
-body.visitMode .hud:not(.berrybar,#dlg,.menuwin),body.visitMode #side,body.visitMode #edge,body.visitMode #btnBag,body.visitMode #frTest,body.visitMode .mapico:not(#btnBerry,#btnHoop),body.visitMode #vOwn{display:none!important}
+body.visitMode .hud:not(.berrybar,#dlg,.menuwin),body.visitMode #side,body.visitMode #edge,body.visitMode #btnBag,body.visitMode #frTest,body.visitMode .mapico:not(#btnBerry,#btnHoop,#btnWhistle),body.visitMode #vOwn{display:none!important}
 body.visitMode :is(#dlg,.menuwin){visibility:hidden!important;pointer-events:none!important}   /* v15.05 경완: 손님 화면 필드 크기 = 기본 게임 화면 (대화창·메뉴 자리는 비워 둠) */
 body.visitMode .vchat-b{min-height:var(--vchat-min,0px);box-sizing:border-box}body.kbOn .vchat-b::after{content:'';position:absolute;left:0;right:0;top:100%;height:100vh;background:#20202c}   /* v15.23 경완: 키보드와 채팅창 사이로 필드가 비치지 않게 */
 body.visitMode.fview :is(.vpad,.vjump,.vhud){visibility:hidden!important}   /* v15.16 경완: 빈 곳 누르면 열매 버튼처럼 방향키·위 상태창도 숨김 */
@@ -1108,7 +1108,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 .journal{flex:none}
 .journal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px;font-size:16px}
 .journal-head h3{margin:0;font-size:17px;font-weight:700}
-.j-out{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:700;line-height:1;padding:6px 9px 6px 12px;border-radius:999px;border:2px solid var(--inner-blue);background:color-mix(in srgb,var(--inner-blue) 20%,var(--win));color:inherit;box-shadow:0 2px 0 color-mix(in srgb,var(--inner-blue) 75%,transparent);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .06s,box-shadow .06s}.j-out svg{width:9px;height:9px;flex:none;opacity:.85}.j-out:active{transform:translateY(2px);box-shadow:0 0 0 transparent}#btnOutF{border-color:#5f9a3e;background:#e4f4d2;color:#2c4a1c;box-shadow:0 2px 0 #4f8432}#btnOutF:active{box-shadow:0 0 0 transparent}#btnOutF[hidden]{display:none}#btnOutF~.tcount{margin-left:auto}   /* v18.15 경완: 필드 메뉴 좌상단에도 필드에 나가기 (초록 바탕에 맞춘 색) */   /* v15.99 경완 '명암 줄이고 디자인 다시': 일지 창 색(낮/밤)을 따르는 알약 버튼 + 화살표, 눌림 */
+.j-out{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:700;line-height:1;padding:6px 9px 6px 12px;border-radius:999px;border:2px solid var(--inner-blue);background:color-mix(in srgb,var(--inner-blue) 20%,var(--win));color:inherit;box-shadow:0 2px 0 color-mix(in srgb,var(--inner-blue) 75%,transparent);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .06s,box-shadow .06s}.j-out svg{width:9px;height:9px;flex:none;opacity:.85}.j-out:active{transform:translateY(2px);box-shadow:0 0 0 transparent}#btnOutF{border-color:#5f9a3e;background:#e4f4d2;color:#2c4a1c;box-shadow:0 2px 0 #4f8432}#btnOutF:active{box-shadow:0 0 0 transparent}#btnOutF[hidden]{display:none}#btnOutF~.tcount{margin-left:auto}html.th-h #btnMapEdit{display:none!important}.th-btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13px;font-weight:700;line-height:1;padding:6px 12px 6px 10px;border-radius:999px;border:2px solid #4a7fb0;background:#e2eefa;color:#1f3a56;box-shadow:0 2px 0 #3c6a96;cursor:pointer;-webkit-tap-highlight-color:transparent}.th-btn svg{width:10px;height:10px;flex:none}.th-btn:active{transform:translateY(2px);box-shadow:0 0 0 transparent}.th-btn+#btnOutF[hidden]~.tcount,.th-btn~.tcount{margin-left:auto}.th-win{width:min(340px,calc(100vw - 32px));box-sizing:border-box}.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 10px}.th-card{display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 6px 8px;border:2px solid color-mix(in srgb,var(--win-ink) 22%,transparent);border-radius:10px;background:color-mix(in srgb,var(--win-ink) 4%,var(--win));color:inherit;font:inherit;cursor:pointer;box-shadow:0 2px 0 color-mix(in srgb,var(--win-ink) 22%,transparent);-webkit-tap-highlight-color:transparent;position:relative}button.th-card:active{transform:translateY(2px);box-shadow:0 0 0 transparent}.th-card.on{border-color:#4a9a3a;box-shadow:0 2px 0 #3a7e2c;background:color-mix(in srgb,#7ac35a 16%,var(--win))}.th-card b{font-size:13px;line-height:1.1}.th-card em{position:absolute;top:-8px;left:50%;translate:-50% 0;font-style:normal;font-size:10px;font-weight:700;white-space:nowrap;background:#4a9a3a;color:#fff;border-radius:999px;padding:2px 7px}.th-img{position:relative;display:block;width:100%;aspect-ratio:3/5;border-radius:6px;overflow:hidden;background:#cfd8e2}.th-img img{display:block;width:100%;height:100%;image-rendering:pixelated;object-fit:cover}.th-card.lock .th-img img{filter:grayscale(.75) brightness(.6)}.th-lk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#fff;font-style:normal;font-size:10px;font-weight:700;text-align:center;line-height:1.25;padding:0 4px;text-shadow:0 1px 0 rgba(0,0,0,.6)}.th-lk svg{width:18px;height:20px}.th-card.soon{cursor:default;box-shadow:none;border-style:dashed}.th-card.soon .th-img{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--win-ink) 7%,transparent) 0 6px,transparent 6px 12px);border:0}.th-card.soon .th-img i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:700;color:var(--dim)}.th-card.soon b{color:var(--dim)}.th-fade{position:fixed;inset:0;z-index:9800;background:#000;opacity:0;transition:opacity .22s;pointer-events:none}.th-fade.on{opacity:1;pointer-events:auto}.th-note{margin:0;text-align:center;font-size:12px;color:var(--dim)}.vh-th{display:flex;gap:6px;justify-content:center;margin-top:6px;pointer-events:auto}.vh-th button{font:inherit;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;border:2px solid rgba(255,255,255,.75);background:rgba(20,30,50,.55);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.35);cursor:pointer;-webkit-tap-highlight-color:transparent}.vh-th button.on{background:#4a9a3a;border-color:#d8f0c8}.vh-th button:active{transform:translateY(2px);box-shadow:none}   /* v18.15 경완: 필드 메뉴 좌상단에도 필드에 나가기 (초록 바탕에 맞춘 색) */   /* v15.99 경완 '명암 줄이고 디자인 다시': 일지 창 색(낮/밤)을 따르는 알약 버튼 + 화살표, 눌림 */
 .journal-head label{display:flex;gap:6px;align-items:center;font-size:14px}
 ol.log{list-style:none;margin:0;padding:0 4px 0 0;overflow-y:auto;height:calc(5 * 34px);overscroll-behavior:contain;line-height:1.5}
 .journal-head .small{color:var(--dim);font-size:13px}
@@ -2487,6 +2487,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
 
   <div class="hud berrybar">
     <button class="mapico" id="btnBag" aria-label="도구 가방"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg></button>
+    <button class="mapico" id="btnWhistle" type="button" aria-label="휘슬"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M6 2h6v5H6zM2 3h4v1H2zM1 4h6v1H1zM0 5h8v4H0zM1 9h6v1H1zM2 10h4v1H2z"/><path fill="#f2c443" d="M6 3h5v3H6zM2 4h4v1H2zM1 5h6v4H1zM2 9h4v1H2z"/><path fill="#fff2a8" d="M6 3h1v1H6zM2 5h1v2H2zM3 4h2v1H3z"/><path fill="#b8862a" d="M3 9h3v1H3zM6 6h1v3H6zM7 5h4v1H7z"/><path fill="#20202c" d="M8 3h2v1H8z"/></svg></button>
     <button class="mapico" id="btnHoop" aria-pressed="false" aria-label="후프링 들기"><svg viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" fill-rule="evenodd" d="M4 0h4v1h2v1h1v2h1v4h-1v2h-1v1H8v1H4v-1H2v-1H1V8H0V4h1V2h1V1h2zM4 3h4v1h1v4H8v1H4V8H3V4h1z"/><path fill="#ef5a3c" fill-rule="evenodd" d="M4 1h4v1h2v2h1v4h-1v2H8v1H4v-1H2V8H1V4h1V2h2zM4 2v1H3v1H2v4h1v1h1v1h4V9h1V8h1V4H9V3H8V2z"/><path fill="#ffd34a" d="M4 1h2v1H4zM9 2h1v2H9zM10 6h1v2h-1zM6 10h2v1H6zM2 8h1v2H2zM1 4h1v2H1z"/></svg></button>
     <button class="mapico" id="btnBerry" aria-pressed="false" aria-label="열매 주기"><svg class="b-day" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#3a7a2a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#5aa83a" d="M4 1h2v2H4z"/><path fill="#20202c" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#d8344a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#ff7a8a" d="M3 5h2v2H3z"/><path fill="#fff" d="M3 5h1v1H3z"/><path fill="#9a1a30" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg><svg class="b-night" viewBox="0 0 12 12" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><path fill="#2a5a4a" d="M6 0h2v1h1v1H7v1H6z"/><path fill="#3e7a5e" d="M4 1h2v2H4z"/><path fill="#0e1024" d="M3 3h6v1h1v1h1v4h-1v1H9v1H3v-1H2V9H1V5h1V4h1z"/><path fill="#7a3a8a" d="M3 4h6v1h1v4H9v1H3V9H2V5h1z"/><path fill="#b070c8" d="M3 5h2v2H3z"/><path fill="#e8e2ff" d="M3 5h1v1H3z"/><path fill="#46205a" d="M8 8h1v1H8zM4 9h4v1H4z"/></svg></button>
     <button id="frTest" class="test-btn" aria-pressed="false">친밀도 만점 (테스트)</button>
@@ -2719,7 +2720,7 @@ try { if (sessionStorage.getItem('pk-wf')) { sessionStorage.removeItem('pk-wf');
   <div class="win mgrwin" role="dialog" aria-label="포켓몬">
     <div class="sheet-head"><h3 id="mgrTitle">포켓몬</h3><span class="tcount bx-cnt" id="boxCount" hidden></span><span class="tcount bx-cnt" id="mgrCap" hidden></span><button class="opt" id="closeMgr">닫기</button></div>
     <div class="mtab" data-t="field">
-      <div class="mgr-tools"><div class="mgr-two test-only"><button class="test-btn" id="mgrClear">모두 빼기 (테스트)</button><button class="test-btn" id="mgrRandom">무작위 (테스트)</button></div><button type="button" class="j-out f-out" id="btnOutF">필드에 나가기<svg viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h1v1h1v1h1v1H5v1H4v1H3v1H2V5h1V4H0V2h3V1H2z"/></svg></button></div>
+      <div class="mgr-tools"><div class="mgr-two test-only"><button class="test-btn" id="mgrClear">모두 빼기 (테스트)</button><button class="test-btn" id="mgrRandom">무작위 (테스트)</button></div><button type="button" class="th-btn" id="btnTheme" aria-label="필드 테마 고르기"><svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M0 0h7v1L4 4v3H3V4L0 1z"/></svg><b>초원</b></button><button type="button" class="j-out f-out" id="btnOutF">필드에 나가기<svg viewBox="0 0 6 6" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h1v1h1v1h1v1h1v1H5v1H4v1H3v1H2V5h1V4H0V2h3V1H2z"/></svg></button></div>
       <div class="mgr-body">
         <div class="slots" id="slots"></div>
       </div>
@@ -2865,6 +2866,8 @@ const dxK = sp => SPECIES[sp]?.rb || +sp;   /* 도감 칸 번호 (지역 폼은 
 'use strict';
 // v14.99 경완 '친구 필드 놀러가기' (베타): beta.html?visit=<친구코드> 를 놀러가기 창(iframe) 안에 띄운다 — 친구의 필드를 그대로 돌리고 저장·앱 연락은 하지 않는다 (코드는 Visit)
 const VISIT = window.parent !== window ?   /* v15.34 경완 '베타로 개발한 거 다 본게임에': 본게임(index.html)에서도 놀러가기 */ (location.search.match(/[?&]visit=([A-Z0-9]{8})/) || [])[1] || '' : '';
+const TH_KEY = 'pk-theme', TH_NAME = { m: '초원', h: '항구' };   /* v27.48 경완: 필드 테마 (초원·항구) — 고른 테마는 기기에 고정, 놀러가기 창은 start() 에서 친구 테마로 */
+let THEME = 'm'; try { if (!VISIT && !/[?&]studio/.test(location.search)) THEME = localStorage.getItem(TH_KEY) === 'h' ? 'h' : 'm'; } catch (e) {} let HB = THEME === 'h';
 const W = 360, H = 600, SCALE = 1.375;   // 필드 스프라이트 크기 (2026-10-13 살짝 줄임: 1.5→1.375)
 const MAX_MONS = 9;   // 필드에는 최대 9마리 (2026-10-14 사용자 요청, 원래 12)
 // ---------- 효과음: 파일 없이 사각파·잡음으로 만드는 옛 휴대용 게임기 소리 ----------
@@ -3096,6 +3099,7 @@ function sfx(name, k = 0) { sfxN++; if (window.__sfxLog) window.__sfxLog.push(na
   const t = a.currentTime + .01;
   switch (name) {
     case 'tap': tone(1320, t, .035, { vol: .045 }); break;
+    case 'whistle': tone(2300, t, .1, { type: 'sine', vol: .06, to: 2700 }); tone(2700, t + .11, .3, { type: 'sine', vol: .06, to: 2450 }); noise(t, .16, .012, 5200); break;   /* v27.48 경완: 휘슬 (삐-익) */
     case 'edDrop': tone(620, t, .09, { type: 'sine', vol: .14, to: 300 }); tone(310, t + .02, .07, { type: 'triangle', vol: .06 }); break;   // v15.83 진화 떨어뜨리기: 구슬 놓는 퐁
     case 'edMerge': { const b = 72 + [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17][Math.min(10, k)], big = k >= 5;   // 합칠 때 유리 딸랑 (단계가 높을수록 높고 길게)
       tone(260 + k * 30, t, .07, { type: 'sine', vol: .12, to: 700 + k * 60 }); [0, 4, 7].concat(big ? [12] : []).forEach((d, i) => tone(NOTE(b + d), t + .03 + i * .045, big ? .22 : .14, { type: 'triangle', vol: .07 })); if (big) tone(NOTE(b + 24), t + .2, .3, { type: 'sine', vol: .04 }); break; }
@@ -3573,7 +3577,7 @@ setInterval(() => { if (!document.hidden) try { pshPond(); } catch (e) {} }, 800
 /* v18.12 경완 '육지 포켓몬이 호수 가장자리에 설 때 호수 위에 있는 것처럼': 몸 가운데(발)만 물 밖이라 옆 물가에선 몸 반쪽이 물 위에 떠 보였다 → 걷는 포켓몬은 몸 폭만큼 연못을 넓혀 본다 */
 const pondPad = m => m && m.el && m.sp != null && pondWalk(m) ? Math.min(36, (m.w || 32) * .42) : 0;
 const pondValM = (m, x, y) => { const P = nearPond(x, y), e = pondPad(m), dx = (x - P.x) / (P.rx + e), dy = (y - P.y) / (P.ry + e * .12); return dx * dx + dy * dy; };
-function randLand() {
+function randLand() { if (HB) return hbRand(null);
   for (let i = 0; i < 50; i++) { const p = { x: rnd(XL + 40, XR - 40), y: rnd(MIN_Y + 10, MAX_Y - 5) }; if (pondVal(p.x, p.y) > 1.35) return p; }
   return { x: 200, y: 400 };
 }
@@ -3581,7 +3585,8 @@ const bigSwimOk = (P, m, x, y) => { const hw = m?.el && m.w > 40 ? m.w * .38 : 0
 /* v22.50 경완 '고래왕 또 물 밖으로 나가 버리네': 헤엄 길·자리 고정은 몸 가운데만 연못 .9 안인지 봐서, 큰 물 포켓몬은 몸 옆·아래가 뭍으로 삐져나갔다 → 몸 끝까지 물 안(bigSwimOk)이 될 때까지 연못 가운데 쪽으로 당긴다 */
 function bigIn(m, q) { if (!(m?.el && m.w > 40) || T(m).mv !== 'swim' || m.land) return q; const P = nearPond(q.x, q.y); if (bigSwimOk(P, m, q.x, q.y)) return q;
   const cx = P.x, cy = P.y - m.w * .2, x0 = q.x, y0 = q.y; let lo = 0, hi = 1; for (let i = 0; i < 12; i++) { const f = (lo + hi) / 2; if (bigSwimOk(P, m, cx + (x0 - cx) * f, cy + (y0 - cy) * f)) lo = f; else hi = f; } q.x = cx + (x0 - cx) * lo; q.y = cy + (y0 - cy) * lo; return q; }
-function randPond(k = .8, near) { const PS = ALLP('pond'), POND = near ? nearPond(near.x, near.y) : PS[Math.floor(Math.random() * PS.length)];
+function randPond(k = .8, near) { if (!HB) return randPond0(k, near); for (let i = 0; i < 60; i++) { const p = randPond0(k, near); if (hbIn(p.x, p.y) && hbZ(p.x, p.y) === 4) return p; } return { x: (XL + XR) / 2, y: 520 }; }   /* v27.48 항구: 바다 타원이 화면보다 커서 화면 안 바다만 */
+function randPond0(k = .8, near) { const PS = ALLP('pond'), POND = near ? nearPond(near.x, near.y) : PS[Math.floor(Math.random() * PS.length)];
   const ok = (x, y) => bigSwimOk(POND, near, x, y);   /* v21.44 경완 '고래왕 연못 아래로 가면 밑이 육지로 삐져나감': 몸집 큰 물 포켓몬은 몸 양쪽 아래 끝까지 물 안인 자리만 */
   for (let i = 0; i < 24; i++) { const a = rnd(0, Math.PI * 2), r = Math.sqrt(Math.random()) * k, p = { x: POND.x + Math.cos(a) * POND.rx * r, y: POND.y + Math.sin(a) * POND.ry * r }; if (ok(p.x, p.y)) return p; }
   return { x: POND.x + rnd(-.15, .15) * POND.rx, y: POND.y - POND.ry * .1 };
@@ -4076,7 +4081,7 @@ const wrongTime = m => DEX[m.sp].noct ? !isNight() : isNight();
 // v4.55 경완: 기력 없이 시간으로 잔다. 낮 포켓몬은 밤 11시부터 하나둘 잠들어 새벽 3~4시엔 거의 다 자고 아침 6~8시 반에 깬다.
 // 밤 포켓몬(noct)은 반대로 아침 6시부터 잠들어 저녁 5~7시 반에 깬다. 잠드는 시각(slpB)은 깰 때마다, 깨는 시각(slpW)은 잠들 때마다 새로 정한다
 const bedRoll = m => (DEX[m.sp].noct ? 6 : 23) + Math.pow(Math.random(), 1.4) * 4.5, wakeRoll = m => (DEX[m.sp].noct ? 17 : 6) + rnd(0, 2.5);
-const sleepyTime = m => { if (m.slpB == null) m.slpB = bedRoll(m); if (m.slpW == null) m.slpW = wakeRoll(m); const h = hour(), b = m.slpB % 24, w = m.slpW; return b > w ? (h >= b || h < w) : (h >= b && h < w); };
+const sleepyTime = m => { if (m.vg) return false;   /* v27.48: 놀러 온 포켓몬은 신나서 안 잠 */ if (m.slpB == null) m.slpB = bedRoll(m); if (m.slpW == null) m.slpW = wakeRoll(m); const h = hour(), b = m.slpB % 24, w = m.slpW; return b > w ? (h >= b || h < w) : (h >= b && h < w); };
 const T = m => DEX[m.sp];
 const awake = m => m.state !== 'sleep' && !m.hidden;
 
@@ -4238,6 +4243,7 @@ async function spawn(sp, opts = {}) {
   { const P = m.pid != null ? boxOf(m.pid) : null; if (P) { if (!opts.name && P.nm) m.name = P.nm; if (!m.notes) m.notes = P.notes || []; } }
   const p = opts.x != null ? { x: opts.x, y: opts.y } : (DEX[sp].mv === 'swim' ? randPond(.6) : randLand());
   m.x = m.tx = p.x; m.y = m.ty = p.y;
+  if (HB && opts.x == null && !hbOk(m, m.x, m.y)) { const q = hbRand(m); m.x = m.tx = q.x; m.y = m.ty = q.y; }
   // DOM
   const el = document.createElement('div'); el.className = 'mon';
   el.innerHTML = '<div class="shadow"></div><div class="ripple"></div><div class="lift"><div class="flip"><div class="dirt"><div class="act"><img alt=""><i class="grime gi"></i><div class="spr" role="img"><i class="grime"></i></div><span class="snot"></span></div></div></div></div>';
@@ -4677,6 +4683,7 @@ function moveTo(m, p, goal, spdMul = 1) {
   if (mv !== 'swim' && inHud(m, m.tx, m.ty)) { let q = outOfHud(m, { x: m.tx, y: m.ty }); for (let i = 0; i < 6 && (inHud(m, q.x, q.y) || (pondWalk(m) && pondValM(m, q.x, q.y) < 1.1)); i++) q = outOfHud(m, randLand()); m.tx = clamp(q.x, XL + 30, XR - 30); m.ty = clamp(q.y, MIN_Y, MAX_Y); }   /* v8.55 경완 '앱만 켜면 턱지충이 열매 버튼 뒤에': 연못가·모닥불 비키기가 목적지를 다시 버튼 밑으로 밀어 넣으면 그 자리에서 멈춰 버렸다 → 마지막에 한 번 더 확인하고, 안 되면 다른 빈 땅으로 */
   if (m.propSit) { m.propSit = false; m.xl = 0; m.pzB = null; m.pzF = 0; }
   if (m.anOv) { m.anOv = null; m.zAdd = 0; }
+  if (HB && !hbOk(m, m.tx, m.ty)) { const q = hbNear(m, m.tx, m.ty); m.tx = q.x; m.ty = q.y; }   /* v27.48 항구: 이 포켓몬이 설 수 있는 가까운 곳으로 */
   m.goal = goal || { kind: 'wander' }; m.spdMul = spdMul;
   setState(m, 'move', 30);
 }
@@ -4721,6 +4728,7 @@ const fedBusy = x => (x.fedT || 0) > performance.now() || ((x.goal?.kind === 'be
 function canMeet(m, o) {
   if (fedBusy(m) || fedBusy(o)) return false;
   if (o !== m && propBusy(o)) return false;   // v9.58: 소품 놀이 중(가는 중 포함)인 포켓몬은 만나러 가지 않는다
+  if (o.follow?.vc || m.follow?.vc) return false;   /* v27.48: 휘슬로 따라오는 중엔 다른 포켓몬이 데려가지 않음 */
   if (o === m || o.held || m.held || m.land || o.land || !awake(o) || o.state === 'interact' || o.state === 'special' || o.state === 'eat' || o.pet || m.pet || o.pin || m.pin || o.camp || m.camp) return false;   /* v5.93: 모닥불로 가는 중인 포켓몬은 건드리지 않는다 */
   const a = T(m).mv, b = T(o).mv;
   /* v5.99 경완: 물 포켓몬이 뭍 포켓몬과 거의 못 어울려 즐거움이 안 쌓이던 것 — 뭍 포켓몬은 물가로 찾아가 어울리고, 물 포켓몬은 물가 가까이 있는 뭍 포켓몬에게 다가간다 */
@@ -4747,6 +4755,7 @@ function pickPartner(m) {
 function think(m) {
   m.goal = null; m.partner = null; m.spdMul = 1;
   if (m.hidden) return;
+  if (m.follow?.vc && awake(m) && !m.held) { faceTo(m, m.follow.tr.x); return setState(m, 'idle', rnd(.6, 1.2)); }   /* v27.48 경완 '휘슬 누르면 내 앞으로 오기, 움직이면 계속 따라다니고': 따라오는 동안은 딴 데 안 감 */
   if (m.camp && CAMP === m.camp && !m.camp.on && m.campSeat && !m.camp.ready.has(m) && awake(m)) return moveTo(m, m.campSeat, { kind: 'camp' }, .9);   // v5.93: 모닥불 자리로 가던 중이면 다른 데로 새지 않고 다시 자리로
   if (m.land) {   // 육지의 잉어킹: 숨을 헐떡이며 쉬엄쉬엄 호수로 파닥파닥
     if (Math.random() < .3) { setState(m, 'idle', rnd(1, 2.2)); emote(m, pick(['헉…헉…', '💦', '파닥파닥', '…!']), '', 1.6, 'karp-gasp'); return; }
@@ -4787,6 +4796,7 @@ function think(m) {
       m.likeCd = rnd(70, 160); const side = m.x < lv.x ? -1 : 1;
       return moveTo(m, { x: lv.x + side * Math.max(34, (m.w + lv.w) * .35), y: lv.y + rnd(-6, 6) }, { kind: 'like', mon: lv });
     } }
+  if (m.vg || S.mons.some(o => o.vg)) { const q = Visit.vcThink?.(m); if (q === 1) return setState(m, 'idle', rnd(.6, 1.2)); if (q) return moveTo(m, q, { kind: 'meet', mon: q }, 1.15); }   /* v27.48 경완 '친구 필드 놀러갈 때 데려갈 포켓몬 고르는 창, 한 명만, 안 고르고 가는 것도': 데려온 포켓몬은 친구 필드 포켓몬들과 자주 어울림 */
   if (m.social > 42 && sceneFree(m) && Math.random() < .85) {
     const o = pickPartner(m);
     if (o && (T(m).mv === 'swim') !== (T(o).mv === 'swim') && !o.goal && (o.state === 'idle' || o.state === 'move') && !o.held && !o.pin) moveTo(o, m, { kind: 'meet', mon: m }, 1.1);   // v5.99: 물·뭍 사이는 서로 물가로 다가간다
@@ -4875,11 +4885,12 @@ function arrive(m) {
   if (g.kind === 'greet') {
     const o = g.mon; if (!S.mons.includes(o) || o.hidden) return think(m);
     faceTo(m, o.x); setState(m, 'idle', rnd(2.5, 4)); anim(m, 'hop'); addRel(m, o, 1);
+    if (o.vg && !m.vg && (o.vcGL = (o.vcGL || 0) + 1) <= 2) log(pick([`${J(m,'이/가')} 놀러 온 ${N(o)}에게 쪼르르 달려가 폴짝 뛰며 반갑게 인사한다.`, `${J(m,'이/가')} 처음 보는 ${N(o)} 앞에서 깡충 뛰며 반가워한다.`, `${J(m,'이/가')} 놀러 온 ${J(o,'을/를')} 보고 반가운 듯 폴짝 뛴다.`]), [m, o]);   /* v27.48 경완 '반갑게 인사하고 … 일지에도 반가워하는 내용' */
     const tx = pick(['?', '?', '♪', '!']); emote(m, tx, tx === '♪' ? 'note' : '', 2.2, 'new-greet');
     /* v4.39 경완: 인사받은 새 포켓몬도 하던 걸 멈추고 돌아봐 반응한다 (폴짝 + 말풍선, 가끔 한 걸음 다가감) */
     const ok = () => S.mons.includes(o) && S.mons.includes(m) && awake(o) && !o.held && !o.pin && o.state !== 'interact' && !fedBusy(o) && petM?.m !== o;
     if (ok()) { faceTo(o, m.x); if (o.state === 'move' || o.state === 'idle') setState(o, 'idle', rnd(3, 4.5)); }
-    setTimeout(() => { if (!ok()) return; faceTo(o, m.x); anim(o, 'hop'); addRel(o, m, 1); const r = pick(['!', '♪', '?', '♥']); emote(o, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 2.2, 'new-greeted');
+    setTimeout(() => { if (!ok()) return; faceTo(o, m.x); anim(o, 'hop'); addRel(o, m, 1); const r = vcShy(o) ? pick(['…', '…!', '…?']) : pick(['!', '♪', '?', '♥']); emote(o, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 2.2, vcShy(o) ? 'vc-shy' : 'new-greeted');
       if (T(o).mv !== 'swim' && dist(o, m) > 46 && Math.random() < .5) setTimeout(() => { if (ok() && o.state === 'idle') moveTo(o, { x: o.x + (m.x - o.x) * .35, y: o.y + (m.y - o.y) * .35 }, { kind: 'wander' }, .6); }, 900); }, 700);
     if (!o.greetLog) { o.greetLog = 1; log(pick([`${J(m,'이/가')} 새로 온 ${J(o,'에게/에게')} 다가가 인사했다.`, `${J(m,'이/가')} 처음 보는 ${J(o,'을/를')} 신기한 듯 살펴본다.`, `${J(m,'이/가')} 새 친구 ${J(o,'이/가')} 궁금한지 주위를 맴돈다.`]), [m, o]); }
     return;
@@ -5971,7 +5982,7 @@ function interact(a, b, forced) {
     return;
   }
   if (firstMeet) { S.rel[relKey(a, b)] = 0; if (Math.random() < .5) log(`${J(a,'과/와')} ${J(b,'이/가')} 처음 만났다.`, [a, b]); }
-  const sc = forced || chooseScene(a, b);
+  const sc = forced || ((!a.vg) !== (!b.vg) && Visit.vcScene?.(a.vg ? b : a, a.vg ? a : b)) || chooseScene(a, b);   /* v27.48: 놀러 온 포켓몬과는 인사·구경시키기·선물 같은 반가운 장면 */
   (S.lastScene = S.lastScene || {})[relKey(a, b)] = sc.key;
   log(sc.text(), [a, b]);   // v5.01 경완: 특별 장면·싸움은 일지에서 색 강조 안 함
   if (sc.start) sc.start(a, b);
@@ -6136,7 +6147,7 @@ function doSpecial(m) {
     setState(m, 'special', 5); m.special = 'flame'; burst(m, 'flame', '✹', 4);   /* v8.85 경완: 불꽃 낼 때마다 둘레가 밝아짐 */   // v6.13 경완: 불꽃 내는 모션이 너무 짧았다 → 3초에서 5초로, 불꽃 상태 동안 1.4초마다 다시 뿜는다
     const fl = setInterval(() => { if (!S.mons.includes(m) || m.special !== 'flame' || m.state !== 'special') return clearInterval(fl); burst(m, 'flame', '✹', 3); }, 1400);
     // v6.13 경완: '모여들어 몸을 녹인다'는 말만 나오고 실제로는 안 모였다 → 한가한 포켓몬이 불꽃 둘레로 걸어와 불을 바라보며 쬔다
-    const cold = isNight() ? S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 220 && !T(o).fire && !o.held && !o.camp && !o.partner && !o.perch && T(o).mv !== 'swim' && (o.state === 'idle' || (o.state === 'move' && (o.goal?.kind || 'wander') === 'wander'))).sort((a, b) => dist(a, m) - dist(b, m)).slice(0, 3) : [];
+    const cold = isNight() ? S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 220 && !T(o).fire && !o.held && !o.camp && !o.partner && !o.perch && !o.follow?.vc && T(o).mv !== 'swim' && (o.state === 'idle' || (o.state === 'move' && (o.goal?.kind || 'wander') === 'wander'))).sort((a, b) => dist(a, m) - dist(b, m)).slice(0, 3) : [];
     if (cold.length) {
       setState(m, 'special', 12);
       const a0 = Math.random() * Math.PI * 2;
@@ -6565,7 +6576,7 @@ function update(m, dt) {
       }
       if (g && g.kind === 'berry' && !S.berries.includes(g.berry)) { arrive(m); break; }
       if (m.wp && m.wpT && Math.hypot(m.wpT[0] - m.tx, m.wpT[1] - m.ty) > 40) m.wp = null;   // v9.34: 목표가 멀리 바뀌면 예전 돌아가기 자리는 버린다
-      if (!m.wp) { m.wp = treeWp(m, m.tx, m.ty) || pondWp(m, m.tx, m.ty) || fireWp(m, m.tx, m.ty); m.wpT = [m.tx, m.ty]; } else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
+      if (!m.wp) { m.wp = HB ? hbWp(m, m.tx, m.ty) : treeWp(m, m.tx, m.ty) || pondWp(m, m.tx, m.ty) || fireWp(m, m.tx, m.ty); m.wpT = [m.tx, m.ty]; } else if (Math.hypot(m.wp.x - m.x, m.wp.y - m.y) < 6) m.wp = null;
       const gx = m.wp ? m.wp.x : m.tx, gy = m.wp ? m.wp.y : m.ty, dx = gx - m.x, dy = gy - m.y, d = Math.hypot(dx, dy) || .001;
       const sp = t.spd * (m.spdMul || 1) * (pondVal(m.x, m.y) < 1 && t.mv === 'amph' ? .8 : 1);
       const reach = g && (g.kind === 'meet' || g.kind === 'scare' || g.kind === 'heal' || g.kind === 'chase' || g.kind === 'greet') ? 10 : 4;
@@ -6577,6 +6588,7 @@ function update(m, dt) {
         const NP = nearPond(m.x, m.y); let nx = (m.x - NP.x) / NP.rx ** 2, ny = (m.y - NP.y) / NP.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl;
         const dot = vx * nx + vy * ny, inward = t.mv === 'walk' ? dot < 0 : dot > 0; if (inward) { vx -= dot * nx; vy -= dot * ny; } }
       if (fireBlk(m) && fireVal(m, m.x + vx, m.y + vy) < 1) { const B = fireBox(m); let nx = (m.x - B.x) / B.rx ** 2, ny = (m.y - B.y) / B.ry ** 2; const nl = Math.hypot(nx, ny) || 1; nx /= nl; ny /= nl; const dot = vx * nx + vy * ny; if (dot < 0) { vx -= dot * nx; vy -= dot * ny; } }
+      if (HB) [vx, vy] = hbStep(m, vx, vy); const hbX = m.x, hbY = m.y;   /* v27.48 항구: 못 서는 곳(벽·바다·도시 등)으로는 미끄러지기 */
       m.x += vx; m.y += vy;
       if (Math.abs(vx) > step * .25 && Math.abs(dx) > 2) m.face = vx > 0 ? -1 : 1;
       m.up = dy < -Math.abs(dx) * .8; { const ax = Math.abs(dx); m.wd = dy < -ax * 2.414 ? 'WalkN' : dy < -ax * .414 ? 'WalkUp' : dy <= ax * .414 ? 'WalkS' : dy <= ax * 2.414 ? 'Walk' : 'WalkD'; }
@@ -6586,6 +6598,7 @@ function update(m, dt) {
       m.x = clamp(m.x, XL + 20, XR - 20); m.y = clamp(m.y, MIN_Y, MAX_Y);
       if (pondWalk(m) && pondValM(m, m.x, m.y) < 1.08) pondSide(m);   /* 호수 아래 띠가 막혀 아래로 밀었다 위로 당겼다 하며 갇히지 않게 옆으로 */
       fireOut(m, m, 1);
+      if (HB && hbCls(m) !== 'b' && !m.land && hbOk(m, hbX, hbY) && !hbOk(m, m.x, m.y)) { m.x = hbX; m.y = hbY; }
       // 길이 막혀(호수·화면 끝) 거의 못 나아가면 1초쯤 뒤 왔던 쪽으로 돌아 나간다
       { const gain = d - Math.hypot(gx - m.x, gy - m.y);
         m.stk = gain < step * .3 ? (m.stk || 0) + dt : Math.max(0, (m.stk || 0) - dt);
@@ -6596,6 +6609,7 @@ function update(m, dt) {
           const now = performance.now(); if (now - (m.stkAt || -1e9) < 15000) { m.stkAt = 0; m.goal = null; setState(m, 'idle', rnd(3, 6)); break; } m.stkAt = now;
           const back = { x: clamp(m.x - dx / d * rnd(90, 170) + rnd(-40, 40), XL + 30, XR - 30), y: clamp(m.y - dy / d * rnd(50, 110) + rnd(-30, 30), MIN_Y + 5, MAX_Y - 5) };
           if (pondWalk(m) && pondValM(m, back.x, back.y) < 1.15) pondSide(back, 1.2);
+          if (HB) { const q = hbNear(m, back.x, back.y); back.x = q.x; back.y = q.y; }
           m.goal = null; m.tx = back.x; m.ty = back.y; m.t = Math.min(m.t, 4); break; } }
       if (m.t <= 0) { if (g && g.kind === 'chase') chaseEnd(m); else think(m); }
       break;
@@ -6899,8 +6913,117 @@ function seasonFx() { let e = $('#seaFx'); if (!e) { e = document.createElement(
   e.className = fx ? 'sea-' + fx : ''; const n = fx === 'winter' ? 46 : fx ? 16 : 0; let h = '';
   for (let i = 0; i < n; i++) h += `<i style="left:${(Math.random() * (W + 120) - 60).toFixed(0)}px;animation-delay:${(-Math.random() * 9).toFixed(2)}s;animation-duration:${(fx === 'winter' ? 6 + Math.random() * 5 : 8 + Math.random() * 5).toFixed(2)}s;--sx:${(Math.random() * 60 - 30).toFixed(0)}px;--r:${(Math.random() * 360).toFixed(0)}deg"></i>`;
   e.innerHTML = h; }
+/* v27.48 경완 '이제 이거 항구도시 베타에 배포 … 필드는 테마별로 관리': 항구 테마 필드. 그림 maps/harbor.png (180×300 = 맵 반 해상도, 위 투명 줄은 하늘 #skyC), 구역 maps/harbor_z.png (회색 도시·주황 계단·노랑 해변·파랑 바다, 나머지는 못 다님)
+   파도·굴뚝 연기는 시연(assets_src/maps/demo/harbor_tpl.html, 너울 B '은은하게') 그대로 #bg 위에 8장/초. 바다는 연못 타원 셋(LAYOUT.pond·ponds)으로 헤엄 길을 잡고, 설 수 있는 곳은 구역 지도로 (hbOk) */
+const HBZ = { ready: null, img: null, z: null, base: null, ox: 0, W: null };
+const HB_BIRD = new Set([278, 279, 580, 581, 845, 940, 941]), HB_BEACH = new Set([769, 770, 960, 961]);   /* 경완 '갈모매 같은 바다새 포켓몬들은 괜찮음' · '모래성이당, 바다그다 처럼 해변에만 있는 포켓몬들은 해변에만' */
+const HB_LAMP = ['street-lamp', 158, 252];   /* 도시 바닥 왼쪽 판 오른쪽 아래 모서리 (계단 쪽 꺾이는 곳) */
+/* v27.52 경완 '밤에는 집 창문 빛 다 켜지고 한밤 쯤 되면 창문 빛 다 꺼지게 (자는 시간이니까)': 창문 칸(맵 그림 좌표 상자) 안 유리 칸만 노란 불빛, 창마다 18시~18시 40분 사이 켜지고 23시~자정 사이 꺼짐. 파란 집 큰 창은 가장 어두운 칸이 창살 */
+const HB_WIN = [[3, 42, 12, 51], [0, 55, 3, 63], [60, 44, 67, 51], [44, 54, 54, 64], [104, 42, 113, 51], [95, 55, 105, 64], [142, 46, 149, 53], [171, 42, 180, 48], [166, 52, 180, 61, 1]];
+const hbWinOn = (i, h) => h >= LAMP_ON + ((i * 7) % 9) / 9 * .7 && h < 23 + ((i * 5) % 9) / 9 * .9;
+const HB_TOP = { x: 285, y: 210 }, HB_BOT = { x: 285, y: 264 };   /* 경완 '도시에서 해변으로는 계단 통해서만 내려갈 수 있음': 계단 위·아래 */
+function hbLoad() { return HBZ.ready ||= Promise.all(['maps/harbor.png', 'maps/harbor_z.png'].map(u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u + '?v=' + encodeURIComponent(APP_VER); }))).then(([a, b]) => {
+  HBZ.img = a; const cv = document.createElement('canvas'); cv.width = 180; cv.height = 300; const g = cv.getContext('2d', { willReadFrequently: true });
+  if (b) { g.drawImage(b, 0, 0); const D = g.getImageData(0, 0, 180, 300).data, z = new Uint8Array(180 * 300); for (let k = 0; k < z.length; k++) { const r = D[k * 4], q = D[k * 4 + 1], s = D[k * 4 + 2]; z[k] = D[k * 4 + 3] < 128 ? 0 : r === 90 && q === 90 ? 1 : r === 255 && q === 140 ? 2 : r === 255 && q === 220 ? 3 : r === 0 && s === 255 ? 4 : 0; } HBZ.z = z; }
+  if (a) { g.clearRect(0, 0, 180, 300); g.drawImage(a, 0, 0); hbPrep(g.getImageData(0, 0, 180, 300).data); } }); }
+const hbMx = X => clamp(X < 0 ? -X - 1 : X >= 180 ? 359 - X : X, 0, 179);   /* 넓은 화면 양옆 = 맵을 좌우로 뒤집어 이어 그림 */
+const hbZ = (x, y) => { const Y = Math.floor(y / 2); if (Y >= 300) return 4; if (Y < 0 || !HBZ.z) return 0; return HBZ.z[Y * 180 + hbMx(Math.floor(x / 2))]; };
+/* 다니는 갈래: b 바다새(어디든) · s 물고기·헤엄(바다만) · h 해변만 · a 땅·바다 둘 다(초원에서 연못 드나들던 애들) · f 날거나 떠다님(바다 위는 못 감, 경완 '고스트처럼 떠 다니는 포켓몬들도 바다 위로는 못 감') · w 걷기(도시·계단·해변) */
+function hbCls(m) { const s = +m.sp, b = +(RFORM[s]?.b ?? s); if (HB_BIRD.has(b)) return 'b'; if (HB_BEACH.has(b)) return 'h'; const mv = T(m)?.mv; return mv === 'swim' ? 's' : mv === 'amph' ? 'a' : mv === 'fly' || mv === 'hover' || floatM(m) ? 'f' : 'w'; }
+function hbOk(m, x, y) { const z = hbZ(x, y), c = hbCls(m); return c === 'b' || (c === 's' ? z === 4 : c === 'h' ? z === 3 : c === 'f' ? z !== 4 : c === 'a' ? z > 0 : z > 0 && z < 4); }
+const hbIn = (x, y) => x >= XL + 30 && x <= XR - 30 && y >= MIN_Y + 4 && y <= MAX_Y - 4;
+function hbRand(m) { if (m && hbCls(m) === 's') return randPond(.7); for (let i = 0; i < 400; i++) { const p = { x: rnd(XL + 30, XR - 30), y: rnd(MIN_Y + 10, MAX_Y - 5) }, z = hbZ(p.x, p.y); if (m ? hbOk(m, p.x, p.y) : z === 1 || z === 3) return p; } return { x: clamp(200, XL + 30, XR - 30), y: 200 }; }
+function hbNear(m, x, y) { if (hbIn(x, y) && hbOk(m, x, y)) return { x, y }; for (let r = 6; r < 300; r += 6) for (let a = 0; a < 16; a++) { const X = x + Math.cos(a * Math.PI / 8) * r, Y = y + Math.sin(a * Math.PI / 8) * r * .8; if (hbIn(X, Y) && hbOk(m, X, Y)) return { x: X, y: Y }; } return hbRand(m); }
+const hbSide = (x, y) => { const z = hbZ(x, y); return z === 1 ? 1 : z === 2 ? (y < 236 ? 1 : 3) : z === 3 || z === 4 ? 3 : 0; };
+function hbWp(m, tx, ty) { const c = hbCls(m); if (c !== 'w' && c !== 'a') return null; const a = hbSide(m.x, m.y), b = hbSide(tx, ty); if (!a || !b || a === b) return null; const st = hbZ(m.x, m.y) === 2;
+  if (a === 1) return st || Math.hypot(m.x - HB_TOP.x, m.y - HB_TOP.y) < 10 ? { ...HB_BOT } : { ...HB_TOP }; return st || Math.hypot(m.x - HB_BOT.x, m.y - HB_BOT.y) < 10 ? { ...HB_TOP } : { ...HB_BOT }; }
+/* 한 걸음: 못 서는 곳으로 들어가면 벽을 따라 미끄러지게 (못 서는 곳에 있었으면 빠져나가는 건 그대로) */
+function hbStep(m, vx, vy) { if (!HB || !HBZ.z || m.held || m.land || hbCls(m) === 'b' || hbOk(m, m.x + vx, m.y + vy) || !hbOk(m, m.x, m.y)) return [vx, vy]; if (vx && hbOk(m, m.x + vx, m.y)) return [vx, 0]; if (vy && hbOk(m, m.x, m.y + vy)) return [0, vy]; return [0, 0]; }
+function hbLayout() {   /* 초원 소품은 맵 밖(맵 편집으로 뺀 자리)으로, 꽃·바위·덤불·더 놓은 소품은 없음, 연못 = 바다 타원 셋 (구역 지도 바다를 3칸 안쪽까지 덮게 맞춤) */
+  for (const k of ['fire', 'bed', 'tree', 'perch', 'stump']) if (LAYOUT[k]) { LAYOUT[k].x = ME_OUT; LAYOUT[k].y = ME_OUT; }
+  for (const k of Object.values(MK)) LAYOUT[k] = []; LAYOUT.sc = LAYOUT.scArt?.[HB_LAMP[0]] ? [HB_LAMP.slice()] : []; for (const k of ['bushes', 'puddles', 'rocks', 'mush', 'flowers']) LAYOUT[k].length = 0; FLOWERS.length = 0;   /* v27.52 경완 '도시 쪽 바닥 가운데 모서리에 빛 내는 가로등 하나': 상점 가로등 소품 그대로라 밤 빛·둘레 밝힘·상호작용을 다 탐 */
+  Object.assign(LAYOUT.pond, { x: 120, y: 488, rx: 280, ry: 140 }); delete LAYOUT.pond.lk; LAYOUT.ponds = [{ x: 48, y: 356, rx: 104, ry: 52 }, { x: 168, y: 524, rx: 248, ry: 174 }]; MIN_Y = 150; }
+function hbDraw() { const c = $('#bg'), ox = BGX ? BGX.ox : 0, w = BGX ? BGX.w : W / 2; c.width = w; c.height = H / 2; const g = c.getContext('2d', { willReadFrequently: true }); g.imageSmoothingEnabled = false; BGP = []; BGOX = ox;
+  if (HBZ.img) { g.drawImage(HBZ.img, ox, 0); for (const tx of [ox, ox + 360]) if (tx > ox ? w > ox + 180 : ox > 0) { g.save(); g.translate(tx, 0); g.scale(-1, 1); g.drawImage(HBZ.img, 0, 0); g.restore(); } }   /* 넓은 화면: 양옆에 좌우로 뒤집은 맵을 이어 그림 (이음매가 맞음) */
+  HBZ.base = g.getImageData(0, 0, w, 300); HBZ.ox = ox; hbF = -1; }
+function hbPrep(D) { const w = 180, h = 300, at = (x, y) => (y * w + x) * 4;
+  const isSea = (x, y) => { const i = at(x, y); return y > 120 && D[i + 3] && (D[i + 2] > D[i] + 40 || (D[i] > 225 && D[i + 1] > 235 && D[i + 2] > 235 && D[i + 2] >= D[i] - 3)); };   /* 흰 물거품만 바다로, 조개 흰 점(fffaf2)은 빼기 */
+  const isSand = (x, y) => { const i = at(x, y); return y > 126 && D[i + 3] && D[i] > 185 && D[i + 1] > 140 && D[i] - D[i + 2] > 35; };
+  const isRock = (x, y) => { const i = at(x, y); return y > 140 && D[i + 3] && Math.abs(D[i] - D[i + 2]) < 20 && D[i] < 200 && !isSea(x, y); };
+  const kind = new Uint8Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) kind[y * w + x] = isSea(x, y) ? 1 : isSand(x, y) ? 2 : isRock(x, y) ? 3 : 0;
+  const bfs = (dist, seedOk, pass) => { const q = []; for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const k = y * w + x; if (seedOk(x, y, k)) { dist[k] = 0; q.push(k); } }
+    for (let qi = 0; qi < q.length; qi++) { const k = q[qi], x = k % w, y = (k / w) | 0; for (const [X, Y] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) { if (X < 0 || Y < 0 || X >= w || Y >= h) continue; const K = Y * w + X; if (pass(K) && dist[K] > dist[k] + 1) { dist[K] = dist[k] + 1; if (dist[K] < 120) q.push(K); } } } };
+  const nb = (x, y, t) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => kind[(y + b) * w + x + a] === t);
+  const dSea = new Float32Array(w * h).fill(99), dSand = new Float32Array(w * h).fill(99), dw = new Float32Array(w * h).fill(99);
+  bfs(dSea, (x, y, k) => kind[k] === 1 && nb(x, y, 2), K => kind[K] === 1); bfs(dSand, (x, y, k) => kind[k] === 2 && nb(x, y, 1), K => kind[K] === 2); bfs(dw, (x, y, k) => kind[k] === 1 && (nb(x, y, 0) || nb(x, y, 3)), K => kind[K] === 1);
+  const ph = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) ph[y * w + x] = (x * .55 + y * .35) * .09;
+  const deep = []; for (let y = 150; y < h; y++) for (let x = 0; x < w; x++) if (kind[y * w + x] === 1 && dSea[y * w + x] > 10 && dw[y * w + x] > 6) deep.push([x, y]);
+  const band = []; for (let y = 121; y < h - 4; y++) for (let x = 0; x < w; x++) { const k = y * w + x; if (kind[k] === 1 && dSea[k] >= 2 && dSea[k] <= 120 && dw[k] > 2) band.push(k); }
+  const newRip = first => { const [x, y] = deep[(Math.random() * deep.length) | 0]; return { x, y, t0: performance.now() - (first ? Math.random() * 5000 : 0), dur: 3800 + Math.random() * 2600, len: 2 + ((Math.random() * 4) | 0), sp: .6 + Math.random() * .7 }; };
+  HBZ.WIN = HB_WIN.map(([x0, y0, x1, y1, bar], i) => { const px = []; for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const j = at(x, y), r = D[j], q = D[j + 1], b = D[j + 2], t = r + q + b; if (D[j + 3] < 200 || t >= 300 || b < r - 8 || q > b + 10 || (bar && r === 57 && q === 44)) continue; px.push([x, y, t < 190 ? 0 : t < 230 ? 1 : 2]); } return { i, px, cx: (x0 + x1), cy: (y0 + y1) }; });
+  HBZ.W = { D, w, h, kind, dSea, dSand, dw, ph, deep, band, newRip, rip: deep.length ? Array.from({ length: 60 }, () => newRip(true)) : [], glint: deep.length ? Array.from({ length: 14 }, () => ({ p: deep[(Math.random() * deep.length) | 0], o: Math.random() * 6.28 })) : [], smoke: [], chim: [{ x: 47.5, y: 22, gap: 450, t: 0 }, { x: 153.5, y: 25, gap: 520, t: 200 }] }; }
+let hbF = -1; const HB_BY = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+function hbTick() { if (!HB || !HBZ.base || !HBZ.W || document.hidden || mapEdit || window.Gym?.isOpen?.() || (!VISIT && document.body.classList.contains('visiting'))) return; const now = performance.now(), F = Math.floor(now / 125); if (F === hbF) return; hbF = F;
+  const c = $('#bg'); if (c.width !== HBZ.base.width) return; const g = c.getContext('2d'); g.putImageData(HBZ.base, 0, 0);
+  const ox = HBZ.ox, t = F / 8, Z = HBZ.W, { D, w, h, kind, dSea, dSand, dw, ph, deep, band, rip, glint, smoke } = Z, BY = HB_BY, cw = c.width, P = (x, y, col) => { g.fillStyle = col; g.fillRect(x + ox, y, 1, 1); if (ox && ox - 1 - x >= 0) g.fillRect(ox - 1 - x, y, 1, 1); if (ox + 359 - x < cw && cw > ox + 180) g.fillRect(ox + 359 - x, y, 1, 1); };
+  const FOAM = '#f4f8f8', FOAM2 = '#dff0f4', SHAL = '#7dcade', SHAL2 = '#63b2d2', WET = 'rgba(150,100,50,.28)', RIP = '#3e96c3', RIP2 = '#5aaed4';
+  for (const k of band) { const x = k % w, y = (k / w) | 0, A = Math.min(3, 1.1 + dSea[k] / 30), o = Math.round(A * (1 + Math.sin(t * .95 - dSea[k] * .12 + x * .035)) / 2 * 1.6);   /* 경완 '이 안쪽 도트 경계선도 좀 움직여야할듯?': 바다 띠 경계가 밀려왔다 물러남 */
+    if (o <= 0) continue; const Y = Math.min(h - 1, y + o), K = Y * w + x; if (kind[K] !== 1) continue; const i = K * 4, j = k * 4; if (D[i] === D[j] && D[i + 1] === D[j + 1] && D[i + 2] === D[j + 2]) continue; P(x, y, `rgb(${D[i]},${D[i + 1]},${D[i + 2]})`); }
+  for (let y = 120; y < h; y++) for (let x = 0; x < w; x++) { const k = y * w + x, kd = kind[k];
+    const s = (t / 4.2 + ph[k]) % 1, up = s < .38 ? Math.sin(s / .38 * Math.PI / 2) : Math.cos((s - .38) / .62 * Math.PI / 2), f = 3 - up * 6.2;   /* 해변 파도: 빠르게 밀려왔다 천천히 빠짐 */
+    if (kd === 2 && dSand[k] < 5) { const d = -dSand[k] - .5; if (d > f + 1) P(x, y, BY[y & 3][x & 3] < 9 - up * 6 ? SHAL : SHAL2); else if (d > f - .2) P(x, y, (x + F) % 3 ? FOAM : FOAM2); else if (d > f - 2.2 && s > .38 && d > -4) { if (BY[y & 3][x & 3] < 8) P(x, y, WET); } }
+    else if (kd === 1 && dSea[k] < 7) { const d = dSea[k]; if (Math.abs(d - f) < .7 && f > -.5) P(x, y, (x + y + F) % 4 ? FOAM : FOAM2); else if (d < f && f > 0 && BY[y & 3][x & 3] < 6) P(x, y, SHAL); else if (d > 4 && d < 6.5 && Math.abs(d - 4.5 - Math.sin(t * 1.3 + ph[k] * 6) * 1.2) < .5 && BY[y & 3][x & 3] < 8) P(x, y, SHAL2); }
+    if (kd === 1 && dw[k] < 3) { const b = Math.sin(t * 2.1 + x * .23 + y * .11); if (dw[k] === 0 && b > -.2) P(x, y, b > .6 ? FOAM : SHAL); else if (dw[k] === 1 && b > .55) P(x, y, (x + F) & 1 ? FOAM2 : SHAL); else if (dw[k] === 2 && b > .85 && (x + y + F) % 3 === 0) P(x, y, FOAM2); } }   /* 축대 앞 출렁임 */
+  for (const [x, y] of deep) { const k = y * w + x, u = y * .9 - x * .45 + Math.sin(x * .16 + t * .9) * 1.6, v = u + t * 3.2, row = Math.floor(v / 30), cc = ((v / 30) % 1 + 1) % 1, n = Math.sin(x * .21 + row * 2.3) + Math.sin(x * .07 - row * 1.1) * .7;   /* 너울 B 은은하게 */
+    if (n >= .6 && cc < .04) P(x, y, '#3e96c3'); }
+  for (let i = 0; i < rip.length; i++) { const r = rip[i], a = (now - r.t0) / r.dur; if (a >= 1) { rip[i] = Z.newRip(); continue; } const L = Math.max(1, Math.round(r.len * Math.sin(a * Math.PI))), x0 = Math.round(r.x + a * r.sp * 6);
+    for (let j = 0; j < L; j++) { const X = x0 + j - (L >> 1); if (X >= 0 && X < w && kind[r.y * w + X] === 1) P(X, r.y, a > .3 && a < .7 && j === 0 ? RIP2 : RIP); } }
+  if (skyDark < .5) for (const q of glint) { const v = Math.sin(t * 1.7 + q.o); if (v > .82) { const [x, y] = q.p; P(x, y, '#e8fbff'); if (v > .94) { P(x - 1, y, '#9ad8ee'); P(x + 1, y, '#9ad8ee'); P(x, y - 1, '#9ad8ee'); } } }
+  if (weather() !== 'rain') for (const ch of Z.chim) if (now - ch.t > ch.gap) { ch.t = now; smoke.push({ t0: now, x: ch.x + Math.random() - .5, y: ch.y, s: Math.random() * 6.28 }); }   /* 경완 '위 굴뚝 있는 집에서 연기 나오게' · '오른쪽 파란 지붕 있는 굴뚝에는 연기 안 나네' */
+  for (let i = smoke.length - 1; i >= 0; i--) { const q = smoke[i], a = (now - q.t0) / 5200; if (a >= 1) { smoke.splice(i, 1); continue; } const cy = q.y - a * 24, cx = q.x + a * a * 14 + Math.sin(a * 5 + q.s) * 1.2, r = 1.3 + a * 2.8, keep = 1 - a * a;
+    for (let y = Math.floor(cy - r); y <= cy + r; y++) for (let x = Math.floor(cx - r); x <= cx + r; x++) { const e = ((x + .5 - cx) ** 2 + (y + .5 - cy) ** 2) / (r * r); if (e > 1 || y < 0) continue; if (BY[y & 3][x & 3] / 16 > keep) continue; P(x, y, e < .35 && a < .5 ? '#f6f7f8' : y < cy ? '#e2e6ea' : '#c4ccd4'); } }
+  if (Math.random() < .004 && glint.length) glint[(Math.random() * glint.length) | 0].p = deep[(Math.random() * deep.length) | 0]; }
+setInterval(() => { try { hbTick(); } catch (e) {} }, 60);
+/* 못 서는 곳에 3초 넘게 있는 포켓몬(장면·밀기로 들어감)은 가까운 설 수 있는 곳으로 */
+setInterval(() => { if (!HB || !HBZ.z || document.hidden || Visit.live?.()) return; for (const m of S.mons) { if (m.held || m.ride || m.perch || m.scp || m.evolving || m.pet || m.land || hbCls(m) === 'b') continue; if (hbOk(m, m.x, m.y)) { m.hbBad = 0; continue; } if ((m.hbBad = (m.hbBad || 0) + 1) < 2) continue; m.hbBad = 0;
+  const q = hbNear(m, m.x, m.y); try { if (m.state === 'move') continue; if (m.state === 'idle') moveTo(m, q); else place(m, q.x, q.y); } catch (e) {} } }, 1500);
+const hbOpen = () => trLevel().i >= 3;   /* 경완 '항구는 숙련 트레이너가 되어야 열리게' (도감 60) */
+/* v27.48 경완 '필드 메뉴 필드에 나가기 버튼 행 있는 좌측 정렬에 테마를 선택할 수 있는 필터 버튼 … 팝업창으로 테마를 선택': 테마 고르기 창 (직접 연 창이라 바깥 눌러도 닫힘)
+   테마마다 필드 슬롯·포켓몬·열매가 따로 (저장 th = 지금 테마, thF = 다른 테마 필드), 고른 테마는 기기에 고정 (localStorage pk-theme) — 바꾸면 로딩 화면 뒤 다시 켬 */
+const TH_LIST = [{ k: 'm', n: '초원', img: 'maps/th_m.png' }, { k: 'h', n: '항구', img: 'maps/th_h.png', lock: () => !hbOpen() }, { soon: 1 }, { soon: 1 }, { soon: 1 }];
+function thBtnPaint() { const b = $('#btnTheme'); if (b) b.querySelector('b').textContent = TH_NAME[THEME]; }
+function thOpen() { const el = $('#itemPop'); sfx('open');
+  el.innerHTML = `<div class="win ipwin th-win" role="dialog" aria-label="필드 테마"><div class="sheet-head"><h3>필드 테마</h3><button class="opt" data-x>닫기</button></div><div class="th-grid">${TH_LIST.map(o => o.soon ? `<div class="th-card soon"><span class="th-img"><i>준비중</i></span><b>준비중</b></div>`
+    : `<button type="button" class="th-card${o.k === THEME ? ' on' : ''}${o.lock?.() ? ' lock' : ''}" data-th="${o.k}"><span class="th-img"><img src="${o.img}?v=${encodeURIComponent(APP_VER)}" alt="">${o.lock?.() ? `<i class="th-lk"><svg viewBox="0 0 7 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M2 0h3v1h1v2h1v5H0V3h1V1h1zm0 1v2h3V1zm1 3v2h1V4z"/></svg>${TR_LV[3][1]}</i>` : ''}</span><b>${o.n}</b>${o.k === THEME ? '<em>지금 필드</em>' : ''}</button>`).join('')}</div><p class="th-note">테마마다 필드 슬롯과 포켓몬이 따로예요.</p></div>`;
+  el.hidden = false;
+  el.onclick = e => { if (e.target === el || e.target.closest('[data-x]')) { el.hidden = true; return; } const b = e.target.closest('[data-th]'); if (!b) return; const k = b.dataset.th;
+    if (k === THEME) { sfx('tap'); el.hidden = true; return; }
+    const o = TH_LIST.find(q => q.k === k); if (o?.lock?.()) { sfx('tap'); askPop(`${o.n} 필드는 ${TR_LV[3][1]}부터 열려요.\n도감을 ${TR_LV[3][0]}마리 모아서 ${TR_LV[3][1]}가 되어 보세요! (지금 ${S.unlocked.size}마리)`, '확인', ''); return; }
+    el.hidden = true; thGo(k); }; }
+/* v27.50 경완 '테마 넘어갈 때 로딩 중 두번 뜨는 오류 … 로딩 없이 바로 바뀌게': 다시 켜지 않고 그 자리에서 바꿈 — 지금 필드를 thF 에 넣고, 소품·바탕을 다시 그리고, 그 테마 포켓몬·열매를 불러옴 (짧게 어두워졌다 밝아짐) */
+const TH_DEF = JSON.parse(JSON.stringify(LAYOUT));   /* 초원 기본 배치 (작업실 배치는 setLayoutIn 이 HBZ.L 에 남김) */
+function thLayM() { const D = JSON.parse(JSON.stringify(TH_DEF));
+  for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) { for (const q of Object.keys(LAYOUT[k])) delete LAYOUT[k][q]; Object.assign(LAYOUT[k], D[k]); }
+  for (const k of ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers']) LAYOUT[k].splice(0, LAYOUT[k].length, ...(D[k] || []));
+  for (const k of Object.values(MK)) LAYOUT[k] = D[k] || []; LAYOUT.sc = D.sc || []; LAYOUT.scArt = D.scArt || {}; MIN_Y = 150;
+  if (HBZ.L) setLayoutIn(HBZ.L); layApply(); }
+function thPlace(m) { const sw = T(m).mv === 'swim', pv = pondVal(m.x, m.y);
+  if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05) || (HB && !hbOk(m, m.x, m.y))) { const p = sw ? randPond(.6) : HB ? hbRand(m) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
+async function thGo(k) { if (k === THEME || saveFrozen || thGo.busy || !TH_NAME[k]) return; thGo.busy = true; sfx('tap'); try { select(null); } catch (e) {}   /* v27.51 경완 '바뀌는 모습 없이 테마 고르면 바로 바뀌고 창 닫히면서 해당 테마 필드 슬롯 바로 보이게': 어두워짐 없이, 필드 메뉴는 연 채로 */
+  try { const o = serialize(), old = THEME; S.thF = S.thF || {}; S.thF[old] = { mons: o.mons, berries: o.berries };
+    for (const m of S.mons.slice()) removeMon(m, true); for (const b of S.berries.slice()) b.el?.remove(); S.berries = [];
+    THEME = k; HB = k === 'h'; document.documentElement.classList.toggle('th-h', HB); if (HB) { await hbLoad(); hbLayout(); } else thLayM();
+    $('#skyFx').innerHTML = ''; seaRedraw();
+    const n = S.thF[k] || {}, seen = new Set(); delete S.thF[k];
+    for (const q of (n.mons || []).slice(0, MAX_MONS)) { const P = q.pid != null ? boxOf(q.pid) : null; if (q.pid != null && (!P || seen.has(q.pid))) continue; seen.add(q.pid); if (P && q.sp !== P.sp) { q.sp = P.sp; delete q.name; }
+      try { const m = await spawn(q.sp, { ...q, quiet: true }); m.notes = q.notes || []; thPlace(m); if (q.asleep) sleep(m, false); } catch (e) {} }
+    for (const b of n.berries || []) try { addBerry(b.x, b.y, !!b.nat, b.t || Date.now(), b.red ?? Math.random() < .4, true); } catch (e) {}
+    try { localStorage.setItem(TH_KEY, k); } catch (e) {} thBtnPaint(); save();
+  } catch (e) { console.warn('thGo', e); }
+  thGo.busy = false; try { if (!mgr.hidden) { mgrKey = ''; renderMgr(true); setMgrTab('field'); } } catch (e) {} }
 let BGP = [], BGOX = 0, BG_SKIP = null;   // BG_SKIP: 맵 편집에서 끄는 소품 — 바탕에 안 그림 (원래 자리 그림이 남지 않게)   // v9.04 경완: 바탕 그림에 같이 그린 소품(모닥불·그루터기·바위·꽃밭) 자리 — 맵 편집에서 낱개로 고를 수 있게
 function drawBg(X) {
+  if (HB && !X) return hbDraw();   /* v27.48 항구 테마 */
   if (!X && BGX) X = { c: $('#bg'), w: BGX.w, h: H / 2, ox: BGX.ox, oy: 0, keepSky: true };
   const PW = W / 2, PH = H / 2, c = X ? X.c : $('#bg'); c.width = X ? X.w : PW; c.height = X ? X.h : PH;
   const g = c.getContext('2d'); g.imageSmoothingEnabled = false; const OX = X ? X.ox : 0, OY = X ? X.oy || 0 : 0, AW = X ? X.w : PW, AH = X ? X.h : PH, xa = -OX, xb = AW - OX, ya = -OY, yb = AH - OY;
@@ -7184,17 +7307,17 @@ function buildProps() {
   fl2Els = (LAYOUT.fires || []).map(F => { const z = ZP('fire', F), e = document.createElement('div'); e.className = 'flame'; e.F = e.CO = F; e.style.cssText = `background-image:url(${SPR.flame});left:${F.x}px;top:${F.y}px;z-index:${Math.round(F.y) + 1}` + (z !== 1 ? `;transform:scale(${z});transform-origin:50% 100%` : ''); e.innerHTML = Array.from({ length: 8 }, (_, i) => `<i style="--x:${((i * 37) % 21) - 10}px;--d:${(.9 + ((i * 29) % 7) / 10).toFixed(1)}s;--dl:${(-i * .23).toFixed(2)}s"></i>`).join(''); itemsEl.append(e); return e; });   /* v8.95 경완: 더 놓은 모닥불 */
   flameEl.innerHTML = Array.from({ length: 8 }, (_, i) => `<i style="--x:${((i * 37) % 21) - 10}px;--d:${(.9 + ((i * 29) % 7) / 10).toFixed(1)}s;--dl:${(-i * .23).toFixed(2)}s"></i>`).join('');
   /* v3.56: 연못 뒤쪽 갈대·부들도 살랑살랑 */
-  for (const POND of ALLP('pond')) for (let i = 0; i < 20; i++) { const a = Math.PI * 1.08 + (i + (i * 7 % 5) / 6) / 20 * Math.PI * .84, k = i % 3 === 1 ? 'cat' : 'reed', f = SPR.flw[k], x = Math.round(POND.x + Math.cos(a) * (POND.rx * pondR(a) + 2)), y = Math.round(POND.y + Math.sin(a) * (POND.ry * pondR(a) + 2)), e = document.createElement('div'); e.className = 'flw'; e.CO = POND;
+  for (const POND of HB ? [] : ALLP('pond')) for (let i = 0; i < 20; i++) { const a = Math.PI * 1.08 + (i + (i * 7 % 5) / 6) / 20 * Math.PI * .84, k = i % 3 === 1 ? 'cat' : 'reed', f = SPR.flw[k], x = Math.round(POND.x + Math.cos(a) * (POND.rx * pondR(a) + 2)), y = Math.round(POND.y + Math.sin(a) * (POND.ry * pondR(a) + 2)), e = document.createElement('div'); e.className = 'flw'; e.CO = POND;
     e.style.cssText = W2(f.src, f.w, Math.round(f.h * (.75 + (i * 13 % 7) / 18))) + `;left:${x}px;top:${y}px;z-index:${y};--d:${(1.8 + (i * 31 % 11) / 10).toFixed(2)}s;--dl:${(-(i * 43 % 23) / 10).toFixed(1)}s;--a:5deg`; itemsEl.append(e); }
   /* v3.56: 수련잎은 물 위에 둥둥 */
-  for (const POND of ALLP('pond')) [[-.5, -.25, 1], [.2, -.45, 0], [.55, .1, 1], [-.1, .4, 0], [-.7, .25, 0], [.35, .5, 1]].forEach(([u, v, fl], i) => { const e = document.createElement('div'); e.className = 'lily'; e.CO = POND;
+  for (const POND of HB ? [] : ALLP('pond')) [[-.5, -.25, 1], [.2, -.45, 0], [.55, .1, 1], [-.1, .4, 0], [-.7, .25, 0], [.35, .5, 1]].forEach(([u, v, fl], i) => { const e = document.createElement('div'); e.className = 'lily'; e.CO = POND;
     e.style.cssText = W2(fl ? SPR.lilyF : SPR.lily, 18, fl ? 16 : 12) + `;left:${Math.round(POND.x + u * POND.rx)}px;top:${Math.round(POND.y + v * POND.ry)}px;--d:${(2.6 + i * .37).toFixed(2)}s;--dl:${(-i * .9).toFixed(1)}s;--a:${2 + (i % 3)}deg`; itemsEl.append(e); });
   rainEl = document.createElement('div'); rainEl.id = 'rain'; let h = '', hg = '';
   for (let i = 0; i < 80; i++) h += `<i style="left:${(Math.random() * (W + 150)).toFixed(0)}px;animation-delay:${(-Math.random() * .62).toFixed(2)}s;animation-duration:${(.5 + Math.random() * .25).toFixed(2)}s"></i>`;
   for (let i = 0; i < 26; i++) { let x, y, n = 0; do { x = Math.random() * W; y = MIN_Y + Math.random() * (600 - MIN_Y); } while (onProp(x, y) && ++n < 20); hg += `<b style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px;animation-delay:${(-Math.random() * 2).toFixed(2)}s;animation-duration:${(1.2 + Math.random()).toFixed(2)}s"></b>`; }
   rainEl.innerHTML = h; fxEl.append(rainEl);
   rainGEl?.remove(); rainGEl = document.createElement('div'); rainGEl.id = 'rainG'; rainGEl.innerHTML = hg; itemsEl.append(rainGEl); rainGEl.classList.toggle('on', rainEl.classList.contains('on'));   /* v4.16 경완: 땅에 튀는 물방울은 포켓몬·소품 아래 (빗줄기만 위) */
-  const sf = $('#skyFx'); if (!sf.querySelector('.sun')) { sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * 78).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
+  const sf = $('#skyFx'); if (!sf.querySelector('.sun')) { sf.innerHTML = '<i class="sun"></i><i class="moon"></i>' + Array.from({ length: 22 }, () => `<i class="star" style="left:${(Math.random() * W).toFixed(0)}px;top:${(3 + Math.random() * (HB ? 34 : 78)).toFixed(0)}px;animation-delay:${(-Math.random() * 2.6).toFixed(2)}s"></i>`).join('');
   sf.querySelector('.sun').style.backgroundImage = `url(${SPR.sun})`; moonSt = -1; }   // v3.66 경완: 소품을 옮겨 다시 그릴 때 하늘(구름·별)은 그대로 둔다
   treeBerries();
 }
@@ -7443,7 +7566,7 @@ const onShadow = m => { if (m.shX) m.x = clamp(m.x - m.shX * (m.face || 1), XL +
 const tyOf = m => SPD(m.form || m.sp).t || [];
 // v4.44 경완: 모닥불 노래 — 가끔 포켓몬들이 모닥불에 둘러앉아 다 같이 노래를 부른다 (2~5마리)
 let CAMP = null, CAMP_CD = 0;
-const campOk = o => S.mons.includes(o) && awake(o) && !o.hidden && !o.held && !o.pin && !o.evolving && !o.washing && !o.szb && !o.pet && !o.camp && (o.state === 'idle' || o.state === 'move') && !['berry', 'feedb', 'greet', 'bed'].includes(o.goal?.kind) && T(o).mv !== 'swim' && petM?.m !== o && !tyOf(o).some(t => t === WAT || t === ICE);
+const campOk = o => S.mons.includes(o) && awake(o) && !o.hidden && !o.held && !o.follow?.vc && !o.pin && !o.evolving && !o.washing && !o.szb && !o.pet && !o.camp && (o.state === 'idle' || o.state === 'move') && !['berry', 'feedb', 'greet', 'bed'].includes(o.goal?.kind) && T(o).mv !== 'swim' && petM?.m !== o && !tyOf(o).some(t => t === WAT || t === ICE);
 function campSeats(G) {   // 불 둘레 타원에 고르게 앉되, 화면 밖·화면 버튼 밑 자리는 뺀 둘레에 나눠 앉는다. v4.49 경완: 마릿수가 늘어도 불과의 거리는 그대로 (좁으면 다닥다닥)
   const n = G.length, w = G.reduce((a, o) => a + (o.w || 40), 0) / n, x0 = XL + 30, x1 = XR - 30, rx = 50 + w * .4, ry = rx * .42;
   const at = a => ({ a: Math.atan2(Math.sin(a), Math.cos(a)), x: FIRE.x + Math.cos(a) * rx, y: FIRE.y + 6 + Math.sin(a) * ry });
@@ -7574,7 +7697,7 @@ setInterval(() => { if (MOONG || CAMP || document.hidden || mvQuiet() || !isNigh
 const CAMP_P = .35;
 // v5.93 경완: 모닥불 노래 동안은 따로 만든 캠프송을 틀고, 끝나면 듣던 곡을 멈춘 자리부터 다시
 function campBgm(on) { try {
-  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on || inGym()) return false; bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start(campPick()); return campMus.on; }
+  if (on) { if (!bgmOn || !mgEl.hidden || campMus.on || inGym() || document.body.classList.contains('visiting')) return false;   /* v27.46 경완 '친구 필드 놀러갔을 때 내 필드의 모닥불 노래가 겹쳐 들리는 오류': 놀러가 있는 동안 내 필드(뒤에서 계속 도는)는 모닥불 노래를 틀지 않는다 */ bgm.camp = { id: bgm.id, pos: bgmPos() }; bgmSrcStop(); campMus.start(campPick()); return campMus.on; }
   if (!campMus.on && !bgm.camp) return false; campMus.stop(2); const r = bgm.camp; bgm.camp = null; if (!r || !mgEl.hidden || bgm.mg) return false;
   setTimeout(() => { if (campMus.on || bgm.mg) return; bgm.fadeIn = 2; if (bgmOn && r.id && r.id !== 'intro') bgmPlay(r.id, r.pos); else bgmStart(); }, 1200); return false; } catch (e) { return false; } }
 const PROP_JOY = 3;
@@ -7851,14 +7974,14 @@ function moonSpr(st) { if (MOON_C[st]) return MOON_C[st]; const ph = st / 24, k 
 let moonSt = -1;
 function skyBodies(h, wx, dark) {
   const sf = $('#skyFx'); if (!sf.firstChild) return; const sun = sf.querySelector('.sun'), moon = sf.querySelector('.moon');
-  const arc = (t, el, op) => { const x = XL + 40 + (XR - XL - 80) * t, y = 92 - Math.sin(Math.PI * t) * 46; el.style.left = x.toFixed(0) + 'px'; el.style.top = y.toFixed(0) + 'px'; el.style.opacity = op.toFixed(2); };
+  const arc = (t, el, op) => { const x = XL + 40 + (XR - XL - 80) * t, y = (HB ? 36 : 92) - Math.sin(Math.PI * t) * (HB ? 26 : 46); el.style.left = x.toFixed(0) + 'px'; el.style.top = y.toFixed(0) + 'px'; el.style.opacity = op.toFixed(2); };
   const cov = wx === 'rain' ? .08 : wx === 'cloud' ? .45 : 1;
   const ts = (h - 6) / 12.6; if (ts > 0 && ts < 1) arc(ts, sun, Math.min(1, ts * 8, (1 - ts) * 8) * cov); else sun.style.opacity = 0;
   { const st = Math.round(moonPhase() * 24) % 24; if (st !== moonSt) { moonSt = st; moon.style.backgroundImage = `url(${moonSpr(st)})`; } }
   const tm = ((h + 24 - 18.6) % 24) / 11.4; if (tm > 0 && tm < 1) arc(tm, moon, Math.min(1, tm * 8, (1 - tm) * 8) * (wx === 'rain' ? .15 : wx === 'cloud' ? .55 : 1)); else moon.style.opacity = 0;
   const so = wx === 'clear' ? clamp((dark - .35) * 2, 0, 1) : wx === 'cloud' ? clamp((dark - .35), 0, .4) : 0; sf.querySelectorAll('.star').forEach(s => s.style.opacity = so.toFixed(2));
   const want = wx === 'rain' ? 7 : wx === 'cloud' ? 6 : 2, cl = [...sf.querySelectorAll('.cloud')];
-  for (let n = cl.length; n < want; n++) { const c = document.createElement('i'); c.className = 'cloud'; const w = 34 + Math.random() * 28;   /* v3.62 경완: 구름 작게 */ c.style.cssText = `width:${w.toFixed(0)}px;height:${(w * .36).toFixed(0)}px;top:${(2 + Math.random() * 56).toFixed(0)}px;left:0;animation-duration:${(140 + Math.random() * 120).toFixed(0)}s;animation-delay:${(-Math.random() * 260).toFixed(0)}s`; sf.append(c); }
+  for (let n = cl.length; n < want; n++) { const c = document.createElement('i'); c.className = 'cloud'; const w = 34 + Math.random() * 28;   /* v3.62 경완: 구름 작게 */ c.style.cssText = `width:${w.toFixed(0)}px;height:${(w * .36).toFixed(0)}px;top:${(2 + Math.random() * (HB ? 22 : 56)).toFixed(0)}px;left:0;animation-duration:${(140 + Math.random() * 120).toFixed(0)}s;animation-delay:${(-Math.random() * 260).toFixed(0)}s`; sf.append(c); }
   cl.slice(want).forEach(c => c.remove());
   sf.querySelectorAll('.cloud').forEach(c => { c.style.backgroundImage = `url(${wx === 'rain' ? SPR.cloudG : SPR.cloud})`; c.style.filter = `brightness(${(1 - .72 * dark).toFixed(2)})`; });
 }
@@ -7893,7 +8016,8 @@ function litNear(now) { if (now - litT < 200) return; litT = now; const B = docu
     for (const l of scLights) { if (l.fire ? out : !lamps) continue; SRC.push([l.x, l.b ? l.b.t + l.b.H : l.y + 40 * l.k, 80 + 50 * l.k, 50 + 30 * l.k]); }   /* 빛 칸 높이 말고 소품 밑동(땅) 기준 */
     if (flameEl && !flameEl.classList.contains('out')) SRC.push([FIRE.x, FIRE.y - 8, 120, 74]);
     for (const e of fl2Els) if (!e.classList.contains('out')) { const z = ZP('fire', e.F); SRC.push([e.F.x, e.F.y - 8, 120 * z, 74 * z]); }
-    for (const m of S.mons) if (m.lit && m.el.isConnected) SRC.push([m.x, m.y - 6, 110, 64, m]); }
+    for (const m of S.mons) if (m.lit && m.el.isConnected) SRC.push([m.x, m.y - 6, 110, 64, m]);
+    if (HB && HBZ.WIN) { const h = hour(); for (const Wn of HBZ.WIN) if (hbWinOn(Wn.i, h)) SRC.push([Wn.cx, Wn.cy + 30, 46, 30]); } }   /* v27.52 켜진 창문 아래 지나가는 포켓몬도 조금 밝게 */
   const g = Math.max(0, 1 / Math.max(nightLum, .2) - 1) * LIT_G, lv = (x, y, self) => { let f = 0; for (const [lx, ly, rx, ry, o] of SRC) { if (o && o === self) continue; const d = Math.hypot((x - lx) / rx, (y - ly) / ry); if (d < 1) f += (1 - d) ** 1.4; } return Math.min(1, f); };
   const put = (el, v) => { const s = v > .02 ? (1 + v * g).toFixed(2) : ''; if (el.LB !== s) { el.LB = s; if (s) el.style.setProperty('--lb', s); else el.style.removeProperty('--lb'); } };
   for (const m of S.mons) put(m.el, SRC.length ? lv(m.x, m.y, m) : 0);
@@ -7932,6 +8056,9 @@ function tickLight(now) {
   for (const e of fl2Els) { if (e.classList.contains('out')) continue; const z = ZP('fire', e.F), f = fk(e.F.x); blob(e.F.x, e.F.y - 14, 120 * z * f, 80 * z * f, FIREC, .42 * k0); }
   const lamps = document.body.classList.contains('lamps');
   for (const l of scLights) { if (!l.fire && !lamps) continue; if (l.fire && document.body.classList.contains('scOut')) continue; const f = l.fire ? fk(l.x) : 1, c = l.fire ? FIREC : l.cool ? COOLC : LAMPC, cx = l.core ? l.core.x : l.fl ? l.fl.x : l.x, cy = l.core ? l.core.y : l.fl ? l.fl.y : l.y; blob(cx, cy + 10 * l.k, 95 * l.k * f, 70 * l.k * f, c, .36 * k0); }
+  if (HB && HBZ.WIN) { const h = hour(), WC = ['255,196,96', '255,218,128', '255,236,170'], al = clamp(k0 * 1.3, .55, 1);   /* v27.52 항구 집 창문 불빛 (맵 그림 칸 = 이 캔버스 2칸, 넓은 화면 뒤집힌 양옆도) */
+    for (const Wn of HBZ.WIN) { if (!hbWinOn(Wn.i, h)) continue; for (const X0 of [0, 1, 2]) { const mx = X => X0 === 0 ? X * 2 : X0 === 1 ? (-1 - X) * 2 : (359 - X) * 2; if (X0 && !(X0 === 1 ? XL < 0 : XR > 360)) continue;
+      blob(mx(Wn.cx / 2), Wn.cy + 4, 26, 18, LAMPC, .3 * k0); for (const [x, y, c] of Wn.px) { g.fillStyle = `rgba(${WC[c]},${al})`; g.fillRect(mx(x) - (X0 ? 1 : 0), y * 2, 2, 2); } } } }
   for (const F of FLASH) { const e = flashK(F, now); if (e > .02) blob(F.x, F.y - 10, 110, 70, F.c || FIREC, .45 * k0 * e); } }
 /* 필드 조명: 시각별 곱하기 색 (한밤→새벽 푸른 기운→해돋이 분홍·주황→아침 노란 빛→한낮→오후 금빛→노을 주황·붉은→저녁 보라→밤) */
 const SKY = [[0, [100, 108, 160]], [3.5, [102, 110, 162]], [4.8, [116, 116, 172]], [5.6, [150, 124, 176]], [6.4, [255, 184, 160]], [7.4, [255, 224, 190]], [9, [252, 248, 236]], [11, [255, 255, 255]], [14.5, [255, 252, 240]], [16.3, [255, 228, 182]], [17.6, [252, 186, 128]], [18.5, [214, 132, 132]], [19.3, [124, 94, 156]], [20.4, [110, 116, 168]], [22, [104, 112, 164]], [24, [100, 108, 160]]];   /* v4.23 경완: 한밤이 너무 어두움 → 밤 색을 밝게. v5.60 경완: 한 단계 더 밝게 (시안 B) */
@@ -8012,7 +8139,7 @@ function tickBugs(now, real) {
   }
 }
 function addGlints() {
-  for (const POND of ALLP('pond')) for (let i = 0; i < 7; i++) {
+  for (const POND of HB ? [] : ALLP('pond')) for (let i = 0; i < 7; i++) {
     const a = Math.random() * 6.28, r = Math.sqrt(Math.random()) * .7, g = document.createElement('div'); g.className = 'glint'; g.CO = POND;
     g.style.left = (POND.x + Math.cos(a) * POND.rx * r) + 'px'; g.style.top = (POND.y + Math.sin(a) * POND.ry * r) + 'px';
     g.style.animationDelay = (-Math.random() * 3.2).toFixed(2) + 's'; g.style.animationDuration = (2.6 + Math.random() * 1.6).toFixed(2) + 's';
@@ -8168,9 +8295,9 @@ function select(m) {
 const KEY = VISIT ? 'pk-visit-v2' : /[?&]studio/.test(location.search) ? 'pk-studio-v2' : 'pk-meadow-v2';   // 작업실 미리보기는 따로 저장
 function serialize() {
   return { clock: S.clock, base: S.base, uid: S.uid, rel: S.rel, like: S.like || {}, log: S.log.slice(0, LOG_MAX),
-    savedAt: Date.now(), mons: S.mons.map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
+    savedAt: Date.now(), th: THEME, thF: S.thF && Object.keys(S.thF).length ? S.thF : undefined, mons: S.mons.filter(m => !m.vg).map(m => ({ uid: m.uid, pid: m.pid, sp: m.sp, name: m.name, x: m.x, y: m.y, hunger: m.hunger, slpB: m.slpB, slpW: m.slpW, social: m.social, joy: m.joy, joyH: m.joyH || 0, clean: Math.round((m.clean ?? 100) * 10) / 10, frT: m.frT || 0, asleep: m.state === 'sleep', born: m.born, notes: m.notes || [], sex: m.sex })),
     berries: S.berries.map(b => ({ x: b.x, y: b.y, t: b.t, nat: !!b.nat, shk: !!b.shk, red: !!b.red })), lockT: S.lockT,
-    since: S.since || undefined, seenAt: S.seenAt || undefined, dorm: S.dorm || undefined, gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, trOff: S.trOff, useH: S.useH, useHD: S.useHD, shopSeen: S.shopSeen, shopSeenF: S.shopSeenF, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: GT ? GT.real.concat(S.bag.filter(e => !e.tst)) : S.bag, ga: S.ga || undefined, gaSeen: S.gaSeen ? 1 : undefined, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, bagFull: S.bagFull || undefined, trI: S.trI, pity: S.pity, tree: S.tree, tree2: S.tree2 || undefined, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, mvG: S.mvG || 0, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], rfGhost: S.rfGhost || undefined, evoGhost: S.evoGhost || undefined, ghFix1: S.ghFix1 || undefined, mgtFix: S.mgtFix || undefined, mgtFix2: S.mgtFix2 || undefined, mgtFix3: S.mgtFix3 || undefined, dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], rgH: S.rgH || undefined, lgW: S.lgW || undefined, evS: S.evS?.length ? S.evS : undefined, undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fits: S.fits || undefined, fit: S.fit || undefined, edBest: S.edBest || undefined, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], rfU: [...(S.rfU || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, wkH: S.wkH || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frReqOut: S.frReqOut && Object.keys(S.frReqOut).length ? S.frReqOut : undefined, frReqDone: S.frReqDone && Object.keys(S.frReqDone).length ? S.frReqDone : undefined, frReqView: S.frReqView || undefined,   /* v14.07 경완 '친구 요청 한 게 사라짐': 보낸 요청·처리한 요청이 저장에 빠져 있어 앱을 다시 켜면 없어졌음 */ frOutP: S.frOutP && Object.keys(S.frOutP).length ? S.frOutP : undefined, frGot: S.frGot?.length ? S.frGot : undefined, frTy: S.frTy?.length ? S.frTy : undefined, frTyS: S.frTyS?.length ? S.frTyS : undefined, repP: S.repP ?? undefined, errs: S.errs.length ? S.errs : undefined };
+    since: S.since || undefined, seenAt: S.seenAt || undefined, dorm: S.dorm || undefined, gold: S.gold, box: S.box, gym: S.gym || undefined, frAcc: S.frAcc, tracks: S.tracks, trOff: S.trOff, useH: S.useH, useHD: S.useHD, shopSeen: S.shopSeen, shopSeenF: S.shopSeenF, places: S.places, bgm: S.bgm, eggs: S.eggs, bag: GT ? GT.real.concat(S.bag.filter(e => !e.tst)) : S.bag, ga: S.ga || undefined, gaSeen: S.gaSeen ? 1 : undefined, bagAcc: S.bagAcc, bagDry: S.bagDry || 0, bagFull: S.bagFull || undefined, trI: S.trI, pity: S.pity, tree: S.tree, tree2: S.tree2 || undefined, walkKm: S.walkKm, walkSync: S.walkSync, fedPend: S.fedPend, mvG: S.mvG || 0, fedLog: S.fedLog, today: S.today, ped: S.ped, tr: S.tr, bgmRand: !!S.bgmRand, unlocked: [...S.unlocked], rfGhost: S.rfGhost || undefined, evoGhost: S.evoGhost || undefined, plFix1: S.plFix1 || undefined, ghFix1: S.ghFix1 || undefined, mgtFix: S.mgtFix || undefined, mgtFix2: S.mgtFix2 || undefined, mgtFix3: S.mgtFix3 || undefined, dexFix1: !!S.dexFix1, buds: S.buds, runs: S.runs, totalKm: S.totalKm, eid: S.eid, recentHatch: S.recentHatch || [], rgH: S.rgH || undefined, lgW: S.lgW || undefined, evS: S.evS?.length ? S.evS : undefined, undo1: !!S.undo1, eggV: S.eggV || 0, lastPlace: S.lastPlace || null, autoInc: !!S.autoInc, noti: S.noti, bagQ: S.bagQ || [], items: S.items || {}, itemSeen: S.itemSeen || {}, evoPend: S.evoPend || undefined, fx1173: S.fx1173 || undefined, mg: S.mg || {}, fbag: S.fbag || {}, fits: S.fits || undefined, fit: S.fit || undefined, edBest: S.edBest || undefined, fbagT: S.fbagT || {}, lay: S.lay || {}, layAdd: S.layAdd || [], fx: S.fx || {}, colT: S.colT || 0, dexNew: [...(S.dexNew || [])], rfU: [...(S.rfU || [])], dexDot: !!S.dexDot, friends: S.friends || [], wk: S.wk || undefined, wkH: S.wkH || undefined, frOut: S.frOut?.length ? S.frOut : undefined, frReqOut: S.frReqOut && Object.keys(S.frReqOut).length ? S.frReqOut : undefined, frReqDone: S.frReqDone && Object.keys(S.frReqDone).length ? S.frReqDone : undefined, frReqView: S.frReqView || undefined,   /* v14.07 경완 '친구 요청 한 게 사라짐': 보낸 요청·처리한 요청이 저장에 빠져 있어 앱을 다시 켜면 없어졌음 */ frOutP: S.frOutP && Object.keys(S.frOutP).length ? S.frOutP : undefined, frGot: S.frGot?.length ? S.frGot : undefined, frTy: S.frTy?.length ? S.frTy : undefined, frTyS: S.frTyS?.length ? S.frTyS : undefined, repP: S.repP ?? undefined, errs: S.errs.length ? S.errs : undefined };
 }
 let saveFrozen = !!VISIT, tutFreeze = false, introPv = false, bootOk = false;   // bootOk (v21.37): start() 가 저장을 불러오기 전엔 저장하지 않는다   // introPv: 튜토리얼 미리 보기 (끝나도 저장 안 함)
 /* v23.06 경완 '내 포켓몬 박스에 있는 포켓몬들은 놓아주기 하는 거 아닌 이상 사라지지 않게': 저장할 때마다 지난번 상자와 비교해, 허락된 길(놓아주기 등 boxOut 으로 알린 것)이 아닌데 없어진 포켓몬은 그 자리(들어온 순서)로 되돌려 놓는다. 시험 포켓몬(id 990000~, gTst)은 빼고 */
@@ -8226,6 +8353,11 @@ async function bakOpen() {
 }
 let layPre = 0;   // restore 에서 먼저 얹은 맵 편집 자리 수 (그 뒤 바탕을 다시 그리게)
 async function restore(d) {
+  { const cur = d.th === 'h' ? 'h' : 'm', F = d.thF && typeof d.thF === 'object' ? d.thF : {};   /* v27.48 경완 '다른 테마 선택하면 … 필드 슬롯도 해당 테마의 필드 슬롯과 포켓몬들로': 지금 테마 필드 ↔ 저장해 둔 테마 필드 */
+    if (cur !== THEME) { F[cur] = { mons: d.mons || [], berries: d.berries || [] }; const n = F[THEME] || {}, B = new Map((d.box || []).map(P => [P.id, P])), seen = new Set(); delete F[THEME];
+      d.mons = (Array.isArray(n.mons) ? n.mons : []).filter(o => { if (o.pid == null) return true; const P = B.get(o.pid); if (!P || seen.has(o.pid)) return false; seen.add(o.pid); if (o.sp !== P.sp) { o.sp = P.sp; delete o.name; } return true; });   /* 다른 테마에 있는 동안 놓아준 포켓몬은 빼고, 진화했으면 지금 모습으로 */
+      d.berries = Array.isArray(n.berries) ? n.berries : []; }
+    S.thF = F; }
   S.base = d.base || midnight(); S.clock = realClock(); S.rel = d.rel || {}; S.log = (d.log || []).filter(e => !/^런닝을 시작했다|^진화할 때 잘못 생겼던/.test(e.html)).slice(0, LOG_MAX); S.log.forEach(e => { e.html = e.html.replace('(런닝 · 알)', '(알)'); });
   S.since = +d.since || 0; S.seenAt = +d.seenAt || +d.savedAt || 0; S.dorm = d.dorm && typeof d.dorm === 'object' ? d.dorm : null; S.lockT = d.lockT || 0; S.gym = d.gym?.tut ? null : (d.gym || null);   /* v13.96 경완: 체육관 튜토리얼을 다 보기 전에 껐으면 처음부터 */ S.tree = d.tree || null; S.tree2 = Array.isArray(d.tree2) ? d.tree2 : null; S.box = d.box || []; BOX_MIG = !Array.isArray(d.box); BOX_RS = true; BOX_SEEN = null; setTimeout(shPrepOwned, 0); S.like = d.like || {}; S.box.forEach(P => { rkMig(P); if (P.sex === undefined) P.sex = rollSex(P.sp); if (P.nm && new RegExp(`^${SPECIES[P.sp].n} \\d+$`).test(P.nm)) delete P.nm; }); S.frAcc = d.frAcc || 0; S.gold = d.gold || 0; S.tracks = (d.tracks || []).filter(id => TRACKS.some(t => t.id === id)); S.shopSeen = Array.isArray(d.shopSeen) ? d.shopSeen : null; S.trOff = Array.isArray(d.trOff) ? d.trOff.filter(id => S.tracks.includes(id)) : []; S.useH = Array.isArray(d.useH) && d.useH.length === 24 ? d.useH.map(x => +x || 0) : null; S.useHD = d.useHD || 0; S.shopSeenF = d.shopSeenF || 0; (d.tracks || []).forEach(id => { if (OLD_TRACKS[id]) S.gold += OLD_TRACKS[id]; }); if (!S.tracks.includes('azalea')) S.tracks.unshift('azalea'); S.bgm = S.tracks.includes(d.bgm) ? d.bgm : 'azalea'; S.eggs = d.eggs || []; S.bag = d.bag || []; try { for (const e of [...S.bag, ...S.eggs]) if (e && e.ct && !e.gk) { e.gk = 1; if (e.need != null) e.need = eggNeed(e); } } catch (er) {}   /* v21.16 경완 '이미 가진 타입 알 거리도 바꿔줘': 예전 타입 알(체육관 보상·예전 뽑기)도 타입 부화거리, 부화기 알은 need 다시 */ S.ga = d.ga && typeof d.ga === 'object' ? d.ga : null; if (S.ga) S.ga.t = 0;   /* v19.94 경완: 앱을 켜면 알 뽑기 타입은 기본 '모든 타입' */ S.gaSeen = !!d.gaSeen;   /* v19.14 경완: 알 뽑기 정식 공개 — 뽑은 알(gc)·모은 점수(S.ga) 저장 (v17.98 시험 때 지우던 줄 뺌) */ S.bagAcc = d.bagAcc || 0; S.bagDry = d.bagDry || 0; S.bagFull = d.bagFull || null; S.pity = d.pity || { e: 0, l: 0 }; S.walkKm = d.walkKm || 0; S.walkSync = !!d.walkSync; S.fedPend = +d.fedPend || 0; S.mvG = +d.mvG || 0; S.fedLog = Array.isArray(d.fedLog) ? d.fedLog : []; S.today = d.today || null; S.ped = d.ped || null; S.recentHatch = d.recentHatch || []; S.rgH = d.rgH && typeof d.rgH === 'object' ? d.rgH : null; S.lgW = d.lgW && typeof d.lgW === 'object' ? d.lgW : null; S.evS = Array.isArray(d.evS) ? d.evS.slice(-60) : []; S.undo1 = !!d.undo1; S.trI = d.trI ?? null; S.eggV = d.eggV || 0; S.lastPlace = d.lastPlace || null; S.autoInc = !!d.autoInc; S.noti = { on: true, egg: true, hatch: true, evo: true, ...(d.noti || {}) }; S.bagQ = Array.isArray(d.bagQ) ? d.bagQ : [];   /* v4.23 경완: 부화기 자동 채우기가 다시 켜면 꺼지던 문제 — 저장에 빠져 있었다 */ S.buds = (d.buds || (d.bud ? [d.bud] : [])).slice(0, MAX_BUDS);
   // 예전 저장: 짝꿍이 필드 포켓몬(uid)이었다
@@ -8235,7 +8367,7 @@ async function restore(d) {
   S.dexNew = new Set(d.dexNew || []); S.dexDot = d.dexDot ?? !!S.dexNew.size;   /* v10.02 경완: 도감 빨간 점은 도감 탭에 들어가면 사라진다 (NEW 표시는 닫을 때) */
   S.unlocked.clear(); (d.unlocked || []).forEach(sp => S.unlocked.add(dxK(sp))); (d.mons || []).forEach(o => S.unlocked.add(dxK(o.sp)));
   S.rfU = new Set(d.rfU || []); if (!d.rfU) for (const k in RFORM) if (S.unlocked.has(dxK(k))) S.rfU.add(+k);   /* v25.51: 지역 폼 만남 기록 (처음엔 지금 도감에 보이던 폼 칸 그대로 — 등록이 없어지지 않게) */   /* v10.18: 10.02 에서 이 줄이 위 줄 주석 안으로 들어가 도감 목록을 못 불러오고 빈 채로 저장됐다 */
-  S.rfGhost = d.rfGhost || 0; S.evoGhost = d.evoGhost || 0; S.ghFix1 = d.ghFix1 || 0; S.mgtFix = d.mgtFix || 0; S.mgtFix2 = d.mgtFix2 || 0; S.mgtFix3 = d.mgtFix3 || 0;   /* v23.07: 23.05~06 은 이 표시를 저장 안 해서 켤 때마다 다시 돌았고 날짜 자리 옮기기는 안 됐음 */ S.dexFix1 = !!d.dexFix1; if (!S.dexFix1) { S.dexFix1 = true; const add = sp => { for (let k = 0; sp != null && SPECIES[sp] && k < 4; k++) { S.unlocked.add(dxK(sp)); sp = SPECIES[sp].fr; } };   /* v10.18 경완 '도감 등록한 거 없어짐': 한 번만, 박스·필드·짝꿍 포켓몬과 그 진화 전 모습, 최근 부화, 베타 켜기 전 백업의 도감으로 되살린다 */
+  S.rfGhost = d.rfGhost || 0; S.evoGhost = d.evoGhost || 0; S.plFix1 = d.plFix1 || 0; S.ghFix1 = d.ghFix1 || 0; S.mgtFix = d.mgtFix || 0; S.mgtFix2 = d.mgtFix2 || 0; S.mgtFix3 = d.mgtFix3 || 0;   /* v23.07: 23.05~06 은 이 표시를 저장 안 해서 켤 때마다 다시 돌았고 날짜 자리 옮기기는 안 됐음 */ S.dexFix1 = !!d.dexFix1; if (!S.dexFix1) { S.dexFix1 = true; const add = sp => { for (let k = 0; sp != null && SPECIES[sp] && k < 4; k++) { S.unlocked.add(dxK(sp)); sp = SPECIES[sp].fr; } };   /* v10.18 경완 '도감 등록한 거 없어짐': 한 번만, 박스·필드·짝꿍 포켓몬과 그 진화 전 모습, 최근 부화, 베타 켜기 전 백업의 도감으로 되살린다 */
     [...(d.box || []), ...(d.mons || []), ...(d.buds || [])].forEach(o => add(o.sp)); (d.recentHatch || []).forEach(add); (d.dexNew || []).forEach(add);
     try { const o = JSON.parse(localStorage.getItem('pk-meadow-v2-prebeta') || 'null'), bd = o?.d && JSON.parse(o.d); (bd?.unlocked || []).forEach(sp => { if (SPECIES[sp]) S.unlocked.add(+sp); }); } catch (e) {} }
   try { layPre = layApply(); } catch (e) {}   /* v17.55 경완 '가비루사·고래왕자가 옮긴 적도 없는데 육지에': 맵 편집으로 옮긴 연못 자리를 포켓몬 불러오기 전에 얹는다 (예전엔 원래 연못 자리 기준으로 물 포켓몬을 옮겨 놓아, 연못을 옮긴 필드에선 옛 연못 자리 = 땅에 놓였다) */
@@ -8244,7 +8376,7 @@ async function restore(d) {
   // 앱을 닫아 둔 동안: 배고파지고 심심해지면서 그만큼 필드 친밀도 (친구가 옆에 있었는지 보려고 다 불러온 뒤에)
   // v3.60: 맵이 960→360 폭으로 바뀌어 예전 자리(오른쪽 밖, 옛 연못 자리)에 저장된 포켓몬을 지금 맵 안으로 데려온다
   for (const m of S.mons) { const sw = T(m).mv === 'swim', pv = pondVal(m.x, m.y);
-    if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05)) { const p = sw ? randPond(.6) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
+    if (m.x < XL + 20 || m.x > XR - 20 || m.y < MIN_Y || m.y > MAX_Y || (sw ? pv > 1 : pv < 1.05) || (HB && !hbOk(m, m.x, m.y))) { const p = sw ? randPond(.6) : HB ? hbRand(m) : randLand(); m.x = m.tx = p.x; m.y = m.ty = p.y; m.goal = null; m.home = randLand(); } }
   if (d.savedAt > 0) S.mons.forEach(m => offFr(m, (Date.now() - d.savedAt) / 1000));
   for (const b of d.berries || []) { if (b.nat && KEY === 'pk-studio-v2') continue; const nb = addBerry(b.x, b.y, !!b.nat, b.t || Date.now(), b.red ?? Math.random() < .4, true); if (nb && b.shk) nb.shk = true; }
   rotBerries();
@@ -8254,6 +8386,7 @@ async function restore(d) {
   renderLog();
 }
 async function fresh() {
+  S.thF = {};
   S.base = midnight(); S.clock = realClock(); S.rel = {}; S.log = [];
   logEl.innerHTML = '';
   S.since = Date.now();   // v14.73 경완 '신규 유저 파쪼옥이 바로 진화': 처음 시작한 시각. 이보다 전에 한 운동(건강 앱·워치, 앱이 지난 2일을 봄)은 짝꿍·알에 안 넣는다
@@ -8582,7 +8715,7 @@ function arcField(step) {
   L.forEach((m, i) => { m.act?.classList.add('arcup'); setTimeout(() => { try { m.act.classList.remove('arcbow', 'arcup'); if (m.one?.hold === 'end' && !m.fnt) m.one = null; m.backSit = false; if (m.special === 'arc') { m.special = null; if (S.mons.includes(m)) setState(m, 'idle', 2 + Math.random() * 3); } } catch (e) {} }, 700 + i * 60); });
 }
 GA.arcScene = (o = {}) => new Promise(done => {
-  if (!o.test && GA.arcGot()) return done(false);
+  const first = o.first === 0 ? false : o.test ? true : !GA.arcGot(), pl = o.pl || null;   /* v27.43 경완 '평판 3,000 되면 아르세우스 강림하고 해당 타입 플레이트 받는 걸로': first = 아르세우스가 박스로(계정 처음), 아니면 짧은 강림. pl = 그 체육관 타입 플레이트 {id,nm,ty} (지급은 gym.js arcGo), 노말은 o.gold */
   const el = document.createElement('div'); el.id = 'arcSc';
   el.innerHTML = `<style>
 .act.arcbow{animation:arcBow 1.2s ease-in-out forwards;transform-origin:50% 100%}
@@ -8622,6 +8755,10 @@ GA.arcScene = (o = {}) => new Promise(done => {
 #arcSc .ar-tx em{position:absolute;right:14px;bottom:5px;font-style:normal;font-size:11px;color:#ffd75a;animation:arT .8s ease-in-out infinite alternate}
 #arcSc .ar-got{position:absolute;left:50%;top:44%;width:min(280px,82vw);box-sizing:border-box;translate:-50% -50%;padding:18px 16px 16px;border-radius:14px;background:#fffdf2;color:#3a3220;text-align:center;box-shadow:0 0 0 3px #f4d470,0 0 40px rgba(255,226,130,.7),0 10px 30px rgba(0,0,0,.5);animation:arP .5s cubic-bezier(.2,1.5,.4,1)}
 #arcSc .ar-got u{display:block;width:80px;height:80px;margin:14px auto 30px;scale:1.8;background:url(gym/img/pk/493.png) 0 0/160px 80px no-repeat;image-rendering:pixelated;animation:arS 1.1s steps(1) infinite}
+#arcSc .ar-got img{display:block;width:64px;height:64px;margin:6px auto 14px;image-rendering:pixelated;filter:drop-shadow(0 0 8px #ffd75a)}
+#arcSc .ar-plt{position:absolute;left:50%;top:36%;width:48px;height:48px;margin:-24px 0 0 -24px;image-rendering:pixelated;opacity:0;scale:.3;filter:brightness(3) drop-shadow(0 0 12px #fff6c0);transition:top 2.6s cubic-bezier(.3,.1,.3,1),opacity .8s,scale 1.4s,filter 2.2s}
+#arcSc .ar-plt.on{top:60%;opacity:1;scale:1.3;filter:brightness(1.15) drop-shadow(0 0 12px #ffe38a)}
+#arcSc .ar-plt.off{opacity:0;scale:.2;transition:opacity .5s,scale .5s}
 #arcSc .ar-got h4{margin:0 0 4px;font-size:17px}
 #arcSc .ar-got small{display:block;font-size:12px;color:#8a7a50;margin-bottom:12px}
 #arcSc .ar-got button{width:100%;padding:11px 0;border:0;border-radius:9px;background:#f0b93a;color:#3a2a00;font:inherit;font-weight:700;font-size:15px;box-shadow:0 4px 0 #b98a1e;transition:translate .06s,box-shadow .06s}
@@ -8648,21 +8785,38 @@ GA.arcScene = (o = {}) => new Promise(done => {
       await Promise.race([snd, W(4000)]); await W(600); bgmSrcStop(); bgmDuck(1, .05);
       el.classList.add('dim'); rumble(2, 3); se('DP_W089', .8); await W(1700);
       mus('evLegend'); el.classList.add('crack'); se('DP_W356'); arcField('look'); await W(1500);
-      await say('필드를 감싸던 바람이 멎고,<br>하늘이 둘로 갈라진다…');
+      const gotPop = h => new Promise(r => { const got = document.createElement('div'); got.className = 'ar-got'; got.innerHTML = h + '<button type="button">확인</button>'; el.appendChild(got); const b = got.querySelector('button'), t0 = Date.now(); b.onclick = e => { e.stopPropagation(); if (Date.now() - t0 < 1000) return; got.remove(); r(); }; });
+      const gift = async () => {   /* 빛 한 조각이 플레이트가 되어 내려온다 → 받는 창 (창고에 넣는 건 gym.js). 노말 체육관은 플레이트가 없어 골드 */
+        if (!pl && !o.gold) return;
+        await say('아르세우스의 몸에서 빛 한 조각이 떨어져 나와,<br>관장의 손 위로 천천히 내려앉는다.');
+        let im = null; if (pl) { im = document.createElement('img'); im.className = 'ar-plt'; im.alt = ''; im.src = `gym/img/item/${pl.id}.png`; el.appendChild(im); void im.offsetWidth; im.classList.add('on'); } se('DP_KIRAKIRA2'); await W(pl ? 2800 : 900);
+        if (!o.test && pl) log(`아르세우스에게서 <b>${pl.nm}</b>를 받았다!`, [], true);
+        try { M()?.fan?.('ME_BADGE'); } catch (e) {} haptic(1);
+        await gotPop(pl ? `<img alt="" src="gym/img/item/${pl.id}.png"><h4>${pl.nm}를 받았다!</h4><small>아르세우스가 지니면 ${pl.ty} 타입이 된다.<br>체육관 창고에 들어 있어요.</small>` : `<h4>${o.gold.toLocaleString()}G를 받았다!</h4><small>노말 타입에는 플레이트가 없어<br>빛이 골드가 되어 내려앉았다.</small>`);
+        if (im) { im.classList.add('off'); setTimeout(() => im.remove(), 600); } await W(400);
+      };
+      await say(first ? '필드를 감싸던 바람이 멎고,<br>하늘이 둘로 갈라진다…' : '필드를 감싸던 바람이 멎고,<br>하늘이 다시 둘로 갈라진다…');
       el.classList.add('beam'); se('DP_W076'); rumble(2, 2); await W(1700);
-      await say('천 갈래의 빛이 한 줄기로 모여<br>필드 한가운데로 내려온다.');
+      if (first) await say('천 갈래의 빛이 한 줄기로 모여<br>필드 한가운데로 내려온다.');
       el.classList.add('come'); se('DP_W322'); await W(4300); flash(); rumble(3, 4); haptic(2); se('DP_DODON', 1.3); try { M()?.stop(.3); } catch (e) {} el.classList.add('land'); await W(500); try { playCry(493, 0, 1, 2); } catch (e) {} await W(1900); mus('aus'); await W(700);
       await say('<b>아르세우스</b>');
-      await say('세상이 태어나기 전, 홀로 알에서 깨어나<br>천 개의 손으로 우주를 빚었다고 전해지는 포켓몬.');
-      await say('그 누구도 닿지 못한 평판 3,000.<br>그 자리에 선 관장을 가만히 내려다본다.');
+      if (first) { await say('세상이 태어나기 전, 홀로 알에서 깨어나<br>천 개의 손으로 우주를 빚었다고 전해지는 포켓몬.');
+        await say('그 누구도 닿지 못한 평판 3,000.<br>그 자리에 선 관장을 가만히 내려다본다.'); }
+      else await say('또 하나의 체육관을 평판 3,000에 올린 관장을<br>가만히 내려다본다.');
       el.classList.add('bow'); arcField('bow'); se('DP_W215', .8); await W(2600);
-      await say('필드의 포켓몬들이 하나둘<br>조용히 고개를 숙인다.');
-      await say('아르세우스가 천천히 눈을 감는다.<br>그리고 스스로 빛이 되어, 관장에게 다가온다…');
-      el.classList.add('go'); se('DP_W361'); await W(1500); flash(); haptic(2); se('DP_KIRAKIRA2');
-      if (!o.test) { const P = newPoke(493, { shiny: false, place: '전설의 체육관' }); P.iv = P.iv.map(() => 31); P.arc = 1; P.nw = true; unlock(493, true); log('하늘에서 내려온 <b>아르세우스</b>가 박스에 들어왔다!', [], true); save(); try { renderBox(); menuDots(); } catch (e) {} }
-      await W(700); try { M()?.fan?.('ME_BADGE'); } catch (e) {}
-      const got = document.createElement('div'); got.className = 'ar-got'; got.innerHTML = `<u></u><h4>아르세우스가 박스에 들어왔다!</h4><small>평판 3,000에 닿은 관장에게만 내려온다.</small><button type="button">확인</button>`; el.appendChild(got);
-      await new Promise(r => { got.querySelector('button').onclick = e => { e.stopPropagation(); r(); }; }); got.remove(); arcField('end'); await W(500);
+      if (first) await say('필드의 포켓몬들이 하나둘<br>조용히 고개를 숙인다.');
+      await gift();
+      if (first) {
+        await say('아르세우스가 천천히 눈을 감는다.<br>그리고 스스로 빛이 되어, 관장에게 다가온다…');
+        el.classList.add('go'); se('DP_W361'); await W(1500); flash(); haptic(2); se('DP_KIRAKIRA2');
+        if (!o.test && !GA.arcGot()) { const P = newPoke(493, { shiny: false, place: '전설의 체육관' }); P.iv = P.iv.map(() => 31); P.arc = 1; P.nw = true; unlock(493, true); log('하늘에서 내려온 <b>아르세우스</b>가 박스에 들어왔다!', [], true); save(); try { renderBox(); menuDots(); } catch (e) {} }
+        await W(700); try { M()?.fan?.('ME_BADGE'); } catch (e) {}
+        await gotPop(`<u></u><h4>아르세우스가 박스에 들어왔다!</h4><small>평판 3,000에 닿은 관장에게만 내려온다.</small>`);
+      } else {
+        await say('아르세우스가 천천히 눈을 감는다.<br>그리고 빛이 되어, 하늘로 돌아간다…');
+        el.classList.add('go'); se('DP_W361'); await W(1500); flash(); haptic(2);
+      }
+      arcField('end'); await W(500);
       await say('하늘이 다시 닫히고,<br>필드에 고요가 돌아온다.');
     } catch (e) { try { pkErr(e?.message || e, e?.stack); } catch (e2) {} }
     try { arcField('end'); } catch (e) {} try { M()?.stop(1.4); } catch (e) {}
@@ -8744,7 +8898,7 @@ $('#updNow').onclick = async () => {
     save(); const q = new URLSearchParams(location.search); q.set('u', u); setTimeout(() => location.replace(pg + '?' + q + location.hash), 300);
   } catch (e) { msg.textContent = '받지 못했어요. 인터넷 연결을 확인해 주세요'; b.disabled = false; }
 };
-/* v27.13 경완 '물레방아 뒤로 가면 투명해지게 하지 말고 그냥 물레방아 뒤에서 멈추게만 하지 말아줘': 반투명 뺌, 뒤에서 비켜 나기는 그대로 */ /* v27.08 경완: 물레방아 뒤 포켓몬이면 반투명·뒤에서 안 멈춤, 큰 포켓몬(고래왕 등)은 물레방아 상호작용 안 함, 고래왕 등엔 작은 포켓몬만(샹델라 너무 큼) */ /* v27.07 경완 '물레방아는 그림자 빼줘도 될듯': 물레방아 타원 그림자·햇빛 그림자 뺌 */ /* v27.04 경완 '4,000으로 가자. 물레방아는 호숫가에만 놓을 수 있게, 호숫가 왼쪽에 놓으려고 하면 방향 자동으로 좌우 반전': 물레방아 소품(바퀴 돎·상호작용 7개) */ /* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '27.42';   /* v27.42 경완: 결과창 평판 숫자 +N 나올 때 비켜 갔다 가운데로 돌아옴, 멈춰 있을 땐 정가운데 */   /* v27.40 경완: 더블 배틀 다이맥스·Z기술 대상 없어서 배틀 멈추던 것 */   /* v27.39 경완: 도전자 팀에 같은 포켓몬 안 겹침, 메가자리 이름 옆 메가 마크 없앰 */   /* v27.33 경완: 필드 그림자 = 예전 둥근 그림자 (작업실 그림자 값 그대로) */   /* v26.20 경완: 로켓단 점거 사이렌이 끝나자마자 아지트 곡(미리 만들어 둠), 앱을 끄지 않고 다시 들어와도 발동, 점거 중 필드 곡이 섞여 나오던 것 */   /* 고래왕 등에 탄 포켓몬 그림자 숨김 */   /* 짝꿍 칸 이상한사탕: 게이지 다 찬 뒤 진화하기 버튼이 켜짐 */   /* 수련탑 상대 기술 고르기·100층 뒤 레벨·경험치 = 체육관 등급 배율 */   /* 수련탑 층·코인 오른쪽 위 */   /* 밤에 빛 소품·모닥불 근처 포켓몬·소품도 밝게 (경완 0.7) */   /* 밤에 가로등 유리·몬스터볼 스프링 빛 칸이 다시 밝게 */   /* 기술 효과가 상단바에 거울 대신 위로 이어져 그려짐 */   /* 도전자도 Z기술(메가와 같은 배틀에도), Z파워 기운 타입별 색, 메가·Z 실루엣 어긋남, 전체 화면 연출 상단바 거울 */   /* 랭킹 화면은 모든 유저 중 가장 최근 기록이 오른 종목부터 */   /* 더 놓은 열매나무에도 열매 + 가방에서 놓는 소품은 여유로운 빈자리 먼저 */   /* 승급 심사 레벨 보너스 모든 등급 +2 */   /* 이름 있는 트레이너 재방문 팀 (3번째부터 조금씩 바뀜, 에픽·전설 알 포켓몬, 등급 천장 안) */   /* 필드 상호작용 일지 문장에 맞는 동작 (숨바꼭질·팔씨름·눈싸움·미끄럼틀 등) */   /* v23.23 경완: 탑 쌓기 불태우기·사이코키네시스·매혹은 고르기 전 버튼 다시 누르면 취소 */   /* v23.21 경완: 탑 쌓기 역대 최고 높이 분홍 점선 + 처음 넘을 때 한 번 돌파 효과 */   /* v23.20 경완: 예전 기준으로 받은 탑 쌓기 미션 중 지금 기록이 새 기준에 못 미치는 칸 되돌리고 골드 거둠 */   /* v23.02 지역 폼 떠 있기 = 원래 폼 값 */   /* v22.55 기술 놀람 = 효과음 순간 */   /* v22.43 배턴터치·용의춤·용의파동·파워트릭·사이코부스트·심판의뭉치·공간절단·중력 효과음(플래티넘 슬롯·클라이맥스 소리 묶음), 상대 메가진화 빛은 filter 없이 캔버스로 하얗게(아이폰 네모 경계선) */   /* v22.42 상대 메가진화: 빛나기 전 트레이너가 포켓몬 뒤로 들어왔다 나감, 빛날 때 박스 경계선 안 보이게, 메가 마크 포켓몬 위에 보이게 */   /* v22.41 상대 메가진화 간단 연출에 효과음(기운 모음·반짝·쾅)·진동, 메가 마크가 한 바퀴 돌며 위에 */   /* v22.40 도전자 메가진화는 내 라인업이 셀 때만(이 시점은 최솟값), 메가진화 포켓몬 레벨 −2, 창고(민트·새 물건 점·메가링) 모든 체육관 공유 */   /* v22.39 도전자 메가진화 = 체육관마다 이름난 체육관이 된 뒤 판수로 (페이즈), 메가링은 모든 체육관에서 */   /* v22.37 도전자 메가진화는 간단히 빛나며 바뀜, 도전자 메가진화 시험 첫 포켓몬이 바로 메가진화, 도전자 메가진화 10판 뒤부터 */   /* v22.34 도전자 메가진화 규칙을 판수로 (메가링 받고 직접 싸운 20판은 안 씀, 다음 20판 동안 늘어남, 배포 전) */   /* v22.33 운영자 '도전자 메가진화' 시험, 도전자 메가진화 규칙(해금 뒤 7일 안 씀·7일 동안 늘어남, 배포 전) */   /* v22.29 승급 튜토리얼 다듬기(메뉴 직접 누르기·대사 이음새·빈 대사창), 창고 중요한 물건(메가링), 메가진화 버튼 소리·진동, 배틀 위 막대 그늘 뺌 */   /* v22.23 승급마다 강박사 방문 튜토리얼(배포 전, 운영자 승급 튜토리얼로만), 메가스톤 상점, 동네 훈련장 튜토리얼 멈춤 고침 */   /* v22.20 베타 운영자 메가진화 시험(시뮬 안), 메가 타입·니힐레이저 */   /* v22.12 학습장치 창 아이콘 */   /* v22.11 배틀 친밀도 본가 기준 (레벨업·이긴 배틀·쓰러짐) */   /* v22.06 경완: 아이폰에서 채팅창 끊김 없이 펼치기, 보내기 버튼 되돌리고 오른쪽 여백 없앰 */   /* v21.78 경완: 배틀 폼 체인지 움직이는 그림(마이티폼·들킨 모습·꼬르륵 등 25개), 느리던 EeveeExpo 모션 속도 맞춤 */   /* v21.77 경완: 음번·대여르 이로치 = 지금 움직이는 그림에 이로치 색 */   /* v21.74 경완: 밤에 빛나는 포켓몬 앞뒤 판정 뿌리부터 (밤 그늘 판을 땅 위로, 나머지는 각자 밤빛 필터) */   /* v21.62 경완: 트레이너 혼자 탄 고래왕에 근처 포켓몬도 가끔 같이 */   /* v21.60 경완: 고래왕 숨 쉴 때 탄 트레이너도 같이 오르내림 */   /* v21.59 경완: 고래왕 뒷모습 두 명 앞뒤로 */   /* v21.58 경완: 고래왕 옆모습 등 안쪽·앞모습 정중앙 */   /* v21.57 경완: 고래왕 탄 트레이너 앞에 그리고 방향별 등 자리 */   /* v21.56 경완: 열매나무에 앉는 자리를 잎 가운데로 */   /* v21.55 경완: 고래왕 등에 트레이너도 2명까지 */   /* v21.54 경완: 고래왕 등에 여럿이 올라타 연못 한 바퀴 */   /* v21.44 경완: 고래왕 같은 큰 물 포켓몬이 연못 아래쪽에서 육지로 삐져나가던 것 */   /* v21.40 경완: 느린 폰에서 알 주움(새 소식) 알림창 확인 버튼이 잘 안 눌리던 것 — 버튼 모양 없이 글자만 있던 확인을 꽉 찬 입체 버튼으로, 창 뜬 동안 뒤 필드 덜 그림, 저장은 닫은 다음 */   /* v21.38 경완: 친구 필드 놀러가기 끊김 — 주인 창이 덮여도 손님 있으면 평소 속도, 손님 화면 30fps */   /* v21.30 경완 '따라큐 탈·본가랑 다른 거 검토': 탈 0 데미지 깜빡임 없앰, 빠진 본가 문장(묶기 시작·트레이스·프레셔 등)·특성 이름 */   /* v21.29 트레이너 체육관에 배치 버튼 없앰, 고용하면 모두 체육관 기본 자리에 */   /* v21.27 경완: 필터 효과음, 도감 칸 그림 빨리(dexth.json), 타입·도감 버튼 아이콘 */   /* v21.26 경완: 도감·박스 필터 누르면 바로 */   /* v21.25 경완: 히스이 폼 딱지 색 = 히스이 도감 가죽색 */   /* v21.24 경완: 지역 도감마다 카드 기계 모양, 도감 카드 지역 폼 딱지·분류 안 잘리게 */   /* v21.23 경완: 지역 폼 도감 설명 */   /* v21.22 경완: 지역 도감마다 도감 카드 색, 지역 도감 설명 */   /* v21.21 경완: 지역 도감 (관동~팔데아) 고르기, 지역 도감에선 그 지역 폼 칸 */   /* v21.20 경완: 지역 폼 딱지를 분류와 친밀도 사이 가운데로 */   /* v21.19 경완: 상세카드 지역 폼 딱지 (종류 밑·친밀도 위) */   /* v21.18 지원서 코치 실력을 특성 밑으로 */   /* v21.16 경완: 체육관 타입 알·이미 가진 타입 알도 타입 부화거리 */   /* v21.15 경완: 부화기 자동 채우기 — 남은 거리 비슷하면 타입 알 먼저 */   /* v21.14 경완: 지역 폼 이름은 원래 이름(야돈), 상세카드 분류 칸에 '가라르 폼' */   /* v21.13 경완: 알 주움·부화 준비 알림창은 확인 버튼으로만 닫힘 */   /* v21.12 레어 기술 설명창 한 줄 가운데·글자색 */   /* v21.09 레어 기술 칸 누르면 설명창 */   /* v21.08 훈련장 처음 들어갈 때 노란 바탕이 잠깐 보이던 것 */   /* v21.06 트레이너 상세카드 스크롤 없게, 훈련장 코치 딱지 정리, 훈련장 코치 효과 박스, 기술 설명 창 아이콘 뺌 */   /* v21.00 훈련장 다른 메뉴 다녀오면 +·포켓몬 안 눌리던 것, 코치 종류 딱지 가독성, 깨달은 기술 알림창 바로 */ /* v20.96 기술 코치 효과 2배, 훈련장 깨달음 % 표시 */ /* v20.94 훈련장 코치 3명, 같은 종류 겹치면 100·60·30% */ /* v20.93 홈 평판 게이지만 눌림 */ /* v20.92 코치 종류 경험치·노력치·기술 */ /* v20.91 훈련장 다른 메뉴·+ 화면 동안도 움직임 계산(순간이동 없음), 노력치·친밀도 오름 표시, 효과 글자 한 줄 */ /* v20.90 훈련장 + 화면이 덮는 동안 훈련장 안 그림, 주급 숫자 쉼표 */ /* v20.89 훈련장 몸 풀기 동작 (빙글빙글·구르기·점프·춤 등) */ /* v20.88 코치 한마디에 쓴 기술 이름, 훈련장 상세카드 지닌 도구 */ /* v20.87 훈련장 밥 시간 7~10분마다 */ /* v20.86 훈련장 밥 주는 시간 (코치가 그릇 놓으면 포켓몬이 와서 냠냠) */ /* v20.85 훈련장 덤불 앞은 기술·훈련 자리 아님, 기술로 맞춘 과녁 흔들림, 코치 말 가운데 */ /* v20.84 경완: 훈련장 코치 말 훨씬 다양하게(훈련별·이름 부르기) */ /* v20.83 경완: 훈련장 기술 이름 외치기 뺌 */ /* v20.82 경완: 횃대 앉을 때 발이 가지 두께 가운데 */   /* v20.81 경완: 훈련장 포켓몬들이 아는 기술 동작·효과로 훈련, 평판 게이지 → 등급표, 영양제 고르기 노력치 딱지 뺌, 일지에 상점 지출 안 씀 */ /* v20.80 경완: 상점 도구 탭 항목 필터, 영양제 창고·도구 사용에서 먹이기, 훈련장 슬롯 나무 판자 */ /* v20.79 경완: 횃대에 앉으면 발이 가지 위에 얹히게 */   /* v20.78 경완: 체육관 넓어짐 알림창 새 디자인(마지막 단계 완성됐어요), 훈련장 슬롯 능력치 훈련 딱지·디자인, 슬롯 레벨업 수 = 훈련 일지, 상점 새 칸 빨간 점 */ /* v20.77 경완 '원래대로, 물 왔다갔다 하는지 몰랐음': v20.76 바다 포켓몬 9종 물에서만 되돌림 */   /* v20.76 경완: 수레기 등 바다 포켓몬 9종 물에서만 다님 */   /* v20.75 경완: 배틀 특성 문장 빠진 것들(게으름·클리어바디류·베일·타입 바뀜·타오르는불꽃·슬로스타트·고대활성/쿼크차지·일루전·점착/흡반 등) 보이게 */   /* v20.74 경완: 배틀에서 예지몽·싱크로처럼 '발동' 줄로 나오는 특성도 특성 창으로 보임 (예지몽은 알아챈 기술까지) */   /* v20.73 경완: 체육관 열려 있고 평판 50 이상·자주 들어가는 사람은 미니게임 기록별 선물에 체육관 상점 지닌 도구·민트도 나옴 */   /* v20.72 경완: 창고에서 기술 가르치면 배웠다 창 다음 그 포켓몬 기술 목록 카드로 */   /* v20.71 경완: 방명록 손님 행동 줄 닉네임 뒤 조사·띄어쓰기 */   /* v20.70 경완: 체육관 상품 카드 보유 수 아이콘 가방 → 창고, 기술머신·레코드 가르칠 때 박스 화면 위에서 바로 잊을 기술 창, 기술 줄 오른쪽 잘림, 포켓몬 메뉴 예전 효과음 없앰, 훈련 일지 이름 줄 연필 */   /* v20.69 경완: 상점에서 산 것 창고 빨간 점, 창고 수량 딱지 오른쪽, 퇴근하면 상점 필터 처음대로, 창고·추천 기술 상세카드 = 상점 카드(TR 딱지·설명·1회용 안내), 상세카드 제목 가운데, 훈련 추천 카드 문구 크게·? 정렬 */   /* v20.68 경완: 탑 쌓기 미션 기록 초기화, 베타판에선 미션 기록 안 함 */   // v20.67 경완: 훈련장·트레이너·노력치 튜토리얼을 오프닝처럼 (강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기)   /* v20.61 경완: 훈련장 카드 노력치 훈련 박스 ? — 지금 좋은 훈련 힌트·바로 훈련하기 */   /* v20.60 경완: 도구 사용 화면 추천 도구 버튼·가진 도구 추천 딱지, 기술머신 배울 수 있는 포켓몬 누르면 상세카드, 승급 직전 평판은 관장이 직접 */   /* v20.68 경완: 상세카드 크기 통일·도구 없으면 점선 + 칸, 노력치 설정 ? 가운데·추천이 넣은 노력치도 다시 배분·영양제 1당 노력치 +10, 기술 가르치기 딱지 안 잘림 */   /* v20.58 경완: 탑 쌓기 이상해꽃·고래왕이 너무 자주 나오던 것 → 꼭대기 좁을 때 고르는 넓적한 포켓몬 2 → 16마리 */   /* v20.57 경완: 칠색조·루기아 하늘 지나갈 때 울음소리 메아리 */   /* v20.56 경완: 다이빙 튀어나오는 자리 호수 안쪽만 */   /* v20.55 경완: 강박사 노력치 튜토리얼 — 노력치 박스를 직접 눌러 설정 창을 연 뒤에 설정 창 설명 */   /* v20.54 경완: 노력치는 새내기 체육관부터 쌓이고(채우기·배틀), 보이는 건 동네 체육관부터 */   /* v20.53 경완: 다이빙 들어갈 때 물에 떠 있을 때 잘리는 선 기준으로 사라짐, 튀어오를 때 기술 효과 */   /* v20.52 경완: 원래 있던 포켓몬 노력치 채우기 (배틀 경험치로 쓰러뜨린 수 어림, 최근 배틀 상대 종) */   /* v20.51 경완: 탑 쌓기(베타)는 기록별 선물을 주지 않음, 이미 받은 선물 거둬들이고 받은 칸 초기화 */   /* v20.50 경완: 도전자 포켓몬 노력치(체육관 등급별), 만렙 포켓몬도 훈련장에 */   /* v20.49 경완: 탑 쌓기 시작할 때 게임 선택 화면이 한 번 비치던 것 → 상세창을 시작 카드 뜰 때 닫음 */   /* v20.48 경완: 미니게임·메뉴 중 필드 구멍 파기·전설 등장 소리 안 남 */   /* v20.47 경완: 노력치 — 체육관 동네 등급부터, 상세카드 노력치 박스·설정 창·훈련장 노력치 훈련·영양제·파워 도구, 코치 실력 개체별·훈련장 특성, 튜토리얼 */   /* v20.46 경완: 다이빙 나올 때 공격 효과 없이 크게 튀어올라 착지 */   /* v20.45 경완: 탑 쌓기 맨 처음 실행할 때도 하늘 화면 먼저 안 보이게·게임 파일 미리 받기, 앱 다녀오면 소리 다시 만들기, 아슬아슬 덤 점수 표시, 큰 포켓몬 35% → 22% */   /* v20.44 경완: 운영자 모드 '튜토리얼 시험' — 강박사 훈련장(노력치 설명)·트레이너 메뉴 튜토리얼 시안을 체육관 시뮬에서 (나가면 되돌림) */   /* v20.43 경완: 탑 쌓기에 어써러셔 추가 */   /* v20.42 경완: 탑 쌓기 큰 포켓몬 더 자주(약 35%) + 아주 큰 포켓몬 13종 추가(갸라도스·고래왕·밀로틱 등) */   /* v20.41 경완: 다이빙 — 물에 닿은 부분부터 사라지고, 물 위로 점프해 나와 착지 */   /* v20.40 경완: 탑 쌓기 중 앱 나가면 일시정지·곡 멈춤, 돌아오면 소리 다시 */   /* v20.39 경완: 탑 쌓기 시작할 때 하늘 화면 먼저 안 보이고 바로 시작 카드 */   /* v20.37 경완: 랭킹 포켓몬 박스에서 키 큰 그림(가라르 또도가스)이 잘리던 것 */   /* v20.30 경완: 나옹 열기구 동전 한 칸 더 낮춤 */   /* v20.28 경완: 나옹 열기구 동전을 머리 쪽으로 낮춰 이음새 기둥 없앰 */   /* v20.27 경완: 나옹 열기구 동전을 사진처럼 머리 위에 얹힌 둥근 동전으로, 체육관 아이콘 R 딱지 상하좌우 여백 같게(12×12) */   /* v20.25 경완: 나옹 열기구 이마 동전이 떠 보이던 것 → 머리에 붙은 작은 혹, 바구니에 로켓단 셋(긴 머리·나옹·앞머리) 그림자 */   /* v20.24 경완: 로켓단 점거 중 필드 하늘에 나옹 열기구 실루엣 (한자리 둥실, 밤엔 검정 + R 불빛) */   /* v20.23 경완: 탑 쌓기 점수 10배 → 4배 (기준·예전 기록도 4배에 맞춤), 베타 탑 쌓기 기록은 랭킹 서버에 안 올림 */   /* v20.22 경완: 탑 쌓기 점수 10배 (골드·친밀도·선물·미션 기준도 10배, 예전 기록도 10배) */   /* v20.21 경완: 미니게임 기록별 선물 가운데 세 칸(알 뽑기권 포함) 싼 것부터 낮은 점수에 */   /* v20.20 경완: 의상 상세카드에 의상별 설명, 들어가는 곳 문구는 옅게 가운데 */   /* v20.19 경완: 상점 음악 탭 아래 박스로 되돌림, 상점 그림 미리 읽기, 의상 상세카드 = 상점 카드 틀, 박스·도감 타입 필터 = 알 뽑기 순서 */   /* v20.18 경완: 꾸미기 포켓몬 박스·도감 타입 고르기 창 색 네모 → 타입 아이콘 */   /* v20.15 경완: 탑 쌓기 무게 아래로·흔들림 줄이기 늘 켬, 꾹 눌러 돌리기는 양옆만, 가장자리에 걸쳐 놓을 때 처음 닿는 회전 흡수 */   /* v20.13 경완: 체육관 이벤트 1 로켓단 점거 배포 (평판 180, 다음 실행부터, 계정당 한 번) */   /* v20.12 경완: 이벤트 필드 박물관 등 문 칸에 선 사람 머리가 문틀 위로 튀어나오던 것 */   /* v20.11 경완: 탑 쌓기 베타 설정 버튼(운영자) — 시안 설정·물리 테스트 4개, 바꾼 판은 기록·보상 없음 */   /* v20.10 경완: 필드 시험 때 아이콘 누르는 순간 R 딱지가 떨어져 도전자 수가 보이던 것 → 체육관에서 나올 때 뗌 */   /* v20.09 경완: 운영자 모드 '필드에서부터 해 보기' — 필드 R 딱지·사이렌·아지트 곡부터, 아이콘 누르면 시험 이벤트 (본 계정 그대로) */   /* v20.08 경완 2번: 로켓단 점거 딱지 떠 있는 동안 필드 곡 = FR 로켓단 아지트(evMus), 해결되면 원래 필드 곡 */   /* v20.06 경완: 밤에 다른 포켓몬과 겹칠 때 몬스터볼 스프링 탄 포켓몬이 스프링 뒤로 가던 것 */   /* v20.03 경완: 주간 결산 트레이너 수익이 그 주에 잡히게 */ /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
+/* v27.13 경완 '물레방아 뒤로 가면 투명해지게 하지 말고 그냥 물레방아 뒤에서 멈추게만 하지 말아줘': 반투명 뺌, 뒤에서 비켜 나기는 그대로 */ /* v27.08 경완: 물레방아 뒤 포켓몬이면 반투명·뒤에서 안 멈춤, 큰 포켓몬(고래왕 등)은 물레방아 상호작용 안 함, 고래왕 등엔 작은 포켓몬만(샹델라 너무 큼) */ /* v27.07 경완 '물레방아는 그림자 빼줘도 될듯': 물레방아 타원 그림자·햇빛 그림자 뺌 */ /* v27.04 경완 '4,000으로 가자. 물레방아는 호숫가에만 놓을 수 있게, 호숫가 왼쪽에 놓으려고 하면 방향 자동으로 좌우 반전': 물레방아 소품(바퀴 돎·상호작용 7개) */ /* v19.27 경완: 하늘에 일주일에 몇 번 칠색조(낮, 무지개 가루)·루기아(밤, 은빛 실루엣·은빛 가루)가 멀리 천천히 나무 뒤로 지나가고 몇몇이 올려다봄, 달 모양이 실제 날짜 주기를 따라감, 보름 무렵 같이 달 보기 자주·보름날 밤엔 다 모여 달 보기(올려다보는 그림 있는 포켓몬만) */ /* v19.28 경완: 놀러 온 손님이 필드에 놓은 열매는 배고픈 포켓몬만 따라와 먹고, 직접 준 열매는 배불러도 먹음 */ const APP_VER = '27.53';   /* v27.53 경완: (베타) 휘슬 5초·곁에 오면 하트, 놀러 가면 친구 필드 포켓몬들이 다 같이 → 돌아가며 관심, 처음엔 어색하다가 신나게 */   /* v27.40 경완: 더블 배틀 다이맥스·Z기술 대상 없어서 배틀 멈추던 것 */   /* v27.39 경완: 도전자 팀에 같은 포켓몬 안 겹침, 메가자리 이름 옆 메가 마크 없앰 */   /* v27.33 경완: 필드 그림자 = 예전 둥근 그림자 (작업실 그림자 값 그대로) */   /* v26.20 경완: 로켓단 점거 사이렌이 끝나자마자 아지트 곡(미리 만들어 둠), 앱을 끄지 않고 다시 들어와도 발동, 점거 중 필드 곡이 섞여 나오던 것 */   /* 고래왕 등에 탄 포켓몬 그림자 숨김 */   /* 짝꿍 칸 이상한사탕: 게이지 다 찬 뒤 진화하기 버튼이 켜짐 */   /* 수련탑 상대 기술 고르기·100층 뒤 레벨·경험치 = 체육관 등급 배율 */   /* 수련탑 층·코인 오른쪽 위 */   /* 밤에 빛 소품·모닥불 근처 포켓몬·소품도 밝게 (경완 0.7) */   /* 밤에 가로등 유리·몬스터볼 스프링 빛 칸이 다시 밝게 */   /* 기술 효과가 상단바에 거울 대신 위로 이어져 그려짐 */   /* 도전자도 Z기술(메가와 같은 배틀에도), Z파워 기운 타입별 색, 메가·Z 실루엣 어긋남, 전체 화면 연출 상단바 거울 */   /* 랭킹 화면은 모든 유저 중 가장 최근 기록이 오른 종목부터 */   /* 더 놓은 열매나무에도 열매 + 가방에서 놓는 소품은 여유로운 빈자리 먼저 */   /* 승급 심사 레벨 보너스 모든 등급 +2 */   /* 이름 있는 트레이너 재방문 팀 (3번째부터 조금씩 바뀜, 에픽·전설 알 포켓몬, 등급 천장 안) */   /* 필드 상호작용 일지 문장에 맞는 동작 (숨바꼭질·팔씨름·눈싸움·미끄럼틀 등) */   /* v23.23 경완: 탑 쌓기 불태우기·사이코키네시스·매혹은 고르기 전 버튼 다시 누르면 취소 */   /* v23.21 경완: 탑 쌓기 역대 최고 높이 분홍 점선 + 처음 넘을 때 한 번 돌파 효과 */   /* v23.20 경완: 예전 기준으로 받은 탑 쌓기 미션 중 지금 기록이 새 기준에 못 미치는 칸 되돌리고 골드 거둠 */   /* v23.02 지역 폼 떠 있기 = 원래 폼 값 */   /* v22.55 기술 놀람 = 효과음 순간 */   /* v22.43 배턴터치·용의춤·용의파동·파워트릭·사이코부스트·심판의뭉치·공간절단·중력 효과음(플래티넘 슬롯·클라이맥스 소리 묶음), 상대 메가진화 빛은 filter 없이 캔버스로 하얗게(아이폰 네모 경계선) */   /* v22.42 상대 메가진화: 빛나기 전 트레이너가 포켓몬 뒤로 들어왔다 나감, 빛날 때 박스 경계선 안 보이게, 메가 마크 포켓몬 위에 보이게 */   /* v22.41 상대 메가진화 간단 연출에 효과음(기운 모음·반짝·쾅)·진동, 메가 마크가 한 바퀴 돌며 위에 */   /* v22.40 도전자 메가진화는 내 라인업이 셀 때만(이 시점은 최솟값), 메가진화 포켓몬 레벨 −2, 창고(민트·새 물건 점·메가링) 모든 체육관 공유 */   /* v22.39 도전자 메가진화 = 체육관마다 이름난 체육관이 된 뒤 판수로 (페이즈), 메가링은 모든 체육관에서 */   /* v22.37 도전자 메가진화는 간단히 빛나며 바뀜, 도전자 메가진화 시험 첫 포켓몬이 바로 메가진화, 도전자 메가진화 10판 뒤부터 */   /* v22.34 도전자 메가진화 규칙을 판수로 (메가링 받고 직접 싸운 20판은 안 씀, 다음 20판 동안 늘어남, 배포 전) */   /* v22.33 운영자 '도전자 메가진화' 시험, 도전자 메가진화 규칙(해금 뒤 7일 안 씀·7일 동안 늘어남, 배포 전) */   /* v22.29 승급 튜토리얼 다듬기(메뉴 직접 누르기·대사 이음새·빈 대사창), 창고 중요한 물건(메가링), 메가진화 버튼 소리·진동, 배틀 위 막대 그늘 뺌 */   /* v22.23 승급마다 강박사 방문 튜토리얼(배포 전, 운영자 승급 튜토리얼로만), 메가스톤 상점, 동네 훈련장 튜토리얼 멈춤 고침 */   /* v22.20 베타 운영자 메가진화 시험(시뮬 안), 메가 타입·니힐레이저 */   /* v22.12 학습장치 창 아이콘 */   /* v22.11 배틀 친밀도 본가 기준 (레벨업·이긴 배틀·쓰러짐) */   /* v22.06 경완: 아이폰에서 채팅창 끊김 없이 펼치기, 보내기 버튼 되돌리고 오른쪽 여백 없앰 */   /* v21.78 경완: 배틀 폼 체인지 움직이는 그림(마이티폼·들킨 모습·꼬르륵 등 25개), 느리던 EeveeExpo 모션 속도 맞춤 */   /* v21.77 경완: 음번·대여르 이로치 = 지금 움직이는 그림에 이로치 색 */   /* v21.74 경완: 밤에 빛나는 포켓몬 앞뒤 판정 뿌리부터 (밤 그늘 판을 땅 위로, 나머지는 각자 밤빛 필터) */   /* v21.62 경완: 트레이너 혼자 탄 고래왕에 근처 포켓몬도 가끔 같이 */   /* v21.60 경완: 고래왕 숨 쉴 때 탄 트레이너도 같이 오르내림 */   /* v21.59 경완: 고래왕 뒷모습 두 명 앞뒤로 */   /* v21.58 경완: 고래왕 옆모습 등 안쪽·앞모습 정중앙 */   /* v21.57 경완: 고래왕 탄 트레이너 앞에 그리고 방향별 등 자리 */   /* v21.56 경완: 열매나무에 앉는 자리를 잎 가운데로 */   /* v21.55 경완: 고래왕 등에 트레이너도 2명까지 */   /* v21.54 경완: 고래왕 등에 여럿이 올라타 연못 한 바퀴 */   /* v21.44 경완: 고래왕 같은 큰 물 포켓몬이 연못 아래쪽에서 육지로 삐져나가던 것 */   /* v21.40 경완: 느린 폰에서 알 주움(새 소식) 알림창 확인 버튼이 잘 안 눌리던 것 — 버튼 모양 없이 글자만 있던 확인을 꽉 찬 입체 버튼으로, 창 뜬 동안 뒤 필드 덜 그림, 저장은 닫은 다음 */   /* v21.38 경완: 친구 필드 놀러가기 끊김 — 주인 창이 덮여도 손님 있으면 평소 속도, 손님 화면 30fps */   /* v21.30 경완 '따라큐 탈·본가랑 다른 거 검토': 탈 0 데미지 깜빡임 없앰, 빠진 본가 문장(묶기 시작·트레이스·프레셔 등)·특성 이름 */   /* v21.29 트레이너 체육관에 배치 버튼 없앰, 고용하면 모두 체육관 기본 자리에 */   /* v21.27 경완: 필터 효과음, 도감 칸 그림 빨리(dexth.json), 타입·도감 버튼 아이콘 */   /* v21.26 경완: 도감·박스 필터 누르면 바로 */   /* v21.25 경완: 히스이 폼 딱지 색 = 히스이 도감 가죽색 */   /* v21.24 경완: 지역 도감마다 카드 기계 모양, 도감 카드 지역 폼 딱지·분류 안 잘리게 */   /* v21.23 경완: 지역 폼 도감 설명 */   /* v21.22 경완: 지역 도감마다 도감 카드 색, 지역 도감 설명 */   /* v21.21 경완: 지역 도감 (관동~팔데아) 고르기, 지역 도감에선 그 지역 폼 칸 */   /* v21.20 경완: 지역 폼 딱지를 분류와 친밀도 사이 가운데로 */   /* v21.19 경완: 상세카드 지역 폼 딱지 (종류 밑·친밀도 위) */   /* v21.18 지원서 코치 실력을 특성 밑으로 */   /* v21.16 경완: 체육관 타입 알·이미 가진 타입 알도 타입 부화거리 */   /* v21.15 경완: 부화기 자동 채우기 — 남은 거리 비슷하면 타입 알 먼저 */   /* v21.14 경완: 지역 폼 이름은 원래 이름(야돈), 상세카드 분류 칸에 '가라르 폼' */   /* v21.13 경완: 알 주움·부화 준비 알림창은 확인 버튼으로만 닫힘 */   /* v21.12 레어 기술 설명창 한 줄 가운데·글자색 */   /* v21.09 레어 기술 칸 누르면 설명창 */   /* v21.08 훈련장 처음 들어갈 때 노란 바탕이 잠깐 보이던 것 */   /* v21.06 트레이너 상세카드 스크롤 없게, 훈련장 코치 딱지 정리, 훈련장 코치 효과 박스, 기술 설명 창 아이콘 뺌 */   /* v21.00 훈련장 다른 메뉴 다녀오면 +·포켓몬 안 눌리던 것, 코치 종류 딱지 가독성, 깨달은 기술 알림창 바로 */ /* v20.96 기술 코치 효과 2배, 훈련장 깨달음 % 표시 */ /* v20.94 훈련장 코치 3명, 같은 종류 겹치면 100·60·30% */ /* v20.93 홈 평판 게이지만 눌림 */ /* v20.92 코치 종류 경험치·노력치·기술 */ /* v20.91 훈련장 다른 메뉴·+ 화면 동안도 움직임 계산(순간이동 없음), 노력치·친밀도 오름 표시, 효과 글자 한 줄 */ /* v20.90 훈련장 + 화면이 덮는 동안 훈련장 안 그림, 주급 숫자 쉼표 */ /* v20.89 훈련장 몸 풀기 동작 (빙글빙글·구르기·점프·춤 등) */ /* v20.88 코치 한마디에 쓴 기술 이름, 훈련장 상세카드 지닌 도구 */ /* v20.87 훈련장 밥 시간 7~10분마다 */ /* v20.86 훈련장 밥 주는 시간 (코치가 그릇 놓으면 포켓몬이 와서 냠냠) */ /* v20.85 훈련장 덤불 앞은 기술·훈련 자리 아님, 기술로 맞춘 과녁 흔들림, 코치 말 가운데 */ /* v20.84 경완: 훈련장 코치 말 훨씬 다양하게(훈련별·이름 부르기) */ /* v20.83 경완: 훈련장 기술 이름 외치기 뺌 */ /* v20.82 경완: 횃대 앉을 때 발이 가지 두께 가운데 */   /* v20.81 경완: 훈련장 포켓몬들이 아는 기술 동작·효과로 훈련, 평판 게이지 → 등급표, 영양제 고르기 노력치 딱지 뺌, 일지에 상점 지출 안 씀 */ /* v20.80 경완: 상점 도구 탭 항목 필터, 영양제 창고·도구 사용에서 먹이기, 훈련장 슬롯 나무 판자 */ /* v20.79 경완: 횃대에 앉으면 발이 가지 위에 얹히게 */   /* v20.78 경완: 체육관 넓어짐 알림창 새 디자인(마지막 단계 완성됐어요), 훈련장 슬롯 능력치 훈련 딱지·디자인, 슬롯 레벨업 수 = 훈련 일지, 상점 새 칸 빨간 점 */ /* v20.77 경완 '원래대로, 물 왔다갔다 하는지 몰랐음': v20.76 바다 포켓몬 9종 물에서만 되돌림 */   /* v20.76 경완: 수레기 등 바다 포켓몬 9종 물에서만 다님 */   /* v20.75 경완: 배틀 특성 문장 빠진 것들(게으름·클리어바디류·베일·타입 바뀜·타오르는불꽃·슬로스타트·고대활성/쿼크차지·일루전·점착/흡반 등) 보이게 */   /* v20.74 경완: 배틀에서 예지몽·싱크로처럼 '발동' 줄로 나오는 특성도 특성 창으로 보임 (예지몽은 알아챈 기술까지) */   /* v20.73 경완: 체육관 열려 있고 평판 50 이상·자주 들어가는 사람은 미니게임 기록별 선물에 체육관 상점 지닌 도구·민트도 나옴 */   /* v20.72 경완: 창고에서 기술 가르치면 배웠다 창 다음 그 포켓몬 기술 목록 카드로 */   /* v20.71 경완: 방명록 손님 행동 줄 닉네임 뒤 조사·띄어쓰기 */   /* v20.70 경완: 체육관 상품 카드 보유 수 아이콘 가방 → 창고, 기술머신·레코드 가르칠 때 박스 화면 위에서 바로 잊을 기술 창, 기술 줄 오른쪽 잘림, 포켓몬 메뉴 예전 효과음 없앰, 훈련 일지 이름 줄 연필 */   /* v20.69 경완: 상점에서 산 것 창고 빨간 점, 창고 수량 딱지 오른쪽, 퇴근하면 상점 필터 처음대로, 창고·추천 기술 상세카드 = 상점 카드(TR 딱지·설명·1회용 안내), 상세카드 제목 가운데, 훈련 추천 카드 문구 크게·? 정렬 */   /* v20.68 경완: 탑 쌓기 미션 기록 초기화, 베타판에선 미션 기록 안 함 */   // v20.67 경완: 훈련장·트레이너·노력치 튜토리얼을 오프닝처럼 (강박사가 칸마다 옮겨 다니며 설명, 직접 눌러 보기)   /* v20.61 경완: 훈련장 카드 노력치 훈련 박스 ? — 지금 좋은 훈련 힌트·바로 훈련하기 */   /* v20.60 경완: 도구 사용 화면 추천 도구 버튼·가진 도구 추천 딱지, 기술머신 배울 수 있는 포켓몬 누르면 상세카드, 승급 직전 평판은 관장이 직접 */   /* v20.68 경완: 상세카드 크기 통일·도구 없으면 점선 + 칸, 노력치 설정 ? 가운데·추천이 넣은 노력치도 다시 배분·영양제 1당 노력치 +10, 기술 가르치기 딱지 안 잘림 */   /* v20.58 경완: 탑 쌓기 이상해꽃·고래왕이 너무 자주 나오던 것 → 꼭대기 좁을 때 고르는 넓적한 포켓몬 2 → 16마리 */   /* v20.57 경완: 칠색조·루기아 하늘 지나갈 때 울음소리 메아리 */   /* v20.56 경완: 다이빙 튀어나오는 자리 호수 안쪽만 */   /* v20.55 경완: 강박사 노력치 튜토리얼 — 노력치 박스를 직접 눌러 설정 창을 연 뒤에 설정 창 설명 */   /* v20.54 경완: 노력치는 새내기 체육관부터 쌓이고(채우기·배틀), 보이는 건 동네 체육관부터 */   /* v20.53 경완: 다이빙 들어갈 때 물에 떠 있을 때 잘리는 선 기준으로 사라짐, 튀어오를 때 기술 효과 */   /* v20.52 경완: 원래 있던 포켓몬 노력치 채우기 (배틀 경험치로 쓰러뜨린 수 어림, 최근 배틀 상대 종) */   /* v20.51 경완: 탑 쌓기(베타)는 기록별 선물을 주지 않음, 이미 받은 선물 거둬들이고 받은 칸 초기화 */   /* v20.50 경완: 도전자 포켓몬 노력치(체육관 등급별), 만렙 포켓몬도 훈련장에 */   /* v20.49 경완: 탑 쌓기 시작할 때 게임 선택 화면이 한 번 비치던 것 → 상세창을 시작 카드 뜰 때 닫음 */   /* v20.48 경완: 미니게임·메뉴 중 필드 구멍 파기·전설 등장 소리 안 남 */   /* v20.47 경완: 노력치 — 체육관 동네 등급부터, 상세카드 노력치 박스·설정 창·훈련장 노력치 훈련·영양제·파워 도구, 코치 실력 개체별·훈련장 특성, 튜토리얼 */   /* v20.46 경완: 다이빙 나올 때 공격 효과 없이 크게 튀어올라 착지 */   /* v20.45 경완: 탑 쌓기 맨 처음 실행할 때도 하늘 화면 먼저 안 보이게·게임 파일 미리 받기, 앱 다녀오면 소리 다시 만들기, 아슬아슬 덤 점수 표시, 큰 포켓몬 35% → 22% */   /* v20.44 경완: 운영자 모드 '튜토리얼 시험' — 강박사 훈련장(노력치 설명)·트레이너 메뉴 튜토리얼 시안을 체육관 시뮬에서 (나가면 되돌림) */   /* v20.43 경완: 탑 쌓기에 어써러셔 추가 */   /* v20.42 경완: 탑 쌓기 큰 포켓몬 더 자주(약 35%) + 아주 큰 포켓몬 13종 추가(갸라도스·고래왕·밀로틱 등) */   /* v20.41 경완: 다이빙 — 물에 닿은 부분부터 사라지고, 물 위로 점프해 나와 착지 */   /* v20.40 경완: 탑 쌓기 중 앱 나가면 일시정지·곡 멈춤, 돌아오면 소리 다시 */   /* v20.39 경완: 탑 쌓기 시작할 때 하늘 화면 먼저 안 보이고 바로 시작 카드 */   /* v20.37 경완: 랭킹 포켓몬 박스에서 키 큰 그림(가라르 또도가스)이 잘리던 것 */   /* v20.30 경완: 나옹 열기구 동전 한 칸 더 낮춤 */   /* v20.28 경완: 나옹 열기구 동전을 머리 쪽으로 낮춰 이음새 기둥 없앰 */   /* v20.27 경완: 나옹 열기구 동전을 사진처럼 머리 위에 얹힌 둥근 동전으로, 체육관 아이콘 R 딱지 상하좌우 여백 같게(12×12) */   /* v20.25 경완: 나옹 열기구 이마 동전이 떠 보이던 것 → 머리에 붙은 작은 혹, 바구니에 로켓단 셋(긴 머리·나옹·앞머리) 그림자 */   /* v20.24 경완: 로켓단 점거 중 필드 하늘에 나옹 열기구 실루엣 (한자리 둥실, 밤엔 검정 + R 불빛) */   /* v20.23 경완: 탑 쌓기 점수 10배 → 4배 (기준·예전 기록도 4배에 맞춤), 베타 탑 쌓기 기록은 랭킹 서버에 안 올림 */   /* v20.22 경완: 탑 쌓기 점수 10배 (골드·친밀도·선물·미션 기준도 10배, 예전 기록도 10배) */   /* v20.21 경완: 미니게임 기록별 선물 가운데 세 칸(알 뽑기권 포함) 싼 것부터 낮은 점수에 */   /* v20.20 경완: 의상 상세카드에 의상별 설명, 들어가는 곳 문구는 옅게 가운데 */   /* v20.19 경완: 상점 음악 탭 아래 박스로 되돌림, 상점 그림 미리 읽기, 의상 상세카드 = 상점 카드 틀, 박스·도감 타입 필터 = 알 뽑기 순서 */   /* v20.18 경완: 꾸미기 포켓몬 박스·도감 타입 고르기 창 색 네모 → 타입 아이콘 */   /* v20.15 경완: 탑 쌓기 무게 아래로·흔들림 줄이기 늘 켬, 꾹 눌러 돌리기는 양옆만, 가장자리에 걸쳐 놓을 때 처음 닿는 회전 흡수 */   /* v20.13 경완: 체육관 이벤트 1 로켓단 점거 배포 (평판 180, 다음 실행부터, 계정당 한 번) */   /* v20.12 경완: 이벤트 필드 박물관 등 문 칸에 선 사람 머리가 문틀 위로 튀어나오던 것 */   /* v20.11 경완: 탑 쌓기 베타 설정 버튼(운영자) — 시안 설정·물리 테스트 4개, 바꾼 판은 기록·보상 없음 */   /* v20.10 경완: 필드 시험 때 아이콘 누르는 순간 R 딱지가 떨어져 도전자 수가 보이던 것 → 체육관에서 나올 때 뗌 */   /* v20.09 경완: 운영자 모드 '필드에서부터 해 보기' — 필드 R 딱지·사이렌·아지트 곡부터, 아이콘 누르면 시험 이벤트 (본 계정 그대로) */   /* v20.08 경완 2번: 로켓단 점거 딱지 떠 있는 동안 필드 곡 = FR 로켓단 아지트(evMus), 해결되면 원래 필드 곡 */   /* v20.06 경완: 밤에 다른 포켓몬과 겹칠 때 몬스터볼 스프링 탄 포켓몬이 스프링 뒤로 가던 것 */   /* v20.03 경완: 주간 결산 트레이너 수익이 그 주에 잡히게 */ /* v20.02 경완: 미니게임 기록별 선물 가운데 칸 = 알 뽑기권(타입 무작위) 고정, 기록창 랭킹 칸 눌러도 안 넘어감, 탑 쌓기 미리 띄우기·아슬아슬 0.7초 뒤 판정 */   /* v19.89 경완: 탑 쌓기 시작 때 튕김·하트 자리·아슬아슬 판정·옆 꾹 = 돌리기·기술 버튼 왼쪽·썸네일 구름 */   /* v19.84 경완: 탑 쌓기 랭킹·미션, 아슬아슬 점수, 버튼 자리, 길동무 바로, 밤하늘 썸네일, 곡 바로 */   /* v19.78 경완: 세 번째 미니게임 포켓몬 탑 쌓기 (베타·운영자만) — 보상 기준은 시뮬로, 다른 미니게임과 같은 카드·상세창·기록창 */   /* v19.73 경완: 꾸미기 상세카드 기술 칸 높이 = 진화하기 박스, 눌러서 써보기 없앰 */   /* v19.66 경완: 미니게임 선물에 덤불·열매나무 안 나옴, 의상 가끔, 열매나무·바람개비 가격 바꿈(작업실 데이터) */   /* v19.65 경완: 상점 추천 없음 문구 가운데·'해당 필터에', 추천 바로 뜨게 */ /* v19.63 경완: 훈련장 슬롯 크기 같게·데려오기 → ✕·슬롯 상세카드 = 훈련 상세카드 */ /* v19.62 경완: 미니게임 기록별 선물 가운데 세 칸은 게임끼리 안 겹침 */   /* v19.59 경완: 새 기술 창에 레벨업 기술 다시, 훈련 양은 하루 8시간 몫 그대로, 훈련 시간 표시 뺌 */ /* v19.58 경완: 체육관 상점 기술머신(계속 사용)·기술레코드(1회용) 딱지 안내, 사기 창 기술 칸 안에 설명(진한 글자)·라인업에서 배울 수 있는 포켓몬 */   /* v19.57 경완: 체육관 훈련 쉬는 시간 없이 계속, 알 기술 1/168, 새 기술 창은 특별한 기술만 */ /* v19.55 경완: 새 기술 알림창 원래대로, 훈련 현황 새 기술 창에 특별한 기술 줄 실루엣 */ /* v19.53 경완: 예전 특별한 기술 지움 + 알 기술 4칸 실루엣이 배울 때마다 열림 */ /* v19.51 경완: 훈련장 특별한 기술 = 포켓로그 알 기술, 일주일에 1개쯤 */ /* v19.49 경완: 열여덟 번째 전설 = 안내원이 막아서고 같이 전당 가서 안내원도 등록 */ /* v19.48 경완: 미니게임 점수판 딱지는 게임 이름 말고 '점수' (모든 미니게임) */   /* v19.47 경완: 전설 체육관 4~18번째 대사, 18번째 엔딩 */ /* v19.45 경완: 두 번째 전설 체육관부터 강박사·안내원 대사 바뀜 */ /* v19.42 경완: 진화구슬 키우기 점수판에 골드·점수 (장애물 넘기처럼, 앞으로 모든 미니게임) */   /* v19.41 경완: 전설 알 새 연출(명예의 전당 웅장하게·울음소리·전설 알 알림창·보상창 전설 알 줄·안내원 자리) */ /* v19.39 경완: 비 온 뒤 털기 — 물방울 나오는 동안 털기 동작 계속 */   /* v19.38 경완: 전설 리본 가운데 무지개, 승급 보상 딩동 뺌, 배경 곡 크기 맞춤 */ /* v19.37 경완 '털 때 나오는 게 물방울이 아니라 눈동자 같어': 흰 동그라미+가운데 점 → 파란 물방울 모양(.pt.wdrop), 땀방울 안 💧 글자 뺌 */   /* v19.36 경완: 찌릿 장난 전기 효과 크게 — 번개 줄기·노란 빛·맞은 쪽 하얗게 번쩍·찌직 소리 */   /* v19.35 경완 '고쳐줘': 장면 효과 타이머 every(sc,'p') 가 장면 파라미터 sc.p 를 덮어써 효과가 안 뜨던 것 → 'pp' (뿜기 물·불·가루, 디아루가·펄기아 빛, 라티 듀오, 뮤츠·뮤, 자석, 따라 하기, 띄우기, 치료) */   /* v19.34 경완: 체육관 알림창 효과음 = 업데이트 알림창 소리 */ /* v19.33 경완: 필드 상호작용 7개 — 술래잡기하다 넘어짐, 같이 낮잠·깨우기, 비 온 뒤 털기, 하늘 놀이(빙글빙글), 핥기(혀가 닿게), 찌릿, 방귀 (그 동작 그림 있는 포켓몬만) */   /* v19.32 경완: 로켓단 점거 체육관에서 사람들이 R 상자·깃발 칸을 밟고 지나가며 R 글자 밑으로 걸어오던 것 → 그 칸은 피해 감 */   /* v19.31 경완: 몬스터볼 스프링(밀기 동작 있는 타는 소품)에 누가 타면 가끔 둘레 포켓몬이 와서 밀어 줌 */   /* v19.30 경완: 승급 연출 전엔 리본도 예전 등급 색, 블루시티 안내원이 문 줄(밖처럼 보임) → 한 칸 위 */ /* v19.29 경완: 로켓단 이벤트 — 같이 다닐 포켓몬 고르기·넣어 두기, 첫 등장 울음소리·대사, 부탁 창은 장애물에 말 걸 때, 다시 말 걸면 힌트, 주운 것 가운데 창(상점 그림+효과), 콩이 모자, 건물 안 사람 보임, 달리기 단추 A 왼쪽, A 로 안 끊김, 지붕 밑 가려짐, 길막 대사 (운영자 시험) */   /* v19.26 경완: 체육관 주간 보고서는 월요일 오전 6시부터 뜸, 옛 보고서는 안 띄움 */   /* v19.25 경완 '암해머는 원래꺼가 맞아': 암해머 효과 자리 되돌림 */
 $('#appVer').textContent = 'v' + APP_VER + (IS_BETA ? ' 베타' : '');   // 데이터 버전(작업실 배포)은 설정을 불러온 뒤 덧붙인다
 const setEl = $('#set');
 // 프로필 ↔ 설정 (톱니 아이콘으로 들어가고 ◀로 돌아온다)
@@ -8889,7 +9043,7 @@ const Visit = (() => {
       const q = this.ip?.at(); if (q) { const v = q.v; this.tx = v[0]; this.ty = v[1]; this.d = v[2]; this.f = v[3]; this.w = v[4] || (q.mv ? 1 : 0); if (Math.hypot(v[0] - this.x, v[1] - this.y) < 80) { this.x = v[0]; this.y = v[1]; } }
       const dx = this.tx - this.x, dy = this.ty - this.y, dd = Math.hypot(dx, dy);
       if (dd > 80) { this.x = this.tx; this.y = this.ty; } else if (dd > .3) { const k = Math.min(1, dt * 9); this.x += dx * k; this.y += dy * k; }
-      const walking = this.w || dd > 1.5;
+      const walking = this.w || dd > 1.5; if (walking) this.mvT = Date.now();   /* v27.48: 마지막으로 움직인 때 (휘슬 따라오기 10초) */
       this.pt += dt; if (walking && this.pt > .16) { this.pt = 0; this.ph = (this.ph + 1) % 4; } if (!walking) this.ph = 0;
       this.draw();
     }
@@ -8949,10 +9103,12 @@ const Visit = (() => {
   function follow() {
     for (const m of S.mons) {
       const F = m.follow; if (!F) continue;
+      if (F.vc) { F.until = Math.max(F.until, (F.tr.mvT || 0) + 5e3); if (F.until < Date.now() || !F.tr.el.isConnected || !S.mons.includes(m)) { m.follow = null; if (S.mons.includes(m) && awake(m)) { if (m.goal?.kind === 'follow') m.goal = null; emote(m, '♪', 'note', 1.4, 'follow-end'); anim(m, 'hop'); log(pick([`${J(m,'이/가')} 다시 신나게 뛰어놀러 간다.`, `${J(m,'은/는')} 심심해졌는지 친구들한테 놀러 간다.`]), [m]); m.vcQ = 0; } continue; } }   /* v27.48 경완 '움직임 없이 한 10초 지나면 다시 돌아다니면서 놀게끔' → v27.53 5초 */
       if (F.until < Date.now() || !F.tr.el.isConnected || !S.mons.includes(m)) { m.follow = null; if (S.mons.includes(m) && awake(m) && m.goal?.kind === 'follow') { emote(m, '♪', 'note', 1.4, 'follow-end'); m.goal = null; } continue; }
       if (!awake(m) || m.held || m.pin || m.evolving || m.washing || m.hidden || m.state === 'eat' || m.state === 'interact' || m.state === 'sleep' || petM?.m === m || T(m).mv === 'swim') continue;
       const tr = F.tr, d = Math.hypot(m.x - tr.x, m.y - tr.y);
-      if (d > 52 && (m.state === 'idle' || m.state === 'move')) { const side = m.x < tr.x ? -1 : 1; moveTo(m, { x: tr.x + side * 34, y: tr.y + 4 }, { kind: 'follow', tr }, d > 140 ? 1.6 : 1.3); }
+      if (F.vc && !F.arr) { if (d <= 56) { F.arr = 1; F.until = Math.max(F.until, Date.now() + 5e3); faceTo(m, tr.x); anim(m, 'hop'); emote(m, '♥', 'heart', 2.4, 'vc-heart'); } else if (Date.now() - (F.t0 || 0) < 9e3) F.until = Math.max(F.until, Date.now() + 1500); }   /* v27.53 경완 '휘슬 부르고 5초 이상 아무 동작 없으면 그냥 자유롭게 돌아다니게. 휘슬 부르고 내 곁에 오면 포켓몬 위에 하트 말풍선' */
+      if (d > 52 && (m.state === 'idle' || m.state === 'move')) { const side = m.x < tr.x ? -1 : 1; moveTo(m, { x: tr.x + side * 34, y: tr.y + 4 }, { kind: 'follow', tr }, F.vc ? (d > 90 ? 2 : 1.5) : d > 140 ? 1.6 : 1.3); }
     }
   }
   function nearMons() {
@@ -8962,7 +9118,7 @@ const Visit = (() => {
       if ((m.nearT || 0) > Date.now() || m.follow || m.hj || m.goal?.kind === 'hoop' || tr.rd || tr.ho || !monOk(m) || Math.hypot(m.x - tr.x, m.y - tr.y) > 44) continue;
       m.nearT = Date.now() + 9e3;
       faceTo(m, tr.x); anim(m, 'hop');
-      const r = pick(['♥', '♪', '!', '♥', '?']); emote(m, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 1.8, 'visit-near');
+      const r = m.vg && m.vg === tr.c ? pick(['♥', '♪']) : pick(['♥', '♪', '!', '♥', '?']); emote(m, r, r === '♥' ? 'heart' : r === '♪' ? 'note' : '', 1.8, 'visit-near');
       if (tr === me) monSay(m, r === '♥' ? `${J(m, '이/가')} ${nmP(myN(), '을', '를')} 반가워한다.` : r === '♪' ? `${J(m, '이/가')} ${myN()} 곁에서 신나게 깡충 뛰었다.` : r === '?' ? (VISIT ? `${J(m, '은/는')} ${nmP(myN(), '이', '가')} 누군지 고개를 갸웃한다.` : `${J(m, '이/가')} ${nmP(myN(), '을', '를')} 올려다보며 고개를 갸웃한다.`) : VISIT ? `${J(m, '이/가')} ${nmP(myN(), '을', '를')} 보고 깜짝 놀랐다.` : `${J(m, '이/가')} ${nmP(myN(), '을', '를')} 보고 반갑게 달려왔다.`);   // v16.00: 주인한테는 낯가림 말 대신
       if (m.state === 'move' && m.goal?.kind !== 'visit' && !VISIT) setState(m, 'idle', rnd(1.5, 3));
     }
@@ -8983,7 +9139,7 @@ const Visit = (() => {
       for (const tr of L) {
         if (tr.rd || tr.ho || Math.random() > .4) continue;
         const near = S.mons.filter(m => m.goal?.kind === 'visit' && m.goal.tr === tr).length; if (near >= 2) continue;
-        const ok = m => awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.hidden && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed', 'visit', 'hoop'].includes(m.goal?.kind) && !m.hj && T(m).mv !== 'swim' && petM?.m !== m && (m.vcT || 0) < Date.now();
+        const ok = m => awake(m) && !m.held && !m.pin && !m.evolving && !m.washing && !m.hidden && (m.state === 'idle' || m.state === 'move') && !['berry', 'feedb', 'greet', 'bed', 'visit', 'hoop'].includes(m.goal?.kind) && !m.hj && !m.follow && !(m.vg && m.vg === tr.c) && T(m).mv !== 'swim' && petM?.m !== m && (m.vcT || 0) < Date.now();
         const C = S.mons.filter(m => ok(m) && Math.hypot(m.x - tr.x, m.y - tr.y) < 190 && Math.hypot(m.x - tr.x, m.y - tr.y) > 50).sort((a, b) => Math.hypot(a.x - tr.x, a.y - tr.y) - Math.hypot(b.x - tr.x, b.y - tr.y));
         const m = C[Math.random() < .6 ? 0 : Math.floor(Math.random() * Math.min(3, C.length))]; if (!m) continue;
         m.vcT = Date.now() + 25e3;   // 같은 포켓몬은 25초에 한 번
@@ -9272,10 +9428,10 @@ const Visit = (() => {
 
   // 친구에게 보여 줄 내 필드: 저장(serialize)에서 필드 그림에 필요한 것만 (박스는 필드에 있는 포켓몬 것만)
   function snap() {
-    const o = serialize(), pids = new Set(o.mons.map(m => m.pid));
-    const keep = ['clock', 'base', 'rel', 'like', 'mons', 'berries', 'lockT', 'tree', 'lay', 'layAdd', 'fbag', 'fbagT', 'fx', 'bgm', 'bgmRand', 'tracks', 'trOff', 'tr', 'fit', 'fits', 'items'];
+    const o = serialize(), pids = new Set([...o.mons, ...Object.values(o.thF || {}).flatMap(t => t.mons || [])].map(m => m.pid));   /* v27.48: 다른 테마 필드 포켓몬도 (친구가 테마를 골라 봄) */
+    const keep = ['th', 'thF', 'clock', 'base', 'rel', 'like', 'mons', 'berries', 'lockT', 'tree', 'lay', 'layAdd', 'fbag', 'fbagT', 'fx', 'bgm', 'bgmRand', 'tracks', 'trOff', 'tr', 'fit', 'fits', 'items'];
     const d = { v: 1 }; for (const k of keep) if (o[k] !== undefined) d[k] = o[k];
-    d.box = (o.box || []).filter(P => pids.has(P.id)); d.unlocked = [...new Set(o.mons.map(m => m.sp))]; d.log = []; d.buds = []; d.eggs = []; d.bag = []; d.wx = wxNow();
+    d.box = (o.box || []).filter(P => pids.has(P.id)); d.unlocked = [...new Set(o.mons.map(m => m.sp))]; d.thL = hbOpen() ? ['m', 'h'] : ['m']; d.log = []; d.buds = []; d.eggs = []; d.bag = []; d.wx = wxNow();
     return JSON.stringify(d);
   }
   async function putField(force) {
@@ -9368,7 +9524,7 @@ const Visit = (() => {
   function ownMsg(m) {
     switch (m.t) {
       case 'hi': {
-        OWN.back = 5e3; OWN.ppl.clear(); for (const p of m.ppl || []) ownJoin(p, true);
+        OWN.back = 5e3; OWN.ppl.clear(); for (const p of m.ppl || []) ownJoin(p, true); for (const c of [...VC.keys()]) if (!OWN.ppl.has(c)) vcDrop(c, true);
         OWN.chat = m.chat || []; OWN.acts = m.acts || []; OWN.got = true; let seen = 0; try { seen = +localStorage.getItem('pk-vchat-seen') || 0; } catch (e) {}
         OWN.unread = bookOpen() ? 0 : [...OWN.chat, ...OWN.acts].filter(o => o.c !== frMe && o.at > seen).length;
         for (const a of m.pend || []) ownAct(a, true);
@@ -9376,8 +9532,8 @@ const Visit = (() => {
         if (bookOpen()) { bookDraw(); bookSeen(); } ownUi(); break;
       }
       case 'join': ownJoin(m.p); break;
-      case 'leave': { const p = OWN.ppl.get(m.c); OWN.ppl.delete(m.c); TR.get(m.c)?.remove(); TR.delete(m.c); if (p && !p.o) { clearTimeout(OWN.lv.get(m.c)); OWN.lv.set(m.c, setTimeout(() => { OWN.lv.delete(m.c); if (!OWN.ppl.has(m.c)) toast(`${esc(p.n)}${hasBat(p.n) ? '이' : '가'} 돌아갔어요`); }, 10e3)); } ownUi(); break; }   // v15.70: 잠깐 끊겼다 다시 들어오면 '돌아갔어요'·'놀러 왔어요' 안 띄움
-      case 'tr': { const p = OWN.ppl.get(m.c); if (!p || p.o) break; TR.get(m.c)?.set(m); break; }
+      case 'leave': { const p = OWN.ppl.get(m.c); vcDrop(m.c); OWN.ppl.delete(m.c); TR.get(m.c)?.remove(); TR.delete(m.c); if (p && !p.o) { clearTimeout(OWN.lv.get(m.c)); OWN.lv.set(m.c, setTimeout(() => { OWN.lv.delete(m.c); if (!OWN.ppl.has(m.c)) toast(`${esc(p.n)}${hasBat(p.n) ? '이' : '가'} 돌아갔어요`); }, 10e3)); } ownUi(); break; }   // v15.70: 잠깐 끊겼다 다시 들어오면 '돌아갔어요'·'놀러 왔어요' 안 띄움
+      case 'tr': { const p = OWN.ppl.get(m.c); if (!p || p.o) break; TR.get(m.c)?.set(m); vcMsg(m.c, m); break; }
       case 'chat': {
         OWN.chat.push(m); OWN.chat = OWN.chat.slice(-60);
         const mine = m.c === frMe; if (!mine) TR.get(m.c)?.say(m.m); else me?.say(m.m);
@@ -9393,7 +9549,7 @@ const Visit = (() => {
     const back = OWN.ppl.has(p.c) || OWN.lv.has(p.c); if (OWN.lv.has(p.c)) { clearTimeout(OWN.lv.get(p.c)); OWN.lv.delete(p.c); }
     OWN.ppl.set(p.c, p); if (p.o) return;
     if (!TR.has(p.c)) TR.set(p.c, new Trainer({ ...p, ...(p.p || {}), ...landSpot(), ...(p.p?.x != null ? { x: p.p.x, y: p.p.y } : {}) }));
-    if (p.p) TR.get(p.c).set(p.p);
+    if (p.p) { TR.get(p.c).set(p.p); vcMsg(p.c, p.p); }
     loopStart();
     if (!quiet && !back) { toast(`<b>${esc(p.n)}</b>${hasBat(p.n) ? '이' : '가'} 놀러 왔어요!`, 3500); try { sfx('newdex'); haptic(1); } catch (e) {} }
     OWN.sig = ''; OWN.bSig = ''; OWN.mSig = ''; OWN.wSig = ''; ownUi();
@@ -9433,17 +9589,19 @@ const Visit = (() => {
     } catch (e) { OWN.conn = null; OWN.fail = true; if (bookOpen()) bookDraw(); if (/모르는 요청|서로 친구|열지 않았/.test(e?.message || '')) { OWN.back = 30 * 60e3; return; }   // 서버가 아직 모르면(새 서버 전) 30분 뒤 5분마다 다시
       setTimeout(ownConnect, OWN.back); OWN.back = Math.min(5 * 60e3, OWN.back * 2); }
   }
-  function ownGone() { for (const [c, tr] of TR) if (tr !== me) tr.remove(); TR.clear(); OWN.ppl.clear(); ownUi(); }   // v15.70 경완: 연결이 잠깐 끊겨도 필드에 나가 있던 주인은 그대로 (다시 연결되면 자리 다시 보냄)
+  function ownGone() { for (const c of [...VC.keys()]) vcDrop(c, true); for (const [c, tr] of TR) if (tr !== me) tr.remove(); TR.clear(); OWN.ppl.clear(); ownUi(); }   // v15.70 경완: 연결이 잠깐 끊겨도 필드에 나가 있던 주인은 그대로 (다시 연결되면 자리 다시 보냄)
 
   // v15.72 경완: 친구가 오지 않아도 '필드에 나가기' — 관찰 일지를 펼친 창 우상단 버튼 (누르면 일지 닫고 나감, 나가면 위 '복귀')
   { const ob = qs('#btnOut'); if (ob) { if (VISIT) ob.remove(); else ob.addEventListener('click', e => { e.stopPropagation(); sfx('tap'); try { setLog(false); } catch (er) {} ownOut(true); }); } }
+  { const tb = qs('#btnTheme'); if (tb) { if (VISIT) tb.remove(); else tb.addEventListener('click', e => { e.stopPropagation(); thOpen(); }); } }   /* v27.48 */
   { const ob = qs('#btnOutF'); if (ob) { if (VISIT) ob.remove(); else ob.addEventListener('click', e => { e.stopPropagation(); sfx('tap'); try { closeMgr(); syncTabs(); } catch (er) {} ownOut(true); }); } }
   V.own = () => {
     if (VISIT || V.ownOn) return; V.ownOn = true;
     document.addEventListener('pointerdown', e => { const c = OWN.cb; if (c && !c.box.classList.contains('fold') && !e.target.closest('.vchat') && !c.ip.value.trim()) c.set(false); }, true);
     { const em0 = emote, an0 = anim, has = () => OWN.conn && [...OWN.ppl.values()].some(p => !p.o) && !document.hidden;   // 주인 화면의 말풍선·폴짝을 친구 화면에도
       emote = (m, ...a) => { const r = em0(m, ...a); if (m?.uid != null && has() && S.mons.includes(m)) OWN.fxq.push(['e', m.uid, ...a.slice(0, 4)]); return r; };
-      anim = (m, cls) => { const r = an0(m, cls); if (m?.uid != null && has() && S.mons.includes(m)) OWN.fxq.push(['a', m.uid, cls]); return r; }; }
+      anim = (m, cls) => { const r = an0(m, cls); if (m?.uid != null && has() && S.mons.includes(m)) OWN.fxq.push(['a', m.uid, cls]); return r; };
+      const lg0 = log; log = (html, who = [], big) => { const r = lg0(html, who, big); try { const u = (who || []).filter(m => m?.vg).map(m => m.uid); if (u.length && has() && !vcNoFwd) OWN.fxq.push(['l', String(html).slice(0, 400), u]); } catch (e) {} return r; }; }   /* v27.48 경완 '일지에도 반가워하는 내용': 데려온 포켓몬 이야기는 손님 화면(채팅창 줄·손님 일지)에도 */
     sendTr = () => { if (!OWN.conn) return; OWN.conn.send(me ? { t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: fitNow(), out: 1, j: me.jn || 0, r: me.rd ? rdR(me) : 0, h: me.ho ? 1 : 0, ts: Date.now() } : { t: 'tr', out: 0 }); };
     setInterval(ownTick, 100);
     setInterval(() => { if (!document.hidden) { putField(); if (!OWN.conn) ownConnect(); } }, 5 * 60e3);
@@ -9458,18 +9616,18 @@ const Visit = (() => {
   // 2) 손님 바깥: 놀러가기 창 (iframe)
   // =====================================================================
   let frame = null;
-  V.open = async code => {
+  V.open = async (code, th, pm) => {
     if (frame) return;
     if (!frH) throw new Error('앱에서만 놀러 갈 수 있어요');
     const [u, tk] = await Promise.all([base(), ticket(code)]);
     const box = el('div', 'vframe'); box.id = 'vFrame';
     const f = el('iframe'); f.setAttribute('title', '친구 필드'); f.setAttribute('allow', 'autoplay');
     const k = encodeURIComponent(fitNow() || '');
-    f.src = `${location.pathname.split('/').pop() || 'index.html'}?visit=${code}#t=${encodeURIComponent(tk.t)}&w=${encodeURIComponent(u)}&k=${k}&sx=${S.tr?.sex === 'f' ? 'f' : 'm'}&nm=${encodeURIComponent(S.tr?.n || '')}`;
+    f.src = `${location.pathname.split('/').pop() || 'index.html'}?visit=${code}#t=${encodeURIComponent(tk.t)}&w=${encodeURIComponent(u)}&k=${k}&sx=${S.tr?.sex === 'f' ? 'f' : 'm'}&nm=${encodeURIComponent(S.tr?.n || '')}${th ? '&th=' + th : ''}${pm ? '&pm=' + encodeURIComponent(JSON.stringify(pm)) : ''}`;
     let nm = '친구'; try { nm = (JSON.parse(localStorage.getItem('pk-fr-cards') || '{}')[code] || {}).n || nm; } catch (e) {}
-    try { gymLoad.show(`${String(nm).slice(0, 8)}의 필드로 가는 중`, '', false, 'field'); } catch (e) {}   // v15.08 경완: 체육관처럼 로딩 화면
+    try { gymLoad.show(`${String(nm).slice(0, 8)}의 ${th ? TH_NAME[th] + ' ' : ''}필드로 가는 중`, '', false, 'field'); } catch (e) {}   // v15.08 경완: 체육관처럼 로딩 화면
     box.classList.add('ld'); const t0 = Date.now();
-    box.append(f); document.body.append(box); frame = { box, f, code }; window.__inVisit = true;
+    box.append(f); document.body.append(box); frame = { box, f, code, pm: pm || null, nm, vl: 0 }; window.__inVisit = true;
     { const hb = () => { try { if (document.hidden) localStorage.removeItem('pk-vis'); else localStorage.setItem('pk-vis', JSON.stringify({ c: code, t: Date.now() })); } catch (e) {} }; hb(); frame.hb = setInterval(hb, 15e3); frame.vh = hb; document.addEventListener('visibilitychange', hb); window.addEventListener('pagehide', frame.ph = () => { try { localStorage.removeItem('pk-vis'); } catch (e) {} }); }   /* v25.45 경완 '놀러간 상태에서 껐다 켰는데 본인 필드로 돌아왔다가 자동으로 친구 필드로 가짐': 앱을 내리거나 끄면(화면 숨김) 표시를 지워, 메모리로 튕겼을 때만 다시 들어감 */   /* v21.63 경완 '놀러가 있다가 튕겨서 돌아옴': 앱 화면이 메모리 때문에 다시 켜져도 1분 안이면 같은 친구 필드로 다시 들어간다 */   // v15.31 경완: 놀러가 있는 동안 내 필드 곡은 다시 켜지지 않게 (앱 포커스·화면 돌아옴 때 bgmShow 가 켜서 겹쳐 들렸음)
     // v15.11 경완: 다 뜨면 바로 (최소 1.2초), 로딩 곡을 줄이고 내 필드 곡을 멈춘 뒤에 친구 필드 곡
     // v15.20 경완 '로딩이 중간에 뚝 끊김': 체육관처럼 로딩 곡·걷기가 끝까지 (최소 3초, 곡 끝나기 직전) 간 뒤에 친구 필드, 친구 필드 곡은 서서히
@@ -9480,10 +9638,11 @@ const Visit = (() => {
     setTimeout(() => frame?.shown?.(), 15e3);
     try { $('#rank').hidden = true; } catch (e) {}
     try { hideSheets(); } catch (e) {}
+    try { if (campMus.on || bgm.camp) { campMus.stop(.3); bgm.camp = null; } } catch (e) {}   /* v27.46: 놀러 갈 때 내 필드 모닥불 노래가 나오고 있었으면 끈다 */
     document.body.classList.add('visiting');
   };
   function closeFrame() {
-    if (!frame) return; const b = frame.box; clearInterval(frame.hb); if (frame.vh) document.removeEventListener('visibilitychange', frame.vh); if (frame.ph) window.removeEventListener('pagehide', frame.ph); try { localStorage.removeItem('pk-vis'); } catch (e) {} frame = null;
+    if (!frame) return; const b = frame.box; clearInterval(frame.hb); { const pm = frame.pm, m = pm && S.mons.find(x => x.uid === pm.ou); if (m) { try { log(`${J(m,'이/가')} ${esc(frame.nm || '친구')}의 필드에서 실컷 놀고 돌아왔다.`, [m]); save(); } catch (e) {} } }   /* v27.48 */ if (frame.vh) document.removeEventListener('visibilitychange', frame.vh); if (frame.ph) window.removeEventListener('pagehide', frame.ph); try { localStorage.removeItem('pk-vis'); } catch (e) {} frame = null;
     // v15.08 경완: 돌아갈 때도 체육관 퇴근처럼 로딩 화면 → 내 필드
     const t0 = Date.now(); try { b.querySelector('iframe').contentWindow?.postMessage({ visit: 'mute' }, location.origin); } catch (e) {}
     // v15.33 경완 '돌아가기 할 때 로딩 전에 잠깐 내 필드 보임': 친구 화면을 바로 숨기지 않고 로딩 화면 밑으로만 내려, 로딩이 다 덮은 뒤(.35초 페이드) 치움
@@ -9500,6 +9659,9 @@ const Visit = (() => {
     const d = e.data || {};
     if (d.visit === 'close') closeFrame();
     if (d.visit === 'shown') frame.shown?.();
+    if (d.visit === 'theme' && TH_NAME[d.th]) { const { code, box, pm } = frame; clearInterval(frame.hb); if (frame.vh) document.removeEventListener('visibilitychange', frame.vh); if (frame.ph) window.removeEventListener('pagehide', frame.ph); frame = null;   /* v27.48 경완 '다른 테마를 누르면 필드 넘어가는 로딩 중 화면 후 친구의 해당 테마 필드로' */
+      try { box.querySelector('iframe').contentWindow?.postMessage({ visit: 'mute' }, location.origin); } catch (er) {} box.style.zIndex = '9790'; V.open(code, d.th, pm).catch(() => {}); setTimeout(() => box.remove(), 700); }
+    if (d.visit === 'vlog' && frame.pm && typeof d.h === 'string' && frame.vl++ < 60) { const m = S.mons.find(x => x.uid === frame.pm.ou); try { log(`<span class="vlg">${esc(frame.nm || '친구')}의 필드</span> ` + d.h.slice(0, 400), m ? [m] : []); } catch (er) {} }   /* v27.48 경완 '일지에도 반가워하는 내용들': 데려간 포켓몬이 친구 필드에서 한 일을 내 일지에 */
     if (d.visit === 'ticket') { try { const tk = await ticket(frame.code); frame.f.contentWindow.postMessage({ visit: 'ticket', t: tk.t }, location.origin); } catch (er) { frame?.f.contentWindow.postMessage({ visit: 'ticket', err: er?.message || '연결 실패' }, location.origin); } }
   });
 
@@ -9556,13 +9718,19 @@ const Visit = (() => {
   addEventListener('message', e => { if (VISIT && e.origin === location.origin && e.data?.visit === 'go') G.bgmGo?.(); if (VISIT && e.origin === location.origin && e.data?.visit === 'mute') { G.bgmOk = true; window.__vBgmOk = false; window.__vMuted = true; try { bgmStop(); } catch (er) {} setTimeout(() => { try { const a = actx; actx = null; a?.close?.().catch(() => {}); } catch (er) {} }, 150); } });   // v15.35: 돌아갈 때 친구 화면의 오디오를 먼저 닫아 둠 (화면을 치울 때 앱 오디오가 흔들려 내 쪽 로딩 곡이 끊기거나 작아지던 것)
   addEventListener('message', e => { if (!VISIT || e.origin !== location.origin || e.data?.visit !== 'ticket') return; if (e.data.t) G.open(e.data.t); else status(e.data.err || '연결이 끊겼어요'); });
 
+  V.th = d => { G.oth = d?.th === 'h' ? 'h' : 'm'; G.thL = Array.isArray(d?.thL) ? d.thL.filter(k => TH_NAME[k]) : ['m']; const t = TH_NAME[HP.th] && G.thL.includes(HP.th) ? HP.th : G.oth; G.off = t !== G.oth; return t; };
+  V.live = () => VISIT && G.live;
+  function thBar() { if (!G.hud || (G.thL || []).length < 2) return; const b = el('div', 'vh-th', G.thL.map(k => `<button type="button" data-th="${k}" class="${k === THEME ? 'on' : ''}">${TH_NAME[k]}</button>`).join('')); G.hud.append(b);   /* v27.48 경완 '상단 박스 밑에 테마를 고를 수 있는 버튼' */
+    b.onclick = e => { const q = e.target.closest('[data-th]'); if (!q) return; e.stopPropagation(); sfx('tap'); if (q.dataset.th === THEME) return; G.gone = true; try { G.conn?.close(); } catch (er) {} parent.postMessage({ visit: 'theme', th: q.dataset.th }, location.origin); }; }
   V.ready = () => {
-    const m = G.hi; if (!m) return;
+    const m = G.hi; if (!m) return; thBar();
     G.me = m.me;
     me = new Trainer({ c: G.me, n: HP.nm || '나', sx: HP.sx, k: HP.k || '', me: true, ...landSpot() });
     me.d = 0;   // v15.31 경완: 처음 들어오면 뒷모습 말고 앞모습
-    sendTr = () => G.conn?.send({ t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: HP.k || '', out: 1, j: me.jn || 0, r: me.rd ? rdR(me) : 0, h: me.ho ? 1 : 0, ts: Date.now() });
+    sendTr = () => G.conn?.send({ t: 'tr', x: me.tx, y: me.ty, d: me.d, w: me.w, f: me.f, k: HP.k || '', out: 1, j: me.jn || 0, r: me.rd ? rdR(me) : 0, h: me.ho ? 1 : 0, pm: G.pm || 0, wh: me.wh || 0, ts: Date.now() });   /* v27.48: pm = 데려온 포켓몬, wh = 휘슬 분 횟수 */
     padMake().hidden = false; loopStart(); parent.postMessage({ visit: 'shown' }, location.origin);
+    try { const o = JSON.parse(HP.pm || 'null'); G.pm = o && DEX[o.s] ? { u: o.u | 0, s: o.s | 0, n: String(o.n || '').slice(0, 12), x: o.x === 'f' ? 'f' : o.x === 'm' ? 'm' : '', h: o.h ? 1 : 0 } : null; } catch (e) { G.pm = null; }   /* v27.48: 데려온 포켓몬 */
+    if (G.pm) { document.body.classList.add('vcOn'); me.wh = 0; vcSet(G.me, G.pm, true); }
     guestHi(m); sendTr();
     // v15.21 경완: 다시 들어오면 예전 채팅은 안 보이게 (방명록에는 남음)
     setInterval(stUpdate, 30e3);
@@ -9571,7 +9739,7 @@ const Visit = (() => {
     G.bgmGo = () => { if (G.bgmOk) return; G.bgmOk = true; window.__vBgmOk = true; bgm.fadeIn = 1.5; if (bgmOn) bgmStart(); }; setTimeout(G.bgmGo, 8000);   // v15.11: 부모 로딩 화면이 걷힌 뒤(go)에 곡 — 로딩 곡과 안 겹치게
   };
   function guestHi(m) {
-    for (const tr of TR.values()) tr.remove(); TR.clear(); G.ppl.clear();
+    for (const tr of TR.values()) tr.remove(); TR.clear(); G.ppl.clear(); for (const c of [...VC.keys()]) if (c !== G.me && !(m.ppl || []).some(p => p.c === c)) vcDrop(c, true);
     G.on = !!m.on; for (const p of m.ppl || []) guestJoin(p);
     G.live = false; stUpdate();
   }
@@ -9580,22 +9748,23 @@ const Visit = (() => {
     if (p.c === G.me) return;
     const show = !p.o || p.p?.out;
     if (show && !TR.has(p.c)) TR.set(p.c, new Trainer({ ...p, ...(p.p || {}), ...landSpot(), ...(p.p?.x != null ? { x: p.p.x, y: p.p.y } : {}) }));
+    if (!p.o && p.p) vcMsg(p.c, p.p);
   }
   function guestMsg(m) {
     switch (m.t) {
       case 'hi': guestHi(m); break;   // 다시 연결
       case 'join': guestJoin(m.p); if (!m.p.o) toast(`<b>${esc(m.p.n)}</b>${hasBat(m.p.n) ? '이' : '가'} 놀러 왔어요`); stUpdate(); break;
-      case 'leave': { const p = G.ppl.get(m.c); G.ppl.delete(m.c); TR.get(m.c)?.remove(); TR.delete(m.c); if (p?.o) G.owner = { ...p }; stUpdate(); break; }
+      case 'leave': { const p = G.ppl.get(m.c); vcDrop(m.c); G.ppl.delete(m.c); TR.get(m.c)?.remove(); TR.delete(m.c); if (p?.o) G.owner = { ...p }; stUpdate(); break; }
       case 'own': G.on = m.on; if (!m.on) { G.live = false; G.pup.clear(); G.ip.clear(); toast(`${esc(ownerName())}${hasBat(ownerName()) ? '이' : '가'} 필드를 떠났어요`); } else toast(`${esc(ownerName())}${hasBat(ownerName()) ? '이' : '가'} 필드에 왔어요!`); stUpdate(); break;
       case 'tr': {
         const p = G.ppl.get(m.c); if (!p) break;
         if (p.o) { p.p = m; if (m.out && !TR.has(m.c)) TR.set(m.c, new Trainer({ ...p, ...m })); if (!m.out) { TR.get(m.c)?.remove(); TR.delete(m.c); break; } }
-        TR.get(m.c)?.set(m); break;
+        TR.get(m.c)?.set(m); if (!p.o) vcMsg(m.c, m); break;
       }
       case 'chat': chatLine(G.chat.log, m, m.c === G.me); G.chat.seen(m, m.c === G.me); (m.c === G.me ? me : TR.get(m.c))?.say(m.m); if (m.c !== G.me) sfx('tick'); break;
-      case 'mons': { G.live = true; for (const r of m.L || []) { G.pup.set(r[0], r); let q = G.ip.get(r[0]); if (!q) G.ip.set(r[0], q = new Interp([0, 1, 9, 10])); q.push(m.ts, r.slice(1)); } break; }
-      case 'field': { G.fat = m.at; let d = null; try { d = JSON.parse(m.d); } catch (e) {} if (d?.mons) syncMons(d); stUpdate(); break; }
-      case 'ev': if (m.e?.w) guestWx(m.e.w); if (m.e?.b) syncBerries(m.e.b); if (m.e?.fx || m.e?.p) { const e = m.e; setTimeout(() => guestFx(e), IP_LAG); } break;
+      case 'mons': { if (G.off) break; G.live = true; for (const r of m.L || []) { G.pup.set(r[0], r); let q = G.ip.get(r[0]); if (!q) G.ip.set(r[0], q = new Interp([0, 1, 9, 10])); q.push(m.ts, r.slice(1)); } break; }
+      case 'field': { G.fat = m.at; let d = null; try { d = JSON.parse(m.d); } catch (e) {} if (d?.mons && !G.off && (d.th || 'm') === THEME) syncMons(d); stUpdate(); break; }
+      case 'ev': if (m.e?.w) guestWx(m.e.w); if (m.e?.b && !G.off) syncBerries(m.e.b); if ((m.e?.fx || m.e?.p) && !G.off) { const e = m.e; setTimeout(() => guestFx(e), IP_LAG); } break;
       case 'act': if (m.c !== G.me) { const mm = S.mons.find(x => x.uid === m.u); if (mm && (m.k === 'pet' || m.k === 'wash')) emote(mm, '♪', 'heart', 1.2, 'pet-done'); } break;
       case 'err': toast(esc(m.m)); break;
       case 'called': toast(m.r === 'sent' ? `${esc(ownerName())}에게 알림을 보냈어요` : m.r === 'wait' ? '방금 불렀어요. 조금 뒤에 다시 부를 수 있어요' : m.r === 'here' ? `${esc(ownerName())}${hasBat(ownerName()) ? '이' : '가'} 이미 필드에 있어요` : '지금은 부를 수 없어요'); break;
@@ -9604,13 +9773,13 @@ const Visit = (() => {
   // 주인 필드에 포켓몬이 들어오고 나가면 따라 한다
   async function syncMons(d) {
     const want = new Map(d.mons.map(o => [o.uid, o]));
-    for (const m of [...S.mons]) if (!want.has(m.uid)) { try { removeMon(m, true); } catch (e) {} }
+    for (const m of [...S.mons]) if (!want.has(m.uid) && !m.vg) { try { removeMon(m, true); } catch (e) {} }
     for (const P of d.box || []) if (!S.box.some(q => q.id === P.id)) S.box.push(P);
     for (const [uid, o] of want) if (!S.mons.some(m => m.uid === uid)) { try { const m = await spawn(o.sp, { ...o, quiet: true }); m.notes = o.notes || []; } catch (e) {} }
   }
   // v15.72: 주인 화면의 말풍선·폴짝·움직이는 소품을 보간 버퍼만큼 늦춰 같이
   function guestFx(e) {
-    for (const f of e.fx || []) { const m = S.mons.find(o => o.uid === f[1]); if (!m) continue; try { if (f[0] === 'e') emote(m, ...f.slice(2)); else if (f[0] === 'a') anim(m, f[2]); } catch (er) {} }
+    for (const f of e.fx || []) { if (f[0] === 'l') { vcGot(f[1], f[2]); continue; } const m = S.mons.find(o => o.uid === f[1]); if (!m) continue; try { if (f[0] === 'e') emote(m, ...f.slice(2)); else if (f[0] === 'a') anim(m, f[2]); } catch (er) {} }
     for (const [i, tf, or, mp, fl] of e.p || []) { const r = LAYOUT.sc?.[i], el = r && scGeo(r)?.el; if (!el) continue;
       el.style.transition = 'transform .1s linear'; el.style.transformOrigin = or; el.style.transform = tf; el.style.filter = fl;
       if (el.mpEl) { el.mpEl.style.transition = 'transform .1s linear'; el.mpEl.style.transform = mp; if (el.mbEl) { el.mbEl.style.transition = 'transform .1s linear'; el.mbEl.style.transform = mp; } } }
@@ -9630,6 +9799,7 @@ const Visit = (() => {
 
   // 손님 기기의 게임 함수를 감싼다: 주인이 있으면 포켓몬은 주인이 보낸 자리로, 내가 한 일은 주인에게
   function hooks() {
+    { const lg0 = log; log = (html, who = [], big) => { const r = lg0(html, who, big); try { const o = VC.get(G.me)?.m; if (o && who.includes(o) && !vcPup(o)) vcGot(html, [o.uid]); } catch (e) {} return r; }; }   /* v27.48: 주인이 없어 내 화면이 움직일 때 */
     const upd0 = update;
     update = (m, dt) => {
       const r = G.live && G.pup.get(m.uid);
@@ -9656,17 +9826,170 @@ const Visit = (() => {
       if (m.shEl && (m.shEl.style.translate !== V[13] || m.shEl.style.rotate !== V[14])) { m.shEl.style.translate = V[13]; m.shEl.style.rotate = V[14]; m.shF = null; } };
     const fn0 = feedNow;   // v15.73 경완 '열매 직접 줘도 잠 깨게': 정보창·배고픔 말풍선 열매도 주인에게 (예전엔 손님 화면에서만 먹음)
     const vFed = m => { m.vFed = performance.now(); if (m.hunger > FEED_BUB) m.hunger = FEED_BUB - 5; m.bubT = 0; if (m.bub?.classList.contains('feed')) m.bub.hidden = true; };   /* v21.64: 손님이 준 열매는 손님 화면 배고픔도 바로 내림 (예전엔 그대로라 말풍선이 계속 다시 뜸) */
-    feedNow = m => { G.conn?.send({ t: 'act', k: 'feed', u: m.uid }); if (G.live) { vFed(m); select(null); sfx('tap'); emote(m, '♥', 'heart', 1.6, ''); return; } G.noSend = true; try { fn0(m); } finally { G.noSend = false; } };
+    feedNow = m => { (G.off ? null : G.conn)?.send({ t: 'act', k: 'feed', u: m.uid }); if (G.live) { vFed(m); select(null); sfx('tap'); emote(m, '♥', 'heart', 1.6, ''); return; } G.noSend = true; try { fn0(m); } finally { G.noSend = false; } };
     const feed0 = feedOne;
-    feedOne = m => { G.conn?.send({ t: 'act', k: 'feed', u: m.uid }); if (G.live) { vFed(m); setTool('look'); sfx('tap'); emote(m, '♥', 'heart', 1.6, ''); return; } G.noSend = true; try { feed0(m); } finally { G.noSend = false; } };
+    feedOne = m => { (G.off ? null : G.conn)?.send({ t: 'act', k: 'feed', u: m.uid }); if (G.live) { vFed(m); setTool('look'); sfx('tap'); emote(m, '♥', 'heart', 1.6, ''); return; } G.noSend = true; try { feed0(m); } finally { G.noSend = false; } };
     const add0 = addBerry;
     addBerry = (x, y, natural, ...rest) => {
-      if (!natural && !G.noSend) { G.conn?.send({ t: 'act', k: 'berry', x, y }); if (G.live) { const b = add0(x, y, natural, ...rest); if (b) { b.vk = 1; b.pend = Date.now(); G.bp.push(b); } return b; } }   // v15.69 경완: 주인이 있을 때도 파장 대신 내 화면에 바로 열매가 떨어짐 — 주인이 보낸 열매가 오면 그걸로 이어받음
+      if (!natural && !G.noSend) { (G.off ? null : G.conn)?.send({ t: 'act', k: 'berry', x, y }); if (G.live) { const b = add0(x, y, natural, ...rest); if (b) { b.vk = 1; b.pend = Date.now(); G.bp.push(b); } return b; } }   // v15.69 경완: 주인이 있을 때도 파장 대신 내 화면에 바로 열매가 떨어짐 — 주인이 보낸 열매가 오면 그걸로 이어받음
       return add0(x, y, natural, ...rest);
     };
     const pet0 = petDone;
-    petDone = () => { const m = petM?.m, wash = petM?.wash; if (m) G.conn?.send({ t: 'act', k: wash ? 'wash' : 'pet', u: m.uid }); return pet0(); };
+    petDone = () => { const m = petM?.m, wash = petM?.wash; if (m) (G.off ? null : G.conn)?.send({ t: 'act', k: wash ? 'wash' : 'pet', u: m.uid }); return pet0(); };
   }
+
+  // =====================================================================
+  // v27.48 경완 '친구 필드 놀러갈 때 내 필드에 있는 포켓몬 중에 데려갈 포켓몬 고르는 창, 한 명만, 안 고르고 가는 것도 가능.
+  //   데리고 가면 나랑 그 포켓몬이 같이 친구 필드로 가고 친구 필드 포켓몬들이랑 반갑게 인사하고 놀면서 상호작용, 일지에도.
+  //   후프링 버튼 위에 휘슬 — 누르면 내 앞으로, 내가 움직이면 따라다니고 10초 가만히 있으면 다시 놀기. 놀러 온 포켓몬한테 하는 상호작용 여러 개' (베타)
+  //   데려온 포켓몬 = 주인 기기 S.mons 안의 임시 포켓몬(m.vg = 데려온 사람 코드, 저장·필드 칸 수엔 안 들어감). 주인이 있으면 주인 기기가 움직이고, 없으면 손님 기기가.
+  //   tr 에 pm {u 번호, s 종, n 이름, x 성별, h 이로치} · wh 휘슬 횟수 (서버 room.js 가 걸러 전함)
+  // =====================================================================
+  const VC = new Map();   // 사람 코드 → { s, u, m, wh }
+  let vcNoFwd = false;   // 주인 화면에만 남길 일지 (손님에게 안 보냄)
+  const vcUid = m => { let h = 2166136261; const t = (frMe || 'x') + ':' + m.uid; for (let i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 16777619); return 700000000 + (h >>> 0) % 100000000; };
+  const vcWho = c => (VISIT ? (c === G.me ? HP.nm : G.ppl.get(c)?.n) : OWN.ppl.get(c)?.n) || '친구';
+  const vcTrOf = c => VISIT && c === G.me ? me : TR.get(c);
+  const vcPup = m => VISIT && G.live && G.pup.has(m.uid);   // 주인 화면이 움직여 주는 중
+  function vcNear(tr, m) { const yB = yBottom(); for (const [dx, dy] of [[34, 8], [-34, 8], [0, 26], [46, -6], [-46, -6]]) { const x = clampN(tr.x + dx, XL + 24, XR - 24), y = clampN(tr.y + dy, MIN_Y, yB); if (landOk(x, y, yB) && !(pondWalk(m) && pondValM(m, x, y) < 1.1)) return { x, y }; } return null; }
+  async function vcSet(c, pm, mine) {
+    const o = VC.get(c);
+    if (!pm || !pm.s || !DEX[pm.s]) { if (o) vcDrop(c); return; }
+    if (o && o.s === pm.s && o.u === pm.u) return;
+    if (o) vcDrop(c, true);
+    const r = { s: pm.s, u: pm.u, m: null, wh: null }; VC.set(c, r);
+    const tr = vcTrOf(c), sw = DEX[pm.s].mv === 'swim', u0 = S.uid;
+    const q = tr && !sw ? vcNear(tr, { sp: pm.s, w: 40, h: 40 }) : null;
+    let m = null; try { m = await spawn(pm.s, { uid: pm.u, name: pm.n || '', sex: pm.x || '', quiet: true, hunger: 20, joy: 85, social: 70, clean: 100, ...(q || {}) }); } catch (e) {}
+    if (m) S.uid = Math.max(u0, ...S.mons.filter(x => !x.vg && x !== m).map(x => x.uid + 1));   // 손님 포켓몬 번호(7억~)로 내 다음 번호가 뛰지 않게
+    if (!m) { if (VC.get(c) === r) VC.delete(c); return; }
+    if (VC.get(c) !== r || (!mine && !VISIT && !OWN.ppl.has(c))) { removeMon(m, true); if (VC.get(c) === r) VC.delete(c); return; }   // 그 사이 나감
+    r.m = m; m.vg = c; m.notes = [];
+    if (pm.h) { m.el.classList.add('shiny'); m.el.style.setProperty('--shue', shinyHue(pm.s) + 'deg'); }
+    anim(m, 'appear'); m.vcAt = performance.now(); m.greetLog = 1;
+    const who = esc(vcWho(c));
+    if (!VISIT) { vcNoFwd = true; try { log(`${who}의 ${J(m,'이/가')} 같이 놀러 왔다! 필드 포켓몬들이 반갑게 맞이한다.`, [m], true); } finally { vcNoFwd = false; } setTimeout(() => vcCrowd(m), 900); }
+    else if (mine) { if (!vcPup(m)) { log(`${J(m,'이/가')} 같이 놀러 왔다! 필드 포켓몬들이 반갑게 맞이한다.`, [m]); setTimeout(() => { if (S.mons.includes(m) && !vcPup(m)) vcCrowd(m); }, 900); } else vcGot(`${J(m,'이/가')} 같이 놀러 왔다! 필드 포켓몬들이 반갑게 맞이한다.`, [m.uid]); }
+  }
+  // v27.53 경완 '포켓몬 데리고 필드 놀러가면 한 동안 친구 필드 포켓몬들이 내 포켓몬한테 관심 가지게 (처음엔 다 같이 관심 가지고 이후로는 돌아가면서)
+  //   내 포켓몬은 처음에 어색해하다가 나중에 같이 말풍선 띄워가면서 신나게 노는' — 도착하면 다 같이 둘러쌈 → 4분 동안 한 마리씩 돌아가며 놀자고 옴, 45초 뒤 어색함이 풀림
+  const vcFree = o => !o.vg && S.mons.includes(o) && awake(o) && !o.held && !o.pin && !o.evolving && !o.washing && !o.hidden && !o.szb && !o.follow && (o.state === 'idle' || o.state === 'move') && !['berry', 'feedb', 'greet', 'bed', 'hoop'].includes(o.goal?.kind) && T(o).mv !== 'swim' && !isFish(o.sp) && petM?.m !== o;
+  function vcCrowd(n) {
+    if (!S.mons.includes(n) || n.hidden || T(n).mv === 'swim' || isFish(n.sp)) return;
+    const C = S.mons.filter(vcFree).sort((a, b) => dist(a, n) - dist(b, n)).slice(0, 8), yB = yBottom();
+    if (!C.length) return;
+    C.forEach((m, i) => { const a = Math.PI * (.15 + .7 * (i / Math.max(1, C.length - 1))) * (i % 2 ? -1 : 1) + (i % 2 ? 0 : Math.PI), r = 46 + (i >> 2) * 22;
+      let x = clampN(n.x + Math.cos(a) * r, XL + 24, XR - 24), y = clampN(n.y + Math.sin(a) * r * .55 + 6, MIN_Y, yB); if (!landOk(x, y, yB)) { x = n.x + (m.x < n.x ? -40 : 40); y = n.y + 4; }
+      m.vcLast = performance.now();
+      setTimeout(() => { if (!vcFree(m) || !S.mons.includes(n)) return; emote(m, '!', '', 1, 'new-see'); moveTo(m, { x, y }, { kind: 'greet', mon: n }, 1.15); }, i * 260); });
+    setTimeout(() => { if (!S.mons.includes(n) || !awake(n)) return; emote(n, '…', '', 2.4, 'vc-shy'); anim(n, 'hop');
+      log(pick([`필드 포켓몬들이 우르르 몰려와 ${J(n,'을/를')} 둘러싼다! ${J(n,'은/는')} 아직 어색한지 쭈뼛쭈뼛한다.`, `모두 놀러 온 ${N(n)} 곁으로 모여든다. ${J(n,'은/는')} 낯선지 살짝 뒤로 물러선다.`]), [n]); }, 1400);
+  }
+  setInterval(() => {
+    if (document.hidden) return;
+    const now = performance.now();
+    for (const r of VC.values()) { const m = r.m; if (!m || !S.mons.includes(m) || vcPup(m) || (VISIT && G.live)) continue;
+      const age = now - (m.vcAt || now);
+      if (!m.vcEx && age >= 45e3) { m.vcEx = 1; if (awake(m) && !m.held) { anim(m, 'hop'); emote(m, '♪', 'note', 2.2, 'vc-fun'); log(pick([`${J(m,'은/는')} 이제 어색함이 다 풀렸는지 신이 나서 친구들과 어울린다!`, `${J(m,'이/가')} 금세 친해졌는지 꼬리를 흔들며 신나게 뛰어논다!`]), [m]); } }
+      if (m.vcEx && awake(m) && !m.follow && Math.random() < (m.state === 'interact' ? .45 : .12)) {   // 신날 땐 놀면서 말풍선을 자주
+        const o = m.state === 'interact' && m.partner && S.mons.includes(m.partner) && Math.random() < .4 ? m.partner : m, t = pick(['♪', '♫', '♥', '!', '신나!', '하하', '좋아!']);
+        emote(o, t, /♥/.test(t) ? 'heart' : /[♪♫]/.test(t) ? 'note' : '', 1.6, 'vc-fun'); if (o === m && m.state !== 'interact' && Math.random() < .5) anim(m, 'hop'); }
+      if (age < 12e3 || age > 240e3 || m.follow || (m.vcRot || 0) > now || !awake(m) || m.held || !sceneFree(m) || T(m).mv === 'swim' || isFish(m.sp) || m.land) continue;
+      const C = S.mons.filter(o => vcFree(o) && canMeet(o, m) && sceneFree(o)).sort((a, b) => (a.vcLast || 0) - (b.vcLast || 0) || dist(a, m) - dist(b, m));
+      if (!C.length) continue;
+      const h = C[0]; h.vcLast = now; m.vcRot = now + rnd(10e3, 16e3);
+      emote(h, '!', '', 1.2, 'vc-turn'); moveTo(h, m, { kind: 'meet', mon: m }, 1.15); }
+  }, 1000);
+  function vcDrop(c, quiet) {
+    const r = VC.get(c); VC.delete(c); const m = r?.m; if (!m || !S.mons.includes(m)) return;
+    if (!quiet && !VISIT) { log(`${esc(vcWho(c))}의 ${J(m,'이/가')} 친구들에게 인사하고 돌아갔다.`, [m]);
+      S.mons.filter(o => !o.vg && o !== m && awake(o) && !o.held && (o.state === 'idle' || o.state === 'move') && dist(o, m) < 220).slice(0, 3).forEach((o, i) => setTimeout(() => { if (!S.mons.includes(o)) return; faceTo(o, m.x); anim(o, 'hop'); emote(o, pick(['♪', '…♥', '♥']), 'heart', 1.8, 'vc-bye'); }, i * 160)); }   // 배웅: 둘레 포켓몬이 돌아보고 폴짝
+    m.follow = null; try { removeMon(m, true); } catch (e) {}
+  }
+  function vcMsg(c, p) {
+    if (!p || p.pm === undefined) return;   // 옛 서버·옛 앱 = 모름
+    vcSet(c, p.pm || null);
+    const r = VC.get(c); if (!r || p.wh == null) return;
+    if (r.wh != null && (p.wh | 0) !== r.wh && r.m && !vcPup(r.m)) vcCall(r.m, vcTrOf(c));
+    r.wh = p.wh | 0;
+  }
+  // 휘슬: 하던 걸 멈추고 내 앞으로 달려옴(곁에 오면 하트) → 따라다님 (follow, 5초 가만히 있으면 끝)
+  function vcCall(m, tr) {
+    if (!m || !tr || !S.mons.includes(m) || m.held || m.evolving) return;
+    if (T(m).mv === 'swim' || isFish(m.sp) || m.land) { faceTo(m, tr.x); emote(m, '♪', 'note', 1.6, 'vc-call'); return; }
+    if (m.partner) { const o = m.partner; m.partner = null; o.partner = null; o.scene = null; o.special = null; if (S.mons.includes(o) && ['interact', 'special'].includes(o.state)) { try { clearMotion(o); } catch (e) {} setState(o, 'idle', 1); } }
+    if (m.scp) try { scEnd(m); } catch (e) {}
+    if (m.state === 'sleep' || !awake(m)) wake(m, `${J(m,'이/가')} 휘슬 소리에 눈을 번쩍 떴다.`);
+    if (['interact', 'special'].includes(m.state) || m.goal) { m.goal = null; m.scene = null; m.special = null; try { clearMotion(m); } catch (e) {} setState(m, 'idle', .2); }
+    m.follow = { tr, until: Date.now() + 5e3, vc: 1, t0: Date.now() };
+    faceTo(m, tr.x); anim(m, 'hop'); emote(m, '!', '', 1.2, 'vc-call');
+    const yB = yBottom(), fx = clampN(tr.x + (m.x < tr.x ? -14 : 14), XL + 24, XR - 24), fy = clampN(tr.y + 24, MIN_Y, yB);
+    setTimeout(() => { if (S.mons.includes(m) && m.follow?.vc) moveTo(m, landOk(fx, fy, yB) ? { x: fx, y: fy } : { x: tr.x + 30, y: tr.y + 6 }, { kind: 'follow', tr }, 2); }, 260);
+    log(pick([`휘슬 소리에 ${J(m,'이/가')} 쪼르르 달려온다.`, `${J(m,'이/가')} 휘슬 소리를 듣고 하던 놀이를 멈추고 달려온다.`, `${J(m,'이/가')} 휘슬 소리에 귀를 쫑긋 세우고 달려온다.`]), [m]);
+  }
+  { const wb = qs('#btnWhistle'); if (wb) wb.addEventListener('click', e => { e.stopPropagation(); if (!VISIT || !me || !G.pm) return;
+    sfx('whistle'); try { haptic(0); } catch (er) {} wb.classList.remove('on'); void wb.offsetWidth; wb.classList.add('on'); clearTimeout(wb.t); wb.t = setTimeout(() => wb.classList.remove('on'), 380);
+    for (let i = 0; i < 3; i++) setTimeout(() => { try { particle(me.x + (me.f ? 14 : -14) + rnd(-6, 6), me.y - 62 - i * 4, 'note', pick(['♪', '♫'])); } catch (er) {} }, i * 120);
+    me.wh = ((me.wh || 0) + 1) % 1000; sendTr();
+    const r = VC.get(G.me); if (r?.m && !vcPup(r.m)) vcCall(r.m, me); }); }
+  // 주인이 보낸 일지 줄(또는 내 화면 일지) → 손님 채팅창에 한 줄 + 내 기기 일지에
+  function vcGot(html, uids) {
+    const o = VC.get(G.me)?.m; if (!VISIT || !o || !(uids || []).includes(o.uid)) return;
+    const ch = G.chat; if (ch) { const L = ch.log, li = el('div', 'vc-l act', `<span>${html}</span>`); L.append(li); while (L.children.length > 60) L.firstChild.remove(); L.scrollTop = L.scrollHeight; if (ch.box.classList.contains('fold')) ch.box.querySelector('.vc-pv').innerHTML = `<span class="act">${html}</span>`; }
+    try { parent.postMessage({ visit: 'vlog', h: String(html) }, location.origin); } catch (e) {}
+  }
+  // 데려온 포켓몬이 어울릴 상대 고르기 (think 에서): 1 = 휘슬로 따라오는 중이라 가만히, 포켓몬 = 만나러 감
+  V.vcThink = m => {
+    if (m.follow?.vc && awake(m) && !m.held) return 1;
+    if (VISIT && G.live) { if (m.vg) m.social = Math.min(m.social, 10); return null; }   // 주인 화면이 움직이는 포켓몬과는 내 화면에서 장면을 만들지 않음 (옛 주인 앱)
+    const now = performance.now(); if ((m.vcQ || 0) > now || !sceneFree(m) || T(m).mv === 'swim' || isFish(m.sp) || m.land) return null;
+    if (m.vg) { if (vcShy(m) || Math.random() > .8) return null; m.vcQ = now + rnd(3e3, 7e3);
+      const C = S.mons.filter(o => !o.vg && canMeet(m, o) && T(o).mv !== 'swim' && !isFish(o.sp)).sort((a, b) => dist(m, a) - dist(m, b)); return C.length ? C[Math.floor(Math.random() * Math.min(3, C.length))] : null; }
+    if (Math.random() > .3) return null; m.vcQ = now + rnd(15e3, 30e3);
+    const v = S.mons.filter(o => o.vg && !o.follow && canMeet(m, o) && T(o).mv !== 'swim' && !isFish(o.sp)); return v.length ? pick(v) : null;
+  };
+  // 놀러 온 포켓몬과의 장면 (h = 이 필드 포켓몬, v = 놀러 온 포켓몬). 경완 규칙: 문장마다 그대로 보이는 동작(mo)
+  V.vcScene = (h, v) => {
+    if (Math.random() > .9) return null;
+    const wk = q => T(q).mv !== 'swim' && !isFish(q.sp) && !q.land; if (!wk(h) || !wk(v)) return null;
+    const big = (h.w || 40) * (h.h || 40) >= (v.w || 40) * (v.h || 40) * 1.2, fl = q => winged(q) || T(q).mv === 'hover';
+    if (vcShy(v)) { const S2 = [   /* v27.53: 아직 어색한 동안 — 필드 포켓몬이 다가오고 놀러 온 포켓몬은 쭈뼛쭈뼛 */
+      [3, { key: 'v-shy-sniff', kind: 'play', mo: 'sniff', ea: '!', eb: '…', p: { t: ['킁킁', '…?'], spd: 1.1 }, text: () => `${J(h,'이/가')} 놀러 온 ${N(v)} 둘레를 킁킁 맴돈다. ${J(v,'은/는')} 아직 어색한지 쭈뼛쭈뼛한다.` }],
+      [3, { key: 'v-shy-side', kind: 'chat', mo: 'side', ea: '♪', eb: '…', p: {}, text: () => `${J(h,'이/가')} 쭈뼛거리는 ${N(v)} 옆에 살며시 앉아 말을 건다. ${J(v,'이/가')} 수줍게 고개를 끄덕인다.` }],
+      [2.5, { key: 'v-shy-guide', kind: 'care', mo: 'follow', ea: '♪', eb: '…', text: () => `${J(h,'이/가')} 어색해하는 ${N(v)}에게 앞장서서 필드를 보여 준다. ${J(v,'이/가')} 머뭇머뭇 뒤를 따라간다.` }],
+      [2.5, { key: 'v-shy-gift', kind: 'care', mo: 'feed', ea: '♥', eb: '…', p: { t: '●', cls: 'note' }, text: () => `${J(h,'이/가')} 낯설어하는 ${N(v)}에게 열매를 내민다. ${J(v,'이/가')} 조심스레 받아 든다.` }],
+    ]; let t2 = 0; for (const x of S2) t2 += x[0]; let r2 = Math.random() * t2; for (const [w, sc] of S2) { r2 -= w; if (r2 <= 0) return { ...sc, roles: [h, v] }; } return { ...S2[0][1], roles: [h, v] }; }
+    const L = [
+      [3, { key: 'v-sniff', kind: 'play', mo: 'sniff', ea: '!', eb: '♪', p: { t: ['킁킁', '반가워!', '♪'], spd: 1.4 }, text: () => pick([`${J(h,'이/가')} 놀러 온 ${N(v)} 둘레를 빙 돌며 킁킁 냄새를 맡는다. 반가운가 보다!`, `${J(h,'이/가')} 처음 보는 ${N(v)} 둘레를 맴돌며 킁킁 인사한다.`]) }],
+      [3, { key: 'v-guide', kind: 'care', mo: 'follow', ea: '♪', eb: '♪', text: () => pick([`${J(h,'이/가')} 놀러 온 ${N(v)}에게 필드 구경을 시켜 준다. ${J(v,'이/가')} 졸졸 따라다닌다.`, `${J(h,'이/가')} 앞장서서 ${N(v)}에게 필드 이곳저곳을 안내한다.`]) }],
+      [2.5, { key: 'v-gift', kind: 'care', mo: 'feed', ea: '♥', eb: '!', p: { t: '●', cls: 'note' }, text: () => pick([`${J(h,'이/가')} 아껴 둔 열매를 놀러 온 ${N(v)}에게 나눠 준다.`, `${J(h,'이/가')} 멀리서 온 ${N(v)}에게 환영의 열매를 건넨다. ${J(v,'이/가')} 맛있게 먹는다.`]) }],
+      [2.5, { key: 'v-dance', kind: 'play', mo: 'dance', ea: '♪', eb: '♪', p: { t: ['♪', '♫', '환영!'] }, text: () => `${J(h,'과/와')} 놀러 온 ${J(v,'이/가')} 반가움에 나란히 춤을 춘다.` }],
+      [2.5, { key: 'v-tag', kind: 'play', mo: 'tag', ea: '!', eb: '!', p: { t: ['잡았다!', '!'] }, text: () => `${J(h,'이/가')} 놀러 온 ${N(v)}에게 술래잡기를 하자고 조른다. 술래는 ${N(h)}!` }],
+      [2, { key: 'v-hug', kind: 'care', mo: 'hug', ea: '♥', eb: '♥', p: { hop: 1 }, text: () => pick([`${J(h,'이/가')} 놀러 온 ${J(v,'을/를')} 꼭 껴안으며 반긴다.`, `${J(h,'과/와')} ${J(v,'이/가')} 오랜 친구처럼 꼭 붙어 반가워한다.`]) }],
+      [2, { key: 'v-circle', kind: 'play', mo: 'circle', ea: '♪', eb: '♪', p: { t: ['♪', '♥'], cls: 'note', fly: fl(h) && fl(v) ? 1 : 0 }, text: () => `${J(h,'과/와')} 놀러 온 ${J(v,'이/가')} 신이 나서 서로 빙글빙글 돌며 뛰어논다.` }],
+      [2, { key: 'v-side', kind: 'chat', mo: 'side', ea: '♪', eb: '…♥', p: {}, text: () => pick([`${J(h,'이/가')} 놀러 온 ${N(v)} 옆에 나란히 앉아 이 필드 이야기를 들려준다.`, `${J(h,'과/와')} ${J(v,'이/가')} 나란히 앉아 도란도란 이야기를 나눈다.`]) }],
+    ];
+    if (big) L.push([2, { key: 'v-pat', kind: 'care', mo: 'pat', ea: '♥', eb: '♥', p: {}, text: () => `${J(h,'이/가')} 놀러 온 ${N(v)}의 머리를 쓰다듬으며 반겨 준다.` }]);
+    const last = (S.lastScene || {})[relKey(h, v)]; let tot = 0; for (const x of L) { if (x[1].key === last) x[0] *= .2; tot += x[0]; }
+    let r = Math.random() * tot; for (const [w, sc] of L) { r -= w; if (r <= 0) return { ...sc, roles: [h, v] }; }
+    return { ...L[0][1], roles: [h, v] };
+  };
+  // 손님 바깥(내 기기): 데려갈 포켓몬 고르기 → undefined 안 감(바깥 눌러 닫음) · null 혼자 · {…} 데려감
+  V.pick = () => new Promise(ok => {
+    const L = S.mons.filter(m => !m.vg && !m.hidden && DEX[m.sp]); if (!L.length) return ok(null);
+    let sel = null;
+    const box = frGPop(`<p class="vcp-t">같이 놀러 갈 포켓몬</p><p class="vcp-s">필드에 있는 포켓몬 중 한 마리만 데려갈 수 있어요</p><div class="vcp-g">${L.map(m => { const P = boxOf(m.pid); return `<button type="button" class="vcp-c" data-u="${m.uid}"><span class="ph${pkCls(P)}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="vcp-n">${esc(m.name)}</span></button>`; }).join('')}</div><button type="button" class="lk-btn main vcp-go" data-a="go" disabled>같이 가기</button><button type="button" class="lk-btn" data-a="solo">혼자 가기</button>`);
+    box.classList.add('vcp'); box.style.zIndex = 9900;
+    const go = box.querySelector('.vcp-go');
+    box.onclick = e => {
+      if (e.target === box) { sfx('tap'); box.remove(); return ok(undefined); }   // 직접 연 창: 바깥 누르면 닫힘 (안 감)
+      const c = e.target.closest('.vcp-c'); if (c) { sfx('tap'); const u = +c.dataset.u; sel = sel === u ? null : u; box.querySelectorAll('.vcp-c').forEach(b => b.classList.toggle('on', +b.dataset.u === sel)); const m = L.find(x => x.uid === sel); go.disabled = !m; go.innerHTML = m ? `${J(m, '과/와')} 같이 가기` : '같이 가기'; return; }
+      const b = e.target.closest('[data-a]'); if (!b || b.disabled) return; sfx('tap'); box.remove();
+      if (b.dataset.a === 'solo') return ok(null);
+      const m = L.find(x => x.uid === sel); if (!m) return ok(null);
+      ok({ u: vcUid(m), s: m.sp, n: String(m.name || '').slice(0, 12), x: sexOf(m) === 'f' ? 'f' : sexOf(m) === 'm' ? 'm' : '', h: boxOf(m.pid)?.shiny ? 1 : 0, ou: m.uid });
+    };
+  });
   V.hosting = () => !!OWN.conn && [...OWN.ppl.values()].some(p => !p.o);   /* v21.38: 손님이 와 있으면 창이 필드를 덮어도 포켓몬은 평소 속도로 움직임 (손님 화면 끊김) */
   return V;
 })();
@@ -9978,7 +10301,7 @@ function openTrView(c) {
     if (e.target.closest('[data-rename]')) { sfx('tap'); trNameEdit(); const ip = $('#itemPop'), mo = new MutationObserver(() => { if (ip.hidden) { mo.disconnect(); if (box.isConnected) openMyCard(); } }); mo.observe(ip, { attributes: true, attributeFilter: ['hidden'] }); return; }   // v12.33 경완: 카드에서도 연필로 이름 바꾸기
     if (e.target.closest('[data-unrep]')) { sfx('tap'); repSet(null); return openMyCard(); }   // v12.30 경완: 바꾸기 대신 빼기
     const gb = e.target.closest('[data-gift]'); if (gb) { sfx('tap'); box.remove(); return frGiftPick(gb.dataset.gift); }
-    const vb = e.target.closest('[data-visit]'); if (vb) { sfx('tap'); vb.disabled = true; Visit.open(vb.dataset.visit).then(() => box.remove()).catch(er => sayPop(er?.message || '놀러 가지 못했어요. 잠시 뒤 다시 해 주세요')).finally(() => { vb.disabled = false; }); return; }   // v14.99 경완: 친구 필드 놀러가기 (베타)   // v12.71 경완: 알 선물·체육관 도전은 친구 상세카드에서
+    const vb = e.target.closest('[data-visit]'); if (vb) { sfx('tap'); vb.disabled = true; Visit.pick().then(pm => pm === undefined ? 0 : Visit.open(vb.dataset.visit, null, pm).then(() => box.remove())).catch(er => sayPop(er?.message || '놀러 가지 못했어요. 잠시 뒤 다시 해 주세요')).finally(() => { vb.disabled = false; }); return; }   // v14.99 경완: 친구 필드 놀러가기 (베타)   // v12.71 경완: 알 선물·체육관 도전은 친구 상세카드에서
     const gy = e.target.closest('[data-gym]'); if (gy) { sfx('tap'); const F = frCards[gy.dataset.gym]; if (!F?.gym || !window.gymVisit) return; box.remove(); $('#rank').hidden = true; if (!setEl.hidden) { setPage(false); $('#closeSet').click(); } window.gymVisit(F, gy.dataset.gym); return; }
     const uf = e.target.closest('[data-unfr]'); if (uf) { sfx('tap'); if (!uf.classList.contains('sure')) { uf.classList.add('sure'); uf.textContent = '한 번 더 누르면 지워져요'; setTimeout(() => { if (uf.isConnected) { uf.classList.remove('sure'); uf.textContent = '친구 지우기'; } }, 3000); return; }
       S.friends = (S.friends || []).filter(x => x !== uf.dataset.unfr); (S.frReqDone ||= {})[uf.dataset.unfr] = Date.now(); save(); box.remove(); try { renderFriends(); if (!$('#rank').hidden) renderRank(); } catch (er) {} return; }
@@ -10836,7 +11159,7 @@ function meBgProps(on) { itemsEl.querySelectorAll('.prop.bgp').forEach(e => e.re
   for (const p of BGP) { const w = p.cv.width, h = p.cv.height, c = document.createElement('canvas'), g = c.getContext('2d'); c.width = w; c.height = h;
     g.drawImage(bg, p.l + BGOX, p.t, w, h, 0, 0, w, h); g.globalCompositeOperation = 'destination-in'; g.drawImage(p.cv, 0, 0);
     const e = document.createElement('div'); e.className = 'prop bgp ' + p.k; e.style.cssText = W2(c.toDataURL(), w * 2, h * 2) + `;left:${(p.l + w / 2) * 2}px;top:${(p.t + h) * 2}px`; e.style.setProperty('z-index', 0, 'important'); e.P = p; e.LV = p.v; itemsEl.prepend(e); } meFootAll(); }   /* 바탕 그림처럼 맨 아래 — 골라도 위의 꽃·나무를 덮지 않게 */
-function mapEditSet(on) { if (mapEdit === on) return; if (on && fme) fmeEnd(); if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
+function mapEditSet(on) { if (mapEdit === on) return; if (on && HB) { sayPop('항구 필드는 아직 소품을 놓거나 옮길 수 없어요.'); return; } if (on && fme) fmeEnd(); if (on) meHud = meHudSnap(); mapEdit = on; document.body.classList.toggle('mapEdit', on); for (const id of ['meBar', 'meTitle', 'meZone', 'meLayer']) $('#' + id).hidden = !on;
   if (on) { meFoldSet(true); meDock();   /* v13.42 경완: 들어가면 소품 리스트는 접힌 채로 */ mePick = null; meBagD = {}; meXLR = [XL, XR]; meSnap = meSnapshot(); meBgProps(true); meZoneDraw(); meRender(); } else { meSel(null); meBgProps(false); meSnap = null; meIcoRepaint(); } sfx(on ? 'open' : 'tap'); }
 // v13.46 경완 '맵 편집 취소했을 때 아이콘 원래 밝기로 안 돌아옴': 아이폰 사파리가 filter 를 뗀 뒤 다시 안 그리는 일이 있어 편집 아이콘을 한 번 새로 그리게 함
 function meIcoRepaint() { const b = $('#btnMapEdit'); if (!b) return; for (const e of [b, ...b.querySelectorAll('svg')]) { e.style.filter = 'none'; e.style.opacity = '.99'; } void b.offsetWidth; requestAnimationFrame(() => requestAnimationFrame(() => { for (const e of [b, ...b.querySelectorAll('svg')]) { e.style.filter = ''; e.style.opacity = ''; } })); }   /* v13.41: 화면 크기가 안 바뀌므로 resize 안 보냄 */
@@ -10953,7 +11276,7 @@ function fpMake(k, x, y) { if (k.startsWith('sc:')) { const id = k.slice(3); ret
 const layDrop = f => { let n = 0; for (const K of LAY_ARR) { const A = LAYOUT[K]; if (Array.isArray(A)) for (let i = A.length - 1; i >= 0; i--) if (f(A[i])) { A.splice(i, 1); n++; } } return n; };   // 목록은 제자리에서 고침 (PROPS 가 같은 배열을 봄)
 function layAddApply() { layDrop(v => v.pa);
   for (const [k, x, y] of S.layAdd || []) { const r = typeof k === 'string' && fpMake(k, x, y); if (!r) continue; r[1].pa = 1; (LAYOUT[r[0]] = LAYOUT[r[0]] || []).push(r[1]); } }
-function layApply() { layAddApply(); let n = (S.layAdd || []).length; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
+function layApply() { if (HB) return 0; layAddApply(); let n = (S.layAdd || []).length; for (const [key, q] of Object.entries(S.lay || {})) { const v = layObj(key); if (!v || !Array.isArray(q)) continue; const [x, y] = lvXY(v); if (x === q[0] && y === q[1]) { lvSet(v, q[2], q[3]); n++; } } return n; }
 function meSnapshot() { const m = new Map(); for (const k of LAY_ONE) m.set(LAYOUT[k], lvXY(LAYOUT[k])); for (const k of LAY_ARR) for (const v of LAYOUT[k] || []) m.set(v, lvXY(v)); return m; }
 function meSnapRestore(m) { let moved = false; for (const [v, [x, y]] of m) { const [a, b] = lvXY(v); if (a !== x || b !== y) { lvSet(v, x, y); moved = true; } } return moved; }
 function layKeep() { if (!meSnap) return; S.layAdd = []; for (const K of LAY_ARR) for (const v of LAYOUT[K] || []) if (v.pa && !meOut(v)) { const k = fpKeyOf(v); if (k) S.layAdd.push([k, ...lvXY(v)]); }
@@ -10967,7 +11290,7 @@ ibagEl.addEventListener('click', e => {
   if (e.target.closest('#ibagBar [data-mback]') && ibagMSel) { sfx('pickup'); S.trOff = S.trOff.filter(x => x !== ibagMSel); ibagMSel = null; save(); renderIBag(); renderBgmPick(); return; }
   { const f = e.target.closest('[data-fk]'); if (f) { sfx('tap'); if (ibagMul) { const k = f.dataset.fk; ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); $('#ibagMsg').textContent = ''; renderIBag(); return; } ibagFSel = ibagFSel === f.dataset.fk ? null : f.dataset.fk; renderIBag(); return; } }
   if (e.target.closest('#ibagBar [data-place]') && mapEdit) { const k = ibagFSel; ibagEl.hidden = true; ibagFSel = null; mePend = null; mePlaceNew(k); return; }   /* v14.50 경완: 맵 편집 '가방 전체보기'에서도 설명 카드 + 필드에 놓기 */
-  if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; mapEditSet(true); mePick = k; meRender();   /* v13.51 경완: 필드에 놓기 = 맵 편집 화면 가운데에 놓고 고른 채로 */
+  if (e.target.closest('#ibagBar [data-place]')) { const k = ibagFSel; ibagEl.hidden = true; if (HB) { mapEditSet(true); return; } mapEditSet(true); mePick = k; meRender();   /* v13.51 경완: 필드에 놓기 = 맵 편집 화면 가운데에 놓고 고른 채로 */
     requestAnimationFrame(() => { if (!mapEdit || mePick !== k) return; const bt = $('#meBar')?.getBoundingClientRect().top || innerHeight; mePlaceAt(innerWidth / 2, Math.min(innerHeight, bt) * .55, v => { mePick = null; meRender(); const el = [...itemsEl.querySelectorAll('.prop')].find(o => o.LV === v); if (el) meSel(el); }, true); }); return; }
   if (e.target.closest('#ibagMulti')) { ibagMul = !ibagMul; ibagPick.clear(); ibagSel = null; ibagFSel = null; $('#ibagMsg').textContent = ''; renderIBag(); return; }
   const v = e.target.closest('[data-it]'); if (v) { const k = v.dataset.it; ibagFresh.delete(k);   /* v7.56 경완: 한 번 누르면 빨간 점 사라짐 */ if (ibagMul) ibagPick.has(k) ? ibagPick.delete(k) : ibagPick.add(k); else ibagSel = ibagSel === k ? null : k; $('#ibagMsg').textContent = ''; renderIBag(); return; }
@@ -13223,7 +13546,7 @@ async function openCard(sp, dir = 0) {
   if (cardEvo) { act.textContent = '확인'; act.classList.remove('off'); return; }   // 짝꿍 고르기 중엔 자리를 늘 차지해 창 크기가 그대로
   if (!lock) {
     if (dexMode === 'buddy') { const bs = S.buds.some(b => b.sp === ownSp(sp)); act.textContent = bs ? '이미 짝꿍이에요' : '짝꿍으로 정하기'; act.classList.toggle('off', bs); }
-    else { const full = S.mons.length >= MAX_MONS, none = !dexPoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
+    else { const full = fMonsN() >= MAX_MONS, none = !dexPoke(sp); act.textContent = full ? `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})` : none ? '모두 필드에 나가 있어요' : '필드에 풀어놓기'; act.classList.toggle('off', full || none); }
   }
 }
 function cardStep(dir) { if (cardEvo) return; const list = cardList(), i = list.indexOf(cardSp), j = i + dir; if (j >= 0 && j < list.length) { sfx('tap'); openCard(list[j], dir); } }
@@ -13235,7 +13558,7 @@ $('#dpAct').onclick = async () => {
   if (cardEvo) { const a = $('#dpAct'); if (a.classList.contains('prs')) return; a.classList.add('prs'); setTimeout(() => { a.classList.remove('prs'); closeCard(); }, 160); return; }
   if (dexMode === 'buddy') { const o = ownSp(sp); if (S.buds.some(b => b.sp === o)) return; closeCard(); picked.clear(); picked.add(o); await setBuddySp(o); return; }   /* v21.21: 지역 도감 칸이면 가진 모습으로 */
   // 바로 필드에 풀어놓는다
-  const P = dexPoke(sp); if (S.mons.length >= MAX_MONS || !P) return;
+  const P = dexPoke(sp); if (fMonsN() >= MAX_MONS || !P) return;
   if (!(await yardAsk(P))) return;
   closeCard(); sheet.hidden = true;
   try { const m = await spawn(P.sp, { pid: P.id }); if (m) select(m); } catch (e) { log(`${SPECIES[sp].n}의 그림을 불러오지 못했다.`); }
@@ -13249,12 +13572,12 @@ function togglePick(sp) {
   if (dexLocked(sp)) { $('#dexCount').textContent = '아직 만나지 못한 포켓몬이다. 알을 부화시켜 만나 보자.'; return; }
   if (dexMode === 'buddy') { const on = picked.has(sp); picked.forEach(x => dexBtns[x].setAttribute('aria-pressed', 'false')); picked.clear(); if (!on) { picked.add(sp); dexBtns[sp].setAttribute('aria-pressed', 'true'); } updateDexCount(); return; }
   if (picked.has(sp)) picked.delete(sp);
-  else if (S.mons.length + picked.size < MAX_MONS) picked.add(sp);
+  else if (fMonsN() + picked.size < MAX_MONS) picked.add(sp);
   else { $('#dexCount').textContent = `필드가 꽉 찼어요 (${MAX_MONS}/${MAX_MONS})`; return; }
   dexBtns[sp].setAttribute('aria-pressed', picked.has(sp)); updateDexCount();
 }
 function updateDexCount() {
-  const free = MAX_MONS - S.mons.length - picked.size;
+  const free = MAX_MONS - fMonsN() - picked.size;
   if (dexMode === 'buddy') { const sp = [...picked][0]; $('#dexCount').textContent = sp ? SPECIES[sp].n : ''; $('#dexClear').hidden = true; $('#dexGo').hidden = !sp; $('#dexGo').textContent = '짝꿍으로 정하기'; return; }
   $('#dexCount').textContent = picked.size ? `${picked.size}마리 선택` : '';
   $('#dexGo').hidden = $('#dexClear').hidden = !picked.size; $('#dexGo').textContent = picked.size ? `${picked.size}마리 풀어놓기` : '풀어놓기';
@@ -13607,7 +13930,7 @@ function openPoke(id, dir = 0, quiet = false, noCry = false) {
     ; ppSlot();
   if (!NAB) nabLoad().then(() => { const e = $('#ppBody .pv-st'); if (e && pokeId === id) e.innerHTML = pvStats(P, true); });
   { const inp = $('#ppName'); inp.addEventListener('input', () => { inp.style.width = (Math.max(1, inp.value.length) + .15) + "em"; }); inp.addEventListener('change', () => renameBox(P, inp.value)); inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.blur(); }); }
-  const on = onField(P.id), full = S.mons.length >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
+  const on = onField(P.id), full = fMonsN() >= MAX_MONS, isBud = S.buds.some(b => b.pid === P.id);
   const pick = budPick != null || boxFromSlot;   /* 빈 짝꿍 칸·빈 필드 슬롯에서 왔으면 그 일 하는 버튼 하나만 */
   const rb = $('#ppFree'); rb.hidden = pick; if (freeArm !== id) { freeArm = null; rb.classList.remove('arm'); rb.textContent = '놓아주기'; }
   const fb = $('#ppField'); fb.hidden = budPick != null; fb.textContent = on ? (boxFromSlot ? '이미 필드에 있어요' : '필드에 나감') : full ? '필드 가득' : boxFromSlot ? '필드에 내보내기' : '필드로';   /* v6.00 경완: 아래 버튼은 도감·필드로·짝꿍으로 */ $('#ppDex').hidden = pick; fb.disabled = (!on && full) || (boxFromSlot && on); fb.classList.toggle('sunk', on && !boxFromSlot); fb.classList.toggle('off', boxFromSlot && on); fb.classList.remove('popout');
@@ -13709,7 +14032,7 @@ $('#ppField').onclick = async () => {
   const P = boxOf(pokeId); if (!P) return;
   const m = S.mons.find(x => x.pid === P.id);
   if (m) { if (boxFromSlot) return; sfx('tap'); removeMon(m); }   // 눌려 있던 버튼이 중간 모션 없이 바로 '필드에 내보내기'로
-  else if (S.mons.length < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; if (!(await yardAsk(P))) return; sfx('tap');
+  else if (fMonsN() < MAX_MONS) { const fb = $('#ppField'); if (fb.classList.contains('pressd') || fb.classList.contains('sunk')) return; if (!(await yardAsk(P))) return; sfx('tap');
     if (boxFromSlot) { fb.classList.add('pressd'); await wait(110); fb.classList.remove('pressd'); }   // 빈 슬롯에서 왔으면 바로 눌린 뒤 필드로
     else { fb.classList.add('sunk'); fb.textContent = '필드에 나감'; }   /* v4.39 경완: 부화 창 '필드로' 처럼 눌린 채 '필드에 나감' (다시 누르면 빼기) */   // 그림을 불러오는 동안 기다리지 않고 먼저 눌린 모양으로
     try { markNew(await spawn(P.sp, { pid: P.id })); } catch (e) {} if (boxFromSlot && S.mons.some(x => x.pid === P.id)) { refreshCap(); save(); closePoke(); setMgrTab('field'); return; } }
@@ -13741,7 +14064,7 @@ $('#openFld').onclick = () => menuTo(fldOpen, 'fld');   // 짝꿍 고르다 나�
 $('#closeMgr').onclick = closeMgr;
 // fill up to six free spots with random species from the dex
 $('#mgrRandom').onclick = async () => {
-  const btn = $('#mgrRandom'), free = MAX_MONS - S.mons.length, pool = S.box.filter(p => !onField(p.id) && !inYard(p.id));
+  const btn = $('#mgrRandom'), free = MAX_MONS - fMonsN(), pool = S.box.filter(p => !onField(p.id) && !inYard(p.id));
   const say = t => { btn.textContent = t; setTimeout(() => btn.textContent = '무작위 (테스트)', 2200); };
   if (!pool.length) return say('내보낼 포켓몬이 없어요');
   if (free <= 0) return say('필드가 꽉 찼어요');
@@ -13752,8 +14075,8 @@ $('#mgrRandom').onclick = async () => {
 mgr.addEventListener('click', e => { if (e.target === mgr) closeMgr(); });
 // 모두 빼기: 필드의 포켓몬을 전부 상자로 (한 번 더 눌러 확인)
 $('#mgrClear').onclick = () => {
-  if (!S.mons.length) return;
-  const n = S.mons.length; for (const m of [...S.mons]) removeMon(m, true); sfx('tap');
+  if (!fMonsN()) return;
+  const n = fMonsN(); for (const m of fMons()) removeMon(m, true); sfx('tap');
   mgrSel = null; log(`필드의 포켓몬 ${n}마리가 모두 포켓몬 박스로 돌아갔다.`); save(); refreshCap(); renderMgr(true);
 };
 function slotState(m) {
@@ -13775,14 +14098,14 @@ const GG = [['cl', GSVG('<path fill="#3a8ae8" d="M3 0h1v2h1v1h2v1H5v1H4v2H3V5H2V
 function renderMgr(force) { refreshCap();
   if (mgr.hidden) return;
   if (mgrSel && !S.mons.includes(mgrSel)) mgrSel = null;
-  $("#mgrCap").innerHTML = `<b>${S.mons.length}</b>/${MAX_MONS}`;
+  $("#mgrCap").innerHTML = `<b>${fMonsN()}</b>/${MAX_MONS}`;
   const isBud = m => m.pid && S.buds.some(b => b.pid === m.pid);
-  const key = S.mons.map(m => m.uid + ':' + m.name + ':' + sexOf(m) + ':' + m.form + (isBud(m) ? 'b' : '')).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
+  const FM = fMons(), key = FM.map(m => m.uid + ':' + m.name + ':' + sexOf(m) + ':' + m.form + (isBud(m) ? 'b' : '')).join(',') + '|' + (mgrSel ? mgrSel.uid : '');
   if (force || key !== mgrKey) {
     const focusUid = document.activeElement?.dataset?.uid;
     slotsEl.innerHTML = '';
     for (let i = 0; i < MAX_MONS; i++) {
-      const m = S.mons[i], b = document.createElement('button'); b.className = 'slot';
+      const m = FM[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
         b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}</span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}<span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="pk-tys sl-tys">${(m.pid != null && boxOf(m.pid)?.sp === m.sp ? pTy(boxOf(m.pid)) : SPECIES[m.sp]?.t || []).map(t => tyIcon(t).replace(/ data-tip="[^"]*"/, '')).join('')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
@@ -14052,7 +14375,7 @@ function toggleSleep(m) {
   else if (!m.hidden && m.state !== 'interact' && m.state !== 'special') { sleep(m, true); log(`${J(m,'을/를')} 토닥토닥 재웠다.`, [m]); }
   renderMgr();
 }
-function refreshCap() { $('#capBadge').textContent = `${S.mons.length}/${MAX_MONS}`; const rb = $('#mgrRandom'); if (rb && !rb.dataset.busy) rb.disabled = S.mons.length >= MAX_MONS; }   /* 필드가 꽉 차면 무작위 버튼을 끈다 */
+function refreshCap() { $('#capBadge').textContent = `${fMonsN()}/${MAX_MONS}`; const rb = $('#mgrRandom'); if (rb && !rb.dataset.busy) rb.disabled = fMonsN() >= MAX_MONS; }   /* 필드가 꽉 차면 무작위 버튼을 끈다 */
 
 // ---------- eggs, running and evolution ----------
 // Every species starts locked. Eggs (max 15, empty slots refill) hatch only from distance run: the lock-screen run, or a
@@ -14803,6 +15126,8 @@ function newPoke(sp, o = {}) {
   return p;
 }
 const boxOf = id => id == null ? null : S.box.find(p => p.id === id);
+const vcShy = m => !!m?.vg && performance.now() - (m.vcAt || 0) < 45e3;   /* v27.53 경완 '내 포켓몬은 처음에 어색해하다가 나중에 … 신나게' — 놀러 와서 45초는 어색 */
+const fMons = () => S.mons.filter(m => !m.vg), fMonsN = () => S.mons.reduce((n, m) => n + (m.vg ? 0 : 1), 0);   /* v27.48 경완 '친구 필드 놀러갈 때 데려갈 포켓몬 고르는 창, 한 명만, 안 고르고 가는 것도': 친구가 데려와 내 필드에서 노는 포켓몬(m.vg)은 내 필드 칸 수·목록·저장에 안 들어감 */
 // 성별: 상자 P.sex 'm'/'f', 성별 없는 종은 '' (종마다 본가 암수 비율 gr: 암컷 확률 gr/8, -1은 성별 없음)
 const rollSex = sp => { const g = SPECIES[sp]?.gr ?? 4; return g < 0 ? '' : Math.random() * 8 < g ? 'f' : 'm'; };
 const sexOf = m => (m.pid != null ? boxOf(m.pid)?.sex : m.sex) || '';
@@ -15079,6 +15404,7 @@ async function mgtRescue() { if (!S.mgtFix2 && bootOk) { S.mgtFix2 = 1; for (con
   } catch (e) { console.error(e); } }
 /* v26.62 경완 '응' (불꽃 타입 알에서 훌라훌라로 잘못 나온 춤추새 한 마리만 이글이글로): 11-17 00:20 알 뽑기 불꽃 알 3321 → 3412, 한 번만 */
 function fmFix1() { if (S.fmFix1) return; S.fmFix1 = 1; const P = (S.box || []).find(p => p.id === 3412 && p.sp === 741 && p.fm === 'Pa_U' && p.t === 1794842421818); if (P) { delete P.fm; try { save(); } catch (e) {} } }
+function plFix1() { if (S.plFix1) return; S.plFix1 = 1; let a = null; try { a = JSON.parse(localStorage.getItem('pk-acct') || 'null'); } catch (e) {} if (a?.id === 'flyweb') { const ids = new Set([3421, 3422, 3460, 3487, 3488, 3489, 3490, 3491, 3492, 3493, 3494, 3498, 3501, 3510, 3511]); for (const e of [...S.bag, ...S.eggs]) if (ids.has(e.id) && !e.place && !e.spN && !e.gc && !e.ev) e.place = '서울 마천동 천마풋살파크'; } }   /* v27.45 경완 '이미 생긴 15개는 천마풋살파크로 장소 찾아보고 넣어줘': v27.44 전에 장소 없이 주운 경완 알 15개(서버 저장에서 찾은 id)에 주운 곳을 한 번만 넣는다 (서울 송파구 성내천로29길 31 마천동, 속 포켓몬은 그대로) */
 function migrateBox() { const ids0 = new Set(S.box.map(p => p.id)); try { migrateBox0(); } finally { if (BOX_RS && !BOX_MIG) for (const p of S.box) if (!ids0.has(p.id)) boxRep(p); } }   /* v27.06: 불러온 저장에서 켤 때 고치기가 포켓몬을 새로 만들면 보고 */
 function migrateBox0() {
   for (const m of S.mons) if (m.pid == null || !boxOf(m.pid)) { const p = newPoke(m.sp, { shiny: false }); m.pid = p.id; }
@@ -15652,12 +15978,13 @@ function retCap(km) { const now = Date.now(), inR = RET && now - RET.t < RET_WIN
 const retWb = () => { const D = S.dorm; return RET && RET.away >= RET_AWAY && D && D.k === RET.seen && !D.sh && D.km >= 1 ? D : null; };
 window.pokeRunWalk = (km, place, tags, la, lo) => {
   place = cleanPlace(place); km = +km; if (!(km > 0 && km <= 200)) return false;
-  const ll = isFinite(la) && isFinite(lo) && la !== null && lo !== null && (+la || +lo) ? [+(+la).toFixed(5), +(+lo).toFixed(5)] : null;   // v5.18: 아이폰 앱이 걸은 곳 좌표도 보낸다 (출현 지역)
+  let ll = isFinite(la) && isFinite(lo) && la !== null && lo !== null && (+la || +lo) ? [+(+la).toFixed(5), +(+lo).toFixed(5)] : null;   // v5.18: 아이폰 앱이 걸은 곳 좌표도 보낸다 (출현 지역)
   S.walkSync = true; S.walkKm += km; today().walk += km; wkNow().km += km;
   // 걷는 동안 이미 쌓은 만큼은 빼고 나머지만 알·짝꿍에 (앱이 꺼져 있던 동안 걸은 거리 등)
   const rest = km - S.fedPend; S.fedPend = Math.max(0, S.fedPend - km); if (rest > .005) { const n = Date.now(); feedKm(rest); noteFed(n, n, rest); }
   { const raw = String(tags || '').split(','), ct = catThemes(raw.find(k => k.startsWith('cat:'))); tags = ct.length ? ct : raw.filter(k => THEMES[k]); }   // v5.67 경완: 카카오 세부 종류가 게임 테마 낱말에 맞으면 그걸로
   if (place) { S.lastPlace = { n: String(place), tags, t: Date.now() }; if (ll) S.lastPlace.ll = ll; notePlace(place, tags, Date.now(), ll); }
+  else { const lp = S.lastPlace; if (lp?.n && Date.now() - lp.t < 3 * 3600e3) { place = lp.n; tags = lp.tags || []; if (!ll && lp.ll) ll = lp.ll; } }   /* v27.44 경완 '왜 주운 곳 기록 없는 알이 있지? 애플워치로 주운 알인가?': 워치만으로 잰 거리(WatchWalk)·위치 이름 못 찾은 거리는 장소 없이 와서 '주운 곳 기록 없음' 알이 생김 → 3시간 안 마지막 장소로 (워치 운동 routePlace 와 같게) */
   const [ek, D] = retCap(km), got = ek > 0 ? collectEggs(ek, place || '', tags, null, ll) : []; if (D) D.n += got.length;
   gotLog(got, '', place || '');   // v4.14 경완: 걸으며 주운 알은 '걸어서 ~km' 없이
   save(); renderRun(); return true;
@@ -16251,11 +16578,11 @@ async function playHatch() {
   // 상태창 보기: 다른 화면으로 넘어가지 않고 도감 정보 칸만 개체값으로 바꿔 본다
   let ivm = false; look.onclick = () => { ivm = !ivm; look.textContent = ivm ? '도감 정보' : '상태창 보기'; showDexInfo(sp, P); if (ivm) showIvInfo({ P }); };
   // 필드에 빈 칸이 있으면 바로 내보낼 수 있다 (누르면 눌린 채로 남고, 포켓몬은 뒤에서 필드에 나온다)
-  const sb = $('#hatchSend'); let send = false; sb.hidden = S.mons.length >= MAX_MONS; sb.classList.remove('sunk'); sb.disabled = false; sb.textContent = '필드로';
+  const sb = $('#hatchSend'); let send = false; sb.hidden = fMonsN() >= MAX_MONS; sb.classList.remove('sunk'); sb.disabled = false; sb.textContent = '필드로';
   let sm = null, busy = false;   // 다시 누르면 필드에서 빼서 상자로 (토글)
   fastBtn(sb, async () => { if (busy) return;
     if (send) { const m = sm && S.mons.includes(sm) ? sm : S.mons.find(x => x.pid === P.id); if (m) removeMon(m, true); send = false; sm = null; sb.classList.remove('sunk'); sb.textContent = '필드로'; save(); refreshCap(); return; }
-    if (S.mons.length >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
+    if (fMonsN() >= MAX_MONS) return; send = true; busy = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
     try { sm = await spawn(sp, { pid: P.id }); sm.born = S.clock; markNew(sm); } finally { busy = false; } save(); refreshCap(); });
   ok.focus(); hatchLock();
   const how = await new Promise(r => { ok.onclick = () => r(); hatchEl.onclick = null; });   /* v5.16 경완: 두드리다 바깥을 눌러 정보를 못 보고 닫히지 않게, 확인으로만 닫는다 */
@@ -16388,7 +16715,7 @@ async function hatchAll(L) {
     strip.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', j === i));
     if (!q) strip.children[i]?.scrollIntoView({ block: 'nearest', inline: 'center' });
     fieldBtn.hidden = true; ok.textContent = i < res.length - 1 ? '다음' : '확인';   /* v8.56 경완: 모두 부화에서 뒤에 카드가 남아 있으면 확인 대신 '다음' */
-    { const on = onField(r.P.id); sb.hidden = !on && S.mons.length >= MAX_MONS; sb.disabled = false; sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; }   /* v4.45 경완: 모두 부화 카드마다 '필드로' (한 마리 부화와 같이 누르면 눌린 채, 다시 누르면 빼기) */
+    { const on = onField(r.P.id); sb.hidden = !on && fMonsN() >= MAX_MONS; sb.disabled = false; sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; }   /* v4.45 경완: 모두 부화 카드마다 '필드로' (한 마리 부화와 같이 누르면 눌린 채, 다시 누르면 빼기) */
     if (!q) playCry(r.sp, r.isNew ? 1.3 : .8);
   };
   $('#hlPrev').onclick = () => show(i - 1); $('#hlNext').onclick = () => show(i + 1);
@@ -16398,10 +16725,10 @@ async function hatchAll(L) {
   function slide(d, from = 0) { hw.style.transform = ''; hw.animate([{ transform: `translateX(${from || d * 90}px)`, opacity: .15 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.3,1)' }); }
   // 밀어서 넘기기는 포켓몬 정보 카드와 같은 cardPager (양옆 카드가 붙어 들어온다)
   hatchPg = { can: d => i + d >= 0 && i + d < res.length, snap: (d, w) => { const k = i; show(k + d, true); const g = w.cloneNode(true); show(k, true); return g; }, step: d => { sfx('tap'); show(i + d, false, true); } };
-  fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || S.mons.length >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
+  fieldBtn.onclick = async () => { const r = res[i]; if (onField(r.P.id) || fMonsN() >= MAX_MONS) return; fieldBtn.hidden = true; const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); save(); refreshCap(); show(i); };
   fastBtn(sb, async () => { if (sbBusy) return; const r = res[i], k = i;
     if (onField(r.P.id)) { const m = S.mons.find(x => x.pid === r.P.id); if (m) removeMon(m, true); r.sent = false; save(); refreshCap(); sb.classList.remove('sunk'); sb.textContent = '필드로'; return; }   /* 경완: 카드를 다시 그리면 스프라이트가 한 번 더 튕겨서 버튼만 바꾼다 */
-    if (S.mons.length >= MAX_MONS) return; sbBusy = true; r.sent = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
+    if (fMonsN() >= MAX_MONS) return; sbBusy = true; r.sent = true; sb.classList.add('sunk'); sb.textContent = '필드에 나감';
     try { const m = await spawn(r.sp, { pid: r.P.id }); m.born = S.clock; markNew(m); } finally { sbBusy = false; } save(); refreshCap(); if (i !== k) { const on = onField(res[i].P.id); sb.classList.toggle('sunk', on); sb.textContent = on ? '필드에 나감' : '필드로'; } });
   // 상태창 보기: 창을 떠나지 않고 도감 정보 칸만 개체값으로 바꿔 본다 (다시 누르면 도감 정보)
   ok.hidden = false; ok.textContent = '확인'; const look = $('#hatchLook'); look.hidden = false; look.textContent = '상태창 보기';
@@ -17186,6 +17513,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
   if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤
+  if (document.body.classList.contains('visiting') && !Visit.hosting?.()) { last = now; return; }   /* v27.47 경완 '친구 필드 놀러갔을 때 내 필드 끄는게 낫지 않아? 용량 너무 잡아 먹을 것 같은데': 놀러가 있는 동안 내 필드는 체육관에 있을 때처럼 멈춤 (손님이 내 필드를 보고 있을 때만 계속) */
   const host = cov && Visit.hosting?.();   /* v21.38: 손님이 보는 중이면 덮여 있어도 움직임·그림은 평소대로 (손님에게 보낼 모습) — 0.3~0.9초마다 뚝뚝 끊겨 보이던 것 */
   if (now - fLast < (cov && !host ? (now < fHold ? 900 : 300) : fGap()) && !drag && !petM) return; fLast = now;   /* v21.32 경완 '도감 필터 누르자마자 바로': 창이 덮은 동안엔 0.3초마다만, 화면을 누른 뒤 0.6초는 (길어도 0.9초에 한 번은) 쉬어서 누른 반응이 먼저 (시간은 그대로 흐름 — 덮인 동안 한 번에 1초까지) */
   const t0 = performance.now(); fTick = true; try { frameIn(now, cov && !host); } catch (e) { frameErr(e); } fTick = false; if (!cov) fCost += (performance.now() - t0 - fCost) * .05;
@@ -17240,6 +17568,7 @@ function scFill() { if (!Object.keys(LAYOUT.scArt || {}).length) return; (scFill
     const M = o.mv, same = G => Array.isArray(G) && G.length === A.px?.length && G.every((r, y) => r.length === A.px[y].length); if (!A.mv && M?.st && M?.mp && same(M.st) && same(M.mp)) { A.mv = M; n++; } }
   if (n && typeof itemsEl !== 'undefined' && itemsEl?.querySelector('.prop')) seaRedraw(); }); }   // 이미 그린 필드면 소품을 다시 그린다 (아직이면 처음 그릴 때 들어감)
 function setLayoutIn(L) {
+  HBZ.L = L;   /* v27.50 초원으로 돌아올 때 다시 얹음 */
   for (const k of ['pond', 'fire', 'bed', 'tree', 'perch', 'stump']) if (L[k]) { delete LAYOUT[k].lk; Object.assign(LAYOUT[k], L[k]); }
   LAYOUT.kinds = L.kinds && typeof L.kinds === 'object' ? JSON.parse(JSON.stringify(L.kinds)) : {};
   LAYOUT.scArt = L.scArt && typeof L.scArt === 'object' ? JSON.parse(JSON.stringify(L.scArt)) : {}; LAYOUT.sc = Array.isArray(L.sc) ? JSON.parse(JSON.stringify(L.sc)).filter(r => LAYOUT.scArt[r[0]]) : [];
@@ -17251,7 +17580,7 @@ function setLayoutIn(L) {
   if (L.nat) LAYOUT.nat = 1; else delete LAYOUT.nat;   // v8.77: 놓인 소품 밑에 자연 요소를 한 번 깔았음   // v3.70: 작업실에서 지운 소품 종류 (목록에서 숨김)
   if (typeof S !== 'undefined' && S.lay) layApply();   // v9.06: 작업실 배치를 새로 받아도 플레이어가 옮긴 자리는 다시 얹는다
   FLOWERS.splice(0, FLOWERS.length, ...ALLP('bed').flatMap(bedFlowers), ...LAYOUT.flowers);
-  uiIn(L);
+  uiIn(L); if (HB) hbLayout();
 }
 // v3.88 경완: 포켓몬 경계선(MIN_Y)과 날짜 박스·열매 버튼·골드 자리도 작업실 맵 편집에서 옮긴다 (LAYOUT.minY, LAYOUT.ui = {clock|berry|gold: [dx, dy]})
 const UI_EL = { clock: '#clock', berry: '.berrybar', gold: '#goldbar' };
@@ -17733,6 +18062,11 @@ async function bootRescue() {
 async function start(data) {
   applyCfg(await loadCfg());
   if (VISIT) data = await Visit.boot();   // 놀러가기 창: 친구 필드를 받아서 그걸로 시작
+  if (VISIT) { THEME = Visit.th(data); HB = THEME === 'h'; }   /* v27.48 경완 '친구가 놀러올 때도 기본적으로 설정한 테마의 필드로' */
+  const thIn = !VISIT && (() => { try { const v = sessionStorage.getItem('pk-thgo'); sessionStorage.removeItem('pk-thgo'); return !!v; } catch (e) { return false; } })();
+  if (thIn) try { gymLoad.show(`${TH_NAME[THEME]} 필드로 가는 중`, '', false, 'field'); } catch (e) {}
+  document.documentElement.classList.toggle('th-h', HB); if (HB) { await hbLoad(); hbLayout(); } thBtnPaint();
+  if (!VISIT) try { localStorage.setItem(TH_KEY, THEME); } catch (e) {}
   S.clock = realClock(); buildProps(); sky(); fxEl.append(selMark); drawBg(); addGlints(); fit(); requestAnimationFrame(() => document.documentElement.classList.add('ready'));
   let d = data && data.mons ? data : null;
   if (!d) { try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; } }
@@ -17749,9 +18083,10 @@ async function start(data) {
   try { if (!isNew && !introPrev && !saveFrozen && opAcct() && !localStorage.getItem('pk-gfix3') && !localStorage.getItem('pk-gym-sim')) { localStorage.setItem('pk-gfix3', '1'); S.gold = 5000; save(); } } catch (e) {}   /* v14.03 경완: flyweb 계정 골드 5,000 만 (한 번). 14.01~02 는 불러오기 전에 돌아 안 먹었음 */
   try { const g = S.gym; if (!isNew && !saveFrozen && g && !g.fxCut1 && (JSON.parse(localStorage.getItem('pk-acct') || 'null') || {}).id === 'flyweb' && !localStorage.getItem('pk-gym-sim')) { g.fxCut1 = 1; if ((g.l | 0) > 0 && (g.log || []).some(x => x[1] === 'lose' && /동현/.test(x[2]))) { g.stk = (g.stk | 0) + 8; g.rep = (g.rep || 0) + 1; g.l--; if (g.wk && g.wk.l > 0) g.wk.l--; g.log = g.log.filter(x => !(x[1] === 'lose' && /동현/.test(x[2]))); } save(); } } catch (e) {}   /* v15.26 경완 '되돌려줘': 그림자밟기 오류로 진 걸로 처리된 동현 배틀 되돌림 (연승 8, 평판 +1, 패 -1), 한 번 */
   if (layApply() + layPre) seaRedraw();   // v9.06 경완: 맵 편집에서 옮긴 자리
+  if (thIn) setTimeout(() => { try { gymLoad.hide(); } catch (e) {} if (HB && !S.mons.length) setTimeout(() => sayPop('항구 필드에 왔어요!\n필드 메뉴에서 이 필드에 내보낼 포켓몬을 골라 보세요.'), 700); }, 1200);
   if (bgmOn && bgm.id !== S.bgm) bgmStart();
   Object.keys(dexBtns).forEach(sp => lockDexBtn(+sp)); menuDots();
-  migrateBox(); fmFix1(); setTimeout(mgtRescue, 2500); setTimeout(mgtRescue2, 6000); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
+  migrateBox(); fmFix1(); plFix1(); setTimeout(mgtRescue, 2500); setTimeout(mgtRescue2, 6000); undoAutoHatch(); syncNeed(); renderGold(); if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) document.documentElement.classList.remove('bootBlk');
   if ((isNew && INTRO_ON()) || /[?&]intro/.test(location.search)) introFlow().then(() => tutFlow()).finally(() => { if (introPrev) { tutFreeze = false; setTimeout(() => location.replace(location.pathname), 1500); return; }   /* v8.04 경완: 운영자 '튜토리얼 미리 보기' — 끝나면 원래 저장으로 돌아감 (미리 보기 중엔 저장 안 함) */ if (tutFreeze) { tutFreeze = false; saveFrozen = false; save(); } }).then(() => notiSoon(300)); else notiSoon(700); sky(); fetchWx(false, 10 * 60e3); setInterval(fetchWx, 10 * 60e3); document.addEventListener('visibilitychange', () => { if (document.hidden) return;   /* v4.33 경완: 다시 켜면 시간·날씨를 바로 (서서히 바뀌는 연출 없이) */
     const c = document.documentElement.classList; c.add('boot'); S.clock = realClock(); skyKey = ''; sky(); requestAnimationFrame(() => requestAnimationFrame(() => c.remove('boot'))); fetchWx(false, 10 * 60e3); }); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('boot', 'boot-night')));
   if (!((isNew && INTRO_ON()) || /[?&]intro/.test(location.search))) acctGate(false).then(() => { locFirst(); return acctSync(); }).then(re => { if (!re) acctSend(); try { stGiftUndo(); } catch (e) {} });   setTimeout(() => { try { if (!saveFrozen && S.items) stGiftUndo(); } catch (e) {} }, 15000);   // v11.97 경완: 계정 없으면 먼저 만들어야 게임 진행
@@ -18200,7 +18535,7 @@ api.szLoad = async L => { for (const o of L || []) { if (!SZB.on) return; const 
     if (o.scId) { a = LAYOUT.scArt?.[o.scId]?.acts?.[o.ai]; p = P.find(q => q.k === 'sc' && LAYOUT.sc[q.i]?.[0] === o.scId); if (!a || !p) return 'none'; fitF = m => { try { return scFit(m, a.w || ''); } catch (e) { return false; } }; }
     else { const F = RX[o.r]; if (!F || !F[o.i]) return 'rain'; p = o.r === 'pond' ? (POND && POND.x > ME_OUT / 2 ? { k: 'pond', n: '연못', x: POND.x, y: POND.y, rx: POND.rx, ry: POND.ry } : null) : P.find(q => q.k === o.r); if (!p) return 'none';   /* 연못은 propSpots 에 없음 */ fitF = m => { try { return F.findIndex(f => f && f(m)) === o.i; } catch (e) { return false; } }; }
     let m = S.mons.filter(x => !x.held && !x.evolving && !x.hatching && fitF(x)).sort((u, v) => awake(v) - awake(u) || dist(u, p) - dist(v, p))[0];
-    if (!m) { if (S.mons.length >= MAX_MONS) return 'full:' + MAX_MONS;
+    if (!m) { if (fMonsN() >= MAX_MONS) return 'full:' + MAX_MONS;
       const L = Object.keys(SPECIES).map(Number).filter(sp => DEX[sp] && fitF({ sp, form: sp })); if (!L.length) return 'nosp';
       m = await spawn(pick(L), { x: clamp(p.x + rnd(-70, 70), XL + 16, XR - 16), y: clamp(p.y + rnd(24, 60), MIN_Y, MAX_Y) }); m.studio = true; save(); api.onMon?.({ uid: m.uid, sp: m.sp, name: m.name, wild: !m.pid }); await new Promise(r => setTimeout(r, 350)); }
     if (!awake(m)) wake(m); if (m.scp) scEnd(m); m.goal = null;
