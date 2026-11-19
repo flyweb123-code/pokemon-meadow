@@ -961,19 +961,23 @@ const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_tra
 /* v24.51 경완 '3,000에서 멈추게 해주고 3,000에 닿으면 필드에 아르세우스가 내려오는 스토리 연출 후 내 포켓몬 박스에 아르세우스': 전설의 체육관 평판 꼭대기 LEG_TOP.
    닿으면(계정에 한 번: 박스에 그 아르세우스가 있거나 어느 체육관이든 g.arc) 체육관에서 땅울림·안내원 → 필드로 나가 GA.arcScene (index/beta.html). test = 운영자 시뮬 버튼 (아무것도 안 남김) */
 const LEG_TOP = 3000;
-const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !tutSeen('arc') && !!GA.arcScene && !GA.arcGot?.() && !window.gymSimOn; };
+/* v27.43 경완 '평판 3,000 되면 아르세우스 강림하고 해당 타입 플레이트 받는 걸로 하자' + 카드 '체육관마다 플레이트 받기': 타입 체육관마다(g.arcP) 3,000 에 닿으면 강림 → 그 타입 플레이트 (창고 g.itm).
+   아르세우스는 계정에 처음 한 번만 박스로, 두 번째 체육관부터는 짧은 강림. 노말은 플레이트가 없어 ARC_NG 골드. 예전에 이미 아르세우스를 받은 체육관도 플레이트는 아직이라 다음 배틀 뒤에 짧은 강림으로 받음 */
+const PL_ST = ['', '', 'fistplate', 'skyplate', 'toxicplate', 'earthplate', 'stoneplate', 'insectplate', 'spookyplate', 'ironplate', 'flameplate', 'splashplate', 'meadowplate', 'zapplate', 'mindplate', 'icicleplate', 'dracoplate', 'dreadplate', 'pixieplate'], ARC_NG = 5000;
+const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !g.arcP && !!GA.arcScene && !window.gymSimOn; };
 async function arcGo(test) {
   const g = st(); if (busy || !open) return; busy = true; root.classList.add('busy'); const GW = '<span class="gy-who">안내원</span>';
+  const first = test ? test === 1 : !tutSeen('arc') && !GA.arcGot?.(), pid = PL_ST[g.ty] || '', pl = pid ? { id: pid, nm: GB()?.HOLD?.[pid]?.[0] || '플레이트', ty: TYPE_KO[g.ty] || '' } : null;
   /* v24.55 경완 '쿠구궁 할 때 테두리 빈틈으로 뒷 화면 안 보이게, 효과음도': 흔들 때 화면을 살짝 키워(1.05배) 가장자리가 안 드러나게 + 플래티넘 지진 소리. 아르세우스 연출은 개그 없이 */
   const quake = (k = 1) => { try { GA.rumble?.(2, 3); window.GymBGM?.se('DP_W089', { gain: .7 + .3 * k }); const a = 4 * k, F = [[0, 0], [-a, a / 2], [a, -a / 2], [-a * .7, -a / 3], [a * .8, a / 2], [-a / 2, a / 3], [a / 2, -a / 4], [0, 0]].map(([x, y], i, A) => ({ translate: `${x}px ${y}px`, scale: i && i < A.length - 1 ? '1.05' : '1' })); root.animate(F, { duration: 1300, easing: 'linear' }); } catch (e) {} };
   try { openTab(null); try { window.GymBGM?.stop(1.2); window.GymBGM?.sePrep?.(['DP_W089']); } catch (e) {}
     await talk(`<b>${esc(g.nm || '체육관')}</b>의 평판이<br><b>3,000</b>에 닿았다!`);
     await wait(500); quake(.8); dlg('<b>쿠구구구구…</b>'); await wait(1900); quake(1.25); dlg('<b>쿠구구구구구…!!</b>'); await wait(1900);
-    await talk(GW + '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!');
+    await talk(GW + (first ? '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 갈라지고 있어요!' : '관장님, 밖을 보세요!<br>필드 쪽 하늘이… 다시 갈라지고 있어요!'));
     await talk(GW + '어서 가 보세요.<br>체육관은 제가 지키고 있을게요.');
   } catch (e) { console.error(e); } finally { busy = false; root.classList.remove('busy'); }
-  await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0 });
-  if (ok && !test && S.gym) { S.gym.arc = 1; GA.save?.(); }
+  await exit('필드로 달려가는 중'); const ok = await GA.arcScene?.({ test: test ? 1 : 0, first: first ? 1 : 0, pl, gold: pl ? 0 : ARC_NG });
+  if (ok && !test && S.gym === g) { g.arcP = 1; if (first) g.arc = 1; if (pl) { g.itm = g.itm || {}; g.itm[pid] = (g.itm[pid] | 0) + 1; } else GA.addGold?.(ARC_NG, 'gym'); GA.save?.(); }
 }
 const repCap = g => { const nx = GRADES[(g.gmax | 0) + 1]; return nx ? nx[0] : LEG_TOP; };   // 승급 심사 전에는 문턱까지만 (v15.42: 문턱 바로 앞 → 문턱에 꽉 차게)
 const RIVAL_GYMS = ['무쇠시티 체육관', '영원시티 체육관', '베일시티 체육관', '늪지시티 체육관', '연고시티 체육관', '운하시티 체육관', '선단시티 체육관', '물가시티 체육관'];
@@ -3126,10 +3130,10 @@ function storePop() {
 // 체육관 시뮬레이터 (운영자, 경완 2026-10-28): 기다려야 볼 수 있는 것을 바로 불러 본다. 나오면 원래 체육관으로 되돌아간다 (beta.html gymSim)
 function simPop() {
   const g = st(); if (!g?.d) return say('체육관을 먼저 세워 주세요.');
-  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['arc', '평판 3,000 연출 (아르세우스)'], ['new', '처음 세우기부터']];
+  const B = [['cand1', '지원자 1명 부르기'], ['cand3', '지원자 3명 부르기'], ['chal', '도전자 부르기'], ['named', '이름 있는 도전자'], ['namedv', '이름 있는 재방문 팀'], ['rep+', '평판 +50'], ['rep-', '평판 -50'], ['gold', '골드 +10만'], ['bdg', '등급 배지 받기 연출'], ['arc', '평판 3,000 연출 (아르세우스)'], ['arc2', '평판 3,000 연출 (두 번째 체육관부터)'], ['new', '처음 세우기부터']];
   pop(`<h4>체육관 시뮬레이터</h4><p class="gy-msg">퇴근하면 들어오기 전 체육관으로 되돌아가요.</p><div class="gy-sim">${B.map(([a, n]) => `<button type="button" data-a="${a}">${n}</button>`).join('')}</div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, close) => {
     close(); if (a === 'x') return; const now = Date.now();
-    if (a === 'arc') return arcGo(1);   /* 운영자: 평판 3,000 연출만 (박스·저장 안 건드림) */
+    if (a === 'arc') return arcGo(1); if (a === 'arc2') return arcGo(2);   /* 운영자: 평판 3,000 연출만 (박스·저장 안 건드림) */
     if (a === 'cand1' || a === 'cand3') { for (let i = a === 'cand1' ? 1 : 3; i--;) g.cands.push(mkCand(now)); g.candSeen = 0; save(); menuDot(); return say(`지원자가 왔어요! (지원서 ${g.cands.length}장)`, '트레이너 메뉴 › 지원서'); }
     if (a === 'namedv') { NAMED.forEach(n => { g.nt[n.id] = { s: n.st.length + rndI(0, 3), n: 0 }; }); g.q = g.q.filter(c => !c.named); const c = pickNamed(myAvg(), now); if (!c) return say('올 수 있는 이름 있는 트레이너가 없어요.'); arrive(c); save(); homeSay(); return qDing(); }   // v23.31 본가 단계를 다 이긴 걸로 치고 재방문 팀 (시뮬 안이라 나오면 되돌아감)
     if (a === 'chal' || a === 'named') { let c = mkChal(now); if (a === 'named') { for (let i = 0; i < 30 && !c.named; i++) c = mkChal(now); } arrive(c); save(); homeSay(); return qDing(); }
