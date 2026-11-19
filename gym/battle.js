@@ -1465,9 +1465,16 @@ async function play() {
     if (!B.dbl && c2 && !c1 && r2.forceSwitch && btl.p2.active[0]?.fainted && /^switch/.test(c2)) { await shiftAsk(c2); if (!B) return; }
     idlePanel();
     if (B.picks) B.picks.push([btl.turn, c1 || '', c2 || '']);   // 배틀 기록: 이 턴에 관장이 고른 것·상대 AI 가 고른 것
+    if (B.dbl) { c1 = maxTg(btl, 'p1', c1); c2 = maxTg(btl, 'p2', c2); }
     if (c1 && c2) btl.makeChoices(c1, c2); else if (c1) btl.choose('p1', c1); else if (c2) btl.choose('p2', c2); else return;
   }
 }
+/* v27.40 경완 '지금 배틀 오류 계속 생기는데 왜 그런지 봐줘': 더블 배틀에서 다이맥스(·Z기술)하면 지진 같은 여럿 맞히는 기술도 한 마리만 맞히는 기술(다이맥스 기술)이 되어 대상이 꼭 있어야 하는데,
+   상대 AI·내 선택이 대상 없이 'move 2 dynamax' 를 보내 쇼다운이 'Earthquake needs a target' → 'Not all choices done' 으로 배틀이 멈췄다 (다이맥스한 다음 턴들도 같음). 대상이 빠졌으면 쓰러지지 않은 상대 중 체력 비율이 가장 낮은 쪽으로 채운다 */
+function maxTg(btl, sid, c) { if (!c || !/move/.test(c)) return c; const side = btl[sid], foe = btl[sid === 'p1' ? 'p2' : 'p1'], R = side.activeRequest;
+  return c.split(', ').map((p, k) => { const m = /^move (\d+)(?: (-?\d+))?((?: \w+)*)$/.exec(p); if (!m || m[2]) return p; const me = side.active[k], g = m[3] || '', id = R?.active?.[k]?.moves?.[+m[1] - 1]?.id; if (!me || !id) return p;
+    const md = PSim.Dex.moves.get(id); if (md.category === 'Status' || !(/dynamax|zmove/.test(g) || me.volatiles?.dynamax)) return p;
+    const L = foe.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted).sort((a, b) => a.q.hp / a.q.maxhp - b.q.hp / b.q.maxhp); return L.length ? `move ${m[1]} ${L[0].n}${g}` : p; }).join(', '); }
 // 교체 룰 (본가 기본): 상대가 쓰러진 포켓몬 대신 다음을 내보내기 전에 '포켓몬을 바꾸겠습니까?' (경완 2026-10-29). 바꾸면 내 쪽이 먼저 나온다
 async function shiftAsk(c2) {
   const btl = B.btl, me = btl.p1.active[0];
@@ -1526,7 +1533,7 @@ async function chooseD(req) {
     for (;;) {
       const a = await mainPanel(X); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
       if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { B.gkSel = null; i = await movePanel(req, k); if (i == null) break;
-          const tg = R.moves[i].target || PSim.Dex.moves.get(R.moves[i].id)?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
+          const md = PSim.Dex.moves.get(R.moves[i].id), mx = md?.category !== 'Status' && (/^(dynamax|zmove)$/.test(B.gkSel || '') || B.btl.p1.active[k]?.volatiles?.dynamax), tg = mx ? 'adjacentFoe' : R.moves[i].target || md?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
         if (i == null) { B.gkSel = null; continue; }
         { const g = B.gkSel; B.gkSel = null; B.gmBase[S2[k]] = R.moves[i]?.id; if (g) { B.gkTurn.push(g.replace(/^mega[xy]$/, 'mega')); if (!k) B.gkUsed = g; }   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': 고른 기믹을 그 자리 기술에 붙임 */
           ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '') + (g ? ' ' + g : '')); } break; }
