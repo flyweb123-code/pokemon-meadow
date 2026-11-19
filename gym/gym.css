@@ -4743,7 +4743,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .rs-stk2 .sk-ms{position:absolute;right:-2px;bottom:calc(100% + 4px);font-style:normal;font-size:13px;font-weight:800;line-height:1;padding:4px 8px;border-radius:8px;background:#ffd23a;color:#a8260e;white-space:nowrap;box-shadow:0 2px 0 #c8901a;transform:scale(0);transform-origin:70% 100%}
 #gym .rs-stk2.go .sk-ms{animation:skMsIn .45s cubic-bezier(.3,1.8,.5,1) .35s forwards}
 @keyframes skMsIn{0%{transform:translateY(6px) scale(0)}100%{transform:scale(1)}}
-#gym .rs-rep .rr-top{display:grid;grid-template-columns:1fr auto 1fr;column-gap:8px}#gym .rs-rep .rr-top>span{justify-self:end}#gym .rs-rep .rr-top>.rr-n{grid-column:2}   /* v27.23 경완 '기록창 평판 부분 평판 숫자가 가운데 오게끔': 평판 글자는 왼쪽 칸, 숫자는 가운데 칸 (+N 은 원래대로 숫자 옆에 붙음) */
+#gym .rs-rep .rr-top{display:flex;justify-content:center}#gym .rs-rep .rr-top>span{position:absolute;white-space:nowrap;right:calc(50% + 1.25em * 22 / 13 + 8px);bottom:1px}   /* v27.42 경완 '평판숫자 원래 보너스 숫자 나올 때 움직였다가 중간으로 돌아왔잖아 그거 되돌려주고 움직이기 전이랑 돌아왔을 때의 검정 숫자가 가운데 정렬': 흐름엔 숫자만(가운데), 평판 글자는 숫자 왼쪽에 붙임, +N 이 떠 있는 동안 숫자+N 묶음이 가운데로 오게 숫자가 비켜 갔다 돌아옴 (gym.js repAnim pin) */
 
 /* 경완 2026-11-19 '포켓몬 위에 오버레이 되는 타입 크리스탈': 테라스탈한 동안 머리 위 테라 보석 관 + 몸 위 반짝이 (battle.js tcOn) */
 .bt-tcr{position:absolute;left:0;top:0;width:0;height:0;z-index:3;pointer-events:none;transition:opacity .2s}
