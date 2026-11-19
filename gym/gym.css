@@ -4769,3 +4769,33 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt:has(.bt-tcr) .bt-hb{z-index:7}   /* 경완 '배틀화면에서 왕관이 배틀박스 가리지 않게': 관(.bt-tcr)은 늘 체력 박스 밑으로 */   /* 경완 2026-11-19 '그 그래픽이 배틀화면에서 배틀박스 가리지 않게': 도전자 테라스탈 결정이 체력 박스 밑으로 */
 
 .bt-tcr .cr{background-position:center bottom;filter:none!important;animation:tcrB2 2.4s ease-in-out infinite}@keyframes tcrB2{50%{transform:translateY(-1.5px)}}   /* v27.26 3D 결정 관: 그림에 빛 번짐이 이미 있어 CSS 빛은 뺌 (경완 '디자인이 좀 달라지는건 왜') */
+/* v27.54 경완 '받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로': 전설 관장 의상 — 보상 줄 작은 그림(받기 전 실루엣) + 받는 창(무대 조명 아래 실루엣 → 번쩍 → 옷) */
+#gym .pk-lf{position:relative;display:inline-block;width:26px;height:26px;vertical-align:middle;margin:0 6px 0 -2px}
+#gym .pk-lf img{position:absolute;left:50%;top:50%;width:32px;height:32px;margin:-18px 0 0 -16px;max-width:none;image-rendering:pixelated}   /* 경완 '혜택 슬롯 박스 내 정렬 맞춰달라구': 다른 줄 아이콘(26px 칸) 가운데에 몸이 오게 */
+#gym .pk-lf.sil img{filter:brightness(0);opacity:.5}#gym .bsw-ben .pk-lf.sil img{filter:brightness(0) invert(1);opacity:.4}
+#gym .pk-ben .lf .pk-ic{background:none;box-shadow:none}#gym .pk-ben .lf .pk-ic::before{display:none}#gym .pk-ben .lf .pk-lf{margin:0}
+#gym .gy-perk .pk-lf{margin:0 6px 0 0}#gym .gy-perk ul li:has(.pk-lf){list-style:none;margin-left:-16px;margin-top:8px}   /* 경완 '등급표에서 알 스프라이트랑 관장 옷이랑 좀 떨어지게' */
+#gym .gy-pop.lf-pop .win{border-color:#8a5a00}
+#gym .lf-hd{position:relative;height:184px;display:grid;place-items:center;overflow:hidden;margin:-6px -6px 2px;border-radius:6px;background:radial-gradient(ellipse at 50% 70%,#4a2c6a 0,#1e1234 55%,#0c0818 100%)}
+#gym .lf-hd::after{content:'';position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#gym .lf-pop.on .lf-hd::after{animation:lfFlash .7s ease-out both}
+#gym .lf-beam{position:absolute;left:50%;top:-10px;width:150px;height:190px;margin-left:-75px;background:linear-gradient(180deg,rgba(255,246,200,.5),rgba(255,236,170,.12) 75%,transparent);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);opacity:.35;transition:opacity .8s}
+#gym .lf-pop.on .lf-beam{opacity:1}
+#gym .lf-halo{position:absolute;left:50%;top:54%;width:150px;height:150px;margin:-75px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,150,.55),transparent 68%);opacity:0;transition:opacity .6s}
+#gym .lf-pop.on .lf-halo{opacity:1;animation:bswPulse 2.2s ease-in-out .7s infinite}
+#gym .lf-spot{position:absolute;left:50%;bottom:12px;width:130px;height:26px;margin-left:-65px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,236,170,.8),rgba(255,236,170,.15) 60%,transparent 72%)}
+#gym .lf-fig{position:relative;z-index:1;width:160px;height:160px;margin-top:4px}
+#gym .lf-fig img{display:block;width:160px;height:160px;max-width:none;image-rendering:pixelated;filter:brightness(0) saturate(1) drop-shadow(0 0 5px rgba(255,230,150,.6));animation:lfIn .6s cubic-bezier(.3,1.5,.5,1) both}
+#gym .lf-pop.on .lf-fig img{animation:lfShow .9s ease-out both,lfBob 2.4s ease-in-out .9s infinite}
+#gym .lf-sp{position:absolute;z-index:2;width:12px;height:12px;margin:-6px;background:#fff6c4;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0}
+#gym .lf-pop.on .lf-sp{animation:lfTw 1.6s ease-in-out calc(.5s + var(--d)) infinite}
+#gym h4.lf-t{margin:10px 0 6px}
+#gym .lf-tx{display:flex;flex-direction:column;align-items:center;gap:5px;margin:0 0 14px;text-align:center;font-size:14px;line-height:1.45;color:#3a2a08}
+#gym .lf-tx small{font-size:12px;color:#7a6a4a}
+#gym .lf-ty{display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 6px;border:2px solid #d8a820;border-radius:11px;background:#fff3c4;color:#6a4a08;font-size:12px;font-weight:700}
+#gym .lf-ty :is(img,svg,i){width:16px;height:16px}
+@keyframes lfIn{0%{transform:translateY(-14px) scale(.85);opacity:0}100%{transform:none;opacity:1}}
+@keyframes lfShow{0%{filter:brightness(0) saturate(1) drop-shadow(0 0 5px rgba(255,230,150,.6))}35%{filter:brightness(2.4) saturate(0) drop-shadow(0 0 14px rgba(255,250,220,1))}100%{filter:brightness(1) saturate(1) drop-shadow(0 0 7px rgba(255,226,140,.85))}}
+@keyframes lfBob{50%{transform:translateY(-3px)}}
+@keyframes lfFlash{0%{opacity:0}18%{opacity:.85}100%{opacity:0}}
+@keyframes lfTw{0%,100%{opacity:0;transform:scale(.4)}45%{opacity:1;transform:scale(1) rotate(45deg)}}
