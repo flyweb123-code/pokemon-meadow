@@ -363,7 +363,7 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   misty: { n: '물 관장 옷', a: '#f0c030', b: '#d84830', g: 3000, sx: 'f' },   // v14.99 경완: 이슬(여) 추가
   rocket: { n: '로켓단 제복', a: '#34343c', b: '#2a2a30', g: 0, sx: 'mf', ev: 'rocket' },
   /* v27.54 경완 '만든 관장 의상들은 다 타입별로 전설 승급 보상에 넣어놔주고 받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로 표시': 전설의 체육관 보상 관장 의상 (PixelLab, 얼굴은 광휘·빛나 그대로). 상점엔 안 나옴(ev), 걸음 그림은 색 바꾸기 */
-  lf_bruno: { n: '시바의 도복', a: '#eeeef2', b: '#2c2c34', g: 0, sx: 'm', ev: 'leg' }, lf_bea: { n: '사이토의 도복', a: '#2e2e34', b: '#e8782c', g: 0, sx: 'f', ev: 'leg' },
+  lf_bruno: { n: '시바의 도복', a: '#eeeef2', b: '#2c2c34', g: 0, sx: 'm', ev: 'leg' }, lf_bea: { n: '채두의 도복', a: '#2e2e34', b: '#e8782c', g: 0, sx: 'f', ev: 'leg' },
   lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' },   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
 };
 // 전설의 체육관 타입 → 받는 관장 의상 (주인공 성별마다 하나, 그림이 있는 타입만. 새 의상을 그리면 여기에 더한다)
@@ -1001,6 +1001,8 @@ function fitList() { const g = st() || {}; g.fits = g.fits || {}; const F = new 
 const fitHas = k => !!(k && (st()?.fits?.[k] || (Array.isArray(S.fits) && S.fits.includes(k))));
 const legFitK = (t = st()?.ty) => { const k = LEG_FIT[t]?.[myF() ? 'f' : 'm']; return k && fitOf(k) ? k : ''; };
 const legFitDue = () => { const g = st(), k = g?.d && isLeg(g) && legFitK(g.ty); return !!k && !fitHas(k) && !window.gymSimOn && !window.gymEvTest; };
+const LF_ADJ = '명예의';   /* 경완 '전설의 독 타입 관장 옷 이런 식으로 수식어, 전설은 좀 과한 듯' → 받기 전 이름 = '명예의 독 관장 옷' */
+const lfNm = t => `${LF_ADJ} ${TYPE_KO[t] || ''} 관장 옷`;
 const lfImg = k => `${IMG}fit/${k}_${myF() ? 'f' : 'm'}.png`;
 // 전설 의상 받는 창: 빛 무대 위 실루엣 → 번쩍 하고 옷이 보임 → 팡파르. test = 운영자 시험 (아무것도 안 남김)
 function legFitPop(test) { const g = st(), k = test ? (legFitK(g?.ty) || legFitK('fighting')) : legFitDue() && legFitK(g.ty); if (!k) return Promise.resolve();
@@ -1008,7 +1010,7 @@ function legFitPop(test) { const g = st(), k = test ? (legFitK(g?.ty) || legFitK
   if (!test) { g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); else if (!Array.isArray(S.fits)) S.fits = [k]; glog('fit', `전설 승급 보상으로 <b>${esc(O.n)}</b>을 받았다!`); save(); }
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`<div class="lf-hd"><i class="lf-beam"></i><i class="lf-halo"></i><i class="lf-spot"></i><div class="lf-fig"><img alt="" src="${lfImg(k)}"></div>${[[20, 28], [78, 22], [14, 62], [86, 58], [28, 84], [72, 82]].map(([x, y], i) => `<i class="lf-sp" style="left:${x}%;top:${y}%;--d:${(i * .17).toFixed(2)}s"></i>`).join('')}</div>
-      <h4 class="pp-t lf-t"><small>전설 승급 보상</small>${esc(O.n)}</h4><p class="lf-tx"><span class="lf-ty">${tyIcon(t).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[t] || ''} 관장 의상</span>전설의 체육관 관장만 입을 수 있는 옷이에요.<small>관장 카드 옷장에서 언제든 갈아입을 수 있어요.</small></p>
+      <h4 class="pp-t lf-t"><small>전설 승급 보상</small>${esc(O.n)}</h4><p class="lf-tx"><span class="lf-ty">${tyIcon(t).replace(/ data-tip="[^"]*"/, '')}${lfNm(t)}</span>전설의 체육관 관장만 입을 수 있는 옷이에요.<small>관장 카드 옷장에서 언제든 갈아입을 수 있어요.</small></p>
       <div class="gy-btns"><button data-a="x">나중에</button><button class="main" data-a="w">지금 입기</button></div>`, (a, close) => { close(); if (a === 'w' && !test) { fitSet(k); save(); renderHome(); } ok(); });
     p.classList.add('pp-pop', 'lf-pop'); gyHold(p.querySelector('.gy-btns'), 1600);
     setTimeout(() => { if (!p.isConnected) return; p.classList.add('on'); try { window.GymBGM?.fan?.('ME_BADGE'); } catch (e) {} GA.haptic?.(1); }, 900); }); }
@@ -1412,7 +1414,7 @@ const grEggI = i => { const R = grEggT(i); return R ? GA.eggIcoG?.(R[0], R[1]) |
 const perks = (i, noRw) => { const g = st(), L = [], tc = k => Math.min(6, k), ar = (a, b, u) => `<s>${a}${u}</s><i class="pk-ar" aria-hidden="true"></i><b>${b}${u}</b>`;
   /* v23.37 경완 '전설의 체육관 승급 혜택에 전설 알이 없네': 심사 화면(보상 보이는 쪽)에는 그 타입 전설 알도 한 줄. 이미 받은 타입이면 안 보임. 주는 건 그대로 전당 연출. v23.38 경완 '전설 알을 골드 위로' */
   { const t = g?.ty; if (i === GRADES.length - 1 && !noRw && t && !(g.legE || {})[t]) L.push(['eg', `<span class="pk-le">${GA.eggIco?.(t) || ''}</span>`, `${GA.LT_ADJ?.[t] || TYPE_KO[t]} 전설 알`, '<b>1개</b>']); }
-  { const k = i === GRADES.length - 1 && !noRw && legFitK(g?.ty); if (k) { const own = fitHas(k); L.push(['lf', `<span class="pk-lf${own ? '' : ' sil'}"><img alt="" src="${lfImg(k)}"></span>`, own ? esc(OUTFITS[k].n) : '관장 의상', `<b>${own ? '받음' : '1벌'}</b>`]); } }   /* v27.54 경완 '받기 전에는 실루엣' */
+  { const k = i === GRADES.length - 1 && !noRw && legFitK(g?.ty); if (k) { const own = fitHas(k); L.push(['lf', `<span class="pk-lf${own ? '' : ' sil'}"><img alt="" src="${lfImg(k)}"></span>`, own ? esc(OUTFITS[k].n) : lfNm(g?.ty), `<b>${own ? '받음' : '1벌'}</b>`]); } }   /* v27.54 경완 '받기 전에는 실루엣' */
   if (GR_EGG[i] && !noRw) L.push(['eg', `<span class="pk-le">${grEggI(i)}</span>`, grEggN(i), `<b>${GR_EGG[i][1]}개</b>`]);   /* v23.39 경완 '다른 등급 혜택도 알 먼저, 그 밑에 골드' */
   if (GR_GOLD[i] && !noRw) L.push(['gold', '<i class="coin"></i>', '골드', `<b>${GR_GOLD[i].toLocaleString()}G</b>`]);
   /* v18.87 경완 '전설 체육관은 전설 알 슬롯 없이 등급 혜택만': 전설 알은 강박사가 따로 들고 와서 준다 (legEggPop) */
@@ -2964,7 +2966,7 @@ function perkPop() {
     if (GR_GOLD[i]) R.push(`<i class="coin"></i>${GR_GOLD[i].toLocaleString()}G`);
     if (GR_EGG[i]) R.push(`<span class="pk-le">${grEggI(i)}</span>${grEggN(i)} ${GR_EGG[i][1]}개`);
     if (i === GRADES.length - 1) R.push(`<span class="pk-le">${GA.eggIco?.(g.ty) || ''}</span>${GA.LT_ADJ?.[g.ty] || ''} 전설 알`);
-    { const k = i === GRADES.length - 1 && legFitK(g.ty); if (k) { const own = fitHas(k); R.push(`<span class="pk-lf${own ? '' : ' sil'}"><img alt="" src="${lfImg(k)}"></span>${own ? esc(OUTFITS[k].n) : `${TYPE_KO[g.ty] || ''} 관장 의상`}`); } }   /* v27.54 경완: 전설 관장 의상, 받기 전엔 실루엣 */   /* v18.87 경완 '등급표에 승급 보상이랑 등급 혜택 나눠서': 처음 오를 때 한 번 받는 것 / 그 등급의 혜택 */
+    { const k = i === GRADES.length - 1 && legFitK(g.ty); if (k) { const own = fitHas(k); R.push(`<span class="pk-lf${own ? '' : ' sil'}"><img alt="" src="${lfImg(k)}"></span>${own ? esc(OUTFITS[k].n) : lfNm(g.ty)}`); } }   /* v27.54 경완: 전설 관장 의상, 받기 전엔 실루엣 */   /* v18.87 경완 '등급표에 승급 보상이랑 등급 혜택 나눠서': 처음 오를 때 한 번 받는 것 / 그 등급의 혜택 */
     const ul = (h, A) => A.length ? `<h6 class="pk-gh">${h}</h6><ul>${A.map(t => `<li>${t}</li>`).join('')}</ul>` : '';   // v18.17 경완: 등급 보상 골드·알   // 전설 = 알 지급 + 크기·트레이너·훈련장 (v13.01 경완)   // 훈련장은 등급마다 한 칸 (경완 2026-10-29)   // 도전자 수·꾸미기·의상은 등급 차등 없음 (경완 2026-10-28)
     return `<li class="${i === gi ? 'cur' : i < gi ? 'done' : ''}">${i > gi ? `<span class="bdw sil"><img alt="" src="${bdImg(g.ty, i + 1)}"></span>` : gEmb(i)}<div><b${i <= gi ? ` class="gr-tag" data-g="${i}"` : ''}>${n}</b>${i === gi ? '<em>지금</em>' : ''}</div>${ul('승급 보상', R)}${ul('등급 혜택', L)}<i class="pk-rep">평판 ${v}</i></li>`; };   // 필요 평판 = 우하단 딱지, '지금'은 등급 이름 옆 (경완 2026-10-30)
   /* 경완 2026-11-12: 등급 카드 사이에 '승급하면 강박사가 알려 주는 것' 카드 (위아래 화살표). 튜토리얼 전엔 실루엣, 이 체육관에서 튜토리얼을 마치면 열림.
