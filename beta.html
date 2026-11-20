@@ -951,7 +951,7 @@ button:focus-visible{outline:3px dashed var(--cursor);outline-offset:2px}@media 
 #night{animation:fireK 3s ease-in-out infinite}
 /* v9.72 경완 '빛 엔진': 밤 그늘 위에 광원마다 색 빛을 더하는 빛 레이어 */
 #lightC{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1001;mix-blend-mode:screen}
-#winC{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2;mix-blend-mode:screen}   /* v27.79 경완 '갈모매 보면 집 조명이 포켓몬 스프라이트 앞으로 옴': 항구 창문 불빛 칸은 땅 그림이라 포켓몬 밑(밤 그늘 판 z 1 바로 위) */
+#winC{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2;mix-blend-mode:screen;image-rendering:pixelated}   /* v27.79 경완 '갈모매 보면 집 조명이 포켓몬 스프라이트 앞으로 옴': 항구 창문 불빛 칸은 땅 그림이라 포켓몬 밑(밤 그늘 판 z 1 바로 위) */
 .mon .shadow,.psh{translate:var(--shx,0px) 0}.mon>.shadow,.psh{filter:opacity(var(--shw,1))}.mon.nightf>.shadow{filter:url(#nightF) opacity(var(--shw,1))}
 /* v17.88 경완 '그림자 엔진 필드에도': 해가 낮을수록(아침·노을) 포켓몬 그림자는 해 반대쪽으로 길게, 소품·나무는 그림 모양 그대로 검게 본떠 땅에 눕힌 그림자(.pcs) */
 /* v18.44 경완 '필드에서 그림자 엔진 포켓몬이랑 트레이너 그림자엔 적용 x': .mon .shadow 는 해 따라 늘이지 않고 발밑 타원 그대로 (소품만 그림자 엔진) */
@@ -6942,7 +6942,7 @@ function hbSD(x, y) { if (!HBZ.z) return 0; if (!HBZ.SD) { const W = 180, H = 30
 const HB_BIRD = new Set([278, 279, 580, 581, 845, 940, 941]), HB_BEACH = new Set([769, 770, 960, 961]);   /* 경완 '갈모매 같은 바다새 포켓몬들은 괜찮음' · '모래성이당, 바다그다 처럼 해변에만 있는 포켓몬들은 해변에만' */
 const HB_LAMP = ['street-lamp', 158, 252];   /* 도시 바닥 왼쪽 판 오른쪽 아래 모서리 (계단 쪽 꺾이는 곳) */
 /* v27.52 경완 '밤에는 집 창문 빛 다 켜지고 한밤 쯤 되면 창문 빛 다 꺼지게 (자는 시간이니까)': 창문 칸(맵 그림 좌표 상자) 안 유리 칸만 노란 불빛, 창마다 18시~18시 40분 사이 켜지고 23시~자정 사이 꺼짐. 파란 집 큰 창은 가장 어두운 칸이 창살 */
-const HB_WIN = [[3, 42, 12, 51], [0, 55, 3, 63], [60, 44, 67, 51], [44, 54, 54, 64], [104, 42, 113, 51], [95, 55, 105, 64], [142, 46, 149, 53], [171, 42, 180, 48], [166, 52, 180, 61, 1]];
+const HB_WIN = [[3, 42, 12, 51], [0, 55, 3, 63], [60, 44, 67, 51], [44, 54, 54, 64], [104, 42, 113, 51], [95, 55, 105, 64], [142, 46, 149, 53], [172, 43, 179, 48], [168, 54, 180, 59, 1]];   /* v27.80 경완 '불켜진 창문 틀 찌꺼기 같은 것들 좀 정리해줘봐': 파란 집 창문 왼쪽 틀 칸·가게 창 아래 창턱·화분 칸이 같이 켜지던 것 → 유리 칸만 */
 const hbWinOn = (i, h) => h >= LAMP_ON + ((i * 7) % 9) / 9 * .7 && h < 23 + ((i * 5) % 9) / 9 * .9;
 const HB_TOP = { x: 285, y: 210 }, HB_BOT = { x: 285, y: 264 };   /* 경완 '도시에서 해변으로는 계단 통해서만 내려갈 수 있음': 계단 위·아래 */
 function hbLoad() { return HBZ.ready ||= Promise.all(['maps/harbor.png', 'maps/harbor_z.png'].map(u => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = u + '?v=' + encodeURIComponent(APP_VER); }))).then(([a, b]) => {
@@ -7122,7 +7122,7 @@ function hbPrep(D) { const w = 180, h = 300, at = (x, y) => (y * w + x) * 4;
   const deep = []; for (let y = 150; y < h; y++) for (let x = 0; x < w; x++) if (kind[y * w + x] === 1 && dSea[y * w + x] > 10 && dw[y * w + x] > 6) deep.push([x, y]);
   const band = []; for (let y = 121; y < h - 4; y++) for (let x = 0; x < w; x++) { const k = y * w + x; if (kind[k] === 1 && dSea[k] >= 2 && dSea[k] <= 120 && dw[k] > 2) band.push(k); }
   const newRip = first => { const [x, y] = deep[(Math.random() * deep.length) | 0]; return { x, y, t0: performance.now() - (first ? Math.random() * 5000 : 0), dur: 3800 + Math.random() * 2600, len: 2 + ((Math.random() * 4) | 0), sp: .6 + Math.random() * .7 }; };
-  HBZ.WIN = HB_WIN.map(([x0, y0, x1, y1, bar], i) => { const px = []; for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const j = at(x, y), r = D[j], q = D[j + 1], b = D[j + 2], t = r + q + b; if (D[j + 3] < 200 || t >= 300 || b < r - 8 || q > b + 10 || (bar && r === 57 && q === 44)) continue; px.push([x, y, t < 190 ? 0 : t < 230 ? 1 : 2]); } return { i, px, cx: (x0 + x1), cy: (y0 + y1) }; });
+  HBZ.WIN = HB_WIN.map(([x0, y0, x1, y1, bar], i) => { const px = []; for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const j = at(x, y), r = D[j], q = D[j + 1], b = D[j + 2], t = r + q + b; if (D[j + 3] < 200 || t >= 330 || b < r - 8 || q > b + 44 || (bar && r === 57 && q === 44)) continue; px.push([x, y, t < 190 ? 0 : t < 230 ? 1 : 2]); } return { i, px, cx: (x0 + x1), cy: (y0 + y1) }; });
   HBZ.W = { D, w, h, kind, dSea, dSand, dw, ph, deep, band, newRip, rip: deep.length ? Array.from({ length: 60 }, () => newRip(true)) : [], glint: deep.length ? Array.from({ length: 14 }, () => ({ p: deep[(Math.random() * deep.length) | 0], o: Math.random() * 6.28 })) : [], smoke: [], chim: [{ x: 47.5, y: 22, gap: 450, t: 0, win: [2, 3] }, { x: 153.5, y: 25, gap: 520, t: 200, win: [6] }] }; }
 /* v27.56 경완 '굴뚝 연기는 시간대별로 어떻게 해야 자연스러울까' → 시연 제안대로: 밥 짓는 때(아침 6~8시 반·저녁 5~8시) 진하고 자주, 점심 11~1시 보통, 낮엔 옅게, 밤 8시 뒤 난로 옅게, 그 집 창문(win, HB_WIN 번호)이 다 꺼지면 새벽 5시 반까지 없음, 눈 오면 1.4배, 비 오면 없음 */
 function hbSmF(h, c) { const lit = c.win.some(i => hbWinOn(i, h)); const f = h >= 5.5 && h < 6 ? .4 : h >= 6 && h < 8.5 ? 1.6 : h >= 8.5 && h < 11 ? .55 : h >= 11 && h < 13 ? 1.1 : h >= 13 && h < 17 ? .45 : h >= 17 && h < 20 ? 1.6 : h >= 20 && lit ? .6 : 0; return f * (snowing() ? 1.4 : 1); }
@@ -8224,7 +8224,7 @@ function tickLight(now) {
   const lamps = document.body.classList.contains('lamps');
   for (const l of scLights) { if (!l.fire && !lamps) continue; if (l.fire && document.body.classList.contains('scOut')) continue; const f = l.fire ? fk(l.x) : 1, c = l.fire ? FIREC : l.cool ? COOLC : LAMPC, cx = l.core ? l.core.x : l.fl ? l.fl.x : l.x, cy = l.core ? l.core.y : l.fl ? l.fl.y : l.y; blob(cx, cy + 10 * l.k, 95 * l.k * f, 70 * l.k * f, c, .36 * k0); }
   if (HB && HBZ.WIN) { const h = hour(), WC = ['255,196,96', '255,218,128', '255,236,170'], al = clamp(k0 * 1.3, .55, 1);   /* v27.52 항구 집 창문 불빛 (맵 그림 칸 = 이 캔버스 2칸, 넓은 화면 뒤집힌 양옆도) */
-    if (winC.width !== cw * 2 || winC.height !== ch * 2) { winC.width = cw * 2; winC.height = ch * 2; } winC.style.left = L0 + 'px'; winC.style.width = Wc + 'px';
+    const ww = Math.round(Wc), wh = Math.round(H); if (winC.width !== ww || winC.height !== wh) { winC.width = ww; winC.height = wh; }   /* v27.80 캔버스 = 화면 칸 1:1 (1px 늘어나 번지던 것) · 유리에 비친 초록 칸(g−b 44 이하·밝기 합 330 아래)도 같이 켬 — 켜진 창 속에 초록 점으로 남던 것, 창 앞 화분 잎(g−b 48 넘음)만 뺌 */ winC.style.left = L0 + 'px'; winC.style.width = Wc + 'px';
     const wg = winC.getContext('2d'); wg.setTransform(1, 0, 0, 1, 0, 0); wg.clearRect(0, 0, winC.width, winC.height); wg.setTransform(1, 0, 0, 1, -L0, 0); winOn = true;
     for (const Wn of HBZ.WIN) { if (!hbWinOn(Wn.i, h)) continue; for (const X0 of [0, 1, 2]) { const mx = X => X0 === 0 ? X * 2 : X0 === 1 ? (-1 - X) * 2 : (359 - X) * 2; if (X0 && !(X0 === 1 ? XL < 0 : XR > 360)) continue;
       blob(mx(Wn.cx / 2), Wn.cy + 4, 26, 18, LAMPC, .3 * k0); for (const [x, y, c] of Wn.px) { wg.fillStyle = `rgba(${WC[c]},${al})`; wg.fillRect(mx(x) - (X0 ? 1 : 0), y * 2, 2, 2); } } } }   /* v27.79 창문 칸은 winC(포켓몬 밑), 둘레 은은한 빛만 lightC */
