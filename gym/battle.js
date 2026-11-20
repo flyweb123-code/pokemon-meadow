@@ -1271,6 +1271,59 @@ function aiNoGo(btl, a, d, m) { try { if (!a || !m) return false;
 /* 위력이 그때그때 달라 AI 가 너무 높게 보던 기술: 분화·해수스파우팅·드래곤에너지 = 남은 체력 비율, 두 턴 모으는 기술 = 절반 (쾌청의 솔라빔·파워풀허브는 그대로) */
 function aiPw(btl, a, m) { try { if (['eruption', 'waterspout', 'dragonenergy'].includes(m.id)) return Math.max(.01, a.hp / Math.max(1, a.maxhp));
   if (m.flags?.charge) { const wx = btl.field.weather || ''; if (a.item === 'powerherb' || ['solarbeam', 'solarblade'].includes(m.id) && ['sunnyday', 'desolateland'].includes(wx) || m.id === 'electroshot' && ['raindance', 'primordialsea'].includes(wx)) return 1; return .5; } } catch (e) {} return 1; }
+/* v27.71 경완 '또 이런 ai 찐빠 없는지 검토 좀 해줘봐' → '어차피 배포하면 1,2단계로 조절할거 아냐?': 상대 AI 어림 피해식을 한곳으로 (싱글 aiChoice·더블 aiD). smart = AI 1·2단계만 (쉬움은 예전 식 그대로).
+   예전엔 위력 0 으로 적힌 기술(풀묶기·자이로볼·헤비봄버·바둥바둥·분노의앞니…)을 0점으로 봐서 들고도 안 썼고, 연속기는 한 타만, 바디프레스·속임수·사이코쇼크는 엉뚱한 능력치로, 웨더볼·심판의뭉치는 노말로 셈했다.
+   smart 면 그 값들과 날씨·벽·특성(두꺼운지방·멀티스케일·천하장사…)·도구(구애·생명의구슬·돌격조끼) 배수까지 어림한다 */
+function aiDmg(btl, a, d, m, st, smart) {
+  if (!a || !d || d.fainted || m.category === 'Status' || aiNoGo(btl, a, d, m)) return 0;
+  const T = p => p.terastallized ? [p.terastallized] : p.types || p.species?.types || [], acc = (m.accuracy === true ? 100 : m.accuracy) / 100;
+  if (!smart) { if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
+    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
+    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m) * ((a.types || a.species?.types || []).includes(m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * acc; }
+  try { const id = m.id, ab = p => p.volatiles?.gastroacid ? '' : p.ability || '', aa = ab(a), mold = ['moldbreaker', 'teravolt', 'turboblaze'].includes(aa), da = mold ? '' : ab(d), wx = btl.field.weather || '', tr = btl.field.terrain || '';
+    const it = p => p.item ? btl.dex.items.get(p.item) : null, kg = p => (p.weighthg || p.species?.weighthg || 0) / 10, pos = p => Object.values(p.boosts || {}).reduce((s, x) => s + Math.max(0, x), 0);
+    /* 타입이 바뀌는 기술 */
+    let ty = m.type; const WB = { sunnyday: 'Fire', desolateland: 'Fire', raindance: 'Water', primordialsea: 'Water', sandstorm: 'Rock', hail: 'Ice', snow: 'Ice', snowscape: 'Ice' };
+    if (id === 'weatherball' && WB[wx]) ty = WB[wx]; else if (id === 'judgment') ty = it(a)?.onPlate || ty; else if (id === 'multiattack') ty = it(a)?.onMemory || ty; else if (id === 'technoblast') ty = it(a)?.onDrive || ty;
+    else if (id === 'revelationdance') ty = T(a)[0] || ty; else if (id === 'terablast' && a.terastallized) ty = a.terastallized; else if (id === 'hiddenpower' && a.hpType) ty = a.hpType;
+    else if (id === 'terrainpulse' && tr) ty = { electricterrain: 'Electric', grassyterrain: 'Grass', mistyterrain: 'Fairy', psychicterrain: 'Psychic' }[tr] || ty;
+    if (!(id === 'thousandarrows') && !btl.dex.getImmunity(ty, d)) return 0;
+    /* 정해진 피해 */
+    if (m.damage === 'level' || id === 'psywave') return a.level * acc; if (typeof m.damage === 'number') return m.damage * acc;
+    if (id === 'superfang' || id === 'naturesmadness' || id === 'ruination') return d.hp / 2 * acc; if (id === 'endeavor') return Math.max(0, d.hp - a.hp);
+    if (m.ohko || m.damageCallback) return 0;
+    /* 위력 */
+    let bp = m.basePower || 0; const hr = a.hp / Math.max(1, a.maxhp);
+    if (id === 'grassknot' || id === 'lowkick') { const w = kg(d); bp = w < 10 ? 20 : w < 25 ? 40 : w < 50 ? 60 : w < 100 ? 80 : w < 200 ? 100 : 120; }
+    else if (id === 'heavyslam' || id === 'heatcrash') { const r = kg(a) / Math.max(.1, kg(d)); bp = r >= 5 ? 120 : r >= 4 ? 100 : r >= 3 ? 80 : r >= 2 ? 60 : 40; }
+    else if (id === 'gyroball') bp = Math.min(150, Math.floor(25 * st(d, 'spe') / Math.max(1, st(a, 'spe'))) + 1);
+    else if (id === 'electroball') { const r = st(a, 'spe') / Math.max(1, st(d, 'spe')); bp = r >= 4 ? 150 : r >= 3 ? 120 : r >= 2 ? 80 : r >= 1 ? 60 : 40; }
+    else if (id === 'flail' || id === 'reversal') bp = hr < .042 ? 200 : hr < .104 ? 150 : hr < .208 ? 100 : hr < .354 ? 80 : hr < .688 ? 40 : 20;
+    else if (id === 'return') bp = 102; else if (id === 'magnitude') bp = 71; else if (id === 'present' || id === 'trumpcard') bp = 40;
+    else if (id === 'crushgrip' || id === 'wringout') bp = Math.max(1, 120 * d.hp / d.maxhp); else if (id === 'hardpress') bp = Math.max(1, 100 * d.hp / d.maxhp);
+    else if (id === 'punishment') bp = Math.min(200, 60 + 20 * pos(d)); else if (id === 'storedpower' || id === 'powertrip') bp = 20 + 20 * pos(a);
+    else if (id === 'acrobatics') bp = a.item ? 55 : 110; else if (id === 'hex' || id === 'infernalparade') bp = d.status ? bp * 2 : bp; else if (id === 'knockoff') bp = d.item ? 97 : 65;
+    else if (id === 'facade') bp = ['brn', 'psn', 'tox', 'par'].includes(a.status) ? 140 : 70; else if (id === 'venoshock') bp = ['psn', 'tox'].includes(d.status) ? 130 : 65;
+    else if (id === 'weatherball') bp = WB[wx] ? 100 : 50; else if (id === 'terrainpulse') bp = tr ? 100 : 50; else if (id === 'brine') bp = d.hp <= d.maxhp / 2 ? 130 : 65;
+    else if (id === 'tripleaxel') bp = 94; else if (id === 'triplekick') bp = 47; else if (id === 'populationbomb') bp = aa === 'loadeddice' || a.item === 'loadeddice' ? 140 : 110;
+    else if (m.multihit) bp *= Array.isArray(m.multihit) ? (aa === 'skilllink' ? 5 : a.item === 'loadeddice' ? 4.5 : 3.1) : m.multihit;
+    if (!bp) return 0; if (aa === 'technician' && (m.basePower || bp) <= 60 && !m.multihit) bp *= 1.5;
+    /* 어느 능력치로 셈하나 */
+    const ph = m.category === 'Physical'; let A = id === 'bodypress' ? st(a, 'def') : id === 'foulplay' ? st(d, 'atk') : st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph || ['psyshock', 'psystrike', 'secretsword'].includes(id) ? 'def' : 'spd'));
+    if (ph && id !== 'bodypress' && id !== 'foulplay' && (aa === 'hugepower' || aa === 'purepower')) A *= 2; if (ph && aa === 'guts' && a.status) A *= a.status === 'brn' ? 3 : 1.5;
+    if (a.item === 'choiceband' && ph || a.item === 'choicespecs' && !ph) A *= 1.5; if (d.item === 'assaultvest' && !ph) Df *= 1.5; if (d.item === 'eviolite' && d.species?.nfe) Df *= 1.5;
+    if (wx === 'sandstorm' && !ph && T(d).includes('Rock')) Df *= 1.5; if (['snow', 'snowscape'].includes(wx) && ph && T(d).includes('Ice')) Df *= 1.5;
+    let v = (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m);
+    if (T(a).includes(ty)) v *= aa === 'adaptability' ? 2 : 1.5;
+    let eff = id === 'thousandarrows' && T(d).includes('Flying') ? 1 : 2 ** btl.dex.getEffectiveness(ty, d); if (id === 'freezedry' && T(d).includes('Water')) eff *= 4; if (id === 'flyingpress') eff *= 2 ** btl.dex.getEffectiveness('Flying', d);
+    v *= eff; if (eff > 1 && ['filter', 'solidrock', 'prismarmor'].includes(da)) v *= .75; if (eff < 1 && aa === 'tintedlens') v *= 2;
+    if (['sunnyday', 'desolateland'].includes(wx)) v *= ty === 'Fire' ? 1.5 : ty === 'Water' ? .5 : 1; if (['raindance', 'primordialsea'].includes(wx)) v *= ty === 'Water' ? 1.5 : ty === 'Fire' ? .5 : 1;
+    if (a.side !== d.side && aa !== 'infiltrator' && id !== 'brickbreak' && id !== 'psychicfangs' && (d.side.sideConditions?.auroraveil || d.side.sideConditions?.[ph ? 'reflect' : 'lightscreen'])) v *= .5;
+    if (da === 'thickfat' && (ty === 'Fire' || ty === 'Ice') || da === 'heatproof' && ty === 'Fire' || da === 'waterbubble' && ty === 'Fire' || da === 'purifyingsalt' && ty === 'Ghost') v *= .5;
+    if ((da === 'multiscale' || da === 'shadowshield') && d.hp >= d.maxhp) v *= .5; if (da === 'fluffy') v *= (m.flags?.contact ? .5 : 1) * (ty === 'Fire' ? 2 : 1); if (da === 'dryskin' && ty === 'Fire') v *= 1.25;
+    if (a.item === 'lifeorb') v *= 1.3; if (a.item === 'expertbelt' && eff > 1) v *= 1.2;
+    return v * .925 * acc;
+  } catch (e) { return 0; } }
 function aiChoice(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const foe = btl.p1.active[0], me = side.active[0];
@@ -1289,11 +1342,7 @@ function aiChoice(btl, diff) {
   // 쇼다운 getStat·hasType 은 이벤트를 돌려서 배틀 밖에서 부르면 스택이 넘친다 → 저장된 능력치·종족 타입으로 직접 계산
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, mid) => { if (!a || !d || d.fainted) return 0; const m = btl.dex.moves.get(mid); if (m.category === 'Status' || aiNoGo(btl, a, d, m)) return 0;
-    if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
-    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
-    const base = Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2;
-    return base * aiPw(btl, a, m) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+  const dmg = (a, d, mid) => aiDmg(btl, a, d, btl.dex.moves.get(mid), st, true);
   const best = (a, d) => Math.max(0, ...(a?.moveSlots || []).filter(x => x.pp > 0).map(x => dmg(a, d, x.id)));
   const fast = (a, d) => st(a, 'spe') >= st(d, 'spe');
   // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
@@ -1644,9 +1693,7 @@ function aiD(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || aiNoGo(btl, a, d, m) || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
-    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
-    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+  const dmg = (a, d, m) => aiDmg(btl, a, d, m, st, diff > 0);
   const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
   if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
     const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
