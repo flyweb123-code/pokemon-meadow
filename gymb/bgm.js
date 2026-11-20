@@ -62,6 +62,7 @@ const SONG = {
   train: { s: 'sBaTrain', bank: 'battle', vol: 88 },      // 트레이너 배틀
   gymBattle: { s: 'sBaGym', bank: 'battle', vol: 88 },    // 체육관 관장 배틀
   rival: { s: 'sBaRival', bank: 'battle', vol: 88 },      // 라이벌 배틀
+  teraSv: { file: 'gym/snd/sv-tera.m4a', ls: 31.0, le: 55.0 },   /* 테라스탈 곡 (경완 '테라스탈 노래 이걸로 넣어주고': 경완이 준 스칼렛·바이올렛 체육관 관장 배틀(테라스탈) 곡, 처음 31초 뒤부터 24초 반복. 원저작권은 권리자에게 있고, 이 파일을 내려받아 쓰는 데 따르는 법적 책임은 내려받아 활용하는 사람에게 있음 — gym/snd/README.md) */
   dmax: { file: 'gym/snd/swsh-gym.m4a', ls: 62.0, le: 199.154 },   // 다이맥스 곡 (경완이 준 소드실드 체육관 관장 배틀 곡, 처음 62초 뒤부터 137.154초 반복. 원저작권은 권리자에게 있고, 이 파일을 내려받아 쓰는 데 따르는 법적 책임은 내려받아 활용하는 사람에게 있음 — gym/snd/README.md)
   champ: { s: 'sBaChamp', bank: 'battle', vol: 90, boost: 1.35 },      // 챔피언 배틀 (경완 '난천 배틀곡 음량이 작은 것 같은데': 재 보면 다른 배틀 곡과 같은 -19dB 지만 피아노 위주라 작게 들려 +2.6dB)
   winTrain: { s: 'sWinTrain', bank: 'battle', vol: 118 }, // 트레이너에게 이겼다

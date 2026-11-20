@@ -7,3 +7,4 @@
 Any legal responsibility for downloading or using these files lies entirely with the person who downloads and uses them. The repository owner does not permit, and takes no responsibility for, any use outside this game.
 
 - `swsh-gym.m4a` — 소드·실드 체육관 관장 배틀 곡 (다이맥스 때 재생, `bgm.js` `SONG.dmax`)
+- `sv-tera.m4a` — 스칼렛·바이올렛 체육관 관장 배틀(테라스탈) 곡 (테라스탈 연출 때 재생, `bgm.js` `SONG.teraSv`)
