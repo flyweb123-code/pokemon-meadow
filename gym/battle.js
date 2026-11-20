@@ -1183,20 +1183,94 @@ function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에�
   if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
-/* v27.68 경완이 보여 준 동혁 말 'Ai 멍청해서 … 아이언롤러 … 자꾸 쓰고 실패함': 지금 쓰면 실패하는 공격 기술은 상대 AI 가 0점으로 봄 (싱글 aiChoice·더블 aiD 공통).
-   아이언롤러 = 필드 없음, 속이기·만나자마자 = 나온 첫 턴 아님, 버닝아웃·더블쇼크 = 그 타입을 이미 잃음, 폴터가이스트 = 상대 도구 없음, 꿈먹기 = 상대 안 잠, 코골기 = 내가 안 잠, 트림 = 열매 안 먹음.
+/* v27.68 경완이 보여 준 동혁 말 'Ai 멍청해서 … 아이언롤러 … 자꾸 쓰고 실패함' → v27.69 경완 '또 이런 ai 찐빠 없는지 검토 좀 해줘봐': 지금 쓰면 실패하거나 헛도는 기술은 상대 AI 가 안 고름 (싱글 aiChoice·더블 aiD 공통, 쉬움·보통의 무작위 고르기에서도 뺌).
+   공격 = 조건부 실패(아이언롤러·속이기·꿈먹기·미래예지 겹침·마지막수단…), 특성·도구로 안 맞음(부유·풍선·축전·저수·타오르는불꽃·초식·불가사의부적·방음·방탄…), 사이코필드·여왕의위엄에 선공기, 큰비·큰가뭄.
+   변화 = 이미 걸린 상태이상·타입·특성으로 안 걸림, 풀 타입에 가루, 대타출동·신비의부적·미스트필드, 이미 깔린 압정·벽·날씨·필드, 꽉 찬 능력치·체력에 올리기·회복, 연속 방어, 교체할 포켓몬 없는 날려버리기, 튀어오르기 등.
    도전자 기술 고르기(MV_BAD)에서도 아이언롤러·버닝아웃·더블쇼크는 뺌 */
-function aiNoGo(btl, a, d, m) { try { const T = p => p.types || p.species?.types || [];
-  switch (m.id) {
-    case 'steelroller': return btl.field.isTerrain('');
-    case 'fakeout': case 'firstimpression': return a.isActive && a.activeMoveActions > 0;
+const AI_ABI = { Electric: ['voltabsorb', 'lightningrod', 'motordrive'], Water: ['waterabsorb', 'stormdrain', 'dryskin'], Fire: ['flashfire', 'wellbakedbody'], Grass: ['sapsipper'], Ground: ['eartheater'] };
+const AI_STA = { slp: ['insomnia', 'vitalspirit', 'sweetveil'], par: ['limber'], brn: ['waterveil', 'waterbubble', 'thermalexchange'], psn: ['immunity', 'pastelveil'], tox: ['immunity', 'pastelveil'], frz: ['magmaarmor'] };
+const AI_STT = { brn: ['Fire'], par: ['Electric'], psn: ['Poison', 'Steel'], tox: ['Poison', 'Steel'], frz: ['Ice'] };
+const AI_HEAL = new Set('recover roost softboiled slackoff milkdrink synthesis moonlight morningsun shoreup healorder wish lifedew junglehealing lunarblessing rest swallow'.split(' '));
+const AI_NEVER = new Set('splash celebrate holdhands happyhour'.split(' ')), AI_KO = new Set('memento healingwish lunardance finalgambit'.split(' '));
+function aiNoGo(btl, a, d, m) { try { if (!a || !m) return false;
+  const T = p => p.terastallized ? [p.terastallized] : p.types || p.species?.types || [], ab = p => !p || p.volatiles?.gastroacid ? '' : p.ability || '', mold = ['moldbreaker', 'teravolt', 'turboblaze'].includes(ab(a)), dab = mold ? '' : ab(d);
+  const F = btl.field, wx = F.weather || '', tr = F.terrain || '', id = m.id, st = m.category === 'Status', toFoe = !['self', 'allySide', 'allies', 'adjacentAlly', 'adjacentAllyOrSelf', 'all', 'foeSide', 'allyTeam'].includes(m.target);
+  const gnd = p => !!p && (p.item === 'ironball' || !!p.volatiles?.ingrain || !!p.volatiles?.smackdown || !!F.pseudoWeather?.gravity || !(T(p).includes('Flying') || ab(p) === 'levitate' && !mold || p.item === 'airballoon' || p.volatiles?.magnetrise || p.volatiles?.telekinesis));
+  const left = s => s.pokemon.filter(p => !p.fainted).length, hpR = a.hp / Math.max(1, a.maxhp);
+  if (AI_NEVER.has(id)) return true;
+  if (AI_KO.has(id) || m.selfdestruct === 'always' || id === 'mindblown' && a.hp <= a.maxhp / 2) { if (hpR > .35) return true; if (['explosion', 'selfdestruct', 'mistyexplosion', 'mindblown'].includes(id) && [...btl.p1.active, ...btl.p2.active].some(p => p && !p.fainted && ab(p) === 'damp')) return true; }
+  switch (id) {
+    case 'steelroller': return !tr;
+    case 'fakeout': case 'firstimpression': return !!a.isActive && a.activeMoveActions > 0;
     case 'burnup': return !T(a).includes('Fire');
     case 'doubleshock': return !T(a).includes('Electric');
     case 'poltergeist': return !d?.item;
-    case 'dreameater': return !!d && d.status !== 'slp';
-    case 'snore': return a.status !== 'slp';
+    case 'dreameater': return !!d && d.status !== 'slp' && dab !== 'comatose';
+    case 'snore': case 'sleeptalk': return a.status !== 'slp';
     case 'belch': return !a.ateBerry;
-  } } catch (e) {} return false; }
+    case 'futuresight': case 'doomdesire': return !!d && !!d.side.slotConditions?.[d.position]?.futuremove;
+    case 'lastresort': return a.moveSlots.length < 2 || a.moveSlots.some(s => s.id !== 'lastresort' && !s.used);
+    case 'synchronoise': return !!d && !T(a).some(t => T(d).includes(t));
+    case 'spitup': case 'swallow': if (!a.volatiles?.stockpile) return true; break;
+    case 'stockpile': return (a.volatiles?.stockpile?.layers | 0) >= 3;
+    case 'aurawheel': return a.species?.baseSpecies !== 'Morpeko';
+    case 'hyperspacefury': return a.species?.name !== 'Hoopa-Unbound';
+    case 'shelltrap': case 'upperhand': return true;
+    case 'focuspunch': return !a.volatiles?.substitute;
+    case 'skydrop': return !!d && (d.weighthg || 0) >= 2000;
+    case 'bellydrum': return a.hp <= a.maxhp / 2 || (a.boosts?.atk | 0) >= 6;
+    case 'substitute': return !!a.volatiles?.substitute || a.hp <= a.maxhp / 4;
+    case 'encore': case 'disable': case 'spite': case 'mimic': case 'sketch': return !!d && !d.lastMove;
+    case 'whirlwind': case 'roar': return !!d && left(d.side) <= d.side.active.length;
+    case 'batonpass': case 'teleport': case 'partingshot': case 'shedtail': return left(a.side) <= a.side.active.length;
+    case 'auroraveil': if (!['snow', 'hail', 'snowscape'].includes(wx)) return true; break;
+    case 'rest': if (a.status === 'slp' || ['insomnia', 'vitalspirit'].includes(ab(a)) || tr === 'electricterrain' && gnd(a) || tr === 'mistyterrain' && gnd(a)) return true; break;
+    case 'trick': case 'switcheroo': return !!d && dab === 'stickyhold';
+    case 'painsplit': return !!d && d.hp <= a.hp;
+    case 'healbell': case 'aromatherapy': case 'refresh': return !a.side.pokemon.some(p => !p.fainted && p.status);
+    case 'psychup': return !!d && !Object.values(d.boosts || {}).some(x => x > 0);
+    case 'haze': case 'clearsmog': if (st) return !d || !Object.values(d.boosts || {}).some(x => x > 0); break;
+    case 'defog': case 'rapidspin': if (st) return !Object.keys(a.side.sideConditions || {}).some(k => ['stealthrock', 'spikes', 'toxicspikes', 'stickyweb'].includes(k)) && !(d && Object.keys(d.side.sideConditions || {}).some(k => ['reflect', 'lightscreen', 'auroraveil'].includes(k))); break;
+  }
+  if (!st) { if (!d) return false;
+    if (wx === 'primordialsea' && m.type === 'Fire' || wx === 'desolateland' && m.type === 'Water') return true;
+    if (m.priority > 0 && a.side !== d.side && (tr === 'psychicterrain' && gnd(d) || ['dazzling', 'queenlymajesty', 'armortail'].includes(dab) || d.side.active.some(p => p && !p.fainted && !mold && ['dazzling', 'queenlymajesty', 'armortail'].includes(ab(p))))) return true;
+    if (m.type === 'Ground' && id !== 'thousandarrows' && !gnd(d)) return true;
+    if ((AI_ABI[m.type] || []).includes(dab)) return true;
+    if (m.flags?.sound && dab === 'soundproof' || m.flags?.bullet && dab === 'bulletproof' || m.flags?.wind && dab === 'windrider' || m.flags?.powder && (dab === 'overcoat' || d.item === 'safetygoggles' || T(d).includes('Grass'))) return true;
+    if (dab === 'wonderguard' && m.type && m.type !== '???' && id !== 'struggle' && btl.dex.getEffectiveness(m.type, d) <= 0) return true;
+    return false; }
+  /* ── 변화 기술 ── */
+  if (a.volatiles?.taunt) return true;
+  if (m.stallingMove) return !!a.volatiles?.stall;
+  if (m.heal || AI_HEAL.has(id)) { if (a.hp >= a.maxhp && !['lifedew', 'junglehealing', 'lunarblessing'].includes(id)) return true; if (a.volatiles?.healblock) return true; }
+  if (m.target === 'self' || m.target === 'allySide' || m.target === 'allies' || m.target === 'adjacentAllyOrSelf') {
+    const up = m.boosts ? Object.entries(m.boosts).filter(([, x]) => x > 0) : []; if (up.length && !m.volatileStatus && !m.sideCondition && up.every(([k]) => (a.boosts?.[k] | 0) >= 6)) return true;
+    if (m.volatileStatus && a.volatiles?.[m.volatileStatus] && !['stockpile', 'protect'].includes(m.volatileStatus)) return true;
+    if (m.sideCondition && a.side.sideConditions?.[m.sideCondition]) return true; }
+  if (m.target === 'foeSide' && m.sideCondition && d) { const c = d.side.sideConditions?.[m.sideCondition]; if (c && (c.layers || 1) >= ({ spikes: 3, toxicspikes: 2 }[m.sideCondition] || 1)) return true; }
+  if (m.weather && wx === PSim.toID(m.weather)) return true; if (m.weather && ['primordialsea', 'desolateland', 'deltastream'].includes(wx)) return true;
+  if (m.terrain && tr === PSim.toID(m.terrain)) return true;
+  if (toFoe && d && a.side !== d.side) {
+    if (dab === 'goodasgold' || dab === 'magicbounce' && m.flags?.reflectable) return true;
+    if (d.volatiles?.substitute && !m.flags?.bypasssub && !(m.flags?.sound) && ab(a) !== 'infiltrator') return true;
+    if (m.flags?.powder && (dab === 'overcoat' || d.item === 'safetygoggles' || T(d).includes('Grass'))) return true;
+    if (id === 'thunderwave' && !btl.dex.getImmunity('Electric', d) || id === 'thunderwave' && T(d).includes('Ground')) return true;
+    const sts = m.status || (id === 'yawn' ? 'slp' : '');
+    if (sts) { if (d.status || dab === 'comatose' || dab === 'purifyingsalt' || dab === 'leafguard' && ['sunnyday', 'desolateland'].includes(wx)) return true;
+      if ((AI_STA[sts] || []).includes(dab)) return true; if ((AI_STT[sts] || []).some(t => T(d).includes(t)) && !(ab(a) === 'corrosion' && (sts === 'psn' || sts === 'tox'))) return true;
+      if (d.side.sideConditions?.safeguard && ab(a) !== 'infiltrator') return true; if (tr === 'mistyterrain' && gnd(d)) return true; if (sts === 'slp' && tr === 'electricterrain' && gnd(d)) return true;
+      if (id === 'yawn' && d.volatiles?.yawn) return true; }
+    if (m.volatileStatus && d.volatiles?.[m.volatileStatus]) return true;
+    if (m.volatileStatus === 'confusion' && (dab === 'owntempo' || tr === 'mistyterrain' && gnd(d) || d.side.sideConditions?.safeguard)) return true;
+    if (m.volatileStatus === 'leechseed' && T(d).includes('Grass')) return true;
+    if (m.volatileStatus === 'attract' && (dab === 'oblivious' || !a.gender || !d.gender || a.gender === 'N' || d.gender === 'N' || a.gender === d.gender)) return true;
+    if (m.volatileStatus === 'taunt' && dab === 'oblivious') return true;
+    const dn = m.boosts ? Object.entries(m.boosts).filter(([, x]) => x < 0) : []; if (dn.length && (dn.every(([k]) => (d.boosts?.[k] | 0) <= -6) || ['clearbody', 'whitesmoke', 'fullmetalbody'].includes(dab) || d.side.sideConditions?.mist)) return true; }
+  } catch (e) {} return false; }
+/* 위력이 그때그때 달라 AI 가 너무 높게 보던 기술: 분화·해수스파우팅·드래곤에너지 = 남은 체력 비율, 두 턴 모으는 기술 = 절반 (쾌청의 솔라빔·파워풀허브는 그대로) */
+function aiPw(btl, a, m) { try { if (['eruption', 'waterspout', 'dragonenergy'].includes(m.id)) return Math.max(.01, a.hp / Math.max(1, a.maxhp));
+  if (m.flags?.charge) { const wx = btl.field.weather || ''; if (a.item === 'powerherb' || ['solarbeam', 'solarblade'].includes(m.id) && ['sunnyday', 'desolateland'].includes(wx) || m.id === 'electroshot' && ['raindance', 'primordialsea'].includes(wx)) return 1; return .5; } } catch (e) {} return 1; }
 function aiChoice(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const foe = btl.p1.active[0], me = side.active[0];
@@ -1219,7 +1293,7 @@ function aiChoice(btl, diff) {
     if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
     const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
     const base = Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2;
-    return base * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+    return base * aiPw(btl, a, m) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const best = (a, d) => Math.max(0, ...(a?.moveSlots || []).filter(x => x.pp > 0).map(x => dmg(a, d, x.id)));
   const fast = (a, d) => st(a, 'spe') >= st(d, 'spe');
   // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
@@ -1231,7 +1305,7 @@ function aiChoice(btl, diff) {
   if (diff === 1 && !B?.train && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수 (수련탑은 아래 점수 고르기)
   const fHp = Math.max(1, foe?.hp || 1), mHp = me.hp / me.maxhp, inDanger = best(foe, me) >= me.hp, foeHit = best(foe, me) / Math.max(1, me.hp), bo = me.boosts || {};
   const sc = mv.map(o => { const m = btl.dex.moves.get(o.m.id); let v;
-    if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25; if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; }
+    if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (d > 0 && m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25;   /* v27.69 안 맞는 선공기(고스트에 신속 등)엔 덤 점수 없음 */ if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; }
     else { v = .05; const sb = m.boosts && m.target === 'self' ? m.boosts : null;
       if (sb) { const up = Object.entries(sb).filter(([k, x]) => x > 0), cur = Math.max(...up.map(([k]) => bo[k] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .45) v = .62 - cur * .2; }
       else if (m.status && foe && !foe.status && !foe.fainted) { const im = !btl.dex.getImmunity(m.status === 'par' && m.type === 'Electric' ? 'Electric' : m.type, foe) || (m.status === 'brn' && hasT(foe, 'Fire')) || ((m.status === 'psn' || m.status === 'tox') && (hasT(foe, 'Poison') || hasT(foe, 'Steel'))) || (m.status === 'par' && hasT(foe, 'Electric'));
@@ -1572,7 +1646,7 @@ function aiD(btl, diff) {
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
   const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || aiNoGo(btl, a, d, m) || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
     const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
-    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
   if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
     const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
@@ -1591,7 +1665,7 @@ function aiD(btl, diff) {
         else if (m.id === 'protect' || m.id === 'detect') v = foeHit > .6 ? .3 : .05;
         else if (m.id === 'followme' || m.id === 'ragepowder') v = alOk && mHp > .5 ? .3 : 0;
         else if (m.heal || /^(roost|synthesis|moonlight|morningsun)$/.test(m.id)) v = mHp < .45 ? .65 : 0;
-        else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && btl.dex.getImmunity(m.type, F.q)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
+        else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && !aiNoGo(btl, me, F.q, m)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
         if (m.accuracy !== true) v *= m.accuracy / 100; opts.push({ o, T: [[NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n || '' : '', v]] }); continue; }
       const r = F => Math.min(1, dmg(me, F.q, m) / Math.max(1, F.q.hp)) + (dmg(me, F.q, m) >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : 0);
       if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, F) => a + r(F), 0) * .75; if (tg === 'allAdjacent' && alOk) v -= Math.min(1, dmg(me, al, m) / Math.max(1, al.hp)) * 1.2 + (dmg(me, al, m) >= al.hp ? 1 : 0); opts.push({ o, T: [['', v]], ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) }); }
