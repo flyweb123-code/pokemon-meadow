@@ -454,6 +454,7 @@ body.gasbx #hatchSend,body.gasbx #hatchField{display:none!important}
 .fr-go[data-u],.fr-go[data-p]{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 /* 긴 목록은 화면 밖 칸을 그리지 않는다 (도감 1025칸, 포켓몬 상자) */
 #dexGrid img:not([data-fit]){visibility:hidden}
+.slots .ph img:not([data-fit]){visibility:hidden}
 /* 도감 창은 닫혀도 배치를 기억해 둔다 (다시 열 때 1025칸을 새로 배치하지 않아 바로 뜬다) */
 #sheet[hidden]{display:grid!important;visibility:hidden;pointer-events:none;content-visibility:hidden}#sheet[hidden].warm{content-visibility:visible}
 /* 작은 화면(아이폰 SE 등): 버튼 글자가 잘리지 않게 */
@@ -14347,7 +14348,7 @@ function renderMgr(force) { refreshCap();
       const m = FM[i], b = document.createElement('button'); b.className = 'slot';
       if (m) {
         b.dataset.uid = m.uid; b.setAttribute('aria-current', m === mgrSel); if (isBud(m)) b.classList.add('bud'); setTier(b, m.sp);
-        b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}</span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}<span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="pk-tys sl-tys">${(m.pid != null && boxOf(m.pid)?.sp === m.sp ? pTy(boxOf(m.pid)) : SPECIES[m.sp]?.t || []).map(t => tyIcon(t).replace(/ data-tip="[^"]*"/, '')).join('')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
+        b.innerHTML = `<span class="sl-tags">${rkBadge(boxOf(m.pid))}</span>${isBud(m) ? '<span class="sl-bud">짝꿍</span>' : ''}<span class="sl-x" role="button" aria-label="필드에서 빼기">✕</span><span class="ph${pkCls(boxOf(m.pid))}"><img alt="" src="${thumbOf(m.sk || m.form)}"${slotNH(m.sk || m.form)}></span><span class="nmw"><span class="nm${tnCls(m.sp)}">${esc(m.name)}</span>${sexHtml(sexOf(m)).replace(/ data-tip="[^"]*"/, '')}</span><span class="pk-tys sl-tys">${(m.pid != null && boxOf(m.pid)?.sp === m.sp ? pTy(boxOf(m.pid)) : SPECIES[m.sp]?.t || []).map(t => tyIcon(t).replace(/ data-tip="[^"]*"/, '')).join('')}</span><span class="gg">${GG.map(([k, ic]) => `<span class="gr ${k}"><i class="gi">${ic}</i><span class="mini"><i></i></span></span>`).join('')}</span>`;
         b.onclick = e => { if (e.target.closest('.sl-x')) { sfx('tap'); removeMon(m); if (mgrSel === m) mgrSel = null; renderMgr(true); refreshCap(); save(); return; } openMon(m); };   // 우상단 ✕ = 바로 상자로
       } else {
         b.classList.add('empty'); b.innerHTML = '<span class="plus">+</span><span>빈 자리</span>';
@@ -15714,7 +15715,8 @@ async function dexFxRun() {
 // v3.09: 작은 스프라이트(토중몬 등)를 칸 높이까지 늘리면 도트가 커 보인다(경완) → 도트 한 칸 최대 2배까지만 키우고 칸 높이는 그대로
 function dexImgFit(im, H = 56) { const h = Math.min(H, Math.round(im.naturalHeight * 2)); im.style.height = h + 'px'; im.style.marginTop = (H - h) + 'px'; im.dataset.fit = 1; }   // v6.13 경완: 크기를 맞추기 전 한 프레임 동안 원래 크기로 보였다가 줄어들던 것 → 맞추기 전엔 숨김 (CSS)
 $('#dpImg').addEventListener('load', e => { const im = e.target, h = Math.min(108, Math.round(im.naturalHeight * 3)); im.style.height = h + 'px'; });   // 도감 카드: 작은 포켓몬은 3배까지만 (v3.10)
-$('#slots').addEventListener('load', e => { const im = e.target; if (im.tagName === 'IMG' && im.closest('.ph')) im.style.maxHeight = Math.round(im.naturalHeight * 2) + 'px'; }, true);   // 필드 슬롯도 2배까지만 (v3.11)
+const SLOT_NH = {}; const slotNH = k => ` data-k="${k}"` + (SLOT_NH[k] ? ` style="max-height:${SLOT_NH[k] * 2}px" data-fit="1"` : '');   /* v27.99 경완 '처음 필드 테마 바꿀 때 포켓몬 스프라이트 잠깐 커졌다가 다시 원래 크기로' '필드 슬롯에 있는 포켓몬 스프라이트 말한거' — 그림이 다 받아지기 전 한 프레임 칸 높이(63px)로 그려졌다 줄던 것 → 아는 크기는 처음부터 넣고, 모르면 맞출 때까지 숨김 */
+$('#slots').addEventListener('load', e => { const im = e.target; if (im.tagName === 'IMG' && im.closest('.ph')) { im.style.maxHeight = Math.round(im.naturalHeight * 2) + 'px'; im.dataset.fit = 1; if (im.dataset.k && im.naturalHeight) SLOT_NH[im.dataset.k] = im.naturalHeight; } }, true);   // 필드 슬롯도 2배까지만 (v3.11)
 document.addEventListener('load', e => { const im = e.target; if (im.tagName !== 'IMG' || !im.closest('.bd-pic') || !im.naturalWidth) return; const k = Math.min(3, 84 / im.naturalWidth, 84 / im.naturalHeight); im.style.width = Math.round(im.naturalWidth * k) + 'px'; im.style.height = Math.round(im.naturalHeight * k) + 'px'; }, true);   // 짝꿍 카드 사진도 3배까지만 (v3.14)
 $('#boxGrid').addEventListener('load', e => { if (e.target.tagName === 'IMG' && e.target.closest('.pk')) dexImgFit(e.target, 52); }, true);   // 포켓몬 상자 리스트도 같은 규칙 (v3.10)
 function dexCellReady(sp) { const b = dexBtns[sp]; if (!b) return; io.unobserve(b); const put = () => { const im = b.querySelector('img'); if (thumbOf(sp) && im.src !== thumbOf(sp)) im.src = thumbOf(sp); if (im.complete && im.naturalHeight) dexImgFit(im); im.decode?.().catch(() => {}); };
