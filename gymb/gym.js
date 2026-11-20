@@ -3961,6 +3961,7 @@ function enter() {
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }
+  window.gymTrGo = window.gymSimOn ? trGo : null;   /* v27.90 포켓몬 메뉴 [수련탑] 버튼 시안: 운영자 시뮬 안에서만 */
   { const k = window.gymSimOn ? window.gymYaTest : null; window.gymYaTest = null; if (k) setTimeout(() => { if (lockedT('train')) yaTest(); else openTab('train'); }, 900); }   /* 경완 2026-11-15 '특훈 시연 훈련장에서 버튼 눌러서 들어가는거부터 해볼 수 있게': 시연 = 시뮬 훈련장을 열어 두고, 아래 [특훈] 버튼으로 들어감 */   // 운영자 직접 훈련 시연 (시뮬 안, 저장 안 건드림)   // v23.10 운영자 훈련하기 시연 (시뮬 안)
   { const k = window.gymSimOn ? window.gymLegFit : null; window.gymLegFit = null; if (k) setTimeout(() => legFitPop(1), 900); }   /* 운영자 전설 의상 받는 창 시험 */
   { const k = window.gymSimOn ? window.gymLegExam : null; window.gymLegExam = null; if (k) setTimeout(() => legExamTest(k === 2), 900); }   // 운영자 전설 심사 (강박사) 시험
@@ -4490,6 +4491,15 @@ const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.
   if (R.end === 'top') try { sfx('win'); } catch (e) {}
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); el.remove(); ok(); };
 });
+/* v27.90 경완 '수련탑 포켓몬 메뉴 하단에 연습게임 버튼 대신 … 그 버튼 누르면 승급심사나 특훈 들어갈 때처럼 진입 연출 나오고 등반대 고르는 화면': 줄무늬가 화면을 가르며 '수련탑' (bsGo 와 같은 .bs-tr) → 닫힌 사이에 메뉴를 닫고 등반대 고르기(trainTest → trLineup) */
+function trGo() {
+  if (!open || !st()?.d || root.querySelector('.bs-tr')) return;
+  /* 특훈(yaTest)처럼 줄무늬가 닫힌 채 기다렸다가 등반대 화면(#trLobby)이 뜬 뒤 연다 (늦어도 6초), 아래 메뉴는 안 가림 */
+  const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; { const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; }
+  f.innerHTML = '<i class="a"></i><i class="b"></i><b>수련탑</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
+  const t0 = performance.now(); let rd = 0; setTimeout(() => { openTab(null); trainTest(); }, 450);
+  const iv = setInterval(() => { const now = performance.now(), dt = now - t0, L = root.querySelector('#trLobby, .tr-gate, .gy-pop'); if (!rd && dt > 450 && L) rd = now; if (!(dt > 6000 || !open || (dt >= 910 && rd && now - rd >= 200))) return; clearInterval(iv); f.classList.add('go'); setTimeout(() => f.remove(), 500); }, 40);
+}
 async function trainTest() {
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM'); await loadNamed();   /* v24.87 관장·라이벌·사천왕 층 */
