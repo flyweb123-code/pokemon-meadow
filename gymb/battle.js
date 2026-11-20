@@ -647,7 +647,7 @@ function gifUrl(sp, b, sh, f, fm) {
   { const G = fm ? GMJ[fm] : null; if (G) { const L = G[2], u = p => `${IMG}pk/gm/${p}${fm}.gif?v=1`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.89 메가진화·거다이맥스 움직이는 그림 */
   { const L = fm ? BWA.fm?.[fm] : null; if (L) { const u = p => `${IMG}pk/bw/${p}${fm}.gif?v=4`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.78 경완 '폼 체인지도 다 움직이는 걸로': 배틀 폼(마이티폼·들킨 모습 등) EeveeExpo 움직이는 그림 */
   if (+sp >= 650 && (!fm || fm === toID(D?.sp?.[sp]?.id || ''))) return bwUrl(sp, b, sh, f);   /* 배틀 중 바뀐 폼은 예전 그림 */
-  { const k = RFA[fm] ? fm : rfKey(sp) ? toID(rfKey(sp)) : ''; if (k || RFA[fm]) return RFA[k] ? `${IMG}pk/rf/a/${b ? 'b' : ''}${sh ? 's' : ''}${k}.gif?v=1` : null; }   /* v27.94 경완 '켄타로스 팔데아 폼 뒷모습 안 움직이네. 안 움직이는 폼 또 있어?': 지역 폼 59종 앞·뒤·이로치 움직이는 그림 (EeveeExpo, gym/img/pk/rf/a) */
+  { const k = RFA[fm] ? fm : rfKey(sp) ? toID(rfKey(sp)) : ''; if (k || RFA[fm]) return RFA[k] ? `${IMG}pk/rf/a/${b ? 'b' : ''}${sh ? 's' : ''}${k}.gif?v=1` : null; }   /* v27.95 경완 '켄타로스 팔데아 폼 뒷모습 안 움직이네. 안 움직이는 폼 또 있어?': 지역 폼 59종 앞·뒤·이로치 움직이는 그림 (EeveeExpo, gym/img/pk/rf/a) */
   if (FM_G[fm]) return `${G5}s${FM_G[fm]}${b ? '-b' : ''}${sh ? '-s' : ''}.gif`;
   const g = ANIM.g?.[sp]; if (!g) return null; const [nm, bits] = g, has = k => !k || (bits >> G5K.indexOf(k) & 1);
   const fs = f ? ['-f', ''] : [''], ss = sh ? ['-s', ''] : [''];
@@ -997,13 +997,22 @@ function partyPanel(req, forced, ban = []) {
   });
 }
 /* v24.55 경완 '도구 쓸 때는 포켓몬 교체 화면이랑 똑같은 목록': L = [{id, hp, mhp, ok}] → 고른 id (취소 null) */
-function trPickMon(q, L) {
+function trPickMon(q, L, act) {   /* v27.95 경완 '보상에서 상처약 누르자마자 체력 회복되는 연출': act(id) → 새 HP 를 주면 그 칸 HP 막대·숫자가 차오른 뒤 닫힘 */
   return new Promise(async res => { if (q) await msg(q, 0);
     const p = panel(`<div class="bp-party${B?.ptyIt ? ' tr1' : ''}">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
       return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b><span class="pty-nm">${esc(P.nm || SPECIES[P.sp]?.n || '')}</span>${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span>${x.tag ? `<span class="pty-it pty-n">${x.tag}</span>` : B?.ptyIt ? `<span class="pty-it">${B.ptyIt(x.id)}</span>` : ''}</button>`; }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
-    p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
+    p.onclick = async e => { const b = e.target.closest('button'); if (!b || b.disabled || p._busy) return; tapSe(); if (b.hasAttribute('data-x')) { panel(''); return res(null); } const x = L[+b.dataset.i];
+      if (act) { p._busy = 1; let v = null; try { v = await act(x.id); } catch (err) { console.error(err); } if (typeof v === 'number' && B) await hpFill(b, x, v); else if (v && B) await slotFx(b, x, v.img); } panel(''); res(x.id); }; });
 }
+/* 도구·영양제를 준 칸: 도구 그림이 칸 가운데로 쏙 들어가고 칸이 빛남, 칸 오른쪽 도구 줄도 새로 */
+async function slotFx(b, x, img) { b.classList.add('hl-on', 'hl-it'); if (img) { const i = document.createElement('img'); i.className = 'pty-pop'; i.alt = ''; i.src = img; b.appendChild(i); setTimeout(() => i.remove(), 700); }
+  await wait(320); try { const w = b.querySelector('.pty-it:not(.pty-n)'); if (w && B?.ptyIt) { w.innerHTML = B.ptyIt(x.id); fillTh?.(w); } } catch (e) {} await wait(420); b.classList.remove('hl-on', 'hl-it'); }
+/* 교체 화면 칸의 HP 막대·숫자를 a → v 로 차오르게 (본가 회복약 쓸 때처럼) */
+async function hpFill(b, x, v) { const bar = b.querySelector('.hp i'), num = b.querySelector('.hpn'), a = Math.max(0, x.hp), M = Math.max(1, x.mhp), T = clampN(Math.abs(v - a) * 18, 400, 1100), t0 = performance.now();
+  b.classList.remove('fnt'); b.classList.add('hl-on');
+  await new Promise(ok => { const st = () => { const k = Math.min(1, (performance.now() - t0) / T), h = Math.round(a + (v - a) * k), r = h / M; if (bar) { bar.style.width = r * 100 + '%'; bar.className = hpCol(r); } if (num) num.textContent = `${h}/${M}`; if (k < 1 && B) requestAnimationFrame(st); else ok(); }; requestAnimationFrame(st); });
+  await wait(380); b.classList.remove('hl-on'); }
 /* v23.10 훈련하기 보급 고르기: 아래 화면에 고를 것 여러 개 (L = [[제목, 설명, 'c1,c2']]) → 고른 번호 */
 function trChoose(q, L) {
   return new Promise(res => { const p = panel(`<div class="bp-yn bp-tr"><p>${q}</p>${L.map(([t, d, c], i) => `<button class="bb" data-a="${i}"${c ? ` style="--c1:${c.split(',')[0]};--c2:${c.split(',')[1]}"` : ''}><span>${t}${d ? `<small>${d}</small>` : ''}</span></button>`).join('')}</div>`);

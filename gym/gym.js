@@ -2322,7 +2322,7 @@ function guyAsk() {
     if (b.dataset.a === 'bt') { homeSay(); return btHelp(); }
     await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
-  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
+  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang, .gy-pop')) return;   /* v27.95 위에 뜬 알림창 버튼을 누른 건 먹지 않음 */ off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
   const off = () => root.removeEventListener('click', shut, true);
   setTimeout(() => root.addEventListener('click', shut, true));
 }
