@@ -92,7 +92,7 @@ let nextDrop = 0;
 /* 보석 */
 /* 경완 '내가 배치할 수 있게 해줘' → 보석·버섯은 바탕에 찍지 않고 따로 그림, 자리는 이 기기에 저장 */
 const SPR = {}; for (const k in CFG.sprites) { const i = new Image(); i.src = CFG.sprites[k]; SPR[k] = i; }
-const LSK = 'cave-props-v1';
+const LSK = 'cave-props-v2';
 const mkP = a => { const [t, k, x, y] = a; if (t === 'gem') { const [c, name] = CFG.gemInfo[k]; return { t, k, x, y, c, name, hp: 3, gone: 0, grow: 1, shake: 0, sp: R() * 4, sx: 0, sy: 0 }; } return { t, k, x, y }; };
 let props = (() => { try { const v = JSON.parse(localStorage.getItem(LSK)); if (Array.isArray(v) && v.length) return v.map(mkP); } catch (e) {} return CFG.props.map(mkP); })();
 const spr = p => SPR[p.t === 'gem' ? 'gem_' + p.k : 'mush_' + p.k];
