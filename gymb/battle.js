@@ -1888,11 +1888,14 @@ const hpOf = s => { const [a] = String(s || '').split(' '); if (a === '0') retur
 const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
 // 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
 const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 굉장했다!', '-resisted': '효과가 별로인 듯하다…' };
-async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
+async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (typeof t === 'function') { await t(); continue; } if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
+function hangOn(a) { const k = a[1], t = a[3] || ''; if (!((k === '-enditem' && /Focus Sash/.test(t)) || (k === '-activate' && /item: Focus Band|move: Endure/.test(t)) || (k === '-ability' && /Sturdy/.test(t) && !a[4]))) return false; const n = (B?.btl?.log?.[B.li] || '').split('|'); return n[1] === '-damage' && n[2] === a[2]; }
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
   // v13.16 경완 '맞지 않았다! 가 너무 빨리': 기술 이름 바로 뒤에 오는 결과 말은 이름을 읽을 틈(0.75초)을 둔다
   const pk = B.prevK; B.prevK = k; const gap = () => pk === 'move' ? wait(750) : null;
+  /* v27.95 경완 '기합의 띠로 버티는 연출이 본가에서는 원래 피 1 까지 게이지 줄어든 다음에 버텼다고 나오지 않나?': 쇼다운은 띠·머리띠·옹골참·버티기 줄을 -damage 보다 먼저 보냄 → 바로 뒤 같은 포켓몬 -damage 가 있으면 체력바가 다 줄어든 뒤로 미룸 */
+  if (!a._hold && hangOn(a)) { a._hold = 1; (B.pend = B.pend || []).push(() => handle(a)); return; }
   if (PEND[k]) { if (k === '-crit') setTimeout(() => vib(2), 120); (B.pend = B.pend || []).push(PEND[k]); return; }
   if (k === '-frmsg') {   // 친밀도: 버티기는 체력바가 줄어든 뒤에, 피하기·고치기는 바로
     const n = nmIn(a[2]), s = sideOf(a[2]);
