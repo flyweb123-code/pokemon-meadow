@@ -2322,7 +2322,7 @@ function guyAsk() {
     if (b.dataset.a === 'bt') { homeSay(); return btHelp(); }
     await kang(GUY_TOUR(), Object.assign(guy, { skip: true })); homeSay(); };
   // 물음 밖(대화창·빈 곳)을 누르면 박사 창처럼 닫힌다 (경완 2026-10-27)
-  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang')) return; off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
+  const shut = e => { if (e.target.closest('.gy-dyn button, .gy-kang, .gy-pop')) return;   /* v27.95 위에 뜬 알림창(수련탑 기록창 등) 버튼을 누른 건 먹지 않음 */ off(); if ($g('.gy-dyn')) { e.stopPropagation(); homeSay(); } };   // 빈 곳을 눌러도 이 창만 닫히고 화면 숨기기(gview)는 안 됨 (경완 2026-10-29)
   const off = () => root.removeEventListener('click', shut, true);
   setTimeout(() => root.addEventListener('click', shut, true));
 }
@@ -2476,7 +2476,7 @@ function openTab(t, opt) {
 
 // ---------- 팝업 ----------
 // v18.91 경완: 저절로 뜨는 알림창(배틀 결과·승급·보상·주간 보고서·내가 없는 동안·오류·다시 개업)은 버튼으로만 닫힘 — 모르고 막 누르다 꺼지지 않게. 직접 눌러 연 창은 바깥 눌러도 닫힘
-const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop';
+const POP_LOCK = '.rs-hd,.bsa-hd,.ul-t,.pp-t,.le-get,.wr-pop,.aw-pop,.sh-re,.gy-lock,.eg-lk,.ro-pop,.trs';   /* .trs = v27.95 수련탑 기록창 */
 const gyHold = (el, ms) => { if (!el) return; el.classList.add('gy-hold'); setTimeout(() => el.classList.remove('gy-hold'), ms); };   // 막 누르다 넘어가지 않게 버튼 잠깐 잠금 (v24.42)
 function pop(html, onClick) {
   const p = document.createElement('div'); p.className = 'gy-pop'; p.innerHTML = `<div class="win" role="dialog">${html}</div>`; if (p.querySelector(POP_LOCK)) { p.classList.add('gy-np'); const t0 = performance.now(); setTimeout(() => { if (!p.isConnected || p.querySelector('.aw-pop') || (window.GymBGM?.seT || 0) > t0 - 400) return; try { GA.sfx('newdex'); } catch (e) { try { window.GymBGM?.se?.('DP_PINPON'); } catch (x) {} } GA.haptic?.(1); }, 60); }   /* v19.34 경완 '딩동 말고 업데이트 알림창 효과음' */   // v18.98 경완: 저절로 뜨는 알림창은 업데이트 알림창 팝업 모션. v18.99 경완: 효과음도 항상 — 창이 따로 소리를 안 냈으면 딩동(DP_PINPON)
@@ -4445,7 +4445,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
     el.querySelector('[data-f=sh]').setAttribute('aria-pressed', trlSh); el.querySelector('[data-f=lu]').setAttribute('aria-pressed', trlLu); el.querySelector('.tl-cnt').textContent = `${L.length}/${A0.length}마리`;
     list.innerHTML = L.length ? L.map(P => `<button class="tl-c${sel.includes(P.id) ? ' on' : ''}" data-p="${P.id}"><span class="tl-top"><span class="tl-tg">${tags(P).map(([k, t]) => `<i class="${k}">${t}</i>`).join('')}</span><span class="ty">${GA.pTy(P).map(tyI0).join('')}</span></span>${B.thumb(P)}<b>${esc(nmOf(P))}</b><span class="st"><em>Lv.${B.gm(P).lv}</em><em class="c" title="코스트">${cost(P)}</em></span></button>`).join('') : '<p style="grid-column:1/-1;font-size:12px;color:#fff">포켓몬이 없어요.</p>';
     list.scrollTop = sc; B.fillTh(el); };
-  const end = v => { el.remove(); ok(v); };
+  const end = v => { if (v) trLobOut(el); else el.remove(); ok(v); };   /* v27.95 시작하면 배틀 화면이 뜰 때까지 등반대 화면을 그대로 둠 */
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.q) { const i = el.querySelector('.tl-q input'); i.value = ''; i.blur(); draw(); return; }
     if (b.dataset.so) { const k = b.dataset.so; if (k === trlSo) trlDir = -trlDir; else { trlSo = k; trlDir = 1; } draw(); el.querySelector('.tl-list').scrollTop = 0; return; }
@@ -4480,7 +4480,7 @@ const trGate = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.bo
     `<button class="gy-key" data-a="x">나가기</button><button class="gy-key" data-a="new">새로 시작<small>1층부터</small></button><button class="gy-key main" data-a="cont">이어 오르기<small>${R.floor}층부터</small></button>`);
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const a = b.dataset.a;
     if (a === 'new' && !b.classList.contains('sure')) { b.classList.add('sure'); b.innerHTML = '정말 새로?<small>기록이 지워져요</small>'; return; }
-    if (a) { el.remove(); ok(a === 'x' ? null : a); } };
+    if (a) { if (a === 'cont') trLobOut(el); else el.remove(); ok(a === 'x' ? null : a); } };
 });
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 끝날 때(그만두기·쓰러짐·꼭대기) 정산 화면 — 지난 기준점부터 오른 층·레벨·경험치·코인·동료 */
 /* v26.91 경완 '배틀 끝날 때마다 골드 받게 해주고 … 얻는 골드 양은 밸런스 맞춰줘': 이기면 야생 15·트레이너(더블) 30·우두머리 60 G × (1 + 층/100).
@@ -4492,13 +4492,17 @@ const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.
   const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
   const rows = L.map(P => { const m = B.gm(P), [lv0, xp0] = m0[P.id] || [m.lv, m.xp | 0], dl = m.lv - lv0, dx = Math.max(0, (m.xp | 0) - xp0);
     return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em class="mt">동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
-  const el = await trScr('settle ' + (R.end || ''), `<div class="tl-win tl-res"><div class="tl-rh"><b>${T[0]}</b><small>${T[1]}</small></div>
-      <div class="tl-chips"><span><small>오른 층</small><b>${up}</b></span><span><small>기록</small><b>${R.floor}층</b></span><span><small>코인</small><b>+${coin}</b></span><span><small>골드</small><b>+${gold.toLocaleString()}</b></span></div>
-      <ul class="tl-rows">${rows}</ul><p class="tl-sm">시연이라 내 포켓몬 상자에는 들어가지 않아요</p></div>`, `<button class="gy-key main" data-a="ok">받기</button>`);
+  /* v27.95 경완 '도전 멈추거나 끝났을 때 기록창은 팝업창으로': 화면 전체 대신 체육관 알림창(.gy-pop, gy-lock = 팝업 모션·소리, 버튼으로만 닫힘) */
+  const p = pop(`<div class="trs"><h4 class="trs-h trs-${R.end || ''}">${T[0]}</h4>${T[1] ? `<p class="trs-s">${T[1]}</p>` : ''}
+      <div class="trs-c"><span><small>오른 층</small><b>${up}</b></span><span><small>기록</small><b>${R.floor}층</b></span><span><small>코인</small><b>+${coin}</b></span><span><small>골드</small><b>+${gold.toLocaleString()}</b></span></div>
+      <ul class="trs-r">${rows}</ul><p class="trs-n">베타에선 경험치·보상을 실제로 받지 않아요</p></div><div class="gy-btns one"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); });
+  p.classList.add('trs-pop'); try { B.fillTh?.(p); } catch (e) {}
   if (R.end === 'top') try { sfx('win'); } catch (e) {}
-  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); el.remove(); ok(); };
 });
 /* v27.90 경완 '수련탑 포켓몬 메뉴 하단에 연습게임 버튼 대신 … 그 버튼 누르면 승급심사나 특훈 들어갈 때처럼 진입 연출 나오고 등반대 고르는 화면': 줄무늬가 화면을 가르며 '수련탑' (bsGo 와 같은 .bs-tr) → 닫힌 사이에 메뉴를 닫고 등반대 고르기(trainTest → trLineup) */
+/* v27.95 경완 '수련탑 시작할 때는 체육관 화면으로 돌아가서 시작하지 않고, 시작화면에서 시작하게. 시작할 때 효과음 추가': 오르기를 누르면 SE_DP_TB_START(배틀타워 시작) 를 내고, 등반대 화면은 배틀 화면(.bt)이 뜬 뒤에 치움 (늦어도 6초) */
+function trLobOut(el) { try { window.GymBGM?.se?.('DP_TB_START'); } catch (e) {} el.style.pointerEvents = 'none'; const t0 = performance.now();
+  const iv = setInterval(() => { const bt = document.querySelector('.bt.intro, .bt.open'); if (!(bt && !bt.hidden && bt.offsetParent) && performance.now() - t0 < 6000 && el.isConnected) return; clearInterval(iv); requestAnimationFrame(() => el.remove()); }, 40); }
 /* v27.91 시험 버튼(랜덤 라인업·⏩ 등)은 운영자 시뮬·시험 모드에서만 */
 const trOp = () => !!window.gymSimOn || document.documentElement.classList.contains('tests');
 function trGo() {
@@ -4539,9 +4543,9 @@ async function trainTest(o0) {
         tools: trOp() && [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }], ['🧑 트레이너', () => { R.trNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
       first = false; if (!res?.keep) break;
     }
-    if (R?.end) { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; }
+    if (R?.end) { document.body.classList.remove('gymBattle'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; }
   } catch (err) { console.error(err); GA.toast?.('수련탑을 이어 가지 못했어요'); }
-  finally { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSave?.ids?.includes(P.id)).map(P => P.id)); save(); bgmPlay('gym'); }
+  finally { document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSave?.ids?.includes(P.id)).map(P => P.id)); save(); bgmPlay('gym'); }
 }
 async function trPost(R, o, boss, ids, T, trn) {
   Object.assign(R.hp, o.hp);
@@ -4669,22 +4673,25 @@ async function trReward(R, o, ids, boss, shop, first) {
   const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
   const cur = id => Math.round(hp(id) * mx(id));
   /* v23.56 경완 '상처약은 본가처럼 절댓값으로 쓸 포켓몬 선택, 기력의덩어리도 한 마리만, 도구는 본가 기준': 상처약 20·좋은상처약 60·고급상처약 120·회복약 가득, 기력의조각 절반·기력의덩어리 가득 (한 마리) */
-  const who = async (L, q, tg) => { if (o.pickMon) return o.pickMon(q, ids.filter(id => P(id)).map(id => ({ id, hp: cur(id), mhp: mx(id), ok: L.includes(id) })));   /* v24.55 경완 '도구 쓸 때 교체 화면과 같은 목록' */ const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };
-  const heal = n => async () => { const id = await who(live.filter(id => hp(id) > 0 && hp(id) < .999), '누구에게 쓸까요?'); if (id == null) return null; const a = cur(id), M = mx(id), b = Math.min(M, Math.round(a + n * (1 + .1 * (R.tit?.healingcharm | 0)))); R.hp[id] = b / M; o.se?.('KAIFUKU'); return `${nm(id)}의 HP가 ${b - a} 회복됐다!`; };   /* 본가: 회복 도구 SE_KAIFUKU */
-  const rev = f => async () => { const id = await who(ids.filter(id => hp(id) <= 0), '누구를 살릴까요?'); if (id == null) return null; R.hp[id] = f; o.se?.('KAIFUKU'); return `${eun(nm(id))} 기운을 차렸다!`; };
+  const who = async (L, q, tg, act) => { if (o.pickMon) return o.pickMon(q, ids.filter(id => P(id)).map(id => ({ id, hp: cur(id), mhp: mx(id), ok: L.includes(id) })), act);   /* v24.55 경완 '도구 쓸 때 교체 화면과 같은 목록' */ const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };
+  /* v27.95 경완 '다른 보상들도 마찬가지로 누르자마자 연출 나오게': 포켓몬을 고르는 보상은 고른 칸에서 바로 (도구 그림이 칸에 쏙 + 빛 + 소리), 그 뒤 창이 닫히고 문구 */
+  const doFx = async (L, q, run, ic) => { let out = null; const go = id => { out = run(id); return { img: ic ? `${IMG}item/${ic}.png` : '' }; }; const id = await who(L, q, 0, go); if (id == null) return null; if (out == null) out = run(id); return out; };
+  const heal = n => async () => { let a = 0, b = null; const go = id => { a = cur(id); const M = mx(id); b = Math.min(M, Math.round(a + n * (1 + .1 * (R.tit?.healingcharm | 0)))); R.hp[id] = b / M; o.se?.('KAIFUKU'); return b; };   /* v27.95 경완 '보상에서 상처약 누르자마자 체력 회복되는 연출': 고른 칸에서 바로 HP 가 차오름 (pickMon act) */
+    const id = await who(live.filter(id => hp(id) > 0 && hp(id) < .999), '누구에게 쓸까요?', 0, go); if (id == null) return null; if (b == null) go(id); return `${nm(id)}의 HP가 ${b - a} 회복됐다!`; };   /* 본가: 회복 도구 SE_KAIFUKU */
+  const rev = f => async () => { let done = 0; const go = id => { R.hp[id] = f; o.se?.('KAIFUKU'); done = 1; return Math.round(f * mx(id)); }; const id = await who(ids.filter(id => hp(id) <= 0), '누구를 살릴까요?', 0, go); if (id == null) return null; if (!done) go(id); return `${eun(nm(id))} 기운을 차렸다!`; };
   const U = boss ? 3 : 1, H = hurt.length ? 1 : 0, D = down.length ? 1 : 0, C = [   // [무게, 등급(0 일반 1 우수 2 레어 3 에픽 4 전설), 이름, 설명, 고르면, 그림, 딱지, 개수 표시]
     [4 * H, 0, '상처약', 'HP를 20 회복', heal(20)], [3 * H, 0, '좋은상처약', 'HP를 60 회복', heal(60)], [2 * H, 1, '고급상처약', 'HP를 120 회복', heal(120)], [U * H, 2, '회복약', 'HP를 모두 회복', heal(1e9)],
     [4 * D, 1, '기력의조각', '기절한 포켓몬 하나를 HP 절반으로', rev(.5)], [U * D, 2, '기력의덩어리', '기절한 포켓몬 하나를 HP 가득', rev(1)],
     [(R.sh | 0) < 5 ? 3 : 0, 1, '학습장치', '배틀에 안 나간 포켓몬도 경험치를 20%씩 받아요', async () => { R.sh = Math.min(5, (R.sh | 0) + 1); return `학습장치를 손에 넣었다!\n배틀에 안 나간 포켓몬도\n경험치를 ${R.sh * 20}% 받는다!`; }, 0, 0, `${R.sh | 0} / 5`],   /* v23.57 경완 '포켓로그처럼 학습장치': 하나에 20%, 5개까지 (이번 도전만) */
     ...(() => { const k = Math.random() * 6 | 0, [n, st] = TR_VIT[k], ok = live.filter(id => ((R.vit?.[id] || [])[k] | 0) < 3); if (!ok.length) return [];   /* v23.63 경완 '영양제 좋아': 한 마리 능력치 ×1.1 (같은 능력치 3개까지), 이번 도전만 */
-      return [[3, 1, n, `한 마리의 ${st} +10% (이번 도전만)`, async () => { const id = await who(ok, `누구에게 먹일까요? (${st})`); if (id == null) return null; const V = (R.vit = R.vit || {})[id] = R.vit[id] || [0, 0, 0, 0, 0, 0]; V[k]++; return `${nm(id)}의 ${iga(st)} 올랐다!`; }]]; })(),
+      return [[3, 1, n, `한 마리의 ${st} +10% (이번 도전만)`, () => doFx(ok, `누구에게 먹일까요? (${st})`, id => { const V = (R.vit = R.vit || {})[id] = R.vit[id] || [0, 0, 0, 0, 0, 0]; V[k]++; o.se?.('KAIFUKU'); return `${nm(id)}의 ${iga(st)} 올랐다!`; }, trIc(n))]]; })(),
     [(R.xpM || 1) < 1.7 ? 2 : 0, 1, '경험치 부적', '이번 도전 경험치 +25%', async () => {   /* v23.63 경완 '실제 레벨이 오르니 밸런스 맞춰서': 3개(175%)까지 — 시뮬: 100층 Lv10→33 이 37 (무제한이면 53) */ R.xpM = (R.xpM || 1) + .25; return `이번 도전 경험치가 ${Math.round(R.xpM * 100)}%가 됐다!`; }, 0, 0, `${Math.round(((R.xpM || 1) - 1) / .25)} / 3`],
     /* v26.92 경완 '중간중간 보상 아이템으로 골드 꾸러미 등장하게 밸런스 맞춰서': 이 층 야생 배틀 골드(trGold)의 4·10·25배 — 일반·우수·레어 (레어는 10층부터). 한 판 보상 골드의 2~3할쯤 */
     /* v26.93 경완 '골드 확률도 밸런스 맞춰줘': 무게 2·1·.5 → 1·.5·.25 — 상자 셋 중 골드 꾸러미가 끼는 판 35% → 약 20% (다섯 층에 한 번꼴), 늘 골랐을 때 한 층 평균 ≈ 야생 배틀 골드 1번어치 (몬테카를로 20만 번) */
     ...[[1, 0, 4], [.5, 1, 10], [.25, 2, 25]].map(([w, gg, x]) => { const gv = trGold(R.floor, 0, 0) * x; return [w, gg, '골드 꾸러미', `${gv.toLocaleString()}골드`, async () => { R.gold = (R.gold | 0) + gv; if (TR_PAY) addG(gv, 'tower'); trHud(R, 'g'); o.se?.('REGI'); return `골드 꾸러미를 열었다!\n${gv.toLocaleString()}골드를 얻었다!`; }]; }),
     /* v25.xx 경완 '우리도 여러개 쓸 수 있게': 쌓이는 지닌 도구 (한 마리가 여러 종류, 같은 건 개수만큼 셈) + 본가 지닌 도구 1칸 */
     ...(() => { const X = R.xit = R.xit || {}, n = (id, k) => X[id]?.[k] | 0, out = [];
-      const give = (k, ok, q, mx) => async () => { const id = await who(ok, q); if (id == null) return null; (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 빌려주었다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; };
+      const give = (k, ok, q, mx) => () => doFx(ok, q, id => { (X[id] = X[id] || {})[k] = n(id, k) + 1; o.se?.('DECIDE'); return `${nm(id)}에게 ${eul(trItNm(k))} 빌려주었다!${n(id, k) > 1 ? `\n(${n(id, k)}개째)` : ''}`; }, k);
       /* v26.82 경완 '초반에 타입 강화 도구 너무 많이 나오는데 포켓로그 도구 엔진 참고한 거 맞나?' → 포켓로그 modifierPool 등급·무게 그대로: 타입 강화(울트라 9)·넓은렌즈(울트라 7)·선제공격손톱(울트라 3), 먹다남은음식·조개껍질방울·왕의징표석(로그 3)·기합의띠(로그 5).
          우리는 등급이 셋이라 울트라·로그 = 레어, 로그는 포켓로그 확률 비(1.2/5)만큼 무게를 줄임. 레어는 10층부터. 설명은 '대여', 개수는 아래 딱지로 */
       const DS = '';   /* v26.85 경완 'C 좋다': 대여는 카드마다 말고 아래 안내 글에 한 번만 (TR_RENT) */
@@ -4693,9 +4700,9 @@ async function trReward(R, o, ids, boss, shop, first) {
       [...TR_XS, ...TR_XS2].forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_MS.has(k) ? 4 : TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
       const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([9 * .3, 2, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20%${DS}`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 빌려줄까요?`, 5), 0, 0, '마리당 최대 5개']); }
       { const sb = TR_SB.map(([k, sp, g]) => [k, g, live.filter(id => (typeof sp === 'function' ? sp(P(id) || {}, String(m(id)?.ab || '').toLowerCase().replace(/[^a-z0-9]/g, '')) : sp.includes(P(id)?.sp)) && m(id)?.it !== k)]).filter(x => x[2].length), x = sb.length && pick(sb);   /* 그 종이 라인업에 있을 때만 */
-        if (x) { const [kk, gg, ok3] = x; out.push([(gg === 2 ? 12 : 2) * .3, gg, trItNm(kk), trItD(kk), async () => { const id = await who(ok3, `누구에게 ${eul(trItNm(kk))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = kk; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(kk))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(kk))} 빌려주었다!`; }, 0, 0, '마리당 최대 1개']); TR_BK.add(kk); } }
+        if (x) { const [kk, gg, ok3] = x; out.push([(gg === 2 ? 12 : 2) * .3, gg, trItNm(kk), trItD(kk), () => doFx(ok3, `누구에게 ${eul(trItNm(kk))} 빌려줄까요?`, id => { const old = m(id).it; m(id).it = kk; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(kk))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(kk))} 빌려주었다!`; }, kk), 0, 0, '마리당 최대 1개']); TR_BK.add(kk); } }
       const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
-      if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, async () => { const id = await who(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`); if (id == null) return null; const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, 0, 0, '마리당 최대 1개']);
+      if (ok1.length) out.push([1.5, g1, trItNm(k1), `${trItD(k1)}${DS}`, () => doFx(ok1, `누구에게 ${eul(trItNm(k1))} 빌려줄까요?`, id => { const old = m(id).it; m(id).it = k1; o.se?.('DECIDE'); return old ? `${nm(id)}의 ${eul(trItNm(old))} 돌려받고\n${eul(trItNm(k1))} 빌려주었다!` : `${nm(id)}에게 ${eul(trItNm(k1))} 빌려주었다!`; }, k1), 0, 0, '마리당 최대 1개']);
       /* v26.91 경완 '1번': 팀 전체 도구 — 열매주머니(포켓로그 로그 4, 3개)·회복의부적(마스터, 5개). 개수는 R.tit, 배틀엔 xitT 로 */
       { const T = R.tit = R.tit || {}, tc = (k, w, g, mx, msg) => { if ((T[k] | 0) < mx) out.push([w, g, trItNm(k), trItD(k), async () => { T[k] = (T[k] | 0) + 1; o.se?.('DECIDE'); return msg(T[k]); }, 0, 0, `${T[k] | 0} / ${mx}`]); };
         tc('berrypouch', 4 * .3, 3, 3, n => `열매주머니를 손에 넣었다!\n열매를 먹어도 ${n * 30}% 확률로 줄지 않는다!`);
