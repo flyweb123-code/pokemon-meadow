@@ -4713,8 +4713,8 @@ async function trReward(R, o, ids, boss, shop, first) {
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
     [boss ? 2 : .6, 2, '동료 하이퍼볼', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'ultra', 1, '동료 하이퍼볼')],
     [boss ? .4 : 0, 4, '동료 마스터볼', '반드시 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'master', 1, '동료 마스터볼')],
-    [first ? 0 : .6, 0, '강박사 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'mail']];   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
-  if (shop) { const PR = [30, 60, 120, 200, 400], L = C.filter(c => c[0] > 0 && !/강박사 상자|경험치 부적|골드 꾸러미/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
+    [first ? 0 : .6, 0, '강박사의 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'parcel']];   /* v27.98 경완 '1번으로 해서 강박사의 상자 로 수정' = 본가 소포 그림 */   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
+  if (shop) { const PR = [30, 60, 120, 200, 400], L = C.filter(c => c[0] > 0 && !/강박사의 상자|경험치 부적|골드 꾸러미/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
     for (;;) { const i = await o.choose(`수련탑 상점 · 코인 ${R.coin | 0}`, [...L.map(c => [c[2], `${c[3]} · ${PR[c[1]]}코인`, TR_RC[c[1]]]), ['나가기', '', '#9aa0b4,#6c7288']]); const c = L[i]; if (!c) break;
       if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; trHud(R); L.splice(i, 1); if (t) await o.msgTap(t); }
     await o.msgTap('수련탑 상점을 나섰다!'); return; }
