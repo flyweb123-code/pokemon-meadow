@@ -19,6 +19,8 @@ if monp != '-':
   for m in cfg.get('mons', []):
     s = sp[str(m['sp'])]; mons.append({**m, 'v': m.get('sp_w', .4), 'f': s['walk'], 'w': s['ww'], 'h': s['wh']})
 js = dict(cfg); js.pop('isWaterPy'); js['mons'] = mons
+import os
+for k, v in cfg.get('sprites', {}).items(): js['sprites'][k] = durl(Image.open(os.path.join(os.path.dirname(cfgp), v)).convert('RGBA'))
 cj = json.dumps(js, ensure_ascii=False)
 cj = cj[:-1] + ', "isWater": (r, g, b, x, y) => ' + cfg['isWaterJs'] + '}'
 html = open(sys.argv[0].replace('build_cave.py', 'cave_tpl.html'), encoding='utf-8').read()

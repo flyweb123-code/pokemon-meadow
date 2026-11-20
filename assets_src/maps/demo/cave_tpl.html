@@ -31,7 +31,7 @@ input[type=range]{width:100%}
 ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
 </style></head><body><div class="wrap">
 <h1>동굴 필드 시연</h1>
-<p class="s">바탕 그림 위에 움직임은 모두 코드예요. 바닥의 보석 무리를 눌러 캐 보세요.</p>
+<p class="s">바탕 그림 위에 움직임은 모두 코드예요. 벽 밑 보석 무리를 눌러 캐 보세요. 배치 모드에서 보석·버섯을 직접 옮길 수 있어요.</p>
 <div class="stage" id="st">
   <canvas id="bgC" width="180" height="300"></canvas>
   <canvas id="fxC" width="360" height="600"></canvas>
@@ -43,6 +43,15 @@ ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
 <div class="pan">
   <div class="lb">빛 엔진 (야광 버섯·보석이 둘레 바닥과 포켓몬을 밝힘)</div>
   <div class="row"><button id="litB" class="on">빛 엔진 켜기</button><button id="cartB">광차 바로 지나가기</button></div>
+
+  <div class="lb">배치 (보석·버섯을 끌어서 옮겨요 · 이 기기에 저장돼요)</div>
+  <div class="row"><button id="edB">배치 모드</button><button id="cpB">자리 복사</button></div>
+  <div id="edR" hidden>
+    <div class="row"><button id="addW">+ 물의 돌</button><button id="addM">+ 달의 돌</button><button id="addT">+ 천둥의 돌</button><button id="addS">+ 버섯</button></div>
+    <div class="row"><button id="delB">고른 것 빼기</button><button id="rstB">처음 자리로</button></div>
+    <div class="lb">보석은 벽 밑 노란 띠 안에서만 움직여요. 버섯은 호수 안엔 못 놓아요.</div>
+  </div>
+  <textarea id="cpT" hidden readonly style="width:100%;height:64px;font:12px monospace;margin-top:6px"></textarea>
 
   <div class="lb">보기</div>
   <div class="row"><button id="dropB">물방울 바로 떨어뜨리기</button><button id="batB">박쥐 날리기</button><button id="zb">구역 지도</button></div>
@@ -81,7 +90,16 @@ const drops = [], rings = [], bits = [];
 function newDrop(tip) { const t = tip || CFG.tips[(R() * CFG.tips.length) | 0]; drops.push({ x: t[0], y0: t[1], land: t[2], y: t[1], v: 0, st: 0, t: 0 }); }
 let nextDrop = 0;
 /* 보석 */
-const gems = CFG.gems.map(g => ({ ...g, hp: 3, gone: 0, grow: 1, shake: 0, sp: R() * 4 }));
+/* 경완 '내가 배치할 수 있게 해줘' → 보석·버섯은 바탕에 찍지 않고 따로 그림, 자리는 이 기기에 저장 */
+const SPR = {}; for (const k in CFG.sprites) { const i = new Image(); i.src = CFG.sprites[k]; SPR[k] = i; }
+const LSK = 'cave-props-v1';
+const mkP = a => { const [t, k, x, y] = a; if (t === 'gem') { const [c, name] = CFG.gemInfo[k]; return { t, k, x, y, c, name, hp: 3, gone: 0, grow: 1, shake: 0, sp: R() * 4, sx: 0, sy: 0 }; } return { t, k, x, y }; };
+let props = (() => { try { const v = JSON.parse(localStorage.getItem(LSK)); if (Array.isArray(v) && v.length) return v.map(mkP); } catch (e) {} return CFG.props.map(mkP); })();
+const spr = p => SPR[p.t === 'gem' ? 'gem_' + p.k : 'mush_' + p.k];
+const gemsL = () => props.filter(p => p.t === 'gem'), mushL = () => props.filter(p => p.t === 'mush');
+const shL = () => mushL().map(m => [m.x, m.y - (spr(m).height || 18) * .62]);
+const saveP = () => { try { localStorage.setItem(LSK, JSON.stringify(props.map(p => [p.t, p.k, Math.round(p.x), Math.round(p.y)]))); } catch (e) {} };
+let EDIT = false, sel = null, drag = null;
 /* 박쥐 */
 const bats = [];
 function newBat() { const l = R() < .5; bats.push({ x: l ? -10 : W + 10, y: 18 + R() * 30, vx: (l ? 1 : -1) * (28 + R() * 14), ph: R() * 6, t: 0 }); }
@@ -98,11 +116,11 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   /* 보석·버섯·광차 빛은 어둠을 덜어냄 (게임 nightHoles) */
   dk.globalCompositeOperation = 'destination-out';
   const hole = (x, y, rx, ry, a) => { const g = dk.createRadialGradient(x, y, 0, x, y, rx); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)'); dk.save(); dk.translate(x, y); dk.scale(1, ry / rx); dk.translate(-x, -y); dk.fillStyle = g; dk.beginPath(); dk.arc(x, y, rx, 0, 7); dk.fill(); dk.restore(); };
-  if (LIT) { for (const g of gems) if (!g.gone) hole(g.x, g.y - 6, g.r * 1.7, 18, .6 * g.grow);
-    for (const m of CFG.shrooms) hole(m[0], m[1] + 3, 24, 13, .62 + .18 * Math.sin(tt * 1.7 + m[0])); }
+  if (LIT) { for (const g of gemsL()) if (!g.gone && g.r) hole(g.x, g.y - 6, g.r * 1.5, 16, .6 * g.grow);
+    for (const m of shL()) hole(m[0], m[1] + 3, 24, 13, .62 + .18 * Math.sin(tt * 1.7 + m[0])); }
   dk.globalCompositeOperation = 'source-over';
   /* 버섯 빛 */
-  if (LIT) for (const m of CFG.shrooms) { const p = .5 + .5 * Math.sin(tt * 1.7 + m[0]), g = gl.createRadialGradient(m[0] * S, m[1] * S, 0, m[0] * S, m[1] * S, 34); g.addColorStop(0, `rgba(190,130,255,${.3 + .2 * p})`); g.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = g; gl.fillRect(m[0] * S - 34, m[1] * S - 34, 68, 68); }
+  if (LIT) for (const m of shL()) { const p = .5 + .5 * Math.sin(tt * 1.7 + m[0]), g = gl.createRadialGradient(m[0] * S, m[1] * S, 0, m[0] * S, m[1] * S, 34); g.addColorStop(0, `rgba(190,130,255,${.3 + .2 * p})`); g.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = g; gl.fillRect(m[0] * S - 34, m[1] * S - 34, 68, 68); }
   /* 호수 잔물결 반짝임 */
   if (R() < dt * 9) { for (let k = 0; k < 20; k++) { const x = R() * W, y = CFG.lakeY0 + R() * (H - CFG.lakeY0); if (isW(x, y) && isW(x - 3, y) && isW(x + 3, y)) { glints.push({ x, y, t: 0, l: 1.2 + R() }); break; } } }
   for (let i = glints.length - 1; i >= 0; i--) { const q = glints[i]; q.t += dt; if (q.t > q.l) { glints.splice(i, 1); continue; } const a = Math.sin(q.t / q.l * Math.PI), w = 2 + Math.round(a * 2); fx.fillStyle = `rgba(190,225,255,${.55 * a})`; fx.fillRect(Math.round(q.x - w / 2) * S, Math.round(q.y) * S, w * S, 1 * S); }
@@ -115,15 +133,18 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   for (let i = rings.length - 1; i >= 0; i--) { const q = rings[i]; q.t += dt; const L = q.w ? 1.6 : .45; if (q.t > L) { rings.splice(i, 1); continue; } const u = q.t / L;
     for (let k = 0; k < (q.w ? 2 : 1); k++) { const uu = u - k * .25; if (uu <= 0) continue; const rx = (q.w ? 3 + uu * 13 : 2 + uu * 4), ry = rx * .42; fx.strokeStyle = `rgba(200,232,255,${(1 - uu) * (q.w ? .8 : .6)})`; fx.lineWidth = 2; fx.beginPath(); fx.ellipse(q.x * S, q.y * S, rx * S, ry * S, 0, 0, 7); fx.stroke(); } }
   for (let i = bits.length - 1; i >= 0; i--) { const q = bits[i]; q.t += dt; q.vy += 160 * dt; q.x += q.vx * dt; q.y += q.vy * dt; if (q.t > .35) { bits.splice(i, 1); continue; } fx.fillStyle = q.spark ? 'rgba(255,220,140,.9)' : 'rgba(210,236,255,.8)'; fx.fillRect(Math.round(q.x * S), Math.round(q.y * S), 2, 2); }
-  /* 보석: 반짝임·흔들림·캔 자리·다시 자람 */
-  for (const g of gems) { g.sp += dt;
-    if (g.gone) { g.gone -= dt; if (g.gone <= 0) { g.gone = 0; g.grow = 0; g.hp = 3; } }
-    if (!g.gone && g.grow < 1) g.grow = Math.min(1, g.grow + dt / 1.6);
-    if (g.gone || g.grow < 1) { fx.drawImage(BG0, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.fillStyle = `rgba(${g.c},.55)`; fx.fillRect((g.x - 3) * S, (g.y - 1) * S, 6 * S, 1 * S); }
-    if (!g.gone && g.grow < 1) { const hh = Math.max(1, Math.round(g.h * g.grow)); fx.save(); fx.beginPath(); fx.rect((g.x - g.r) * S, (g.y - hh) * S, g.r * 2 * S, hh * S + 2); fx.clip(); fx.drawImage(BG, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - hh) * S, g.r * 2 * S, (g.h + 1) * S); fx.restore(); }
-    if (g.shake > 0) { g.shake -= dt; const o = Math.round(Math.sin(g.shake * 60) * 1.5); fx.drawImage(BG0, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.drawImage(BG, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r + o) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); }
-    const glow = g.gone ? 0 : g.grow; if (glow > 0) { const p = .5 + .5 * Math.sin(tt * 2.2 + g.x), gg = gl.createRadialGradient(g.x * S, (g.y - g.h / 2) * S, 0, g.x * S, (g.y - g.h / 2) * S, 26); gg.addColorStop(0, `rgba(${g.c},${(.22 + .14 * p) * glow})`); gg.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = gg; gl.fillRect(g.x * S - 26, (g.y - g.h / 2) * S - 26, 52, 52);
-      const k = (g.sp % 3.2) / .5; if (k < 1 && g.grow === 1) { const sx = (g.x + g.sx) * S, sy = (g.y - g.h + g.sy) * S, a = Math.sin(k * Math.PI), L = 2 + a * 5; gl.fillStyle = `rgba(255,255,255,${a})`; gl.fillRect(sx - L, sy - 1, L * 2, 2); gl.fillRect(sx - 1, sy - L, 2, L * 2); } } }
+  /* 보석·버섯 (아래 것이 앞) */
+  for (const p of [...props].sort((a, b) => a.y - b.y)) { const im = spr(p); if (!im || !im.complete || !im.width) continue; const w = im.width, h = im.height, X = Math.round(p.x - w / 2), Y = Math.round(p.y) - h + 1;
+    if (p.t === 'mush') fx.drawImage(im, X * S, Y * S, w * S, h * S);
+    else { const g = p; g.r = w / 2; g.h = h; g.sp += dt;
+      if (g.gone) { g.gone -= dt; if (g.gone <= 0) { g.gone = 0; g.grow = 0; g.hp = 3; } }
+      if (!g.gone && g.grow < 1) g.grow = Math.min(1, g.grow + dt / 1.6);
+      if (g.gone) { fx.fillStyle = `rgba(${g.c},.45)`; fx.fillRect((g.x - 5) * S, Math.round(g.y) * S, 10 * S, S); }
+      else { const hh = Math.max(1, Math.round(h * g.grow)), o = g.shake > 0 ? Math.round(Math.sin(g.shake * 60) * 1.5) : 0; if (g.shake > 0) g.shake -= dt; fx.drawImage(im, 0, 0, w, hh, (X + o) * S, (Y + h - hh) * S, w * S, hh * S); }
+      const glow = g.gone ? 0 : g.grow; if (glow > 0) { const pp = .5 + .5 * Math.sin(tt * 2.2 + g.x), cy = (g.y - g.h / 2) * S, gg = gl.createRadialGradient(g.x * S, cy, 0, g.x * S, cy, 30); gg.addColorStop(0, `rgba(${g.c},${(.2 + .12 * pp) * glow})`); gg.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = gg; gl.fillRect(g.x * S - 30, cy - 30, 60, 60);
+        const k = (g.sp % 3.2) / .5; if (k < 1 && g.grow === 1) { const sx = g.x * S, sy = (g.y - g.h + 2) * S, a = Math.sin(k * Math.PI), L = 2 + a * 5; gl.fillStyle = `rgba(255,255,255,${a})`; gl.fillRect(sx - L, sy - 1, L * 2, 2); gl.fillRect(sx - 1, sy - L, 2, L * 2); } } }
+    if (EDIT) { fx.save(); fx.setLineDash([4, 3]); fx.lineWidth = 2; fx.strokeStyle = p === sel ? '#ffe070' : 'rgba(255,255,255,.45)'; fx.strokeRect(X * S - 2, Y * S - 2, w * S + 4, h * S + 4); fx.restore(); } }
+  if (EDIT) { const [y0, y1] = CFG.gemY; fx.fillStyle = 'rgba(255,224,112,.12)'; fx.fillRect(0, y0 * S, W * S, (y1 - y0) * S); }
   for (let i = shards.length - 1; i >= 0; i--) { const q = shards[i]; q.t += dt; q.vy += 300 * dt; q.x += q.vx * dt; q.y += q.vy * dt; if (q.y > q.fl) { q.y = q.fl; q.vy *= -.35; q.vx *= .6; } if (q.t > 1.3) { shards.splice(i, 1); continue; } fx.fillStyle = `rgba(${q.c},${q.t > 1 ? (1.3 - q.t) / .3 : 1})`; fx.fillRect(Math.round(q.x * S) - 2, Math.round(q.y * S) - 2, 4, 4); fx.fillStyle = `rgba(255,255,255,${q.t > 1 ? 0 : .8})`; fx.fillRect(Math.round(q.x * S) - 2, Math.round(q.y * S) - 2, 2, 2); }
   /* 곡괭이 */
   if (pick) { pick.t += dt; const u = Math.min(1, pick.t / .22), a = u < .5 ? -1.1 + u * 2 * 1.6 : .5 - (u - .5) * 2 * 1.6; fx.save(); fx.translate((pick.x + 9) * S, (pick.y - 2) * S); fx.rotate(a); fx.fillStyle = '#8a5a2c'; fx.fillRect(-2, -2, 4, 26); fx.fillStyle = '#c8ccd8'; fx.beginPath(); fx.moveTo(-12, -2); fx.quadraticCurveTo(0, -10, 12, -2); fx.lineTo(10, 1); fx.quadraticCurveTo(0, -5, -10, 1); fx.fill(); fx.restore(); if (pick.t > .3) pick = null; }
@@ -141,17 +162,33 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   for (let i = bats.length - 1; i >= 0; i--) { const b = bats[i]; b.t += dt; b.x += b.vx * dt; const y = b.y + Math.sin(b.t * 3 + b.ph) * 4, f = Math.sin(b.t * 18) > 0; if (b.x < -20 || b.x > W + 20) { bats.splice(i, 1); continue; }
     fx.fillStyle = 'rgba(16,10,30,.85)'; const X = Math.round(b.x) * S, Y = Math.round(y) * S; fx.fillRect(X - 2, Y - 2, 4, 4); if (f) { fx.fillRect(X - 10, Y - 6, 8, 2); fx.fillRect(X + 2, Y - 6, 8, 2); fx.fillRect(X - 12, Y - 8, 2, 2); fx.fillRect(X + 10, Y - 8, 2, 2); } else { fx.fillRect(X - 10, Y, 8, 2); fx.fillRect(X + 2, Y, 8, 2); fx.fillRect(X - 12, Y + 2, 2, 2); fx.fillRect(X + 10, Y + 2, 2, 2); } }
   /* 포켓몬 걷기 (크기 가늠) */
-  MONS.forEach((m, i) => { m.t = (m.t || 0) + dt; const fr = Math.floor(m.t * 7) % m.f.length, x = m.x + Math.sin(m.t * m.v + i) * m.ax, y = m.y + Math.sin(m.t * m.v * .8 + i * 2) * m.ay; const e = monEls[i]; e.style.left = x * S + 'px'; e.style.top = y * S + 'px'; const s = m.f[fr]; if (e.src !== s) e.src = s; let lb = 0; if (LIT) for (const q of [...CFG.shrooms, ...gems.filter(g => !g.gone).map(g => [g.x, g.y])]) { const d = Math.hypot(x - q[0], (y - q[1]) * 1.6); lb = Math.max(lb, clamp(1 - d / 34, 0, 1)); } e.style.filter = `brightness(${(LIT ? .62 : .8) + lb * .7}) drop-shadow(0 0 ${Math.round(lb * 6)}px rgba(190,130,255,${lb * .9}))`; e.style.transform = Math.cos(m.t * m.v + i) * m.ax < 0 ? 'scaleX(-1)' : ''; });
+  MONS.forEach((m, i) => { m.t = (m.t || 0) + dt; const fr = Math.floor(m.t * 7) % m.f.length, x = m.x + Math.sin(m.t * m.v + i) * m.ax, y = m.y + Math.sin(m.t * m.v * .8 + i * 2) * m.ay; const e = monEls[i]; e.style.left = x * S + 'px'; e.style.top = y * S + 'px'; const s = m.f[fr]; if (e.src !== s) e.src = s; let lb = 0; if (LIT) for (const q of [...shL(), ...gemsL().filter(g => !g.gone).map(g => [g.x, g.y])]) { const d = Math.hypot(x - q[0], (y - q[1]) * 1.6); lb = Math.max(lb, clamp(1 - d / 34, 0, 1)); } e.style.filter = `brightness(${(LIT ? .62 : .8) + lb * .7}) drop-shadow(0 0 ${Math.round(lb * 6)}px rgba(190,130,255,${lb * .9}))`; e.style.transform = Math.cos(m.t * m.v + i) * m.ax < 0 ? 'scaleX(-1)' : ''; });
   requestAnimationFrame(frame); }
 const shards = []; let pick = null, cart = null, cartT = 5;
 function runCart() { cart = { t: 0, L: 9, up: R() < .3 }; }
 const CART = new Image(); CART.src = 'CART_IMG';
 $('#st').addEventListener('pointerdown', e => { const r = $('#st').getBoundingClientRect(), x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
-  const g = gems.find(g => !g.gone && g.grow === 1 && Math.abs(x - g.x) < g.r + 4 && y > g.y - g.h - 6 && y < g.y + 6); if (!g) return;
+  if (EDIT) { const hit = [...props].sort((a, b) => b.y - a.y).find(p => { const im = spr(p); return Math.abs(x - p.x) <= im.width / 2 + 3 && y >= p.y - im.height - 3 && y <= p.y + 4; }); sel = hit || null; if (hit) { drag = { dx: x - hit.x, dy: y - hit.y }; try { $('#st').setPointerCapture(e.pointerId); } catch (e2) {} } return; }
+  const g = gemsL().find(g => !g.gone && g.grow === 1 && g.r && Math.abs(x - g.x) < g.r + 2 && y > g.y - g.h - 4 && y < g.y + 5); if (!g) return;
   pick = { x: g.x, y: g.y - g.h, t: 0 }; g.shake = .18; g.hp--; try { navigator.vibrate?.(g.hp ? 10 : 30); } catch (e2) {}
   for (let k = 0; k < 3; k++) shards.push({ x: g.x + (R() - .5) * 6, y: g.y - g.h / 2, vx: (R() - .5) * 50, vy: -40 - R() * 30, fl: g.y + 6 + R() * 8, t: .6, c: '200,200,210' });
   if (g.hp <= 0) { g.gone = 12; for (let k = 0; k < 9; k++) shards.push({ x: g.x + (R() - .5) * 8, y: g.y - g.h / 2, vx: (R() - .5) * 90, vy: -70 - R() * 60, fl: g.y + 8 + R() * 14, t: 0, c: g.c });
     const t = document.createElement('div'); t.className = 'get'; t.textContent = g.name + ' 획득!'; t.style.left = g.x * 2 + 'px'; t.style.top = (g.y - g.h) * 2 + 'px'; $('#st').appendChild(t); setTimeout(() => t.remove(), 1200); } });
+const stXY = e => { const r = $('#st').getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
+$('#st').addEventListener('pointermove', e => { if (!EDIT || !drag || !sel) return; const [x, y] = stXY(e); let nx = clamp(Math.round(x - drag.dx), 0, W), ny = Math.round(y - drag.dy);
+  /* 경완 '보석은 벽 쪽에만' → 보석은 벽 밑 띠 안에서만 */
+  if (sel.t === 'gem') ny = clamp(ny, CFG.gemY[0], CFG.gemY[1]); else { ny = clamp(ny, CFG.wallY + 6, H); if (isW(nx, ny) || isW(nx, ny - 3)) return; }
+  sel.x = nx; sel.y = ny; });
+const endDrag = () => { if (drag) { drag = null; saveP(); } };
+$('#st').addEventListener('pointerup', endDrag); $('#st').addEventListener('pointercancel', endDrag);
+const addP = a => { if (!EDIT) setEdit(true); const p = mkP(a); props.push(p); sel = p; saveP(); };
+function setEdit(on) { EDIT = on; $('#edB').classList.toggle('on', on); $('#edB').textContent = on ? '배치 끝내기' : '배치 모드'; $('#st').style.touchAction = on ? 'none' : ''; $('#edR').hidden = !on; if (!on) { sel = null; drag = null; } }
+$('#edB').onclick = () => setEdit(!EDIT);
+$('#addW').onclick = () => addP(['gem', 'water', 90, 76]); $('#addM').onclick = () => addP(['gem', 'moon', 90, 76]); $('#addT').onclick = () => addP(['gem', 'thunder', 90, 76]);
+let mk = 0; $('#addS').onclick = () => addP(['mush', (mk++) % 2, 90, 150]);
+$('#delB').onclick = () => { if (sel) { props = props.filter(p => p !== sel); sel = null; saveP(); } };
+$('#rstB').onclick = () => { props = CFG.props.map(mkP); sel = null; try { localStorage.removeItem(LSK); } catch (e) {} };
+$('#cpB').onclick = () => { const t = JSON.stringify(props.map(p => [p.t, p.k, Math.round(p.x), Math.round(p.y)])); $('#cpT').hidden = false; $('#cpT').value = t; try { navigator.clipboard.writeText(t).then(() => { $('#cpB').textContent = '복사됨'; setTimeout(() => $('#cpB').textContent = '자리 복사', 1500); }).catch(() => {}); } catch (e) {} };
 $('#litB').onclick = () => { LIT = !LIT; $('#litB').classList.toggle('on', LIT); $('#litB').textContent = LIT ? '빛 엔진 켜기' : '빛 엔진 끄기 (비교)'; };
 $('#cartB').onclick = () => { if (!cart) runCart(); };
 $('#dropB').onclick = () => { newDrop(); newDrop(CFG.tips.find(t => isW(t[0], t[2]))); };
