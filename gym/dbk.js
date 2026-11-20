@@ -897,6 +897,7 @@
       s.fx = fx; s.fy = fy; s.rot = rot; s.a = a;
       A(s.e, [{ opacity: 0, transform: `translate(${gx + Math.cos(a) * rr - s.w / 2}px,${gy + Math.sin(a) * rr - s.h / 2}px) rotate(${rot + 240}deg) scale(1.5)` }, { opacity: 1, offset: .3 }, { opacity: 1, transform: `translate(${fx}px,${fy}px) rotate(${rot}deg) scale(1)` }], { duration: 520, delay: 4150 + i * 55, easing: 'cubic-bezier(.3,.6,.4,1.15)' });
       if (i % 3 === 0) at(4150 + i * 55 + 480, () => { c.se('Sword2'); hz(); }); });
+    at(5000, () => c.se('Tera Form'));   /* 경완 '테라 될 때 크리스탈 스러운 효과음': 결정이 포켓몬을 감싸는 순간 쨍 */
     at(5050, () => { c.se('Ice5'); vib(2); });
     A(gem, [{ opacity: 0, transform: 'scale(.6,.3)' }, { opacity: 1, transform: 'scale(1.06,1.04)', offset: .7 }, { opacity: 1, transform: 'scale(1)' }], { duration: 450, delay: 5000, easing: 'cubic-bezier(.2,1.2,.4,1)' });
     A(box, [{ opacity: 1 }, { opacity: .55 }], { duration: 400, delay: 5050 });   /* 결정 안에 갇혀 비쳐 보임 */
@@ -911,7 +912,7 @@
     shake(5650, 300, 2); shake(5980, 300, 4); shake(6250, 300, 7);
     // 8) 결정이 깨짐 → 테라스탈한 모습 (6550~)
     A(flash, [{ opacity: 0 }, { opacity: 1 }, { opacity: 1, offset: .45 }, { opacity: 0 }], { duration: 600, delay: 6520, easing: 'linear' });
-    at(6560, () => { c.se('Explosion3'); c.se('Earth1'); c.se('Ice5'); vib(3); gem.style.opacity = 0; crk.style.opacity = 0; leak.style.opacity = 0; [gem, crk, leak, glow].forEach(e => e.getAnimations().forEach(a => a.cancel())); glow.style.opacity = 0;
+    at(6560, () => { c.se('Tera Break'); c.se('Explosion3'); c.se('Earth1'); c.se('Ice5'); vib(3); gem.style.opacity = 0; crk.style.opacity = 0; leak.style.opacity = 0; [gem, crk, leak, glow].forEach(e => e.getAnimations().forEach(a => a.cancel())); glow.style.opacity = 0;
       im.getAnimations().forEach(a => a.cancel()); im.style.filter = WH; box.getAnimations().forEach(a => a.cancel()); box.style.opacity = 1;
       shards.forEach((s, i) => { s.e.getAnimations().forEach(a => a.cancel()); const d = Math.hypot(Wd, Hd) * (.6 + Math.random() * .4), a = s.a + (Math.random() - .5) * .5;
         s.e.animate([{ opacity: 1, transform: `translate(${s.fx}px,${s.fy}px) rotate(${s.rot}deg) scale(1)` }, { opacity: 1, offset: .6 }, { opacity: 0, transform: `translate(${s.fx + Math.cos(a) * d}px,${s.fy + Math.sin(a) * d + Hd * .15}px) rotate(${s.rot + (i % 2 ? 1 : -1) * (300 + Math.random() * 300)}deg) scale(.7)` }], { duration: 900 + Math.random() * 300, fill: 'forwards', easing: 'cubic-bezier(.1,.7,.4,1)' }); });
