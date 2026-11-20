@@ -23,4 +23,6 @@ cj = json.dumps(js, ensure_ascii=False)
 cj = cj[:-1] + ', "isWater": (r, g, b, x, y) => ' + cfg['isWaterJs'] + '}'
 html = open(sys.argv[0].replace('build_cave.py', 'cave_tpl.html'), encoding='utf-8').read()
 html = html.replace('/*CFG*/{}', cj).replace('MAP_IMG', durl(im)).replace('ZONES_IMG', durl(z)).replace('BASE_IMG', durl(Image.open(basep).convert('RGBA')))
+cartp = sys.argv[6] if len(sys.argv) > 6 else None
+if cartp: html = html.replace('CART_IMG', durl(Image.open(cartp).convert('RGBA')))
 open(out, 'w', encoding='utf-8').write(html); print(len(html))
