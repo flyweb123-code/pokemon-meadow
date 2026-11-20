@@ -4816,3 +4816,11 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 @keyframes lfBob{50%{transform:translateY(-3px)}}
 @keyframes lfFlash{0%{opacity:0}18%{opacity:.85}100%{opacity:0}}
 @keyframes lfTw{0%,100%{opacity:0;transform:scale(.4)}45%{opacity:1;transform:scale(1) rotate(45deg)}}
+
+/* v27.89 경완 '수련탑 포켓몬 슬롯에서 성별 아이콘 잘리는 오류': 이름 칸이 좁아 4글자 이름 뒤 ♂♀ 가 잘림 → 이름은 HP 칸 위까지 쓰고, HP 막대는 아래 줄 전체로. 긴 이름은 말줄임, 성별은 늘 보이게 (.pty-nm) */
+.bt .pty b .pty-nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bt.mob .bp-party.tr1 .pty{grid-template-columns:34px minmax(0,1fr) auto 38%!important;grid-template-rows:auto auto auto!important;row-gap:2px}
+.bt.mob .bp-party.tr1 .pty>.rk-fr{grid-row:1/4!important}
+.bt.mob .bp-party.tr1 .pty b{grid-column:2/4;grid-row:1}
+.bt.mob .bp-party.tr1 .pty .hpn{grid-column:3;grid-row:2;align-self:center}
+.bt.mob .bp-party.tr1 .pty .hp{grid-column:2/4;grid-row:3;align-self:center}
