@@ -1,0 +1,20 @@
+# Gym-leader outfit field sprites (lf_*): how they were made
+
+PixelLab web, Creator > Edit > **Transfer outfit** (Pro, 10 generations a run).
+(Inpaint is not offered in Creator; Transfer outfit keeps the uploaded frames and only redresses them.)
+
+- Outfit image: the battle front fit, `assets_src/leg_fit/front/<name>.png` (80x80).
+- Images to edit: the 9 base walking frames cut from `gym/img/ow/pt_m.png` / `pt_f.png`
+  (32x32 each, in game order 0..8). Output is one 96x96 3x3 sheet in the same order.
+- Remove background: off (result is on white; `topost.py` removes it).
+- Additional instructions: what replaces the cap/beanie and hair, the outfit, how the back
+  looks, "keep every frame's pose, facing direction, head size, body size and feet position",
+  "side frames face left".
+
+Bruno, Bea, Janine: one run each with all 9 frames (raw/*_transfer.png).
+Roxie: the all-9 run put the guitar in a different place per frame, so it was redone per
+direction (3 frames per run: front 0,3,4 / back 1,5,6 / side 2,7,8), and back walk frames
+5 and 6 take frame 1's upper body (`backfix.py`, split row 27) so head and guitar don't move.
+
+    python3 topost.py raw/lf_bruno_m_transfer.png ../../../gym/img/ow/pt_m.png OUT/lf_bruno_m
+    python3 backfix.py OUT/lf_roxie_m_t_ow9.png OUT/lf_roxie_m 27
