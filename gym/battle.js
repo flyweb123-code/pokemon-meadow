@@ -122,7 +122,7 @@ function pickMoves(sp, lv, r) {
   return take.map(i => D.mv[i][0]);
 }
 // 실전 기술 배치 (경완 2026-10-29 '난이도가 레벨뿐 아니라 실전 기술 배치·운용까지'): tier 1 = 레벨업 기술 중 자속·견제·변화기 하나, tier 2 = 기술머신·알 기술까지 넣고 능력치 올리기·선공기도
-const MV_BAD = new Set('hyperbeam gigaimpact blastburn hydrocannon frenzyplant rockwrecker roaroftime selfdestruct explosion memento finalgambit healingwish lunardance focuspunch dreameater lastresort synchronoise futuresight doomdesire skullbash skyattack razorwind solarbeam solarblade meteorbeam belch steelbeam mindblown naturalgift fling snore spitup present magnitude return frustration trumpcard spitup beatup counter mirrorcoat metalburst bide endeavor painsplit perishsong destinybond grudge'.split(' '));
+const MV_BAD = new Set('hyperbeam gigaimpact blastburn hydrocannon frenzyplant rockwrecker roaroftime selfdestruct explosion memento finalgambit healingwish lunardance focuspunch dreameater lastresort synchronoise futuresight doomdesire skullbash skyattack razorwind solarbeam solarblade meteorbeam belch steelbeam mindblown naturalgift fling snore spitup present magnitude return frustration trumpcard spitup beatup counter mirrorcoat metalburst bide endeavor painsplit perishsong destinybond grudge steelroller burnup doubleshock'.split(' '));
 const MV_FIX = { seismictoss: 70, nightshade: 70, superfang: 60, dragonrage: 40, sonicboom: 20 };
 const MV_SETUP = { swordsdance: 0, dragondance: 0, bulkup: 0, howl: 0, honeclaws: 0, shiftgear: 0, coil: 0, nastyplot: 1, calmmind: 1, quiverdance: 1, tailglow: 1, geomancy: 1, workup: -1, growth: 1 };
 const MV_STAT = { thunderwave: 3, willowisp: 3, toxic: 3, spore: 5, sleeppowder: 4, hypnosis: 2, yawn: 2, glare: 3, stunspore: 2, stealthrock: 2, leechseed: 2, recover: 3, roost: 3, softboiled: 3, slackoff: 3, synthesis: 2, moonlight: 2, morningsun: 2, milkdrink: 3, shoreup: 3, substitute: 1, reflect: 1, lightscreen: 1, taunt: 1, encore: 1, trickroom: 0 };
@@ -1183,17 +1183,31 @@ function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에�
   if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
+/* v27.68 경완이 보여 준 동혁 말 'Ai 멍청해서 … 아이언롤러 … 자꾸 쓰고 실패함': 지금 쓰면 실패하는 공격 기술은 상대 AI 가 0점으로 봄 (싱글 aiChoice·더블 aiD 공통).
+   아이언롤러 = 필드 없음, 속이기·만나자마자 = 나온 첫 턴 아님, 버닝아웃·더블쇼크 = 그 타입을 이미 잃음, 폴터가이스트 = 상대 도구 없음, 꿈먹기 = 상대 안 잠, 코골기 = 내가 안 잠, 트림 = 열매 안 먹음.
+   도전자 기술 고르기(MV_BAD)에서도 아이언롤러·버닝아웃·더블쇼크는 뺌 */
+function aiNoGo(btl, a, d, m) { try { const T = p => p.types || p.species?.types || [];
+  switch (m.id) {
+    case 'steelroller': return btl.field.isTerrain('');
+    case 'fakeout': case 'firstimpression': return a.isActive && a.activeMoveActions > 0;
+    case 'burnup': return !T(a).includes('Fire');
+    case 'doubleshock': return !T(a).includes('Electric');
+    case 'poltergeist': return !d?.item;
+    case 'dreameater': return !!d && d.status !== 'slp';
+    case 'snore': return a.status !== 'slp';
+    case 'belch': return !a.ateBerry;
+  } } catch (e) {} return false; }
 function aiChoice(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const foe = btl.p1.active[0], me = side.active[0];
-  const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;
+  const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (aiNoGo(btl, mon, foe, m)) return 0; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;
     if (!btl.dex.getImmunity(m.type, foe)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, foe); const stab = (mon.types || mon.species?.types || []).includes(m.type) ? 1.5 : 1;
     return (m.basePower || 40) * eff * stab * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const bench = () => req.side.pokemon.map((p, i) => ({ p, i, mon: side.pokemon[i] })).filter(o => !o.p.active && !/fnt/.test(o.p.condition));
   // 쉬움: 예전 그대로 (거의 아무 기술)
   if (diff === 0) {
     if (req.forceSwitch) { const o = bench(); return o.length ? 'switch ' + (pick(o).i + 1) : 'pass'; }
-    const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    const mv0 = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv0.length) return 'move 1'; const ok = mv0.filter(o => !aiNoGo(btl, me, foe, btl.dex.moves.get(o.m.id))), mv = ok.length ? ok : mv0;   /* 쉬움도 실패할 기술은 안 고름 */
     if (Math.random() < .7) return 'move ' + (pick(mv).i + 1);
     return 'move ' + (mv.map(o => ({ o, s: score(me, o.m.id) * rnd(.85, 1.15) })).sort((a, b) => b.s - a.s)[0].o.i + 1);
   }
@@ -1201,7 +1215,7 @@ function aiChoice(btl, diff) {
   // 쇼다운 getStat·hasType 은 이벤트를 돌려서 배틀 밖에서 부르면 스택이 넘친다 → 저장된 능력치·종족 타입으로 직접 계산
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, mid) => { if (!a || !d || d.fainted) return 0; const m = btl.dex.moves.get(mid); if (m.category === 'Status') return 0;
+  const dmg = (a, d, mid) => { if (!a || !d || d.fainted) return 0; const m = btl.dex.moves.get(mid); if (m.category === 'Status' || aiNoGo(btl, a, d, m)) return 0;
     if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
     const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
     const base = Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2;
@@ -1211,8 +1225,9 @@ function aiChoice(btl, diff) {
   // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
   const matchup = mon => !foe || foe.fainted ? 0 : Math.min(1.2, best(mon, foe) / Math.max(1, foe.hp)) - Math.min(1.2, best(foe, mon) / Math.max(1, mon.hp)) * .9;
   if (req.forceSwitch) { const o = bench(); if (!o.length) return 'pass'; return 'switch ' + (o.map(x => ({ x, s: matchup(x.mon) + Math.random() * .1 })).sort((a, b) => b.s - a.s)[0].x.i + 1); }
-  const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
-  if (!mv.length) return 'move 1';
+  const mv0 = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
+  if (!mv0.length) return 'move 1';
+  const mvOk = mv0.filter(o => !aiNoGo(btl, me, foe, btl.dex.moves.get(o.m.id))), mv = mvOk.length ? mvOk : mv0;
   if (diff === 1 && !B?.train && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수 (수련탑은 아래 점수 고르기)
   const fHp = Math.max(1, foe?.hp || 1), mHp = me.hp / me.maxhp, inDanger = best(foe, me) >= me.hp, foeHit = best(foe, me) / Math.max(1, me.hp), bo = me.boosts || {};
   const sc = mv.map(o => { const m = btl.dex.moves.get(o.m.id); let v;
@@ -1555,7 +1570,7 @@ function aiD(btl, diff) {
   const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
+  const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || aiNoGo(btl, a, d, m) || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
     const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
     return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
@@ -1566,7 +1581,7 @@ function aiD(btl, diff) {
   return req.active.map((R, k) => aiGmk(btl, aiD1(R, k), k, tk)).join(', ');
   function aiD1(R, k) { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
     if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
-    const mv = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    const mv0 = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv0.length) return 'move 1'; const mvOk = mv0.filter(o => { const m = btl.dex.moves.get(o.m.id); return !foes.length || !foes.every(F => aiNoGo(btl, me, F.q, m)); }), mv = mvOk.length ? mvOk : mv0;
     const al = side.active[1 - k], alOk = al && !al.fainted, mHp = me.hp / me.maxhp, foeHit = Math.max(0, ...foes.map(F => Math.max(0, ...(F.q.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(F.q, me, btl.dex.moves.get(y.id)))))) / Math.max(1, me.hp);
     const opts = [];   /* { o: 기술, T: [대상 번호, 점수][], ko } */
     for (const o of mv) { const m = btl.dex.moves.get(o.m.id), tg = o.m.target || m.target;
