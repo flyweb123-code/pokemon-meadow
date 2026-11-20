@@ -18,3 +18,10 @@ direction (3 frames per run: front 0,3,4 / back 1,5,6 / side 2,7,8), and back wa
 
     python3 topost.py raw/lf_bruno_m_transfer.png ../../../gym/img/ow/pt_m.png OUT/lf_bruno_m
     python3 backfix.py OUT/lf_roxie_m_t_ow9.png OUT/lf_roxie_m 27
+
+Walking bob (2026-11-21, 경완 '걸을 때 위아래 까딱이는 느낌이 없네'): Transfer outfit did not
+always raise the body 1px in walk frames (Bruno, Roxie) and redrew parts of the head
+(Janine's hair). `bobfix.py` makes every walk frame 1px higher than its standing frame with the
+feet kept in place, and uses the standing frame's head (rows < 19) so the head moves as one piece:
+
+    python3 bobfix.py ../../../gym/img/fit/ow9/lf_bruno_m.png OUT/lf_bruno_m
