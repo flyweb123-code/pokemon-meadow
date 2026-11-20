@@ -3961,7 +3961,7 @@ function enter() {
   const tutW = st()?.d && window.gymSimOn ? window.gymTutTest : null; window.gymTutTest = null;   // 운영자 튜토리얼 시험 (v20.44)
   if (Array.isArray(S.box) && S.box.some(isTstP)) { dropMgT(); save(); }   // 메가진화 시험 포켓몬이 (도중에 꺼져서) 남았으면 본 계정에서 지움
   { const k = window.gymSimOn ? window.gymTrTest : null; window.gymTrTest = null; if (k) setTimeout(() => trainTest(), 900); }
-  window.gymTrGo = window.gymSimOn ? trGo : null;   /* v27.90 포켓몬 메뉴 [수련탑] 버튼 시안: 운영자 시뮬 안에서만 */
+  window.gymTrGo = trGo;   /* v27.91 경완 '6번으로 가자. 이거 베타에 배포해주는데 베타에서는 여전히 보상이나 경험치는 못 받게': 포켓몬 메뉴 [수련탑] 버튼을 베타 모두에게. 내 포켓몬은 사본(gTst)으로 오르고 저장엔 사본이 안 남음(beta.html serialize), 골드 TR_PAY false */
   { const k = window.gymSimOn ? window.gymYaTest : null; window.gymYaTest = null; if (k) setTimeout(() => { if (lockedT('train')) yaTest(); else openTab('train'); }, 900); }   /* 경완 2026-11-15 '특훈 시연 훈련장에서 버튼 눌러서 들어가는거부터 해볼 수 있게': 시연 = 시뮬 훈련장을 열어 두고, 아래 [특훈] 버튼으로 들어감 */   // 운영자 직접 훈련 시연 (시뮬 안, 저장 안 건드림)   // v23.10 운영자 훈련하기 시연 (시뮬 안)
   { const k = window.gymSimOn ? window.gymLegFit : null; window.gymLegFit = null; if (k) setTimeout(() => legFitPop(1), 900); }   /* 운영자 전설 의상 받는 창 시험 */
   { const k = window.gymSimOn ? window.gymLegExam : null; window.gymLegExam = null; if (k) setTimeout(() => legExamTest(k === 2), 900); }   // 운영자 전설 심사 (강박사) 시험
@@ -4372,7 +4372,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-c b{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #trLobby .tl-c .st{display:flex;gap:2px;font-size:9px;white-space:nowrap}#trLobby .tl-c .st em{font-style:normal;padding:1px 3px;color:#fff;background:#383848}#trLobby .tl-c .st em.c{background:#2f7cd0}
 #trLobby .tl-ft{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:8px 10px 10px;background:#2b2b3c}
-#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 1.6fr}
+#trLobby .tl-ft.two{grid-template-columns:1fr 1fr 1.6fr}#trLobby .tl-ft.nr{grid-template-columns:1fr}#trLobby .tl-ft.nr.two{grid-template-columns:1fr 1.6fr}
 #trLobby .tl-ft .gy-key{min-height:52px;font-size:14px;flex-direction:column}
 #trLobby .tl-ft .gy-key small{font-size:9px;opacity:.75}
 #trLobby .tl-ft .gy-key.main{font-size:16px}
@@ -4422,7 +4422,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
       <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
     <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
       <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="lu">라인업</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
-    <div class="tl-ft${save ? ' two' : ''}"><button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
+    <div class="tl-ft${save ? ' two' : ''}${trOp() ? '' : ' nr'}">${trOp() ? '<button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>' : ''}${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
   root.appendChild(el);
   const draw = () => { const n = sum(), cap = B.TR_CAP, ov = n > cap, list = el.querySelector('.tl-list'), sc = list.scrollTop;
     el.querySelector('.tl-party').innerHTML = [0, 1, 2, 3, 4, 5].map(i => { const P = B.boxOf(sel[i]); return P ? `<button class="tl-s on" data-p="${P.id}">${B.thumb(P)}<em>${cost(P)}</em></button>` : `<span class="tl-s">${TRL_PB}</span>`; }).join('');
@@ -4492,6 +4492,8 @@ const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); el.remove(); ok(); };
 });
 /* v27.90 경완 '수련탑 포켓몬 메뉴 하단에 연습게임 버튼 대신 … 그 버튼 누르면 승급심사나 특훈 들어갈 때처럼 진입 연출 나오고 등반대 고르는 화면': 줄무늬가 화면을 가르며 '수련탑' (bsGo 와 같은 .bs-tr) → 닫힌 사이에 메뉴를 닫고 등반대 고르기(trainTest → trLineup) */
+/* v27.91 시험 버튼(랜덤 라인업·⏩ 등)은 운영자 시뮬·시험 모드에서만 */
+const trOp = () => !!window.gymSimOn || document.documentElement.classList.contains('tests');
 function trGo() {
   if (!open || !st()?.d || root.querySelector('.bs-tr')) return;
   /* 특훈(yaTest)처럼 줄무늬가 닫힌 채 기다렸다가 등반대 화면(#trLobby)이 뜬 뒤 연다 (늦어도 6초), 아래 메뉴는 안 가림 */
@@ -4524,7 +4526,7 @@ async function trainTest() {
       const env = trEnv(f, big), res = await GB().run({ my, foe, wild: !trn, dbl, chain: !first, train: T, pre: intro, hp: R.hp, vit: R.vit, xit: R.xit, xitT: R.tit, ptyIt: trPtyIt(R), diff: boss || nmd ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: !trn, win: nmd ? nmd.win || undefined : trn ? 'winTrain' : 'winWild', meFrontUrl, meBackUrl,
         items: trItHtml(R), badge: `<div class="bfl${boss || nmd ? ' bs' : ''}"><b class="f">${f}<em>층</em></b><span class="cr"><b class="g"><i class="coin"></i><span>${(R.gold | 0).toLocaleString()}</span></b><b class="c"><img alt="" src="${IMG}item/relicsilver.png"><span>${(R.coin | 0).toLocaleString()}</span></b></span></div>`,   /* v26.91 경완 '수련탑 코인 왼쪽에 우리 골드 아이콘으로 표시' · v26.92 경완 '고대의 은화로 가자 골드랑 헷갈리니까' */   /* v24.81 경완 '우상단, 박스 없이' → 체력 박스 글씨 그대로 A안, 코인은 금색 + 고대의 금화(1번) */ post: o => trPost(R, o, boss || !!nmd, ids, T, trn),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
-        tools: [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }], ['🧑 트레이너', () => { R.trNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
+        tools: trOp() && [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }], ['🧑 트레이너', () => { R.trNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
       first = false; if (!res?.keep) break;
     }
     if (R?.end) { document.body.classList.remove('gymBattle'); root.classList.remove('dhide'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; }
