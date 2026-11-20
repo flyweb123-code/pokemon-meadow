@@ -122,7 +122,7 @@ function pickMoves(sp, lv, r) {
   return take.map(i => D.mv[i][0]);
 }
 // 실전 기술 배치 (경완 2026-10-29 '난이도가 레벨뿐 아니라 실전 기술 배치·운용까지'): tier 1 = 레벨업 기술 중 자속·견제·변화기 하나, tier 2 = 기술머신·알 기술까지 넣고 능력치 올리기·선공기도
-const MV_BAD = new Set('hyperbeam gigaimpact blastburn hydrocannon frenzyplant rockwrecker roaroftime selfdestruct explosion memento finalgambit healingwish lunardance focuspunch dreameater lastresort synchronoise futuresight doomdesire skullbash skyattack razorwind solarbeam solarblade meteorbeam belch steelbeam mindblown naturalgift fling snore spitup present magnitude return frustration trumpcard spitup beatup counter mirrorcoat metalburst bide endeavor painsplit perishsong destinybond grudge'.split(' '));
+const MV_BAD = new Set('hyperbeam gigaimpact blastburn hydrocannon frenzyplant rockwrecker roaroftime selfdestruct explosion memento finalgambit healingwish lunardance focuspunch dreameater lastresort synchronoise futuresight doomdesire skullbash skyattack razorwind solarbeam solarblade meteorbeam belch steelbeam mindblown naturalgift fling snore spitup present magnitude return frustration trumpcard spitup beatup counter mirrorcoat metalburst bide endeavor painsplit perishsong destinybond grudge steelroller burnup doubleshock'.split(' '));
 const MV_FIX = { seismictoss: 70, nightshade: 70, superfang: 60, dragonrage: 40, sonicboom: 20 };
 const MV_SETUP = { swordsdance: 0, dragondance: 0, bulkup: 0, howl: 0, honeclaws: 0, shiftgear: 0, coil: 0, nastyplot: 1, calmmind: 1, quiverdance: 1, tailglow: 1, geomancy: 1, workup: -1, growth: 1 };
 const MV_STAT = { thunderwave: 3, willowisp: 3, toxic: 3, spore: 5, sleeppowder: 4, hypnosis: 2, yawn: 2, glare: 3, stunspore: 2, stealthrock: 2, leechseed: 2, recover: 3, roost: 3, softboiled: 3, slackoff: 3, synthesis: 2, moonlight: 2, morningsun: 2, milkdrink: 3, shoreup: 3, substitute: 1, reflect: 1, lightscreen: 1, taunt: 1, encore: 1, trickroom: 0 };
@@ -1184,17 +1184,207 @@ function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에�
   if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
   return c;
 }
+/* v27.68 경완이 보여 준 동혁 말 'Ai 멍청해서 … 아이언롤러 … 자꾸 쓰고 실패함' → v27.69 경완 '또 이런 ai 찐빠 없는지 검토 좀 해줘봐': 지금 쓰면 실패하거나 헛도는 기술은 상대 AI 가 안 고름 (싱글 aiChoice·더블 aiD 공통, 쉬움·보통의 무작위 고르기에서도 뺌).
+   공격 = 조건부 실패(아이언롤러·속이기·꿈먹기·미래예지 겹침·마지막수단…), 특성·도구로 안 맞음(부유·풍선·축전·저수·타오르는불꽃·초식·불가사의부적·방음·방탄…), 사이코필드·여왕의위엄에 선공기, 큰비·큰가뭄.
+   변화 = 이미 걸린 상태이상·타입·특성으로 안 걸림, 풀 타입에 가루, 대타출동·신비의부적·미스트필드, 이미 깔린 압정·벽·날씨·필드, 꽉 찬 능력치·체력에 올리기·회복, 연속 방어, 교체할 포켓몬 없는 날려버리기, 튀어오르기 등.
+   도전자 기술 고르기(MV_BAD)에서도 아이언롤러·버닝아웃·더블쇼크는 뺌 */
+/* v27.72 경완 '포켓로그 규칙 다 참고한거야?' → '다시 대조해줘' → '교체 안 줄여도 될 것 같고 나머지 2개랑 특성은 드러난 뒤에만': 포켓로그(src/field/pokemon.ts getNextMove, src/data/moves/move.ts 효과별 benefit score, docs/enemy-ai.md) 규칙을 따옴 (코드는 안 가져옴).
+   ① aiAb: 상대 AI 는 내 포켓몬 특성을 배틀에서 한 번 드러난 뒤에만 안다 (포켓로그 waveData.abilityRevealed). 쇼다운 기록의 -ability·[from] ability 줄을 aiSee 가 읽어 pk.aiRev 표시. 자기 편 특성은 늘 앎
+   ② aiSec: 공격 기술 부가 효과 점수 (1·2단계) — 풀죽음·상태이상·혼란은 확률만큼, 상대 능력치 내리기·내 능력치 올리기, 급소, 흡수 회복(체력 낮을 때), 도구 떨구기, 교체기(체력 낮을 때) 가산 / 반동·쉬는 턴 감점. 포켓로그 점수 1점 = 우리 점수 .025 (포켓로그 보통 공격 20점 ≒ 상대 체력 절반 깎는 기술 .5)
+   ③ aiStat: 변화 기술 효과별 점수 (1·2단계) — 예전엔 능력치 올리기·상태이상·회복·스텔스록·씨뿌리기·대타출동만 점수가 있고 나머지는 .05 라 사실상 안 썼다 */
+const aiAb = (btl, p) => !p || p.volatiles?.gastroacid ? '' : p.side === btl.p2 || p.aiRev ? p.ability || '' : '';
+function aiSee(btl) { try { const L = btl.log; for (let i = btl.aiLi | 0; i < L.length; i++) { const s = L[i]; let n = ''; if (s.startsWith('|-ability|')) n = s.split('|')[3] || ''; else { const k = s.indexOf('ability: '); if (k < 0) continue; n = s.slice(k + 9).split('|')[0]; }
+    const id = PSim.toID(n); if (!id) continue; for (const p of btl.p1.pokemon) if (p.ability === id || p.baseAbility === id) p.aiRev = 1; } btl.aiLi = L.length; } catch (e) {} }
+function aiSec(btl, a, d, m, o) { try { let v = 0; const P = .025, hr = a.hp / Math.max(1, a.maxhp), T = p => p.terastallized ? [p.terastallized] : p.types || p.species?.types || [], da = aiAb(btl, d);
+  const secs = m.secondaries || (m.secondary ? [m.secondary] : []), block = da === 'shielddust' || d.item === 'covertcloak';
+  for (const s of secs) { const ch = (s.chance || 100) / 100;
+    if (!block) { if (s.volatileStatus === 'flinch' && o.fast && da !== 'innerfocus') v += 5 * ch * P; if (s.volatileStatus === 'confusion' && !d.volatiles?.confusion) v += 5 * ch * P;
+      if (s.status && !d.status && !aiNoGo(btl, a, d, { id: '', category: 'Status', target: 'normal', status: s.status, flags: {}, type: m.type })) v += 10 * ch * P;
+      if (s.boosts) for (const [k, x] of Object.entries(s.boosts)) if (x < 0 && (d.boosts?.[k] | 0) > -6) v += (4 * -x - 2) * Math.max(.5, ch) * P; }
+    if (s.self?.boosts) for (const [k, x] of Object.entries(s.self.boosts)) if (x > 0 && (a.boosts?.[k] | 0) < 6) v += (4 * x - 2) * Math.max(.5, ch) * P; }
+  if (m.willCrit) v += 5 * P; else if ((m.critRatio | 0) > 1) v += 3 * P;
+  if (m.recoil) v -= Math.floor((m.basePower || 0) / 20) * P * Math.min(1, m.recoil[0] / m.recoil[1] * 3);
+  if (m.drain) v += Math.max(0, 1 - hr - .33) * (m.basePower || 0) / 4 * P;
+  if (m.self?.volatileStatus === 'mustrecharge' || m.flags?.recharge) v -= 16 * P;
+  if ((m.id === 'knockoff' || m.id === 'thief' || m.id === 'covet' || m.id === 'incinerate') && d.item && da !== 'stickyhold') v += 5 * P;
+  if (m.selfSwitch && a.side.pokemon.filter(p => !p.fainted).length > a.side.active.length) v += (1 - hr) * 12 * P;
+  return v; } catch (e) { return 0; } }
+/* 값을 돌려주면 그 점수, null 이면 부른 쪽의 예전 계산(능력치 올리기·상태이상·회복·스텔스록·씨뿌리기·대타출동·방어)을 그대로 */
+function aiStat(btl, a, d, m, o) { try { const id = m.id, P = .025, hr = a.hp / Math.max(1, a.maxhp), F = btl.field, mvs = p => (p?.moveSlots || []).map(s => btl.dex.moves.get(s.id)), has = (p, c) => mvs(p).some(x => x.category === c);
+  const foeUp = d ? Object.values(d.boosts || {}).reduce((s, x) => s + Math.max(0, x), 0) : 0, fl = d ? d.side.pokemon.filter(p => !p.fainted).length : 0, self = m.target === 'self';
+  if (id === 'sleeptalk') return a.status === 'slp' ? 1.5 : 0;
+  if (id === 'rest') return hr < .4 && !o.inDanger ? .6 : hr < .6 ? .15 : 0;
+  if (id === 'wish') return hr < .6 ? .3 : .05; if (id === 'painsplit') return d && d.hp > a.hp * 1.5 ? .35 : .05;
+  if (id === 'bellydrum') return hr > .8 && o.foeHit < .4 ? .5 : 0;
+  if (id === 'haze' || id === 'whirlwind' || id === 'roar') return foeUp >= 2 ? .5 : id === 'haze' ? 0 : .04;
+  if (id === 'defog') return Object.keys(a.side.sideConditions || {}).some(k => ['stealthrock', 'spikes', 'toxicspikes', 'stickyweb'].includes(k)) ? .3 : 0;
+  if (id === 'healbell' || id === 'aromatherapy' || id === 'refresh') return a.status ? 10 * P : .08; if (id === 'psychoshift') return a.status && d && !d.status ? 10 * P : 0;
+  if (id === 'batonpass') return (1 - hr) * 10 * P + Math.min(10, Object.values(a.boosts || {}).reduce((s, x) => s + Math.max(0, x), 0)) * .03; if (id === 'teleport' || id === 'partingshot' || id === 'shedtail') return (1 - hr) * 20 * P + (id === 'partingshot' ? .08 : 0);
+  if (id === 'destinybond') return hr < .25 && o.fast ? .45 : 0; if (id === 'perishsong') return hr < .4 ? .2 : .03;
+  if (id === 'trickroom') return F.pseudoWeather?.trickroom ? (o.fast ? .25 : 0) : (o.fast ? 0 : .3); if (id === 'tailwind') return o.fast ? .08 : 6 * P;
+  if (id === 'taunt') return d && mvs(d).filter(x => x.category === 'Status').length >= 2 ? 6 * P : .04;
+  if (id === 'encore') return d && d.lastMove && btl.dex.moves.get(d.lastMove.id).category === 'Status' ? .35 : 2 * P; if (id === 'disable' || id === 'torment') return 5 * P * .6;
+  if (id === 'spikes' || id === 'toxicspikes' || id === 'stickyweb') return fl > 2 ? (id === 'spikes' ? .4 : .35) : 0;
+  if (id === 'reflect' || id === 'lightscreen' || id === 'auroraveil') return hr > .5 && d && (id === 'auroraveil' || has(d, id === 'reflect' ? 'Physical' : 'Special')) ? 8 * P : .04;
+  if (m.weather || m.terrain) return hr > .4 ? 6 * P : .04;
+  if (id === 'safeguard' || id === 'mist' || id === 'luckychant') return 2 * P;
+  if (id === 'curse' && (a.terastallized ? a.terastallized === 'Ghost' : (a.types || []).includes('Ghost'))) return hr > .6 ? 3 * P : 0;
+  if (id === 'curse') return null;
+  if (self && m.volatileStatus) return ({ aquaring: 3, ingrain: 3, focusenergy: 5, laserfocus: 5, magiccoat: 3, charge: 3, endure: o.inDanger ? 4 : 1, magnetrise: 2 }[m.volatileStatus] ?? 2) * P;
+  if (!self && m.volatileStatus && d) { const pt = { confusion: 5, attract: 5, yawn: 5, healblock: 5, nightmare: 5, leechseed: null, curse: 3, partiallytrapped: 3, embargo: 2, telekinesis: 1, foresight: 0, miracleeye: 0, taunt: null, encore: null, disable: null, torment: null }[m.volatileStatus]; if (pt === null) return null; return (pt ?? 2) * P; }
+  if (id === 'meanlook' || id === 'block' || id === 'spiderweb') return fl > 1 ? 3 * P : 0;
+  if (!self && m.boosts && d) { let pts = 0; for (const [k, x] of Object.entries(m.boosts)) { if (x >= 0) continue; const lv = Math.max((d.boosts?.[k] | 0) + x, -6) - (d.boosts?.[k] | 0); if (!lv) continue;
+      const no = k === 'atk' ? !has(d, 'Physical') : k === 'spa' ? !has(d, 'Special') : k === 'def' ? !has(a, 'Physical') : k === 'spd' ? !has(a, 'Special') : k === 'spe' ? o.fast : false; if (!no) pts += 4 * -lv - 2; } return pts > 0 ? pts * P : 0; }
+  if (self && m.boosts) { const up = Object.entries(m.boosts).filter(([, x]) => x > 0); if (up.length && up.every(([k]) => k === 'atk' ? !has(a, 'Physical') : k === 'spa' ? !has(a, 'Special') : false)) return 0; }   /* 쓸 공격이 없는 능력치만 올리는 기술 */
+  return null; } catch (e) { return null; } }
+const AI_ABI = { Electric: ['voltabsorb', 'lightningrod', 'motordrive'], Water: ['waterabsorb', 'stormdrain', 'dryskin'], Fire: ['flashfire', 'wellbakedbody'], Grass: ['sapsipper'], Ground: ['eartheater'] };
+const AI_STA = { slp: ['insomnia', 'vitalspirit', 'sweetveil'], par: ['limber'], brn: ['waterveil', 'waterbubble', 'thermalexchange'], psn: ['immunity', 'pastelveil'], tox: ['immunity', 'pastelveil'], frz: ['magmaarmor'] };
+const AI_STT = { brn: ['Fire'], par: ['Electric'], psn: ['Poison', 'Steel'], tox: ['Poison', 'Steel'], frz: ['Ice'] };
+const AI_HEAL = new Set('recover roost softboiled slackoff milkdrink synthesis moonlight morningsun shoreup healorder wish lifedew junglehealing lunarblessing rest swallow'.split(' '));
+const AI_NEVER = new Set('splash celebrate holdhands happyhour'.split(' ')), AI_KO = new Set('memento healingwish lunardance finalgambit'.split(' '));
+function aiNoGo(btl, a, d, m) { try { if (!a || !m) return false;
+  const T = p => p.terastallized ? [p.terastallized] : p.types || p.species?.types || [], ab = p => aiAb(btl, p), mold = ['moldbreaker', 'teravolt', 'turboblaze'].includes(ab(a)), dab = mold ? '' : ab(d);
+  const F = btl.field, wx = F.weather || '', tr = F.terrain || '', id = m.id, st = m.category === 'Status', toFoe = !['self', 'allySide', 'allies', 'adjacentAlly', 'adjacentAllyOrSelf', 'all', 'foeSide', 'allyTeam'].includes(m.target);
+  const gnd = p => !!p && (p.item === 'ironball' || !!p.volatiles?.ingrain || !!p.volatiles?.smackdown || !!F.pseudoWeather?.gravity || !(T(p).includes('Flying') || ab(p) === 'levitate' && !mold || p.item === 'airballoon' || p.volatiles?.magnetrise || p.volatiles?.telekinesis));
+  const left = s => s.pokemon.filter(p => !p.fainted).length, hpR = a.hp / Math.max(1, a.maxhp);
+  if (AI_NEVER.has(id)) return true;
+  if (AI_KO.has(id) || m.selfdestruct === 'always' || id === 'mindblown' && a.hp <= a.maxhp / 2) { if (hpR > .35) return true; if (['explosion', 'selfdestruct', 'mistyexplosion', 'mindblown'].includes(id) && [...btl.p1.active, ...btl.p2.active].some(p => p && !p.fainted && ab(p) === 'damp')) return true; }
+  switch (id) {
+    case 'steelroller': return !tr;
+    case 'fakeout': case 'firstimpression': return !!a.isActive && a.activeMoveActions > 0;
+    case 'burnup': return !T(a).includes('Fire');
+    case 'doubleshock': return !T(a).includes('Electric');
+    case 'poltergeist': return !d?.item;
+    case 'dreameater': return !!d && d.status !== 'slp' && dab !== 'comatose';
+    case 'snore': case 'sleeptalk': return a.status !== 'slp';
+    case 'belch': return !a.ateBerry;
+    case 'futuresight': case 'doomdesire': return !!d && !!d.side.slotConditions?.[d.position]?.futuremove;
+    case 'lastresort': return a.moveSlots.length < 2 || a.moveSlots.some(s => s.id !== 'lastresort' && !s.used);
+    case 'synchronoise': return !!d && !T(a).some(t => T(d).includes(t));
+    case 'spitup': case 'swallow': if (!a.volatiles?.stockpile) return true; break;
+    case 'stockpile': return (a.volatiles?.stockpile?.layers | 0) >= 3;
+    case 'aurawheel': return a.species?.baseSpecies !== 'Morpeko';
+    case 'hyperspacefury': return a.species?.name !== 'Hoopa-Unbound';
+    case 'shelltrap': case 'upperhand': return true;
+    case 'focuspunch': return !a.volatiles?.substitute;
+    case 'skydrop': return !!d && (d.weighthg || 0) >= 2000;
+    case 'bellydrum': return a.hp <= a.maxhp / 2 || (a.boosts?.atk | 0) >= 6;
+    case 'substitute': return !!a.volatiles?.substitute || a.hp <= a.maxhp / 4;
+    case 'encore': case 'disable': case 'spite': case 'mimic': case 'sketch': return !!d && !d.lastMove;
+    case 'whirlwind': case 'roar': return !!d && left(d.side) <= d.side.active.length;
+    case 'batonpass': case 'teleport': case 'partingshot': case 'shedtail': return left(a.side) <= a.side.active.length;
+    case 'auroraveil': if (!['snow', 'hail', 'snowscape'].includes(wx)) return true; break;
+    case 'rest': if (a.status === 'slp' || ['insomnia', 'vitalspirit'].includes(ab(a)) || tr === 'electricterrain' && gnd(a) || tr === 'mistyterrain' && gnd(a)) return true; break;
+    case 'trick': case 'switcheroo': return !!d && dab === 'stickyhold';
+    case 'painsplit': return !!d && d.hp <= a.hp;
+    case 'healbell': case 'aromatherapy': case 'refresh': return !a.side.pokemon.some(p => !p.fainted && p.status);
+    case 'psychup': return !!d && !Object.values(d.boosts || {}).some(x => x > 0);
+    case 'haze': case 'clearsmog': if (st) return !d || !Object.values(d.boosts || {}).some(x => x > 0); break;
+    case 'defog': case 'rapidspin': if (st) return !Object.keys(a.side.sideConditions || {}).some(k => ['stealthrock', 'spikes', 'toxicspikes', 'stickyweb'].includes(k)) && !(d && Object.keys(d.side.sideConditions || {}).some(k => ['reflect', 'lightscreen', 'auroraveil'].includes(k))); break;
+  }
+  if (!st) { if (!d) return false;
+    if (wx === 'primordialsea' && m.type === 'Fire' || wx === 'desolateland' && m.type === 'Water') return true;
+    if (m.priority > 0 && a.side !== d.side && (tr === 'psychicterrain' && gnd(d) || ['dazzling', 'queenlymajesty', 'armortail'].includes(dab) || d.side.active.some(p => p && !p.fainted && !mold && ['dazzling', 'queenlymajesty', 'armortail'].includes(ab(p))))) return true;
+    if (m.type === 'Ground' && id !== 'thousandarrows' && !gnd(d)) return true;
+    if ((AI_ABI[m.type] || []).includes(dab)) return true;
+    if (m.flags?.sound && dab === 'soundproof' || m.flags?.bullet && dab === 'bulletproof' || m.flags?.wind && dab === 'windrider' || m.flags?.powder && (dab === 'overcoat' || d.item === 'safetygoggles' || T(d).includes('Grass'))) return true;
+    if (dab === 'wonderguard' && m.type && m.type !== '???' && id !== 'struggle' && btl.dex.getEffectiveness(m.type, d) <= 0) return true;
+    return false; }
+  /* ── 변화 기술 ── */
+  if (a.volatiles?.taunt) return true;
+  if (m.stallingMove) return !!a.volatiles?.stall;
+  if (m.heal || AI_HEAL.has(id)) { if (a.hp >= a.maxhp && !['lifedew', 'junglehealing', 'lunarblessing'].includes(id)) return true; if (a.volatiles?.healblock) return true; }
+  if (m.target === 'self' || m.target === 'allySide' || m.target === 'allies' || m.target === 'adjacentAllyOrSelf') {
+    const up = m.boosts ? Object.entries(m.boosts).filter(([, x]) => x > 0) : []; if (up.length && !m.volatileStatus && !m.sideCondition && up.every(([k]) => (a.boosts?.[k] | 0) >= 6)) return true;
+    if (m.volatileStatus && a.volatiles?.[m.volatileStatus] && !['stockpile', 'protect'].includes(m.volatileStatus)) return true;
+    if (m.sideCondition && a.side.sideConditions?.[m.sideCondition]) return true; }
+  if (m.target === 'foeSide' && m.sideCondition && d) { const c = d.side.sideConditions?.[m.sideCondition]; if (c && (c.layers || 1) >= ({ spikes: 3, toxicspikes: 2 }[m.sideCondition] || 1)) return true; }
+  if (m.weather && wx === PSim.toID(m.weather)) return true; if (m.weather && ['primordialsea', 'desolateland', 'deltastream'].includes(wx)) return true;
+  if (m.terrain && tr === PSim.toID(m.terrain)) return true;
+  if (toFoe && d && a.side !== d.side) {
+    if (dab === 'goodasgold' || dab === 'magicbounce' && m.flags?.reflectable) return true;
+    if (d.volatiles?.substitute && !m.flags?.bypasssub && !(m.flags?.sound) && ab(a) !== 'infiltrator') return true;
+    if (m.flags?.powder && (dab === 'overcoat' || d.item === 'safetygoggles' || T(d).includes('Grass'))) return true;
+    if (id === 'thunderwave' && !btl.dex.getImmunity('Electric', d) || id === 'thunderwave' && T(d).includes('Ground')) return true;
+    const sts = m.status || (id === 'yawn' ? 'slp' : '');
+    if (sts) { if (d.status || dab === 'comatose' || dab === 'purifyingsalt' || dab === 'leafguard' && ['sunnyday', 'desolateland'].includes(wx)) return true;
+      if ((AI_STA[sts] || []).includes(dab)) return true; if ((AI_STT[sts] || []).some(t => T(d).includes(t)) && !(ab(a) === 'corrosion' && (sts === 'psn' || sts === 'tox'))) return true;
+      if (d.side.sideConditions?.safeguard && ab(a) !== 'infiltrator') return true; if (tr === 'mistyterrain' && gnd(d)) return true; if (sts === 'slp' && tr === 'electricterrain' && gnd(d)) return true;
+      if (id === 'yawn' && d.volatiles?.yawn) return true; }
+    if (m.volatileStatus && d.volatiles?.[m.volatileStatus]) return true;
+    if (m.volatileStatus === 'confusion' && (dab === 'owntempo' || tr === 'mistyterrain' && gnd(d) || d.side.sideConditions?.safeguard)) return true;
+    if (m.volatileStatus === 'leechseed' && T(d).includes('Grass')) return true;
+    if (m.volatileStatus === 'attract' && (dab === 'oblivious' || !a.gender || !d.gender || a.gender === 'N' || d.gender === 'N' || a.gender === d.gender)) return true;
+    if (m.volatileStatus === 'taunt' && dab === 'oblivious') return true;
+    const dn = m.boosts ? Object.entries(m.boosts).filter(([, x]) => x < 0) : []; if (dn.length && (dn.every(([k]) => (d.boosts?.[k] | 0) <= -6) || ['clearbody', 'whitesmoke', 'fullmetalbody'].includes(dab) || d.side.sideConditions?.mist)) return true; }
+  } catch (e) {} return false; }
+/* 위력이 그때그때 달라 AI 가 너무 높게 보던 기술: 분화·해수스파우팅·드래곤에너지 = 남은 체력 비율, 두 턴 모으는 기술 = 절반 (쾌청의 솔라빔·파워풀허브는 그대로) */
+function aiPw(btl, a, m) { try { if (['eruption', 'waterspout', 'dragonenergy'].includes(m.id)) return Math.max(.01, a.hp / Math.max(1, a.maxhp));
+  if (m.flags?.charge) { const wx = btl.field.weather || ''; if (a.item === 'powerherb' || ['solarbeam', 'solarblade'].includes(m.id) && ['sunnyday', 'desolateland'].includes(wx) || m.id === 'electroshot' && ['raindance', 'primordialsea'].includes(wx)) return 1; return .5; } } catch (e) {} return 1; }
+/* v27.71 경완 '또 이런 ai 찐빠 없는지 검토 좀 해줘봐' → '어차피 배포하면 1,2단계로 조절할거 아냐?': 상대 AI 어림 피해식을 한곳으로 (싱글 aiChoice·더블 aiD). smart = AI 1·2단계만 (쉬움은 예전 식 그대로).
+   예전엔 위력 0 으로 적힌 기술(풀묶기·자이로볼·헤비봄버·바둥바둥·분노의앞니…)을 0점으로 봐서 들고도 안 썼고, 연속기는 한 타만, 바디프레스·속임수·사이코쇼크는 엉뚱한 능력치로, 웨더볼·심판의뭉치는 노말로 셈했다.
+   smart 면 그 값들과 날씨·벽·특성(두꺼운지방·멀티스케일·천하장사…)·도구(구애·생명의구슬·돌격조끼) 배수까지 어림한다 */
+function aiDmg(btl, a, d, m, st, smart) {
+  if (!a || !d || d.fainted || m.category === 'Status' || aiNoGo(btl, a, d, m)) return 0;
+  const T = p => p.terastallized ? [p.terastallized] : p.types || p.species?.types || [], acc = (m.accuracy === true ? 100 : m.accuracy) / 100;
+  if (!smart) { if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
+    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
+    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m) * ((a.types || a.species?.types || []).includes(m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * acc; }
+  try { const id = m.id, ab = p => aiAb(btl, p), aa = ab(a), mold = ['moldbreaker', 'teravolt', 'turboblaze'].includes(aa), da = mold ? '' : ab(d), wx = btl.field.weather || '', tr = btl.field.terrain || '';
+    const it = p => p.item ? btl.dex.items.get(p.item) : null, kg = p => (p.weighthg || p.species?.weighthg || 0) / 10, pos = p => Object.values(p.boosts || {}).reduce((s, x) => s + Math.max(0, x), 0);
+    /* 타입이 바뀌는 기술 */
+    let ty = m.type; const WB = { sunnyday: 'Fire', desolateland: 'Fire', raindance: 'Water', primordialsea: 'Water', sandstorm: 'Rock', hail: 'Ice', snow: 'Ice', snowscape: 'Ice' };
+    if (id === 'weatherball' && WB[wx]) ty = WB[wx]; else if (id === 'judgment') ty = it(a)?.onPlate || ty; else if (id === 'multiattack') ty = it(a)?.onMemory || ty; else if (id === 'technoblast') ty = it(a)?.onDrive || ty;
+    else if (id === 'revelationdance') ty = T(a)[0] || ty; else if (id === 'terablast' && a.terastallized) ty = a.terastallized; else if (id === 'hiddenpower' && a.hpType) ty = a.hpType;
+    else if (id === 'terrainpulse' && tr) ty = { electricterrain: 'Electric', grassyterrain: 'Grass', mistyterrain: 'Fairy', psychicterrain: 'Psychic' }[tr] || ty;
+    if (!(id === 'thousandarrows') && !btl.dex.getImmunity(ty, d)) return 0;
+    /* 정해진 피해 */
+    if (m.damage === 'level' || id === 'psywave') return a.level * acc; if (typeof m.damage === 'number') return m.damage * acc;
+    if (id === 'superfang' || id === 'naturesmadness' || id === 'ruination') return d.hp / 2 * acc; if (id === 'endeavor') return Math.max(0, d.hp - a.hp);
+    if (m.ohko || m.damageCallback) return 0;
+    /* 위력 */
+    let bp = m.basePower || 0; const hr = a.hp / Math.max(1, a.maxhp);
+    if (id === 'grassknot' || id === 'lowkick') { const w = kg(d); bp = w < 10 ? 20 : w < 25 ? 40 : w < 50 ? 60 : w < 100 ? 80 : w < 200 ? 100 : 120; }
+    else if (id === 'heavyslam' || id === 'heatcrash') { const r = kg(a) / Math.max(.1, kg(d)); bp = r >= 5 ? 120 : r >= 4 ? 100 : r >= 3 ? 80 : r >= 2 ? 60 : 40; }
+    else if (id === 'gyroball') bp = Math.min(150, Math.floor(25 * st(d, 'spe') / Math.max(1, st(a, 'spe'))) + 1);
+    else if (id === 'electroball') { const r = st(a, 'spe') / Math.max(1, st(d, 'spe')); bp = r >= 4 ? 150 : r >= 3 ? 120 : r >= 2 ? 80 : r >= 1 ? 60 : 40; }
+    else if (id === 'flail' || id === 'reversal') bp = hr < .042 ? 200 : hr < .104 ? 150 : hr < .208 ? 100 : hr < .354 ? 80 : hr < .688 ? 40 : 20;
+    else if (id === 'return') bp = 102; else if (id === 'magnitude') bp = 71; else if (id === 'present' || id === 'trumpcard') bp = 40;
+    else if (id === 'crushgrip' || id === 'wringout') bp = Math.max(1, 120 * d.hp / d.maxhp); else if (id === 'hardpress') bp = Math.max(1, 100 * d.hp / d.maxhp);
+    else if (id === 'punishment') bp = Math.min(200, 60 + 20 * pos(d)); else if (id === 'storedpower' || id === 'powertrip') bp = 20 + 20 * pos(a);
+    else if (id === 'acrobatics') bp = a.item ? 55 : 110; else if (id === 'hex' || id === 'infernalparade') bp = d.status ? bp * 2 : bp; else if (id === 'knockoff') bp = d.item ? 97 : 65;
+    else if (id === 'facade') bp = ['brn', 'psn', 'tox', 'par'].includes(a.status) ? 140 : 70; else if (id === 'venoshock') bp = ['psn', 'tox'].includes(d.status) ? 130 : 65;
+    else if (id === 'weatherball') bp = WB[wx] ? 100 : 50; else if (id === 'terrainpulse') bp = tr ? 100 : 50; else if (id === 'brine') bp = d.hp <= d.maxhp / 2 ? 130 : 65;
+    else if (id === 'tripleaxel') bp = 94; else if (id === 'triplekick') bp = 47; else if (id === 'populationbomb') bp = aa === 'loadeddice' || a.item === 'loadeddice' ? 140 : 110;
+    else if (m.multihit) bp *= Array.isArray(m.multihit) ? (aa === 'skilllink' ? 5 : a.item === 'loadeddice' ? 4.5 : 3.1) : m.multihit;
+    if (!bp) return 0; if (aa === 'technician' && (m.basePower || bp) <= 60 && !m.multihit) bp *= 1.5;
+    /* 어느 능력치로 셈하나 */
+    const ph = m.category === 'Physical'; let A = id === 'bodypress' ? st(a, 'def') : id === 'foulplay' ? st(d, 'atk') : st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph || ['psyshock', 'psystrike', 'secretsword'].includes(id) ? 'def' : 'spd'));
+    if (ph && id !== 'bodypress' && id !== 'foulplay' && (aa === 'hugepower' || aa === 'purepower')) A *= 2; if (ph && aa === 'guts' && a.status) A *= a.status === 'brn' ? 3 : 1.5;
+    if (a.item === 'choiceband' && ph || a.item === 'choicespecs' && !ph) A *= 1.5; if (d.item === 'assaultvest' && !ph) Df *= 1.5; if (d.item === 'eviolite' && d.species?.nfe) Df *= 1.5;
+    if (wx === 'sandstorm' && !ph && T(d).includes('Rock')) Df *= 1.5; if (['snow', 'snowscape'].includes(wx) && ph && T(d).includes('Ice')) Df *= 1.5;
+    let v = (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m);
+    if (T(a).includes(ty)) v *= aa === 'adaptability' ? 2 : 1.5;
+    let eff = id === 'thousandarrows' && T(d).includes('Flying') ? 1 : 2 ** btl.dex.getEffectiveness(ty, d); if (id === 'freezedry' && T(d).includes('Water')) eff *= 4; if (id === 'flyingpress') eff *= 2 ** btl.dex.getEffectiveness('Flying', d);
+    v *= eff; if (eff > 1 && ['filter', 'solidrock', 'prismarmor'].includes(da)) v *= .75; if (eff < 1 && aa === 'tintedlens') v *= 2;
+    if (['sunnyday', 'desolateland'].includes(wx)) v *= ty === 'Fire' ? 1.5 : ty === 'Water' ? .5 : 1; if (['raindance', 'primordialsea'].includes(wx)) v *= ty === 'Water' ? 1.5 : ty === 'Fire' ? .5 : 1;
+    if (a.side !== d.side && aa !== 'infiltrator' && id !== 'brickbreak' && id !== 'psychicfangs' && (d.side.sideConditions?.auroraveil || d.side.sideConditions?.[ph ? 'reflect' : 'lightscreen'])) v *= .5;
+    if (da === 'thickfat' && (ty === 'Fire' || ty === 'Ice') || da === 'heatproof' && ty === 'Fire' || da === 'waterbubble' && ty === 'Fire' || da === 'purifyingsalt' && ty === 'Ghost') v *= .5;
+    if ((da === 'multiscale' || da === 'shadowshield') && d.hp >= d.maxhp) v *= .5; if (da === 'fluffy') v *= (m.flags?.contact ? .5 : 1) * (ty === 'Fire' ? 2 : 1); if (da === 'dryskin' && ty === 'Fire') v *= 1.25;
+    if (a.item === 'lifeorb') v *= 1.3; if (a.item === 'expertbelt' && eff > 1) v *= 1.2;
+    return v * .925 * acc;
+  } catch (e) { return 0; } }
 function aiChoice(btl, diff) {
-  const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
+  const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null; aiSee(btl);
   const foe = btl.p1.active[0], me = side.active[0];
-  const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;
+  const score = (mon, mid) => { const m = btl.dex.moves.get(mid); if (!foe || foe.fainted) return 1; if (aiNoGo(btl, mon, foe, m)) return 0; if (m.category === 'Status') return diff ? 18 + Math.random() * 14 : 20;
     if (!btl.dex.getImmunity(m.type, foe)) return 0; const eff = 2 ** btl.dex.getEffectiveness(m.type, foe); const stab = (mon.types || mon.species?.types || []).includes(m.type) ? 1.5 : 1;
     return (m.basePower || 40) * eff * stab * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
   const bench = () => req.side.pokemon.map((p, i) => ({ p, i, mon: side.pokemon[i] })).filter(o => !o.p.active && !/fnt/.test(o.p.condition));
   // 쉬움: 예전 그대로 (거의 아무 기술)
   if (diff === 0) {
     if (req.forceSwitch) { const o = bench(); return o.length ? 'switch ' + (pick(o).i + 1) : 'pass'; }
-    const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    const mv0 = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv0.length) return 'move 1'; const ok = mv0.filter(o => !aiNoGo(btl, me, foe, btl.dex.moves.get(o.m.id))), mv = ok.length ? ok : mv0;   /* 쉬움도 실패할 기술은 안 고름 */
     if (Math.random() < .7) return 'move ' + (pick(mv).i + 1);
     return 'move ' + (mv.map(o => ({ o, s: score(me, o.m.id) * rnd(.85, 1.15) })).sort((a, b) => b.s - a.s)[0].o.i + 1);
   }
@@ -1202,24 +1392,22 @@ function aiChoice(btl, diff) {
   // 쇼다운 getStat·hasType 은 이벤트를 돌려서 배틀 밖에서 부르면 스택이 넘친다 → 저장된 능력치·종족 타입으로 직접 계산
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, mid) => { if (!a || !d || d.fainted) return 0; const m = btl.dex.moves.get(mid); if (m.category === 'Status') return 0;
-    if (!btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
-    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
-    const base = Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2;
-    return base * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+  const dmg = (a, d, mid) => aiDmg(btl, a, d, btl.dex.moves.get(mid), st, true);
   const best = (a, d) => Math.max(0, ...(a?.moveSlots || []).filter(x => x.pp > 0).map(x => dmg(a, d, x.id)));
   const fast = (a, d) => st(a, 'spe') >= st(d, 'spe');
   // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
   const matchup = mon => !foe || foe.fainted ? 0 : Math.min(1.2, best(mon, foe) / Math.max(1, foe.hp)) - Math.min(1.2, best(foe, mon) / Math.max(1, mon.hp)) * .9;
   if (req.forceSwitch) { const o = bench(); if (!o.length) return 'pass'; return 'switch ' + (o.map(x => ({ x, s: matchup(x.mon) + Math.random() * .1 })).sort((a, b) => b.s - a.s)[0].x.i + 1); }
-  const mv = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
-  if (!mv.length) return 'move 1';
+  const mv0 = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
+  if (!mv0.length) return 'move 1';
+  const mvOk = mv0.filter(o => !aiNoGo(btl, me, foe, btl.dex.moves.get(o.m.id))), mv = mvOk.length ? mvOk : mv0;
   if (diff === 1 && !B?.train && Math.random() < .12) return 'move ' + (pick(mv).i + 1);   // 보통은 가끔 실수 (수련탑은 아래 점수 고르기)
   const fHp = Math.max(1, foe?.hp || 1), mHp = me.hp / me.maxhp, inDanger = best(foe, me) >= me.hp, foeHit = best(foe, me) / Math.max(1, me.hp), bo = me.boosts || {};
   const sc = mv.map(o => { const m = btl.dex.moves.get(o.m.id); let v;
-    if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25; if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; }
-    else { v = .05; const sb = m.boosts && m.target === 'self' ? m.boosts : null;
-      if (sb) { const up = Object.entries(sb).filter(([k, x]) => x > 0), cur = Math.max(...up.map(([k]) => bo[k] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .45) v = .62 - cur * .2; }
+    if (m.category !== 'Status') { const d = dmg(me, foe, o.m.id); v = Math.min(1, d / fHp); if (d >= fHp) v += 1 + (m.priority > 0 ? .3 : 0); if (d > 0 && m.priority > 0 && inDanger && !fast(me, foe)) v += d >= fHp ? .6 : .25;   /* v27.69 안 맞는 선공기(고스트에 신속 등)엔 덤 점수 없음 */ if (m.self?.boosts && Object.values(m.self.boosts).some(x => x < 0)) v -= .08; if (d > 0 && d < fHp) v += aiSec(btl, me, foe, m, { fast: fast(me, foe) }); }
+    else { const sv = aiStat(btl, me, foe, m, { fast: fast(me, foe), inDanger, foeHit }); v = sv ?? .05; const sb = m.boosts && m.target === 'self' ? m.boosts : null;
+      if (sv != null) {}
+      else if (sb) { const up = Object.entries(sb).filter(([k, x]) => x > 0), cur = Math.max(...up.map(([k]) => bo[k] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .45) v = .62 - cur * .2; }
       else if (m.status && foe && !foe.status && !foe.fainted) { const im = !btl.dex.getImmunity(m.status === 'par' && m.type === 'Electric' ? 'Electric' : m.type, foe) || (m.status === 'brn' && hasT(foe, 'Fire')) || ((m.status === 'psn' || m.status === 'tox') && (hasT(foe, 'Poison') || hasT(foe, 'Steel'))) || (m.status === 'par' && hasT(foe, 'Electric'));
         if (!im && foe.hp / foe.maxhp > .4) v = m.status === 'slp' ? .75 : m.status === 'brn' ? (st(foe, 'atk') > st(foe, 'spa') ? .6 : .35) : m.status === 'par' ? (fast(me, foe) ? .3 : .55) : .45; }
       else if (m.heal || m.id === 'roost' || m.id === 'synthesis' || m.id === 'moonlight' || m.id === 'morningsun') v = mHp < .45 && !inDanger ? .7 : mHp < .7 ? .25 : 0;
@@ -1235,7 +1423,8 @@ function aiChoice(btl, diff) {
     if (b && b.s > matchup(me) + .35 && Math.random() < (diff === 2 ? .75 : .4)) return 'switch ' + (b.x.i + 1);
   }
   /* v24.82 수련탑 상대 (포켓로그 '똑똑한' 고르기를 참고해 다시 짬): 엉뚱한 기술은 안 쓰고, 다음 기술 점수가 1등과 비슷할수록(비율×50%) 그 기술도 섞음. 쓰러뜨릴 기술은 위 점수에서 이미 1등. 우두머리(diff 2)는 늘 1등 */
-  if (B?.train && diff === 1) { let k = 0; while (k < sc.length - 1 && sc[k].s > 0 && sc[k + 1].s > 0 && Math.random() < sc[k + 1].s / sc[k].s * .5) k++; return 'move ' + (sc[k].o.i + 1); }
+  /* 경완 '2단계도 2등 기술 가끔 쓰는건 명문까지 유지하고 전설 등급부터는 1등 기술만 쓰게': 2단계도 전설 등급 체육관(B.top)이 아니면 같은 방식으로 가끔 다음 기술. 쓰러뜨릴 기술이 있으면 쓰러뜨리는 기술끼리만 */
+  if (B?.train ? diff === 1 : diff === 2 && !B?.top) { let k = 0; while (k < sc.length - 1 && sc[k].s > 0 && sc[k + 1].s > 0 && !(sc[k].s >= 1.9 && sc[k + 1].s < 1.9) && Math.random() < sc[k + 1].s / sc[k].s * .5) k++; return 'move ' + (sc[k].o.i + 1); }
   return 'move ' + (sc[0].o.i + 1);
 }
 
@@ -1383,7 +1572,7 @@ async function run(opts) {
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, top: opts.top ?? !!globalThis.gymAiTop?.() /* 전설 등급 체육관 = 2단계가 늘 1등 기술 */, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '' };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka'); if (opts.gmk?.tera) M('prep', 'evLegend');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
@@ -1553,12 +1742,10 @@ async function chooseD(req) {
    ① 쓰러뜨릴 수 있는 공격이 있으면 그 기술들만 본다 ② 점수 = 어림 피해 비율 × (상성·자속은 피해식 안에), 모두 맞히는 기술은 상대 둘 합 ×.75 − 같은 편 피해 ×1.2
    ③ 대상은 1등 점수의 절반 이상인 대상들 중 점수 비례로 고름 ④ 기술 고르기: 쉬움 = 포켓로그 SMART_RANDOM(5/8 1등, 아니면 다음), 보통 = SMART(다음 기술 점수 비율×50% 확률로 넘어감), 어려움 = 늘 1등 */
 function aiD(btl, diff) {
-  const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null;
+  const side = btl.p2, req = side.activeRequest; if (!req || req.wait) return null; aiSee(btl);
   const st = (p, k) => { const b = p.boosts?.[k] || 0; let v = (p.storedStats?.[k] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (k === 'spe' && p.status === 'par') v /= 2; if (k === 'atk' && p.status === 'brn') v /= 2; return v; };
   const hasT = (p, t) => (p.types || p.species?.types || []).includes(t);
-  const dmg = (a, d, m) => { if (!a || !d || d.fainted || m.category === 'Status' || !btl.dex.getImmunity(m.type, d)) return 0; if (m.damage === 'level') return a.level; if (typeof m.damage === 'number') return m.damage;
-    const bp = m.basePower || 0; if (!bp) return 0; const ph = m.category === 'Physical', A = st(a, ph ? 'atk' : 'spa'), Df = Math.max(1, st(d, ph ? 'def' : 'spd'));
-    return (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * (hasT(a, m.type) ? 1.5 : 1) * 2 ** btl.dex.getEffectiveness(m.type, d) * .925 * ((m.accuracy === true ? 100 : m.accuracy) / 100); };
+  const dmg = (a, d, m) => aiDmg(btl, a, d, m, st, diff > 0);
   const foes = btl.p1.active.map((q, i) => ({ q, n: i + 1 })).filter(x => x.q && !x.q.fainted);
   if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
     const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
@@ -1567,19 +1754,20 @@ function aiD(btl, diff) {
   return req.active.map((R, k) => aiGmk(btl, aiD1(R, k), k, tk)).join(', ');
   function aiD1(R, k) { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
     if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
-    const mv = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv.length) return 'move 1';
+    const mv0 = R.moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0); if (!mv0.length) return 'move 1'; const mvOk = mv0.filter(o => { const m = btl.dex.moves.get(o.m.id); return !foes.length || !foes.every(F => aiNoGo(btl, me, F.q, m)); }), mv = mvOk.length ? mvOk : mv0;
     const al = side.active[1 - k], alOk = al && !al.fainted, mHp = me.hp / me.maxhp, foeHit = Math.max(0, ...foes.map(F => Math.max(0, ...(F.q.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(F.q, me, btl.dex.moves.get(y.id)))))) / Math.max(1, me.hp);
     const opts = [];   /* { o: 기술, T: [대상 번호, 점수][], ko } */
     for (const o of mv) { const m = btl.dex.moves.get(o.m.id), tg = o.m.target || m.target;
       if (m.category === 'Status') { if (tg === 'adjacentAlly') { if (m.id === 'helpinghand' && alOk) opts.push({ o, T: [[-(2 - k), .35]] }); continue; }   /* 같은 편 자리 = 쇼다운 음수 대상 */
-        let v = .08; const sb = m.boosts && m.target === 'self' ? m.boosts : null, F0 = foes[0]?.q;
-        if (sb) { const up = Object.entries(sb).filter(([, x]) => x > 0), cur = Math.max(...up.map(([q]) => me.boosts?.[q] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .4) v = .55 - cur * .2; }
+        let v = .08; const sb = m.boosts && m.target === 'self' ? m.boosts : null, F0 = foes[0]?.q, sv = diff && F0 ? aiStat(btl, me, F0, m, { fast: st(me, 'spe') >= st(F0, 'spe'), inDanger: foeHit >= 1, foeHit }) : null;
+        if (sv != null) v = sv;
+        else if (sb) { const up = Object.entries(sb).filter(([, x]) => x > 0), cur = Math.max(...up.map(([q]) => me.boosts?.[q] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .4) v = .55 - cur * .2; }
         else if (m.id === 'protect' || m.id === 'detect') v = foeHit > .6 ? .3 : .05;
         else if (m.id === 'followme' || m.id === 'ragepowder') v = alOk && mHp > .5 ? .3 : 0;
         else if (m.heal || /^(roost|synthesis|moonlight|morningsun)$/.test(m.id)) v = mHp < .45 ? .65 : 0;
-        else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && btl.dex.getImmunity(m.type, F.q)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
+        else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && !aiNoGo(btl, me, F.q, m)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
         if (m.accuracy !== true) v *= m.accuracy / 100; opts.push({ o, T: [[NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n || '' : '', v]] }); continue; }
-      const r = F => Math.min(1, dmg(me, F.q, m) / Math.max(1, F.q.hp)) + (dmg(me, F.q, m) >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : 0);
+      const r = F => { const dd = dmg(me, F.q, m); return Math.min(1, dd / Math.max(1, F.q.hp)) + (dd >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : dd > 0 && diff ? aiSec(btl, me, F.q, m, { fast: st(me, 'spe') >= st(F.q, 'spe') }) : 0); };
       if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, F) => a + r(F), 0) * .75; if (tg === 'allAdjacent' && alOk) v -= Math.min(1, dmg(me, al, m) / Math.max(1, al.hp)) * 1.2 + (dmg(me, al, m) >= al.hp ? 1 : 0); opts.push({ o, T: [['', v]], ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) }); }
       else if (NEED_T.has(tg)) opts.push({ o, T: foes.map(F => [F.n, r(F)]), ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) });
       else opts.push({ o, T: [['', foes[0] ? r(foes[0]) : 0]] }); }
@@ -1590,7 +1778,7 @@ function aiD(btl, diff) {
       return { o: x.o, n: t[0], s: top * rnd(.95, 1.05) }; }).sort((a, b) => b.s - a.s);
     let c = 0;   /* ④ */
     if (diff === 0) while (c < sc.length - 1 && Math.random() >= 5 / 8) c++;
-    else if (diff === 1) while (c < sc.length - 1 && sc[c].s > 0 && sc[c + 1].s > 0 && Math.random() < sc[c + 1].s / sc[c].s * .5) c++;
+    else if (diff === 1 || !B?.top && !B?.train) while (c < sc.length - 1 && sc[c].s > 0 && sc[c + 1].s > 0 && Math.random() < sc[c + 1].s / sc[c].s * .5) c++;
     return 'move ' + (sc[c].o.i + 1) + (sc[c].n ? ' ' + sc[c].n : '');
   }
 }

@@ -961,6 +961,7 @@ const bsReady = g => { const nx = g && GRADES[(g.gmax | 0) + 1]; return !!nx && 
 const repFloor = g => GRADES[g.gmax | 0]?.[0] | 0;   /* v15.67 경완: 승급한 등급의 문턱 아래로는 평판이 안 떨어진다 */
 /* v24.19 경완 '전설 등급부터는 천장도 없고 난이도도 계속 어려움, 평판 계속 올라가게. 고용 트레이너는 평판 안 올리고 관장 배틀로만 — 순수 관장 실력으로 랭킹': 전설의 체육관은 평판 상한 없음 */
 const isLeg = g => (g?.gmax | 0) >= GRADES.length - 1;
+globalThis.gymAiTop = () => { try { return isLeg(g); } catch (e) { return false; } };   /* battle.js: 전설 등급부터 2단계 AI 가 1등 기술만 (경완 '전설 등급부터는 1등 기술만 쓰게') */
 /* v24.30 경완 '평판 오를수록 계속 어려워지게', '전설부터는 연패 보정도 없애자': 전설의 체육관은 평판이 문턱(1250)을 LEG_STEP 넘을 때마다 한 단계(legX)씩 세짐 —
    보통 도전자 레벨 +2/단계(100 까지), 종 강함 바닥 540 → +20/단계(680 까지, 내 라인업이 약해도), 마리 수 4+단계(6 까지), 1단계부터 개체값 31, 2단계부터 이름 있는 트레이너급 AI·도구. 연패 보정(lsLv)은 없음 */
 const LEG_STEP = 250, legX = g => isLeg(g) ? Math.max(0, ((g.rep || 0) - GRADES[GRADES.length - 1][0]) / LEG_STEP) : 0, lsOf = g => isLeg(g) ? 0 : lsLv(g.lstk);
@@ -2152,7 +2153,7 @@ async function legExam(gi, test) {
     const team = c.team.map(([sp, lv]) => { const o = GB().foeEntry(sp, lv, BS_AI[gi - 1]); o.iv = o.iv.map(() => 31); o.evs = GB().foeEvs?.(sp, gi); o.gmax = 1; return o; });
     const sayEnd = { win: `…훌륭하네.\n${me}의 체육관은\n진짜였구먼.`, lose: '아직은 넘을 수 없단다.' };
     document.body.classList.add('gymBattle'); let res;
-    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), gmk: { dmax: 1, ...(MEGA_ON && tutSeen('mgRing') ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) }, frw: FR_W[3], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: BS_AI[gi - 1] }, rew: { g: R.g, r: repWin(R.r), rl: 0 }, diff: BS_AI[gi - 1], ...chalEnv(c, team), music: 'champ', exam: { g: GRADES[gi][1], bd: bdHtml(g.ty, gi + 1), kang: 1 }, meBackUrl: await fitSrc('trb'), ...(test ? { practice: true } : {}) }); }
+    try { res = await GB().run({ meFrontUrl: await fitSrc('tr'), my, xpm: xpM(), gmk: { dmax: 1, ...(MEGA_ON && tutSeen('mgRing') ? { mega: 1 } : {}), ...(Z_ON && tutSeen('zRing') ? { z: 1 } : {}) }, frw: FR_W[3], foe: { tr: c.tr, cls: c.cls, nm: c.nm, team, say: sayEnd, hold: BS_AI[gi - 1] }, rew: { g: R.g, r: repWin(R.r), rl: 0 }, diff: BS_AI[gi - 1], top: true /* 전설 승급 심사도 1등 기술만 */, ...chalEnv(c, team), music: 'champ', exam: { g: GRADES[gi][1], bd: bdHtml(g.ty, gi + 1), kang: 1 }, meBackUrl: await fitSrc('trb'), ...(test ? { practice: true } : {}) }); }
     finally { document.body.classList.remove('gymBattle'); }
     if (res?.cut) { done = { cut: 1 }; return false; }
     const won = !!res?.won, r0 = g.rep || 0; let gold = 0;
