@@ -647,7 +647,7 @@ function gifUrl(sp, b, sh, f, fm) {
   { const G = fm ? GMJ[fm] : null; if (G) { const L = G[2], u = p => `${IMG}pk/gm/${p}${fm}.gif?v=1`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.89 메가진화·거다이맥스 움직이는 그림 */
   { const L = fm ? BWA.fm?.[fm] : null; if (L) { const u = p => `${IMG}pk/bw/${p}${fm}.gif?v=4`; if (b) return sh && L & 4 ? u('bs') : L & 1 ? u('b') : null; return sh && L & 2 ? u('s') : L & 32 ? u('') : null; } }   /* v21.78 경완 '폼 체인지도 다 움직이는 걸로': 배틀 폼(마이티폼·들킨 모습 등) EeveeExpo 움직이는 그림 */
   if (+sp >= 650 && (!fm || fm === toID(D?.sp?.[sp]?.id || ''))) return bwUrl(sp, b, sh, f);   /* 배틀 중 바뀐 폼은 예전 그림 */
-  if (RFA[fm] || rfKey(sp)) return null;   /* 지역 폼은 gif 없이 저장소 그림 */
+  { const k = RFA[fm] ? fm : rfKey(sp) ? toID(rfKey(sp)) : ''; if (k || RFA[fm]) return RFA[k] ? `${IMG}pk/rf/a/${b ? 'b' : ''}${sh ? 's' : ''}${k}.gif?v=1` : null; }   /* v27.94 경완 '켄타로스 팔데아 폼 뒷모습 안 움직이네. 안 움직이는 폼 또 있어?': 지역 폼 59종 앞·뒤·이로치 움직이는 그림 (EeveeExpo, gym/img/pk/rf/a) */
   if (FM_G[fm]) return `${G5}s${FM_G[fm]}${b ? '-b' : ''}${sh ? '-s' : ''}.gif`;
   const g = ANIM.g?.[sp]; if (!g) return null; const [nm, bits] = g, has = k => !k || (bits >> G5K.indexOf(k) & 1);
   const fs = f ? ['-f', ''] : [''], ss = sh ? ['-s', ''] : [''];
