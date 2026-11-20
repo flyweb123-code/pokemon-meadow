@@ -66,7 +66,7 @@ const S = 2, W = 180, H = 300;
 const $ = s => document.querySelector(s);
 const bg = $('#bgC').getContext('2d'), fx = $('#fxC').getContext('2d'), dk = $('#dkC').getContext('2d'), gl = $('#glC').getContext('2d');
 fx.imageSmoothingEnabled = false; gl.imageSmoothingEnabled = false;
-const BG = new Image(); BG.src = 'MAP_IMG';
+const BG = new Image(); BG.src = 'MAP_IMG'; const BG0 = new Image(); BG0.src = 'BASE_IMG';
 const ZN = new Image(); ZN.src = 'ZONES_IMG';
 let hour = 12, ff = false, bgData = null;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t, R = Math.random;
@@ -92,7 +92,7 @@ function newBat() { const l = R() < .5; bats.push({ x: l ? -10 : W + 10, y: 18 +
 const glints = [];
 /* 포켓몬 몇 마리 (크기 가늠용) */
 const MONS = CFG.mons || [];
-const monEls = MONS.map(m => { const e = document.createElement('img'); e.className = 'mon'; e.src = m.f[0]; e.style.width = m.w + 'px'; e.style.height = m.h + 'px'; e.style.margin = `${-m.h}px 0 0 ${-m.w / 2}px`; $('#mons').appendChild(e); return e; });
+const monEls = MONS.map(m => { const e = document.createElement('img'); e.className = 'mon'; e.src = m.f[0]; e.style.width = m.w + 'px'; e.style.height = m.h + 'px'; e.style.margin = `${m.swim ? -m.h * .55 : -m.h}px 0 0 ${-m.w / 2}px`; if (m.swim) e.style.clipPath = 'inset(0 0 45% 0)'; $('#mons').appendChild(e); return e; });
 let last = performance.now();
 function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; if (ff) { hour = (hour + dt * 2) % 24; $('#tm').value = hour; }
   $('#hr').textContent = `${String(Math.floor(hour)).padStart(2, '0')}:${String(Math.floor(hour % 1 * 60)).padStart(2, '0')}`;
@@ -131,14 +131,15 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   for (const g of gems) { g.sp += dt;
     if (g.gone) { g.gone -= dt; if (g.gone <= 0) { g.gone = 0; g.grow = 0; g.hp = 3; } }
     if (!g.gone && g.grow < 1) g.grow = Math.min(1, g.grow + dt / 1.6);
-    if (g.gone || g.grow < 1) { fx.drawImage(BG, g.x - g.r + g.dx, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.fillStyle = `rgba(${g.c},.55)`; fx.fillRect((g.x - 3) * S, (g.y - 1) * S, 6 * S, 1 * S); }
+    if (g.gone || g.grow < 1) { fx.drawImage(BG0, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.fillStyle = `rgba(${g.c},.55)`; fx.fillRect((g.x - 3) * S, (g.y - 1) * S, 6 * S, 1 * S); }
     if (!g.gone && g.grow < 1) { const hh = Math.max(1, Math.round(g.h * g.grow)); fx.save(); fx.beginPath(); fx.rect((g.x - g.r) * S, (g.y - hh) * S, g.r * 2 * S, hh * S + 2); fx.clip(); fx.drawImage(BG, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - hh) * S, g.r * 2 * S, (g.h + 1) * S); fx.restore(); }
-    if (g.shake > 0) { g.shake -= dt; const o = Math.round(Math.sin(g.shake * 60) * 1.5); fx.drawImage(BG, g.x - g.r + g.dx, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.drawImage(BG, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r + o) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); }
+    if (g.shake > 0) { g.shake -= dt; const o = Math.round(Math.sin(g.shake * 60) * 1.5); fx.drawImage(BG0, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); fx.drawImage(BG, g.x - g.r, g.y - g.h, g.r * 2, g.h + 1, (g.x - g.r + o) * S, (g.y - g.h) * S, g.r * 2 * S, (g.h + 1) * S); }
     const glow = g.gone ? 0 : g.grow; if (glow > 0) { const p = .5 + .5 * Math.sin(tt * 2.2 + g.x), gg = gl.createRadialGradient(g.x * S, (g.y - g.h / 2) * S, 0, g.x * S, (g.y - g.h / 2) * S, 26); gg.addColorStop(0, `rgba(${g.c},${(.22 + .14 * p) * glow})`); gg.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = gg; gl.fillRect(g.x * S - 26, (g.y - g.h / 2) * S - 26, 52, 52);
       const k = (g.sp % 3.2) / .5; if (k < 1 && g.grow === 1) { const sx = (g.x + g.sx) * S, sy = (g.y - g.h + g.sy) * S, a = Math.sin(k * Math.PI), L = 2 + a * 5; gl.fillStyle = `rgba(255,255,255,${a})`; gl.fillRect(sx - L, sy - 1, L * 2, 2); gl.fillRect(sx - 1, sy - L, 2, L * 2); } } }
   for (let i = shards.length - 1; i >= 0; i--) { const q = shards[i]; q.t += dt; q.vy += 300 * dt; q.x += q.vx * dt; q.y += q.vy * dt; if (q.y > q.fl) { q.y = q.fl; q.vy *= -.35; q.vx *= .6; } if (q.t > 1.3) { shards.splice(i, 1); continue; } fx.fillStyle = `rgba(${q.c},${q.t > 1 ? (1.3 - q.t) / .3 : 1})`; fx.fillRect(Math.round(q.x * S) - 2, Math.round(q.y * S) - 2, 4, 4); fx.fillStyle = `rgba(255,255,255,${q.t > 1 ? 0 : .8})`; fx.fillRect(Math.round(q.x * S) - 2, Math.round(q.y * S) - 2, 2, 2); }
   /* 곡괭이 */
   if (pick) { pick.t += dt; const u = Math.min(1, pick.t / .22), a = u < .5 ? -1.1 + u * 2 * 1.6 : .5 - (u - .5) * 2 * 1.6; fx.save(); fx.translate((pick.x + 9) * S, (pick.y - 2) * S); fx.rotate(a); fx.fillStyle = '#8a5a2c'; fx.fillRect(-2, -2, 4, 26); fx.fillStyle = '#c8ccd8'; fx.beginPath(); fx.moveTo(-12, -2); fx.quadraticCurveTo(0, -10, 12, -2); fx.lineTo(10, 1); fx.quadraticCurveTo(0, -5, -10, 1); fx.fill(); fx.restore(); if (pick.t > .3) pick = null; }
+  for (const m of MONS) if (m.swim && Math.random() < dt * 1.2) { const x = m.x + Math.sin(m.t * m.v + MONS.indexOf(m)) * m.ax, y = m.y + Math.sin(m.t * m.v * .8 + MONS.indexOf(m) * 2) * m.ay; rings.push({ x, y, t: .3, w: 1 }); }
   /* 박쥐 (천장 그림자) */
   if (R() < dt * .05) newBat();
   for (let i = bats.length - 1; i >= 0; i--) { const b = bats[i]; b.t += dt; b.x += b.vx * dt; const y = b.y + Math.sin(b.t * 3 + b.ph) * 4, f = Math.sin(b.t * 18) > 0; if (b.x < -20 || b.x > W + 20) { bats.splice(i, 1); continue; }

@@ -2,7 +2,7 @@
 # 쓰는 법: python3 build_cave.py 바탕.png 설정.json 포켓몬.json 출력.html
 import sys, json, base64, io
 from PIL import Image
-bgp, cfgp, monp, out = sys.argv[1:5]
+bgp, cfgp, monp, out = sys.argv[1:5]; basep = sys.argv[5] if len(sys.argv) > 5 else bgp
 cfg = json.load(open(cfgp))
 im = Image.open(bgp).convert('RGBA'); W, H = im.size; p = im.load()
 iw = eval('lambda r,g,b,x,y: ' + cfg['isWaterPy'])
@@ -22,5 +22,5 @@ js = dict(cfg); js.pop('isWaterPy'); js['mons'] = mons
 cj = json.dumps(js, ensure_ascii=False)
 cj = cj[:-1] + ', "isWater": (r, g, b, x, y) => ' + cfg['isWaterJs'] + '}'
 html = open(sys.argv[0].replace('build_cave.py', 'cave_tpl.html'), encoding='utf-8').read()
-html = html.replace('/*CFG*/{}', cj).replace('MAP_IMG', durl(im)).replace('ZONES_IMG', durl(z))
+html = html.replace('/*CFG*/{}', cj).replace('MAP_IMG', durl(im)).replace('ZONES_IMG', durl(z)).replace('BASE_IMG', durl(Image.open(basep).convert('RGBA')))
 open(out, 'w', encoding='utf-8').write(html); print(len(html))
