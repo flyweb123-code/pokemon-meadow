@@ -6417,7 +6417,7 @@ function faintDown(m) { const k = m.sk || m.form, P = SPRITES[k]; if (!P || !isP
 const hurt = m => { playOnce(m, 'Hurt'); anim(m, 'shake'); };
 // v16.60 경완 '얼굴 표정, 필드 동작 다 받아주고 상호작용 별로 알맞게': 불가사의 던전 그림 모음의 나머지 동작(끄덕이기·앉기·올려다보기 등 mx/<키>.json)과
 // 얼굴 표정(face/<키>.png 40칸 가로 띠, face.json)을 필요할 때만 받는다. 동작은 받으면 원래 아틀라스 아래에 이어 붙여 같은 그림으로 쓴다 (drawSprite 그대로)
-const MXP = {};
+const MXP = {}, MXI = {};
 function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.resolve(false); if (P.mx) return Promise.resolve(true); if (P.mxNo) return Promise.resolve(false);
   return MXP[k] ||= (async () => { try {
     await padAtlas(k); const r = await fetch(`mx/${k}.json?v=4`); if (!r.ok) { P.mxNo = 1; return false; } const X = await r.json();
@@ -6431,7 +6431,9 @@ function loadMx(k) { const P = SPRITES[k]; if (!P || !isPmd(k)) return Promise.r
     const c = document.createElement('canvas'); c.width = Math.max(bi.width, ex.width); c.height = H * R + ex.height; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
     g.drawImage(bi, 0, 0); g.drawImage(ex, 0, H * R, ex.width, ex.height);
     for (const n of names) { const a = X.a[n]; A[n] = [H + ny[n], a[1], a[2], a[3], a[4], a[5], a[6], a[7]]; }
-    P.i = c.toDataURL('image/png'); P.mx = 1; delete atlasDims[k];
+    /* 경완 '처음 필드 테마 바꿀 때 포켓몬 스프라이트 잠깐 커졌다가 다시 원래 크기로 돌아오는 오류': 늘어난 그림(아래에 동작을 이어 붙임)을 다 풀기 전에 새 크기(background-size)부터 바뀌어 옛 그림이 잠깐 늘어나 보였음 → 새 그림을 먼저 풀어 둔 뒤 바꿈 */
+    const nu = c.toDataURL('image/png'); try { const ni = new Image(); ni.src = nu; await ni.decode(); MXI[k] = ni; } catch (e) {}
+    P.i = nu; P.mx = 1; delete atlasDims[k];
     for (const m of S.mons) if ((m.sk || m.form) === k && m.spr) { const one = m.one; setMode(m); if (one && A[one.name]) m.one = one; }
     return true; } catch (e) { P.mxNo = 1; return false; } })(); }
 // 그 동작 그림이 있으면 한 번 (아직 안 받았으면 받고 나서, 그사이 다른 걸 하고 있으면 건너뜀)
