@@ -1177,6 +1177,7 @@ ol.log li.big .txt{color:#c03838}
 .act.shake{animation:shake .25s linear 3}
 /* v3.47 경완: 구멍파기 — 크기·투명도는 그대로, 땅선 아래는 잘리고 드드득 떨며 아래로 박혀 들어간다 */
 .mon.dig .act{clip-path:polygon(-999px -999px,999px -999px,999px 0,-999px 0)}
+.mon.hbsub .act{clip-path:polygon(-999px -999px,999px -999px,999px 0,-999px 0)}.mon.hbsub .act>*{transform:translateY(var(--sub,0px))}   /* v27.77 항구 다이빙 물속 잠김 */
 .mon.dig .dirt{animation:judder .08s ease-in-out infinite}
 @keyframes judder{0%{transform:translateX(-1.5px)}50%{transform:translateX(1.5px)}}
 .mon.dig.down .act>*{animation:digDown var(--dd,.9s) steps(9,end) forwards}
@@ -7003,7 +7004,7 @@ function hbAct(m, k) { if (!HB || hbBusy(m)) return false; const L = hbActs(m); 
 function hbStart(m, g) { const k = g.k; m.goal = null; m.hbS = { k, q: g.q, t: 0, ph: 0 }; setState(m, 'special', 30); m.special = 'hb-' + k; m.hj = false;
   if (k === 'dive') { faceTo(m, m.x + (m.x < (XL + XR) / 2 ? 1 : -1)); emote(m, '!', '', 1, 'hb-dive'); anim(m, 'hop'); }
   if (k === 'sand') { m.hbS.el = null; } }
-function hbEnd(m, idle = 2) { m.goal = null; m.hj = false; m.xl = 0; m.zAdd = 0; m.hbS = null; m.special = null; m.act.style.transform = ''; if (S.mons.includes(m)) setState(m, 'idle', idle); }
+function hbEnd(m, idle = 2) { m.el?.classList.remove('hbsub'); m.el?.style.removeProperty('--sub'); m.goal = null; m.hj = false; m.xl = 0; m.zAdd = 0; m.hbS = null; m.special = null; m.act.style.transform = ''; if (S.mons.includes(m)) setState(m, 'idle', idle); }
 const hbWalk = (m, q, v, dt) => { const dx = q.x - m.x, dy = q.y - m.y, d = Math.hypot(dx, dy); if (d < 2) { m.x = q.x; m.y = q.y; return true; } const s = Math.min(d, v * dt); m.x += dx / d * s; m.y += dy / d * s; if (Math.abs(dx) > 1) m.face = dx > 0 ? -1 : 1; const ax = Math.abs(dx); m.wd = dy < -ax * 2.414 ? 'WalkN' : dy < -ax * .414 ? 'WalkUp' : dy <= ax * .414 ? 'WalkS' : dy <= ax * 2.414 ? 'Walk' : 'WalkD'; m.anOv = 'Walk'; m.anOvT = performance.now() + 250; return false; };
 function hbSpTick(m, dt) { const H = m.hbS, k = m.special; if (H) H.dt = dt;
   if (k === 'hbrace') return hbRaceTick(m, dt);
@@ -7015,7 +7016,12 @@ function hbSpTick(m, dt) { const H = m.hbS, k = m.special; if (H) H.dt = dt;
       if (u >= 1) { H.ph = 2; H.t2 = t; m.xl = 0; m.zAdd = 0; m.hj = false; m.act.style.transform = ''; for (let i = 0; i < 3; i++) setTimeout(() => S.mons.includes(m) && splashAt(m), i * 90); particle(m.x, m.y - 10, 'splash', '💦'); 
         const W = S.mons.filter(o => o !== m && awake(o) && dist(o, m) < 200 && !hbBusy(o)); W.slice(0, 2).forEach((o, i) => setTimeout(() => S.mons.includes(o) && (faceTo(o, m.x), emote(o, i ? '♪' : '!', i ? 'note' : '', 1.6, 'hb-see')), 250 + i * 300));
         hbLog([m, ...W.slice(0, 1)], pick([`${J(m,'이/가')} 도시 끝에서 바다로 멋지게 다이빙했다! 첨벙!`, `${J(m,'이/가')} 축대 위에서 빙글 돌며 바다로 뛰어들었다. 물보라가 크게 일었다.`]) + (W.length ? ` ${J(W[0],'이/가')} 깜짝 놀라 쳐다본다.` : '')); } }
-    if (H.ph === 2 && t - H.t2 > 1.4) { emote(m, '♪', 'note', 1.8, 'hb-dive'); anim(m, 'hop'); hbEnd(m, 1); const q = hbShal(m) ? hbNear(m, m.x, m.y) : randPond(.6, m); moveTo(m, q, { kind: 'wander' }, .6); }   /* v27.76 얕은 바다 포켓몬은 가까운 얕은 바다로 헤엄쳐 감 */
+    if (H.ph === 2) { const u = t - H.t2, D = (m.h || 40) * 1.15, el = m.el || m.act?.closest?.('.mon');   /* v27.77 경완 '다이빙 할 때는 물 속까지 들어갔다가 떠오르게': 첨벙 → 물속으로 쑥 잠김(물 선 아래는 잘림) → 거품 뽀글 → 떠오름 */
+      if (el) { el.classList.add('hbsub'); const s = u < .45 ? D * Math.pow(u / .45, 1.6) : u < 1.7 ? D : u < 2.3 ? D * (1 - (u - 1.7) / .6) : 0; el.style.setProperty('--sub', s.toFixed(1) + 'px'); }
+      if (u > .5 && u < 1.7 && every(H, 'bb', .28)) particle(m.x + rnd(-7, 7), m.y - 6, 'splash', '🫧');
+      if (u > 1.7 && !H.up) { H.up = 1; splashAt(m); }
+      if (u > 2.3 && el) { el.classList.remove('hbsub'); el.style.removeProperty('--sub'); } }
+    if (H.ph === 2 && t - H.t2 > 2.5) { emote(m, '♪', 'note', 1.8, 'hb-dive'); anim(m, 'hop'); hbEnd(m, 1); const q = hbShal(m) ? hbNear(m, m.x, m.y) : randPond(.6, m); moveTo(m, q, { kind: 'wander' }, .6); }   /* v27.76 얕은 바다 포켓몬은 가까운 얕은 바다로 헤엄쳐 감 */
     return; }
   if (k === 'hb-surf') {   /* v27.74 경완 '파도타기 상호작용은 바다 전체로 범위 넓혀줘도 돼': 바다 곳곳을 가로지르며 파도를 타고 빠르게 미끄러짐 + 물보라 줄 (곧게 갈 수 있는 먼 바다 자리를 차례로) */
     const seaQ = () => { let best = null, bd = 0; for (let i = 0; i < 80; i++) { if (i === 40 && !best) bd = -40;   /* 얕은 바다 포켓몬은 가까운 자리도 */ const x = i < 40 ? rnd(XL + 36, XR - 36) : m.x + rnd(-130, 130), y = i < 40 ? rnd(MIN_Y + 20, MAX_Y - 14) : m.y + rnd(-90, 90), d = Math.hypot(x - m.x, y - m.y); if (d < (bd < 0 ? 45 : 90) || d <= bd || hbZ(x, y) !== 4 || pondVal(x, y) > .85 || !hbOk(m, x, y)) continue; let ok = true; for (let u = .1; u < 1 && ok; u += .1) { const X = m.x + (x - m.x) * u, Y = m.y + (y - m.y) * u; if (hbZ(X, Y) !== 4 || !hbOk(m, X, Y)) ok = false; } if (ok) { best = { x, y }; bd = d; if (d > 170) break; } } return best; };
