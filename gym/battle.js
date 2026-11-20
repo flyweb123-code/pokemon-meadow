@@ -2560,6 +2560,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxLu = false; bxSort = O?.view ?
     <div class="boxgrid bw-grid"></div></div>`;
   (O?.host || document.querySelector('#gym .gy-main')).appendChild(w); if (O?.z) w.style.zIndex = O.z;
   const grid = w.querySelector('.bw-grid'), inp = w.querySelector('input');
+  let bxIds = [];   /* 경완 '체육관 포켓몬 박스에서 필터링 되어있는 순으로 상세카드 순서대로 넘어가지지 않는 오류': 상세카드 넘기기 = 지금 박스에 보이는 순서 (예전엔 라인업으로 넘어감) */
   const draw = () => {
     w.querySelectorAll('[data-sort]').forEach(b => { const on = b.dataset.sort === bxSort; b.setAttribute('aria-pressed', on); b.dataset.dir = on ? (bxDir > 0 ? '▼' : '▲') : ''; });
     const lu = new Set(O?.view ? [] : curLu()), q = bxQ.toLowerCase();
@@ -2573,6 +2574,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxLu = false; bxSort = O?.view ?
     const L = all.filter(P => (!q || nmOf(P).toLowerCase().includes(q) || String(P.sp) === q.replace(/^0+/, '')) && (!bxTy || tys(P).includes(bxTy)) && (!bxLu || luAll.has(P.id))).map(P => { const ok = O ? O.ok(P) : tyOk(P) && (!tmId || tmCan(P, tmId)); return { P, ok, f: O?.first ? +!!O.first(P) : 0, m: O?.view ? null : O || tyOk(P) ? gm(P) : null }; }); if (bxSort === 'lv') {   /* v25.50 경완 '박스에서 랭크순 정렬하면 같은 랭크 안에서 능력치 순으로, 체육관 박스 레벨순도, 근데 같은 종 붙이는건 우선, 친밀도순도': 같은 레벨이면 같은 종끼리 붙이고, 종 묶음은 그 안 가장 센 능력치 순, 묶음 안도 능력치 순 */
       const GB = new Map(); for (const x of L) { x.lv = x.m?.lv || 0; x.st = statsOf(x.P.sp ?? x.m?.sp, x.lv || 1, x.P.iv || [0, 0, 0, 0, 0, 0], x.m?.nat || 'hardy', x.m?.ev).reduce((a, b) => a + b, 0); const g = x.lv + ':' + x.P.sp; GB.set(g, Math.max(GB.get(g) || 0, x.st)); }
       L.sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || bxDir * ((b.lv - a.lv) || (GB.get(b.lv + ':' + b.P.sp) - GB.get(a.lv + ':' + a.P.sp)) || (a.P.sp - b.P.sp) || (b.st - a.st))); } else L.sort((a, b) => (b.ok - a.ok) || (b.f - a.f) || (key(b) - key(a)) * bxDir);
+    bxIds = L.map(x => x.P.id);
     w.querySelector('.tcount').innerHTML = q || bxTy || bxLu ? `찾은 포켓몬 <b>${L.length}</b>마리` : `<b>${all.length}</b>마리`;   // 마릿수만 (경완 2026-10-29)
     grid.innerHTML = L.length ? L.map(({ P, m, ok }) => { const rk = GA.rankOf(P), on = lu.has(P.id);
       return `<button class="pk${P.shiny ? ' shiny' : ''}${GA.pkCls?.(P) || ''}${ok ? '' : ' bw-no'}" data-id="${P.id}" ${ok ? '' : 'disabled'} style="--shue:${GA.shinyHue(P.sp)}deg"><span class="rk ${rk}">${rk}</span>${(T => T.length ? `<span class="tgs">${T.map(t => `<span class="tg${t === '훈련중' || t === '훈련 중' || t === '훈련장' ? ' tg-tr' : t === '라인업' ? ' tg-lu' : ''}">${t}</span>`).join('')}</span>` : '')(O ? [O.tag?.(P)].flat().filter(Boolean) : [on && '라인업', inTr(P.id) && '훈련중'].filter(Boolean))}<img alt="" data-th="${P.id}"><span class="nm">${esc(nmOf(P))}${P.shiny ? '<b class="sh">✦</b>' : ''}</span><span class="bw-tys">${tys(P).map(tyI).join('')}</span>${tmId && !ok ? `<span class="bw-lv">${m?.mv.includes(tmId) ? '이미 앎' : '못 배움'}</span>` : m ? `<span class="bw-lv">Lv.${m.lv}</span>` : ''}</button>`; }).join('')
@@ -2596,7 +2598,7 @@ function boxWin(add, tmId, done, O) { bxTy = 0; bxLu = false; bxSort = O?.view ?
     if (tmId) { const P = boxOf(id); if (!P || !tmCan(P, tmId)) return; teachTm(P, tmId, k => movesPop(P, () => { w.remove(); done?.(); }, k == null ? -1 : k), null, () => {}); return; }   /* v20.72 경완: 배웠다 창 다음엔 그 포켓몬 기술 목록 카드, 닫으면 창고로 */   /* v20.70 경완: 박스 화면 위에서 바로 잊을 기술 창, 그만두면 박스 그대로 */
     if (add) return monPop(id, 'add');   // 라인업 고르기도 상세카드 먼저, 버튼은 라인업에 넣기만 (경완 2026-10-29)
     if (add) { const cur = curLu(), j = cur.indexOf(id); if (j >= 0) cur.splice(j, 1); else if (cur.length < 6) cur.push(id); else return;   /* 경완 2026-10-28: 라인업에 든 포켓몬을 다시 누르면 빠진다 */ GA.save(); drawTab(); if (cur.length >= 6 && j < 0) w.remove(); else { const sm = w.querySelector('.bw-hd small'); if (sm) sm.textContent = `${cur.length}/6`; draw(); } return; }
-    monPop(id, true);
+    monPop(id, true, null, () => bxIds);
   };
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); bxQ = inp.value.trim(); draw(); inp.blur(); } });
   inp.addEventListener('input', () => { if (!inp.value.trim() && bxQ) { bxQ = ''; draw(); } });
