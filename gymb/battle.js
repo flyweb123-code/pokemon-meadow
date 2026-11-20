@@ -688,7 +688,9 @@ function setSrc(img, u) {
   const abs = new URL(u, location.href).href; if (img.src === abs && img.complete && img.naturalWidth) { img.style.visibility = ''; return; }
   img.style.visibility = 'hidden'; img.onload = () => { img.onload = null; img.style.visibility = ''; }; img.src = u;
 }
+const kpKey = A => [A.sp, !!A.shiny, A.g === 'F', A.fm && A.fm !== toID(D?.sp?.[A.sp]?.id || '') ? A.fm : ''].join('|');   /* 배틀 중엔 fm 에 기본 폼 이름이 들어옴 */
 function showMon(side, A, on = true) {
+  monEl(side)._kp = A ? kpKey(A) : null;   /* v27.89 이어지는 층에서 그대로 둘지 = 같은 포켓몬(종·이로치·성별·폼)인지. gif 없는 그림(PixelLab 칸 그림·느린 gif)도 */
   const m = monEl(side), img = m.querySelector('img');
   img.style.width = '';
   if (A && A.gif) { m._fa = null; m.classList.remove('fa'); img.style.height = ''; img.onerror = null; setSrc(img, A.gif); img.alt = ''; m.classList.remove('pl2'); m.classList.add('gf'); img.style.transform = ''; m.style.left = m.style.top = '';
@@ -742,7 +744,7 @@ function playAnim(side, A) {
 // 볼 던지기 → 펑 → 하얗게 커지며 나타남 (4세대)
 async function sendOut(side, A, quick) {
   const pre0 = side[0] === 'e' && B.wild && monEl(side).classList.contains('wdk'), preP = side[0] === 'p' && !!B.pG?.[side] && monEl(side).classList.contains('pre');   /* 배틀 여는 연출 때 이미 발판 위에 어둡게 올려 둠 / 이어지는 층: 내 포켓몬이 그대로 서 있음 */
-  if (preP) { A.gif = B.pG[side]; delete B.pG[side]; const m = monEl(side); m.classList.remove('pre'); playAnim(side, A); paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); return; }
+  if (preP) { A.gif = B.pG[side] === '-' ? null : B.pG[side]; delete B.pG[side]; const m = monEl(side); m.classList.remove('pre'); playAnim(side, A); paintHb(side, A); $b(SEL('hb', side)).classList.add('on'); return; }
   if (pre0) A.gif = B.wG || A.gif; else { A.gif = await pickGif(side, A); if (!B) return;
   } const m = monEl(side); m.classList.remove('faint', 'on', 'recall', 'fmc', 'sub', 'hid'); if (!pre0) showMon(side, A, false);
   if (quick && side[0] === 'e' && B.wild) { if (!m.classList.contains('wdk')) { m.classList.add('on', 'wdk'); se('SLIDEIN'); await m.animate([{ transform: 'translateX(300px)' }, { transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.catch(() => {}); if (!B) return; } m.classList.add('on'); m.classList.remove('wdk'); await wait(300); if (!B) return; }   /* v24.20 경완 '오른쪽에서 들어오게': 본가 Intro 움직임(어둡게 0.9초 → 제 색·울음 → HP 박스)은 그대로, 들어오는 방향만 오른쪽 화면 밖에서 (첫 층도) · v24.18 경완 '본가 엔진으로': 본가(Essentials Intro·Intro2)처럼 야생 포켓몬은 어둡게(Tone -80) 발판과 같이 왼쪽에서 미끄러져 들어오고, 제 색으로 돌아오며 울음소리 → HP 박스 (이어지는 층은 포켓몬만 왼쪽에서) */   /* v24.02 경완 '수련탑 포켓몬은 화면 밖에서 팬 이동하며 등장': 야생 포켓몬이 오른쪽 화면 밖에서 미끄러져 들어옴 (v24.09 경완 '오른쪽에서') */
@@ -998,7 +1000,7 @@ function partyPanel(req, forced, ban = []) {
 function trPickMon(q, L) {
   return new Promise(async res => { if (q) await msg(q, 0);
     const p = panel(`<div class="bp-party${B?.ptyIt ? ' tr1' : ''}">${L.map((x, i) => { const P = boxOf(x.id); if (!P) return ''; const r = x.mhp ? x.hp / x.mhp : 0, fnt = x.hp <= 0, g = P.sex === 'f' ? 'F' : P.sex === 'm' ? 'M' : '';   /* v24.68 경완 '누구에게 쓸까 화면에 성별도': 성별은 P.sex */
-      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span>${x.tag ? `<span class="pty-it pty-n">${x.tag}</span>` : B?.ptyIt ? `<span class="pty-it">${B.ptyIt(x.id)}</span>` : ''}</button>`; }).join('')}
+      return `<button class="pty${fnt ? ' fnt' : ''}${x.ok ? '' : ' act'}${P.mate ? ' mate' : ''}" data-i="${i}" ${x.ok ? '' : 'disabled'}>${P.mate ? '<em class="pty-mt">동료</em>' : ''}${thumb(P)}<b><span class="pty-nm">${esc(P.nm || SPECIES[P.sp]?.n || '')}</span>${g ? `<i class="sx ${g}"></i>` : ''}</b><span class="pty-ty">${(SPECIES[P.sp]?.t || []).map(t => tyI(t)).join('')}<span class="lv">Lv${gm(P).lv}</span></span><i class="hp"><i class="${hpCol(r)}" style="width:${r * 100}%"></i></i><span class="hpn">${fnt ? '기절' : `${x.hp}/${x.mhp}`}</span>${x.tag ? `<span class="pty-it pty-n">${x.tag}</span>` : B?.ptyIt ? `<span class="pty-it">${B.ptyIt(x.id)}</span>` : ''}</button>`; }).join('')}
       <button class="bb cancel" data-x><span>그만두기</span></button></div>`); fillTh(p);
     p.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe(); panel(''); if (b.hasAttribute('data-x')) return res(null); res(L[+b.dataset.i].id); }; });
 }
@@ -1593,9 +1595,9 @@ async function run(opts) {
   B.trU = { e: uE, p: opts.meFrontUrl || `${IMG}tr/${meF ? 'pt_f' : 'pt_m'}.png` }; B.trBU = uP;   /* v21.89 DBK 기믹 장면의 트레이너 앞모습 */
   await Promise.race([Promise.all([uEp, uP].filter(Boolean).map(u => new Promise(r => { const im = new Image(); im.onload = im.onerror = r; im.src = u; }))), wait(1200)]);   // 그림이 늦게 떠서 멈춰 보이지 않게 미리 받기
   /* v24.55 경완 '포켓몬 바뀔 때 내 포켓몬 사라지지 않게': 이어지는 층에서 같은 포켓몬이 그대로 나오면 발판 위에 둔 채로 (B.pG 그림, sendOut 이 다시 안 그림) */
-  B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._gif || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; const u = gifUrl(A.sp, true, A.shiny, A.g === 'F', A.fm); if (u !== m._gif) return false; B.pG[s] = u; return true; };
-  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); const kp = s === 'p' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = kp ? 'bt-mon p gf on pre' : `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; if (!kp) setSt(s, ''); });
-  ['e2', 'p2'].forEach(s => { const kp = s === 'p2' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = kp ? 'bt-mon p s2 gf on pre' : `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; if (!kp) setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
+  B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._kp || m._kp !== kpKey(A) || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; B.pG[s] = m._gif || '-'; return true; };   /* v27.89 경완 '다음 층 넘어갈 때 몬스터볼에 들어갔다가 나오는 연출이 반복': gif 주소가 아니라 같은 포켓몬인지로 (칸 그림 포켓몬은 _gif 가 없어 매 층 볼이 나왔음) */
+  ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); const kp = s === 'p' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = kp ? ['bt-mon p', ...['gf', 'pl2', 'fa'].filter(c => monEl(s).classList.contains(c)), 'on pre'].join(' ') : `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; if (!kp) setSt(s, ''); });
+  ['e2', 'p2'].forEach(s => { const kp = s === 'p2' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = kp ? ['bt-mon p s2', ...['gf', 'pl2', 'fa'].filter(c => m.classList.contains(c)), 'on pre'].join(' ') : `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; if (!kp) setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
   if (opts.wild && !opts.chain && !opts.pre && foeT[0]) try {   /* v24.64 경완 '포켓몬 나오기 전에 보상 까고': 출발 선물(opts.pre)이 있으면 빈 발판에서 고르고, 야생은 그 뒤 오른쪽에서 들어옴 */ const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
