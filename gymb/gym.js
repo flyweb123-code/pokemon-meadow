@@ -4386,7 +4386,14 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
 #trLobby .tl-rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}#trLobby .tl-rows li{display:grid;grid-template-columns:40px 1fr auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:3px 6px;background:#f0f0f6;box-shadow:inset 0 0 0 2px #d8d8e4}
 #trLobby .tl-rows li>:first-child{grid-row:1/3;max-width:40px;max-height:40px}#trLobby .tl-rows img{max-width:40px;max-height:40px;object-fit:contain}#trLobby .tl-rows b{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#trLobby .tl-rows .mt{font-style:normal;font-size:9px;color:#fff;background:#2f7cd0;padding:1px 4px;margin-left:4px}
-#trLobby .tl-rows .lv{grid-column:3;grid-row:1/3;font-size:12px;white-space:nowrap}#trLobby .tl-rows .lv i{font-style:normal;font-size:9px;color:#e0a020}#trLobby .tl-rows .lv strong{color:#e04838}#trLobby .tl-rows .xp{font-size:10px;opacity:.7}`;
+#trLobby .tl-rows .lv{grid-column:3;grid-row:1/3;font-size:12px;white-space:nowrap}#trLobby .tl-rows .lv i{font-style:normal;font-size:9px;color:#e0a020}#trLobby .tl-rows .lv strong{color:#e04838}#trLobby .tl-rows .xp{font-size:10px;opacity:.7}
+/* v27.93 경완 '수련탑 시작화면 상단 플로팅 바 있는 부분 잘리지 않게 연장' + '수련탑 오르기 버튼 밑에도 잘림선 안 보이게 끝까지 연장': 하늘을 화면 맨 위까지, 아래 버튼 줄 바탕을 맨 아래까지 */
+#trLobby{padding-top:0;padding-bottom:0}
+#trLobby .tl-sky{height:calc(min(25vh,200px) + var(--si-top,env(safe-area-inset-top,0px)))}
+#trLobby .tl-rail{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
+#trLobby .tl-hd{top:calc(8px + var(--si-top,env(safe-area-inset-top,0px)))}
+#trLobby .tl-x{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
+#trLobby .tl-ft{padding-bottom:calc(10px + var(--si-bottom,env(safe-area-inset-bottom,0px)))}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
 /* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
 function trTowerSvg(tod) {
@@ -4497,18 +4504,21 @@ const trOp = () => !!window.gymSimOn || document.documentElement.classList.conta
 function trGo() {
   if (!open || !st()?.d || root.querySelector('.bs-tr')) return;
   /* 특훈(yaTest)처럼 줄무늬가 닫힌 채 기다렸다가 등반대 화면(#trLobby)이 뜬 뒤 연다 (늦어도 6초), 아래 메뉴는 안 가림 */
-  const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; { const m = root.querySelector('.gy-menu'), mh = m && m.offsetHeight ? root.getBoundingClientRect().bottom - m.getBoundingClientRect().top : 0; if (mh > 0) f.style.bottom = mh + 'px'; }
+  /* v27.93 경완 '수련탑 진입할 때는 하단 메뉴 가려지고, 열리면서 수련탑 오르기 버튼이 드러나게' + '진입 할 때부터 특훈 시작 화면이랑 같은 bgm': 줄무늬가 화면 전체(메뉴까지), 곡 = 특훈 시작 화면 곡 league */
+  const f = document.createElement('div'); f.className = 'bs-tr hd'; f.style.zIndex = 6000; bgmPlay('league');
   f.innerHTML = '<i class="a"></i><i class="b"></i><b>수련탑</b>'; root.appendChild(f); try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
-  const t0 = performance.now(); let rd = 0; setTimeout(() => { openTab(null); trainTest(); }, 450);
+  const t0 = performance.now(); let rd = 0; setTimeout(() => { openTab(null); trainTest({ back: 1 }); }, 450);
   const iv = setInterval(() => { const now = performance.now(), dt = now - t0, L = root.querySelector('#trLobby, .tr-gate, .gy-pop'); if (!rd && dt > 450 && L) rd = now; if (!(dt > 6000 || !open || (dt >= 910 && rd && now - rd >= 200))) return; clearInterval(iv); f.classList.add('go'); setTimeout(() => f.remove(), 500); }, 40);
 }
-async function trainTest() {
+async function trainTest(o0) {
+  /* v27.93 경완 '수련탑 시작 화면에서 나가기 누르면 포켓몬 라인업 화면으로': [수련탑] 버튼으로 왔으면(o0.back) 나가기 = 체육관 곡 + 포켓몬 메뉴 */
+  const back = () => { if (!o0?.back || !open) return; bgmPlay('gym'); openTab('battle'); };
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM'); await loadNamed();   /* v24.87 관장·라이벌·사천왕 층 */
   if (trSave?.keep) { const g = st(); g.mon = g.mon || {}; trSave.keep.forEach(([P, m]) => { if (!GB().boxOf(P.id)) { S.box.push(JSON.parse(JSON.stringify(P))); g.mon[P.id] = JSON.parse(JSON.stringify(m)); } }); }   /* v24.02 시연 사본은 시뮬을 나가면 상자에서 사라짐 → 멈출 때 떠 둔 걸로 되살려 이어 오르기 */
   let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
-  { const gv = R ? await trGate(R) : 'new'; if (!gv) return;   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
-    if (gv === 'new') { if (R) { trDrop(R.ids); R = null; trSave = null; } const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return; R = trNew(v); } }
+  { const gv = R ? await trGate(R) : 'new'; if (!gv) return back();   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
+    if (gv === 'new') { if (R) { trDrop(R.ids); R = null; trSave = null; } const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return back(); R = trNew(v); } }
   trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   window.gymTrR = () => R;   /* 시험용: 지금 수련탑 기록 (운영자 시연 안에서만) */
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
