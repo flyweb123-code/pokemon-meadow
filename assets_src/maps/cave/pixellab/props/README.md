@@ -19,3 +19,9 @@ PixelLab 웹 > Create image > **Pro**, 출력 32x32 (한 번에 8x8 = 64가지),
 - raw/grid_*.png: 64칸 전체 (다른 후보를 고를 때 칸 번호 = 왼쪽 위부터 가로로 0~63)
 - preview.png: 고른 14장을 4배로
 - 메모: 광차는 정면·뒷면이라 바퀴는 아래쪽 2~4개만 보임. 버섯 일부는 줄기가 아래 칸 끝까지 닿음.
+
+## 2차: 작은 야광 버섯 16x16 (mush16_1~4)
+Pro, Custom size 16x16 (8x8 = 64가지), Remove background 켬. 공통 문구는 위와 같고 "fills about 60% of the canvas".
+- mush16_1, mush16_2: "Two tiny glowing cave mushrooms side by side, one slightly taller, purple and teal glowing caps with bright luminous dots, thin pale stems, small and delicate" — raw/grid_mush16_two.png 칸 2, 17
+- mush16_3, mush16_4: "Three tiny glowing cave mushrooms in a little clump, ..." — raw/grid_mush16_three.png 칸 5, 9
+- 생성 횟수: 2번 x 10 = 20 generations. (48x32 보석 무리는 경완 '이미 만든 보석을 겹쳐 쓰면 된다'로 만들지 않음)
