@@ -1581,11 +1581,15 @@ async function run(opts) {
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   /* v23.10 훈련하기: 지난 층에서 남은 체력(opts.hp = {pid: 비율}), 우두머리는 체력 크게(foe.hpX) */
   /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
+  /* v28.35 경완 '또 이런 오류 없는지 도구별로 검토해봐': 1층 출발 선물(opts.pre)로 받은 영양제·쌓이는 도구·열매·팀 도구·지닌 도구가 1층 배틀엔 안 들어가던 것 (배틀을 먼저 만들고 선물을 골라서) → 출발 선물이 있으면 고른 뒤에 넣음 */
+  const twAp = () => {
   if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
   if (opts.xitT) btl.xitT = { ...opts.xitT }; if (opts.xit || opts.xitT) xitInstall(btl.dex);   /* v26.91 팀 전체 도구(열매주머니·회복의부적) */
   if (opts.xit) { btl.p1.pokemon.forEach((pk, i) => { const x = opts.xit[my[i]?.pid]; if (x) { pk.m.xit = { ...x }; pk.m.xitR = x; } }); }   /* 수련탑 쌓이는 도구 개수 (한 마리 여러 개) */
   if (opts.hp) btl.p1.pokemon.forEach((pk, i) => { const f = opts.hp[my[i]?.pid]; if (f != null && f <= 0) { pk.hp = 0; pk.fainted = true; pk.status = 'fnt'; pk.side.pokemonLeft--; } else if (f != null && f < 1) pk.hp = Math.max(1, Math.round(pk.maxhp * f)); });   /* v26.82 경완 '기절한 포켓몬 사라지는 오류': 수련탑 기절 포켓몬도 교체 화면에 (기절로) 남게, 뒤쪽에 넣어 줌 */
+  };
+  if (!opts.pre) twAp();
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
   B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, top: opts.top ?? !!globalThis.gymAiTop?.() /* 전설 등급 체육관 = 2단계가 늘 1등 기술 */, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '', ptyIt: opts.ptyIt || null   /* 수련탑: 교체 화면 줄마다 지닌 도구 */ };
@@ -1619,6 +1623,8 @@ async function run(opts) {
   await wait(900); el.classList.remove('intro'); await trPlay(trE, trA); }
   const foeNm = B.foeNm = opts.wild ? opts.foe.nm : `${opts.foe.cls} ${opts.foe.nm}`;
   if (opts.pre && B) try { await opts.pre({ msg, msgTap, choose: trChoose, pickMon: trPickMon, se }); } catch (e) { console.error(e); }
+  if (opts.pre) { if (opts.twRe) Object.assign(opts, opts.twRe()); twAp();   /* 출발 선물 뒤: 고른 도구를 이 층 배틀에도 */
+    btl.p1.pokemon.forEach((pk, i) => { const A = my[i], it = A && gm(boxOf(A.pid))?.it || ''; if (!A || it === (A.it || '')) return; A.it = it; const d = it && btl.dex.items.get(it), id = d && (HOLD[it] || d.megaStone || d.zMove) ? d.id : ''; pk.item = id; pk.itemState = { id, target: pk }; if (pk.set) pk.set.item = d?.name || ''; }); }
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
@@ -1651,6 +1657,7 @@ async function run(opts) {
   if (monSnap) S.gym.mon = JSON.parse(monSnap);
   /* v23.10 훈련하기: 끝난 뒤 남은 체력(hp)·보급 고르기(opts.post). post 가 true 면 배틀 화면을 닫지 않고 다음 층으로 */
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
+  if (opts.post && B) lowHp(false);   /* v28.35 배틀이 끝난 뒤(보상 고르기·그만두기 문구) 체력 경고음 멈춤 — 다음 층은 체력 상자를 다시 그릴 때 다시 판단 */
   let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
   if (keep && B) { lowHp(false); const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
