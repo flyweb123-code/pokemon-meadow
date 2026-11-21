@@ -4395,17 +4395,21 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-rail{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
 #trLobby .tl-hd{top:calc(8px + var(--si-top,env(safe-area-inset-top,0px)))}
 #trLobby .tl-x{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
-#trLobby .tl-gf{position:absolute;right:10px;top:calc(50px + var(--si-top,env(safe-area-inset-top,0px)));z-index:3;min-height:0!important;padding:4px 8px!important;font-size:12px!important;display:flex;align-items:center;gap:4px}
-#trLobby .tl-gf img{width:19px;height:18px;image-rendering:pixelated}
+#trLobby .tl-gf{position:absolute;right:14px;top:calc(48px + var(--si-top,env(safe-area-inset-top,0px)));z-index:3;width:44px;height:44px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}   /* v28.21 경완 '선물 버튼은 박스 없이 아이콘만 살려서 나가기 버튼 밑에' */
+#trLobby .tl-gf img{width:38px;height:36px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 #0008);animation:tlGf 2.4s ease-in-out infinite}#trLobby .tl-gf:active img{transform:scale(.9)}
+@keyframes tlGf{0%,80%,100%{transform:none}86%{transform:rotate(-8deg)}92%{transform:rotate(8deg)}}
 #trLobby .tl-gfp{position:absolute;inset:0;z-index:50;background:rgba(8,10,24,.6);display:flex;align-items:center;justify-content:center;padding:calc(16px + var(--si-top,0px)) 14px calc(16px + var(--si-bottom,0px))}
-#trLobby .tl-gfw{width:min(100%,360px);max-height:100%;display:flex;flex-direction:column;gap:6px;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:10px 10px 12px;color:var(--win-ink)}
+#trLobby .tl-gfw{width:min(100%,360px);max-height:min(100%,520px);display:flex;flex-direction:column;gap:6px;background:var(--win);border:3px solid var(--frame);box-shadow:0 3px 0 var(--frame),inset 0 0 0 2px #fff,inset 0 -4px 0 var(--inner);padding:10px 10px 12px;color:var(--win-ink)}
 #trLobby .tl-gfw h3{margin:0;text-align:center;font-size:16px}#trLobby .tl-gfs{margin:0;text-align:center;font-size:10px;opacity:.7;line-height:1.5}
 #trLobby .tl-gfw ol{list-style:none;margin:0;padding:0;overflow-y:auto;display:flex;flex-direction:column;gap:3px;min-height:0}
-#trLobby .tl-gfw li{display:grid;grid-template-columns:40px auto minmax(0,1fr) auto;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.05)}
+#trLobby .tl-gfw li{display:grid;grid-template-columns:40px 34px minmax(0,1fr) auto;align-items:center;gap:6px;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.05)}
 #trLobby .tl-gfw li.b{background:linear-gradient(90deg,#f8e3a0,#f6eccb);box-shadow:inset 0 0 0 2px #d8a830}
-#trLobby .tl-gfw li>b{font-size:12px}#trLobby .tl-gfw li .ic{display:flex;gap:2px}#trLobby .tl-gfw li .ic img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}
+#trLobby .tl-gfw li>b{font-size:12px}#trLobby .tl-gfw li .bx{position:relative;width:34px;height:30px;display:flex;align-items:center;justify-content:center}
+#trLobby .tl-gfw li .ic{display:flex;align-items:center;justify-content:center;width:26px;height:26px;position:relative;z-index:1}#trLobby .tl-gfw li .ic img{width:24px;height:24px;object-fit:contain;image-rendering:pixelated}#trLobby .tl-gfw li .ic .egg{transform:scale(.42)}
+#trLobby .tl-gfw li .ic.sh{filter:brightness(0);opacity:.35}#trLobby .tl-gfw li .lid{position:absolute;right:-4px;bottom:-2px;width:16px;height:15px;image-rendering:pixelated;z-index:2}#trLobby .tl-gfw li .bx.op .lid{transform:translate(4px,-8px) rotate(28deg);opacity:.8}
+#trLobby .tl-gfw li.got.g0 .bx{filter:drop-shadow(0 0 3px #7cd080)}#trLobby .tl-gfw li.got.g1 .bx{filter:drop-shadow(0 0 3px #f6b45a)}#trLobby .tl-gfw li.got.g2 .bx{filter:drop-shadow(0 0 3px rgba(80,150,235,.9))}#trLobby .tl-gfw li.got.g3 .bx{filter:drop-shadow(0 0 3px rgba(170,120,240,.95))}#trLobby .tl-gfw li.got.g4 .bx{filter:drop-shadow(0 0 4px #f0c040)}
 #trLobby .tl-gfw li .nm{font-size:11px;line-height:1.3;min-width:0}#trLobby .tl-gfw li .nm small{display:block;font-size:9px;opacity:.6}
-#trLobby .tl-gfw li em{font-style:normal;font-size:10px;padding:1px 5px;border-radius:4px;background:#3a9a50;color:#fff}#trLobby .tl-gfw li.got{opacity:.55}
+#trLobby .tl-gfw li em{font-style:normal;font-size:10px;padding:1px 5px;border-radius:4px;background:#3a9a50;color:#fff}
 #trLobby .tl-gfw>.gy-key{align-self:center;min-width:96px}
 #trLobby .tl-ft{padding-bottom:calc(10px + var(--si-bottom,env(safe-area-inset-bottom,0px)))}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
@@ -4440,7 +4444,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
       ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
       <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
       <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
-      <button class="gy-key tl-x" data-a="x">나가기</button><button class="gy-key tl-gf" data-a="gf" aria-label="층별 선물"><img alt="" src="${IMG}yact/gift.png">선물</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
+      <button class="gy-key tl-x" data-a="x">나가기</button><button class="tl-gf" data-a="gf" aria-label="이번 주 층별 선물"><img alt="" src="${IMG}yact/gift.png"></button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
     <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
       <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="lu">라인업</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
     <div class="tl-ft${save ? ' two' : ''}${trOp() ? '' : ' nr'}">${trOp() ? '<button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>' : ''}${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
@@ -4591,36 +4595,57 @@ async function trPost(R, o, boss, ids, T, trn) {
    값 = 상점 값 기준 (이상한사탕·영양제 300, 향로 900, 뽑기권 점수×50, 기술머신 tmPrice, 민트 3,000, 빛나는 부적 5,000) → 100층까지 약 5,500G·200층 약 20,300G (배틀 골드 200층 약 10,900G 따로)
    TR_GF_PAY = false: 창만 보여 주고 실제로 넣지 않음, 받은 층 기록도 저장 안 함 (공개 때 켜고 gyGive 처럼 넣기) */
 const TR_GF_PAY = false;
-const trGfK = f => f === 50 ? 'inc' : f === 100 ? 'big' : f === 150 ? 'mint' : f === 200 ? 'charm' : f < 50 ? 'lo' : f < 100 ? 'mid' : f < 150 ? 'hi' : 'top';
-const TR_GF_G = { lo: 0, mid: 1, hi: 2, top: 3, inc: 2, big: 3, mint: 3, charm: 4 }, TR_GF_TK = { mid: [1, 7], hi: [4, 6, 3, 12, 11, 13, 14, 2, 15], top: [8, 10, 9, 17, 18] }, TR_GF_TM = { mid: [300, 700], hi: [700, 700], top: [1200, 1200] };
-const TR_VIT_IT = ['hpup', 'protein', 'iron', 'calcium', 'zinc', 'carbos'];
+/* v28.21 경완 '층별 선물은 매주 미니게임 보상처럼 매주 랜덤으로 유저한테 필요한게 정해지도록': 주마다 층별 선물을 한 번 정함 (주·닉네임 씨앗이라 다시 켜도 같음)
+   필요한 것 = 라인업 포켓몬 추천 성격 민트(아직 없는 것)·추천 능력치 영양제, 체육관 타입 포켓몬이 배울 수 있고 없는 기술머신(라인업이 배우면 3배), 체육관 타입 뽑기권 4배 */
+/* v28.22 경완 '알 뽑기 처럼 확률을 3단계 정도로 나눠서 좋은 선물이 나오게, 단계 올라갈 때마다 진동 + 색 바뀌는 연출' → 층마다 단계 레어 70%·에픽 25%·전설 5% (주마다 정함)
+   단계가 오르면 값 구간(TR_GF_B)이 한 칸씩 올라감: 0 사탕·영양제 300 / 1 기술머신 ~700·뽑기권 ~600 / 2 기술머신 700·뽑기권 600~750 / 3 기술머신 1,200·뽑기권 850~1,000 / 4 기술머신 2,000·드래곤 뽑기권·추천 민트 */
+const TR_GF_P = [.7, .25, .05], TR_GF_NM = ['레어', '에픽', '전설'];
+const TR_EGG_P = [.3, .35, .22, .1, .03], TR_EGG_NM = ['일반', '우수', '레어', '에픽', '전설'];   /* 200층 이로치 알 등급 (알 뽑기 GA_ODDS 우수 62·레어 30·에픽 7·전설 1% 보다 위쪽이 조금 후함) */
+const trGfK = f => f % 50 === 0 ? 'big' : f < 50 ? 0 : f < 100 ? 1 : f < 150 ? 2 : 3;
+const TR_GF_TM = [null, [300, 700], [700, 700], [1200, 1200], [2000, 2000]], TR_GF_TKB = [null, [0, 600], [600, 750], [850, 1000], [1750, 1750]];
+const TR_TK_SC = { 0: 10, 1: 10, 7: 10, 4: 12, 6: 12, 3: 13, 12: 13, 11: 13, 13: 13, 14: 13, 2: 14, 15: 14, 5: 15, 8: 17, 10: 18, 9: 19, 17: 19, 18: 20, 16: 35 };   /* 뽑기권 값 = 점수 × 50G (beta.html ITEMS tk 사본) */
+const TR_VIT_IT = ['hpup', 'protein', 'iron', 'calcium', 'zinc', 'carbos'], TR_ST_I = { hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5 };
 const trTmPr = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;   /* manage.js tmPrice 사본 */
 const trMainArt = a => { try { return GA.fArt?.({ a }) || ''; } catch (e) { return ''; } };
 const trTkNm = t => `${t ? TYPE_KO[t] : '모든 타입'} 뽑기권`;
-const TR_GF_TXT = { lo: ['이상한사탕 또는 영양제', '가방 · 창고'], mid: ['기술머신 또는 타입 뽑기권', '창고 · 가방'], hi: ['기술머신 또는 타입 뽑기권', '창고 · 가방'], top: ['기술머신 또는 희귀 타입 뽑기권', '창고 · 가방'],
-  inc: ['향로', '가방'], big: ['모든 타입 뽑기권 + 이상한사탕 3개', '가방'], mint: ['민트 1개', '창고'], charm: ['빛나는 부적', '가방'] };
-const trGfIc = k => k === 'lo' ? [trMainArt('rcandy'), `${IMG}item/protein.png`] : k === 'inc' ? [trMainArt('incense')] : k === 'big' ? [trMainArt('tk0'), trMainArt('rcandy')] : k === 'mint' ? [`${IMG}item/mint_adamant.png`] : k === 'charm' ? [trMainArt('charm')] : [`${IMG}bt/tm_${k === 'mid' ? 1 : k === 'hi' ? 13 : 16}.png`, trMainArt('tk' + TR_GF_TK[k][0])];
-function trGfTm(k) { try { const B = GB(), D = B.D, g = st() || {}, [lo, hi] = TR_GF_TM[k], can = new Set();
-  S.box.filter(P => P && !P.egg && !P.gTst && GA.pTy(P).includes(g.ty)).forEach(P => (B.tmOf(P.sp) || []).forEach(i => can.add(i)));
-  const L = [...can].filter(i => { const x = D.mv[i]; return x && !B.isTR(x[0]) && !(g.tms || {})[x[0]] && trTmPr(x) >= lo && trTmPr(x) <= hi; });
-  return L.length ? L[Math.floor(Math.random() * L.length)] : null; } catch (e) { return null; } }
-function trGfRoll(f) { const k = trGfK(f), pick = a => a[Math.floor(Math.random() * a.length)];
-  if (k === 'inc') return { k, nm: '향로', ic: trMainArt('incense'), at: '가방' };
-  if (k === 'charm') return { k, nm: '빛나는 부적', ic: trMainArt('charm'), at: '가방' };
-  if (k === 'big') return { k, nm: '모든 타입 뽑기권 + 이상한사탕 3개', ic: trMainArt('tk0'), at: '가방' };
-  if (k === 'mint') { const m = pick(GB().MINT || ['adamant']); return { k, nm: GB().mintNm?.(m) || '민트', ic: `${IMG}item/mint_${m}.png`, at: '창고' }; }
-  if (k === 'lo') { if (Math.random() < .5) return { k, nm: '이상한사탕', ic: trMainArt('rcandy'), at: '가방' }; const v = Math.floor(Math.random() * 6); return { k, nm: TR_VIT[v][0], ic: `${IMG}item/${TR_VIT_IT[v]}.png`, at: '창고' }; }
-  const tm = Math.random() < .5 ? trGfTm(k) : null; if (tm != null) { const x = GB().D.mv[tm]; return { k, nm: `기술머신 ${x[1]}`, ic: `${IMG}bt/tm_${x[2]}.png`, at: '창고' }; }
-  const tk = pick(TR_GF_TK[k]); return { k, nm: trTkNm(tk), ic: trMainArt('tk' + tk), at: '가방' }; }
+const trSeed = s => { let h = 1779033703; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 3432918353), h = h << 13 | h >>> 19; return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; }; };
+function trGfPlan() { const s = trGfSt(); if (s.plan) return s.plan;
+  const rnd = trSeed(`${s.wk}|${S.nick || S.name || ''}|${S.gym?.ty || 0}`), B = GB(), D = B.D, g = st() || {}, cnt = {}, plan = {};
+  const wp = L => { L = L.map(x => ({ ...x, w: (x.w || 1) / (1 + 2 * (cnt[x.id] | 0)) })); let r = L.reduce((a, x) => a + x.w, 0) * rnd(); for (const x of L) if ((r -= x.w) < 0) return x; return L[L.length - 1]; };   /* 이미 나온 건 덜 나오게 */
+  const lu = [...new Set((g.lu || []).flat())].map(id => B.boxOf(id)).filter(P => P && !P.gTst), mons = S.box.filter(P => P && !P.egg && !P.gTst && GA.pTy(P).includes(g.ty));
+  const rec = P => { try { return B.recNat(P, B.gm(P)); } catch (e) { return null; } };
+  const it = (id, nm, a, at = '가방') => ({ id, nm, ic: trMainArt(a), at });
+  const vits = () => { const L = lu.map(P => D.nt[rec(P)]?.[1]).filter(k => k in TR_ST_I).map(k => TR_ST_I[k]); return (L.length ? L : [0, 1, 2, 3, 4, 5]).map(v => ({ id: 'v' + v, nm: TR_VIT[v][0], ic: `${IMG}item/${TR_VIT_IT[v]}.png`, at: '창고' })); };
+  const mint = () => { const L = [...new Set(lu.map(P => { const r = rec(P); return r && r !== B.gm(P).nat && !(g.mint || {})[r] ? r : null; }).filter(Boolean))], M = B.MINT || ['adamant'], L2 = L.filter(x => !cnt['mint' + x]), m = L2.length ? L2[Math.floor(rnd() * L2.length)] : L.length ? L[Math.floor(rnd() * L.length)] : M[Math.floor(rnd() * M.length)]; return { id: 'mint' + m, nm: B.mintNm?.(m) || '민트', ic: `${IMG}item/mint_${m}.png`, at: '창고' }; };
+  const luCan = new Set(); lu.forEach(P => (B.tmOf(P.sp) || []).forEach(i => luCan.add(i))); const can = new Set(luCan); mons.forEach(P => (B.tmOf(P.sp) || []).forEach(i => can.add(i)));
+  const tms = b => { const [lo, hi] = TR_GF_TM[b]; return [...can].filter(i => { const x = D.mv[i]; return x && !B.isTR(x[0]) && !(g.tms || {})[x[0]] && trTmPr(x) >= lo && trTmPr(x) <= hi; }).map(i => { const x = D.mv[i]; return { id: 'tm' + x[0], nm: `기술머신 ${x[1]}`, ic: `${IMG}bt/tm_${x[2]}.png`, at: '창고', w: luCan.has(i) ? 3 : 1 }; }); };
+  const tks = b => { const [lo, hi] = TR_GF_TKB[b]; return Object.keys(TR_TK_SC).map(Number).filter(t => t && TR_TK_SC[t] * 50 >= lo && TR_TK_SC[t] * 50 <= hi).map(t => ({ ...it('tk' + t, trTkNm(t), 'tk' + t), w: t === g.ty ? 4 : 1 })); };
+  const band = b => { if (b === 0) return wp([{ ...it('rcandy', '이상한사탕', 'rcandy'), w: 3 }, ...vits()]); const a = tms(b), c = tks(b); if (b === 4 && rnd() < .34) return mint(); return wp(a.length && (rnd() < .5 || !c.length) ? a : c); };
+  /* v28.22 경완 '200층은 어려우니까 이로치 타입 알 확정으로' → '알 등급 확률도 있으니까 이로치 알 타입은 랜덤으로 가고 알 등급 5단계로': 타입 18개 중 무작위, 알 등급 일반~전설 TR_EGG_P */
+  const shEgg = () => { const T = Object.keys(TR_TK_SC).map(Number).filter(Boolean), ty = T[Math.floor(rnd() * T.length)], r = rnd(); let k = 0, a = 0; for (; k < 4; k++) if (r < (a += TR_EGG_P[k])) break;
+    return { tier: k, id: 'she' + ty, nm: `이로치 ${TYPE_KO[ty]} 타입 알`, ic: GA.eggIcoSh?.(k + 1, ty) || '', at: '알 가방', egg: [k + 1, ty, 1] }; };
+  const tkG = () => it('tk' + (g.ty || 0), `${trTkNm(g.ty || 0)}`, 'tk' + (g.ty || 0)), ic = (o, nm, id) => ({ ...o, nm, id });
+  const BIG = { 50: [() => it('incense', '향로', 'incense'), () => ic(it('incense', '', 'incense'), '향로 2개', 'incense2'), () => it('charm', '빛나는 부적', 'charm')],
+    100: [() => it('big', '모든 타입 뽑기권 + 이상한사탕 3개', 'tk0'), () => mint(), () => it('charm', '빛나는 부적', 'charm')],
+    150: [() => mint(), () => { const m = mint(); return { ...m, id: m.id + '+', nm: `${m.nm} + ${tkG().nm}` }; }, () => it('charm', '빛나는 부적', 'charm')],
+    200: [] };
+  for (let f = 10; f <= 200; f += 10) { const r = rnd(), tier = r < TR_GF_P[0] ? 0 : r < TR_GF_P[0] + TR_GF_P[1] ? 1 : 2, k = trGfK(f); let G;
+    if (f === 200) G = shEgg(); else if (k === 'big') G = BIG[f][tier]();
+    else G = band(Math.min(4, k + tier));
+    cnt[G.id] = (cnt[G.id] | 0) + 1; plan[f] = { tier, gi: tier + 2, ...G }; if (f === 200) plan[f].gi = G.tier; }
+  return (s.plan = plan); }
 let trGfMem = null;
 const trGfWk = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };   /* 월요일 0시에 새로 (미니게임 기록 선물과 같은 주) */
-const trGfSt = () => { const s = TR_GF_PAY ? (st().trGf = st().trGf || {}) : (trGfMem = trGfMem || {}), wk = trGfWk(); if (s.wk !== wk) { s.wk = wk; s.got = []; } return s; };
-async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; s.got.push(f); const G = trGfRoll(f);
-  await trBoxPick([[0, TR_GF_G[G.k], G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, f % 50 ? `${f}층 선물` : `${f}층 큰 선물`]], `${f}층 도달 선물!`, 0, TR_GF_PAY ? '이번 주에 한 번만 받아요' : '베타에서는 실제로 받지 않아요'); }
-/* 수련탑 시작 화면 '선물' 버튼: 층별 선물 목록·이번 주 받은 층 (경완 '수련탑 시작 화면에 층별 보상 목록 확인할 수 있는 아이콘도') */
-function trGfList(el) { const s = trGfSt(), w = document.createElement('div'); w.className = 'tl-gfp';
-  w.innerHTML = `<div class="tl-gfw" role="dialog"><h3>층별 선물</h3><p class="tl-gfs">그 층에 이번 주 처음 닿으면 받아요 · 월요일에 새로${TR_GF_PAY ? '' : '<br>(베타에서는 실제로 받지 않아요)'}</p><ol>${Array.from({ length: 20 }, (_, i) => (i + 1) * 10).map(f => { const k = trGfK(f), [nm, at] = TR_GF_TXT[k], got = s.got.includes(f);
-    return `<li class="${f % 50 ? '' : 'b'}${got ? ' got' : ''}"><b>${f}층</b><span class="ic">${trGfIc(k).filter(Boolean).map(u => `<img alt="" src="${u}">`).join('')}</span><span class="nm">${esc(nm)}<small>${at}</small></span>${got ? '<em>받음</em>' : ''}</li>`; }).join('')}</ol><button class="gy-key" type="button" data-gx="1">닫기</button></div>`;
+const trGfSt = () => { const s = TR_GF_PAY ? (st().trGf = st().trGf || {}) : (trGfMem = trGfMem || {}), wk = trGfWk(); if (s.wk !== wk) { s.wk = wk; s.got = []; s.plan = null; } return s; };
+/* v28.21 경완 '선물 받는 창에는 받기 버튼 만들어서 그거 눌러야만 닫히고 진행되게' → trBoxPick X.get */
+async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; const G = trGfPlan()[f]; s.got.push(f);
+  const eg = f === 200, NM = eg ? TR_EGG_NM : TR_GF_NM;
+  await trBoxPick([[0, eg ? 0 : 2, G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, NM[0]]], `${f}층 ${f % 50 ? '' : '큰 '}선물!`, 0, TR_GF_PAY ? '' : '베타에서는 실제로 받지 않아요', { get: '받기', up: eg ? G.gi : G.tier, upNm: NM }); }
+/* 수련탑 시작 화면 선물 아이콘: 이번 주 층별 선물 목록·받은 층 (경완 '수련탑 시작 화면에 층별 보상 목록 확인할 수 있는 아이콘도' · v28.21 '너무 길어지지 않게 스크롤') */
+function trGfList(el) { const s = trGfSt(), P = trGfPlan(), w = document.createElement('div'); w.className = 'tl-gfp';
+  w.innerHTML = `<div class="tl-gfw" role="dialog"><h3>이번 주 층별 선물</h3><p class="tl-gfs">그 층에 이번 주 처음 닿으면 받아요 · 월요일에 새로 정해져요${TR_GF_PAY ? '' : '<br>(베타에서는 실제로 받지 않아요)'}</p><ol>${Array.from({ length: 20 }, (_, i) => (i + 1) * 10).map(f => { const G = P[f], got = s.got.includes(f);
+    const top = f === 200 && !got, ic = top ? GA.eggIcoSh?.(1, 0) || '' : /^</.test(G.ic) ? G.ic : `<img alt="" src="${G.ic}">`;   /* v28.22 경완 '200층 선물 이로치 알이라는건 가리지말고 타입은 확률이라는거만' */   /* v28.22 경완 '아직 안 받은 선물들은 실루엣, 층마다 상자가 오픈되는 느낌' */
+    return `<li class="${f % 50 ? '' : 'b'}${got ? ` got g${G.gi}` : ''}"><b>${f}층</b><span class="bx${got ? ' op' : ''}"><img class="lid" alt="" src="${IMG}yact/gift.png"><span class="ic${got || top ? '' : ' sh'}">${ic}</span></span><span class="nm">${got ? esc(G.nm) : top ? '이로치 타입 알' : '???'}<small>${got ? `${(f === 200 ? TR_EGG_NM : TR_GF_NM)[f === 200 ? G.gi : G.tier]} · ${G.at}` : top ? '타입·알 등급은 받을 때 확률로 정해져요' : '상자 속 선물'}</small></span>${got ? '<em>받음</em>' : ''}</li>`; }).join('')}</ol><button class="gy-key" type="button" data-gx="1">닫기</button></div>`;
   w.onclick = e => { if (e.target === w || e.target.closest('[data-gx]')) { e.stopPropagation(); sfx('tap'); w.remove(); } else e.stopPropagation(); };
   el.appendChild(w); }
 async function trMyst(R, o, card) {
@@ -4702,21 +4727,28 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-s em{font-style:normal;font-size:11px;font-weight:700;color:#4a6490}.trbx .trb-s em::before{content:'';display:inline-block;width:13px;height:9px;margin-right:3px;background:url(${IMG}item/relicsilver.png) center/contain no-repeat;image-rendering:pixelated;vertical-align:0}
 .trbx .trb-s:active:not([disabled]){transform:translateY(3px);box-shadow:0 0 0 2px #c8c8d8}.trbx .trb-s[disabled]{opacity:.4}
 .trbx .trb-rr{height:36px;border:0;border-radius:8px;font:inherit;font-size:13px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#8a7ae0,#5a48b8);box-shadow:inset 0 1px 0 #fff6,0 3px 0 #2c2068}
-.trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}`;
+.trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}
+.trbx .trb-c.up .trb-b{animation:trbUp .48s ease-out}.trbx .trb-c.up::after{content:'';position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle,var(--g1) 0,transparent 65%);opacity:0;animation:trbUpR .55s ease-out;pointer-events:none}
+@keyframes trbUp{0%{transform:scale(1)}35%{transform:scale(1.35);filter:brightness(2.2) drop-shadow(0 0 10px var(--g1))}100%{transform:scale(1)}}@keyframes trbUpR{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+.trbx .trb-k .trb-eg{display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin-top:6px}.trbx .trb-k .trb-eg .egg{transform:scale(.8)}
+.trbx .trb-get{min-width:140px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:0;transition:opacity .3s}.trbx.ready .trb-get{opacity:1}.trbx .trb-get:active{transform:translateY(4px);box-shadow:inset 0 1px 0 #fff8}`;
 /* 필드 가방 버튼(#btnBag)과 같은 도트 가방 */
 const TRB_BAG = '<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg>';
 const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X) => new Promise(ok => {   /* X = { coin, rr, shop: [[이름, 값, 살 수 있음]] } 아래 상점 줄 (v24.70) */   /* c[5] 그림 이름·c[6] 딱지 글자 (v24.68 강박사 상자) */
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
   const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['일반', '우수', '레어', '에픽', '전설'];   /* v26.82 경완 '보상 카드 등급은 일반, 우수, 레어' */
   const el = document.createElement('div'); el.className = 'trbx';
-  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em><img alt="" src="${/[/:]/.test(c[5] || '') ? c[5] : `${IMG}item/${c[5] || trIc(c[2])}.png`}"><b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em>${/^</.test(c[5] || '') ? `<span class="trb-eg">${c[5]}</span>` : `<img alt="" src="${/[/:]/.test(c[5] || '') ? c[5] : `${IMG}item/${c[5] || trIc(c[2])}.png`}">`}<b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X?.get ? `<button type="button" class="trb-get">${esc(X.get)}</button>` : ''}${X?.shop ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
   let ready = !!again; if (again) el.classList.add('ready');
   else (async () => { await wait(500);   /* v24.64 경완 '보상 나오는 연출 속도 좀만 더 빠르게': 떨어짐·흔들림·터짐 모두 약 1/3 빠르게 */ const C = [...el.querySelectorAll('.trb-c')];
     C.forEach(c => c.classList.add('wob')); se('KON'); await wait(310);
+    for (let u = 0; u < (X?.up | 0); u++) { const c = C[0], g0 = +(c.className.match(/\bg(\d)/) || [0, 0])[1], g1 = Math.min(4, g0 + 1), [a1, a2] = TR_RC[g1].split(','); await wait(u ? 420 : 260);   /* v28.22 단계 오름: 색·볼·딱지 바뀌고 진동 */
+      c.classList.remove('wob', 'up', 'g' + g0); void c.offsetWidth; c.classList.add('g' + g1, 'up'); c.style.setProperty('--g1', a1); c.style.setProperty('--g2', a2); const bi = c.querySelector('.trb-b'); if (bi) bi.src = `${IMG}item/${TR_BX[g1]}.png`; const em = c.querySelector('.trb-k em'); if (em && X.upNm) em.textContent = X.upNm[u + 1] || em.textContent;
+      se(u ? 'KON3' : 'KON2'); try { GA.haptic?.(u ? 2 : 1); } catch (e) {} await wait(480); }
     for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(110); }
     await wait(240); ready = true; el.classList.add('ready'); })();
-  el.onclick = e => { if (!ready) return; const sb = e.target.closest('.trb-s,.trb-rr'); if (sb) { if (sb.disabled) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(sb.classList.contains('trb-rr') ? { t: 'rr' } : { t: 'buy', i: +sb.dataset.s }); }
+  el.onclick = e => { if (!ready) return; if (X?.get) { if (!e.target.closest('.trb-get')) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(0); } const sb = e.target.closest('.trb-s,.trb-rr'); if (sb) { if (sb.disabled) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(sb.classList.contains('trb-rr') ? { t: 'rr' } : { t: 'buy', i: +sb.dataset.s }); }
     const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
 });
 async function trReward(R, o, ids, boss, shop, first) {
