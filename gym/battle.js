@@ -447,7 +447,7 @@ async function drainHp(side, A, to) {
 // 내 포켓몬 체력이 빨강이면 본가처럼 삐삐 소리
 function lowHp(on) {
   if (!B) return; if (on === !!B.lowT) return;
-  if (on) { const f = () => { if (B && !B.btl.ended) se('HINSI'); }; f(); B.lowT = setInterval(f, 700); } else { clearInterval(B.lowT); B.lowT = 0; }
+  if (on) { const me = B, f = () => { if (B !== me) { clearInterval(me.lowT); me.lowT = 0; return; } if (!me.btl.ended) se('HINSI'); }; f(); B.lowT = setInterval(f, 700); }   /* v28.34 경완 '체력 없는 경고음 소리 계속 나는 오류': 다음 층(새 B)으로 넘어가면 옛 삐삐는 스스로 멈춤 */ else { clearInterval(B.lowT); B.lowT = 0; }
 }
 const ST_X = { par: 0, frz: 1, slp: 2, psn: 3, tox: 3, brn: 4 };
 function setSt(side, st) { const i = $b(SEL('hb', side) + ' .st'); i.className = 'st' + (st in ST_X ? ' s' + ST_X[st] : ''); hbBalls(side); stPat(side, st); }
@@ -1599,6 +1599,7 @@ async function run(opts) {
   B.pG = {}; const keepP = s => { if (!opts.chain) return false; const m = monEl(s), A = my[s === 'p2' ? 1 : 0]; if (!A || !m._kp || m._kp !== kpKey(A) || !m.classList.contains('on') || m.classList.contains('faint') || (s === 'p2' && !opts.dbl)) return false; B.pG[s] = m._gif || '-'; return true; };   /* v27.89 경완 '다음 층 넘어갈 때 몬스터볼에 들어갔다가 나오는 연출이 반복': gif 주소가 아니라 같은 포켓몬인지로 (칸 그림 포켓몬은 _gif 가 없어 매 층 볼이 나왔음) */
   ['e', 'p'].forEach(s => { $b(`.bt-pty.${s}`).classList.remove('on'); const kp = s === 'p' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); monEl(s).className = kp ? ['bt-mon p', ...['gf', 'pl2', 'fa'].filter(c => monEl(s).classList.contains(c)), 'on pre'].join(' ') : `bt-mon ${s}`; monEl(s).style.opacity = monEl(s).style.transition = ''; if (!kp) setSt(s, ''); });
   ['e2', 'p2'].forEach(s => { const kp = s === 'p2' && keepP(s); if (!kp) $b(SEL('hb', s)).classList.remove('on'); const m = monEl(s); m.className = kp ? ['bt-mon p s2', ...['gf', 'pl2', 'fa'].filter(c => m.classList.contains(c)), 'on pre'].join(' ') : `bt-mon ${s[0]} s2`; m.style.opacity = m.style.transition = ''; if (!kp) setSt(s, ''); });   /* v24.21 더블 배틀 두 번째 자리 */
+  if (opts.chain) ['p', 'p2'].forEach((s, i) => { const pk = btl.p1.pokemon[i]; if (pk && $b(SEL('hb', s)).classList.contains('on')) setHp(s, pk.hp, pk.maxhp); });   /* v28.34 kept hb — 경완 '상처약 먹였는데 체력 올랐다가 다시 줄어들었다가 다시 올랐다가': 이어지는 층에 그대로 남은 체력 상자를 지난 층 체력 말고 고른 보상(상처약) 뒤 체력으로 바로 */
   if (opts.wild && !opts.chain && !opts.pre && foeT[0]) try {   /* v24.64 경완 '포켓몬 나오기 전에 보상 까고': 출발 선물(opts.pre)이 있으면 빈 발판에서 고르고, 야생은 그 뒤 오른쪽에서 들어옴 */ const A0 = foeT[0], m0 = monEl('e'); B.wG = A0.gif = await pickGif('e', A0); showMon('e', A0, false); m0.classList.add('on', 'wdk'); } catch (e) {}   /* v24.18 본가: 야생 포켓몬은 처음부터 발판 위(어둡게)에서 같이 미끄러져 옴 */
   $b('.bt-msg .t').textContent = ''; idlePanel(); wxSet(''); $b('.bt-terr').className = 'bt-terr'; $b('.bt-lvw').hidden = true; $b('.bt-shw').hidden = true;
   // 등장: 화면이 번쩍이며 가로줄로 열리고, 발판·트레이너가 양옆에서 미끄러져 들어온다
@@ -1639,7 +1640,7 @@ async function run(opts) {
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
   let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
-  if (keep && B) { const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
+  if (keep && B) { lowHp(false); const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
   // 끝나면 까맣게 어두워졌다가 체육관이 밝아지며 돌아온다 (본가처럼, 경완 2026-10-28)
   const fd = document.createElement('i'); fd.className = 'bt-fade'; (el.parentElement || document.body).appendChild(fd); void fd.offsetWidth; fd.classList.add('on'); await wait(420);
