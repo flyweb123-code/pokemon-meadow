@@ -4273,6 +4273,9 @@ const trNew = ids => { const it0 = {}; ids.forEach(id => { const m = GB().gm(GB(
 const TR_XS = [['leftovers', 3, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['shellbell', 3, 4, n => `준 대미지의 ${n}/8 회복`], ['kingsrock', 3, 3, n => `공격할 때 ${n * 10}% 확률로 풀죽음`], ['quickclaw', 3, 3, n => `${n * 10}% 확률로 먼저 움직임`], ['widelens', 7, 3, n => `기술 명중 +${n * 10}%`], ['focusband', 5, 5, n => `${n * 10}% 확률로 HP 1 남기고 버팀`]];
 /* v26.88 경완 '도구가 너무 없는데 열매나 이런건 없어?' → '그 열매들 수련탑에도 넣어': 포켓로그 BERRY(일반 등급) 처럼 카드 한 장에 열매 하나 무작위, 마리당 같은 열매 3개까지, 먹으면 하나씩 줄어듦 (battle.js xitInstall).
    뽑기 무게: 포켓로그처럼 자뭉·리샘·과사가 잘 나오고, 상태 이상 하나만 고치는 열매·타입 반감 열매는 적게 */
+/* v28.29 경완 '열매 좀 효과 어려운 것들은 수련탑에서 다 빼자': 수련탑 보상 열매는 보면 바로 아는 것만 — HP 회복(오렌·자뭉)·상태 이상 낫기(리샘·버치·유루·복슝·복분·배리·시몬)·HP 1/4 에서 능력치 오름(치리·용아·캄라·야타비·규살).
+   뺀 것: 타입 반감 18종(로셀 등), 맛·성격 따라 혼란(무화·위키·마고·아바·파야), 랑사·스타·미클·이스티·의문·자보카·애터·악키·타라프, 과사(PP) */
+const TR_BER_OK = new Set(['oranberry', 'sitrusberry', 'lumberry', 'cheriberry', 'chestoberry', 'pechaberry', 'rawstberry', 'aspearberry', 'persimberry', 'liechiberry', 'ganlonberry', 'salacberry', 'petayaberry', 'apicotberry']);
 const TR_BER_W = k => /^(sitrus|lum)berry$/.test(k) ? 3 : /^(cheri|chesto|pecha|rawst|aspear|persim)berry$/.test(k) || /^(chilan|chople|coba|kebia|shuca|charti|tanga|kasib|babiri|occa|passho|rindo|wacan|payapa|yache|haban|colbur|roseli)berry$/.test(k) ? .4 : 1;
 const TR_BK = new Set();   /* 나온 열매 (카드 그림 TR_IC 에 넣을 것) */
 const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband', 'gripclaw', 'souldew', 'scopelens']), TR_MS = new Set(['minibh']);
@@ -4811,7 +4814,7 @@ async function trReward(R, o, ids, boss, shop, first) {
       /* v26.82 경완 '초반에 타입 강화 도구 너무 많이 나오는데 포켓로그 도구 엔진 참고한 거 맞나?' → 포켓로그 modifierPool 등급·무게 그대로: 타입 강화(울트라 9)·넓은렌즈(울트라 7)·선제공격손톱(울트라 3), 먹다남은음식·조개껍질방울·왕의징표석(로그 3)·기합의띠(로그 5).
          우리는 등급이 셋이라 울트라·로그 = 레어, 로그는 포켓로그 확률 비(1.2/5)만큼 무게를 줄임. 레어는 10층부터. 설명은 '대여', 개수는 아래 딱지로 */
       const DS = '';   /* v26.85 경완 'C 좋다': 대여는 카드마다 말고 아래 안내 글에 한 번만 (TR_RENT) */
-      { const BL = Object.keys(GB().HOLD || {}).filter(k => /berry$/.test(k) && k !== 'leppaberry')   /* v27.31 과사열매 = PP 회복이라 뺌 (배틀마다 PP 초기화) */, bk = (() => { let r = Math.random() * BL.reduce((t, k) => t + TR_BER_W(k), 0); return BL.find(k => (r -= TR_BER_W(k)) < 0) || BL[0]; })();
+      { const BL = Object.keys(GB().HOLD || {}).filter(k => TR_BER_OK.has(k))   /* v27.31 과사열매 = PP 회복이라 뺌 (배틀마다 PP 초기화) */, bk = (() => { let r = Math.random() * BL.reduce((t, k) => t + TR_BER_W(k), 0); return BL.find(k => (r -= TR_BER_W(k)) < 0) || BL[0]; })();
         const okb = bk && live.filter(id => n(id, bk) < 3); if (okb?.length) out.push([3, 0, trItNm(bk), trItD(bk), give(bk, okb, `누구에게 ${eul(trItNm(bk))} 빌려줄까요?`, 3), 0, 0, '마리당 최대 3개']); if (bk) TR_BK.add(bk); }
       [...TR_XS, ...TR_XS2].forEach(([k, w, mx, d]) => { const ok = live.filter(id => n(id, k) < mx); if (ok.length) out.push([w * .3, TR_MS.has(k) ? 4 : TR_EP.has(k) ? 3 : 2, trItNm(k), d(1) + DS, give(k, ok, `누구에게 ${eul(trItNm(k))} 빌려줄까요?`, mx), 0, 0, `마리당 최대 ${mx}개`]); });
       const ty = pick(live.flatMap(id => SPECIES[P(id)?.sp]?.t || [])), tk = ty && TR_TYIT[ty]; if (tk) { const ok2 = live.filter(id => n(id, tk) < 5); if (ok2.length) out.push([9 * .3, 2, trItNm(tk), `${TYPE_KO?.[ty] || ''} 타입 기술 위력 +20%${DS}`, give(tk, ok2, `누구에게 ${eul(trItNm(tk))} 빌려줄까요?`, 5), 0, 0, '마리당 최대 5개']); }
