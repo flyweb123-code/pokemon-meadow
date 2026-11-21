@@ -95,7 +95,7 @@ const bg = $('#bgC').getContext('2d'), fx = $('#fxC').getContext('2d'), dk = $('
 fx.imageSmoothingEnabled = false; gl.imageSmoothingEnabled = false;
 const LI = {}; let LN = 0; for (const [k, v] of [['b', 'BAND_IMG'], ['s', 'STAL_IMG'], ['f', 'FLOOR_IMG']]) { const i = new Image(); i.onload = () => { if (++LN === 3) { applyOff(); requestAnimationFrame(frame); } }; i.src = v; LI[k] = i; }
 /* 경완 '내가 필드랑 배경 끌어가지고 위아래로 움직여서 설정할 수 있게 해줘 종유석도' — 층마다 위아래 자리(그림 칸), 기본 = v12 */
-const OSK = 'cave-off-v1', OB = { f: 0, b: 0, s: 0 }, ORG = { b: -24, s: -10, f: 0 }, OLIM = { f: [-40, 60], b: [-40, 70], s: [-30, 10] };
+const OSK = 'cave-off-v2', OB = { f: 12, b: 23, s: 10 }, ORG = { b: -24, s: -10, f: 0 }, OLIM = { f: [-40, 60], b: [-40, 70], s: [-30, 10] };
 let OFF = (() => { try { const v = JSON.parse(localStorage.getItem(OSK)); if (v && typeof v.f === 'number') return v; } catch (e) {} return { ...OB }; })(), OAP = { f: 0, b: 0, s: 0 };
 const C0 = JSON.parse(JSON.stringify({ wallY: CFG.wallY, gemY: CFG.gemY, lakeY0: CFG.lakeY0, tips: CFG.tips, path: CFG.path }));
 let LIT = true, bgData = null;
