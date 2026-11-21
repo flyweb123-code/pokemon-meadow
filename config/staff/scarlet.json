@@ -1,6 +1,896 @@
 {
  "days": [
   {
+   "at": 1795301251727,
+   "theme": "숲속 꼬마 화석 박물관",
+   "note": "오늘은 숲속 꼬마 화석 박물관이에요. 공룡 뼈대·매머드 엄니 아치·화석 알 둥지로 옛날 포켓몬 이야기를 꾸미고, 발굴 모래 상자에선 누구나 꼬마 발굴가가 돼요. 옛 문자 석판은 밤에 하늘빛으로 은은하게 빛나요.",
+   "items": [
+    {
+     "id": "mus-dino-skeleton",
+     "n": "공룡 화석 뼈대",
+     "k": "박물관",
+     "d": "나무 받침 위에 선 커다란 공룡 뼈대예요. 갈비뼈 사이로 하늘이 비치고, 받침 가운데 놋쇠 이름표가 붙어 있어요.",
+     "px": [
+      "................................",
+      "..........................kkk...",
+      "........................kkaabkk.",
+      ".......................kaacddabk",
+      ".......................kacccccbk",
+      "......................kacccccebk",
+      "....................kkacbbcbcbbk",
+      ".............kkkkkkkaacfkkfkfkfk",
+      ".........kkkkaaaaaaacbfk..k.k.k.",
+      "........kaaaacbcbcbcfkk.........",
+      "......kkacccbbkbkbkbk...........",
+      ".....kaacccbkbkbkbkbkk..........",
+      ".....kabbccbkbkbkbkaabk.........",
+      "....kbfkkacfkbkbkbkbcbk.........",
+      "...kfkk.kabkkfkfkfkkabk.........",
+      "..kbk...kabk.k.k.k.kabk.........",
+      ".kafk...kabk.......kabk.........",
+      ".kfk....kabk.......kabk.........",
+      "..k....kacbk.......kacbk........",
+      "..kkkkkbbbbfkkkkkkkbbbbfkkkkkk..",
+      ".kggggggggggggggggggggggggggghk.",
+      "..kiiiiiiiiiiijjjjiiiiiiiiiijk..",
+      "..kiljllljllljgggjilljllljlljk..",
+      "..kjjjjjjjjjjjjjjjjjjjjjjjjjmk..",
+      "...kkkkkkkkkkkkkkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#f6edd4",
+      "b": "#bba47c",
+      "c": "#e2d0a8",
+      "d": "#2e2832",
+      "e": "#6a6458",
+      "f": "#8c7656",
+      "g": "#a8782a",
+      "h": "#6e4c1c",
+      "i": "#d8a46a",
+      "j": "#85562e",
+      "l": "#b07a44",
+      "m": "#5e3a1e"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "뼈대 등줄기 위로 올라가 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "공룡 뼈대 등줄기를 타고 올라가 앉았다.",
+        "뼈대 등 위에서 공룡을 탄 것처럼 의기양양하게 앞을 봤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "뼈대 앞에 서서 머리뼈를 한참 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "공룡 머리뼈를 입을 벌리고 한참 올려다봤다.",
+        "뼈대 이빨을 보고 흠칫 한 걸음 물러섰다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "갈비뼈 사이에 숨었다가 옆으로 빼꼼 얼굴을 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "갈비뼈 사이에 쏙 숨었다가 옆으로 빼꼼 얼굴을 내밀었다.",
+        "갈비뼈 틈에서 스르르 나타나 지나가던 포켓몬을 놀래켰다."
+       ]
+      },
+      {
+       "w": "바위·땅 타입",
+       "a": "받침 앞에 기대 누워 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "공룡 뼈대 받침에 기대 꾸벅꾸벅 졸았다.",
+        "먼 옛날 친구 곁에 있는 듯 편안하게 잠들었다."
+       ]
+      }
+     ],
+     "fit": "박물관 마당 한가운데, 넓게 빈 풀밭"
+    },
+    {
+     "id": "mus-amber-case",
+     "n": "호박 화석 진열장",
+     "k": "박물관",
+     "d": "유리 돔 안에 옛날 벌레가 갇힌 노란 호박이 반짝이는 나무 진열장이에요.",
+     "px": [
+      ".........kk.........",
+      "........kabk........",
+      "......kkcccdkk......",
+      ".....kceffffcdk.....",
+      "....kcefffffffdk....",
+      "...kcfeffffffffdk...",
+      "...kcfeffffffffdk...",
+      "...kcfeffffffffdk...",
+      "...kcfffddddfffdk...",
+      "...kcffghhhidfcdk...",
+      "...kcfdhjllliccdk...",
+      "...kcfdhljjlicfdk...",
+      "...kcfdhiljjicfdk...",
+      "...kcfdillllmcfdk...",
+      "...kdddgiiimdddgk...",
+      "..kaaaaaaaaaaaaabk..",
+      "..knoooooooooooopk..",
+      "...koqqqqqqqqqqnk...",
+      "...koqnqnnnnqnqnk...",
+      "...koqnnrrraonqnk...",
+      "...koqnnaaabonqnk...",
+      "...koqnqooooqnqnk...",
+      "...koqnqqqqqqnqnk...",
+      "...koqnqqqqqqnqnk...",
+      "..knnnnnnnnnnnnnpk..",
+      "...kkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#a8782a",
+      "b": "#6e4c1c",
+      "c": "#e4f2f2",
+      "d": "#86b0be",
+      "e": "#ffffff",
+      "f": "#b4d8de",
+      "g": "#628896",
+      "h": "#ffdc94",
+      "i": "#c87622",
+      "j": "#5a3a1e",
+      "l": "#f0aa3a",
+      "m": "#8a4c16",
+      "n": "#85562e",
+      "o": "#d8a46a",
+      "p": "#5e3a1e",
+      "q": "#b07a44",
+      "r": "#f6dc7a"
+     },
+     "acts": [
+      {
+       "w": "벌레 타입",
+       "a": "진열장 앞에 서서 호박 속 벌레를 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "호박 속 옛날 벌레를 코가 닿도록 들여다봤다.",
+        "호박 속 벌레와 눈이 마주친 것 같아 더듬이를 쫑긋 세웠다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "유리 돔에 얼굴을 대고 안을 들여다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.4
+        ],
+        "m": "win"
+       },
+       "l": [
+        "유리 돔에 얼굴을 꼭 대고 노란 호박을 들여다봤다.",
+        "유리에 입김을 호 불어 뿌옇게 만들고 말았다."
+       ]
+      },
+      {
+       "w": "에스퍼·바위 타입",
+       "a": "진열장 옆에서 기술을 써 호박을 반짝이게 해요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 유리 속 호박을 반짝반짝 빛나게 했다.",
+        "호박이 빛나자 속의 벌레가 움직이는 것 같아 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "박물관 입구 옆, 돌길 가장자리"
+    },
+    {
+     "id": "mus-dig-sandbox",
+     "n": "발굴 모래 상자",
+     "k": "박물관",
+     "d": "모래 속에 뼈가 반쯤 묻힌 나무 상자예요. 모래삽과 붓, 체가 꽂혀 있어 누구나 꼬마 발굴가가 될 수 있어요.",
+     "px": [
+      "..kaabk.....................",
+      "..kbbck........k............",
+      "...kdk........kdk....kkk....",
+      "...kdk.....kk.kdk..kkeddkk..",
+      "...kdk....kfgkkhk.kedhidddk.",
+      "...khk..kkkgkjllikkdllllidk.",
+      ".kkmmnkkopgoojlqijddiqiqiedk",
+      "kednnrhjpgossjiitojdilqitedk",
+      "kedooojugossssooosjdddtedvdk",
+      "kedosssoossssssssssojddhjedk",
+      "kedosssssssssssssssssooojedk",
+      "kedossssssssssssssssssssjedk",
+      "kedjjjjjjjjjjjjjjjjjjjjjpedk",
+      "kevedeedeedeedeedeedeedeevdk",
+      "kdddddddddddddddddddddddddhk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "............................"
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e2705e",
+      "b": "#8c2c2c",
+      "c": "#601e22",
+      "d": "#85562e",
+      "e": "#d8a46a",
+      "f": "#f6edd4",
+      "g": "#8c7656",
+      "h": "#5e3a1e",
+      "i": "#5a5f6c",
+      "j": "#b89c64",
+      "l": "#9aa0aa",
+      "m": "#f6dc7a",
+      "n": "#a8782a",
+      "o": "#f2dfac",
+      "p": "#8c7648",
+      "q": "#787e8a",
+      "r": "#6e4c1c",
+      "s": "#dcc088",
+      "t": "#40444e",
+      "u": "#bba47c",
+      "v": "#b07a44"
+     },
+     "acts": [
+      {
+       "w": "땅 타입",
+       "a": "모래 속으로 파고들어 숨었다가 고개를 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek"
+       },
+       "l": [
+        "모래 상자 속으로 파고들어 숨었다가 쏙 고개를 내밀었다.",
+        "모래 속에서 뼈 조각을 물고 자랑스럽게 나왔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "모래 상자 앞에 앉아 앞발로 모래를 파요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "모래 상자 앞에 앉아 앞발로 모래를 사각사각 팠다.",
+        "모래를 열심히 팠는데 나온 건 작은 조약돌이었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "모래 상자 가장자리를 따라 끝에서 끝까지 걸어요",
+       "x": {
+        "at": "top",
+        "m": "walk"
+       },
+       "l": [
+        "모래 상자 나무 테두리를 따라 조심조심 걸었다.",
+        "테두리 끝까지 걸어가 모래 위로 폴짝 뛰어내렸다."
+       ]
+      }
+     ],
+     "fit": "박물관 마당 구석, 그늘진 곳"
+    },
+    {
+     "id": "mus-ruin-column",
+     "n": "부서진 돌기둥",
+     "k": "박물관",
+     "d": "윗부분이 깨져 나간 옛 신전의 돌기둥이에요. 세로 홈이 파여 있고, 아래엔 떨어진 돌 조각이 굴러 있어요.",
+     "px": [
+      "......................",
+      ".........k............",
+      ".....k..kak...k.......",
+      "....kak.kkak.kak.k....",
+      "...kbkbkbkk.kbkbkbk...",
+      "...kccdcdcbkkccdcbk...",
+      "...kbddddddccddddak...",
+      "....kcddddddddddbk....",
+      "....kcdddddeddddbk....",
+      "....kcdbddbedbdbbk....",
+      "....kcdbddbdebdbbk....",
+      "....kcdbddbdebdbbk....",
+      "....kcdbddbedbdbbk....",
+      "....kcdbddeddbdbbk....",
+      "....kcdbddbddbdbbk....",
+      "....kcdbddbddbdbbk....",
+      "....kcdbbbbbbbdbbk....",
+      "....kcdbffbffbcbbk....",
+      "....kcdbfgbggbcbbk....",
+      "....kcdbhhbhhbcbbk....",
+      "....kcdbccbccbdbbk....",
+      "....kcdbddbddbdbbk....",
+      "....kcddddddddddbkk...",
+      "...kcddddddddddddcbk..",
+      "..kkcddddddddddddddbk.",
+      ".kccdddddddddddddddbk.",
+      ".kcddddddddddddddddbk.",
+      ".kbbbbbbbbbbbbbbbbbak.",
+      "..kkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#5c564c",
+      "b": "#817a6c",
+      "c": "#cfc7b6",
+      "d": "#aaa292",
+      "e": "#6a6458",
+      "f": "#f6dc7a",
+      "g": "#e0b040",
+      "h": "#a8782a"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 기둥 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "부서진 돌기둥 꼭대기에 날아올라 앉았다.",
+        "기둥 꼭대기에서 마당을 내려다보며 날개를 다듬었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "기둥 밑동에 기대 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "부서진 돌기둥에 등을 기대고 스르르 잠들었다.",
+        "시원한 돌기둥에 기대 앉아 한숨 돌렸다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "돌기둥을 힘껏 밀어 보지만 꿈쩍도 하지 않아요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "돌기둥을 힘껏 밀어 봤지만 꿈쩍도 하지 않았다.",
+        "기둥을 밀다가 떨어진 돌 조각에 발가락을 찧었다."
+       ]
+      }
+     ],
+     "fit": "박물관 길 양옆, 돌길 끝"
+    },
+    {
+     "id": "mus-ancient-pot",
+     "n": "옛 토기 받침대",
+     "k": "박물관",
+     "d": "돌 받침 위에 놓인 손잡이 둘 달린 붉은 옛 토기예요. 가운데 줄무늬가 있고 한쪽이 살짝 깨져 있어요.",
+     "px": [
+      "..................",
+      "..................",
+      ".....kkkkkkkk.....",
+      "....kabccccbdk....",
+      ".....kbeeeeak.....",
+      "....kkbeeeeakk....",
+      "...kdkbeeeeakdk...",
+      "..kakkbeeeeakkak..",
+      "..kdkbeeeeeeakdk..",
+      "...kbeeeeeeeeak...",
+      "...kbdfdfdfdfak...",
+      "...kbeeeeeeeeak...",
+      "...kbdedededaak...",
+      "...kaeeeeeedkdk...",
+      "....kaeeeeeedk....",
+      ".....kaeeeedk.....",
+      "...kkkkaaadkkkk...",
+      "..kghhhhhhhhhhik..",
+      "...khjjjjjjjjgk...",
+      "...khjgjjjjjjgk...",
+      "...khjgjjjjjjgk...",
+      "...khjgjjjjjjgk...",
+      "...khjgjjjjjjgk...",
+      "...khjgjjjjjjgk...",
+      "...khjjjjjjjjgk...",
+      "..kgggggggggggik..",
+      "...kkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#985430",
+      "b": "#e8a072",
+      "c": "#2e2832",
+      "d": "#6c3a22",
+      "e": "#c67a48",
+      "f": "#f2dfac",
+      "g": "#817a6c",
+      "h": "#cfc7b6",
+      "i": "#5c564c",
+      "j": "#aaa292"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "토기 입구 위로 올라가 안을 들여다봐요",
+       "x": {
+        "at": "top",
+        "m": "climb peek"
+       },
+       "l": [
+        "토기 입구에 올라가 안을 들여다봤다.",
+        "토기 안에 대고 소리를 냈더니 웅웅 울려서 깜짝 놀랐다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "토기 속으로 스르르 사라졌다가 다시 나타나요",
+       "x": {
+        "at": "in",
+        "m": "blink"
+       },
+       "l": [
+        "토기 속으로 스르르 사라졌다가 다시 나타났다.",
+        "토기 안에서 나타나 옛날 유령인 척 으스댔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "받침대 앞에 서서 토기 무늬를 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "받침대 앞에서 토기 줄무늬를 하나하나 구경했다.",
+        "깨진 자리를 보고 누가 그랬을까 고개를 갸웃했다."
+       ]
+      }
+     ],
+     "fit": "박물관 입구 앞, 돌기둥 옆"
+    },
+    {
+     "id": "mus-ammonite-rock",
+     "n": "암모나이트 화석 바위",
+     "k": "박물관",
+     "d": "납작한 바위에 커다란 소용돌이 껍데기 화석이 박혀 있어요. 볕을 받으면 소용돌이 홈이 또렷해져요.",
+     "px": [
+      "........................",
+      "........................",
+      "........................",
+      ".......kkkkkkkkkk.......",
+      ".....kkabbbcbbbabkk.....",
+      "....kaadeeeeeecbfabk....",
+      "...kafdegggggggcbffbk...",
+      "..kafbcggghhhhggcaffbk..",
+      ".kaffdegghhggghgcbfffbk.",
+      ".kafbeggghggggghgcaffbk.",
+      ".kafbchgghhhhgghgcaffbk.",
+      ".kaffbhggghhggghcafffbk.",
+      ".kbffbchgggggghgcafffdk.",
+      "..kbffbhhhghhhhhafffdk..",
+      "...kaffbcchccccafffbk...",
+      "..kaffffaaaaaaafffffbk..",
+      "..kbbbbbbbbbbbbbbbbbdk..",
+      "...kkkkkkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#cfc7b6",
+      "b": "#817a6c",
+      "c": "#b89c64",
+      "d": "#5c564c",
+      "e": "#f2dfac",
+      "f": "#aaa292",
+      "g": "#dcc088",
+      "h": "#8c7648"
+     },
+     "acts": [
+      {
+       "w": "바위·물 타입",
+       "a": "화석 바위에 몸을 기대고 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "암모나이트 화석 바위에 몸을 기대고 잠들었다.",
+        "소용돌이 무늬에 기대 옛 바다 꿈을 꾸는 듯 새근거렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "바위 위에 올라가 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "화석 바위 위에 올라가 앉아 볕을 쬐었다.",
+        "바위 위에서 소용돌이 무늬를 따라 눈을 빙글빙글 굴렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "바위 둘레를 빙빙 돌며 소용돌이를 따라가요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "화석 바위 둘레를 빙빙 돌며 소용돌이를 따라갔다.",
+        "소용돌이를 따라 돌다가 어지러워 비틀거렸다."
+       ]
+      }
+     ],
+     "fit": "박물관 마당 풀밭, 해가 잘 드는 곳"
+    },
+    {
+     "id": "mus-glyph-tablet",
+     "n": "옛 문자 석판",
+     "k": "박물관",
+     "d": "눈 모양 옛 문자가 새겨진 푸른 돌 석판이에요. 밤이 되면 문자가 은은한 하늘빛으로 빛나요.",
+     "px": [
+      "....................",
+      ".......kkkkkk.......",
+      ".....kkaaaaabkk.....",
+      "....kaaccccccabk....",
+      "...kaccccccccccbk...",
+      "...kaccccccccccbk...",
+      "...kacddccccdccbk...",
+      "...kacedccccddcbk...",
+      "...kacdcccccdccfk...",
+      "...kacccccccecbk....",
+      "...kaccccddcccbk....",
+      "...kaccccdcccccbk...",
+      "...kaccccedccccbk...",
+      "...kaccccccccdcbk...",
+      "...kacddcccccdcbk...",
+      "...kaccdccccddcbk...",
+      "...kaccccccccccbk...",
+      "...kaccccddccccbk...",
+      "...kacccccdccccbk...",
+      "...kaccccccccccbk...",
+      ".kkkbbbbbbbbbbbfkkk.",
+      "kghhhhhhhhhhhhhhhhik",
+      ".khjjjjjjjjjjjjjjgk.",
+      ".khjjjjjjjjjjjjjjgk.",
+      ".khjjjjjjjjjjjjjjgk.",
+      ".kgggggggggggggggik.",
+      "..kkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#9aa0aa",
+      "b": "#5a5f6c",
+      "c": "#787e8a",
+      "d": "#7ae6ee",
+      "e": "#c4fafa",
+      "f": "#40444e",
+      "g": "#817a6c",
+      "h": "#cfc7b6",
+      "i": "#5c564c",
+      "j": "#aaa292"
+     },
+     "acts": [
+      {
+       "w": "에스퍼·고스트 타입",
+       "a": "석판 옆에서 기술을 써 문자를 더 밝게 빛내요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 석판의 옛 문자를 환하게 빛냈다.",
+        "문자가 빛나자 무슨 뜻인지 아는 듯 고개를 끄덕였다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "석판 앞에 서서 빛나는 문자를 읽어요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "석판 앞에서 빛나는 옛 문자를 한 글자씩 읽었다.",
+        "문자를 읽다가 거꾸로 읽은 것 같아 고개를 갸웃했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "석판 뒤에 숨었다가 옆으로 얼굴을 내밀어요",
+       "x": {
+        "at": "under",
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "석판 뒤에 숨었다가 옆으로 빼꼼 얼굴을 내밀었다.",
+        "석판 뒤에서 문자 흉내를 내며 장난을 쳤다."
+       ]
+      }
+     ],
+     "fit": "박물관 안뜰, 조용한 구석",
+     "glow": 1
+    },
+    {
+     "id": "mus-fossil-egg-nest",
+     "n": "화석 알 둥지",
+     "k": "박물관",
+     "d": "돌 둥지 안에 옛 포켓몬 알 화석 세 개가 모여 있어요. 가운데 알엔 금이 가 있어 금방이라도 깨어날 것 같아요.",
+     "px": [
+      "..........................",
+      "..........................",
+      "...........kkkk...........",
+      "..........kaabck..........",
+      "......kk.kadeddck.........",
+      ".....kfbkkadbedck.kkk.....",
+      "....kfgghkadeddckkiijk....",
+      "...kfgbgghaddedckiblljk...",
+      "...kfgggghadddbckillljk...",
+      "...kfgggghcddddmnillljk...",
+      "..kohgggbpncccmqnilbljok..",
+      ".kroshggpqtqqqqtnjlllurok.",
+      "kovvoshpqttttttttnjjurvvwk",
+      ".kovvrronnnnnnnnnsrrrvvwk.",
+      "..koovvvrrrrrrrrrrvvvowk..",
+      "...kkowoowoowoowoowowkk...",
+      ".....kkkkkkkkkkkkkkkk....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#fdf8ea",
+      "b": "#8a7a5e",
+      "c": "#cbbb92",
+      "d": "#ede2c2",
+      "e": "#6a6458",
+      "f": "#ece2ca",
+      "g": "#d2c2a0",
+      "h": "#ac9c7c",
+      "i": "#f6edd4",
+      "j": "#bba47c",
+      "l": "#e2d0a8",
+      "m": "#9c8c68",
+      "n": "#b89c64",
+      "o": "#817a6c",
+      "p": "#7e705a",
+      "q": "#f2dfac",
+      "r": "#cfc7b6",
+      "s": "#8c7648",
+      "t": "#dcc088",
+      "u": "#8c7656",
+      "v": "#aaa292",
+      "w": "#5c564c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "화석 알 사이에 웅크려 잠들어요",
+       "x": {
+        "at": "in",
+        "an": "Sleep"
+       },
+       "l": [
+        "화석 알 사이에 동그랗게 웅크려 잠들었다.",
+        "알인 척 둥지 안에 웅크려 눈을 꼭 감았다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "둥지 앞에서 금 간 알을 지켜봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "둥지 앞에서 금 간 화석 알을 한참 지켜봤다.",
+        "알이 깨어날까 숨을 죽이고 기다렸다."
+       ]
+      },
+      {
+       "w": "노말·불꽃 타입",
+       "a": "둥지 옆에 앉아 알을 품듯 꼭 붙어 있어요",
+       "x": {
+        "at": "side",
+        "an": "Sleep"
+       },
+       "l": [
+        "화석 알 둥지 곁에 꼭 붙어 앉아 알을 품었다.",
+        "알을 따뜻하게 해 주려는 듯 둥지 곁에서 꼼짝 않고 있었다."
+       ]
+      }
+     ],
+     "fit": "박물관 마당, 풀밭 가운데 낮은 곳"
+    },
+    {
+     "id": "mus-tusk-arch",
+     "n": "매머드 엄니 아치",
+     "k": "박물관",
+     "d": "커다란 엄니 두 개가 맞닿아 아치를 이룬 박물관 입구예요. 꼭대기는 빨간 천으로 묶여 있어요.",
+     "px": [
+      "..............................",
+      ".............kkkk.............",
+      "..........kkkaaabkkk..........",
+      ".........kccdaeebccdk.........",
+      "........kcffdbbbgcffdk........",
+      "........kcffdkkkkcffdk........",
+      ".......kcfffhkbgkdfffdk.......",
+      ".......kcffdk.kk.kcffdk.......",
+      "......kcfffhk....kdfffdk......",
+      "......kcffdk......kcffdk......",
+      ".....kcfffhk......kdffdk......",
+      ".....kcffdk........kcffdk.....",
+      ".....kcffhk........kdffdk.....",
+      "....kcffdk..........kcffdk....",
+      "....kcffhk..........kdffdk....",
+      "....kcfdk............kcfdk....",
+      "...kcffdk............kcffdk...",
+      "...kcffhk............kdffdk...",
+      "...kddhk..............kddhk...",
+      "..kiiiijk............kiiiijk..",
+      ".kkccchkkk..........kkkdccdkk.",
+      "klmcfdlllmk........klllmcfdlmk",
+      "klmddhlnnmk........klnnmddhlmk",
+      "klnlllnnnmk........klnnnlllnmk",
+      "kmmmmmmmmok........kmmmmmmmmok",
+      ".kkkkkkkkk..........kkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#e2705e",
+      "b": "#8c2c2c",
+      "c": "#fdf8ea",
+      "d": "#cbbb92",
+      "e": "#bc443c",
+      "f": "#ede2c2",
+      "g": "#601e22",
+      "h": "#9c8c68",
+      "i": "#a8782a",
+      "j": "#6e4c1c",
+      "l": "#cfc7b6",
+      "m": "#817a6c",
+      "n": "#aaa292",
+      "o": "#5c564c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "엄니 아치 아래를 지나가요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "매머드 엄니 아치 아래를 당당하게 지나갔다.",
+        "아치 아래를 지나며 꼭대기 빨간 천을 올려다봤다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 아치 꼭대기 매듭에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "엄니 아치 꼭대기 빨간 매듭 위에 날아올라 앉았다.",
+        "아치 꼭대기에서 박물관 마당을 내려다봤다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "엄니 밑동에 기대 누워 잠들어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "엄니 밑동에 기대 누워 옛 빙하 시대 꿈을 꾸며 잠들었다.",
+        "차가운 엄니에 볼을 대고 기분 좋게 졸았다."
+       ]
+      }
+     ],
+     "fit": "박물관 가는 길 입구"
+    },
+    {
+     "id": "mus-rope-stanchion",
+     "n": "관람 줄 기둥",
+     "k": "박물관",
+     "d": "놋쇠 기둥 둘 사이에 빨간 벨벳 줄이 늘어져 있고, 가운데 \"들어가지 마세요\" 팻말이 걸려 있어요.",
+     "px": [
+      "............................",
+      "...k....................k...",
+      "..kak..................kak..",
+      ".kbcak................kbcak.",
+      ".kacdk................kacdk.",
+      "..kaekk...............kkak..",
+      "..kaefek............kkfeak..",
+      "..kakeeekkk.......kkffegak..",
+      "..kakkkeffekkkkkkkffegkkak..",
+      "..kak..keeeeeeeeefegkk.kak..",
+      "..kak...kkkhhhhhigkk...kak..",
+      "..kak.....khbbbjik.....kak..",
+      "..kak.....khjbjbik.....kak..",
+      "..kak.....kiiiiilk.....kak..",
+      ".kbcak.....kkkkkk.....kbcak.",
+      "kbcccak..............kbcccak",
+      "kaaaadk..............kaaaadk",
+      ".kkkkk................kkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "a": "#a8782a",
+      "b": "#f6dc7a",
+      "c": "#e0b040",
+      "d": "#6e4c1c",
+      "e": "#8c2c2c",
+      "f": "#e2705e",
+      "g": "#601e22",
+      "h": "#5a6a94",
+      "i": "#2c3858",
+      "j": "#3e4c74",
+      "l": "#20283e"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "벨벳 줄 위에 올라가 균형을 잡으며 걸어요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "빨간 벨벳 줄 위에 올라가 비틀비틀 균형을 잡았다.",
+        "팻말 바로 위에서 균형을 잡으며 뿌듯해했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "줄 앞에 멈춰 서서 팻말을 읽어요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "관람 줄 앞에 멈춰 서서 팻말을 읽었다.",
+        "팻말을 읽고는 줄 밑으로 몰래 고개를 들이밀었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 놋쇠 기둥 꼭대기에 앉아요",
+       "x": {
+        "at": [
+         0.1,
+         0.15
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "놋쇠 기둥 꼭대기에 날아올라 앉았다.",
+        "기둥 꼭대기에서 관람객을 지키는 경비원처럼 서 있었다."
+       ]
+      }
+     ],
+     "fit": "공룡 뼈대·진열장 앞"
+    }
+   ]
+  },
+  {
    "at": 1795214907054,
    "theme": "숲속 꼬마 천문대",
    "note": "오늘은 숲속 꼬마 천문대예요. 천문대 돔·혼천의·전파 망원경으로 별 보는 마당을 꾸미고, 초승달 그네와 행성 모빌은 바람에 흔들려요. 돔 창·운석 틈·별 모양 가로등은 밤에 둘레를 밝혀요.",
