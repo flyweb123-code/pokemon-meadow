@@ -1203,11 +1203,14 @@ function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return
   const L = (S.box || []).map(P => g.mon?.[P.id]?.lv | 0).filter(Boolean).sort((a, b) => b - a).slice(0, 6);
   return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
+const bsBad = (T, ty) => { if (!T?.length || !ty) return 0; let b = 0; for (const m of T) { const t = (SPECIES[m[0]]?.t || []).filter(Boolean); if (t.some(a => (SE[a] || []).includes(+ty))) b--; else if (t.some(x => (SE[ty] || []).includes(x))) b++; } return b / T.length; };   /* 심사관 팀 상성: + = 체육관 타입에 불리 */
 function mkBoss(gi, t) {
   const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && !gList().some(x => (x.gmax | 0) >= 5) && NAMED.find(n => n.id === 'red'),   /* v24.16 경완 '첫번째 체육관 명문 심사만 고정, 그 뒤부터는 원래대로': 명문 이상인 체육관(휴업 포함)이 하나도 없을 때만 */
     P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
   if (!P?.length) return null;
-  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
+  /* v28.24 경완 '인기체육관 승급심사에서 도전자가 도전자한테 불리한 상성 가져오는건 난이도 반영이 된거야?' → '불리한 심사관은 안 고르기': 체육관 타입에 약점 찔리는 포켓몬이 상성 좋은 포켓몬보다 많은 팀(bsBad > 0)은 후보에서 뺌. 다 빠지면 그대로 */
+  const tg = myAvg() + BS_LV[gi - 1] + 2, ok = RED ? P : P.filter(n => bsBad(nmTeam(n, tg), g.ty) <= 0), P2 = ok.length ? ok : P;
+  const c = mkScripted(0, t, BS_LV[gi - 1], P2[Math.floor(r() * P2.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
   return c;
 }
 /* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
@@ -1336,6 +1339,17 @@ function sfTick(t) { for (const s of st().sf || []) { if (!sfOn(s)) continue; s.
 // 배틀이 끝나고 나가면서 하는 말: BYE_LOST = 도전자가 졌을 때, BYE_WON = 도전자가 이겼을 때 (v12.20)
 const BYE_LOST = ['다음엔 더 강해져서 다시 올게요!', '{me} 관장님, 정말 강하시네요… 많이 배웠어요.', '으으, 분해! 꼭 다시 도전할 거야!', '포켓몬들이랑 더 수련하고 올게요. 그때 또 붙어요!', '역시 소문대로 대단한 체육관이네요.', '오늘은 졌지만 좋은 배틀이었어요. 고마워요!', '포켓몬 센터 들렀다가 바로 수련하러 갈게요!', '{me} 관장님 이름, 잊지 않을게요.', '오늘 배운 거 노트에 다 적어 둘게요.', '배지는 다음 기회에! 꼭이요!', '진 건 진 거죠. 깔끔하게 인정할게요.', '다음에 올 땐 {me} 관장님이 깜짝 놀라실걸요?', '집에 가는 길이 오늘따라 멀게 느껴지네요…', '포켓몬들이 저보다 더 분해하고 있어요.', '역시 체육관 관장은 아무나 하는 게 아니네요.', '오늘 밤엔 작전 짜느라 잠 못 자겠어요.', '{me} 관장님, 다음에도 봐주지 마세요!', '친구들한테는 아깝게 졌다고 할래요… 히히.'];   /* v26.79 경완 '대사 훨씬 더 다양하게' */
 const BYE_WON = ['좋은 배틀이었어요! 다음에도 또 올게요.', '이 체육관, 앞으로가 더 기대되는데요?', '히히, 이겼다! 친구들한테 자랑해야지!', '{me} 관장님 포켓몬도 꽤 강했어요. 다음엔 모르겠는걸요?', '이번엔 제가 이겼네요. 다음 배틀도 기대할게요!', '좋은 승부였어요. 그럼 이만!', '배지 고마워요! 소중히 간직할게요.', '{me} 관장님, 다음엔 더 센 팀으로 상대해 주세요!', '이 승리는 평생 자랑할 거예요!', '오늘 저녁은 축하 파티다!', '{me} 관장님도 분명 더 강해지시겠죠? 기대할게요.', '다음 체육관으로 출발! 안녕히 계세요!', '포켓몬들한테 맛있는 거 사 줘야겠어요.', '솔직히 질 뻔했어요. 비밀이에요!', '이 체육관 오길 잘했어요!', '또 도전하러 와도 되죠? 이번엔 지켜 보세요!'];
+/* v28.23 경완 '도전자들 이겼을 때랑 졌을 때 대사창 도전자들이랑 좀 맞춰줘 사천왕이 히히 이러고 있네': 이름 있는 트레이너(관장·사천왕·챔피언·라이벌)는 나가는 말도 그 신분에 맞게. l = 도전자가 졌을 때, w = 이겼을 때 */
+const BYE_NM = {
+  lead: { l: ['관장끼리의 배틀, 좋은 공부가 됐어요. 제 체육관에 돌아가서 다시 다듬을게요.', '{me} 관장님, 훌륭한 체육관이에요. 제 도전자들에게도 자랑해야겠어요.', '졌지만 후회는 없어요. 관장으로서 배울 게 많았어요.', '제 체육관 배지를 걸고 싸운 것처럼 진지했어요. 고마워요.', '다음엔 우리 체육관에도 놀러 와 줘요. 그땐 제가 이길게요!'], w: ['좋은 배틀이었어요. 관장끼리 서로 단단해지면 좋겠네요.', '오늘은 제가 이겼지만, {me} 관장님 체육관도 금방 따라올 거예요.', '관장의 자존심은 지켰네요. 다음에도 진지하게 붙어요!', '제 체육관 도전자들보다 훨씬 강했어요. 또 겨뤄요.', '서로 배운 게 많은 배틀이었어요. 그럼 제 체육관으로 돌아갈게요.'] },
+  e4: { l: ['…사천왕을 이기다니. {me}, 그 이름 기억해 두지.', '훌륭하다. 포켓몬 리그에서 다시 만나길 기대하지.', '패배를 인정하지. 이 체육관, 리그에서도 소문이 날 거다.', '사천왕으로서 아직 수련이 부족했군. 다시 오겠다.', '좋은 배틀이었다. 네 포켓몬들의 눈빛, 잊지 않겠다.'], w: ['이것이 사천왕의 힘이다. 더 강해져서 리그로 와라.', '나쁘지 않았다. 하지만 아직 사천왕의 벽은 높다.', '{me}, 너의 가능성은 봤다. 다음을 기대하지.', '리그의 문은 언제나 열려 있다. 실력을 쌓아 와라.', '좋은 승부였다. 다시 도전해 오는 날을 기다리지.'] },
+  ch: { l: ['챔피언을 이기다니… {me}, 당신은 정말 대단한 트레이너예요.', '오랜만에 진심으로 즐거운 배틀이었어요. 고마워요.', '졌어요. 하지만 이런 패배라면 언제든 환영이에요.', '당신과 포켓몬의 유대, 똑똑히 봤어요. 리그에서 또 만나요.'], w: ['정말 즐거운 배틀이었어요. 당신은 더 강해질 거예요.', '챔피언 자리는 아직 내줄 수 없네요. 또 만나요, {me}.', '포켓몬을 믿는 마음이 느껴졌어요. 다음이 기대돼요.', '좋은 승부였어요. 다음엔 리그 정상에서 겨뤄 봐요.'] },
+  riv: { l: ['쳇, 또 졌잖아! 다음엔 진짜 안 봐준다, {me}!', '…인정할게. 지금은 네가 한 수 위야. 지금은!', '좋아, 이번엔 네 승리야. 금방 따라잡을 테니 각오해!', '이길 줄 알았는데! 다음 배틀까지 수련이다!'], w: ['봤지? 이게 내 실력이야, {me}!', '역시 내가 이겼네. 너도 좀 더 분발하라고!', '하하, 라이벌한테 질 순 없지! 또 하자!', '좋은 배틀이었어. 다음엔 네가 더 세져서 와!'] },
+};
+/* v28.23: '히히'·'친구들한테' 같은 아이 말투는 어린 도전자 종류만 (어른 도전자는 뺀 목록에서) */
+const BYE_KID = new Set('youngster lass bug_catcher camper picnicker poke_kid school_kid_m school_kid_f tuber_m tuber_f twins ninja_boy rich_boy sr_and_jr'.split(' '));
+const byeGen = (c, L) => BYE_KID.has(c.tr) ? L : L.filter(s => !/히히|친구들한테/.test(s));
+const byeNm = c => { const k = /관장$/.test(c.cls || '') ? 'lead' : c.cls === '사천왕' ? 'e4' : c.cls === '챔피언' ? 'ch' : c.cls === '라이벌' ? 'riv' : ''; return k ? BYE_NM[k] : null; };
 function arrive(c) {
   rollWeek(c.t);   /* v20.03 경완 '결산 트레이너 주급 대비 수익이 이번 주 기준으로 잡힘': 밀린 도전자는 그 시각의 주에 기록 (예전엔 입장 시각으로 먼저 주를 넘겨서 지난주 몫이 이번 주로 감) */
   const g = st(), cn = `${c.cls} <b>${esc(c.nm)}</b>`; dayRec(c.t).n++;
@@ -1617,7 +1631,7 @@ async function challenge(picked) {
     for (const u of res?.eg || []) try { await window.GymManage?.egGainPop?.(u); } catch (er) { console.error(er); }   // v20.85 경완: 번뜩였으면 기록창 뒤 특별한 기술 카드에서 게이지가 오르는 걸
     if (g.stk && (bsReady(g) || (c.boss && won))) { g.stk = 0; save(); renderTop(); }   /* v15.42 경완: 연승은 등급 안에서만. 결과창 뒤 승급 심사가 열리면(또는 심사 통과) 연승 끊김 */
     // 결과창 다음에 도전자가 한마디 더 하고 나간다 (v12.20 경완 '배틀 결과 안내창 나오고 한 마디씩 더 하고 퇴장'). 기권이면 이긴 한마디 (경완 2026-10-29)
-    { root.classList.remove('dhide'); const bye = res?.quit ? sayStr(sayEnd.lose) : c.named === 'red' ? '…………' : c.boss ? (RS ? (won ? RS.w : RS.l).replace('{me}', me) : won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : pick(won ? BYE_LOST : BYE_WON).replace('{me}', me); await talk(who + esc(bye)); if (PR && !res?.quit) await talk(who2 + esc(pick(PR.y[won ? 0 : 1]))); }
+    { root.classList.remove('dhide'); const bye = res?.quit ? sayStr(sayEnd.lose) : c.named === 'red' ? '…………' : c.boss ? (RS ? (won ? RS.w : RS.l).replace('{me}', me) : won ? '훌륭한 배틀이었어요. 새 등급에 어울리는 체육관이 되길 바라요!' : '아직 조금 부족하네요. 준비되면 언제든 다시 심사를 신청해 주세요.') : c.named && byeNm(c) ? pick(byeNm(c)[won ? 'l' : 'w']).replace('{me}', me) : pick(byeGen(c, won ? BYE_LOST : BYE_WON)).replace('{me}', me); await talk(who + esc(bye)); if (PR && !res?.quit) await talk(who2 + esc(pick(PR.y[won ? 0 : 1]))); }
     if (g.newBdg) await badgeGet(g.newBdg);
     await unlockChk();
     // 배웅하기 창 없이, 알림을 다 닫으면 도전자가 걸어 나간다 (경완 2026-10-28)
@@ -4395,6 +4409,31 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-rail{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
 #trLobby .tl-hd{top:calc(8px + var(--si-top,env(safe-area-inset-top,0px)))}
 #trLobby .tl-x{top:calc(12px + var(--si-top,env(safe-area-inset-top,0px)))}
+#trLobby .tl-gf{position:absolute;right:14px;top:calc(48px + var(--si-top,env(safe-area-inset-top,0px)));z-index:3;width:44px;height:44px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}   /* v28.21 경완 '선물 버튼은 박스 없이 아이콘만 살려서 나가기 버튼 밑에' */
+#trLobby .tl-gf img{width:38px;height:36px;image-rendering:pixelated;filter:drop-shadow(0 2px 0 #0008);animation:tlGf 2.4s ease-in-out infinite}#trLobby .tl-gf:active img{transform:scale(.9)}
+@keyframes tlGf{0%,80%,100%{transform:none}86%{transform:rotate(-8deg)}92%{transform:rotate(8deg)}}
+#trLobby .tl-gfp{position:absolute;inset:0;z-index:50;background:rgba(6,8,20,.72);display:flex;align-items:center;justify-content:center;padding:calc(16px + var(--si-top,0px)) 14px calc(16px + var(--si-bottom,0px))}   /* v28.22 경완 '층마다 선물박스 아이콘 안 넣어줘도 되고 타이틀에만 넣어주면 될 것 같고 이 창 자체 디자인 좀 해줘봐' */
+#trLobby .tl-gfw{width:min(100%,360px);max-height:min(100%,560px);display:flex;flex-direction:column;background:#222944;border:3px solid #0b0e1c;border-radius:10px;box-shadow:0 4px 0 #0b0e1c,inset 0 0 0 2px #3d4774;color:#eef0fa;overflow:hidden}
+#trLobby .tl-gfw .hd{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;background:linear-gradient(180deg,#45307a,#2c2a5a);border-bottom:2px solid #0b0e1c;box-shadow:inset 0 2px 0 #ffffff22}
+#trLobby .tl-gfw .hd img{width:40px;height:38px;flex:none;image-rendering:pixelated;filter:drop-shadow(0 0 6px #ffd86a88) drop-shadow(0 2px 0 #0008);animation:tlGf 2.4s ease-in-out infinite}
+#trLobby .tl-gfw h3{margin:0;font-size:16px;color:#ffe48a;text-shadow:0 2px 0 #000a;letter-spacing:.5px}#trLobby .tl-gfw .hd p{margin:2px 0 0;font-size:10px;line-height:1.4;color:#d6d0f0;opacity:.85}
+#trLobby .tl-gfm{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 14px;font-size:10px;background:#171b31;color:#9ea6c8;border-bottom:2px solid #0b0e1c}#trLobby .tl-gfm b{color:#ffe48a;font-size:11px}
+#trLobby .tl-gfm i{flex:1;height:6px;border-radius:3px;background:#2c3354;overflow:hidden;font-style:normal}#trLobby .tl-gfm i>span{display:block;height:100%;background:linear-gradient(90deg,#ffd86a,#f0a030)}
+#trLobby .tl-gfw ol{list-style:none;margin:0;padding:8px 10px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:5px;min-height:0}
+#trLobby .tl-gfw li{position:relative;display:grid;grid-template-columns:46px 30px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px;padding:0 8px 0 0;border-radius:6px;background:#2c3458;box-shadow:inset 0 -2px 0 #0004;overflow:hidden}
+#trLobby .tl-gfw li .fl{align-self:stretch;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#161a2f;color:#c4cae6;border-right:2px solid #0b0e1c}
+#trLobby .tl-gfw li .ic{display:flex;align-items:center;justify-content:center;width:30px;height:30px}#trLobby .tl-gfw li .ic img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}#trLobby .tl-gfw li .ic .egg{transform:scale(.42)}
+#trLobby .tl-gfw li .ic.sh{filter:brightness(0) invert(1);opacity:.2}
+#trLobby .tl-gfw li .nm{font-size:12px;line-height:1.3;min-width:0}#trLobby .tl-gfw li .nm small{display:block;font-size:9.5px;color:#a8afcf}
+#trLobby .tl-gfw li em{font-style:normal;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:4px;background:#ffffff14;color:#c4cae6;white-space:nowrap}
+#trLobby .tl-gfw li.b{background:linear-gradient(90deg,#4c3d1e,#2f3152 70%);box-shadow:inset 0 0 0 2px #d8a830}#trLobby .tl-gfw li.b .fl{background:#d8a830;color:#3a2600;border-color:#8a6410}#trLobby .tl-gfw li.b em{background:#d8a830;color:#3a2600}
+#trLobby .tl-gfw li.top{background:linear-gradient(90deg,#4a2d66,#2b3a66)}#trLobby .tl-gfw li.top .fl{background:linear-gradient(180deg,#ff9ad8,#a77cf0);color:#2a1040;border-color:#6a3aa0}
+#trLobby .tl-gfw li.top::after{content:'';position:absolute;inset:0;border-radius:6px;padding:2px;background:linear-gradient(90deg,#ff8ad8,#ffe48a,#8ae0ff,#ff8ad8) 0 0/200% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:tlTop 3s linear infinite;pointer-events:none}
+#trLobby .tl-gfw li.top em{background:linear-gradient(90deg,#ff8ad8,#ffe48a);color:#3a1a40}
+@keyframes tlTop{to{background-position:200% 0}}
+#trLobby .tl-gfw li.got{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 30%,#2c3458),#2c3458 75%)}#trLobby .tl-gfw li.got .fl{background:var(--c);color:#14182a;border-color:#0b0e1c}#trLobby .tl-gfw li.got em{background:var(--c);color:#14182a}
+#trLobby .tl-gfw li.got .ic{filter:drop-shadow(0 0 4px var(--c))}
+#trLobby .tl-gff{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 12px 12px;background:#171b31;border-top:2px solid #0b0e1c}#trLobby .tl-gff p{margin:0;font-size:9.5px;color:#9ea6c8}#trLobby .tl-gff .gy-key{min-width:120px}
 #trLobby .tl-ft{padding-bottom:calc(10px + var(--si-bottom,env(safe-area-inset-bottom,0px)))}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
 /* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
@@ -4428,7 +4467,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
       ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
       <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
       <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
-      <button class="gy-key tl-x" data-a="x">나가기</button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
+      <button class="gy-key tl-x" data-a="x">나가기</button><button class="tl-gf" data-a="gf" aria-label="이번 주 층별 선물"><img alt="" src="${IMG}yact/gift.png"></button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
     <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
       <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="lu">라인업</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
     <div class="tl-ft${save ? ' two' : ''}${trOp() ? '' : ' nr'}">${trOp() ? '<button class="gy-key" data-a="rnd">🎲 랜덤<small>시험 포켓몬</small></button>' : ''}${save ? `<button class="gy-key" data-a="cont">이어 오르기<small>${fl}층부터</small></button>` : ''}<button class="gy-key main" data-a="go">수련탑 오르기</button></div>`;
@@ -4451,12 +4490,13 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.q) { const i = el.querySelector('.tl-q input'); i.value = ''; i.blur(); draw(); return; }
     if (b.dataset.so) { const k = b.dataset.so; if (k === trlSo) trlDir = -trlDir; else { trlSo = k; trlDir = 1; } draw(); el.querySelector('.tl-list').scrollTop = 0; return; }
-    if (b.dataset.f === 'ty') { const T = [...new Set(all().flatMap(P => SPECIES[P.sp]?.t || []))].sort((a, c) => a - c); fPop('타입', [[0, '모든 타입'], ...T.map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], trlTy, v => { trlTy = v; draw(); el.querySelector('.tl-list').scrollTop = 0; }); return; }
+    if (b.dataset.f === 'ty') { const T = [...new Set(all().flatMap(P => GA.pTy(P)))].sort((a, c) => a - c); fPop('타입', [[0, '모든 타입'], ...T.map(t => [t, TYPE_KO[t], 0, `<span class="fp-ty">${tyI0(t)}</span>`])], trlTy, v => { trlTy = v; draw(); el.querySelector('.tl-list').scrollTop = 0; }); return; }
     if (b.dataset.f === 'sh') { trlSh = !trlSh; draw(); return; } if (b.dataset.f === 'lu') { trlLu = !trlLu; draw(); return; }
     if (b.dataset.p) { const id = +b.dataset.p || b.dataset.p, P = B.boxOf(id); if (!P) return; const k = sel.indexOf(id);
       if (k >= 0) sel.splice(k, 1); else if (sel.length >= 6) { GA.toast?.('6마리까지 데려갈 수 있어요'); return; } else if (sum() + cost(P) > B.TR_CAP) { GA.toast?.(`코스트가 모자라요 (${nmOf(P)} ${cost(P)}, 남은 ${B.TR_CAP - sum()})`); return; } else sel.push(id); draw(); return; }
     const a = b.dataset.a;
     if (a === 'x') { trDrop(rnd); end(null); return; }
+    if (a === 'gf') { trGfList(el); return; }
     if (a === 'rnd') { trDrop(rnd); rnd = trRollLu(); rnd.forEach(id => { const P = B.boxOf(id); if (P) P.rnd = 1; }); sel = [...rnd]; draw(); return; }
     if (a === 'cont') { trDrop(rnd); end('cont'); return; }
     if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
@@ -4564,6 +4604,7 @@ async function trPost(R, o, boss, ids, T, trn) {
   const gd = trGold(R.floor, boss, trn || T?.dbl); R.gold = (R.gold | 0) + gd; if (TR_PAY) addG(gd, 'tower'); trHud(R); o.se?.('REGI');   /* v27.31 경완 '배틀 끝날 때마다 보상 받을 때도 골드랑 코인 올라가는 효과음' = 꾸러미·상점 구매와 같은 레지 소리 */
   await o.msg(`수련탑 코인 ${cn}개와\n${gd.toLocaleString()}골드를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
+  if (R.floor % 10 === 0) await trGift(R.floor);   /* v27.99 10층마다 선물 (주마다 한 번) */
   R.floor++;
   /* v23.68 경완 '특별한 층': 5·15·25…층 = 수련탑 상점 (이번 판 코인), 가끔 수수께끼 상자 — 배틀 없이 다음 층으로 */
   /* v24.70 경완 '상점은 없애자': 5층마다 상점 층 없앰 — 매층 보상 창 아래 줄이 상점 (포켓로그처럼) */
@@ -4573,6 +4614,71 @@ async function trPost(R, o, boss, ids, T, trn) {
     await o.msgTap(`${R.floor}층에서 ${n.cls} ${iga(n.nm)}\n기다리고 있다!`); } }
   return true;
 }
+/* v27.99 경완 '10층 단위, 50층 단위 … 선물. 본게임 창고나 가방에 들어가는 선물' · '주마다 한번 좋아' · '선물도 일단 베타에 받지는 않는걸로 배포해'
+   값 = 상점 값 기준 (이상한사탕·영양제 300, 향로 900, 뽑기권 점수×50, 기술머신 tmPrice, 민트 3,000, 빛나는 부적 5,000) → 100층까지 약 5,500G·200층 약 20,300G (배틀 골드 200층 약 10,900G 따로)
+   TR_GF_PAY = false: 창만 보여 주고 실제로 넣지 않음, 받은 층 기록도 저장 안 함 (공개 때 켜고 gyGive 처럼 넣기) */
+const TR_GF_PAY = false;
+/* v28.21 경완 '층별 선물은 매주 미니게임 보상처럼 매주 랜덤으로 유저한테 필요한게 정해지도록': 주마다 층별 선물을 한 번 정함 (주·닉네임 씨앗이라 다시 켜도 같음)
+   필요한 것 = 라인업 포켓몬 추천 성격 민트(아직 없는 것)·추천 능력치 영양제, 체육관 타입 포켓몬이 배울 수 있고 없는 기술머신(라인업이 배우면 3배), 체육관 타입 뽑기권 4배 */
+/* v28.22 경완 '알 뽑기 처럼 확률을 3단계 정도로 나눠서 좋은 선물이 나오게, 단계 올라갈 때마다 진동 + 색 바뀌는 연출' → 층마다 단계 레어 70%·에픽 25%·전설 5% (주마다 정함)
+   단계가 오르면 값 구간(TR_GF_B)이 한 칸씩 올라감: 0 사탕·영양제 300 / 1 기술머신 ~700·뽑기권 ~600 / 2 기술머신 700·뽑기권 600~750 / 3 기술머신 1,200·뽑기권 850~1,000 / 4 기술머신 2,000·드래곤 뽑기권·추천 민트 */
+const TR_GF_P = [.7, .25, .05], TR_GF_NM = ['레어', '에픽', '전설'];
+const TR_EGG_P = [.3, .35, .22, .1, .03], TR_EGG_NM = ['일반', '우수', '레어', '에픽', '전설'];   /* 200층 이로치 알 등급 (알 뽑기 GA_ODDS 우수 62·레어 30·에픽 7·전설 1% 보다 위쪽이 조금 후함) */
+const trGfK = f => f % 50 === 0 ? 'big' : f < 50 ? 0 : f < 100 ? 1 : f < 150 ? 2 : 3;
+const TR_GF_TM = [null, [300, 700], [700, 700], [1200, 1200], [2000, 2000]], TR_GF_TKB = [null, [0, 600], [600, 750], [850, 1000], [1750, 1750]];
+const TR_TK_SC = { 0: 10, 1: 10, 7: 10, 4: 12, 6: 12, 3: 13, 12: 13, 11: 13, 13: 13, 14: 13, 2: 14, 15: 14, 5: 15, 8: 17, 10: 18, 9: 19, 17: 19, 18: 20, 16: 35 };   /* 뽑기권 값 = 점수 × 50G (beta.html ITEMS tk 사본) */
+const TR_VIT_IT = ['hpup', 'protein', 'iron', 'calcium', 'zinc', 'carbos'], TR_ST_I = { hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5 };
+const trTmPr = x => x[3] === 2 ? 500 : (x[4] || 0) <= 50 ? 300 : x[4] <= 70 ? 700 : x[4] <= 85 ? 1200 : x[4] <= 100 ? 2000 : 3000;   /* manage.js tmPrice 사본 */
+const trMainArt = a => { try { return GA.fArt?.({ a }) || ''; } catch (e) { return ''; } };
+const trTkNm = t => `${t ? TYPE_KO[t] : '모든 타입'} 뽑기권`;
+const trSeed = s => { let h = 1779033703; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 3432918353), h = h << 13 | h >>> 19; return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; }; };
+function trGfPlan() { const s = trGfSt(); if (s.plan) return s.plan;
+  const rnd = trSeed(`${s.wk}|${S.nick || S.name || ''}|${S.gym?.ty || 0}`), B = GB(), D = B.D, g = st() || {}, cnt = {}, plan = {};
+  const wp = L => { L = L.map(x => ({ ...x, w: (x.w || 1) / (1 + 2 * (cnt[x.id] | 0)) })); let r = L.reduce((a, x) => a + x.w, 0) * rnd(); for (const x of L) if ((r -= x.w) < 0) return x; return L[L.length - 1]; };   /* 이미 나온 건 덜 나오게 */
+  const lu = [...new Set((g.lu || []).flat())].map(id => B.boxOf(id)).filter(P => P && !P.gTst), mons = S.box.filter(P => P && !P.egg && !P.gTst && GA.pTy(P).includes(g.ty));
+  const rec = P => { try { return B.recNat(P, B.gm(P)); } catch (e) { return null; } };
+  const it = (id, nm, a, at = '가방') => ({ id, nm, ic: trMainArt(a), at });
+  const vits = () => { const L = lu.map(P => D.nt[rec(P)]?.[1]).filter(k => k in TR_ST_I).map(k => TR_ST_I[k]); return (L.length ? L : [0, 1, 2, 3, 4, 5]).map(v => ({ id: 'v' + v, nm: TR_VIT[v][0], ic: `${IMG}item/${TR_VIT_IT[v]}.png`, at: '창고' })); };
+  const mint = () => { const L = [...new Set(lu.map(P => { const r = rec(P); return r && r !== B.gm(P).nat && !(g.mint || {})[r] ? r : null; }).filter(Boolean))], M = B.MINT || ['adamant'], L2 = L.filter(x => !cnt['mint' + x]), m = L2.length ? L2[Math.floor(rnd() * L2.length)] : L.length ? L[Math.floor(rnd() * L.length)] : M[Math.floor(rnd() * M.length)]; return { id: 'mint' + m, nm: B.mintNm?.(m) || '민트', ic: `${IMG}item/mint_${m}.png`, at: '창고' }; };
+  const luCan = new Set(); lu.forEach(P => (B.tmOf(P.sp) || []).forEach(i => luCan.add(i))); const can = new Set(luCan); mons.forEach(P => (B.tmOf(P.sp) || []).forEach(i => can.add(i)));
+  const tms = b => { const [lo, hi] = TR_GF_TM[b]; return [...can].filter(i => { const x = D.mv[i]; return x && !B.isTR(x[0]) && !(g.tms || {})[x[0]] && trTmPr(x) >= lo && trTmPr(x) <= hi; }).map(i => { const x = D.mv[i]; return { id: 'tm' + x[0], nm: `기술머신 ${x[1]}`, ic: `${IMG}bt/tm_${x[2]}.png`, at: '창고', w: luCan.has(i) ? 3 : 1 }; }); };
+  const tks = b => { const [lo, hi] = TR_GF_TKB[b]; return Object.keys(TR_TK_SC).map(Number).filter(t => t && TR_TK_SC[t] * 50 >= lo && TR_TK_SC[t] * 50 <= hi).map(t => ({ ...it('tk' + t, trTkNm(t), 'tk' + t), w: t === g.ty ? 4 : 1 })); };
+  const band = b => { if (b === 0) return wp([{ ...it('rcandy', '이상한사탕', 'rcandy'), w: 3 }, ...vits()]); const a = tms(b), c = tks(b); if (b === 4 && rnd() < .34) return mint(); return wp(a.length && (rnd() < .5 || !c.length) ? a : c); };
+  /* v28.22 경완 '200층은 어려우니까 이로치 타입 알 확정으로' → '알 등급 확률도 있으니까 이로치 알 타입은 랜덤으로 가고 알 등급 5단계로': 타입 18개 중 무작위, 알 등급 일반~전설 TR_EGG_P */
+  const shEgg = () => { const T = Object.keys(TR_TK_SC).map(Number).filter(Boolean), ty = T[Math.floor(rnd() * T.length)], r = rnd(); let k = 0, a = 0; for (; k < 4; k++) if (r < (a += TR_EGG_P[k])) break;
+    return { tier: k, id: 'she' + ty, nm: `이로치 ${TYPE_KO[ty]} 타입 알`, ic: GA.eggIcoSh?.(k + 1, ty) || '', at: '알 가방', egg: [k + 1, ty, 1] }; };
+  const tkG = () => it('tk' + (g.ty || 0), `${trTkNm(g.ty || 0)}`, 'tk' + (g.ty || 0)), ic = (o, nm, id) => ({ ...o, nm, id });
+  /* v28.22 경완 '50층 에픽이 향로야??' → 큰 선물(50층마다)은 보통 층(전설 칸 ~2,000G)보다 늘 크게: 단계마다 한 칸씩 위 (레어 ~1,500·에픽 ~4,000·전설 ~6,000G 넘게) */
+  const plus = (a, b) => ({ ...a, id: a.id + '+' + b.id, nm: `${a.nm} + ${b.nm}` });
+  const BIG = { 50: [() => plus(it('incense', '향로', 'incense'), tkG()), () => plus(mint(), it('incense', '향로', 'incense')), () => plus(it('charm', '빛나는 부적', 'charm'), it('incense', '향로', 'incense'))],
+    100: [() => it('big', '모든 타입 뽑기권 + 이상한사탕 3개', 'tk0'), () => plus(mint(), tkG()), () => plus(it('charm', '빛나는 부적', 'charm'), mint())],
+    150: [() => plus(mint(), tkG()), () => plus(it('charm', '빛나는 부적', 'charm'), tkG()), () => plus(plus(it('charm', '빛나는 부적', 'charm'), mint()), tkG())],
+    200: [] };
+  for (let f = 10; f <= 200; f += 10) { const r = rnd(), tier = r < TR_GF_P[0] ? 0 : r < TR_GF_P[0] + TR_GF_P[1] ? 1 : 2, k = trGfK(f); let G;
+    if (f === 200) G = shEgg(); else if (k === 'big') G = BIG[f][tier]();
+    else G = band(Math.min(4, k + tier));
+    cnt[G.id] = (cnt[G.id] | 0) + 1; plan[f] = { tier, gi: tier + 2, ...G }; if (f === 200) plan[f].gi = G.tier; }
+  return (s.plan = plan); }
+let trGfMem = null;
+const trGfWk = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };   /* 월요일 0시에 새로 (미니게임 기록 선물과 같은 주) */
+const trGfSt = () => { const s = TR_GF_PAY ? (st().trGf = st().trGf || {}) : (trGfMem = trGfMem || {}), wk = trGfWk(); if (s.wk !== wk) { s.wk = wk; s.got = []; s.plan = null; } return s; };
+/* v28.21 경완 '선물 받는 창에는 받기 버튼 만들어서 그거 눌러야만 닫히고 진행되게' → trBoxPick X.get */
+async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; const G = trGfPlan()[f]; s.got.push(f);
+  const eg = f === 200, NM = eg ? TR_EGG_NM : TR_GF_NM;
+  await trBoxPick([[0, eg ? 0 : 2, G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, NM[0]]], `${f}층 ${f % 50 ? '' : '큰 '}선물!`, 0, TR_GF_PAY ? '' : '베타에서는 실제로 받지 않아요', { get: '받기', up: eg ? G.gi : G.tier, upNm: NM, box: `${IMG}yact/gift.png` }); }
+/* 수련탑 시작 화면 선물 아이콘: 이번 주 층별 선물 목록·받은 층 (경완 '수련탑 시작 화면에 층별 보상 목록 확인할 수 있는 아이콘도' · v28.21 '너무 길어지지 않게 스크롤') */
+function trGfList(el) { const s = trGfSt(), P = trGfPlan(), w = document.createElement('div'); w.className = 'tl-gfp';
+  const n = s.got.length, row = f => { const G = P[f], got = s.got.includes(f), top = f === 200, nm = top ? TR_EGG_NM : TR_GF_NM, gi = top ? G.gi : G.tier;
+    const ic = top && !got ? GA.eggIcoSh?.(1, 0) || '' : /^</.test(G.ic) ? G.ic : `<img alt="" src="${G.ic}">`;   /* 200층은 이로치 알이라는 건 보여 주고 타입·등급만 숨김 (경완 '이로치 알이라는건 가리지말고 타입은 확률이라는거만') */
+    const t = got ? esc(G.nm) : top ? '이로치 타입 알' : '???', sub = got ? `${G.at}에 들어가는 선물` : top ? '타입·알 등급은 받을 때 확률로 정해져요' : f % 50 ? '아직 모르는 선물' : '큰 선물이 기다려요';
+    const chip = got ? nm[gi] : top ? '확정' : f % 50 ? '' : '큰 선물';
+    return `<li class="${top ? 'top' : f % 50 ? '' : 'b'}${got ? ' got' : ''}"${got ? ` style="--c:${TR_RC[top ? gi : gi + 2].split(',')[0]}"` : ''}><span class="fl">${f}층</span><span class="ic${got || top ? '' : ' sh'}">${ic}</span><span class="nm">${t}<small>${sub}</small></span>${chip ? `<em>${chip}</em>` : '<span></span>'}</li>`; };
+  w.innerHTML = `<div class="tl-gfw" role="dialog"><div class="hd"><img alt="" src="${IMG}yact/gift.png"><div><h3>이번 주 층별 선물</h3><p>10층마다 그 층에 이번 주 처음 닿으면 받아요</p></div></div>
+    <div class="tl-gfm"><span>월요일에 새로 정해져요</span><i><span style="width:${n * 5}%"></span></i><b>${n}/20</b></div>
+    <ol>${Array.from({ length: 20 }, (_, i) => row((i + 1) * 10)).join('')}</ol>
+    <div class="tl-gff">${TR_GF_PAY ? '' : '<p>베타에서는 실제로 받지 않아요</p>'}<button class="gy-key" type="button" data-gx="1">닫기</button></div></div>`;
+  w.onclick = e => { if (e.target === w || e.target.closest('[data-gx]')) { e.stopPropagation(); sfx('tap'); w.remove(); } else e.stopPropagation(); };
+  el.appendChild(w); }
 async function trMyst(R, o, card) {
   if (!card) await o.msgTap(`${R.floor}층에 수상한 상자가 놓여 있다…\n'강박사 것. 절대 열지 마시오'`);
   if (!card && await o.choose('상자를 열어 볼까요?', [['열어 본다', '무슨 일이 생길지 몰라요', TR_RC[2]], ['그냥 지나간다', '', '#9aa0b4,#6c7288']])) { await o.msgTap('못 본 척 지나갔다.\n(멀리서) 강박사: "휴…"'); return; }
@@ -4652,21 +4758,29 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-s em{font-style:normal;font-size:11px;font-weight:700;color:#4a6490}.trbx .trb-s em::before{content:'';display:inline-block;width:13px;height:9px;margin-right:3px;background:url(${IMG}item/relicsilver.png) center/contain no-repeat;image-rendering:pixelated;vertical-align:0}
 .trbx .trb-s:active:not([disabled]){transform:translateY(3px);box-shadow:0 0 0 2px #c8c8d8}.trbx .trb-s[disabled]{opacity:.4}
 .trbx .trb-rr{height:36px;border:0;border-radius:8px;font:inherit;font-size:13px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#8a7ae0,#5a48b8);box-shadow:inset 0 1px 0 #fff6,0 3px 0 #2c2068}
-.trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}`;
+.trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}
+.trbx .trb-b.gb{width:76px;height:72px;margin:-36px 0 0 -38px;filter:drop-shadow(0 0 7px var(--g1)) drop-shadow(0 0 2px var(--g1)) drop-shadow(0 4px 0 #0006);transition:filter .2s}   /* v28.22 경완 '층 선물 아이콘은 몬스터볼 말고 선물 상자 아이콘으로': 단계 색 = 상자 둘레 빛 */
+.trbx .trb-c.up .trb-b{animation:trbUp .48s ease-out}.trbx .trb-c.up::after{content:'';position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle,var(--g1) 0,transparent 65%);opacity:0;animation:trbUpR .55s ease-out;pointer-events:none}
+@keyframes trbUp{0%{transform:scale(1)}35%{transform:scale(1.35);filter:brightness(2.2) drop-shadow(0 0 10px var(--g1))}100%{transform:scale(1)}}@keyframes trbUpR{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
+.trbx .trb-k .trb-eg{display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin-top:6px}.trbx .trb-k .trb-eg .egg{transform:scale(.8)}
+.trbx .trb-get{min-width:140px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:0;transition:opacity .3s}.trbx.ready .trb-get{opacity:1}.trbx .trb-get:active{transform:translateY(4px);box-shadow:inset 0 1px 0 #fff8}`;
 /* 필드 가방 버튼(#btnBag)과 같은 도트 가방 */
 const TRB_BAG = '<svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M4 0h4v1h1v2h1v1h1v7h-1v1H2v-1H1V4h1V3h1V1h1zM5 1v2h2V1z"/><path fill="#e8783c" d="M2 4h8v7H2z"/><path fill="#ffb27a" d="M2 4h8v1H2zM2 5h1v5H2z"/><path fill="#b8502a" d="M3 10h7v1H3zM9 5h1v5H9z"/><path fill="#20202c" d="M3 6h6v1H3zM3 7h1v2H3zM8 7h1v2H8zM3 9h6v1H3z"/><path fill="#ffd84a" d="M5 6h2v2H5z"/></svg>';
 const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X) => new Promise(ok => {   /* X = { coin, rr, shop: [[이름, 값, 살 수 있음]] } 아래 상점 줄 (v24.70) */   /* c[5] 그림 이름·c[6] 딱지 글자 (v24.68 강박사 상자) */
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
   const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['일반', '우수', '레어', '에픽', '전설'];   /* v26.82 경완 '보상 카드 등급은 일반, 우수, 레어' */
   const el = document.createElement('div'); el.className = 'trbx';
-  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b" alt="" src="${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em><img alt="" src="${IMG}item/${c[5] || trIc(c[2])}.png"><b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b${X?.box ? ' gb' : ''}" alt="" src="${X?.box || `${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png`}"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em>${/^</.test(c[5] || '') ? `<span class="trb-eg">${c[5]}</span>` : `<img alt="" src="${/[/:]/.test(c[5] || '') ? c[5] : `${IMG}item/${c[5] || trIc(c[2])}.png`}">`}<b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X?.get ? `<button type="button" class="trb-get">${esc(X.get)}</button>` : ''}${X?.shop ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
   let ready = !!again; if (again) el.classList.add('ready');
   else (async () => { await wait(500);   /* v24.64 경완 '보상 나오는 연출 속도 좀만 더 빠르게': 떨어짐·흔들림·터짐 모두 약 1/3 빠르게 */ const C = [...el.querySelectorAll('.trb-c')];
     C.forEach(c => c.classList.add('wob')); se('KON'); await wait(310);
+    for (let u = 0; u < (X?.up | 0); u++) { const c = C[0], g0 = +(c.className.match(/\bg(\d)/) || [0, 0])[1], g1 = Math.min(4, g0 + 1), [a1, a2] = TR_RC[g1].split(','); await wait(u ? 420 : 260);   /* v28.22 단계 오름: 색·볼·딱지 바뀌고 진동 */
+      c.classList.remove('wob', 'up', 'g' + g0); void c.offsetWidth; c.classList.add('g' + g1, 'up'); c.style.setProperty('--g1', a1); c.style.setProperty('--g2', a2); const bi = c.querySelector('.trb-b'); if (bi && !X.box) bi.src = `${IMG}item/${TR_BX[g1]}.png`; const em = c.querySelector('.trb-k em'); if (em && X.upNm) em.textContent = X.upNm[u + 1] || em.textContent;
+      se(u ? 'KON3' : 'KON2'); try { GA.haptic?.(u ? 2 : 1); } catch (e) {} await wait(480); }
     for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(110); }
     await wait(240); ready = true; el.classList.add('ready'); })();
-  el.onclick = e => { if (!ready) return; const sb = e.target.closest('.trb-s,.trb-rr'); if (sb) { if (sb.disabled) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(sb.classList.contains('trb-rr') ? { t: 'rr' } : { t: 'buy', i: +sb.dataset.s }); }
+  el.onclick = e => { if (!ready) return; if (X?.get) { if (!e.target.closest('.trb-get')) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(0); } const sb = e.target.closest('.trb-s,.trb-rr'); if (sb) { if (sb.disabled) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(sb.classList.contains('trb-rr') ? { t: 'rr' } : { t: 'buy', i: +sb.dataset.s }); }
     const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
 });
 async function trReward(R, o, ids, boss, shop, first) {
@@ -4862,7 +4976,7 @@ const pI = w => jong(w) ? '이' : '가', pE = w => jong(w) ? '을' : '를', pN =
 // 내 포켓몬 중 메가진화할 수 있는 종 (체육관 타입 먼저, 같은 종은 한 번). 레쿠쟈는 화룡점정으로
 function mgCan(luOnly) { const B = GB(), ty = st()?.ty, seen = new Set(), L = [], lu = new Set((st()?.lu || []).flat());   /* 경완 2026-11-13 luOnly: 이 체육관 라인업에 있는 포켓몬만 */
   for (const P of S.box || []) { if (luOnly && !lu.has(P.id)) continue; if (isTstP(P) || seen.has(P.sp)) continue; if (!(B?.mgSt?.(P.sp)?.length || P.sp === 384)) continue; seen.add(P.sp); L.push(P); }
-  return L.sort((a, b) => ((SPECIES[b.sp]?.t || []).includes(ty) - (SPECIES[a.sp]?.t || []).includes(ty))); }
+  return L.sort((a, b) => (GA.pTy(b).includes(ty) - GA.pTy(a).includes(ty))); }
 function ringPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
   const p = pop(`<h4 class="pp-t mr-t"><small>강박사에게서 받았다!</small>메가링</h4><div class="le-get mr-get"><img alt="" src="${IMG}dbk/it/mega-bracelet.png"></div><p class="gy-msg mr-d">메가진화에 쓰는 팔찌.<br>포켓몬에게 메가스톤을 지니게 하면<br>배틀 중에 메가진화할 수 있어요.<br><small>창고 › 도구 › 중요한 물건에 넣었어요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); p.classList.add('mr-pop'); }); }
 /* 경완 2026-11-12 '승급할 때마다 강박사가 체육관에 들어와서 튜토리얼 진행하는 스토리 연출' (+ 개그): 동네 = 훈련장, 떠오르는 = 노력치, 이름난 = 메가진화(megaTut).
