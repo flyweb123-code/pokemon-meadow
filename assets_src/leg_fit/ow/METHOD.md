@@ -44,3 +44,10 @@ towel, black athletic shirt, white shorts with red trim); Flannery front used LE
 background removal treats >=250 in all channels as background (one result came on 255,254,255).
 Picks: Flannery front c0 (c1 face less like Dawn), back c2 (c0 hair touched the top edge, c1 hair
 turned orange), field transfer v2 (v1 hair so big it reached row 0).
+
+Kabu redo (2026-11-21): the first Kabu (headband, towel, black T-shirt) did not look like the game's
+Kabu; kept as raw/lf_kabu_m_*_v1 and ow/raw/lf_kabu_m_*_v1. Redone with the game sprite
+(ref/ref_kabu.png, from branch claude/project-thread-wlqncg) as the Edit image reference: gray hair, no
+headband, black long-sleeve top with red-orange flames, white shorts with red marks, red and white long
+socks, brown shoes. Front pick c1 (c0 made him taller, hair at row 1, and changed the face); back and
+field first results.
