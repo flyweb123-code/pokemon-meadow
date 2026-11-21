@@ -17,6 +17,7 @@
 
 export { FieldRoom } from './room.js';
 import { maskNick, maskRows } from './nick.js';
+import { pedCron } from './push.js';
 
 const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const PART = 600_000;   // 저장 조각 크기 (글자). 한글이 섞여도 D1 한 칸 한도(2MB) 안 넘게
@@ -35,6 +36,7 @@ const acctId = v => { const s = typeof v === 'string' ? v.toLowerCase() : ''; re
 const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 
 export default {
+  async scheduled(ev, env, ctx) { ctx.waitUntil(pedCron(env)); },   // 걸음 알림 (wrangler.toml crons)
   async fetch(req, env) {
     const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
@@ -261,6 +263,15 @@ async function handle(env, b) {
         .bind(tok, me, plat, b.env === 'dev' ? 'dev' : 'prod', kinds, now).run();
       // 한 사람 기기는 5대까지 (오래된 것부터 지움)
       await db.prepare('DELETE FROM push WHERE code = ?1 AND tok NOT IN (SELECT tok FROM push WHERE code = ?1 ORDER BY at DESC LIMIT 5)').bind(me).run();
+      return true;
+    }
+    case 'pedSt': {   // v28.06 걸음 알림: {st:'ok'|'off'|'zero', lw, on, eg:{n, ng:[5], nr:[g,km]|null}}
+      const st = ['ok', 'off', 'zero'].includes(b.st) ? b.st : bad('잘못된 요청'), lw = Math.max(0, Math.min(now, Math.floor(+b.lw || 0))), on = b.on === false ? 0 : 1;
+      const e = b.eg && typeof b.eg === 'object' ? b.eg : {}, eg = JSON.stringify({ n: Math.max(0, Math.min(999, +e.n || 0)), ng: (Array.isArray(e.ng) ? e.ng : []).slice(0, 5).map(x => Math.max(0, Math.min(999, +x || 0))), nr: Array.isArray(e.nr) && e.nr.length === 2 ? [Math.max(1, Math.min(6, +e.nr[0] || 1)), Math.max(0, Math.min(999, +e.nr[1] || 0))] : null });
+      const old = await db.prepare('SELECT lw FROM ped WHERE code = ?').bind(me).first();
+      const reset = st === 'ok' || (old && lw > old.lw);   // 걸음이 다시 들어오면 처음부터
+      await db.prepare('INSERT INTO ped (code, st, lw, on_, eg, n, t0, ls, at) VALUES (?1, ?2, ?3, ?4, ?5, 0, 0, 0, ?6) ON CONFLICT(code) DO UPDATE SET st = ?2, lw = ?3, on_ = ?4, eg = ?5, at = ?6' + (reset ? ', n = 0, t0 = 0' : ''))
+        .bind(me, st, lw, on, eg, now).run();
       return true;
     }
     // ---------- 친구 필드 놀러가기 (v15.34~ 본게임) ----------

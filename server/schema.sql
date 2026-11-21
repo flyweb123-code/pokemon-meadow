@@ -147,3 +147,18 @@ CREATE TABLE IF NOT EXISTS acct_sum (
   gold INTEGER NOT NULL DEFAULT 0,
   at   INTEGER NOT NULL
 );
+
+-- 걸음 알림 (v28.06, 2026-11-21 경완 '꺼져 있는 유저들한테는 주기적으로 켜라고 알림'): 아이폰 앱이 알려 준 만보기 상태.
+-- st: ok | off(동작 및 피트니스 꺼짐) | zero(3일 넘게 0km), lw 마지막으로 거리가 들어온 때, on 걸음 알림 켬, eg 부화기 알 요약(JSON, 종은 없음)
+-- n 이번에 끊긴 동안 보낸 푸시 수(최대 3), t0 첫 푸시 때, ls 마지막 푸시 때. 걸음이 다시 들어오면 n·t0 를 0 으로
+CREATE TABLE IF NOT EXISTS ped (
+  code TEXT PRIMARY KEY,
+  st   TEXT NOT NULL DEFAULT 'ok',
+  lw   INTEGER NOT NULL DEFAULT 0,
+  on_  INTEGER NOT NULL DEFAULT 1,
+  eg   TEXT NOT NULL DEFAULT '',
+  n    INTEGER NOT NULL DEFAULT 0,
+  t0   INTEGER NOT NULL DEFAULT 0,
+  ls   INTEGER NOT NULL DEFAULT 0,
+  at   INTEGER NOT NULL
+);
