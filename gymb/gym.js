@@ -4842,9 +4842,11 @@ async function trReward(R, o, ids, boss, shop, first) {
   const fl = R.floor | 0, fx = TR_FIX(fl), GU = first ? [] : fx ? (fl >= 100 ? [2, 2, 1] : [2, 1, 1]) : boss ? (fl >= 50 && fl % 50 === 0 ? [4, 2] : [2]) : [];   /* v26.86 50층마다 큰 우두머리 = 전설 카드 한 장 보장 (마스터볼 자리) */
   const gate = c => !(c[1] >= 2 && fl < 10 && !GU.length) && !(/하이퍼볼/.test(c[2]) && fl < 20) && !(/마스터볼/.test(c[2]) && !(boss && fl >= 50));
   const tier = () => { const r = Math.random() * 1024 | 0; return r > 255 ? 0 : r > 60 ? 1 : r > 12 ? 2 : r ? 3 : 4; };   /* v26.86 경완 '레어 위로 에픽, 전설': 포켓로그 1024 굴림 그대로 (일반 75%·우수 19%·레어 4.7%·에픽 1.1%·전설 0.1%) */
+  /* v28.23 경완 '보상에 상처약 좋은 상처약 같이 나오는건 의미 없지 않아? 어차피 좋은 상처약 고를텐데': 같은 갈래(회복약·기력의조각/덩어리·골드 꾸러미)는 한 번에 한 장만 */
+  const trGrp = c => /상처약|회복약/.test(c[2]) ? 'h' : /기력의/.test(c[2]) ? 'r' : /골드 꾸러미/.test(c[2]) ? 'g' : '';
   const draw3 = () => { let pool = pool0.filter(gate); L.length = first ? 1 : 0; for (let i = 0; L.length < 3 && pool.length; i++) { let tq = GU[i] ?? tier(), C2 = [];
       for (; tq >= 0 && !(C2 = pool.filter(c => c[1] === tq)).length; tq--);   /* 그 등급이 비면 한 단계 아래 */ if (!C2.length) C2 = pool;
-      const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k]); } };
+      const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k] && !(trGrp(c) && trGrp(c) === trGrp(C2[k]))); } };
   draw3();
   const f = R.floor | 0, hl = f < 20 ? ['상처약', 15, 20] : f < 50 ? ['좋은상처약', 30, 60] : ['고급상처약', 50, 120];
   const SH = first ? null : [[hl[0], hl[1], 0, () => live.some(id => hp(id) > 0 && hp(id) < .999), heal(hl[2])], ['기력의조각', 40, 0, () => ids.some(id => hp(id) <= 0), rev(.5)],
