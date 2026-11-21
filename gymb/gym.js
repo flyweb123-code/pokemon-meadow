@@ -394,7 +394,7 @@ function fitSrc(kind, fit = st()?.fit) {
   // 앞모습(전신 카드·상점)은 옷 모양까지 새로 그린 그림 (Figma 이미지 모델, 경완 2026-10-27 '색 바꾸기 수준이 아니라 옷 좀 바꿔줘')
   if (kind === 'tr') return Promise.resolve(`${IMG}fit/${fit}_${myF() ? 'f' : 'm'}.png`);
   // v14.99 경완: 걸음 그림도 옷마다 새로 그린 그림 (fit/ow9 = 9칸 가로, 필드는 fit/ow 6칸 세로). 그림이 없으면 아래 색 바꾸기
-  if (kind === 'ow') { const u = `${IMG}fit/ow9/${fit}_${myF() ? 'f' : 'm'}.png`, ck = 'ow9|' + u; if (fitCache[ck]) return fitCache[ck];
+  if (kind === 'ow') { const u = `${IMG}fit/ow9/${fit}_${myF() ? 'f' : 'm'}.png${fit.startsWith('lf_') ? '?v=2' : ''}`, ck = 'ow9|' + u; if (fitCache[ck]) return fitCache[ck];
     return (fitCache[ck] = new Promise(ok => { const im = new Image(); im.onload = () => ok(u); im.onerror = () => ok(null); im.src = u; })).then(r => r || recolor()); }
   // v15.39 경완: 배틀 뒷모습도 옷마다 새로 그린 그림 (fit/trb, 80x80). 그림이 없으면 색 바꾸기
   if (kind === 'trb') { const u = `${IMG}fit/trb/${fit}_${myF() ? 'f' : 'm'}.png${VER ? '?v=' + VER : ''}`, ck = 'trb|' + u; if (fitCache[ck]) return fitCache[ck];
