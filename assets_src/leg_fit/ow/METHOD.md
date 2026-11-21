@@ -29,3 +29,10 @@ feet kept in place, and uses the standing frame's head (rows < 19) so the head m
 Roxie back guitar (2026-11-21, 경완 '보미카 뒷모습 기타 방향 반대'): back frames mirrored with
 `backmirror.py` (new 1 = mirror 1, 5 = mirror 6, 6 = mirror 5, moved 1px back) so the neck shows
 on the left from behind, matching the right side from the front.
+
+Blaine (lf_blaine_m, fire, 2026-11-21): battle front = Creator > Edit image (Pro) on gym/img/tr/pt_m.png
+with the shop Blaine fit (gym/img/fit/blaine_m.png) as the reference image (raw/lf_blaine_m_front_c0.png);
+back = same tool on gym/img/trb/pt_m.png with the new front as the reference. White background removed
+by flood fill of pure white from the edges (the lab coat is off-white, so it stays). Field: Transfer
+outfit with the new front as the outfit image -> topost.py -> bobfix.py
+(ow/lf_blaine_m_ow9.png 288x32, ow/lf_blaine_m_ow.png 32x192; not copied into gym/img yet).
