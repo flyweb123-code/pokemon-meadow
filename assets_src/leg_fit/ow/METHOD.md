@@ -25,3 +25,7 @@ always raise the body 1px in walk frames (Bruno, Roxie) and redrew parts of the 
 feet kept in place, and uses the standing frame's head (rows < 19) so the head moves as one piece:
 
     python3 bobfix.py ../../../gym/img/fit/ow9/lf_bruno_m.png OUT/lf_bruno_m
+
+Roxie back guitar (2026-11-21, 경완 '보미카 뒷모습 기타 방향 반대'): back frames mirrored with
+`backmirror.py` (new 1 = mirror 1, 5 = mirror 6, 6 = mirror 5, moved 1px back) so the neck shows
+on the left from behind, matching the right side from the front.
