@@ -11,6 +11,7 @@ for (const [g, a] of Object.entries(G)) {
   const ppl = new Set(ok.map(x => x.c)).size;
   const st = ok.reduce((s, x) => s + x.t, 0), ss = ok.reduce((s, x) => s + x.sc, 0);
   console.log(`== ${g} 판 ${ok.length} 사람 ${ppl} 평균초 ${(st / ok.length).toFixed(0)} 중앙초 ${med(ok.map(x => x.t))} p25 ${q(ok.map(x=>x.t),.25)} p75 ${q(ok.map(x=>x.t),.75)} 중앙점 ${med(ok.map(x => x.sc))} 평균점 ${(ss/ok.length).toFixed(0)} 점/분(합) ${(ss / st * 60).toFixed(0)} 점/분 중앙 ${med(ok.map(x => x.sc / x.t * 60)).toFixed(0)}`);
+  const DIV = { jump: 1000, drop: 1200, stack: 2400 }[g]; if (DIV) { const fs = ok.reduce((s, x) => s + Math.floor(x.sc / DIV), 0); console.log(`   실제 친밀도(내림) 합 ${fs} → 1분 ${(fs / st * 60).toFixed(2)} · 한 판 ${(fs / ok.length).toFixed(2)} · 0 받은 판 ${ok.filter(x => x.sc < DIV).length}`); for (const dv of [300, 350, 400, 450, 500, 600]) { const f2 = ok.reduce((s, x) => s + Math.floor(x.sc / dv), 0); console.log(`     ${dv}점당 → 1분 ${(f2 / st * 60).toFixed(2)} 한 판 ${(f2 / ok.length).toFixed(1)}`); } }
   const per = {}; for (const x of ok) { const p = per[x.c] ||= { n: 0, t: 0, sc: 0 }; p.n++; p.t += x.t; p.sc += x.sc; }
   for (const [c, p] of Object.entries(per).sort((a, b) => b[1].n - a[1].n).slice(0, 12)) console.log(`   ${c.slice(0, 3)}… 판 ${p.n} 평균초 ${(p.t / p.n).toFixed(0)} 평균점 ${(p.sc / p.n).toFixed(0)} 점/분 ${(p.sc / p.t * 60).toFixed(0)}`);
   // 버전별 최근
