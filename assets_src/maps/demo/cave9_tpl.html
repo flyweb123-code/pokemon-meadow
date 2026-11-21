@@ -17,7 +17,8 @@ h1{font-size:19px;margin:0 0 4px}p.s{margin:0 0 12px;color:var(--sub);font-size:
 #bgC{z-index:1}#fxC{z-index:2}#dkC{z-index:3}#glC{z-index:4;mix-blend-mode:screen}#zoneC{z-index:6;opacity:0;transition:opacity .3s}.zones #zoneC{opacity:.55}
 #mons{position:absolute;inset:0;z-index:2;pointer-events:none}
 #hudI{position:absolute;left:0;top:0;width:360px;height:600px;z-index:8;pointer-events:none}.nohud #hudI,.nohud #offTop{display:none}
-#offTop{position:absolute;left:0;top:0;width:100%;height:29px;line-height:25px;z-index:8;pointer-events:none;background:rgba(0,0,0,.55);border-bottom:1px dashed rgba(255,255,255,.6);color:#fff;font-size:11px;text-align:right;padding:2px 6px}
+#offTop{position:absolute;left:0;top:0;width:100%;height:48px;line-height:20px;z-index:8;pointer-events:none;background:rgba(0,0,0,.28);border-bottom:1px dashed rgba(255,255,255,.5);color:#fff;font-size:11px;text-align:center;padding:2px 6px}
+.offS{position:absolute;top:0;bottom:0;width:23px;z-index:8;pointer-events:none;background:rgba(0,0,0,.6)}.offS.l{left:0;border-right:1px dashed rgba(255,255,255,.5)}.offS.r{right:0;border-left:1px dashed rgba(255,255,255,.5)}.nohud .offS{display:none}
 #layLn{position:absolute;left:0;width:100%;z-index:7;pointer-events:none;border-top:2px dashed #ffe070;display:none}.lay #layLn{display:block}
 #layLn b{position:absolute;right:4px;top:2px;font-size:11px;color:#ffe070;text-shadow:0 1px 0 #000}
 .lay{cursor:ns-resize}
@@ -37,7 +38,7 @@ input[type=range]{width:100%}
 ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
 </style></head><body><div class="wrap">
 <h1>동굴 필드 시연</h1>
-<p class="s">게임 날짜 박스와 버튼을 아이폰 15 Pro 자리 그대로 얹었어요. 아래 '자리 맞추기'에서 바닥·뒤 풍경·종유석을 골라 화면을 위아래로 끌어 보세요. 바닥을 끌면 보석·버섯·호수·포켓몬도 같이 움직여요.</p>
+<p class="s">게임 날짜 박스와 버튼을 아이폰 17 Pro 앱 자리 그대로 얹었어요. 좌우 어두운 띠는 이 폰에서 잘려 안 보이는 곳이에요. 아래 '자리 맞추기'에서 바닥·뒤 풍경·종유석을 골라 화면을 위아래로 끌어 보세요. 바닥을 끌면 보석·버섯·호수·포켓몬도 같이 움직여요.</p>
 <div class="stage" id="st">
   <canvas id="bgC" width="180" height="300"></canvas>
   <canvas id="fxC" width="360" height="600"></canvas>
@@ -47,7 +48,7 @@ ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
   <canvas id="zoneC" width="180" height="300"></canvas>
   <div id="layLn"><b>포켓몬이 걸을 수 있는 맨 위</b></div>
   <img id="hudI" src="HUD_IMG" alt="">
-  <div id="offTop">아이폰 15 Pro 화면 밖</div>
+  <div id="offTop">상태 표시줄 (아이폰 17 Pro)</div><div class="offS l"></div><div class="offS r"></div>
 </div>
 <div class="pan">
   <div class="lb">자리 맞추기 (고른 층을 화면에서 위아래로 끌어요 · 이 기기에 저장돼요)</div>
