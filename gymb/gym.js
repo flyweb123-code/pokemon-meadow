@@ -361,10 +361,10 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   rocket: { n: '로켓단 제복', a: '#34343c', b: '#2a2a30', g: 0, sx: 'mf', ev: 'rocket' },
   /* v27.54 경완 '만든 관장 의상들은 다 타입별로 전설 승급 보상에 넣어놔주고 받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로 표시': 전설의 체육관 보상 관장 의상 (PixelLab, 얼굴은 광휘·빛나 그대로). 상점엔 안 나옴(ev), 걸음 그림은 색 바꾸기 */
   lf_bruno: { n: '시바의 도복', a: '#eeeef2', b: '#2c2c34', g: 0, sx: 'm', ev: 'leg' }, lf_bea: { n: '채두의 도복', a: '#2e2e34', b: '#e8782c', g: 0, sx: 'f', ev: 'leg' },
-  lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' },   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
+  lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' }, lf_kabu: { n: '카브의 유니폼', a: '#2a2426', b: '#e0502a', g: 0, sx: 'm', ev: 'leg' }, lf_flannery: { n: '민지의 불꽃 차림', a: '#e05a6a', b: '#2a8a96', g: 0, sx: 'f', ev: 'leg' },  /* v28.12 경완 '남자는 카브로 다시 만들어봐주고 여자는 민지로' → '됐어 이제 불꽃 관장 옷도 배포해' */   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
 };
 // 전설의 체육관 타입 → 받는 관장 의상 (주인공 성별마다 하나, 그림이 있는 타입만. 새 의상을 그리면 여기에 더한다)
-const LEG_FIT = { 2: { m: 'lf_bruno', f: 'lf_bea' }, 4: { m: 'lf_roxie', f: 'lf_janine' } };   // 키 = 타입 번호 (2 격투, 4 독)
+const LEG_FIT = { 2: { m: 'lf_bruno', f: 'lf_bea' }, 4: { m: 'lf_roxie', f: 'lf_janine' }, 10: { m: 'lf_kabu', f: 'lf_flannery' } };   // 키 = 타입 번호 (2 격투, 4 독, 10 불꽃)
 // 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
 const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
 const myF = () => trOf().sex === 'f';
