@@ -80,3 +80,6 @@ Side walk fixes (2026-11-21 night, 경완: 카브 옆 걷기 등이 튀어나옴
 - Flannery 2/7/8: legs drawn from pixel templates in sidefix.py (2 legs together, 7 long step,
   8 short step; black outline, battle jeans dark/mid/light, shoe colour), upper body = frame 2,
   raised 1px in 7/8. Comparison at 8x with the base frames: ow/side_walk_cmp_x8.png. Old *_v4.
+
+Flannery field skin (2026-11-22, 경완 "민지 필드 피부색도 앞뒷모습이랑"): skinfix.py maps the field skin shades to the
+battle sprite skin palette by brightness order; hair and clothes untouched. Old ow/raw/lf_flannery_f_*_v5.
