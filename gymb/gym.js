@@ -361,10 +361,11 @@ const OUTFITS = {   // v14.78 경완 '맘에 든 것들만': PixelLab 으로 다
   rocket: { n: '로켓단 제복', a: '#34343c', b: '#2a2a30', g: 0, sx: 'mf', ev: 'rocket' },
   /* v27.54 경완 '만든 관장 의상들은 다 타입별로 전설 승급 보상에 넣어놔주고 받기 전에는 실루엣으로 표시, 받을 때는 보상 알림창 새로운 창으로 표시': 전설의 체육관 보상 관장 의상 (PixelLab, 얼굴은 광휘·빛나 그대로). 상점엔 안 나옴(ev), 걸음 그림은 색 바꾸기 */
   lf_bruno: { n: '시바의 도복', a: '#eeeef2', b: '#2c2c34', g: 0, sx: 'm', ev: 'leg' }, lf_bea: { n: '채두의 도복', a: '#2e2e34', b: '#e8782c', g: 0, sx: 'f', ev: 'leg' },
-  lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' },   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
+  lf_roxie: { n: '보미카의 무대옷', a: '#8a3a8a', b: '#2a2a30', g: 0, sx: 'm', ev: 'leg' }, lf_janine: { n: '도희의 닌자복', a: '#30282e', b: '#c8305a', g: 0, sx: 'f', ev: 'leg' }, lf_kabu: { n: '카브의 유니폼', a: '#2a2426', b: '#e0502a', g: 0, sx: 'm', ev: 'leg' }, lf_flannery: { n: '민지의 불꽃 차림', a: '#e05a6a', b: '#2a8a96', g: 0, sx: 'f', ev: 'leg' },  /* v28.12 경완 '남자는 카브로 다시 만들어봐주고 여자는 민지로' → '됐어 이제 불꽃 관장 옷도 배포해' */   // 체육관 이벤트 '로켓단의 체육관 점거' 보상 (2026-11-07, 상점엔 안 나옴). 걸음·뒷모습은 색 바꾸기
 };
 // 전설의 체육관 타입 → 받는 관장 의상 (주인공 성별마다 하나, 그림이 있는 타입만. 새 의상을 그리면 여기에 더한다)
-const LEG_FIT = { 2: { m: 'lf_bruno', f: 'lf_bea' }, 4: { m: 'lf_roxie', f: 'lf_janine' } };   // 키 = 타입 번호 (2 격투, 4 독)
+const LEG_FIT = { 2: { m: 'lf_bruno', f: 'lf_bea' }, 4: { m: 'lf_roxie', f: 'lf_janine' }, 10: { m: 'lf_kabu', f: 'lf_flannery' } };   // 키 = 타입 번호 (2 격투, 4 독, 10 불꽃)
+const lfMate = k => { for (const t in LEG_FIT) { const P = LEG_FIT[t]; if (P.m === k) return P.f; if (P.f === k) return P.m; } return ''; };   /* v28.12 경완 '내 캐릭터 성별 바꾸면 해당 성별에 맞는 관장 옷으로 바뀌어져 있게': 같은 타입 남·녀 관장 옷은 한 벌처럼 (받으면 둘 다, 입은 옷도 성별 따라 짝으로) */
 // 이 성별로 입을 수 있는 옷이면 그 옷, 아니면 null (기본 옷)
 const fitOf = (k, f = myF()) => (k && OUTFITS[k]?.sx.includes(f ? 'f' : 'm')) ? OUTFITS[k] : null;
 const myF = () => trOf().sex === 'f';
@@ -389,6 +390,7 @@ function clothMap(list, to) { const T = rgb2hsl(hx(to)), L = list.map(c => rgb2h
 const fitCache = {};
 // 옷을 칠한 그림 (dataURL). kind: ow 맵 걸음 그림 / tr 전신 / trb 배틀 뒷모습. 옷이 없으면 원래 그림
 function fitSrc(kind, fit = st()?.fit) {
+  if (fit && !fitOf(fit) && fitOf(lfMate(fit))) fit = lfMate(fit);
   const base = myOw(), key = `${kind}/${base}`, url = `${IMG}${key}.png`, O = fitOf(fit);
   if (!O || !CLOTH[key]) return Promise.resolve(url);
   // 앞모습(전신 카드·상점)은 옷 모양까지 새로 그린 그림 (Figma 이미지 모델, 경완 2026-10-27 '색 바꾸기 수준이 아니라 옷 좀 바꿔줘')
@@ -992,11 +994,11 @@ const loadNamed = () => NAMED.length ? Promise.resolve() : fetch(`gymb/named.jso
 
 /* v15.92 경완 '체육관 들어가면 캐릭터 디자인이 기본으로 돌아가는 버그' (손인 계정): 의상이 필드(S.fit·S.fits)와 체육관(g.fit·g.fits)에 따로 있어서,
    필드에서 입은 옷이 체육관에 안 넘어오거나 체육관에서 바꾼 옷이 필드에 안 넘어갔다 → 들어올 때 맞추고, 체육관에서 바꿀 때 둘 다 바꾼다 */
-function fitSync(g) { g.fits = g.fits || {}; if (Array.isArray(S.fits)) S.fits.forEach(k => { if (OUTFITS[k]) g.fits[k] = 1; });
+function fitSync(g) { g.fits = g.fits || {}; for (const k in g.fits) if (g.fits[k] && lfMate(k)) g.fits[lfMate(k)] = 1; if (g.fit && !fitOf(g.fit) && fitOf(lfMate(g.fit))) g.fit = lfMate(g.fit); if (S.fit && !fitOf(S.fit) && fitOf(lfMate(S.fit))) S.fit = lfMate(S.fit); if (Array.isArray(S.fits)) S.fits.forEach(k => { if (OUTFITS[k]) g.fits[k] = 1; });
   if (S.fit && OUTFITS[S.fit]) g.fit = S.fit; else if (g.fit && OUTFITS[g.fit] && !S.fit) { S.fit = g.fit; if (Array.isArray(S.fits) && !S.fits.includes(g.fit)) S.fits.push(g.fit); } }
 /* 경완 2026-11-15 '체육관 옷장이랑 필드 옷장이랑 통일': 가진 옷 = 필드 옷장(S.fits)과 체육관(g.fits)을 합친 한 목록, 순서는 의상 목록 순서 (필드 renderFitBag 과 같게) */
 function fitList() { const g = st() || {}; g.fits = g.fits || {}; const F = new Set([...Object.keys(g.fits).filter(k => g.fits[k]), ...(Array.isArray(S.fits) ? S.fits : [])]); return Object.keys(OUTFITS).filter(k => F.has(k) && fitOf(k)); }
-const fitHas = k => !!(k && (st()?.fits?.[k] || (Array.isArray(S.fits) && S.fits.includes(k))));
+const fitHas = k => !!k && [k, lfMate(k)].some(x => x && (st()?.fits?.[x] || (Array.isArray(S.fits) && S.fits.includes(x))));
 const legFitK = (t = st()?.ty) => { const k = LEG_FIT[t]?.[myF() ? 'f' : 'm']; return k && fitOf(k) ? k : ''; };
 const legFitDue = () => { const g = st(), k = g?.d && isLeg(g) && legFitK(g.ty); return !!k && !fitHas(k) && !window.gymSimOn && !window.gymEvTest; };
 const LF_ADJ = '명예로운';   /* 경완 '명예로운 으로 가자' */   /* 경완 '전설의 독 타입 관장 옷 이런 식으로 수식어, 전설은 좀 과한 듯' → 받기 전 이름 = '명예의 독 관장 옷' */
@@ -1005,7 +1007,7 @@ const lfImg = k => `${IMG}fit/${k}_${myF() ? 'f' : 'm'}.png`;
 // 전설 의상 받는 창: 빛 무대 위 실루엣 → 번쩍 하고 옷이 보임 → 팡파르. test = 운영자 시험 (아무것도 안 남김)
 function legFitPop(test) { const g = st(), k = test ? (legFitK(g?.ty) || legFitK(2)) : legFitDue() && legFitK(g.ty); if (!k) return Promise.resolve();
   const t = +Object.keys(LEG_FIT).find(x => Object.values(LEG_FIT[x]).includes(k)), O = OUTFITS[k];
-  if (!test) { g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); else if (!Array.isArray(S.fits)) S.fits = [k]; glog('fit', `전설 승급 보상으로 <b>${esc(O.n)}</b>을 받았다!`); save(); }
+  if (!test) { g.fits = g.fits || {}; if (!Array.isArray(S.fits)) S.fits = []; [k, lfMate(k)].filter(Boolean).forEach(x => { g.fits[x] = 1; if (!S.fits.includes(x)) S.fits.push(x); }); glog('fit', `전설 승급 보상으로 <b>${esc(O.n)}</b>을 받았다!`); save(); }
   return new Promise(ok => { try { window.GymBGM?.se?.('DP_KIRAKIRA2'); } catch (e) {}
     const p = pop(`<div class="lf-hd"><i class="lf-beam"></i><i class="lf-halo"></i><i class="lf-spot"></i><div class="lf-fig"><img alt="" src="${lfImg(k)}"></div>${[[20, 28], [78, 22], [14, 62], [86, 58], [28, 84], [72, 82]].map(([x, y], i) => `<i class="lf-sp" style="left:${x}%;top:${y}%;--d:${(i * .17).toFixed(2)}s"></i>`).join('')}</div>
       <h4 class="pp-t lf-t"><small>전설 승급 보상</small>${esc(O.n)}</h4><p class="lf-tx"><span class="lf-ty">${tyIcon(t).replace(/ data-tip="[^"]*"/, '')}${lfNm(t)}</span>전설의 체육관 관장만 입을 수 있는 옷이에요.<small>관장 카드 옷장에서 언제든 갈아입을 수 있어요.</small></p>
