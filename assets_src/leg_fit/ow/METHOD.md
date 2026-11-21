@@ -51,3 +51,14 @@ Kabu; kept as raw/lf_kabu_m_*_v1 and ow/raw/lf_kabu_m_*_v1. Redone with the game
 headband, black long-sleeve top with red-orange flames, white shorts with red marks, red and white long
 socks, brown shoes. Front pick c1 (c0 made him taller, hair at row 1, and changed the face); back and
 field first results.
+
+Fixes 2026-11-21 (경완: 민지 필드 머리 양쪽으로 뻗치게, 카브 배틀 키가 큼, 카브 뒷모습 팔 3개):
+- Kabu battle front/back: Edit image kept making him taller (hair top row 4-5 vs the cap at 13), so
+  both were redone with Transfer outfit on the 80x80 pt_m front and trb/pt_m back (outfit image = the
+  flame-uniform front, raw/lf_kabu_m_front_c2.png). Result raw/lf_kabu_m_battle_transfer.png (160x80);
+  front moved up 1px so the feet sit on the base row; top row 12 / 14 vs base 13. The back has only the
+  arm reaching to the ball. Previous versions raw/lf_kabu_m_*_v2.png.
+- Flannery field: Transfer outfit with the game's own Flannery NPC field sprite (gym/img/ow/flannery.png,
+  frames 0-2, native 16x32, ref/ow_flannery_outfit.png) as the outfit image -> hair fans out to both
+  sides. One hair-tip pixel at row 1 of side frame 2 removed so bobbed frames stay off row 0. Previous
+  version ow/raw/lf_flannery_f_*_v2.png. (PixelLab flags upscaled uploads; give it native size.)
