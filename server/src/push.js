@@ -85,7 +85,7 @@ export async function pushTo(env, code, m) {
 export const iGa = s => { const c = String(s).trim().slice(-1).charCodeAt(0) - 0xac00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
 export const _jwt = jwt;   // 시험용
 
-// v28.06 걸음 알림 (경완 2026-11-21 '꺼져 있는 유저들한테는 주기적으로 켜라고 알림' → '푸시랑 걸음 알림창 둘 다 배포해'):
+// v28.07 걸음 알림 (경완 2026-11-21 '꺼져 있는 유저들한테는 주기적으로 켜라고 알림' → '푸시랑 걸음 알림창 둘 다 배포해'):
 // 매일 12:30 KST. 만보기가 꺼졌거나(off) 3일 넘게 0km 인 유저에게, 한 번 끊긴 동안 최대 3번 (처음 · 3일 뒤 · 7일 뒤). 알 속 포켓몬은 말하지 않는다
 const DAY = 864e5, GR = ['', '일반', '우수', '레어', '에픽', '전설', '전설'];
 export function pedMsg(r, now = Date.now()) {
