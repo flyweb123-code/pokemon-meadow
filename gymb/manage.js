@@ -366,7 +366,7 @@ function yardTap(ev) {
 }
 const TY_SHOT = new Set([8, 10, 11, 12, 13, 14, 15, 16, 18]);   // 과녁에 기술을 쏘는 타입 (고스트·불꽃·물·풀·전기·에스퍼·얼음·드래곤·페어리)
 function yardMon(P, e, i) {
-  const t = SPECIES[P.sp]?.t || [], o = document.createElement('div');
+  const t = GA.pTy(P), o = document.createElement('div');
   o.className = 'ty-m' + ({ S: ' rkS', A: ' rkA' }[GA.rankOf?.(P)] || ''); o.dataset.p = P.id;   /* v21.09 경완 '훈련장에도 꾸미기 필드처럼 랭크 후광 (S 금빛·A 빨간빛)' */ o.innerHTML = '<i class="ty-sh"></i><div class="ty-fl"><i class="ty-sp"></i></div><div class="ty-tag"></div>';
   // 물고기 포켓몬은 처음부터 수영장에서, 수영장에만 있다 (경완 2026-10-27)
   const fish = !!GA.isFish?.(P.sp), p0 = Y.pos[P.id], [x, y] = p0 && (!fish || inPond(p0[0], p0[1], -14)) ? p0 : yardSpot(fish); Y.L.append(o);
@@ -995,7 +995,7 @@ function drawShop() {
 /* v20.78 경완 '체육관 상점도 추가되는 거 있으면 빨간 점': 새로 살 수 있게 된 칸(업데이트로 들어온 물건, 등급이 올라 풀린 꾸미기, 새 포켓몬으로 늘어난 기술머신)에 점.
    g.shSeen {키: 1} = 본 칸. 처음엔 지금 있는 것 모두 본 걸로. 탭을 열면 본 걸로 저장하되 그 탭을 보는 동안(탭 바꾸기·상점 닫기 전)엔 점을 그대로 둔다 */
 function shopKeys(t) { const g = st(), B = GB(), D = B?.D; if (!D) return [];
-  if (t === 'tm' || t === 'tr') { const K2 = new Set(); S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)).forEach(P => GB().tmOf(P.sp).forEach(i => { const id = D.mv[i]?.[0]; if (id && B.isTR(id) === (t === 'tr')) K2.add('tm:' + id); })); return [...K2]; }
+  if (t === 'tm' || t === 'tr') { const K2 = new Set(); S.box.filter(P => GA.pTy(P).includes(g.ty)).forEach(P => GB().tmOf(P.sp).forEach(i => { const id = D.mv[i]?.[0]; if (id && B.isTR(id) === (t === 'tr')) K2.add('tm:' + id); })); return [...K2]; }
   if (t === 'it') return [...B.IT_CAT.flatMap(([, , ids]) => ids.filter(id => B.HOLD[id]).map(id => 'it:' + id)), ...B.MINT.map(k => 'mint:' + k), ...(B.evOn?.() ? B.EV_VIT.map((_, i) => 'vit:' + i) : [])];
   if (t === 'deco') { const G = K.gradeOf(g.rep || 0).i; return Object.entries(K.DECO).filter(([, o]) => G >= o.lv).map(([k]) => 'deco:' + k); }
   return []; }
@@ -1006,7 +1006,7 @@ function shopSeeT(t) { const g = st(), N = shopNewOf(t); if (N.length) { shNow[t
 function shopLeave(t) { if (t) delete shNow[t]; else for (const k in shNow) delete shNow[k]; K.menuDot?.(); }
 // 기술머신: 내 체육관 타입 포켓몬이 배울 수 있는 기술. 사면 창고(g.tms {기술: 개수})에 들어가고, 가르치기는 포켓몬 정보 창의 '기술 가르치기'에서 (경완 2026-10-27)
 function shopTm(body, wantTR) {   /* v15.75 경완: 기술머신 탭·기술레코드 탭 따로 */
-  const D = GB().D, g = st(), mons = S.box.filter(P => (SPECIES[P.sp]?.t || []).includes(g.ty)); g.tms = g.tms || {};
+  const D = GB().D, g = st(), mons = S.box.filter(P => GA.pTy(P).includes(g.ty)); g.tms = g.tms || {};
   const can = new Map(); mons.forEach(P => GB().tmOf(P.sp).forEach(i => { if (GB().isTR(D.mv[i][0]) !== !!wantTR) return; if (!can.has(i)) can.set(i, []); can.get(i).push(P); }));
   const types = [...new Set([...can.keys()].map(i => D.mv[i][2]))].sort((a, b) => a - b);
   if (tmTy !== -1 && !types.includes(tmTy)) tmTy = -1;   // -1 = 전체 (경완 2026-10-27 '에스퍼 포켓몬이라고 에스퍼 기술만 배우는 건 아닌데')
