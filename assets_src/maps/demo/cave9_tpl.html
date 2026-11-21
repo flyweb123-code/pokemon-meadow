@@ -70,7 +70,7 @@ ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
   <textarea id="cpT" hidden readonly style="width:100%;height:64px;font:12px monospace;margin-top:6px"></textarea>
 
   <div class="lb">보기</div>
-  <div class="row"><button id="dropB">물방울 바로 떨어뜨리기</button><button id="batB">박쥐 날리기</button><button id="zb">구역 지도</button></div>
+  <div class="row"><button id="dropB">물방울 바로 떨어뜨리기</button><button id="batB">주뱃 날리기</button><button id="zb">구역 지도</button></div>
   <div class="lg" id="lg" hidden>
     <i style="background:#5a5a5a"></i><span>동굴 바닥: 땅 포켓몬</span>
     <i style="background:#0078ff"></i><span>호수: 물 포켓몬 (징검돌로 건너기)</span>
@@ -118,7 +118,7 @@ let nextDrop = 0;
 /* 보석 */
 /* 경완 '내가 배치할 수 있게 해줘' → 보석·버섯은 바탕에 찍지 않고 따로 그림, 자리는 이 기기에 저장 */
 const SPR = {}; for (const k in CFG.sprites) { const i = new Image(); i.src = CFG.sprites[k]; SPR[k] = i; }
-const LSK = 'cave-props-v3';
+const LSK = 'cave-props-v4';
 const mkP = a => { const [t, k, x, y] = a; if (t === 'gem') { const [c, name] = CFG.gemInfo[k]; return { t, k, x, y, c, name, hp: 3, gone: 0, grow: 1, shake: 0, sp: R() * 4, sx: 0, sy: 0 }; } return { t, k, x, y }; };
 let props = (() => { try { const v = JSON.parse(localStorage.getItem(LSK)); if (Array.isArray(v) && v.length) return v.map(mkP); } catch (e) {} return CFG.props.map(mkP); })(); /* 바닥 기준 자리로 저장 → 켤 때 바닥 자리만큼 더함 (applyOff 첫 번) */
 const spr = p => SPR[p.t === 'gem' ? 'gem_' + p.k : 'mush_' + p.k];
@@ -128,7 +128,7 @@ const saveP = () => { try { localStorage.setItem(LSK, JSON.stringify(props.map(p
 let EDIT = false, sel = null, drag = null;
 /* 박쥐 */
 const bats = [];
-function newBat() { const l = R() < .5; bats.push({ x: l ? -10 : W + 10, y: 18 + OFF.b + R() * 30, vx: (l ? 1 : -1) * (28 + R() * 14), ph: R() * 6, t: 0 }); }
+function newBat() { const l = R() < .5; bats.push({ x: l ? -10 : W + 10, y: 4 + OFF.b + R() * 24, vx: (l ? 1 : -1) * (28 + R() * 14), ph: R() * 6, t: 0 }); }
 /* 잔물결 반짝임 */
 const glints = [];
 /* 포켓몬 몇 마리 (크기 가늠용) */
@@ -184,13 +184,17 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
     let img, sx = 0, sy = 0, cw, ch, flip = false;
     if (RIDE === 'cart') { img = away ? SPR.cartb : CART; cw = img.width; ch = img.height; }
     else { const an = CFG.coal[away ? 'WalkUp' : 'Walk'], tot = an[4].reduce((a, b) => a + b, 0), f60 = (cart.t * 60 * .8) % tot; let fi = 0, acc = 0; while (fi < an[3] - 1 && f60 >= acc + an[4][fi]) { acc += an[4][fi]; fi++; } img = SPR.coal; sx = fi * an[1]; sy = an[0]; cw = an[1]; ch = an[2]; flip = (P[i + 1][0] - P[i][0]) * (away ? 1 : -1) > 0; }
-    const sc = (RIDE === 'cart' ? .12 + .62 * d : .15 + .7 * d) * (RIDE === 'cart' && away ? .62 : 1), dw = cw * sc, dh = ch * sc;
+    /* 경완 '광차 레일 너비에 맞춰서 크기 맞춰주고' → 그 자리 침목 폭(railW, 뒤 풍경 그림 줄 기준)에 몸 폭을 맞춤 */
+    const rr0 = y - ORG.b - OFF.b, RW = CFG.railW; let rw = RW[RW.length - 1][1]; for (let j = 0; j < RW.length - 1; j++) if (rr0 <= RW[j + 1][0]) { rw = lerp(RW[j][1], RW[j + 1][1], clamp((rr0 - RW[j][0]) / (RW[j + 1][0] - RW[j][0]), 0, 1)); break; } if (rr0 < RW[0][0]) rw = RW[0][1];
+    const bodyW = RIDE === 'cart' ? cw : cw * .62, sc = rw * (RIDE === 'cart' ? .95 : 1.05) / bodyW, dw = cw * sc, dh = ch * sc;
     const oc = OC.c, og = OC.g; oc.width = Math.max(1, Math.ceil(dw * S)); oc.height = Math.max(1, Math.ceil(dh * S)); og.imageSmoothingEnabled = false; og.save(); if (flip) { og.translate(oc.width, 0); og.scale(-1, 1); } og.drawImage(img, sx, sy, cw, ch, 0, 0, oc.width, oc.height); og.restore();
     const dk = CFG.tunnelIn ? Math.max(0, 1 - (y - CFG.tunnelIn) / 10) : 0; og.globalCompositeOperation = 'source-atop'; og.fillStyle = `rgba(26,20,46,${(1 - d) * .65})`; og.fillRect(0, 0, oc.width, oc.height); if (dk > 0) { og.fillStyle = `rgba(6,4,12,${Math.min(1, dk)})`; og.fillRect(0, 0, oc.width, oc.height); } og.globalCompositeOperation = 'source-over';   /* 굴 입구에 가까우면 어둠 속으로 */
+    /* 경완 '지금 광차가 바닥 위로 올라오네' → 바닥 턱(floorTop) 아래로는 안 그림 = 턱 뒤로 숨음 */
+    fx.save(); fx.beginPath(); fx.rect(0, 0, W * S, (CFG.floorTop + OFF.f) * S); fx.clip();
     fx.fillStyle = `rgba(6,4,12,${.3 * d})`; fx.beginPath(); fx.ellipse(x * S, (y + .5) * S, dw * .5 * S, Math.max(1, 2 * d) * S, 0, 0, 7); fx.fill();
     const ft = CFG.pathFadeTop != null ? Math.min(1, Math.max(0, (y - dh * .5) / CFG.pathFadeTop)) : 1; fx.globalAlpha = ft; fx.drawImage(oc, Math.round((x - dw / 2) * S), Math.round((y - dh + 1) * S)); fx.globalAlpha = 1;   /* 맨 위(먼 끝)에서는 안개 속으로 흐려짐 */
     if ((!away || RIDE === 'coal') && !(CFG.tunnelIn && y < CFG.tunnelIn + 4)) { const ly = y - dh * .5, rr = (4 + 8 * d) * S, gr = fx.createRadialGradient(x * S, ly * S, 0, x * S, ly * S, rr); gr.addColorStop(0, RIDE === 'cart' ? `rgba(255,214,140,${.25 + .3 * d})` : `rgba(255,140,60,${.25 + .3 * d})`); gr.addColorStop(1, 'rgba(255,180,90,0)'); fx.fillStyle = gr; fx.fillRect(x * S - rr, ly * S - rr, rr * 2, rr * 2); }
-    cart.lx = x; cart.ly = y; } }
+    fx.restore(); cart.lx = x; cart.ly = y; } }
   else if (cart && CFG.far) { cart.t += dt; const F = CFG.far, u = cart.t / cart.L; if (cart.t >= cart.L) { cart = null; cartT = 14 + R() * 10; } else {
     /* 경완 '멀리서 광차가 지나가는 레일도 디자인하는 식으로 해서 공간감 있는 버전': 먼 나무 다리 위를 작게·어둡게 가로질러 감 */
     const dir = cart.up ? -1 : 1, x = dir > 0 ? lerp(-16, W + 16, u) : lerp(W + 16, -16, u); let img, sx = 0, sy = 0, cw, ch, oy = 0, flip = false;
@@ -218,7 +222,11 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   /* 박쥐 (천장 그림자) */
   if (R() < dt * .05) newBat();
   for (let i = bats.length - 1; i >= 0; i--) { const b = bats[i]; b.t += dt; b.x += b.vx * dt; const y = b.y + Math.sin(b.t * 3 + b.ph) * 4, f = Math.sin(b.t * 18) > 0; if (b.x < -20 || b.x > W + 20) { bats.splice(i, 1); continue; }
-    fx.fillStyle = 'rgba(16,10,30,.85)'; const X = Math.round(b.x) * S, Y = Math.round(y) * S; fx.fillRect(X - 2, Y - 2, 4, 4); if (f) { fx.fillRect(X - 10, Y - 6, 8, 2); fx.fillRect(X + 2, Y - 6, 8, 2); fx.fillRect(X - 12, Y - 8, 2, 2); fx.fillRect(X + 10, Y - 8, 2, 2); } else { fx.fillRect(X - 10, Y, 8, 2); fx.fillRect(X + 2, Y, 8, 2); fx.fillRect(X - 12, Y + 2, 2, 2); fx.fillRect(X + 10, Y + 2, 2, 2); } }
+    /* 경완 '지나가는 박쥐 주뱃으로 바꿔줘봐' → 게임 필드 주뱃 날기 그림(s0 41 Walk), 먼 풍경이라 작고 살짝 어둡게 */
+    const an = CFG.zubat.Walk, tot = an[4].reduce((a, c) => a + c, 0), f60 = (b.t * 60) % tot; let fi = 0, acc = 0; while (fi < an[3] - 1 && f60 >= acc + an[4][fi]) { acc += an[4][fi]; fi++; }
+    const zs = b.sc || (b.sc = .55 + R() * .2), zw = an[1] * zs, zh = an[2] * zs, oc = OC.c, og = OC.g; oc.width = Math.ceil(zw * S); oc.height = Math.ceil(zh * S); og.imageSmoothingEnabled = false; og.save(); if (b.vx > 0) { og.translate(oc.width, 0); og.scale(-1, 1); } og.drawImage(SPR.zubat, fi * an[1], an[0], an[1], an[2], 0, 0, oc.width, oc.height); og.restore();
+    og.globalCompositeOperation = 'source-atop'; og.fillStyle = 'rgba(26,20,46,.3)'; og.fillRect(0, 0, oc.width, oc.height); og.globalCompositeOperation = 'source-over';
+    fx.drawImage(oc, Math.round((b.x - zw / 2) * S), Math.round((y - zh / 2) * S)); }
   /* 포켓몬 걷기 (크기 가늠) */
   MONS.forEach((m, i) => { m.t = (m.t || 0) + dt; const fr = Math.floor(m.t * 7) % m.f.length, x = m.x + Math.sin(m.t * m.v + i) * m.ax, y = m.y + Math.sin(m.t * m.v * .8 + i * 2) * m.ay; const e = monEls[i]; e.style.left = x * S + 'px'; e.style.top = y * S + 'px'; const s = m.f[fr]; if (e.src !== s) e.src = s; let lb = 0; if (LIT) for (const q of [...shL(), ...gemsL().filter(g => !g.gone).map(g => [g.x, g.y])]) { const d = Math.hypot(x - q[0], (y - q[1]) * 1.6); lb = Math.max(lb, clamp(1 - d / 34, 0, 1)); } e.style.filter = `brightness(${(LIT ? .62 : .8) + lb * .7}) drop-shadow(0 0 ${Math.round(lb * 6)}px rgba(190,130,255,${lb * .9}))`; e.style.transform = Math.cos(m.t * m.v + i) * m.ax < 0 ? 'scaleX(-1)' : ''; });
   requestAnimationFrame(frame); }
