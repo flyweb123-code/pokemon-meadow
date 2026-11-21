@@ -1889,7 +1889,7 @@ const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
 // 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
 const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 굉장했다!', '-resisted': '효과가 별로인 듯하다…' };
 async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (typeof t === 'function') { await t(); continue; } if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
-function hangOn(a) { const k = a[1], t = a[3] || ''; if (!((k === '-enditem' && /Focus Sash/.test(t)) || (k === '-activate' && /item: Focus Band|move: Endure/.test(t)) || (k === '-ability' && /Sturdy/.test(t) && !a[4]))) return false; const n = (B?.btl?.log?.[B.li] || '').split('|'); return n[1] === '-damage' && n[2] === a[2]; }
+function hangOn(a) { const k = a[1], t = a[3] || ''; if (!((k === '-enditem' && /Focus Sash/.test(t)) || (k === '-activate' && /item: Focus Band|move: Endure/.test(t)) || (k === '-ability' && /Sturdy/.test(t) && !a[4]))) return false; const L = B?.btl?.log || [], i = /^\|split\|/.test(L[B.li] || '') ? B.li + 1 : B.li, n = (L[i] || '').split('|'); return n[1] === '-damage' && n[2] === a[2]; }   /* v28.09 경완 '여전히 체력 게이지 다는 연출 나오기 전에 기합의 띠로 버텼다는 도구 연출 먼저': 다음 줄이 |split| 이면 그 뒤 진짜 -damage 줄을 봄 */
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
   // v13.16 경완 '맞지 않았다! 가 너무 빨리': 기술 이름 바로 뒤에 오는 결과 말은 이름을 읽을 틈(0.75초)을 둔다
