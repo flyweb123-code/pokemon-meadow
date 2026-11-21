@@ -71,7 +71,7 @@ async function one(env, row, m) {
 // 친구 코드 한 사람의 모든 기기에 (kind = 알림 종류: 기기가 그 종류를 켜 둔 것만)
 export async function pushTo(env, code, m) {
   if (!env.DB) return 0;
-  const { results } = await env.DB.prepare('SELECT tok, plat, env FROM push WHERE code = ? AND kinds LIKE ?').bind(code, `%${m.kind}%`).all();
+  const { results } = await env.DB.prepare('SELECT tok, plat, env FROM push WHERE code = ? AND kinds LIKE ?').bind(code, m.any ? '%' : `%${m.kind}%`).all();   /* m.any: 앱이 종류를 'visit' 하나로만 보내서, 푸시를 켠 기기 모두 (걸음 알림) */
   let n = 0;
   for (const row of results || []) {
     let r = 'fail'; try { r = await one(env, row, m); } catch (e) { console.log('push', e.message); }
@@ -84,3 +84,33 @@ export async function pushTo(env, code, m) {
 // 받침 있으면 '이', 없으면 '가' (한글이 아니면 '가')
 export const iGa = s => { const c = String(s).trim().slice(-1).charCodeAt(0) - 0xac00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; };
 export const _jwt = jwt;   // 시험용
+
+// v28.07 걸음 알림 (경완 2026-11-21 '꺼져 있는 유저들한테는 주기적으로 켜라고 알림' → '푸시랑 걸음 알림창 둘 다 배포해'):
+// 매일 12:30 KST. 만보기가 꺼졌거나(off) 3일 넘게 0km 인 유저에게, 한 번 끊긴 동안 최대 3번 (처음 · 3일 뒤 · 7일 뒤). 알 속 포켓몬은 말하지 않는다
+const DAY = 864e5, GR = ['', '일반', '우수', '레어', '에픽', '전설', '전설'];
+export function pedMsg(r, now = Date.now()) {
+  let e = {}; try { e = JSON.parse(r.eg || '{}') || {}; } catch (x) {}
+  const n = +e.n || 0, days = r.lw ? Math.floor((now - r.lw) / DAY) : 0, waitT = n ? `부화기 알 ${n}개가 기다리고 있어요` : '알이 기다리고 있어요';
+  const offB = '동작 및 피트니스가 꺼져 있어서 걸음이 안 들어와요. 설정 › 개인정보 보호 및 보안 › 동작 및 피트니스에서 포켓에그를 켜 주세요.';
+  const zeroB = `${Math.max(3, days)}일째 걸음이 0km예요. 폰을 들고 걸었다면 설정 › 동작 및 피트니스에서 포켓에그가 켜져 있는지 봐 주세요.`;
+  if (r.n === 0) return r.st === 'off' ? { title: '알이 멈춰 있어요', body: offB } : { title: waitT, body: zeroB };
+  if (r.n === 1) return { title: waitT, body: r.st === 'off' ? offB : zeroB };
+  const nr = Array.isArray(e.nr) && e.nr[1] > 0 ? e.nr : null, km = nr ? (nr[1] < 10 ? nr[1].toFixed(1) : Math.round(nr[1])) : 0;
+  return { title: nr ? `${GR[nr[0]] || ''} 알이 ${km}km만 더 가면 깨어나요` : waitT, body: '걸음이 들어오면 바로 따뜻해져요. 동작 및 피트니스를 켜고 앱을 한 번 열어 주세요.' };
+}
+export function pedDue(r, now = Date.now()) {
+  if (!r.on_ || r.n >= 3 || now - r.at > 30 * DAY) return false;   // 한 달 넘게 소식 없는 기기는 그만
+  if (!(r.st === 'off' || (r.lw > 0 && now - r.lw > 3 * DAY))) return false;
+  const slack = 6 * 3600e3;
+  return r.n === 0 || (r.n === 1 && now - r.t0 >= 3 * DAY - slack) || (r.n === 2 && now - r.t0 >= 7 * DAY - slack);
+}
+export async function pedCron(env) {
+  if (!env.DB) return 0; const now = Date.now(); let sent = 0;
+  const { results } = await env.DB.prepare("SELECT * FROM ped WHERE on_ = 1 AND n < 3 AND st != 'ok' OR (on_ = 1 AND n < 3 AND lw > 0 AND lw < ?)").bind(now - 3 * DAY).all();
+  for (const r of results || []) {
+    if (!pedDue(r, now)) continue;
+    const m = pedMsg(r, now), k = await pushTo(env, r.code, { kind: 'ped', any: true, title: m.title, body: m.body, collapse: 'ped', thread: 'ped' });
+    if (k > 0) { sent++; await env.DB.prepare('UPDATE ped SET n = n + 1, t0 = CASE WHEN n = 0 THEN ?2 ELSE t0 END, ls = ?2 WHERE code = ?1').bind(r.code, now).run(); }
+  }
+  console.log('pedCron', (results || []).length, 'sent', sent); return sent;
+}
