@@ -1,0 +1,19 @@
+name: tmp candy read
+on: { push: { branches: [claude/project-thread-rdrvmy], paths: ['.github/workflows/tmp-cdy.yml'] } }
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    env: { CLOUDFLARE_API_TOKEN: '${{ secrets.CLOUDFLARE_API_TOKEN }}', CLOUDFLARE_ACCOUNT_ID: '${{ secrets.CLOUDFLARE_ACCOUNT_ID }}' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+        working-directory: server
+      - working-directory: server
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          q() { npx wrangler d1 execute pokegrow --remote --json --command "$1" | jq -c '.[0].results'; }
+          echo KINDS; q "SELECT kind, COUNT(*) n FROM bal WHERE t >= (strftime('%s','now')-14*86400)*1000 GROUP BY kind"
+          echo GOLD; q "SELECT code, t, d FROM bal WHERE kind='gold' AND t >= (strftime('%s','now')-14*86400)*1000 ORDER BY t" | jq -c '.[] | {c:.code, t:.t, d:(.d|fromjson? // .)}'
