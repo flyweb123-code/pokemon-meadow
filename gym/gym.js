@@ -4541,7 +4541,7 @@ const trBoxPick = (L, title, again) => new Promise(ok => {
 async function trReward(R, o, ids, boss, shop, first) {
   const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .999);
   const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id));
-  const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p.sp, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
+  const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) | 0); } catch (e) { return 100; } };   /* 맥스업 먹은 만큼 최대 HP 도 */
   const cur = id => Math.round(hp(id) * mx(id));
   /* v23.56 경완 '상처약은 본가처럼 절댓값으로 쓸 포켓몬 선택, 기력의덩어리도 한 마리만, 도구는 본가 기준': 상처약 20·좋은상처약 60·고급상처약 120·회복약 가득, 기력의조각 절반·기력의덩어리 가득 (한 마리) */
   const who = async (L, q) => { const i = await o.choose(q, [...L.map(id => [nm(id), `HP ${cur(id)}/${mx(id)}`]), ['그만두기', '', '#9aa0b4,#6c7288']]); return i < L.length ? L[i] : null; };

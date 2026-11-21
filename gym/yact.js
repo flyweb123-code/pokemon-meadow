@@ -923,7 +923,7 @@ function mvForm(v) { if (!v.c) return '변화'; if (v.A.hide) return '잠복'; c
 function mineOf(o) {   // 고른 포켓몬 → 판에서 쓸 값 (읽기만)
   const B = GB(), P = o.P, m = B.gm(P), lv = m.lv || 1, eg = B.egFocus?.(P) ?? -1, er = eg >= 0 ? B.egList(P).find(r => r.i === eg) : null;
   // 번뜩임으로 깨닫는 중인 기술은 아직 모르는 기술이라 이름은 안 쓰고 타입만 (게임의 ??? 칸과 같게)
-  return { P, lv, st: B.statsOf(P.sp, lv, P.iv || [], m.nat, m.ev || []), mv: moveList(P), eg: er ? { i: eg, t: er.x[2], p: (m.egP || [])[eg] | 0 } : null, xp: m.xp | 0, fr: P.fr | 0, evRoom: Math.max(0, Math.min(B.EV_ONE - ((B.evArr(m)[R.stat]) | 0), B.EV_MAX - B.evSumOf(m) - (m.evp | 0))) };
+  return { P, lv, st: B.statsOf(P, lv, P.iv || [], m.nat, m.ev || []), mv: moveList(P), eg: er ? { i: eg, t: er.x[2], p: (m.egP || [])[eg] | 0 } : null, xp: m.xp | 0, fr: P.fr | 0, evRoom: Math.max(0, Math.min(B.EV_ONE - ((B.evArr(m)[R.stat]) | 0), B.EV_MAX - B.evSumOf(m) - (m.evp | 0))) };
 }
 const nmOf = P => P.nm || nmSp(P.sp);
 function newGame() {
