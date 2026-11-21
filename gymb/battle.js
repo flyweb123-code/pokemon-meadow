@@ -15,7 +15,7 @@
 const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
-const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
+const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png${k === 'leader_flannery' ? '?v=2' : ''}`;
 /* v25.08 경완 '더블 배틀 시연 얼굴 띠에서 npc 하단 잘림': 얼굴 띠 .mug 는 허리 아래를 띠 밖으로 잘라 보여 주는데(margin-bottom -42px), 쌍둥이처럼 키 작은 그림(위 빈칸 20줄 넘음)은 잘리지 않게 아래까지 */
 function mugFit(el, u) { if (!el) return; const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, im.width, im.height).data; let y0 = 0; find: for (; y0 < im.height; y0++) for (let i = 0; i < im.width; i++) if (d[(y0 * im.width + i) * 4 + 3] > 8) break find; if (y0 > im.height * .25) el.style.marginBottom = '0px'; } catch (e) {} }; im.src = u; }
 /* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
