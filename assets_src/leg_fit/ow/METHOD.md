@@ -36,3 +36,11 @@ back = same tool on gym/img/trb/pt_m.png with the new front as the reference. Wh
 by flood fill of pure white from the edges (the lab coat is off-white, so it stays). Field: Transfer
 outfit with the new front as the outfit image -> topost.py -> bobfix.py
 (ow/lf_blaine_m_ow9.png 288x32, ow/lf_blaine_m_ow.png 32x192; not copied into gym/img yet).
+
+Kabu (lf_kabu_m) and Flannery (lf_flannery_f), fire, 2026-11-21 (경완 '남자는 카브, 여자는 민지'; Blaine not used):
+same as Blaine. Kabu front had no reference image (described in the prompt: gray hair, white headband,
+towel, black athletic shirt, white shorts with red trim); Flannery front used LEADER_Flannery from
+"Animated Trainer Intros.zip" as the reference. Backs used the new fronts as reference. White
+background removal treats >=250 in all channels as background (one result came on 255,254,255).
+Picks: Flannery front c0 (c1 face less like Dawn), back c2 (c0 hair touched the top edge, c1 hair
+turned orange), field transfer v2 (v1 hair so big it reached row 0).
