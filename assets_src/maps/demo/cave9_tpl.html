@@ -16,6 +16,7 @@ h1{font-size:19px;margin:0 0 4px}p.s{margin:0 0 12px;color:var(--sub);font-size:
 .stage canvas{position:absolute;left:0;top:0;width:360px;height:600px;image-rendering:pixelated}
 #bgC{z-index:1}#fxC{z-index:2}#dkC{z-index:3}#glC{z-index:4;mix-blend-mode:screen}#zoneC{z-index:6;opacity:0;transition:opacity .3s}.zones #zoneC{opacity:.55}
 #mons{position:absolute;inset:0;z-index:2;pointer-events:none}
+#stC{z-index:2}
 #hudI{position:absolute;left:0;top:0;width:360px;height:600px;z-index:8;pointer-events:none}.nohud #hudI,.nohud #offTop{display:none}
 #offTop{position:absolute;left:0;top:0;width:100%;height:48px;line-height:20px;z-index:8;pointer-events:none;background:rgba(0,0,0,.28);border-bottom:1px dashed rgba(255,255,255,.5);color:#fff;font-size:11px;text-align:center;padding:2px 6px}
 .offS{position:absolute;top:0;bottom:0;width:23px;z-index:8;pointer-events:none;background:rgba(0,0,0,.6)}.offS.l{left:0;border-right:1px dashed rgba(255,255,255,.5)}.offS.r{right:0;border-left:1px dashed rgba(255,255,255,.5)}.nohud .offS{display:none}
@@ -43,6 +44,7 @@ ul.t{margin:6px 0 0;padding-left:18px;font-size:13.5px}ul.t li{margin:2px 0}
   <canvas id="bgC" width="180" height="300"></canvas>
   <canvas id="fxC" width="360" height="600"></canvas>
   <div id="mons"></div>
+  <canvas id="stC" width="180" height="300"></canvas>
   <canvas id="dkC" width="180" height="300"></canvas>
   <canvas id="glC" width="360" height="600"></canvas>
   <canvas id="zoneC" width="180" height="300"></canvas>
@@ -100,7 +102,9 @@ let LIT = true, bgData = null;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v)), lerp = (a, b, t) => a + (b - a) * t, R = Math.random;
 /* 구역: 물 = 호수 (바탕 색으로) */
 let water = null;
-function prep() { bg.clearRect(0, 0, W, H); bg.fillStyle = '#000'; bg.fillRect(0, 0, W, H); bg.drawImage(LI.b, 0, ORG.b + OFF.b); bg.drawImage(LI.s, 0, ORG.s + OFF.s); bg.drawImage(LI.f, 0, ORG.f + OFF.f); bgData = bg.getImageData(0, 0, W, H).data; water = new Uint8Array(W * H);
+function prep() { bg.clearRect(0, 0, W, H); bg.fillStyle = '#000'; bg.fillRect(0, 0, W, H); bg.drawImage(LI.b, 0, ORG.b + OFF.b); bg.drawImage(LI.f, 0, ORG.f + OFF.f);
+  /* 경완 '광차 종유석 위로 지나가네 지금' → 종유석은 광차·주뱃 앞 층(stC)에 따로, 바닥 턱 아래로는 안 그림 */
+  const sc2 = $('#stC').getContext('2d'); sc2.clearRect(0, 0, W, H); sc2.save(); sc2.beginPath(); sc2.rect(0, 0, W, CFG.floorTop + OFF.f); sc2.clip(); sc2.drawImage(LI.s, 0, ORG.s + OFF.s); sc2.restore(); bgData = bg.getImageData(0, 0, W, H).data; water = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) { const r = bgData[i * 4], g = bgData[i * 4 + 1], b = bgData[i * 4 + 2]; if (CFG.isWater(r, g, b, i % W, ((i / W) | 0) - OFF.f)) water[i] = 1; }
   const zc = $('#zoneC').getContext('2d'), zi = zc.createImageData(W, H); for (let i = 0; i < W * H; i++) { const y = (i / W) | 0, c = water[i] ? [0, 120, 255] : y < CFG.wallY ? [192, 64, 255] : [90, 90, 90]; zi.data.set([...c, 255], i * 4); } zc.putImageData(zi, 0, 0); }
 function applyOff() { const df = OFF.f - OAP.f; OAP = { ...OFF };
