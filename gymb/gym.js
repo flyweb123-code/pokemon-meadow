@@ -1203,11 +1203,14 @@ function bsBase(gi) { const g = st(), M = g.bsL = g.bsL || {}; if (M[gi]) return
   const L = (S.box || []).map(P => g.mon?.[P.id]?.lv | 0).filter(Boolean).sort((a, b) => b - a).slice(0, 6);
   return (M[gi] = clampN((L.length ? Math.round(L.reduce((a, b) => a + b, 0) / L.length) : myAvg()) + rndI(-1, 1), 1, 100)); }
 const bsCut = (T, gi) => { const n = BS_N[gi - 1] || 6; return T.length <= n ? T : [...T.slice(0, n - 1), T[T.length - 1]]; };   // 마리 수 제한: 앞에서부터 + 마지막(에이스)
+const bsBad = (T, ty) => { if (!T?.length || !ty) return 0; let b = 0; for (const m of T) { const t = (SPECIES[m[0]]?.t || []).filter(Boolean); if (t.some(a => (SE[a] || []).includes(+ty))) b--; else if (t.some(x => (SE[ty] || []).includes(x))) b++; } return b / T.length; };   /* 심사관 팀 상성: + = 체육관 타입에 불리 */
 function mkBoss(gi, t) {
   const g = st(), r = seeded('bs' + g.ty + gi), q = [/관장/, /관장/, /관장/, /라이벌|관장/, /사천왕/, /챔피언/][gi - 1], RED = gi === 5 && !gList().some(x => (x.gmax | 0) >= 5) && NAMED.find(n => n.id === 'red'),   /* v24.16 경완 '첫번째 체육관 명문 심사만 고정, 그 뒤부터는 원래대로': 명문 이상인 체육관(휴업 포함)이 하나도 없을 때만 */
     P = RED ? [RED] : q && NAMED.filter(n => q.test(n.cls));   /* v24.15 경완 '레드는 일단 명문 등급 심사로 고정' (평소 도전자로도 그대로 옴) */
   if (!P?.length) return null;
-  const c = mkScripted(0, t, BS_LV[gi - 1], P[Math.floor(r() * P.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
+  /* v28.24 경완 '인기체육관 승급심사에서 도전자가 도전자한테 불리한 상성 가져오는건 난이도 반영이 된거야?' → '불리한 심사관은 안 고르기': 체육관 타입에 약점 찔리는 포켓몬이 상성 좋은 포켓몬보다 많은 팀(bsBad > 0)은 후보에서 뺌. 다 빠지면 그대로 */
+  const tg = myAvg() + BS_LV[gi - 1] + 2, ok = RED ? P : P.filter(n => bsBad(nmTeam(n, tg), g.ty) <= 0), P2 = ok.length ? ok : P;
+  const c = mkScripted(0, t, BS_LV[gi - 1], P2[Math.floor(r() * P2.length)]); if (c) { c.boss = gi; c.music = RED ? RED.music : gi >= 5 ? 'champ' : c.music; }
   return c;
 }
 /* v23.31 경완 '이름 있는 트레이너 다시 올 때 라인업 좀 바꿔서, 세 번째 이후에도 조금씩 바꿔서 오게 하고 그때 전설·에픽까지 범위 넓히면, 천장 넘지 않는 선 안에서':
