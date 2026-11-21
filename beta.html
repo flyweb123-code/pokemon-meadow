@@ -4142,10 +4142,12 @@ const USER_LOG_HOLD = 5000;
 function holdLog(e, ms) { dlgHold = { e, until: performance.now() + ms }; clearTimeout(holdLog.t); holdLog.t = setTimeout(renderDlg, ms + 50); }
 /* v27.66 경완 '항구에서는 연못 상호작용 연못이라고 나오는건 다 바다로 수정': 항구 일지는 연못·호수 → 바다 (받침 따라 조사도 바꿈, 석촌호수 같은 이름·호수의 ○○ 는 그대로) */
 const HB_SEA = { '가': '바닷가', '을': '바다를', '이': '바다가', '은': '바다는', '과': '바다와', '으로': '바다로' };
+/* v28.16 경완 '이 외에 동굴에 안 어울리는 상호작용들 있는지 검토해보고 다 빼줘': 동굴 일지 — 연못은 호수, 풀숲은 바위틈, 하늘 문장은 동굴 천장 */
+const CV_LK = { 가: '숫가', 으로: '로', 을: '를', 이: '가', 은: '는', 과: '와' }, cvTxt = t => typeof t !== 'string' ? t : t.replace(/(^|[^가-힣])연못(가|으로|을|이|은|과)?/g, (w, pre, j) => pre + '호수' + (j ? CV_LK[j] : '')).replace(/호수숫가/g, '호숫가').replace(/풀숲/g, '바위틈').replace('나란히 하늘을 빙글빙글', '나란히 동굴 천장 아래를 빙글빙글').replace('밤하늘에 그림을', '어두운 동굴 벽에 그림을').replace(/하늘에서 (.+?) 내려와/, '어디선가 $1 나타나');
 const hbSea = t => typeof t !== 'string' ? t : t.replace(/(^|[^가-힣])(연못|호수)(가|으로|을|이|은|과|의|공)?/g, (w, pre, k, j) => j === '의' || j === '공' ? w : pre + (k === '연못' && j ? HB_SEA[j] : k === '호수' && j === '가' ? '바다가' : '바다' + (j === '으로' ? '로' : j || '')));
 function log(html, who = [], big = false) {
   if (logMute) return;
-  if (HB) html = hbSea(html);   // v5.44: 타이틀 구경 포켓몬
+  if (HB) html = hbSea(html); else if (CV) html = cvTxt(html);   // v5.44: 타이틀 구경 포켓몬
   const dg = $('#dlg'); if (dg && dg.classList.contains('folded') && who.some(watching)) foldDlg(false, true);
   const e = { t: S.clock, html, who: who.map(m => m.uid), big };
   S.log.unshift(e); while (S.log.length > LOG_MAX) S.log.pop();
@@ -5217,7 +5219,7 @@ const TYPE_RULES = [
     start: () => { burst(a, 'spark', '✦', 4); burst(b, 'spark', '✦', 4); } })],
   [(a, b) => has(a, WAT) && has(b, WAT), 6, (a, b) => ({ key: 'water-water', kind: 'play', mo: 'romp', p: { fx: 'splash' },
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 신나게 물장구를 친다.`, start: () => { splashAt(a); splashAt(b); } })],
-  [(a, b) => has(a, GRA) && has(b, GRA) && weather() !== 'rain' && !isNight(), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', mo: 'bask', ea: '☀', eb: '☀',
+  [(a, b) => has(a, GRA) && has(b, GRA) && !CV && weather() !== 'rain' && !isNight(), 6, (a, b) => ({ key: 'grass-grass', kind: 'chat', mo: 'bask', ea: '☀', eb: '☀',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 나란히 서서 잎을 펼치고 광합성을 한다.` })],
   [(a, b) => has(a, FIR) && has(b, FIR), 6, (a, b) => ({ key: 'fire-fire', kind: 'show',
     text: () => `${J(a,'과/와')} ${J(b,'이/가')} 누구 불꽃이 더 큰지 겨룬다!`, start: () => { burst(a, 'flame', '✹', 4); burst(b, 'flame', '✹', 4); } })],
@@ -6217,14 +6219,14 @@ function doSpecial(m) {
     return true;
   }
   if (sp === 'sun') {
-    if (isNight() && m.sp !== 43) return false;
+    if (CV || isNight() && m.sp !== 43) return false;   /* v28.16 동굴엔 햇볕·달빛 없음 */
     if (weather() === 'rain') return false;   // v18.80 경완 '비 오는데 햇볕 쬐는 상호작용': 비 올 땐 햇볕·달빛 쬐기 안 함
     setState(m, 'special', rnd(6, 10)); m.special = 'sun'; emote(m, m.sp === 43 ? '☾' : '☀', 'note', 3, 'sun');
     if (Math.random() < .5) log(m.sp === 43 ? `${J(m,'이/가')} 달빛 아래 잎사귀를 펼친다.` : `${J(m,'이/가')} 햇볕을 쬐며 광합성을 한다.`, [m]);
     return true;
   }
   if (sp === 'moon') {
-    if (!isNight() || weather() === 'rain') return false;
+    if (CV || !isNight() || weather() === 'rain') return false;
     setState(m, 'special', 6); m.special = 'moon'; emote(m, '☾', 'note', 4, 'moon');
     log(`${J(m,'이/가')} 달을 올려다보며 빙글빙글 춤을 춘다.`, [m]);
     return true;
@@ -6970,7 +6972,7 @@ function seasonCv(cv, part, o) { const se = season(); if (se === 'summer' || !cv
     if (out) { A[i] = out[0]; A[i + 1] = out[1]; A[i + 2] = out[2]; } }
   g.putImageData(D, 0, 0); return cv; }
 // 계절 날림: 봄 꽃잎, 가을 낙엽, 겨울 눈
-function seasonFx() { let e = $('#seaFx'); if (!e) { e = document.createElement('div'); e.id = 'seaFx'; fxEl.append(e); } const se = season(), sn = snowing(), k = se + sn; if (e.dataset.s === k) return; e.dataset.s = k;
+function seasonFx() { let e = $('#seaFx'); if (!e) { e = document.createElement('div'); e.id = 'seaFx'; fxEl.append(e); } const se = CV ? 'cave' : season(), sn = !CV && snowing(), k = se + sn;   /* v28.16: 동굴엔 눈·꽃잎 안 날림 */ if (e.dataset.s === k) return; e.dataset.s = k;
   const fx = sn ? 'winter' : se === 'spring' ? 'spring' : '';   // v8.29 경완: 가을 낙엽은 없앰, 눈은 실제로 눈이 올 때만 (봄은 꽃잎)
   e.className = fx ? 'sea-' + fx : ''; const n = fx === 'winter' ? 46 : fx ? 16 : 0; let h = '';
   for (let i = 0; i < n; i++) h += `<i style="left:${(Math.random() * (W + 120) - 60).toFixed(0)}px;animation-delay:${(-Math.random() * 9).toFixed(2)}s;animation-duration:${(fx === 'winter' ? 6 + Math.random() * 5 : 8 + Math.random() * 5).toFixed(2)}s;--sx:${(Math.random() * 60 - 30).toFixed(0)}px;--r:${(Math.random() * 360).toFixed(0)}deg"></i>`;
@@ -8216,7 +8218,7 @@ async function fetchWx(force, maxAge = 30 * 60e3) {
 const SNOW_C = c => (c >= 71 && c <= 77) || c === 85 || c === 86;
 const snowing = () => S.wxT ? S.wxT === 'snow' : !!(realWx && Date.now() - realWx.at < 12 * 3600e3 && SNOW_C(+realWx.code));
 // v8.42 경완: 뇌우 = 실제 날씨 코드 95~99(뇌우)일 때, 작업실 '뇌우' 고르기(S.wxT='storm'). 비 오는 날 그대로에 빗줄기가 굵고 빨라지고, 가끔 번개가 번쩍이고 천둥이 친다
-const wxNow = () => S.wxT || (snowing() ? 'snow' : storming() ? 'storm' : weather());   /* 친구 필드 손님에게 보낼 지금 날씨 */
+const wxNow = () => S.wxT || (snowing() ? 'snow' : storming() ? 'storm' : wxReal());   /* 친구 필드 손님에게 보낼 지금 날씨 */
 const storming = () => S.wxT ? S.wxT === 'storm' : !!(realWx && Date.now() - realWx.at < 12 * 3600e3 && +realWx.code >= 95);
 let stormT = 0;
 function stormBolt(host = fxEl, w0 = 0) { const W = w0 || 360;   /* v18.63 훈련장도 같은 번개 (GA.bolt, 필드 폭 W = 360) */
@@ -8229,7 +8231,8 @@ function stormBolt(host = fxEl, w0 = 0) { const W = w0 || 360;   /* v18.63 훈�
 }
 function stormTick(now = performance.now()) { if (!storming() || document.hidden || inGym() || !rainEl?.classList.contains('on')) { stormT = 0; return; } if (!stormT) stormT = now + 2500 + Math.random() * 4000; else if (now >= stormT) { stormT = now + 6000 + Math.random() * 12000; stormBolt(); if (Math.random() < .3) setTimeout(stormBolt, 250 + Math.random() * 500); } }
 setInterval(() => { const o = fTick; fTick = true; try { stormTick(); } finally { fTick = o; } }, 400);   /* v18.68 경완: 번개 소리도 필드 소리 — 미니게임 중엔 안 남 */
-function weather() {
+function weather() { return CV ? 'clear' : wxReal(); }   /* v28.16 경완 '이 외에 동굴에 안 어울리는 상호작용들 있는지 검토해보고 다 빼줘': 땅속이라 비·흐림에 따른 장면(비 온 뒤 털기·웅덩이·햇볕 쬐기 막힘 등) 없음 — 날짜 박스·친구 화면·진화 조건은 진짜 날씨 wxReal */
+function wxReal() {
   if (S.wxT) return S.wxT === 'snow' ? 'cloud' : S.wxT === 'storm' ? 'rain' : S.wxT; if (realWx && Date.now() - realWx.at < 12 * 3600e3) return realWx.w;   /* v4.33: 새 날씨가 오기 전엔 무작위 날씨보다 마지막 실제 날씨 */ const blk = Math.floor(Date.now() / (3 * 3600e3)); let x = (blk * 2654435761) >>> 0; x ^= x >>> 13; x = Math.imul(x, 0x5bd1e995) >>> 0; x ^= x >>> 15; const r = (x % 1000) / 1000;
   return r < .2 ? 'rain' : r < .5 ? 'cloud' : 'clear';
 }
@@ -8444,7 +8447,7 @@ function sky() {
     drawSky(h, col, wx); skyBodies(h, wx, skyDark); seasonFx(); rainEl?.classList.toggle('on', wx === 'rain'); rainEl?.classList.toggle('storm', wx === 'rain' && storming()); rainGEl?.classList.toggle('on', wx === 'rain'); puddleEls.forEach(p => p.classList.toggle('on', wx === 'rain')); if (flameEl) flameEl.classList.toggle('out', wx === 'rain' || (flameEl.dousedT || 0) > Date.now()); document.body.classList.toggle('scOut', wx === 'rain'); for (const e of fl2Els) e.classList.toggle('out', wx === 'rain');   /* v4.93: 물 기술에 꺼진 동안도 */ treeBerries(); }
   { const h = hour();
   const phase = h < 4 ? '한밤' : h < 5.5 ? '새벽' : h < 7 ? '해돋이' : h < 10 ? '아침' : h < 14 ? '한낮' : h < 16.5 ? '오후' : h < 18.6 ? '노을' : h < 20 ? '저녁' : '밤';
-  $('#phase').textContent = phase + (weather() !== 'clear' ? ' · ' + (storming() ? '뇌우' : WX_TXT[weather()]) : ''); }
+  $('#phase').textContent = phase + (wxReal() !== 'clear' ? ' · ' + (storming() ? '뇌우' : WX_TXT[wxReal()]) : ''); }
   { const d = new Date(); $('#day').textContent = `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
   $('#time').textContent = clockStr();
   { const nt = uiNight(); $('#clock').classList.toggle('night', nt); $('#dlg').classList.toggle('night', nt); infoEl.classList.toggle('night', nt && !infoEl.classList.contains('bud')); document.querySelectorAll('.mapico').forEach(b => b.classList.toggle('night', nt));   /* v5.86 경완: 필드 버튼은 모두 밤낮 디자인 */ $('#hint').classList.toggle('night', nt); }
@@ -8488,7 +8491,8 @@ function tickFlies(now) {
 
 // ---------- info panel ----------
 const STATE_TXT = { idle: '두리번거리는 중', eat: '열매를 먹는 중', sleep: '쿨쿨 자는 중' };
-function doingText(m) {
+function doingText(m) { const t = doingText0(m); return HB ? hbSea(t) : CV ? cvTxt(t) : t; }   /* v28.16: 정보창 '연못가에서 …' 도 항구는 바다·동굴은 호수 */
+function doingText0(m) {
   if (m.hidden) return m.special === 'dig' ? '땅속에 숨어 있음' : '어딘가로 사라짐';
   if (m.state === 'interact' && m.partner) return { play: `${m.partner.name}와(과) 노는 중`, chat: `${m.partner.name} 옆에서 쉬는 중`, fight: `${m.partner.name}와(과) 신경전 중`, mirror: `${m.partner.name}를(을) 신기하게 보는 중` }[m.kind];
   if (m.state === 'move') { const g = m.goal || {}; return { berry: '열매를 향해 가는 중', meet: `${g.mon ? g.mon.name : '친구'}에게 가는 중`, bed: '잘 곳을 찾는 중', forage: '먹을 걸 찾는 중', flee: '도망치는 중', scare: '누굴 놀래킬지 노리는 중', heal: '지친 친구에게 가는 중', fish: '연못가로 가는 중' }[g.kind] || '산책 중'; }
@@ -14907,7 +14911,7 @@ EVX['가라르의 모습으로 큰 피해를 견뎌야'] = { b: 1, f: P => (gmEr
 EVX['흰줄의 모습으로 큰 피해를 견뎌야'] = { b: 1, f: P => P?.fm === 'White' && (gmEr(P).rc || 0) >= 294, k: '흰줄의 모습이 체육관 배틀에서 쓰러지지 않고 받은 피해가 모두 294가 넘으면 진화해요' };
 EVX['대장 절각참을 3마리 쓰러뜨려야'] = { b: 1, f: P => (gmEr(P).ko || 0) >= 3, k: '거리를 채우고 체육관 배틀에서 악·강철 타입 포켓몬을 3마리 쓰러뜨리면 진화해요' };
 EVX['다른 트레이너와 함께 놀아야'] = { f: P => !!P?.vp, k: '거리를 채우고 필드에 놀러 온 친구가 쓰다듬거나 열매를 주면 진화해요' };   /* v21.50: 친구 필드 놀러가기 ownAct 가 P.vp */
-EVX['비가 올 때'] = { f: () => weather() === 'rain', k: '거리를 채우고 비가 올 때 진화해요' };
+EVX['비가 올 때'] = { f: () => wxReal() === 'rain', k: '거리를 채우고 비가 올 때 진화해요' };
 EVX['가라르의 모습으로 밤에'] = { f: () => !isDay(), k: '거리를 채우고 밤에 진화해요' };
 const EV_REMO = '총어와 함께 있어야', remoNear = P => { const L = S.mons || []; return P != null && L.some(m => m.pid === P.id) && L.some(m => m.pid !== P.id && +m.sp === 223); };   /* v21.46 경완: 타만타 → 만타인은 판짱처럼 거리를 다 채우고 타만타와 총어(223)가 둘 다 필드에 있으면 */
 /* v21.44 경완 '폰 거꾸로 하면 진화하기 버튼 활성화': 오케이징 → 칼라마네로. 거리를 다 채우고 폰을 거꾸로 들면(deviceorientation beta < -60) 8초 동안 진화하기가 켜짐 */
@@ -15556,7 +15560,7 @@ const MINIOR_C = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'
 const FM_FGT = { 875: 'Noice', 964: 'Hero', 1024: 'Terastal' };
 const FM_LIVE = new Set([351, 421, 555, 681, 716, 746, 774, 875, 877, 964, 1024]);   // 필드 상황(날씨·배고픔·맞붙기·무리)으로 바뀌는 폼: 도감·상자 그림은 기본
 function fmOf(P, sp = P?.sp) { if (!P) return ''; if (sp === 585 || sp === 586) return fmSeason();
-  if (sp === 351) { const w = snowing() ? 'snow' : weather(), h = hour(); return w === 'snow' ? 'Snowy' : w === 'rain' ? 'Rainy' : w === 'clear' && h >= 9 && h < 17 ? 'Sunny' : ''; }   /* v16.75 경완: 캐스퐁은 필드 날씨 따라 (눈·비·맑은 낮) */
+  if (sp === 351) { const w = snowing() ? 'snow' : weather(), h = hour(); return w === 'snow' ? 'Snowy' : w === 'rain' ? 'Rainy' : w === 'clear' && !CV && h >= 9 && h < 17 ? 'Sunny' : ''; }   /* v16.75 경완: 캐스퐁은 필드 날씨 따라 (눈·비·맑은 낮) */
   if (sp === 877) { const m = S.mons.find(o => o.pid === P.id); return m && m.hunger > FEED_BUB && !(Date.now() - (m.fedFm || 0) < 30e3) ? 'Hangry' : ''; }   /* v21.71: 열매를 받은 뒤 30초는 배부른 모양 (먹기 전에 바로 바뀜) */
   if (sp === 681 || FM_FGT[sp] || sp === 746 || sp === 774) { const m = S.mons.find(o => o.pid === P.id); if (!m) return ''; const ft = Date.now() - (m.fgtAt || -1e9);
     if (sp === 681) return ft < 60e3 ? 'Blade' : '';   /* v16.83 경완: 킬가르도는 필드에서 맞붙으면 블레이드폼, 1분쯤 뒤 실드폼 */
@@ -15564,7 +15568,7 @@ function fmOf(P, sp = P?.sp) { if (!P) return ''; if (sp === 585 || sp === 586) 
     if (sp === 746) return m.school ? 'School' : '';   /* 약어리는 셋 이상 모이면 군집 */
     return m.hunger > FEED_BUB ? MINIOR_C[Math.floor(nabSeed('mn' + P.id)() * 7)] : ''; }   /* 메테노는 배고프면 껍질이 깨져 코어 (색은 개체마다 무작위) */
   if (sp === 716) { const w = snowing() ? 'snow' : weather(); return w === 'clear' ? '' : 'Neutral'; }   /* v16.83 경완: 제르네아스는 비·흐림·눈처럼 차분한 날 릴랙스 */
-  if (sp === 421) return weather() === 'clear' && !snowing() && hour() >= 9 && hour() < 17 ? 'Sunshine' : '';   /* v16.82 경완: 체리꼬는 맑은 낮이면 포지폼 (도감·상자 그림은 기본) */
+  if (sp === 421) return !CV && weather() === 'clear' && !snowing() && hour() >= 9 && hour() < 17 ? 'Sunshine' : '';   /* v16.82 경완: 체리꼬는 맑은 낮이면 포지폼 (도감·상자 그림은 기본) */
   if (sp === 555) { const m = S.mons.find(o => o.pid === P.id); return m && m.hunger > FEED_BUB && natAb(P)?.ab === 'zenmode' ? 'Zen' : ''; }   /* v16.81 경완: 숨겨진 특성(달마모드)인 불비달마만 배고프면 달마모드 */   // 모르페코는 열매 말풍선이 뜰 만큼 배고프면 배고픈 모양 */
  const f = sp === P.sp ? P.fm : ''; return f && FMI[sp]?.includes(f) ? f : ''; }
 const FMP = {};
@@ -18604,7 +18608,7 @@ body.stEdit #fx #rain,body.stEdit #fx #seaFx{visibility:visible!important}body.s
   api.setSeaDate = d => { SEA_PV = d || null; S.seaT = null; buildProps.again?.(); rebuild(true); };   // v8.28: 날짜로 계절 미리 보기
   api.setSeason = v => { S.seaT = SEASONS.includes(v) ? v : null; buildProps.again?.(); rebuild(true); };   // v8.25: 작업실 계절 미리 보기
   api.season = () => season();
-  api.wx = () => weather();
+  api.wx = () => wxReal();
   // ---------- 소품 편집 (맵 편집기와 같은 손잡이) ----------
   let DEFAULT = null;   // 지금 배포된 배치 (설정을 불러온 뒤 정한다)
   const KEYS_OBJ = ['pond', 'fire', 'bed', 'tree', 'perch', 'stump'], KEYS_ARR = ['path', 'bushes', 'puddles', 'rocks', 'mush', 'flowers'];
