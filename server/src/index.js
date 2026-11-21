@@ -265,6 +265,11 @@ async function handle(env, b) {
       await db.prepare('DELETE FROM push WHERE code = ?1 AND tok NOT IN (SELECT tok FROM push WHERE code = ?1 ORDER BY at DESC LIMIT 5)').bind(me).run();
       return true;
     }
+    case 'retSeen': {   // v28.32 휴면 복귀 선물 (경완 2026-11-22): 서버 시각으로 잰 '마지막으로 앱을 본 때' — 기기 시계를 돌려 선물을 받는 걸 막는다. prev 0 = 처음
+      const k = 'seen:' + me, row = await db.prepare('SELECT v FROM kv WHERE k = ?').bind(k).first();
+      await db.prepare('INSERT INTO kv (k, v) VALUES (?1, ?2) ON CONFLICT(k) DO UPDATE SET v = ?2').bind(k, String(now)).run();
+      return { now, prev: +row?.v || 0 };
+    }
     case 'pedSt': {   // v28.07 걸음 알림: {st:'ok'|'off'|'zero', lw, on, eg:{n, ng:[5], nr:[g,km]|null}}
       const st = ['ok', 'off', 'zero'].includes(b.st) ? b.st : bad('잘못된 요청'), lw = Math.max(0, Math.min(now, Math.floor(+b.lw || 0))), on = b.on === false ? 0 : 1;
       const e = b.eg && typeof b.eg === 'object' ? b.eg : {}, eg = JSON.stringify({ n: Math.max(0, Math.min(999, +e.n || 0)), ng: (Array.isArray(e.ng) ? e.ng : []).slice(0, 5).map(x => Math.max(0, Math.min(999, +x || 0))), nr: Array.isArray(e.nr) && e.nr.length === 2 ? [Math.max(1, Math.min(6, +e.nr[0] || 1)), Math.max(0, Math.min(999, +e.nr[1] || 0))] : null });
