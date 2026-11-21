@@ -120,7 +120,7 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   const hole = (x, y, rx, ry, a) => { const g = dk.createRadialGradient(x, y, 0, x, y, rx); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)'); dk.save(); dk.translate(x, y); dk.scale(1, ry / rx); dk.translate(-x, -y); dk.fillStyle = g; dk.beginPath(); dk.arc(x, y, rx, 0, 7); dk.fill(); dk.restore(); };
   if (LIT) { for (const g of gemsL()) if (!g.gone && g.r) hole(g.x, g.y - 6, g.r * 1.5, 16, .6 * g.grow);
     for (const m of shL()) hole(m[0], m[1] + 3, 24, 13, .62 + .18 * Math.sin(tt * 1.7 + m[0])); }
-  if (LIT && cart && cart.lx != null && RIDE === 'coal' && cart.ly > CFG.tunnel[3]) { hole(cart.lx, cart.ly - 16, 22, 18, .55); const g = gl.createRadialGradient(cart.lx * S, (cart.ly - 18) * S, 0, cart.lx * S, (cart.ly - 18) * S, 40); g.addColorStop(0, 'rgba(255,120,40,.28)'); g.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = g; gl.fillRect(cart.lx * S - 40, (cart.ly - 18) * S - 40, 80, 80); } /* 경완 '석탄산 말고 탄차곤으로' — 탄차곤 몸 불빛 */
+  if (LIT && cart && cart.lx != null && RIDE === 'coal' && !CFG.far && !CFG.path && cart.ly > CFG.tunnel[3]) { hole(cart.lx, cart.ly - 16, 22, 18, .55); const g = gl.createRadialGradient(cart.lx * S, (cart.ly - 18) * S, 0, cart.lx * S, (cart.ly - 18) * S, 40); g.addColorStop(0, 'rgba(255,120,40,.28)'); g.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = g; gl.fillRect(cart.lx * S - 40, (cart.ly - 18) * S - 40, 80, 80); } /* 경완 '석탄산 말고 탄차곤으로' — 탄차곤 몸 불빛 */
   dk.globalCompositeOperation = 'source-over';
   /* 버섯 빛 */
   if (LIT) for (const m of shL()) { const p = .5 + .5 * Math.sin(tt * 1.7 + m[0]), g = gl.createRadialGradient(m[0] * S, m[1] * S, 0, m[0] * S, m[1] * S, 34); g.addColorStop(0, `rgba(190,130,255,${.3 + .2 * p})`); g.addColorStop(1, 'rgba(0,0,0,0)'); gl.fillStyle = g; gl.fillRect(m[0] * S - 34, m[1] * S - 34, 68, 68); }
@@ -154,7 +154,31 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   for (const m of MONS) if (m.swim && Math.random() < dt * 1.2) { const x = m.x + Math.sin(m.t * m.v + MONS.indexOf(m)) * m.ax, y = m.y + Math.sin(m.t * m.v * .8 + MONS.indexOf(m) * 2) * m.ay; rings.push({ x, y, t: .3, w: 1 }); }
   /* 광차 / 석탄산: 굴에서 나와 레일 따라 (가끔 거꾸로)
      경완 '터널 안으로 들어갈 때 디졸브로 들어가는게 아니라 들어가는 부분부터 어두워지면서' → 굴 입구 줄(tunnel[3]) 위로 넘어간 칸부터 검게, 굴 안쪽 폭 밖은 안 보임 */
-  cartT -= dt; if (cartT <= 0 && !cart) runCart(); if (cart) { cart.t += dt; const u = cart.up ? 1 - cart.t / cart.L : cart.t / cart.L; if (cart.t >= cart.L) { cart = null; cartT = 36 + R() * 10; } else {
+  cartT -= dt; if (cartT <= 0 && !cart) runCart(); if (cart && CFG.path) { cart.t += dt; const P = CFG.path, u = cart.t / cart.L; if (u >= 1) { cart = null; cartT = 12 + R() * 8; } else {
+    /* 경완 '좀 위에서 내려다보는 느낌으로 멀어질수록 입체적인 동굴 원근감': 아래층 S 자 레일을 따라 멀어지면 작게·흐리게·느리게 (깊이 단위로 같은 빠르기) */
+    const away = !cart.up, f = (away ? u : 1 - u) * (P.length - 1), i = Math.min(P.length - 2, Math.floor(f)), k = f - i, x = lerp(P[i][0], P[i + 1][0], k), y = lerp(P[i][1], P[i + 1][1], k), d = lerp(P[i][2], P[i + 1][2], k);
+    let img, sx = 0, sy = 0, cw, ch, flip = false;
+    if (RIDE === 'cart') { img = away ? SPR.cartb : CART; cw = img.width; ch = img.height; }
+    else { const an = CFG.coal[away ? 'WalkUp' : 'Walk'], tot = an[4].reduce((a, b) => a + b, 0), f60 = (cart.t * 60 * .8) % tot; let fi = 0, acc = 0; while (fi < an[3] - 1 && f60 >= acc + an[4][fi]) { acc += an[4][fi]; fi++; } img = SPR.coal; sx = fi * an[1]; sy = an[0]; cw = an[1]; ch = an[2]; flip = (P[i + 1][0] - P[i][0]) * (away ? 1 : -1) > 0; }
+    const sc = (RIDE === 'cart' ? .12 + .62 * d : .15 + .7 * d) * (RIDE === 'cart' && away ? .62 : 1), dw = cw * sc, dh = ch * sc;
+    const oc = OC.c, og = OC.g; oc.width = Math.max(1, Math.ceil(dw * S)); oc.height = Math.max(1, Math.ceil(dh * S)); og.imageSmoothingEnabled = false; og.save(); if (flip) { og.translate(oc.width, 0); og.scale(-1, 1); } og.drawImage(img, sx, sy, cw, ch, 0, 0, oc.width, oc.height); og.restore();
+    const dk = CFG.tunnelIn ? Math.max(0, 1 - (y - CFG.tunnelIn) / 10) : 0; og.globalCompositeOperation = 'source-atop'; og.fillStyle = `rgba(26,20,46,${(1 - d) * .65})`; og.fillRect(0, 0, oc.width, oc.height); if (dk > 0) { og.fillStyle = `rgba(6,4,12,${Math.min(1, dk)})`; og.fillRect(0, 0, oc.width, oc.height); } og.globalCompositeOperation = 'source-over';   /* 굴 입구에 가까우면 어둠 속으로 */
+    fx.fillStyle = `rgba(6,4,12,${.3 * d})`; fx.beginPath(); fx.ellipse(x * S, (y + .5) * S, dw * .5 * S, Math.max(1, 2 * d) * S, 0, 0, 7); fx.fill();
+    const ft = CFG.pathFadeTop != null ? Math.min(1, Math.max(0, (y - dh * .5) / CFG.pathFadeTop)) : 1; fx.globalAlpha = ft; fx.drawImage(oc, Math.round((x - dw / 2) * S), Math.round((y - dh + 1) * S)); fx.globalAlpha = 1;   /* 맨 위(먼 끝)에서는 안개 속으로 흐려짐 */
+    if ((!away || RIDE === 'coal') && !(CFG.tunnelIn && y < CFG.tunnelIn + 4)) { const ly = y - dh * .5, rr = (4 + 8 * d) * S, gr = fx.createRadialGradient(x * S, ly * S, 0, x * S, ly * S, rr); gr.addColorStop(0, RIDE === 'cart' ? `rgba(255,214,140,${.25 + .3 * d})` : `rgba(255,140,60,${.25 + .3 * d})`); gr.addColorStop(1, 'rgba(255,180,90,0)'); fx.fillStyle = gr; fx.fillRect(x * S - rr, ly * S - rr, rr * 2, rr * 2); }
+    cart.lx = x; cart.ly = y; } }
+  else if (cart && CFG.far) { cart.t += dt; const F = CFG.far, u = cart.t / cart.L; if (cart.t >= cart.L) { cart = null; cartT = 14 + R() * 10; } else {
+    /* 경완 '멀리서 광차가 지나가는 레일도 디자인하는 식으로 해서 공간감 있는 버전': 먼 나무 다리 위를 작게·어둡게 가로질러 감 */
+    const dir = cart.up ? -1 : 1, x = dir > 0 ? lerp(-16, W + 16, u) : lerp(W + 16, -16, u); let img, sx = 0, sy = 0, cw, ch, oy = 0, flip = false;
+    if (RIDE === 'cart') { img = SIDE_CART(); cw = img.width; ch = img.height; oy = (Math.floor(x / 3) % 2) ? 0 : -.5; }
+    else { const an = CFG.coal.Walk, tot = an[4].reduce((a, b) => a + b, 0), f60 = (cart.t * 60 * .8) % tot; let fi = 0, acc = 0; while (fi < an[3] - 1 && f60 >= acc + an[4][fi]) { acc += an[4][fi]; fi++; } img = SPR.coal; sx = fi * an[1]; sy = an[0]; cw = an[1]; ch = an[2]; flip = dir > 0; }
+    const sc = RIDE === 'cart' ? 1 : F.sc, dw = cw * sc, dh = ch * sc, X = x - dw / 2, Y = F.y - dh + 1 + oy;
+    const oc = OC.c, og = OC.g; oc.width = Math.ceil(dw * S); oc.height = Math.ceil(dh * S); og.imageSmoothingEnabled = false; og.save(); if (flip) { og.translate(oc.width, 0); og.scale(-1, 1); } og.drawImage(img, sx, sy, cw, ch, 0, 0, oc.width, oc.height); og.restore();
+    if (RIDE === 'cart') { og.globalCompositeOperation = 'source-atop'; og.fillStyle = F.tint; og.fillRect(0, 0, oc.width, oc.height); og.globalCompositeOperation = 'source-over'; }
+    fx.drawImage(oc, Math.round(X * S), Math.round(Y * S));
+    const lx = x + dir * dw * .45, ly = F.y - dh * .55; cart.lx = lx; cart.ly = ly; const gr = fx.createRadialGradient(lx * S, ly * S, 0, lx * S, ly * S, 10 * S); gr.addColorStop(0, RIDE === 'cart' ? 'rgba(255,214,140,.55)' : 'rgba(255,140,60,.55)'); gr.addColorStop(1, 'rgba(255,180,90,0)'); fx.fillStyle = gr; fx.fillRect((lx - 10) * S, (ly - 10) * S, 20 * S, 20 * S);
+    if (R() < dt * (RIDE === 'cart' ? 4 : 8)) bits.push({ x: x - dir * dw * .3, y: F.y - (RIDE === 'cart' ? 0 : dh * .8), vx: -dir * 8 + (R() - .5) * 8, vy: RIDE === 'cart' ? 10 + R() * 10 : -10 - R() * 8, t: .1, [RIDE === 'cart' ? 'spark' : 'ember']: 1 }); } }
+  else if (cart) { cart.t += dt; const u = cart.up ? 1 - cart.t / cart.L : cart.t / cart.L; if (cart.t >= cart.L) { cart = null; cartT = 36 + R() * 10; } else {
     const [tx0, ty0, tx1, MY] = CFG.tunnel, y = lerp(CFG.rail.y0 - 6, CFG.rail.y1, u), x = CFG.rail.x0 + (y - CFG.rail.y0) * CFG.rail.k;
     cart.lx = x; cart.ly = y; let img, sx = 0, sy = 0, cw, ch, flip = false, oy = 0;
     if (RIDE === 'cart') { img = CART; cw = CART.width; ch = CART.height; oy = Math.round(Math.sin(cart.t * 22) * .6 * .5) + ((Math.floor(y / 4) % 2) ? 0 : -.5); }
@@ -176,7 +200,14 @@ function frame(now) { const dt = Math.min(.05, (now - last) / 1000); last = now;
   requestAnimationFrame(frame); }
 const shards = []; let pick = null, cart = null, cartT = 5;
 let RIDE = 'cart'; const OC = (() => { const c = document.createElement('canvas'); return { c, g: c.getContext('2d') }; })();
-function runCart() { cart = { t: 0, L: RIDE === 'cart' ? 9 : 13, up: R() < .3 }; }
+/* 먼 다리 위 광차 옆모습 (16x11 도트, 멀리라 작게) */
+let SCV = null; function SIDE_CART() { if (SCV) return SCV; const c = document.createElement('canvas'); c.width = 16; c.height = 11; const g = c.getContext('2d'), P = (x, y, w, h, k) => { g.fillStyle = k; g.fillRect(x, y, w, h); };
+  P(3, 1, 3, 2, '#6b4a2e'); P(6, 0, 3, 3, '#8a6238'); P(9, 1, 3, 2, '#5c3f28'); P(7, 1, 1, 1, '#7fd4f0'); P(10, 1, 1, 1, '#f0c860');
+  P(1, 3, 14, 1, '#9aa0b4'); P(1, 4, 14, 4, '#5a5f70'); P(2, 5, 12, 2, '#4a4e5e'); P(1, 8, 14, 1, '#3a3d4a'); P(0, 3, 1, 2, '#2a2532'); P(15, 3, 1, 2, '#2a2532');
+  for (const x of [3, 7, 11]) P(x, 5, 1, 1, '#8a90a2');
+  for (const x of [2, 10]) { P(x, 8, 4, 3, '#221e2a'); P(x + 1, 9, 2, 1, '#9a9aa8'); }
+  return SCV = c; }
+function runCart() { cart = { t: 0, L: CFG.path ? (RIDE === 'cart' ? 12 : 18) : CFG.far ? (RIDE === 'cart' ? 11 : 16) : RIDE === 'cart' ? 9 : 13, up: R() < (CFG.far ? .5 : .3) }; }
 const CART = new Image(); CART.src = 'CART_IMG';
 $('#st').addEventListener('pointerdown', e => { const r = $('#st').getBoundingClientRect(), x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
   if (EDIT) { const hit = [...props].sort((a, b) => b.y - a.y).find(p => { const im = spr(p); return Math.abs(x - p.x) <= im.width / 2 + 3 && y >= p.y - im.height - 3 && y <= p.y + 4; }); sel = hit || null; if (hit) { drag = { dx: x - hit.x, dy: y - hit.y }; try { $('#st').setPointerCapture(e.pointerId); } catch (e2) {} } return; }
