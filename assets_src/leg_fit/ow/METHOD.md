@@ -73,3 +73,10 @@ Fixes 2026-11-21 evening (경완: 카브 뒷모습 왼쪽 팔·흰 브릿지, �
   standing feet) recoloured to jeans + shoes, upper body = standing frame raised 1px; back walk 5/6
   legs = pt_f 5/6 rows >= 26 (this also removes the leftover outline lines); hair and jeans remapped
   to the battle sprite's palettes by brightness order. Old versions *_v3.
+
+Side walk fixes (2026-11-21 night, 경완: 카브 옆 걷기 등이 튀어나옴, 민지 옆 걷기 다리가 안 움직임) — sidefix.py, no PixelLab:
+- Kabu 7/8: rows < 25 = standing side frame 2 raised 1px (the walk frames had the base boy's bag
+  bulge on the back); legs stay.
+- Flannery 2/7/8: legs drawn from pixel templates in sidefix.py (2 legs together, 7 long step,
+  8 short step; black outline, battle jeans dark/mid/light, shoe colour), upper body = frame 2,
+  raised 1px in 7/8. Comparison at 8x with the base frames: ow/side_walk_cmp_x8.png. Old *_v4.
