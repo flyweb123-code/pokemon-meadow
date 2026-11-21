@@ -15,7 +15,7 @@
 const GA = window.GA, { sfx, esc } = GA;
 const SPECIES = GA.SPECIES, TYPE_KO = GA.TYPE_KO, S = GA.S;
 const IMG = 'gym/img/';
-const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png`;
+const trSrc = k => window.Gym?.k?.trSrc?.(k) || `${IMG}tr/${k}.png${k === 'leader_flannery' ? '?v=2' : ''}`;
 /* v25.08 경완 '더블 배틀 시연 얼굴 띠에서 npc 하단 잘림': 얼굴 띠 .mug 는 허리 아래를 띠 밖으로 잘라 보여 주는데(margin-bottom -42px), 쌍둥이처럼 키 작은 그림(위 빈칸 20줄 넘음)은 잘리지 않게 아래까지 */
 function mugFit(el, u) { if (!el) return; const im = new Image(); im.onload = () => { try { const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, im.width, im.height).data; let y0 = 0; find: for (; y0 < im.height; y0++) for (let i = 0; i < im.width; i++) if (d[(y0 * im.width + i) * 4 + 3] > 8) break find; if (y0 > im.height * .25) el.style.marginBottom = '0px'; } catch (e) {} }; im.src = u; }
 /* v21.89 DBK Animated Trainer Intros: 이름 있는 관장·사천왕·챔피언은 움직이는 등장 그림 (가로 띠, 한 칸=h×h, 1.5초에 한 번 재생) */
@@ -1877,7 +1877,7 @@ const stOf = s => (String(s || '').split(' ')[1] || '').replace('fnt', '');
 // 급소·상성 말은 본가처럼 체력바가 다 줄어든 뒤에 (경완 2026-10-28). 쇼다운은 -damage 앞에 보내므로 모아 뒀다가 낸다
 const PEND = { '-crit': '급소에 맞았다!', '-supereffective': '효과가 굉장했다!', '-resisted': '효과가 별로인 듯하다…' };
 async function flushPend() { const L = B?.pend; if (!L?.length) return; B.pend = []; for (const t of L) { if (typeof t === 'function') { await t(); continue; } if (/버텼다!$/.test(t) && B.frq?.length) await frFx(B.frq.shift()); await msg(t); } }
-function hangOn(a) { const k = a[1], t = a[3] || ''; if (!((k === '-enditem' && /Focus Sash/.test(t)) || (k === '-activate' && /item: Focus Band|move: Endure/.test(t)) || (k === '-ability' && /Sturdy/.test(t) && !a[4]))) return false; const n = (B?.btl?.log?.[B.li] || '').split('|'); return n[1] === '-damage' && n[2] === a[2]; }
+function hangOn(a) { const k = a[1], t = a[3] || ''; if (!((k === '-enditem' && /Focus Sash/.test(t)) || (k === '-activate' && /item: Focus Band|move: Endure/.test(t)) || (k === '-ability' && /Sturdy/.test(t) && !a[4]))) return false; const L = B?.btl?.log || [], i = /^\|split\|/.test(L[B.li] || '') ? B.li + 1 : B.li, n = (L[i] || '').split('|'); return n[1] === '-damage' && n[2] === a[2]; }   /* v28.09 경완 '여전히 체력 게이지 다는 연출 나오기 전에 기합의 띠로 버텼다는 도구 연출 먼저': 다음 줄이 |split| 이면 그 뒤 진짜 -damage 줄을 봄 */
 async function handle(a) {
   const k = a[1], A = s => B.act[s];
   // v13.16 경완 '맞지 않았다! 가 너무 빨리': 기술 이름 바로 뒤에 오는 결과 말은 이름을 읽을 틈(0.75초)을 둔다
