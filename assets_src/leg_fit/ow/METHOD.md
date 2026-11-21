@@ -62,3 +62,14 @@ Fixes 2026-11-21 (경완: 민지 필드 머리 양쪽으로 뻗치게, 카브 �
   frames 0-2, native 16x32, ref/ow_flannery_outfit.png) as the outfit image -> hair fans out to both
   sides. One hair-tip pixel at row 1 of side frame 2 removed so bobbed frames stay off row 0. Previous
   version ow/raw/lf_flannery_f_*_v2.png. (PixelLab flags upscaled uploads; give it native size.)
+
+Fixes 2026-11-21 evening (경완: 카브 뒷모습 왼쪽 팔·흰 브릿지, 민지 필드 색·뒤/옆 걷기), all by hand/script, no PixelLab:
+- Kabu back: the extra left arm (sleeve + flame cuff, x < 24..27, rows 44-71) cleared, outline kept on
+  the new edge.
+- Kabu white streak: streak.py recolours the gray hair on short line segments to whites. Battle front
+  (34,12)-(39,19), back (37,15)-(42,21); field front bangs (11,8)-(13,12), side (12,8)-(13,12),
+  back (19,7)-(20,11), walk frames the same 1px higher (they reuse the standing head).
+- Flannery field: legfix.py. Side walk 7/8 legs = pt_f 7/8 legs (rows >= 25, 1px lower to match her
+  standing feet) recoloured to jeans + shoes, upper body = standing frame raised 1px; back walk 5/6
+  legs = pt_f 5/6 rows >= 26 (this also removes the leftover outline lines); hair and jeans remapped
+  to the battle sprite's palettes by brightness order. Old versions *_v3.
