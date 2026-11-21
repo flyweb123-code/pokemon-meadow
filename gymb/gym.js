@@ -4275,7 +4275,7 @@ const TR_XS = [['leftovers', 3, 4, n => `매 턴 끝에 HP ${n}/16 회복`], ['s
    뽑기 무게: 포켓로그처럼 자뭉·리샘·과사가 잘 나오고, 상태 이상 하나만 고치는 열매·타입 반감 열매는 적게 */
 /* v28.29 경완 '열매 좀 효과 어려운 것들은 수련탑에서 다 빼자': 수련탑 보상 열매는 보면 바로 아는 것만 — HP 회복(오렌·자뭉)·상태 이상 낫기(리샘·버치·유루·복슝·복분·배리·시몬)·HP 1/4 에서 능력치 오름(치리·용아·캄라·야타비·규살).
    뺀 것: 타입 반감 18종(로셀 등), 맛·성격 따라 혼란(무화·위키·마고·아바·파야), 랑사·스타·미클·이스티·의문·자보카·애터·악키·타라프, 과사(PP) */
-const TR_BER_OK = new Set(['oranberry', 'sitrusberry', 'lumberry', 'cheriberry', 'chestoberry', 'pechaberry', 'rawstberry', 'aspearberry', 'persimberry', 'liechiberry', 'ganlonberry', 'salacberry', 'petayaberry', 'apicotberry']);
+const TR_BER_OK = new Set(['oranberry', 'sitrusberry', 'lumberry', 'cheriberry', 'chestoberry', 'pechaberry', 'rawstberry', 'aspearberry', 'persimberry', 'liechiberry', 'ganlonberry', 'salacberry', 'petayaberry', 'apicotberry', 'enigmaberry']);   /* v28.30 경완 체크 페이지에서 의문열매 다시 넣음 */
 const TR_BER_W = k => /^(sitrus|lum)berry$/.test(k) ? 3 : /^(cheri|chesto|pecha|rawst|aspear|persim)berry$/.test(k) || /^(chilan|chople|coba|kebia|shuca|charti|tanga|kasib|babiri|occa|passho|rindo|wacan|payapa|yache|haban|colbur|roseli)berry$/.test(k) ? .4 : 1;
 const TR_BK = new Set();   /* 나온 열매 (카드 그림 TR_IC 에 넣을 것) */
 const TR_EP = new Set(['leftovers', 'shellbell', 'kingsrock', 'focusband', 'gripclaw', 'souldew', 'scopelens']), TR_MS = new Set(['minibh']);
@@ -4289,7 +4289,7 @@ const TR_SB = [['lightball', [25], 2], ['thickclub', [104, 105], 2], ['metalpowd
   ['flameorb', (P, ab) => /^(guts|quickfeet|marvelscale|magicguard|flareboost)$/.test(ab) && !(SPECIES[P.sp]?.t || []).includes(10), 2], ['toxicorb', (P, ab) => /^(guts|quickfeet|marvelscale|magicguard|toxicboost|poisonheal)$/.test(ab) && !(SPECIES[P.sp]?.t || []).some(t => t === 4 || t === 9), 2]];
 const trSdId = P => P?.fm || GB().D?.sp?.[P?.sp]?.id || '';   /* v26.86 포켓로그 로그 등급 = 에픽 */
 const TR_TYIT = { 1: 'silkscarf', 2: 'blackbelt', 3: 'sharpbeak', 4: 'poisonbarb', 5: 'softsand', 6: 'hardstone', 7: 'silverpowder', 8: 'spelltag', 9: 'metalcoat', 10: 'charcoal', 11: 'mysticwater', 12: 'miracleseed', 13: 'magnet', 14: 'twistedspoon', 15: 'nevermeltice', 16: 'dragonfang', 17: 'blackglasses', 18: 'fairyfeather' };
-const TR_IT1 = [['lifeorb', 2], ['choiceband', 2], ['choicespecs', 2], ['choicescarf', 2], ['assaultvest', 1], ['rockyhelmet', 1]];
+const TR_IT1 = [['lifeorb', 2], ['assaultvest', 1], ['rockyhelmet', 1]];   /* v28.30 경완 체크 페이지(구애 도구는 포켓로그에 없음): 구애머리띠·구애안경·구애스카프 뺌 */
 const trItNm = k => TR_NM[k]?.[0] || GB().HOLD?.[k]?.[0] || k, trItD = k => TR_NM[k]?.[1] || GB().HOLD?.[k]?.[2] || '';
 /* 교체 화면 줄 안 도구 아이콘 (본가 도구 1칸 + 쌓이는 도구 ×개수 + 영양제 ×개수) */
 const trPtyIt = R => pid => { const L = [], m = GB().gm(GB().boxOf(pid)); if (m?.it) L.push([m.it, 1]); Object.entries(R.xit?.[pid] || {}).forEach(([k, n]) => n > 0 && L.push([k, n])); (R.vit?.[pid] || []).forEach((n, k) => n > 0 && L.push([TR_IC.find(([x]) => x === TR_VIT[k][0])?.[1] || 'hpup', n]));
