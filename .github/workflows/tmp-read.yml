@@ -26,12 +26,12 @@ jobs:
       - name: Read
         run: |
           q() { npx wrangler d1 execute pokegrow --remote --json --command "$1"; }
-          q "SELECT id, code, at FROM account WHERE id LIKE '%donggo%' OR code='PF575BHN'"
+          q "SELECT id, code, dev, at FROM account WHERE id LIKE '%donggo%'"
           q "SELECT code, at, json_extract(card,'$.n') AS n FROM trainer WHERE code='PF575BHN' OR card LIKE '%똥빵귀%'"
           q "SELECT acct, code, saved, parts, at FROM save WHERE code='PF575BHN'"
           q "SELECT acct, slot, saved, dex, box, gold, at FROM bak WHERE code='PF575BHN' ORDER BY slot"
           q "SELECT * FROM acct_sum WHERE acct LIKE '%donggo%'"
           q "SELECT kind, COUNT(*) n, MAX(t) last FROM bal WHERE code='PF575BHN' GROUP BY kind"
           q "SELECT data FROM save_part WHERE code='PF575BHN' ORDER BY i" > /tmp/parts.json
-          q "SELECT slot, i, data FROM bak_part WHERE code='PF575BHN' OR acct LIKE '%donggo%' ORDER BY slot, i" > /tmp/bak.json || true
+          q "SELECT slot, i, data FROM bak_part WHERE acct='donggo' ORDER BY slot, i" > /tmp/bak.json
           node ../tools/tmp/sum.js /tmp/parts.json /tmp/bak.json
