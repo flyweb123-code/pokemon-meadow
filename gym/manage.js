@@ -944,6 +944,7 @@ function hire(c) {
     /* v28.71 경완 카드 '후불로 (일한 뒤 7일마다)' (경완 '고용 트레이너 첫 주 주급 왜 바로 내는걸로 바꼈지?'): 고용할 땐 안 내고 7일째 payDay 에 첫 주급, 해고 수당(일한 시간 비율)과 맞음. pv = 후불 트레이너 */
     const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0, pv: 1 })); dropCand(c);
     K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>주급 ${c.wage.toLocaleString()}G</small>`); K.save();
+    try { window.GymBGM?.se('DP_REGI'); } catch (e) {}   /* v28.71 경완 '고용할 때 캐셔 효과음': 상점 계산대 소리(buy 와 같음) */
     try { const M = window.GymBGM; M?.fan ? M.fan('ME_FANFA1') : M?.se('ME_FANFA1'); } catch (e) {}
     sfT = 'sf'; redraw(); K.renderHome();
   });
