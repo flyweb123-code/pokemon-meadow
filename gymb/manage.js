@@ -51,7 +51,7 @@ const coachP = s => { const k = coachK(s), p = coachSk(s) * (s.trait === 'train'
 const coaches = () => (st().sf || []).filter(s => s.yard && !s.rest);
 // v20.92 경완 '코치 실력을 노력치 잘 올리는·경험치 잘 올리는·기술 잘 가르치는 트레이너로 나누자': 트레이너마다 코치 종류 하나, 실력 %는 그 종류에만
 const CK = { xp: ['경험치', '#2a7ad0'], ev: ['노력치', '#d0601a'], mv: ['기술', '#8a46c8'] }, CK_O = ['xp', 'ev', 'mv'];
-const coachK = s => s.ck || { train: 'xp', effort: 'ev', teach: 'mv' }[s.trait] || 'xp';   // 훈련광=경험치, 노력파=노력치, 기술 선생=기술. 새 지원자는 mkCand 가 ck 를 무작위로 정함 (v28.72), ck 없는 예전 트레이너는 지금처럼 경험치
+const coachK = s => s.ck || (s.ck = { train: 'xp', effort: 'ev', teach: 'mv' }[s.trait] || CK_O[Math.floor(Math.random() * 3)]);   /* v28.73 경완 '오마이갓 무작위로 다시 정해줘': ck 없는 예전 트레이너·지원자도 처음 볼 때 한 번 무작위로 정해 저장 (ck 가 깃발) */   // 훈련광=경험치, 노력파=노력치, 기술 선생=기술. 새 지원자는 mkCand 가 ck 를 무작위로 정함 (v28.72), ck 없는 예전 트레이너는 지금처럼 경험치
 const CK_W = [1, .6, .3];   // v20.94 경완 '코치 3명까지, % 밸런스': 같은 종류 코치는 겹칠수록 덜 (센 순서로 100%·60%·30%) — 셋 다 경험치면 최대 +76%(훈련광 둘이면 더), 종류를 나누면 각자 그대로
 const coachX = (k = 'xp') => 1 + coaches().filter(s => coachK(s) === k).map(coachP).sort((a, b) => b - a).reduce((a, p, i) => a + p * (CK_W[i] ?? 0) / 100, 0);
 const CK_BG = { xp: '#eaf2fc', ev: '#fdf0e6', mv: '#f4ecfb' }, ckAbs = f => new URL(IMG + f, location.href).href, cbgSt = tr => { const e = K.cbgOf(tr); return `--cbg:url(${ckAbs(`bt/bg_${e.bg}.png`)});--cpl:url(${ckAbs(`bt/pl_e${e.pl ? '_' + e.pl : ''}.png`)})`; }, CK_D = { xp: '훈련 경험치가', ev: '노력치 훈련이', mv: '특별한 기술 깨달음이' };
