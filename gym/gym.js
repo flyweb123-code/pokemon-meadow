@@ -3145,6 +3145,7 @@ function storePop() {
       <div class="gy-body"><div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-st="${k}" aria-selected="${storeT === k}">${n} <small>${c}</small>${nwT.has(k) ? '<i class="tdot"></i>' : ''}</button>`).join('')}</div>${body}</div>`;
     el.querySelectorAll('.gy-body [data-tm],.gy-body [data-it],.gy-body [data-ft],.gy-body [data-mint],.gy-body [data-vit],.gy-body [data-dc]').forEach(b => { const d = b.dataset, key = d.tm ? 'tm:' + d.tm : d.it ? 'it:' + d.it : d.ft ? 'ft:' + d.ft : d.mint ? 'mint:' + d.mint : d.vit != null ? 'vit:' + d.vit : 'deco:' + d.dc; if (NW[key]) b.insertAdjacentHTML('beforeend', '<i class="nwdot" aria-label="새로 산 것"></i>'); });
     el.querySelectorAll('img[data-fk]').forEach(im => fitSrc('tr', im.dataset.fk).then(u => { im.src = u; }));
+    GB()?.fillTh?.(el);   /* v28.47 경완 '지니고 있는 도구 포켓몬 스프라이트도 안 나오고': 창고에서 지닌 포켓몬 그림을 안 채웠음 */
     if ((storeT === 'tm' || storeT === 'tr' || storeT === 'it') && !GB()?.D) loadJs('gym/battle.js', 'GymBattle').then(() => GB()?.loadData()).then(() => { if (el.isConnected) draw(); });
   };
   draw();
