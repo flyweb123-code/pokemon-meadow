@@ -1382,6 +1382,7 @@ function payDay(now) {
   const g = st();
   for (const c of g.cands || []) if (c.wv !== 5) { c.wage = sfWage(sfLq(c), c.trait, (c.tv ?? 50) / 100); c.wv = 5; }
   for (const s of g.sf) {
+    if (!s.pv) { s.pv = 1; if (!s.rest && s.pay) s.pay += 7 * DAY; }   /* v28.71 후불로 바꿈: 예전 트레이너는 고용 때 첫 주를 미리 냈으니 다음 주급날을 한 번(7일) 미뤄 맞춤 — 한 번만(pv 깃발) */
     if (s.wv !== 5) { const o = s.wage; s.wage = sfWage(sfLq(s), s.trait, (s.tv ?? 50) / 100); s.wv = 5; if (o !== s.wage) glog('sf', `${sfName(s)} 주급이 실력에 맞게 바뀌었다: ${(+o || 0).toLocaleString()}G → ${s.wage.toLocaleString()}G`); }   /* v15.83 경완 "지금 트레이너들도 바꿔줘": 기존 트레이너 주급을 바로 새 기준(sfWage)으로 */
     let k = 0;
     while (now >= s.pay && k++ < 20) {

@@ -939,10 +939,10 @@ function hire(c) {
   const g = st(); if (!c) return;
   if (g.sf.length >= K.staffMax()) return pop(`<div class="sf-face full">${g.sf.slice(0, 5).map(x => `<img alt="" src="${K.trSrc(x.tr)}">`).join('')}</div><h4>트레이너 자리가 꽉 찼어요</h4><p class="gy-msg">지금 <b>${g.sf.length}/${K.staffMax()}명</b>이에요.<br>체육관 등급을 올리거나<br>한 명을 해고하면 고용할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, close) => close());
   /* v15.60 경완: 고용할지 한 번 묻고, 고용하면 효과음과 함께 고용 관리 탭으로 */
-  pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>첫 주 주급 <b>${c.wage.toLocaleString()}G</b>를 바로 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
+  pop(`${sfFace(c)}<h4>고용할까요?</h4><p class="gy-msg">${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용해요.<br>주급 <b>${c.wage.toLocaleString()}G</b>는 일주일 일한 뒤에 내요.</p><div class="gy-btns"><button data-a="x">아니요</button><button class="main" data-a="y">고용하기</button></div>`, (a, close) => {
     close(); if (a !== 'y') return;
-    if (!spend(c.wage)) return say(`골드가 모자라요. 첫 주 주급 ${c.wage.toLocaleString()}G가 필요해요.`); try { window.pkGold?.('wage', c.wage); } catch (e) {} try { K.dayRec().p += c.wage; } catch (e) {}
-    const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0 })); dropCand(c);
+    /* v28.71 경완 카드 '후불로 (일한 뒤 7일마다)' (경완 '고용 트레이너 첫 주 주급 왜 바로 내는걸로 바꼈지?'): 고용할 땐 안 내고 7일째 payDay 에 첫 주급, 해고 수당(일한 시간 비율)과 맞음. pv = 후불 트레이너 */
+    const now = Date.now(); g.sf.push(Object.assign({}, c, { hired: now, pay: now + 7 * K.DAY, w: 0, l: 0, xp: 0, pv: 1 })); dropCand(c);
     K.glog('sf', `${esc(c.cls)} <b>${esc(c.nm)}</b>${K.jong(c.nm) ? '을' : '를'} 고용했다! <small>주급 ${c.wage.toLocaleString()}G</small>`); K.save();
     try { const M = window.GymBGM; M?.fan ? M.fan('ME_FANFA1') : M?.se('ME_FANFA1'); } catch (e) {}
     sfT = 'sf'; redraw(); K.renderHome();
