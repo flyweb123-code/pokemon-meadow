@@ -1591,6 +1591,7 @@ async function run(opts) {
   /* v23.63 훈련하기 영양제 (opts.vit = {pid: [체력, 공격, 방어, 특공, 특방, 스피드] 개수}): 하나에 그 능력치 ×1.1, 이번 훈련만 (포켓로그처럼) */
   /* v28.35 경완 '또 이런 오류 없는지 도구별로 검토해봐': 1층 출발 선물(opts.pre)로 받은 영양제·쌓이는 도구·열매·팀 도구·지닌 도구가 1층 배틀엔 안 들어가던 것 (배틀을 먼저 만들고 선물을 골라서) → 출발 선물이 있으면 고른 뒤에 넣음 */
   const twAp = () => {
+  if (opts.shyX > 1) btl.p1.pokemon.forEach((pk, i) => { const P = my[i] && boxOf(my[i].pid); if (!P?.shiny) return; const x = opts.shyX; pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * x); pk.hp = pk.maxhp; ['atk', 'def', 'spa', 'spd', 'spe'].forEach(k => { if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * x); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * x); }); });   /* 경완 '수련탑 이로치에 능력치 혜택 줘': 색이 다른 포켓몬은 수련탑에서 모든 능력치 ×shyX */
   if (opts.vit) btl.p1.pokemon.forEach((pk, i) => { const v = opts.vit[my[i]?.pid]; if (!v) return; if (v[0] > 0) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * (1 + .1 * v[0])); pk.hp = pk.maxhp; }
     ['atk', 'def', 'spa', 'spd', 'spe'].forEach((k, j) => { const n = v[j + 1] | 0; if (!n) return; if (pk.baseStoredStats) pk.baseStoredStats[k] = Math.round(pk.baseStoredStats[k] * (1 + .1 * n)); if (pk.storedStats) pk.storedStats[k] = Math.round(pk.storedStats[k] * (1 + .1 * n)); }); });
   if (opts.xitT) btl.xitT = { ...opts.xitT }; if (opts.xit || opts.xitT) xitInstall(btl.dex);   /* v26.91 팀 전체 도구(열매주머니·회복의부적) */
