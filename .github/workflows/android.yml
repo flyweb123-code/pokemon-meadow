@@ -3,11 +3,10 @@
 # - main 에 합쳐지면: Releases 의 'android-latest' 에 pokegrow.apk 를 올린다 → 폰에서 바로 받아 설치.
 name: Android APK
 
+# 저절로 빌드는 꺼 둠 (경완 '그냥 안드로이드 앱 빌드 당분간 안 해도 되는데' 2026-11-22,
+# 비밀 변수 ANDROID_KEYSTORE_B64 가 없어 push 마다 실패 메일). 다시 켤 땐 아래 push 를 되살리고 비밀 변수 등록.
+# 필요하면 Actions 화면에서 Run workflow 로 손으로만 돌린다.
 on:
-  push:
-    paths:
-      - 'android/**'
-      - '.github/workflows/android.yml'
   workflow_dispatch:
 
 permissions:
