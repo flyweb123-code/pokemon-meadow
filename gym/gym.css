@@ -4826,8 +4826,9 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .alt-n{margin:0;text-align:center;font-size:14px}#gym .alt-n b{color:#c08a10}
 
 /* v28.55 경완 '메가진화랑 Z기술 왼쪽에 마크 넣어주고 누르면 한 바퀴 돌면서 빛나게': 버튼 왼쪽 마크, 켤 때 한 바퀴 + 번쩍, 켜진 동안 은은히 빛남 */
-.bt.mob .bb.gkb:has(.gk-mk){position:relative;padding-left:46px}.bt.mob .bb.gkb .gk-mk{position:absolute;left:9px;top:50%;width:34px;height:40px;margin-top:-20px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-.bt.mob .bb.gkb.zmove .gk-mk{width:38px;height:38px;margin-top:-19px;left:7px;background-image:url(../gym/img/dbk/Z-Power/zmark.svg)}
+.bt.mob .bb.gkb:has(.gk-mk){position:relative;padding-left:58px}.bt.mob .bb.gkb .gk-mk{position:absolute;left:16px;top:50%;width:30px;height:36px;margin-top:-18px;background:url(../gym/img/dbk/Mega/mark.png) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.bt.mob .bb.gkb.dynamax .gk-mk{width:46px;height:34px;margin-top:-17px;left:10px;background-image:url(../gym/img/dbk/Dynamax/mark.png)}   /* 경완 '다이맥스도 한 칸만 있을 때는 옆에 다이맥스 마크' (battle.js go.length === 1) */
+.bt.mob .bb.gkb.zmove .gk-mk{width:46px;height:28px;margin-top:-14px;left:10px}   /* 경완 'z기술 마크는 배경에 도는 그 타입 마름모 마크': Z크리스탈 타입 마름모 zc/<타입>.svg (battle.js zTyN) */
 .bt.mob .bb.gkb.on .gk-mk{animation:gkMkSpin .8s cubic-bezier(.25,.7,.3,1) both,gkMkGlow 1.2s .8s ease-in-out infinite}
 @keyframes gkMkSpin{0%{transform:rotate(0) scale(1);filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) brightness(1)}35%{transform:rotate(160deg) scale(1.15);filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px var(--c1)) brightness(1.8)}100%{transform:rotate(360deg) scale(1);filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}}
 @keyframes gkMkGlow{0%,100%{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}50%{filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 15px var(--c1)) brightness(1.45)}}
