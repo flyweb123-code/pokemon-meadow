@@ -3129,7 +3129,7 @@ function storePop() {
   const draw = () => { const g = st(); g.tms = g.tms || {}; g.itm = g.itm || {}; g.own = g.own || {}; g.fits = g.fits || {}; g.dp = (g.dp || []).filter(Boolean);
     const trOf = id => !!GB()?.isTR?.(id), nTm = Object.entries(g.tms).filter(([id, n]) => n > 0 && !trOf(id)).length, nTr = Object.entries(g.tms).reduce((a, [id, n]) => a + (n > 0 && trOf(id) ? n : 0), 0),   /* v15.75 경완: 기술머신·기술레코드 탭 따로 */ dk = Object.keys(g.own).filter(k => g.own[k] && DECO[k]), fk = fitList();
     const H = GB()?.HOLD, IL = H ? GB().itAll() : [], ML = H ? GB().mintAll() : [], VL = H ? GB().vitAll?.() || [] : [], SL = H ? GB().soupAll?.() || [] : [];   // v20.80 영양제도 창고에   // 민트 (경완 2026-10-30)
-    const FA = window.GA, FL = FA?.fTools ? FA.fTools().filter(o => (FA.fOwn()[o.id] | 0) > 0) : [];   /* v26.89 경완 '사면 체육관 창고에도 필드 가방에도': 필드 도구는 같은 주머니라 창고에도 보임 */
+    const FA = window.GA, FL = [];   /* v28.42 경완 '체육관 창고에 필드 진화 도구는 안 보여줘도 될듯': 필드 도구(진화·폼 도구)는 창고에 안 보임 — 사면 필드 가방에서 씀 (예전: FA.fTools() 중 가진 것) */   /* v26.89 경완 '사면 체육관 창고에도 필드 가방에도': 필드 도구는 같은 주머니라 창고에도 보임 */
     const KY = KEY_IT.filter(k => tutSeen(k.k));   // 다른 체육관에서 받았어도 (관장 것)   // 경완 2026-11-12 '창고 도구에 중요한 물건 항목, 메가링은 버리지도 못하게'
     const T = [['tm', '기술머신', nTm], ['tr', '기술레코드', nTr], ['it', '도구', KY.length + FL.length + IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0) + SL.reduce((a, r) => a + r[1], 0)], ['deco', '꾸미기', dk.length]];
     const NW = g.newIt || {}, nwT = new Set(Object.keys(NW).map(nwTab));   // v14.79 경완 '의상 탭 아직 넣지마': 필드 걸음 그림까지 바꾼 뒤에   // 도구 탭 (경완 2026-10-29)
