@@ -398,7 +398,7 @@ function field(I, o) {
       e.hidden = !p.mv && !p.act && Math.round(p.x) === Math.round(mm.x) && Math.round(p.y) === Math.round(mm.y); };
     e.style.visibility = 'hidden';   // 그림을 다 불러오기 전엔 숨김: 그림자만 먼저 나오던 것 (경완 2026-11-08)
     e.addEventListener('pointerdown', ev => { ev.stopPropagation(); if (el.classList.contains('lock') || p.act) return; I.sfx?.('tap'); F.ppQ = true; });   // 포켓몬을 직접 누르면 같이 다니는 포켓몬 고르기 (라인업 1·2·3 탭, 경완 2026-11-08)
-    p.put(); let M = null; try { M = await I.pmd(P.sp, P.sex); } catch (x) {} e.style.visibility = ''; if (F.pl !== p || !M) return p;
+    p.put(); let M = null; try { M = await I.pmd(P.sp, P.sex, P);   /* v28.68 경완 '춤추새 전기 폼으로 미니게임 넘어가면 스프라이트 불꽃폼': 상자 포켓몬 P 를 넘겨 폼 그림 */ } catch (x) {} e.style.visibility = ''; if (F.pl !== p || !M) return p;
     if (P.shiny) p.sp.style.filter = `hue-rotate(${I.shinyHue?.(P.sp) || 0}deg)`;
     if (!M.P) { p.sp.classList.add('one'); p.sp.style.backgroundImage = `url("${M.img}")`; const lp = () => { if (F.pl !== p || !e.isConnected) return; p.put(); p.sp.style.transform = p.f === 'r' ? 'scaleX(-1)' : ''; requestAnimationFrame(lp); }; requestAnimationFrame(lp); return p; }
     const kk = k / 2, s = M.s * kk, lift = (I.lift?.(P.sp) || 0) * kk, A = M.P.a, pick = L => L.find(n => A[n]) || 'Idle';

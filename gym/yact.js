@@ -750,7 +750,7 @@ async function start({ host, mons, bgm0, bgmNow }) {
     await GB()?.evyLoad?.();
     R.kit = await GA.pfxKit?.().catch(() => null);
     try { /* 경완 2026-11-16 '특훈 버튼 누르면 bgm 바뀌고 시작하면 게임 bgm으로 바로 바뀌게': 버튼에서 이미 곡을 바꿨으면(bgmNow) 돌아갈 곡(bgm0)은 바꾸기 전 곡 */ R.bgm0 = bgm0 !== undefined ? bgm0 : window.GymBGM?.name || null; if (bgmNow) R.bgmNow = bgmNow; window.GymBGM?.sePrep(SE_PRE.map(n => 'DP_' + n)); ['wild', 'boss', 'bossBig', 'winWild'].forEach(n => window.GymBGM?.prep(n)); if (!MVFX) fetch('gym/mvfx.json').then(r => r.json()).then(j => { MVFX = j; }).catch(() => {}); } catch (e) {}
-    await Promise.all(mons.map(o => spr(o.P.sp, o.P.sex)));
+    await Promise.all(mons.map(o => spr(o.P.sp, o.P.sex, o.P)));   /* v28.68 경완 '춤추새 전기 폼으로 미니게임 넘어가면 스프라이트 불꽃폼': 상자 포켓몬 P 를 넘겨 폼 그림 */
     await resize(); bind(); startUi();
   } catch (e) { console.error(e); GA.toast?.('특훈을 열지 못했어요'); close(); return closed; }
   q('.ya-load').remove();
@@ -763,9 +763,10 @@ function preOn() { const r = R, m = r.host.querySelector?.('.gy-menu'); if (!m |
 function close() { if (!R) return; humOff(); const r = R; try { if (r.bgmNow !== undefined) r.bgm0 ? window.GymBGM?.play(r.bgm0) : window.GymBGM?.stop(.5); } catch (e) {} R = null; cancelAnimationFrame(r.raf); r.off.forEach(f => f()); r.el.remove(); r.done(); }
 
 // ---------- 그림 ----------
-function spr(sp, sex) { const k = sp + ':' + (sex || ''); if (R.SPR[k]) return Promise.resolve(R.SPR[k]);
-  return (GA.pmdMx || GA.pmd)(sp, sex).then(D => new Promise(ok => { const im = new Image(); im.onload = im.onerror = () => ok(R.SPR[k] = { D, im }); im.src = D.P ? D.P.i : D.img; })).catch(() => (R.SPR[k] = { D: {}, im: null })); }
-const sprOf = e => (e.msp && R.SPR[e.msp]) || R.SPR[e.sp + ':' + (e.sex || '')] || R.SPR[e.sp + ':'];
+const fmOfP = P => (P && GA.pFm?.(P)) || '';
+function spr(sp, sex, P) { const f = fmOfP(P), k = sp + ':' + (sex || '') + (f ? '~' + f : ''); if (R.SPR[k]) return Promise.resolve(R.SPR[k]);
+  return (GA.pmdMx || GA.pmd)(sp, sex, P).then(D => new Promise(ok => { const im = new Image(); im.onload = im.onerror = () => ok(R.SPR[k] = { D, im }); im.src = D.P ? D.P.i : D.img; })).catch(() => (R.SPR[k] = { D: {}, im: null })); }
+const sprOf = e => (e.msp && R.SPR[e.msp]) || (e.fm && R.SPR[e.sp + ':' + (e.sex || '') + '~' + e.fm]) || R.SPR[e.sp + ':' + (e.sex || '')] || R.SPR[e.sp + ':'];
 /* 경완 2026-11-16 '우리 필드용 메가 폼 그림 있는데 다 받아줘': SpriteCollab 에 올라온 메가 폼 42종 (tools/mkpmdmega.py → gym/img/yact/mg/<번호>.json, fm 과 같은 모양). 마지막 대장이 메가진화하면 이 그림으로 바뀐다 (megaDone 의 o.msp) */
 const MEGA_SPR = new Set([6, 65, 80, 94, 115, 142, 150, 208, 227, 229, 248, 254, 282, 302, 303, 308, 310, 319, 323, 334, 354, 358, 359, 362, 380, 381, 384, 428, 448, 475, 491, 530, 560, 604, 670, 691, 701, 718, 719, 780, 807, 978]);
 function megaSpr(sp) { const k = 'M' + sp + ':', r = R; if (!MEGA_SPR.has(sp) || r.SPR[k]) return; r.SPR[k] = { D: {}, im: null };
@@ -928,7 +929,7 @@ function mineOf(o) {   // 고른 포켓몬 → 판에서 쓸 값 (읽기만)
 const nmOf = P => P.nm || nmSp(P.sp);
 function newGame() {
   const o = R.mons[R.pick], M = mineOf(o), P = o.P, W = R.W, H = R.H;
-  const me = { sp: P.sp, sex: P.sex, shiny: !!P.shiny, lv: M.lv, st: M.st, mine: true, x: W / 2, y: H * .55, face: -1, anim: 'Idle', at: 0, inv: 0, cd: {}, cdMax: {}, dcd: 0, flash: 0, buff: 0, shrink: 0, clone: 0, haste: 0, guard: 0, prot: 0, crit: 0, roll: 0, kx: 0, ky: 0, sq: 0, sqv: 0, z: 0, busy: 0, stepT: 0, hide: null };
+  const me = { sp: P.sp, sex: P.sex, fm: fmOfP(P), shiny: !!P.shiny, lv: M.lv, st: M.st, mine: true, x: W / 2, y: H * .55, face: -1, anim: 'Idle', at: 0, inv: 0, cd: {}, cdMax: {}, dcd: 0, flash: 0, buff: 0, shrink: 0, clone: 0, haste: 0, guard: 0, prot: 0, crit: 0, roll: 0, kx: 0, ky: 0, sq: 0, sqv: 0, z: 0, busy: 0, stepT: 0, hide: null };
   me.mhp = me.hp = Math.round(me.st[0] * 2.8);
   Object.assign(R, { HS: 0, SLOW: 0, TR: 0, KX: 0, KY: 0, ZM: 0, FLASH: 0, VIG: 0, BUF: null, HELD: {} }); R.Q.length = 0; R.PT.length = 0; R.GH.length = 0; R.SH = null;
   R.G = { o, M, me, stat: R.stat, pool: R.pool || foePool(R.stat), mobs: [], shots: [], drops: [], wave: 0, ko: 0, gold: 0, goldShown: 0, exp: 0, ev: 0, evRaw: 0, shard: 0, fainted: false, time: 0, start: R.T, over: false, egg0: M.eg?.p ?? 0, egg: M.eg?.p ?? 0, eggShown: M.eg?.p ?? 0,

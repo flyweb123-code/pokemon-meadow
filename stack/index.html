@@ -3363,7 +3363,7 @@ $('dmBuild').addEventListener('click', () => { SFX.pop(); setP(0); reset(); tstR
 /* 게임 안(iframe): 미니게임 창이 함께 놀 포켓몬·랭크·하트·최고 기록·골드 기준을 보내 줌 */
 function embInit() { document.documentElement.classList.add('emb'); return new Promise(ok => { const on = async e => { const d = e.data; if (!d || d.t !== 'stInit') return; removeEventListener('message', on); const c = d.cfg;
     document.documentElement.style.setProperty('--sat', (c.sat || 0) + 'px'); document.documentElement.style.setProperty('--sab', (c.sab || 0) + 'px'); window.__GPP = c.gpp || 9; best = c.best | 0; pbH = +c.hi || 0; try { if (parent.__stAC) { ac = parent.__stAC; if (ac.state === 'suspended') ac.resume(); } } catch (er) {}   /* 경완 'BGM 클릭해야 시작': 미니게임 창에서 시작하기를 누를 때 열어 둔 소리를 그대로 써서 바로 곡이 나옴 */
-    if (c.spU && c.spK) try { const j = await (await fetch(c.spU)).json(), o = j[c.spK]; if (o && o.i && o.a) { const im = await loadImg(o.i); if (im) { PM.me = { im, a: typeof o.a === 'string' ? JSON.parse(o.a) : o.a }; A.H[c.ty - 1] = 'me'; A.nm.me = c.nm || ''; delete PBB.me; } } } catch (er) {}
+    if (c.spU) try { const j = await (await fetch(c.spU)).json(), o = c.spK ? j[c.spK] : j;   /* v28.68 경완 '춤추새 전기 폼…불꽃폼': 폼이면 fm/<열쇠>.json 통째 (spK 없음) */ if (o && o.i && o.a) { const im = await loadImg(o.i); if (im) { PM.me = { im, a: typeof o.a === 'string' ? JSON.parse(o.a) : o.a }; A.H[c.ty - 1] = 'me'; A.nm.me = c.nm || ''; delete PBB.me; } } } catch (er) {}
     setTy(c.ty || 1); setRk(c.rk || 'F'); setFh(c.fh | 0); ok(); };
   addEventListener('message', on); parent.postMessage({ t: 'stReady' }, '*'); });
 }
