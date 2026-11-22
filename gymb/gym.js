@@ -3087,22 +3087,22 @@ function rkPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-rkw'; $g('.gy-main').appendChild(el);
   let me = '', rows = null, err = '', md = 'best';   /* 열 때마다 최고점부터 */
-  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b></div>`;
+  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b>`;   /* v28.56 경완 '토글 체육관 랭킹 행에 넣어도 될듯': 최고점·합산 토글은 제목 줄 오른쪽 */
   const draw = () => {
     const mine = rkCard(), mineC = mine && rkClean(mine);
     let body; const tg = `<div class="rk-tg" role="tablist">${[['best', '최고점'], ['sum', '합산']].map(([k, n]) => `<button type="button" role="tab" data-md="${k}" aria-selected="${md === k}">${n}</button>`).join('')}</div>`;
     if (err) body = `<p class="rk-msg">${err}</p>`;
-    else if (!rows) body = `${tg}<p class="rk-msg">랭킹을 불러오는 중…</p>`;
+    else if (!rows) body = `<p class="rk-msg">랭킹을 불러오는 중…</p>`;
     else {
       const L = rows.map(r => ({ code: r.code, D: r.code === me && mineC ? mineC : rkClean(r.c), mine: r.code === me })); L.forEach(x => { if (!x.D.n) x.D.n = x.mine ? '나' : '트레이너'; }); if (mineC && !mineC.n) mineC.n = '나';
       const myI = L.findIndex(x => x.mine);
       const G = D => gradeOf(D.rep, D.gm);   /* v21.92 경완 '단상 지우고 슬롯으로만, 꾸미기 랭킹처럼 메달·박스, 평판 글자 숫자 위, 타입 아이콘 앞에 프로필 박스, 체육관 이름·관장 이름 자리 바꿈, 평판 순위 박스 없애고 내 위치는 테두리로 은은하게' */
       const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>${md === 'sum' ? '합산 평판' : '평판'}</small><b>${(md === 'sum' ? x.D.sum : x.D.rep).toLocaleString()}</b></span></button></li>`; };
       const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
-      body = `${tg}${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}`;
+      body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}`;
       el._L = L; L.slice(0, 10).forEach(x => x.mine ? mecPre(rkCard(), true) : mecPre(x.D, false));
     }
-    el.innerHTML = `${head}<div class="gy-body">${body}<p class="rk-tip">${md === 'sum' ? '관리 중인 체육관 평판을 모두 더해서 겨뤄요' : '관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요'}</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
+    el.innerHTML = `${head}${GA.frOn?.() ? tg : ''}</div><div class="gy-body">${body}<p class="rk-tip">${md === 'sum' ? '관리 중인 체육관 평판을 모두 더해서 겨뤄요' : '관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요'}</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
   };
   draw();
   el.onpointerdown = e => { const b = e.target.closest('.rk-row'); if (!b) return; const x = el._L?.[+b.dataset.i]; if (b.dataset.me || x?.mine) mecPre(rkCard(), true); else if (x) mecPre(x.D, false); };
