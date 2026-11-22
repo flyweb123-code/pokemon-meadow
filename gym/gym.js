@@ -970,7 +970,7 @@ const LEG_CLS = ['cool_trainer_m', 'cool_trainer_f', 'snow_trainer_m', 'snow_tra
    닿으면(계정에 한 번: 박스에 그 아르세우스가 있거나 어느 체육관이든 g.arc) 체육관에서 땅울림·안내원 → 필드로 나가 GA.arcScene (index/beta.html). test = 운영자 시뮬 버튼 (아무것도 안 남김) */
 const LEG_TOP = 3000;
 /* v27.43 경완 '평판 3,000 되면 아르세우스 강림하고 해당 타입 플레이트 받는 걸로 하자' + 카드 '체육관마다 플레이트 받기': 타입 체육관마다(g.arcP) 3,000 에 닿으면 강림 → 그 타입 플레이트 (창고 g.itm).
-   아르세우스는 계정에 처음 한 번만 박스로, 두 번째 체육관부터는 짧은 강림. 노말은 플레이트가 없어 ARC_NG 골드. 예전에 이미 아르세우스를 받은 체육관도 플레이트는 아직이라 다음 배틀 뒤에 짧은 강림으로 받음 */
+   (v28.49 경완 '바로 박스 안 들어가고 플레이트만': 아르세우스는 박스로 안 옴, 처음만 긴 강림(g.arc)) 두 번째 체육관부터는 짧은 강림. 노말은 플레이트가 없어 ARC_NG 골드. 예전에 이미 아르세우스를 받은 체육관도 플레이트는 아직이라 다음 배틀 뒤에 짧은 강림으로 받음 */
 const PL_ST = ['', '', 'fistplate', 'skyplate', 'toxicplate', 'earthplate', 'stoneplate', 'insectplate', 'spookyplate', 'ironplate', 'flameplate', 'splashplate', 'meadowplate', 'zapplate', 'mindplate', 'icicleplate', 'dracoplate', 'dreadplate', 'pixieplate'], ARC_NG = 5000;
 const arcDue = () => { const g = st(); return isLeg(g) && (g.rep || 0) >= LEG_TOP && !g.arcP && !!GA.arcScene && !window.gymSimOn; };
 async function arcGo(test) {
