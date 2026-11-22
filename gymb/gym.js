@@ -1416,7 +1416,7 @@ function mkCand(now) {
   const tr2 = trait;   /* v25.76 경완 '그냥 무작위로 바꿔줘': 라인업과 상관없이 특성 13개 중 무작위 */
   const U = new Set(), team = Array.from({ length: n }, (_, i) => { const l = clampN(lv + rndI(-2, 1) + (i === n - 1 ? 1 : 0), 2, 100), sp = pickSp(types, l, Math.max(150, Math.min(600, spTgt(l) + tq)), 25, U); U.add(sp); return [sp, l]; });   /* v25.72: 라인업 등급 tq, 600 넘는 전설은 안 옴 */
   const wage = sfWage(ti, tr2, tv / 100);
-  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 5, lq: ti, cs: rndI(10, 40), tv, team };   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
+  return { id: ++st().cid, t: now, exp: now + 30 * H, k, cls: GB()?.TR_KO[k] || '트레이너', tr: k, ow: C.ow, nm: nmFree(C.f), f: C.f, trait: tr2, wage, wv: 5, lq: ti, cs: rndI(10, 40), ck: { train: 'xp', effort: 'ev', teach: 'mv' }[tr2] || ['xp', 'ev', 'mv'][rndI(0, 2)], tv, team };   /* v28.72 경완 '고용 트레이너들 왜 경험치 코치만 계속 오는거같냐': 코치 종류를 지원자 만들 때 무작위로 정해 둠 (예전 manage.js coachK 의 id×40503 %3 은 40503 이 3의 배수라 늘 0 = 경험치) */   /* v15.48 경완: 지원 트레이너 포켓몬은 다 체육관 타입 */
 }
 const SF_MAX = [0, 1, 2, 3, 4, 5, 6];
 /* v18.17 경완 '체육관 등급 올라갈 때마다 보상, 기본 골드': 동네 1,000 · 떠오르는 1,500 · 이름난 2,500 · 인기 4,000 · 명문 6,000 · 전설 10,000G (도전자 막기로 하루 2~3천G 버는 것 기준, 등급 사이 걸리는 날 수에 맞춰 늘림)
