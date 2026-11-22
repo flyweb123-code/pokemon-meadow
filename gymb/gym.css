@@ -4860,3 +4860,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 #gym .sp-tm .tm-meta{flex-wrap:wrap}#gym .sp-tm .tm-meta small{flex:none}#gym .sp-tm .tm-meta .it-note{flex:1 1 100%;white-space:normal;font-size:12px;line-height:1.35;color:#8a6a2a}
 /* v28.38 경완 '색이 다른 포켓몬 나올 때는 이로치 표시 이름 옆에': 배틀 체력 박스 이름 옆 본 게임 이로치 별 */
 .bt-hb .lv .shico{display:block;width:10px;height:10px;margin:0;flex:none;background-size:contain;image-rendering:pixelated;align-self:center}.bt-hb.shy .nm{transform-origin:0 50%}   /* 긴 이름은 별 앞까지 가로로 살짝 좁힘 (battle.js paintHb) */
+/* v28.38 경완 '동료 딱지 정리 좀 해주고': 칸 왼쪽 위 모서리에서 랭크 글자를 덮던 딱지 → 이름 뒤 작은 알약 딱지 (게임 도트 글씨가 8px 에서 뭉개져서 굵은 고딕) */
+.bt .pty b .pty-mt,.bt.mob .pty b .pty-mt{position:static;display:inline-block;flex:none;margin-left:5px;padding:2px 5px;border-radius:7px;font:800 9px/1 system-ui,-apple-system,sans-serif;letter-spacing:0;vertical-align:2px;background:#4a2c94;color:#f2eaff;text-shadow:none;box-shadow:inset 0 0 0 1px #b9a0f0}
