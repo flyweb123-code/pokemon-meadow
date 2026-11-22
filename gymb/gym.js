@@ -2152,7 +2152,7 @@ function legXLines(N, E, ty, retry) {
 }
 // 테라피스 받는 알림창 (저절로 뜨는 창: 버튼으로만 닫힘). 테라스탈을 만들 때 여기서 실제로 창고에 넣는다 (지금은 연출만)
 const TERA_EN = ['', 'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL', 'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK', 'FAIRY'];   // 테라피스 그림 = DBK 팩 (gym/img/dbk/it/<타입>TERASHARD.png, 경완 2026-11-13 '압축 파일 안에 있는 걸로')
-/* v28.56 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 테라스탈오브가 있으면 체육관 배틀에서 테라피스 지닌 포켓몬만 (battle.js tpOnly) */
+/* v28.58 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 테라스탈오브가 있으면 체육관 배틀에서 테라피스 지닌 포켓몬만 (battle.js tpOnly) */
 const tpGmk = () => tutSeen('teraOrb') ? { tera: 1, tpOnly: 1 } : {};
 /* 테라피스 = 전설 체육관마다 그 타입 하나 (창고 도구, 지니는 도구). 전설 체육관 타입인데 창고에도 없고 아무도 안 지녔으면 넣음 (받은 창은 연출, 실제 넣기는 여기서) */
 function tpSync() { const g = st(), B = GB(); if (!g || !B?.TP_ST || !B.HOLD || window.gymSimOn || window.gymEvTest) return; let ch = 0; for (const x of gList()) { if ((x.gmax | 0) < GRADES.length - 1) continue; const id = B.TP_ST[x.ty]; if (!id || !B.HOLD[id] || B.itHave?.(id)) continue; g.itm = g.itm || {}; g.itm[id] = 1; ch = 1; } if (ch) save(); }
@@ -3078,7 +3078,7 @@ function jnlPop() {
   el.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 60) return; const b = el.querySelector(`.jn-nav [data-mv="${dx > 0 ? 1 : -1}"]`); if (b && !b.disabled) b.click(); });
 }
 // 체육관 랭킹 (v21.89 경완 '트레이너들의 현재 체육관 평판 랭킹, 관리 중인 체육관 중 가장 높은 평판의 체육관이 배지랑 같이'): 친구 서버 score 표 game 'gymrep' (best = 평판, card = 관장 카드)
-const RK_G = 'gymrep', RK_S = 'gymsum';   /* v28.56 경완 '전체 체육관 중 최고점인 랭킹이랑, 전체 체육관 평판 합산 랭킹으로 볼 수 있는 토글' → '최고점, 합산으로 가고 기본을 최고점으로': 합산 = 관리 중인 모든 체육관 평판 합 (score game 'gymsum') */
+const RK_G = 'gymrep', RK_S = 'gymsum';   /* v28.58 경완 '전체 체육관 중 최고점인 랭킹이랑, 전체 체육관 평판 합산 랭킹으로 볼 수 있는 토글' → '최고점, 합산으로 가고 기본을 최고점으로': 합산 = 관리 중인 모든 체육관 평판 합 (score game 'gymsum') */
 let rkBusy = null, rkRows = {}, rkAt = {};
 function rkPush(force) {   // 바뀐 게 있을 때만 올림. 운영자 시험·시뮬·이벤트 시험은 본 계정 기록을 안 올림
   const g = st(); if (!g?.d || !GA.frOn?.() || window.gymSimOn || window.gymEvTest || g.ev?.test) return Promise.resolve();
@@ -3091,7 +3091,7 @@ function rkPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-rkw'; $g('.gy-main').appendChild(el);
   let me = '', rows = null, err = '', md = 'best';   /* 열 때마다 최고점부터 */
-  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b>`;   /* v28.56 경완 '토글 체육관 랭킹 행에 넣어도 될듯': 최고점·합산 토글은 제목 줄 오른쪽 */
+  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b>`;   /* v28.58 경완 '토글 체육관 랭킹 행에 넣어도 될듯': 최고점·합산 토글은 제목 줄 오른쪽 */
   const draw = () => {
     const mine = rkCard(), mineC = mine && rkClean(mine);
     let body; const tg = `<div class="rk-tg" role="tablist">${[['best', '최고점'], ['sum', '합산']].map(([k, n]) => `<button type="button" role="tab" data-md="${k}" aria-selected="${md === k}">${n}</button>`).join('')}</div>`;

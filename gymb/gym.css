@@ -4882,7 +4882,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bb.gkb.on .gk-mk,.bt.mob .bb.gkb.on .gk-ti{animation:gkMkSpin .55s cubic-bezier(.15,.85,.3,1),gkMkGlow 1.2s .55s ease-in-out infinite}   /* 경완 '버튼에서 마크 돌아가는거 그 배경에서 돌아가는 것처럼' → '버튼에 있는 마크는 계속 돌아가지 않게, 누를 때만': 누르면 배경 마크처럼 두 바퀴 휙(경완 '버튼 누름과 동시에 빠르게 돌아가게': 감기 빼고 바로 .55s) → 넘쳤다 멈춤(번쩍) 한 번, 그 뒤엔 빛만 */
 @keyframes gkMkSpin{0%{transform:perspective(200px) rotateY(0) scale(1.08);filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px var(--c1)) brightness(1.8)}70%{transform:perspective(200px) rotateY(735deg) scale(1.1);filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px var(--c1)) brightness(1.7)}100%{transform:perspective(200px) rotateY(720deg) scale(1);filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}}
 @keyframes gkMkGlow{0%,100%{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}50%{filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 15px var(--c1)) brightness(1.45)}}
-/* v28.56 경완 '최고점·합산 토글' → '토글 체육관 랭킹 행에 넣어도 될듯' (제목 줄 오른쪽) */
+/* v28.58 경완 '최고점·합산 토글' → '토글 체육관 랭킹 행에 넣어도 될듯' (제목 줄 오른쪽) */
 #gym .gy-rkw .gy-sh{margin-bottom:10px}   /* 경완 '토글이랑 밑에 1등 박스랑 여백 좀 띄워줘' · 토글 높이는 '원래 너비가 낫다'로 처음 크기, 검정 테두리 없음 ('토글 검정 테두리가 없어도 될 것 같은데') */
 #gym .gy-rkw .rk-tg{margin-left:auto;flex:none;display:flex;gap:0;box-sizing:border-box;padding:6px;border:0;border-radius:6px;background:#2a1014;box-shadow:inset 0 0 0 1px rgba(255,220,200,.12),2px 2px 0 rgba(0,0,0,.4)}
 #gym .gy-rkw .rk-tg button{all:unset;box-sizing:border-box;min-width:62px;padding:5px 10px 6px;border-radius:3px;font-size:13px;font-weight:700;text-align:center;color:#c8a8a8;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .12s}
