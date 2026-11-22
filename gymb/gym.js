@@ -2152,7 +2152,7 @@ function legXLines(N, E, ty, retry) {
 }
 // 테라피스 받는 알림창 (저절로 뜨는 창: 버튼으로만 닫힘). 테라스탈을 만들 때 여기서 실제로 창고에 넣는다 (지금은 연출만)
 const TERA_EN = ['', 'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL', 'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK', 'FAIRY'];   // 테라피스 그림 = DBK 팩 (gym/img/dbk/it/<타입>TERASHARD.png, 경완 2026-11-13 '압축 파일 안에 있는 걸로')
-/* v28.56 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 테라스탈오브가 있으면 체육관 배틀에서 테라피스 지닌 포켓몬만 (battle.js tpOnly) */
+/* v28.58 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 테라스탈오브가 있으면 체육관 배틀에서 테라피스 지닌 포켓몬만 (battle.js tpOnly) */
 const tpGmk = () => tutSeen('teraOrb') ? { tera: 1, tpOnly: 1 } : {};
 /* 테라피스 = 전설 체육관마다 그 타입 하나 (창고 도구, 지니는 도구). 전설 체육관 타입인데 창고에도 없고 아무도 안 지녔으면 넣음 (받은 창은 연출, 실제 넣기는 여기서) */
 function tpSync() { const g = st(), B = GB(); if (!g || !B?.TP_ST || !B.HOLD || window.gymSimOn || window.gymEvTest) return; let ch = 0; for (const x of gList()) { if ((x.gmax | 0) < GRADES.length - 1) continue; const id = B.TP_ST[x.ty]; if (!id || !B.HOLD[id] || B.itHave?.(id)) continue; g.itm = g.itm || {}; g.itm[id] = 1; ch = 1; } if (ch) save(); }
@@ -2780,9 +2780,9 @@ function mtfOn(win, ty, g) {
 const rkBest = () => gList().reduce((a, x) => !a || (x.rep | 0) > (a.rep | 0) ? x : a, null);   // 관리 중인 체육관 중 평판이 가장 높은 곳
 function rkCard(g0) { const me = st(), g = g0 || rkBest(); if (!me || !g) return null;
   const lu = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '', GA.rankOf?.(P) || '']);
-  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: gWL(g)[0], l: gWL(g)[1], lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
+  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: gWL(g)[0], l: gWL(g)[1], sum: gList().reduce((a, x) => a + (x.rep | 0), 0), lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
 const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.sx === 'f' ? 'f' : 'm';
-  return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0),
+  return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0), sum: Math.max(0, +D.sum || 0),
     lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
 const meCard = () => meCardOf(rkCard(st()), true);
 // v22.27 경완 '관장 카드 지연 더 줄여': 카드에 쓸 그림(포켓몬 앞모습 png·gif, 관장 옷, 얼굴 자리)을 미리 받아 둠 — 체육관 들어올 때 내 카드, 랭킹 열 때 위 10줄, 줄을 누르기 시작할 때 그 줄
@@ -3078,48 +3078,51 @@ function jnlPop() {
   el.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) < 60) return; const b = el.querySelector(`.jn-nav [data-mv="${dx > 0 ? 1 : -1}"]`); if (b && !b.disabled) b.click(); });
 }
 // 체육관 랭킹 (v21.89 경완 '트레이너들의 현재 체육관 평판 랭킹, 관리 중인 체육관 중 가장 높은 평판의 체육관이 배지랑 같이'): 친구 서버 score 표 game 'gymrep' (best = 평판, card = 관장 카드)
-const RK_G = 'gymrep';
-let rkBusy = null, rkRows = null, rkAt = 0;
+const RK_G = 'gymrep', RK_S = 'gymsum';   /* v28.58 경완 '전체 체육관 중 최고점인 랭킹이랑, 전체 체육관 평판 합산 랭킹으로 볼 수 있는 토글' → '최고점, 합산으로 가고 기본을 최고점으로': 합산 = 관리 중인 모든 체육관 평판 합 (score game 'gymsum') */
+let rkBusy = null, rkRows = {}, rkAt = {};
 function rkPush(force) {   // 바뀐 게 있을 때만 올림. 운영자 시험·시뮬·이벤트 시험은 본 계정 기록을 안 올림
   const g = st(); if (!g?.d || !GA.frOn?.() || window.gymSimOn || window.gymEvTest || g.ev?.test) return Promise.resolve();
   const D = rkCard(); if (!D) return Promise.resolve(); const c = JSON.stringify(D);
   if (!force && S.gymRkUp === c) return Promise.resolve();
   if (rkBusy) return rkBusy;
-  return rkBusy = Promise.resolve(GA.frMe?.()).then(() => GA.frAsk({ op: 'score', game: RK_G, best: D.rep, card: c })).then(() => { S.gymRkUp = c; rkAt = 0; save(); }).catch(() => {}).finally(() => { rkBusy = null; });
+  return rkBusy = Promise.resolve(GA.frMe?.()).then(() => GA.frAsk({ op: 'score', game: RK_G, best: D.rep, card: c })).then(() => GA.frAsk({ op: 'score', game: RK_S, best: D.sum, card: c })).then(() => { S.gymRkUp = c; rkAt = {}; save(); }).catch(() => {}).finally(() => { rkBusy = null; });
 }
 function rkPop() {
   root.querySelectorAll('.gy-infos').forEach(x => x.remove()); openTab(null);
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew gy-rkw'; $g('.gy-main').appendChild(el);
-  let me = '', rows = null, err = '';
-  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b></div>`;
+  let me = '', rows = null, err = '', md = 'best';   /* 열 때마다 최고점부터 */
+  const head = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">체육관 랭킹</b>`;   /* v28.58 경완 '토글 체육관 랭킹 행에 넣어도 될듯': 최고점·합산 토글은 제목 줄 오른쪽 */
   const draw = () => {
     const mine = rkCard(), mineC = mine && rkClean(mine);
-    let body;
+    let body; const tg = `<div class="rk-tg" role="tablist">${[['best', '최고점'], ['sum', '합산']].map(([k, n]) => `<button type="button" role="tab" data-md="${k}" aria-selected="${md === k}">${n}</button>`).join('')}</div>`;
     if (err) body = `<p class="rk-msg">${err}</p>`;
     else if (!rows) body = `<p class="rk-msg">랭킹을 불러오는 중…</p>`;
     else {
       const L = rows.map(r => ({ code: r.code, D: r.code === me && mineC ? mineC : rkClean(r.c), mine: r.code === me })); L.forEach(x => { if (!x.D.n) x.D.n = x.mine ? '나' : '트레이너'; }); if (mineC && !mineC.n) mineC.n = '나';
       const myI = L.findIndex(x => x.mine);
       const G = D => gradeOf(D.rep, D.gm);   /* v21.92 경완 '단상 지우고 슬롯으로만, 꾸미기 랭킹처럼 메달·박스, 평판 글자 숫자 위, 타입 아이콘 앞에 프로필 박스, 체육관 이름·관장 이름 자리 바꿈, 평판 순위 박스 없애고 내 위치는 테두리로 은은하게' */
-      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>평판</small><b>${x.D.rep.toLocaleString()}</b></span></button></li>`; };
+      const row = (x, i) => { const g = G(x.D); return `<li><button type="button" class="rk-row${x.mine ? ' me' : ''}${i >= 0 && i < 3 ? ' top' + (i + 1) : ''}" ${i < 0 ? 'data-me="1"' : `data-i="${i}"`}><span class="lb-rk${i >= 0 && i < 3 ? ' r' + (i + 1) : ''}">${i >= 0 && i < 3 ? GA.lbMedal?.(i + 1) || '' : ''}<b>${i < 0 ? '-' : i + 1}</b></span>${GA.lbTrBox?.({ sex: x.D.sx, fit: x.D.fit, dex: x.D.dex }) || ''}<span class="rk-bd">${bdHtml(x.D.ty, g.i + 1)}</span><span class="rk-tx"><b>${esc(x.D.n)}<small class="rk-ld">관장</small></b><small><em class="gr-tag" data-g="${g.i}">${g.n}</em><span>${esc(x.D.bn || '이름 없는 체육관')}</span></small></span><span class="rk-rep"><small>${md === 'sum' ? '합산 평판' : '평판'}</small><b>${(md === 'sum' ? x.D.sum : x.D.rep).toLocaleString()}</b></span></button></li>`; };
       const meRow = myI < 0 && mineC ? `<div class="rk-mine"><h5>내 체육관</h5><ol class="rk-list">${row({ D: mineC, mine: true }, -1)}</ol></div>` : '';
       body = `${L.length ? `<ol class="rk-list">${L.map(row).join('')}</ol>` : '<p class="rk-msg">아직 랭킹에 오른 체육관이 없어요</p>'}${meRow}`;
       el._L = L; L.slice(0, 10).forEach(x => x.mine ? mecPre(rkCard(), true) : mecPre(x.D, false));
     }
-    el.innerHTML = `${head}<div class="gy-body">${body}<p class="rk-tip">관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
+    el.innerHTML = `${head}${GA.frOn?.() ? tg : ''}</div><div class="gy-body">${body}<p class="rk-tip">${md === 'sum' ? '관리 중인 체육관 평판을 모두 더해서 겨뤄요' : '관리 중인 체육관 가운데 평판이 가장 높은 체육관으로 겨뤄요'}</p></div>`;   // v21.95 경완: 설명 문구는 화면 맨 아래
   };
   draw();
   el.onpointerdown = e => { const b = e.target.closest('.rk-row'); if (!b) return; const x = el._L?.[+b.dataset.i]; if (b.dataset.me || x?.mine) mecPre(rkCard(), true); else if (x) mecPre(x.D, false); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap');
     if (b.dataset.a === 'x') return el.remove();
+    if (b.dataset.md) { if (b.dataset.md !== md) { md = b.dataset.md; load(); } return; }
     if (b.dataset.me) return meCardOf(rkCard(), true);   // v21.93 경완 '랭킹 슬롯 누르면 그 타입 체육관에 등록된 관장 카드': 내 줄도 지금 운영 중인 곳 말고 랭킹에 오른 체육관(평판 최고)
     const x = el._L?.[+b.dataset.i]; if (!x) return; x.mine ? meCardOf(rkCard(), true) : meCardOf(x.D, false); };
   if (!GA.frOn?.()) { err = '체육관 랭킹은 앱에서 친구 서버에 연결되어 있을 때 볼 수 있어요'; return draw(); }
-  const fresh = rkRows && Date.now() - rkAt < 60_000;
-  if (fresh) { rows = rkRows; Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; draw(); }); return draw(); }
-  Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; return rkPush(); }).then(() => GA.frAsk({ op: 'mgtop', game: RK_G }))
-    .then(got => { rows = (got || []).map(r => { try { return { code: r.code, c: { ...JSON.parse(r.card), rep: +r.best || 0 } }; } catch (e) { return null; } }).filter(Boolean); rkRows = rows; rkAt = Date.now(); if (el.isConnected) draw(); })
-    .catch(e => { err = '랭킹을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요'; if (el.isConnected) draw(); });
+  const load = () => { const m = md; err = '';
+    if (rkRows[m] && Date.now() - (rkAt[m] || 0) < 60_000) { rows = rkRows[m]; Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; if (md === m) draw(); }); return draw(); }
+    rows = null; draw();
+    Promise.resolve(GA.frMe?.()).then(c => { me = c || ''; return rkPush(); }).then(() => GA.frAsk({ op: 'mgtop', game: m === 'sum' ? RK_S : RK_G }))
+      .then(got => { const R = (got || []).map(r => { try { const c = JSON.parse(r.card); return { code: r.code, c: m === 'sum' ? { ...c, sum: +r.best || 0 } : { ...c, rep: +r.best || 0 } }; } catch (e) { return null; } }).filter(Boolean); rkRows[m] = R; rkAt[m] = Date.now(); if (md === m) { rows = R; if (el.isConnected) draw(); } })
+      .catch(e => { if (md !== m) return; err = '랭킹을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요'; if (el.isConnected) draw(); }); };
+  load();
 }
 // 창고 (경완 2026-10-28 '꾸미기 모드 가방처럼'): 상점에서 산 기술머신·꾸미기·관장 의상을 한곳에서 본다
 let storeT = 'tm', stPow = 1;
