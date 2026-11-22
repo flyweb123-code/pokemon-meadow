@@ -963,7 +963,7 @@ function battlerInfo() {
     draw(); });
 }
 function abInfo(k) {   /* 경완 2026-11-12 '특성 2줄 되면 버튼 레이아웃 깨짐': 카드엔 한 줄만, 눌러서 전체 설명 */
-  return new Promise(res => { const p = panel(`<div class="bp-info"><div class="mi-top ab-top"><b>${esc(abKo(k))}</b></div><p>${esc(AB_D[k] || '효과 설명이 아직 없어요.')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
+  return new Promise(res => { const p = panel(`<div class="bp-info bp-ab"><div class="mi-top ab-top"><b>${esc(abKo(k))}</b></div><p>${esc(AB_D[k] || '효과 설명이 아직 없어요.')}</p><button class="bb cancel" data-x><span>돌아가기</span></button></div>`);
     p.onclick = e => { const b = e.target.closest('button'); if (!b) return; tapSe(); res(); }; }); }
 function moveInfo(m) {
   return new Promise(res => {
