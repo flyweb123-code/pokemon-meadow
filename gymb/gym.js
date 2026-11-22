@@ -4402,14 +4402,14 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
 #trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;z-index:3;left:4px;right:4px;top:4px;height:4px;background:#0005}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
 #trLobby .tsv-hd{display:flex;align-items:baseline;justify-content:space-between;padding:2px 4px 0;color:#fff}#trLobby .tsv-hd b{font-size:14px;letter-spacing:.04em;text-shadow:0 2px 0 #0008}#trLobby .tsv-hd small{font-size:11px;color:#ffd870}
-#trLobby .tsv-slot{position:relative;display:flex;flex-direction:column;gap:7px}#trLobby .tsv-slot.new1{border-color:#e0a020;box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff,inset 0 0 0 4px #ffd870}
+#trLobby .tsv-slot{position:relative;display:flex;flex-direction:column;gap:7px}
 #trLobby .tsv-top{display:flex;align-items:center;gap:8px}#trLobby .tsv-no{flex:none;width:22px;height:22px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:#3a3a52;box-shadow:inset 0 -2px 0 #1c1c26}
 #trLobby .tsv-fl{flex:none;font-size:26px;line-height:1;color:#e04838}#trLobby .tsv-fl small{font-size:12px;color:var(--win-ink);margin-left:2px}
 #trLobby .tsv-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}#trLobby .tsv-meta .tl-gauge{flex:none;width:100%}#trLobby .tsv-meta small{font-size:10px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #trLobby .tsv-ft{display:flex;align-items:center;gap:6px}#trLobby .tsv-res{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12px;font-weight:700;color:var(--win-ink)}#trLobby .tsv-res span{display:inline-flex;align-items:center;white-space:nowrap}#trLobby .tsv-res img{width:15px;height:auto;image-rendering:pixelated;margin-right:5px}
 #trLobby .tsv-ft .gy-key{min-height:36px;padding:0 12px;font-size:13px;flex:none}#trLobby .tsv-ft .tsv-del{min-width:64px;padding:0 8px}
 #trLobby .tsv-slot.emp{flex-direction:row;align-items:center;gap:10px;padding:14px 10px;border:3px dashed #5a5a78;background:#ffffff0a;color:#b8b8d0}#trLobby .tsv-slot.emp .tsv-no{background:#4a4a66;color:#b8b8d0}
-#trLobby .tsv-em{display:flex;flex-direction:column;gap:2px}#trLobby .tsv-em b{font-size:13px}#trLobby .tsv-em small{font-size:10px;opacity:.8}#trLobby .tl-ft .gy-key:disabled{opacity:.5}
+#trLobby .tsv-em{display:flex;flex-direction:column;gap:2px}#trLobby .tsv-em b{font-size:13px}#trLobby .tsv-em small{font-size:10px;opacity:.8}#trLobby .tl-ft .gy-key:disabled{opacity:.5}#trLobby .tsv-ask{position:absolute;inset:0;z-index:60}#trLobby .tsv-ask .gy-btns .tsv-rm{background:#e05050!important;color:#fff!important;box-shadow:inset 0 3px 0 #ff9a9a,inset 0 -4px 0 #a83030,0 3px 0 #1c1c26}
 #trLobby .gy-key.sure{background:#e05050!important;color:#fff!important}
 #trLobby .tl-rh{text-align:center;padding:4px 0 8px}#trLobby .tl-rh b{display:block;font-size:18px}#trLobby .tl-rh small{font-size:11px;opacity:.7}#trLobby.top .tl-rh b{color:#e0a020}
 #trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
@@ -4529,15 +4529,17 @@ const trAgo = t => { const m = Math.max(0, Math.round((Date.now() - (t || Date.n
 /* 경완 '수련탑 이어 오르기 세이브는 3개까지 가능하게 해주고 그 화면 디자인 좀 해줘봐' · '이어오르기 슬롯 삭제할 수도 있게': 슬롯 카드 3칸(번호 딱지·층·진행 막대·등반대·골드/코인), 카드마다 지우기(두 번 눌러 확인)·이어 오르기, 빈 칸은 점선 */
 const trGate = () => new Promise(async ok => { const B = GB();
   const card = (R, i) => { const L = R.ids.map(B.boxOf).filter(Boolean), alive = L.filter(P => (R.hp[P.id] ?? 1) > 0).length, pc = Math.max(2, R.floor / TR.top * 100);
-    return `<div class="tl-win tsv-slot${i ? '' : ' new1'}"><div class="tsv-top"><span class="tsv-no">${i + 1}</span><b class="tsv-fl">${R.floor}<small>층</small></b><span class="tsv-meta"><span class="tl-gauge"><i style="width:${pc}%"></i></span><small>${trAgo(R.t)} 멈춤 · 싸울 수 있는 포켓몬 ${alive}/${L.length}</small></span></div>
+    return `<div class="tl-win tsv-slot"><div class="tsv-top"><span class="tsv-no">${i + 1}</span><b class="tsv-fl">${R.floor}<small>층</small></b><span class="tsv-meta"><span class="tl-gauge"><i style="width:${pc}%"></i></span><small>${trAgo(R.t)} 멈춤 · 싸울 수 있는 포켓몬 ${alive}/${L.length}</small></span></div>
       <div class="tl-party">${[0, 1, 2, 3, 4, 5].map(k => { const P = L[k]; if (!P) return `<span class="tl-s">${TRL_PB}</span>`; const h = R.hp[P.id] ?? 1; return `<span class="tl-s on${h > 0 ? '' : ' ko'}">${B.thumb(P)}<em class="lv">${B.gm(P).lv}</em><i class="hp" style="--h:${Math.round(h * 100)}%"></i></span>`; }).join('')}</div>
       <div class="tsv-ft"><span class="tsv-res"><span><i class="coin"></i>${(R.gold | 0).toLocaleString()}</span><span><img alt="" src="${IMG}item/relicsilver.png">${R.coin | 0}</span></span><button type="button" class="gy-key tsv-del" data-a="del" data-i="${i}">지우기</button><button type="button" class="gy-key main tsv-go" data-a="cont" data-i="${i}">이어 오르기</button></div></div>`; };
   const body = () => `<div class="tsv-hd"><b>이어 오르기</b><small>슬롯 ${trSaves.length}/${TR_SLOT}</small></div>${trSaves.map(card).join('')}${Array.from({ length: Math.max(0, TR_SLOT - trSaves.length) }, (_, k) => `<div class="tsv-slot emp"><span class="tsv-no">${trSaves.length + k + 1}</span><span class="tsv-em"><b>빈 슬롯</b><small>도전을 멈추면 여기에 기록이 남아요</small></span></div>`).join('')}`;
   const ft = () => { const full = trSaves.length >= TR_SLOT; return `<button class="gy-key" data-a="x">나가기</button><button class="gy-key main" data-a="new" ${full ? 'disabled' : ''}>새로 시작<small>${full ? '슬롯이 가득 찼어요 · 하나 지워 주세요' : '1층부터 새 등반대로'}</small></button>`; };
   const el = await trScr('gate', body(), ft(), 'nr two'); const re = () => { el.querySelector('.tl-body').innerHTML = body(); el.querySelector('.tl-ft').innerHTML = ft(); GB().fillTh(el); };
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const a = b.dataset.a, i = +b.dataset.i;
-    if (a === 'del') { if (!b.classList.contains('sure')) { el.querySelectorAll('.tsv-del.sure').forEach(x => { x.classList.remove('sure'); x.textContent = '지우기'; }); b.classList.add('sure'); b.textContent = '정말 지울까요?'; return; }
-      const R = trSaves[i]; if (R) { trDrop(R.ids); trSaves.splice(i, 1); } re(); return; }
+    if (a === 'del') { const R = trSaves[i]; if (!R) return;   /* 경완 '정말 지울까요? 는 팝업창으로 물어보게 해줘': 직접 누른 확인 알림창(.gy-pop, 바깥 눌러도 닫힘) */
+      const q = document.createElement('div'); q.className = 'gy-pop tsv-ask'; q.innerHTML = `<div class="win" role="dialog"><h4>${i + 1}번 슬롯을 지울까요?</h4><p class="gy-msg" style="text-align:center">${R.floor}층 기록이 사라지고<br>되돌릴 수 없어요.</p><div class="gy-btns"><button type="button" data-q="no">아니요</button><button type="button" class="main tsv-rm" data-q="yes">지우기</button></div></div>`;
+      q.onclick = e => { e.stopPropagation(); const k = e.target === q ? 'no' : e.target.closest('[data-q]')?.dataset.q; if (!k) return; sfx('tap'); q.remove(); if (k === 'yes') { trDrop(R.ids); const j = trSaves.indexOf(R); if (j >= 0) trSaves.splice(j, 1); re(); } };
+      el.appendChild(q); return; }
     if (a === 'cont') { trLobOut(el); ok({ cont: i }); return; }
     if (a === 'new') { el.remove(); ok('new'); return; }
     if (a === 'x') { el.remove(); ok(null); } };
@@ -4548,58 +4550,56 @@ const trGate = () => new Promise(async ok => { const B = GB();
 /* v26.94 경완 '골드 꾸러미 먹었는데 골드 안 올라가는 오류': 층 표시(.bt-fl)는 배틀 시작 때 한 번만 그려져 다음 배틀까지 숫자가 그대로였음 → 골드·코인이 바뀌는 곳마다 바로 고쳐 쓰고 살짝 튐 */
 const trHud = (R, k) => document.querySelectorAll('.bt .bt-fl').forEach(fl => { [['g', R.gold], ['c', R.coin]].forEach(([c, v]) => { const sp = fl.querySelector(`.${c} > span`); if (!sp) return; const t = (v | 0).toLocaleString(); if (sp.textContent === t) return; sp.textContent = t; if (c === k || !k) { sp.classList.remove('up'); void sp.offsetWidth; sp.classList.add('up'); } }); });
 const TR_PAY = false, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));
-/* 경완 '수련탑 기록창도 디자인 좀 해줘보고, 기록창은 그만두기 한 그 화면 위에 뜨도록 … 기록창에 선물 보상 받은 것도 나오게': 배틀 화면 위 어두운 무대에 뜨는 기록 카드 (trBoxPick 과 같은 층, 저절로 뜨는 창 = 팝업 모션·소리·버튼으로만 닫힘)
-   맨 위 끝난 까닭 띠 → 층 메달(200층 막대) → 오른 층·코인·골드 칸 → 받은 층 선물(등급 색 칸) → 등반대 레벨·경험치 → 확인 */
-const TRS_CSS = `.trsx{position:fixed;inset:0;z-index:6100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:rgba(8,10,24,0);transition:background .35s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
-.trsx.on{background:rgba(8,10,24,.62)}.trsx.out{background:rgba(8,10,24,0);transition:background .25s}.trsx.out>*{opacity:0!important;transition:opacity .2s}
-.trsx h3{margin:0;color:#fff;font-size:17px;text-align:center;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-8px);transition:opacity .3s .1s,transform .3s .1s}.trsx h3 small{display:block;margin-top:5px;font-size:11px;opacity:.85;text-shadow:1px 1px 0 #000}
-.trsx.on h3{opacity:1;transform:none}
-.trsx .trs-w{position:relative;width:min(100%,330px);min-height:0;max-height:calc(100% - 150px);display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border:3px solid var(--g2);box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1);filter:drop-shadow(0 0 8px var(--gl));opacity:0;transform:scale(.3)}
-.trsx.on .trs-w{animation:trsIn .3s cubic-bezier(.3,1.6,.5,1) .12s forwards}@keyframes trsIn{to{opacity:1;transform:none}}
-.trsx .trs-w>em{position:absolute;z-index:1;top:-3px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#fff;background:var(--g2);padding:1px 8px;white-space:nowrap}
-.trsx .trs-in{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:16px 10px 10px}
-.trsx .trs-md{display:flex;align-items:center;gap:10px}
-.trsx .trs-fl{flex:none;display:flex;align-items:baseline;gap:2px}.trsx .trs-fl b{font-size:34px;line-height:1;color:var(--g2)}.trsx .trs-fl em{font-style:normal;font-size:13px}
-.trsx .trs-gv{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-.trsx .trs-ga{height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}.trsx .trs-ga i{display:block;height:100%;width:0;background:var(--g1);box-shadow:inset 0 -2px 0 #0003,inset 0 2px 0 #fff6;transition:width .8s cubic-bezier(.2,.8,.3,1) .4s}
-.trsx .trs-gv small{font-size:10px;opacity:.7}
+/* 경완 '수련탑 기록창도 디자인 좀 해줘보고, 기록창은 그만두기 한 그 화면 위에 뜨도록 … 기록창에 선물 보상 받은 것도 나오게' → '선물창이 그 시작화면에서 선물 아이콘 눌렀을 때 나오는 선물창 말한거였음':
+   시작 화면 '이번 주 층별 선물' 창(trGfList .tl-gfw)과 같은 남색 창 — 보라 머리(아이콘·금빛 제목) → 진행 줄 → 오른 층·코인·골드 칸 → 받은 층 선물 줄(층 딱지·등급 색) → 등반대 줄 → 아래 띠 확인.
+   배틀 화면 위 body 에 붙음(저절로 뜨는 창 = 팝업 모션·소리·버튼으로만 닫힘) */
+const TRS_CSS = `.trsx{position:fixed;inset:0;z-index:6100;display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(6,8,20,0);transition:background .3s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
+.trsx.on{background:rgba(6,8,20,.72)}.trsx.out{background:rgba(6,8,20,0);transition:background .22s}.trsx.out .trs-w{opacity:0;transition:opacity .2s}
+.trsx .trs-w{width:min(100%,360px);max-height:min(100%,600px);display:flex;flex-direction:column;background:#222944;border:3px solid #0b0e1c;border-radius:10px;box-shadow:0 4px 0 #0b0e1c,inset 0 0 0 2px #3d4774;color:#eef0fa;overflow:hidden;animation:trsPop .32s steps(4,end) both}
+@keyframes trsPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none;opacity:1}}
+.trsx .hd{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;background:linear-gradient(180deg,var(--h1,#45307a),var(--h2,#2c2a5a));border-bottom:2px solid #0b0e1c;box-shadow:inset 0 2px 0 #ffffff22}
+.trsx .hd img{width:40px;height:40px;flex:none;image-rendering:pixelated;object-fit:contain;filter:drop-shadow(0 0 6px #ffd86a88) drop-shadow(0 2px 0 #0008)}
+.trsx .hd h3{margin:0;font-size:16px;color:#ffe48a;text-shadow:0 2px 0 #000a;letter-spacing:.5px}.trsx .hd p{margin:2px 0 0;font-size:10px;line-height:1.4;color:#d6d0f0;opacity:.85}
+.trsx.lose .hd{--h1:#5a2a44;--h2:#2c2440}.trsx.top .hd{--h1:#7a5a18;--h2:#3a2f4a}
+.trsx .trs-m{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 14px;font-size:10px;background:#171b31;color:#9ea6c8;border-bottom:2px solid #0b0e1c}
+.trsx .trs-m b{color:#ffe48a;font-size:11px;white-space:nowrap}
+.trsx .trs-m i{flex:1;height:6px;border-radius:3px;background:#2c3354;overflow:hidden;font-style:normal}.trsx .trs-m i>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd86a,#f0a030);transition:width .8s cubic-bezier(.2,.8,.3,1) .3s}
+.trsx .trs-in{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;padding:8px 10px 10px}
 .trsx .trs-c{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.trsx .trs-c span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 5px;background:#f0f0f6;border:2px solid #dcdce6}
-.trsx .trs-c small{font-size:9px;opacity:.7}.trsx .trs-c b{display:flex;align-items:center;font-size:14px}
+.trsx .trs-c span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:6px;background:#2c3458;box-shadow:inset 0 -2px 0 #0004}
+.trsx .trs-c small{font-size:9.5px;color:#a8afcf}.trsx .trs-c b{display:flex;align-items:center;font-size:14px;color:#ffe48a}
 .trsx .trs-c b img{width:14px;height:auto;image-rendering:pixelated;margin-right:5px}.trsx .trs-c .coin{margin-right:6px}
-.trsx h5{display:flex;align-items:center;gap:6px;margin:2px 0 0;font-size:12px}.trsx h5::after{content:'';flex:1;height:2px;background:#dcdce6}.trsx h5 small{order:2;font-size:10px;opacity:.6}
-.trsx .trs-gf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 6px;padding-top:3px}
-.trsx .trs-g{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:10px 3px 5px;background:var(--win);border:2px solid var(--g2);box-shadow:inset 0 3px 0 var(--g1);filter:drop-shadow(0 0 4px var(--gl))}
-.trsx .trs-g img,.trsx .trs-g .trb-eg{flex:none;width:32px;height:32px;image-rendering:pixelated;object-fit:contain;display:flex;align-items:center;justify-content:center}.trsx .trs-g .trb-eg .egg{transform:scale(.5)}
-.trsx .trs-g span{min-width:0;display:flex;flex-direction:column;align-items:center}.trsx .trs-g b{font-size:10px;line-height:1.25;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all}
-.trsx .trs-g small{font-size:9px;opacity:.6}.trsx .trs-g em{position:absolute;top:-3px;left:50%;transform:translateX(-50%);padding:1px 5px;font-style:normal;font-size:8px;color:#fff;background:var(--g2);white-space:nowrap}
-.trsx .trs-no{margin:0;padding:8px;text-align:center;font-size:11px;opacity:.6;background:#f0f0f6}
-.trsx .trs-r{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
-.trsx .trs-r li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;padding:3px 6px;background:#f0f0f6}
+.trsx h5{display:flex;align-items:center;gap:6px;margin:6px 2px 0;font-size:11px;color:#c4cae6}.trsx h5::after{content:'';flex:1;height:2px;background:#2c3354}.trsx h5 small{order:2;font-size:10px;color:#ffe48a}
+.trsx ol,.trsx ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.trsx .trs-g li{position:relative;display:grid;grid-template-columns:46px 30px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px;padding:0 8px 0 0;border-radius:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 30%,#2c3458),#2c3458 75%);box-shadow:inset 0 -2px 0 #0004;overflow:hidden}
+.trsx .trs-g .fl{align-self:stretch;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--c);color:#14182a;border-right:2px solid #0b0e1c}
+.trsx .trs-g .ic{display:flex;align-items:center;justify-content:center;width:30px;height:30px;filter:drop-shadow(0 0 4px var(--c))}.trsx .trs-g .ic img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated}.trsx .trs-g .ic .egg{transform:scale(.42)}
+.trsx .trs-g .nm{font-size:12px;line-height:1.3;min-width:0}
+.trsx .trs-g em{font-style:normal;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--c);color:#14182a;white-space:nowrap}
+.trsx .trs-no{margin:0;padding:10px 8px;border-radius:6px;text-align:center;font-size:10px;color:#9ea6c8;background:#2c3458}
+.trsx .trs-r li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;align-items:center;padding:3px 8px 3px 4px;border-radius:6px;background:#2c3458;box-shadow:inset 0 -2px 0 #0004}
 .trsx .trs-r li>.rk-fr,.trsx .trs-r li>img{grid-row:1/3;position:relative;width:34px;height:34px}
-.trsx .trs-r li b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trsx .trs-r li b em{font-style:normal;margin-left:4px;padding:1px 4px;font-size:9px;color:#f2eaff;background:#4a2c94}
-.trsx .trs-r .lv{grid-column:2;font-size:10px;opacity:.85}.trsx .trs-r .lv i{font-style:normal;opacity:.5}.trsx .trs-r .lv strong{color:#e04838}
-.trsx .trs-r .xp{grid-column:3;grid-row:1/3;font-size:10px;color:#2f7cd0;white-space:nowrap}
-.trsx .trs-nt{margin:0;color:#fff;font-size:12px;text-align:center;opacity:0;transition:opacity .3s}.trsx.ready .trs-nt{opacity:.8}
-.trsx .trs-ok{flex:none;min-width:140px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:0;transition:opacity .3s}
-.trsx.ready .trs-ok{opacity:1}.trsx.ready .trs-ok:active{transform:translateY(4px);box-shadow:inset 0 1px 0 #fff8}`;
+.trsx .trs-r li b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trsx .trs-r li b em{font-style:normal;margin-left:4px;padding:1px 4px;border-radius:3px;font-size:9px;color:#f2eaff;background:#6a44c4}
+.trsx .trs-r .lv{grid-column:2;font-size:10px;color:#a8afcf}.trsx .trs-r .lv i{font-style:normal;opacity:.6}.trsx .trs-r .lv strong{color:#ffe48a}
+.trsx .trs-r .xp{grid-column:3;grid-row:1/3;font-size:10px;color:#8ad0ff;white-space:nowrap}
+.trsx .trs-f{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 12px 12px;background:#171b31;border-top:2px solid #0b0e1c}
+.trsx .trs-f p{margin:0;font-size:9.5px;color:#9ea6c8}.trsx .trs-f .gy-key{min-width:120px;min-height:40px;font-size:15px;opacity:.5;transition:opacity .25s}.trsx.ready .trs-f .gy-key{opacity:1}`;
 const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), m0 = R.m0 || {}, up = Math.max(0, R.floor - (R.f0 || 1)), coin = Math.max(0, (R.coin | 0) - (R.c0 | 0)), gold = Math.max(0, (R.gold | 0) - (R.g0 | 0));
   const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
   const rows = L.map(P => { const m = B.gm(P), [lv0, xp0] = m0[P.id] || [m.lv, m.xp | 0], dl = m.lv - lv0, dx = Math.max(0, (m.xp | 0) - xp0);
     return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em>동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
-  const gfs = (R.gfs || []).map(G => { const [g1, g2] = TR_RC[G.g].split(','); return `<div class="trs-g" style="--g1:${g1};--g2:${g2};--gl:${['transparent', 'transparent', 'rgba(80,150,235,.7)', 'rgba(170,120,240,.75)', '#ffd84a'][G.g]}"><em>${esc(G.gn)}</em>${/^</.test(G.ic || '') ? `<span class="trb-eg">${G.ic}</span>` : `<img alt="" src="${/[/:]/.test(G.ic || '') ? G.ic : `${IMG}item/${G.ic || trIc(G.nm)}.png`}">`}<span><b>${esc(G.nm)}</b><small>${G.f}층 선물</small></span></div>`; }).join('');
+  const gfs = (R.gfs || []).map(G => `<li style="--c:${TR_RC[G.g].split(',')[0]}"><span class="fl">${G.f}층</span><span class="ic">${/^</.test(G.ic || '') ? G.ic : `<img alt="" src="${/[/:]/.test(G.ic || '') ? G.ic : `${IMG}item/${G.ic || trIc(G.nm)}.png`}">`}</span><span class="nm">${esc(G.nm)}</span><em>${esc(G.gn)}</em></li>`).join('');
   if (!document.getElementById('trsCss')) { const st0 = document.createElement('style'); st0.id = 'trsCss'; document.head.appendChild(st0); } document.getElementById('trsCss').textContent = TRS_CSS;
-  const el = document.createElement('div'); el.className = 'trsx';
-  const EG = R.end === 'top' ? 4 : R.end === 'lose' ? 3 : 2, [e1, e2] = TR_RC[EG].split(','), GL = ['', '', 'rgba(80,150,235,.85)', 'rgba(170,120,240,.9)', '#ffd84a'];   /* 경완 '기록창 디자인 선물 창 디자인이랑 비슷하게': 어두운 무대 위 흰 제목 + 등급 색 테두리 카드(멈춤 파랑·쓰러짐 보라·꼭대기 금빛) + 아래 금빛 확인 */
-  el.style.cssText = `--g1:${e1};--g2:${e2};--gl:${GL[EG]}`;
-  el.innerHTML = `<h3>${T[0]}${T[1] ? `<small>${T[1]}</small>` : ''}</h3><div class="trs-w"><em>수련탑 기록</em><div class="trs-in">
-      <div class="trs-md"><div class="trs-fl"><b>${R.floor}</b><em>층</em></div><div class="trs-gv"><div class="trs-ga"><i data-w="${Math.max(2, R.floor / TR.top * 100)}"></i></div><small>200층까지 ${Math.max(0, TR.top - R.floor)}층 남음</small></div></div>
-      <div class="trs-c"><span><small>오른 층</small><b>+${up}</b></span><span><small>코인</small><b><img alt="" src="${IMG}item/relicsilver.png">+${coin}</b></span><span><small>골드</small><b><i class="coin"></i>+${gold.toLocaleString()}</b></span></div>
-      <h5>받은 층 선물 <small>${(R.gfs || []).length}개</small></h5>${gfs ? `<div class="trs-gf">${gfs}</div>` : '<p class="trs-no">이번엔 받은 층 선물이 없어요 · 10층마다 받아요</p>'}
-      <h5>등반대</h5><ul class="trs-r">${rows}</ul></div></div>${TR_PAY ? '' : '<p class="trs-nt">베타에서는 경험치·보상을 실제로 받지 않아요</p>'}<button type="button" class="trs-ok">확인</button>`;
+  const el = document.createElement('div'); el.className = `trsx ${R.end || ''}`;
+  el.innerHTML = `<div class="trs-w" role="dialog"><div class="hd"><img alt="" src="${IMG}item/focusband.png"><div><h3>${T[0]}</h3>${T[1] ? `<p>${T[1]}</p>` : ''}</div></div>
+      <div class="trs-m"><span>기록</span><i><span data-w="${Math.max(2, R.floor / TR.top * 100)}"></span></i><b>${R.floor}/${TR.top}층</b></div>
+      <div class="trs-in"><div class="trs-c"><span><small>오른 층</small><b>+${up}</b></span><span><small>코인</small><b><img alt="" src="${IMG}item/relicsilver.png">+${coin}</b></span><span><small>골드</small><b><i class="coin"></i>+${gold.toLocaleString()}</b></span></div>
+      <h5>받은 층 선물 <small>${(R.gfs || []).length}개</small></h5>${gfs ? `<ol class="trs-g">${gfs}</ol>` : '<p class="trs-no">이번엔 받은 층 선물이 없어요 · 10층마다 받아요</p>'}
+      <h5>등반대</h5><ul class="trs-r">${rows}</ul></div>
+      <div class="trs-f">${TR_PAY ? '' : '<p>베타에서는 경험치·보상을 실제로 받지 않아요</p>'}<button type="button" class="gy-key main trs-ok">확인</button></div></div>`;
   document.body.appendChild(el); try { B.fillTh?.(el); } catch (e) {} void el.offsetWidth; el.classList.add('on');
   try { window.GymBGM?.se?.(R.end === 'top' ? 'DP_KIRAKIRA2' : 'DP_PINPON'); } catch (e) {} try { GA.haptic?.(1); } catch (e) {}
-  requestAnimationFrame(() => el.querySelectorAll('.trs-ga i').forEach(i => { i.style.width = i.dataset.w + '%'; }));
+  requestAnimationFrame(() => requestAnimationFrame(() => el.querySelectorAll('.trs-m i>span').forEach(i => { i.style.width = i.dataset.w + '%'; })));
   let rdy = false; setTimeout(() => { rdy = true; el.classList.add('ready'); }, 700);   /* 저절로 뜨는 창: 막 누르다 넘어가지 않게 잠깐 잠금 */
   el.querySelector('.trs-ok').onclick = () => { if (!rdy) return; rdy = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 240); ok(); };
 });
