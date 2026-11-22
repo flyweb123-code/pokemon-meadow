@@ -4658,7 +4658,7 @@ async function trPost(R, o, boss, ids, T, trn) {
   Object.assign(R.hp, o.hp);
   if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
   if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
-  const fin = async () => { await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; };   /* 경완 '기록창은 그만두기 한 그 화면 위에 뜨도록 해줘 체육관 홈화면에서 뜨는게 아니고': 배틀 화면이 남아 있는 동안 기록창 */
+  const fin = async () => { await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; openTab('battle'); };   /* 경완 '수련탑 그만두고 나왔을 때 체육관 홈 화면 잠깐 보였다가 라인업 화면으로 넘어가는 오류': 배틀 화면이 덮고 있는 동안 밑을 라인업으로 먼저 바꿔 둠 */   /* 경완 '기록창은 그만두기 한 그 화면 위에 뜨도록 해줘 체육관 홈화면에서 뜨는게 아니고': 배틀 화면이 남아 있는 동안 기록창 */
   if (o.quit) { trSaves.unshift(R); while (trSaves.length > TR_SLOT) trDrop(trSaves.pop().ids); R.end = 'quit'; R.keep = R.ids.map(id => [GB().boxOf(id), GB().gm(GB().boxOf(id))]).filter(x => x[0]).map(([P, m]) => [JSON.parse(JSON.stringify(P)), JSON.parse(JSON.stringify(m))]); await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n여기까지 한 만큼 보상을 받는다.`); await fin(); return false; }
   if (!o.won) { R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); await trItBack(R, o); await fin(); return false; }
   if (o.act) R.lead = o.act;
