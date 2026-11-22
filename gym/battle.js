@@ -3121,12 +3121,13 @@ function recNat(P, m = gm(P)) {
   else if (off < 75 && Math.max(bs[2], bs[4]) >= 85) up = bs[2] >= bs[4] ? 'def' : 'spd';
   return NATS().find(k => D.nt[k][1] === up && D.nt[k][2] === dn) || m.nat;
 }
+/* v28.40 경완 '상세카드에서 민트 … 창고에 있을 때는 창고아이콘 곱하기 수량으로 표시' → '아 민트만': 창고에 있으면 '창고에 ○○민트 · 누르면 먹여요' 글 대신 가격 자리에 창고 아이콘 × 수량 (bagN) */
 function natRec(rn, m) {
   if (!rn || rn === m.nat) return '';   // v17.59 경완: 이미 추천 성격이면 추천 칸 안 띄움
   const g = S.gym || {}, own = g.mint?.[rn] > 0, nt = D.nt[rn] || ['', '', ''];
   if (!own && window.gymEvLu) return '';   // v19.61 경완: 이벤트 안 라인업 화면에선 체육관 상점으로 못 감
   const body = rn === m.nat ? '<small class="it-recw">지금 성격이 추천 성격이에요</small>'
-    : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small>${own ? `<em class="it-note">창고에 ${esc(mintNm(rn))} · 누르면 먹여요</em>` : ''}</span>${own ? '' : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
+    : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small></span>${own ? `<em class="it-recp it-recown">${bagN(g.mint[rn])}</em>` : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
   return `<div class="it-rec"><span class="it-recl">추천 성격</span><div class="it-recb">${body}</div></div>`;
 }
 function mintUse(P, k) {
