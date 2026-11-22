@@ -4466,7 +4466,12 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-gfw li.got{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 30%,#2c3458),#2c3458 75%)}#trLobby .tl-gfw li.got .fl{background:var(--c);color:#14182a;border-color:#0b0e1c}#trLobby .tl-gfw li.got em{background:var(--c);color:#14182a}
 #trLobby .tl-gfw li.got .ic{filter:drop-shadow(0 0 4px var(--c))}
 #trLobby .tl-gff{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 12px 12px;background:#171b31;border-top:2px solid #0b0e1c}#trLobby .tl-gff p{margin:0;font-size:9.5px;color:#9ea6c8}#trLobby .tl-gff .gy-key{min-width:120px}
-#trLobby .tl-ft{padding-bottom:calc(10px + var(--si-bottom,env(safe-area-inset-bottom,0px)))}`;
+#trLobby .tl-ft{padding-bottom:calc(10px + var(--si-bottom,env(safe-area-inset-bottom,0px)))}
+/* v28.58 경완 '타이틀 디자인만 바꿔볼까' → '남색으로 배포해': 제목 상자만 남색(층 선물 창 색) */
+#trLobby .tl-hd{background:linear-gradient(180deg,#45307a,#2c2a5a);border:3px solid #0b0e1c;border-radius:8px;box-shadow:0 3px 0 #0b0e1c,inset 0 0 0 2px #5a4a9a,inset 0 2px 0 #ffffff33}
+#trLobby .tl-hd h2{color:#ffe48a;text-shadow:0 2px 0 #000a}
+#trLobby .tl-hd h2 b{color:#ffb0d8}
+#trLobby .tl-hd small{color:#d6d0f0;opacity:.9}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
 /* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
 function trTowerSvg(tod) {
