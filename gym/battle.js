@@ -1081,7 +1081,7 @@ function psSet(o) {
   const dx = PSim.Dex, sp = dx.species.get(o.fm || D.sp[o.sp]?.id || String(o.sp));
   const iv = o.iv || [20, 20, 20, 20, 20, 20];
   let ab = o.ab; if (o.fm) { const b0 = dx.species.get(D.sp[o.sp]?.id || String(o.sp)), k = Object.keys(b0.abilities || {}).find(k => toID(b0.abilities[k]) === toID(ab)); if (k && sp.abilities) ab = toID(sp.abilities[k] || sp.abilities[0]); }  if (o.fmAb) ab = o.fmAb;   // v16.91 퍼펙트폼 = 50% 지가르데 + 스웜체인지 (반 이하면 퍼펙트로)   // 영물폼은 특성도 그 칸의 영물폼 특성
-  return { name: o.nm, species: sp.name, level: o.lv, moves: o.mv, ability: ab, nature: dx.natures.get(o.nat || 'hardy').name, item: o.fmIt ? dx.items.get(o.fmIt).name : o.it && !TP_T[o.it] && (HOLD[o.it] || dx.items.get(o.it).megaStone || dx.items.get(o.it).zMove) ? dx.items.get(o.it).name : '', ...(o.tera ? { teraType: o.tera } : {}), ...(o.tpH ? { tpH: 1 } : {}), ...(o.gmax ? { gigantamax: true } : {}),   /* v21.89 메가스톤·Z크리스탈·테라 타입·거다이맥스 */
+  return { name: o.nm, species: sp.name, level: o.lv, moves: o.mv, ability: ab, nature: dx.natures.get(o.nat || 'hardy').name, item: o.fmIt ? dx.items.get(o.fmIt).name : o.it && !TP_T[o.it] && (HOLD[o.it] || dx.items.get(o.it).megaStone || dx.items.get(o.it).zMove) ? dx.items.get(o.it).name : '', ...(o.tera ? { teraType: o.tera } : {}), ...(o.tpH ? { tpH: 1 } : {}), ...(o.fTera ? { fTera: o.fTera } : {}), ...(o.gmax ? { gigantamax: true } : {}),   /* v21.89 메가스톤·Z크리스탈·테라 타입·거다이맥스 */
     gender: o.g === 'M' || o.g === 'F' ? o.g : '', shiny: !!o.shiny,
     ivs: { hp: iv[0], atk: iv[1], def: iv[2], spa: iv[3], spd: iv[4], spe: iv[5] }, evs: o.evs || { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } };
 }
@@ -1173,6 +1173,12 @@ function foeUseItem(btl, ch) {
   else if (k === 'rev') { p.fainted = false; p.faintQueued = false; p.subFainted = false; p.status = ''; p.hp = 1; p.sethp(v >= 7 ? H : Math.floor(H / 2)); btl.add('-dxrevive', 'p2: ' + p.name); }
   else if (k === 'x') { const n = p.boostBy({ [v]: 2 }); btl.add('-boost', p, v, n); }
 }
+/* v28.63 전설 도전자 에이스 테라 타입: 자기 타입·공격 기술 타입 중에서 (센 자속 기술 + 관장 라인업 기술을 덜 아프게 받는 쪽). lx = 전설 단계, 2 미만이면 절반은 그냥 첫 타입 */
+function teraPick(btl, p, lx = 0) { try { const dx = btl.dex, o0 = p.species.types, atk = q => q.moveSlots.map(x => dx.moves.get(x.id)).filter(m => m.category !== 'Status' && m.basePower > 0), mv = atk(p);
+  if (lx < 2 && Math.random() < .5) return o0[0]; const C = [...new Set([...o0, ...mv.map(m => m.type)])].filter(t => dx.types.get(t)?.exists && t !== 'Stellar'), FM = btl.p1.pokemon.flatMap(atk);
+  const df = ty => FM.length ? FM.reduce((a, m) => a + (dx.getImmunity(m.type, ty) ? 2 ** dx.getEffectiveness(m.type, ty) : 0), 0) / FM.length : 1, d0 = df(o0);
+  const of = T => Math.max(1, ...mv.map(m => m.basePower * (o0.includes(m.type) && T === m.type ? 2 : o0.includes(m.type) || T === m.type ? 1.5 : 1))), f0 = of('');
+  return C.map(T => ({ T, v: of(T) / f0 + (d0 - df([T])) * .8 })).sort((a, b) => b.v - a.v)[0]?.T || o0[0]; } catch (e) { return p.species.types[0]; } }
 function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': k = 자리(더블), tk = 이번 턴에 이미 쓴 기믹 */
   const G = B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[k], me = side.active[k], mt = /^move (\d+)( -?\d+)?$/.exec(c || ''), tn = mt?.[2] ? +mt[2] : 0, foe = (tn > 0 && btl.p1.active[tn - 1] && !btl.p1.active[tn - 1].fainted ? btl.p1.active[tn - 1] : btl.p1.active.find(q => q && !q.fainted));
   if (!mt || !G || !R || !me) return c;
@@ -1180,13 +1186,23 @@ function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에�
   const ok = q => !tk || !tk.includes(q), put = q => { if (tk) tk.push(q); return c + ' ' + q; };
   const left = side.pokemon.filter(p => !p.fainted).length, ace = left === 1 || side.pokemon.indexOf(me) === side.pokemon.length - 1 || me.position === 0 && side.pokemon[side.pokemon.length - 1] === me, hpR = me.hp / me.maxhp;
   if (G.mega && ok('mega') && (R.canMegaEvo || R.canMegaEvoX || R.canMegaEvoY)) { if (tk) tk.push('mega'); return c + (R.canMegaEvoX ? ' megax' : R.canMegaEvoY ? ' megay' : ' mega'); }
+  /* v28.63 경완 '응 다듬어주고 또 ai가 멍청한 부분이 어디 있는지 검토해줘봐': 보통·어려움·전설은 기믹을 따져서 씀 — Z기술은 그냥 기술로 쓰러뜨릴 수 있으면 아끼고 가장 센 Z기술로, 다이맥스는 맞붙을 만할 때, 테라스탈은 받는 피해가 크게 줄거나 이번에 쓰러뜨릴 수 있게 될 때 */
+  const smart = (B.diff | 0) >= 1 || !!B.top, stA = (p, q) => { const b = p.boosts?.[q] || 0; let v = (p.storedStats?.[q] || 100) * (b >= 0 ? (2 + b) / 2 : 2 / (2 - b)); if (q === 'spe' && p.status === 'par') v /= 2; if (q === 'atk' && p.status === 'brn') v /= 2; return v; };
+  const dm = (a, d, id) => { try { return aiDmg(btl, a, d, PSim.Dex.moves.get(id), stA, true); } catch (e) { return 0; } }, bestOf = (a, d) => !a || !d ? 0 : Math.max(0, ...(a.moveSlots || []).filter(x => x.pp > 0).map(x => dm(a, d, x.id)));
+  if (smart && G.z && ok('zmove') && R.canZMove && foe && !G.meOnly) { const cur = m && PSim.Dex.moves.get(m.id).category !== 'Status' ? dm(me, foe, m.id) : 0;
+    if (cur < foe.hp) { let bj = -1, bv = 0; R.canZMove.forEach((z, j) => { if (!z || !R.moves?.[j] || R.moves[j].disabled || (B.dbl && j !== i)) return; const dv = PSim.Dex.moves.get(R.moves[j].id); if (dv.category === 'Status') return; const v = dm(me, foe, dv.id) / Math.max(1, dv.basePower || 60) * (dv.zMove?.basePower || 100); if (v > bv) { bv = v; bj = j; } });
+      if (bj >= 0 && (bv >= foe.hp || foe.hp / foe.maxhp > .35 && bv > cur * 1.3)) { B.gmBase[k ? 'e2' : 'e'] = R.moves[bj].id; if (tk) tk.push('zmove'); return `move ${bj + 1}${mt[2] || ''} zmove`; } } }
+  else {
   if (G.z && ok('zmove') && R.canZMove?.[i] && PSim.Dex.moves.get(m.id).category !== 'Status' && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) return put('zmove');
   /* v24.51 도전자 Z기술: 고른 기술이 Z가 안 되면, Z크리스탈로 바뀌는 공격 기술 중 상대에게 안 막히는(무효·반감 아님) 것으로 바꿔서 Z기술 */
   if (G.z && !G.meOnly && !B.dbl && R.canZMove && foe && foe.hp / foe.maxhp > .35 && (B.diff || Math.random() < .5)) { const ft = foe.getTypes?.() || foe.types || [];
     const j = R.canZMove.findIndex((z, k) => { if (!z || !R.moves?.[k] || R.moves[k].disabled) return false; const dm = PSim.Dex.moves.get(R.moves[k].id); return dm.category !== 'Status' && PSim.Dex.getImmunity(dm.type, ft) && PSim.Dex.getEffectiveness(dm.type, ft) >= 0; });
     if (j >= 0) { B.gmBase.e = R.moves[j].id; return `move ${j + 1} zmove`; } }
-  if (G.dmax && ok('dynamax') && !G.meOnly && R.canDynamax && (left === 1 || (ace && hpR > .5))) return put('dynamax');
-  if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize && (left === 1 || ace || (B.diff >= 2 && hpR < .5))) return put('terastallize');   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
+  }
+  if (G.dmax && ok('dynamax') && !G.meOnly && R.canDynamax && (left === 1 || ace && hpR > .5) && (!smart || left === 1 || bestOf(me, foe) / Math.max(1, foe?.hp || 1) >= .3)) return put('dynamax');   /* v28.63 똑똑하면 에이스는 상대에게 제법 들어갈 때만 (마지막 포켓몬은 늘) */
+  if (G.tera && ok('terastallize') && !G.meOnly && R.canTerastallize) { if (!smart || !foe) { if (left === 1 || ace || (B.diff >= 2 && hpR < .5)) return put('terastallize'); }   /* meOnly = 테라스탈 튜토리얼 연습 배틀: 상대는 안 씀 */
+    else { const T = me.teraType, t0 = me.terastallized, iO = bestOf(foe, me), oO = m ? dm(me, foe, m.id) : 0; let iN = iO, oN = oO; try { me.terastallized = T; iN = bestOf(foe, me); oN = m ? dm(me, foe, m.id) : 0; } finally { me.terastallized = t0; }
+      if (left === 1 || oN >= foe.hp && oO < foe.hp || iO >= me.hp * .4 && iN <= iO * .5 || ace && iN <= iO && oN > oO * 1.2) return put('terastallize'); } }
   return c;
 }
 /* v27.68 경완이 보여 준 동혁 말 'Ai 멍청해서 … 아이언롤러 … 자꾸 쓰고 실패함' → v27.69 경완 '또 이런 ai 찐빠 없는지 검토 좀 해줘봐': 지금 쓰면 실패하거나 헛도는 기술은 상대 AI 가 안 고름 (싱글 aiChoice·더블 aiD 공통, 쉬움·보통의 무작위 고르기에서도 뺌).
@@ -1369,7 +1385,7 @@ function aiDmg(btl, a, d, m, st, smart) {
     if (a.item === 'choiceband' && ph || a.item === 'choicespecs' && !ph) A *= 1.5; if (d.item === 'assaultvest' && !ph) Df *= 1.5; if (d.item === 'eviolite' && d.species?.nfe) Df *= 1.5;
     if (wx === 'sandstorm' && !ph && T(d).includes('Rock')) Df *= 1.5; if (['snow', 'snowscape'].includes(wx) && ph && T(d).includes('Ice')) Df *= 1.5;
     let v = (Math.floor(Math.floor(Math.floor(2 * a.level / 5 + 2) * bp * A / Df) / 50) + 2) * aiPw(btl, a, m);
-    if (T(a).includes(ty)) v *= aa === 'adaptability' ? 2 : 1.5;
+    { const o0 = a.types || a.species?.types || [], tz = a.terastallized && a.terastallized !== 'Stellar' ? a.terastallized : '', s0 = o0.includes(ty), s1 = tz === ty; if (s0 || s1) v *= s0 && s1 ? (aa === 'adaptability' ? 2.25 : 2) : aa === 'adaptability' ? 2 : 1.5; }   /* v28.63 본가처럼 테라스탈해도 원래 타입 자속은 남고, 같은 타입으로 테라하면 2배 */
     let eff = id === 'thousandarrows' && T(d).includes('Flying') ? 1 : 2 ** btl.dex.getEffectiveness(ty, d); if (id === 'freezedry' && T(d).includes('Water')) eff *= 4; if (id === 'flyingpress') eff *= 2 ** btl.dex.getEffectiveness('Flying', d);
     v *= eff; if (eff > 1 && ['filter', 'solidrock', 'prismarmor'].includes(da)) v *= .75; if (eff < 1 && aa === 'tintedlens') v *= 2;
     if (['sunnyday', 'desolateland'].includes(wx)) v *= ty === 'Fire' ? 1.5 : ty === 'Water' ? .5 : 1; if (['raindance', 'primordialsea'].includes(wx)) v *= ty === 'Water' ? 1.5 : ty === 'Fire' ? .5 : 1;
@@ -1401,7 +1417,7 @@ function aiChoice(btl, diff) {
   const best = (a, d) => Math.max(0, ...(a?.moveSlots || []).filter(x => x.pp > 0).map(x => dmg(a, d, x.id)));
   const fast = (a, d) => st(a, 'spe') >= st(d, 'spe');
   // 들어갈 포켓몬 고르기: 내가 주는 피해 비율 − 받는 피해 비율이 가장 좋은 쪽
-  const matchup = mon => !foe || foe.fainted ? 0 : Math.min(1.2, best(mon, foe) / Math.max(1, foe.hp)) - Math.min(1.2, best(foe, mon) / Math.max(1, mon.hp)) * .9;
+  const matchup = mon => !foe || foe.fainted ? 0 : Math.min(1.2, best(mon, foe) / Math.max(1, foe.hp)) - Math.min(1.2, best(foe, mon) / Math.max(1, mon.hp)) * .9 - (diff && !fast(mon, foe) && best(foe, mon) >= mon.hp ? .6 : 0);   /* v28.63 상대보다 느리고 한 방에 쓰러질 포켓몬은 덜 고름 */
   if (req.forceSwitch) { const o = bench(); if (!o.length) return 'pass'; return 'switch ' + (o.map(x => ({ x, s: matchup(x.mon) + Math.random() * .1 })).sort((a, b) => b.s - a.s)[0].x.i + 1); }
   const mv0 = req.active[0].moves.map((m, i) => ({ m, i })).filter(o => !o.m.disabled && o.m.pp > 0);
   if (!mv0.length) return 'move 1';
@@ -1415,7 +1431,7 @@ function aiChoice(btl, diff) {
       else if (sb) { const up = Object.entries(sb).filter(([k, x]) => x > 0), cur = Math.max(...up.map(([k]) => bo[k] || 0), 0); if (up.length && cur < 2 && mHp > .6 && foeHit < .45) v = .62 - cur * .2; }
       else if (m.status && foe && !foe.status && !foe.fainted) { const im = !btl.dex.getImmunity(m.status === 'par' && m.type === 'Electric' ? 'Electric' : m.type, foe) || (m.status === 'brn' && hasT(foe, 'Fire')) || ((m.status === 'psn' || m.status === 'tox') && (hasT(foe, 'Poison') || hasT(foe, 'Steel'))) || (m.status === 'par' && hasT(foe, 'Electric'));
         if (!im && foe.hp / foe.maxhp > .4) v = m.status === 'slp' ? .75 : m.status === 'brn' ? (st(foe, 'atk') > st(foe, 'spa') ? .6 : .35) : m.status === 'par' ? (fast(me, foe) ? .3 : .55) : .45; }
-      else if (m.heal || m.id === 'roost' || m.id === 'synthesis' || m.id === 'moonlight' || m.id === 'morningsun') v = mHp < .45 && !inDanger ? .7 : mHp < .7 ? .25 : 0;
+      else if (m.heal || m.id === 'roost' || m.id === 'synthesis' || m.id === 'moonlight' || m.id === 'morningsun') v = mHp < .45 && !inDanger ? .7 : inDanger && mHp < .5 && fast(me, foe) && me.hp + me.maxhp / 2 > best(foe, me) * 1.1 ? .65 : mHp < .7 && !inDanger ? .25 : 0;   /* v28.63 한 방에 쓰러질 상황이어도 먼저 회복해서 버틸 수 있으면 회복 */
       else if (m.sideCondition === 'stealthrock') v = !btl.p1.sideConditions?.stealthrock && btl.p1.pokemon.filter(p => !p.fainted).length > 2 ? .5 : 0;
       else if (m.volatileStatus === 'leechseed') v = foe && !foe.volatiles?.leechseed && !hasT(foe, 'Grass') ? .4 : 0;
       else if (m.id === 'substitute') v = mHp > .6 && !me.volatiles?.substitute ? .3 : 0;
@@ -1425,7 +1441,7 @@ function aiChoice(btl, diff) {
   // 상성이 나쁘면 교체: 지금 기술로 거의 못 때리고, 맞으면 크게 다칠 때 더 나은 포켓몬이 있으면
   if (!req.active[0].trapped && foe && !foe.fainted && sc[0].s < .3 && (foeHit > .5 || sc[0].s < .12)) {
     const b = bench().map(x => ({ x, s: matchup(x.mon) })).sort((a, b) => b.s - a.s)[0];
-    if (b && b.s > matchup(me) + .35 && Math.random() < (diff === 2 ? .75 : .4)) return 'switch ' + (b.x.i + 1);
+    if (b && b.s > matchup(me) + .35 && best(foe, b.x.mon) < b.x.mon.hp * .6 && Math.random() < (diff === 2 ? .75 : .4)) return 'switch ' + (b.x.i + 1);   /* v28.63 바꿔 들어가면서 지금 상대 기술에 크게 다칠 포켓몬으로는 안 바꿈 */
   }
   /* v24.82 수련탑 상대 (포켓로그 '똑똑한' 고르기를 참고해 다시 짬): 엉뚱한 기술은 안 쓰고, 다음 기술 점수가 1등과 비슷할수록(비율×50%) 그 기술도 섞음. 쓰러뜨릴 기술은 위 점수에서 이미 1등. 우두머리(diff 2)는 늘 1등 */
   /* 경완 '2단계도 2등 기술 가끔 쓰는건 명문까지 유지하고 전설 등급부터는 1등 기술만 쓰게': 2단계도 전설 등급 체육관(B.top)이 아니면 같은 방식으로 가끔 다음 기술. 쓰러뜨릴 기술이 있으면 쓰러뜨리는 기술끼리만 */
@@ -1568,7 +1584,7 @@ async function run(opts) {
   { const RM = btl.actions.runMove.bind(btl.actions); btl.actions.runMove = (mv, pk, ...r) => { if (B?.passP && pk?.side === btl.p1 && (B.passP === 1 || B.passP === pk)) { B.passP = 0; return; } return RM(mv, pk, ...r); }; }   /* 수련탑 동료 볼을 놓친 턴: 내 포켓몬은 기술을 안 씀 */
   btl.setPlayer('p1', { name: '관장', team: my.map(psSet) });
   btl.setPlayer('p2', { name: opts.foe.nm, team: foeT.map(psSet) });
-  if (opts.gmk?.tpOnly) { btl.p1.pokemon.forEach(p => { if (!p.set?.tpH) p.canTerastallize = null; }); btl.p2.pokemon.forEach(p => { p.canTerastallize = null; }); }   /* v28.56 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 체육관 배틀은 테라피스 지닌 포켓몬만 (상대는 아직 안 씀) */
+  if (opts.gmk?.tpOnly) { btl.p1.pokemon.forEach(p => { if (!p.set?.tpH) p.canTerastallize = null; }); btl.p2.pokemon.forEach(p => { if (!p.set?.fTera) { p.canTerastallize = null; return; } const T = teraPick(btl, p, p.set.fTera - 1); p.teraType = T; p.canTerastallize = T; }); }   /* v28.63 경완 '전설 등급부터 도전자도 테라' → '응 다듬어주고 또 ai가 멍청한 부분이 어디 있는지 검토해줘봐': 전설 도전자 에이스(fTera)만 테라 — 타입은 teraPick */   /* v28.56 경완 '테라피스를 포켓몬한테 지니게 해야 그 타입으로 테라할 수 있게 하자. 배틀당 한번': 체육관 배틀은 테라피스 지닌 포켓몬만 (상대는 아직 안 씀) */
   if (opts.gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; });   /* v21.89 9세대 규칙에서도 다이맥스 (쇼다운은 8세대만) */
   // 쇼다운은 교체할 때마다 pokemon 배열 순서를 바꾼다. 처음 순서(my·foe 와 같은 순서)를 따로 둔다 (경완 2026-10-27 '시라소몬인데 망키라고 나옴')
   /* v23.10 훈련하기: 지난 층에서 남은 체력(opts.hp = {pid: 비율}), 우두머리는 체력 크게(foe.hpX) */
@@ -1757,7 +1773,7 @@ function aiD(btl, diff) {
   if (req.forceSwitch) { const used = []; return req.forceSwitch.map(f => { if (!f) return 'pass'; const o = req.side.pokemon.map((q, i) => ({ q, i, mon: side.pokemon[i] })).filter(x => !x.q.active && !/fnt/.test(x.q.condition) && !used.includes(x.i)); if (!o.length) return 'pass';
     const fit = x => diff ? foes.reduce((a, F) => a + Math.min(1.2, Math.max(0, ...(x.mon.moveSlots || []).filter(y => y.pp > 0).map(y => dmg(x.mon, F.q, btl.dex.moves.get(y.id)))) / Math.max(1, F.q.hp)), 0) + Math.random() * .15 : Math.random();
     const x = o.sort((a, b) => fit(b) - fit(a))[0]; used.push(x.i); return 'switch ' + (x.i + 1); }).join(', '); }
-  const tk = [];
+  const tk = [], kod = {};   /* v28.63 경완 '…ai가 멍청한 부분이 어디 있는지 검토해줘봐': 같은 편이 이번 턴에 쓰러뜨릴 상대는 겹쳐 때리지 않음 (kod) */
   return req.active.map((R, k) => aiGmk(btl, aiD1(R, k), k, tk)).join(', ');
   function aiD1(R, k) { const me = side.active[k]; if (!me || me.fainted || /fnt/.test(req.side.pokemon[k]?.condition || '')) return 'pass';
     if (R.moves.length === 1 && R.moves[0].pp == null) return 'move 1';
@@ -1774,7 +1790,7 @@ function aiD(btl, diff) {
         else if (m.heal || /^(roost|synthesis|moonlight|morningsun)$/.test(m.id)) v = mHp < .45 ? .65 : 0;
         else if (m.status) { const T = foes.filter(F => !F.q.status && F.q.hp / F.q.maxhp > .4 && !aiNoGo(btl, me, F.q, m)).map(F => [F.n, m.status === 'slp' ? .7 : .45]); if (T.length) opts.push({ o, T: NEED_T.has(tg) ? T : [['', T[0][1]]] }); continue; }
         if (m.accuracy !== true) v *= m.accuracy / 100; opts.push({ o, T: [[NEED_T.has(tg) && tg !== 'adjacentAllyOrSelf' ? pick(foes)?.n || '' : '', v]] }); continue; }
-      const r = F => { const dd = dmg(me, F.q, m); return Math.min(1, dd / Math.max(1, F.q.hp)) + (dd >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : dd > 0 && diff ? aiSec(btl, me, F.q, m, { fast: st(me, 'spe') >= st(F.q, 'spe') }) : 0); };
+      const r = F => { if (diff && kod[F.n]) return .05; const dd = dmg(me, F.q, m); return Math.min(1, dd / Math.max(1, F.q.hp)) + (dd >= F.q.hp ? 1 + (m.priority > 0 ? .3 : 0) : dd > 0 && diff ? aiSec(btl, me, F.q, m, { fast: st(me, 'spe') >= st(F.q, 'spe') }) : 0); };
       if (tg === 'allAdjacentFoes' || tg === 'allAdjacent') { let v = foes.reduce((a, F) => a + r(F), 0) * .75; if (tg === 'allAdjacent' && alOk) v -= Math.min(1, dmg(me, al, m) / Math.max(1, al.hp)) * 1.2 + (dmg(me, al, m) >= al.hp ? 1 : 0); opts.push({ o, T: [['', v]], ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) }); }
       else if (NEED_T.has(tg)) opts.push({ o, T: foes.map(F => [F.n, r(F)]), ko: foes.some(F => dmg(me, F.q, m) >= F.q.hp) });
       else opts.push({ o, T: [['', foes[0] ? r(foes[0]) : 0]] }); }
@@ -1786,6 +1802,7 @@ function aiD(btl, diff) {
     let c = 0;   /* ④ */
     if (diff === 0) while (c < sc.length - 1 && Math.random() >= 5 / 8) c++;
     else if (diff === 1 || !B?.top && !B?.train) while (c < sc.length - 1 && sc[c].s > 0 && sc[c + 1].s > 0 && Math.random() < sc[c + 1].s / sc[c].s * .5) c++;
+    if (diff && sc[c].n > 0) { const F = foes.find(x => x.n === sc[c].n), m = btl.dex.moves.get(sc[c].o.m.id); if (F && m.category !== 'Status' && dmg(me, F.q, m) >= F.q.hp) kod[F.n] = 1; }
     return 'move ' + (sc[c].o.i + 1) + (sc[c].n ? ' ' + sc[c].n : '');
   }
 }

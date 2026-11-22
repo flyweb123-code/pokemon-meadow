@@ -14,13 +14,13 @@ window.__GBX = { ev: s => eval(s), simB(myT, foeT, hold, tier) {
   try { foeItems(foeT, hold); } catch (e) {}
   const btl = new PSim.Battle({ formatid: 'gen9customgame', seed: [1, 2, 3, 4].map(() => Math.floor(Math.random() * 65536)) });
   btl.setPlayer('p1', { name: 'aa', team: myT.map(psSet) }); btl.setPlayer('p2', { name: 'bb', team: foeT.map(psSet) });
-  B = { btl, train: null, bag: [], dbl: false, diff: tier, gmk: window.__gmk || null, gmBase: {} }; if (window.__gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; }); const GK = !!window.__gmk;
+  B = { btl, train: null, bag: [], dbl: false, diff: tier, gmk: window.__gmk || null, gmBase: {}, top: !!window.__top }; if (window.__gmk?.tera) { btl.p1.pokemon.forEach(p => { p.canTerastallize = null; }); btl.p2.pokemon.forEach(p => { if (!p.set?.fTera) { p.canTerastallize = null; return; } const T = teraPick(btl, p, p.set.fTera - 1); p.teraType = T; p.canTerastallize = T; }); }   /* v28.63 전설 도전자 에이스 테라 (봇 관장은 테라 안 함) */ if (window.__gmk?.dmax) btl.sides.forEach(sd => { sd.dynamaxUsed = false; sd.canDynamaxNow = function () { return !this.dynamaxUsed; }; }); const GK = !!window.__gmk;
   const mb = new Proxy(btl, { get: (t, k) => k === 'p1' ? t.p2 : k === 'p2' ? t.p1 : typeof t[k] === 'function' ? t[k].bind(t) : t[k] });
   let i = 0;
   for (; i < 600 && !btl.ended; i++) { const r1 = btl.p1.activeRequest, r2 = btl.p2.activeRequest; let c1 = null, c2 = null;
     if (r1 && !r1.wait) c1 = r1.teamPreview ? 'default' : GK ? (B.diff = 2, aiGmk(mb, aiChoice(mb, 2))) : aiChoice(mb, 2); B.diff = tier; if (r2 && !r2.wait) c2 = r2.teamPreview ? 'default' : GK ? aiGmk(btl, aiChoice(btl, tier)) : aiChoice(btl, tier);
     try { if (c1 && c2) btl.makeChoices(c1, c2); else if (c1) btl.choose('p1', c1); else if (c2) btl.choose('p2', c2); else break; } catch (e) { try { btl.makeChoices('default', 'default'); } catch (e2) { break; } } }
-  const r = { dm: btl.p1.dynamaxUsed ? 1 : 0, mg: btl.p1.pokemon.some(p => /mega/i.test(p.species.forme || '')) ? 1 : 0, w: btl.winner === 'aa' ? 1 : 0, end: btl.ended ? 1 : 0, t: btl.turn, left: btl.p1.pokemon.filter(p => !p.fainted).length }; B = null; return r; } };
+  const r = { tr: btl.p2.pokemon.some(p => p.terastallized) ? 1 : 0, dm: btl.p1.dynamaxUsed ? 1 : 0, mg: btl.p1.pokemon.some(p => /mega/i.test(p.species.forme || '')) ? 1 : 0, w: btl.winner === 'aa' ? 1 : 0, end: btl.ended ? 1 : 0, t: btl.turn, left: btl.p1.pokemon.filter(p => !p.fainted).length }; B = null; return r; } };
 `;
 const serve = async route => { try { const u = new URL(route.request().url()); let f = path.join(ROOT, decodeURIComponent(u.pathname)); if (!f.startsWith(ROOT)) return route.abort();
   let body = fs.readFileSync(f); const cut = s => { const t = body.toString('utf8'), i = t.lastIndexOf('})();'); if (i < 0) throw new Error('끼울 자리 없음 ' + f); return Buffer.from(t.slice(0, i) + s + '\n' + t.slice(i)); };
@@ -47,16 +47,17 @@ const MODE = process.argv[2] || 'car', N = +(process.argv[3] || 300);
       const MY = my.map(id => S.box.find(p => p.id === id)), seq = [], K = { e: [0, 0], h: [0, 0], n: [0, 0] };
       let tries = 0, lvd = 0;
       while (seq.length < N && tries++ < N * 30) { g.q = []; g.rep = rep; const c = mkChal(Date.now()); if (pairOf(c) || (onlyHard && (c.named || !c.diff))) continue; if (onlyHard) { g.stk = 0; g.lstk = 0; c.brk = 0; } refit(c, MY);
-        const le = lsE(g), tier = c.named ? 2 : Math.max(0, (c.ai ?? (c.diff ? 1 : 0)) - (le >> 1));
+        window.__top = gi >= 6; const le = lsE(g), tier = c.named ? 2 : Math.max(0, (c.ai ?? (c.diff ? 1 : 0)) - (le >> 1));
         const team = c.team.map(([sp, lv, mv]) => { const o = GB()._foeEntry(sp, lv, tier); if (mv && mv.length) o.mv = mv; if (c.named) o.iv = o.iv.map(() => rndI(22, 31)); else if (c.ivm) o.iv = o.iv.map(v => Math.max(v, c.ivm)); if (le) o.iv = o.iv.map(v => Math.min(v, 31 - le * 6)); o.evs = GB().foeEvs(sp, Math.max(0, gi - Math.round(le * 1.5))); return o; });
         const myT = sps.map(sp => { const o = GB()._foeEntry(sp, myLv, 2); o.iv = o.iv.map(() => rndI(15, 31)); o.evs = GB().foeEvs(sp, gi); return o; });
         if (window.__kit) { const B2 = GB(); B2.itAi.setB && 0; __GBX.ev('foeItems')(myT, 2);
           if (gi >= 3) { const o = myT.find(o => B2.mgSt?.(o.sp)?.length || __GBX.ev('mgSt')(o.sp).length); if (o) o.it = __GBX.ev('mgSt')(o.sp)[0]; }
           if (gi >= 4) { const MS = __GBX.ev('MEGA_ST'), ZS = __GBX.ev('ZC_ST'), o = myT.find(o => !MS[o.it]); if (o) { const t = (SPECIES[o.sp].t || [])[0]; if (ZS[t]) o.it = ZS[t]; } }
-          window.__gmk = { ...(gi >= 3 ? { mega: 1 } : {}), ...(gi >= 4 ? { z: 1 } : {}), };
+          window.__gmk = { ...(gi >= 3 ? { mega: 1 } : {}), ...(gi >= 4 ? { z: 1 } : {}), ...(gi >= 6 && window.__tera ? { tera: 1 } : {}) };
+          if (gi >= 6 && window.__tera && team.length) team[team.length - 1].fTera = Math.floor(legX(g)) + 1;
           const kd = c.named ? 'named' : c.diff | 0, ef = 1 - le * .25;
           if (gi >= 3 && Math.random() < MG_FOE.max[kd] * ef) foeMega(c, team, 1, MY); if (gi >= 4 && Math.random() < Z_FOE.max[kd] * ef) foeZ(c, team, 1, MY); } else window.__gmk = null;
-        const r = __GBX.simB(myT, team, tier, tier); if (!r.end) continue; window.__mgc = (window.__mgc || 0) + r.mg; window.__dmc = (window.__dmc || 0) + r.dm;
+        const r = __GBX.simB(myT, team, tier, c.boss ? tier : gi >= 6 ? 2 : c.diff | 0); if (!r.end) continue; window.__mgc = (window.__mgc || 0) + r.mg; window.__trc = (window.__trc || 0) + r.tr; window.__dmc = (window.__dmc || 0) + r.dm;
         const k = c.named ? 'n' : c.diff ? 'h' : 'e'; K[k][0] += r.w; K[k][1]++; lvd += teamLv(c.team) - myLv;
         if (r.w) { g.stk = (g.stk | 0) + 1; g.lstk = Math.max(0, Math.min(5, g.lstk | 0) - 1); if (!c.named) g.nc = (g.nc | 0) + 1; } else { g.stk = 0; g.lstk = Math.min(5, (g.lstk | 0) + 1); }
         seq.push(r.w); }
@@ -65,12 +66,13 @@ const MODE = process.argv[2] || 'car', N = +(process.argv[3] || 300);
       return [gi, myLv, seq.length, Math.round(seq.reduce((a, b) => a + b, 0) / seq.length * 100), pc(K.e) + '/' + K.e[1], pc(K.h) + '/' + K.h[1], pc(K.n) + '/' + K.n[1], +(W.reduce((a, b) => a + b, 0) / Math.max(1, W.length)).toFixed(1), Math.max(0, ...W), Math.max(0, ...Ls), Ls.filter(x => x >= 3).length, Ls.filter(x => x >= 5).length, +(lvd / seq.length).toFixed(1)];
     }`);
   }, +(process.argv[4] || 0));
+  await pg.evaluate(t => { window.__tera = t; }, !!process.env.TERA);   // TERA=1 이면 전설 도전자 에이스 테라 (v28.63)
   const MID = [[6, 59, 78, 38, 136, 126], 10], STR = [[149, 373, 445, 635, 706, 784], 16], LV = [25, 35, 45, 55, 66, 78, 92], CEIL = [30, 40, 50, 60, 72, 85, 100];
   console.log('who gi myLv n win% easy hard named avgWinStreak maxWinStreak maxLoseStreak lose3+ lose5+ foeLv-my');
   const jobs = [];
   if (MODE === 'leg') for (const lv of [90, 95, 100]) jobs.push(['str', 6, N, STR[0], STR[1], lv, 0]);
   if (MODE === 'car') for (const [nm, T] of [['mid', MID], ['str', STR]]) for (const gi of [3, 4, 5, 6]) jobs.push([nm, gi, N, T[0], T[1], LV[gi], 0]);
   if (MODE === 'lv') for (const [nm, T] of [['mid', MID], ['str', STR]]) for (const gi of [3, 5]) for (const d of [-9, -4, 0]) jobs.push([nm, gi, N, T[0], T[1], Math.min(100, CEIL[gi] + d), 1]);
-  for (const [nm, ...a] of jobs) { const r = await pg.evaluate(a => __car(...a), a); console.log(nm + '\t' + r.join('\t') + '\tmega:' + await pg.evaluate(() => { const x = window.__mgc || 0; window.__mgc = 0; window.__dmc = 0; return x; })); }
+  for (const [nm, ...a] of jobs) { const r = await pg.evaluate(a => __car(...a), a); console.log(nm + '\t' + r.join('\t') + '\tmega:' + await pg.evaluate(() => { const x = (window.__mgc || 0) + ' tera:' + (window.__trc || 0); window.__mgc = 0; window.__dmc = 0; window.__trc = 0; return x; })); }
   await b.close();
 })();
