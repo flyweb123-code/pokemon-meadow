@@ -873,7 +873,7 @@ function movePanel(req, ak = 0) {
     const gkNm = k => k === 'megax' ? '메가진화 X' : k === 'megay' ? '메가진화 Y' : k === 'dynamax' && gmx ? '거다이맥스' : GK_NM[k];
     const p = panel(`<div class="bp-moves${go.length ? ' gk' : ''}">${[0, 1, 2, 3].map(i => { const m = mv[i]; if (!m) return `<i class="mvb empty"></i>`; const d0 = mvOf(m.id) || ['', m.move, 1, 0], [d, zx] = gkMove(R, i, m, d0, gk);
       const h = mvBox(i, d, m.pp, m.maxpp, m.disabled || m.pp <= 0 || zx); return gk === 'zmove' && R.canZMove?.[i] ? h.replace('class="mvw"', `class="mvw zon zty${d[2] || 1}"`).replace('</b>', '</b>' + zPtH()) : gk === 'dynamax' ? h.replace('class="mvw"', 'class="mvw don"') : h; }).join('')}
-      ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}">${/^mega/.test(k) || k === 'dynamax' && go.length === 1 ? `<i class="gk-mk"></i>` : k === 'zmove' ? `<i class="gk-mk" style="background-image:url(${IMG}dbk/Z-Power/zc/${zTyN(R, mv) || 1}.svg)"></i>` : ''}${k === 'terastallize' && tera && TERA_I[R.canTerastallize] ? `<i class="gk-ti" style="background-image:url(${IMG}dbk/Tera/ty/${TERA_I[R.canTerastallize]}.png)"></i>` : ''}<span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
+      ${go.length ? `<div class="gk-row">${go.map(k => `<button class="bb gkb ${k.replace(/^mega[xy]$/, 'mega')}${gk === k ? ' on' : ''}" data-gk="${k}">${/^mega|^zmove$/.test(k) ? `<i class="gk-mk"></i>` : ''}${k === 'terastallize' && tera && TERA_I[R.canTerastallize] ? `<i class="gk-ti" style="background-image:url(${IMG}dbk/Tera/ty/${TERA_I[R.canTerastallize]}.png)"></i>` : ''}<span>${gkNm(k)}</span>${k === 'terastallize' && tera ? `<small>${tera} 타입</small>` : ''}</button>`).join('')}<button class="bb cancel" data-x><span>취소</span></button></div>` : '<button class="bb cancel" data-x><span>취소</span></button>'}</div>`);
     if (gk === 'zmove') zTySet(R, mv);
     p.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return; tapSe();
@@ -893,8 +893,7 @@ function movePanel(req, ak = 0) {
 /* 경완 2026-11-13: Z 버튼 → Z기술로 바뀌는 칸만 번쩍 빛나며 바뀌고(효과음), 켜져 있는 동안 타입별 기운(불이면 불꽃이 일렁임)이 칸에 계속 */
 const ZPT_N = 9, zPtH = () => '<i class="zpt">' + Array.from({ length: ZPT_N }, (_, k) => `<i style="--x:${(k + .5) / ZPT_N * 100}%;--d:${(k * .37 % 1) * 1.6}s;--s:${.7 + (k * .53 % 1) * .6}"></i>`).join('') + '</i>';
 /* 경완 2026-11-14: 아래 화면 Z 마크·바탕색 = Z기술로 바뀌는 기술 타입의 Z크리스탈 */
-function zTyN(R, mv) { const i = [0, 1, 2, 3].find(i => R.canZMove?.[i] && mv[i]); if (i == null) return 0; const m = mv[i], d0 = mvOf(m.id) || ['', m.move, 1, 0]; return gkMove(R, i, m, d0, 'zmove')[0][2] || 1; }
-function zTySet(R, mv) { const n = zTyN(R, mv); if (n) el.dataset.zt = n; }
+function zTySet(R, mv) { const i = [0, 1, 2, 3].find(i => R.canZMove?.[i] && mv[i]); if (i == null) return; const m = mv[i], d0 = mvOf(m.id) || ['', m.move, 1, 0]; el.dataset.zt = gkMove(R, i, m, d0, 'zmove')[0][2] || 1; }
 function zSwap(p, R, mv) {
   const on = B.gkSel === 'zmove', ws = p.querySelectorAll('.bp-moves > .mvw, .bp-moves > .mvb.empty'); let n = 0; if (on) zTySet(R, mv);
   [0, 1, 2, 3].forEach(i => { const m = mv[i], w = ws[i]; if (!m || !w || !w.classList.contains('mvw')) return;
