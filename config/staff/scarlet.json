@@ -1,6 +1,1173 @@
 {
  "days": [
   {
+   "at": 1795387659784,
+   "theme": "숲속 꼬마 기사의 성",
+   "note": "오늘은 숲속 꼬마 기사의 성이에요. 돌탑 성문과 파란 지붕 망루로 성의 모양을 잡고, 기사 연습 과녁과 깃발은 치거나 바람이 불면 흔들려요. 성벽 횃불은 밤에 성 마당을 따뜻하게 밝혀요.",
+   "items": [
+    {
+     "id": "cas-gate",
+     "n": "꼬마 성문",
+     "k": "성",
+     "d": "돌탑 두 개 사이에 둥근 나무 문이 달린 꼬마 성문이에요. 탑 꼭대기엔 빨간 깃발이 펄럭이고 문엔 쇠띠와 금빛 손잡이가 붙어 있어요.",
+     "px": [
+      "....kkkk..............kkkk..",
+      "...ktGrrk............ktGrrk.",
+      "...ktrrrrk...........ktrrrrk",
+      "...ktRRRk............ktRRRk.",
+      "...ktRRk.............ktRRk..",
+      "...ktkk..............ktkk...",
+      ".kkktk.kk..........kkktk.kk.",
+      "kabkabkabk........kabkabkabk",
+      "kbckbckbck........kbckbckbck",
+      "kaaaaaaadk........kaaaaaaadk",
+      "kabbcbbbdkkk.kk.kkkabbcbbbdk",
+      "kbccccccdkabkabkabkbccccccdk",
+      "kacaddcadkbckbckbckacaddcadk",
+      "kacbeecbdaaaaaaaaadacbeecbdk",
+      "kbcceeccdabbcbbbcbdbcceeccdk",
+      "kabbeebbdbccccccccdabbeebbdk",
+      "kabbaabbdacabbcabbdabbaabbdk",
+      "kbccccccdacbddddbbdbccccccdk",
+      "kacabbcadbcddvvddcdacabbcadk",
+      "kacbbbcbdabdwwuudadacbbbcbdk",
+      "kbccccccdabdwwuudbdbccccccdk",
+      "kabbcabbdbcdOOOOdcdabbcabbdk",
+      "kabbcbbbdacdwwuudbdabbcbbbdk",
+      "kbccccccdacdwGgudbdbccccccdk",
+      "kacabbcadbcdwwuudcdacabbcadk",
+      "kacbbbcbdabdwwuudadacbbbcbdk",
+      "kbccccccdabdOOOOdbdbccccccdk",
+      "kabbcabbdbcdwwuudcdabbcabbdk",
+      "kabbcbbbdacdwwuudbdabbcbbbdk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "G": "#f6dc7a",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "a": "#d8d0c0",
+      "b": "#b0a690",
+      "c": "#857c6c",
+      "d": "#5c5548",
+      "e": "#2e2832",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "r": "#e2705e",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "성문 앞에 서서 높은 탑을 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "성문 앞에 서서 높은 탑 꼭대기 깃발을 올려다봤다.",
+        "성문을 똑똑 두드리고 누가 나오나 기다렸다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 탑 꼭대기 톱니 벽에 앉아요",
+       "x": {
+        "at": [
+         0.18,
+         0.25
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 성 탑 꼭대기에 앉아 망을 봤다.",
+        "탑 꼭대기에서 깃발 옆에 앉아 성 아래를 내려다봤다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "탑 창문으로 얼굴을 쏙 내밀어요",
+       "x": {
+        "at": [
+         0.16,
+         0.45
+        ],
+        "m": "win"
+       },
+       "l": [
+        "성 탑 창문으로 얼굴을 쏙 내밀었다.",
+        "탑 창문에서 빼꼼 내다보며 문지기 흉내를 냈다."
+       ]
+      },
+      {
+       "w": "격투·강철 타입",
+       "a": "나무 문을 몸으로 쿵 밀어요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "성문을 몸으로 쿵 밀어 봤지만 꿈쩍도 안 했다.",
+        "성문에 부딪쳐 쿵 소리를 내고 의기양양하게 섰다."
+       ]
+      }
+     ],
+     "fit": "필드 가장자리, 길이 시작되는 곳"
+    },
+    {
+     "id": "cas-turret",
+     "n": "돌 망루",
+     "k": "성",
+     "d": "파란 기와 원뿔 지붕을 쓴 둥근 돌 망루예요. 아치 창문과 작은 나무 문이 있고 꼭대기엔 금빛 꼭지가 반짝여요.",
+     "px": [
+      ".........kk.........",
+      "........kGGk........",
+      "........kGgk........",
+      ".......kABDk........",
+      ".......kABCDk.......",
+      "......kBBCCCDk......",
+      ".....kAABBBCCDk.....",
+      "....kAAABBBCCDDk....",
+      "...kBBBCCCCCCCDDk...",
+      "..kAAAABBBBBCCCDDk..",
+      ".kAAAABBBBBBCCCCDDk.",
+      "kBBBBBCCCCCCCCCCDDDk",
+      ".kBCCCCCCCCCCCCCCDk.",
+      "..kaaaaaaaaaaaaadk..",
+      "..kaabcbbbcbbbccdk..",
+      "..kbccccccccccccdk..",
+      "..kacabbceebcabcdk..",
+      "..kacbbbdeedcbbcdk..",
+      "..kbccccefeeccccdk..",
+      "..kaabcaeeeebbcadk..",
+      "..kaabcbeeeebbccdk..",
+      "..kbcccceeeeccccdk..",
+      "..kacabbaaaacabcdk..",
+      "..kacbbbcbbbcbbcdk..",
+      "..kbcccccvvcccccdk..",
+      "..kaabcawvvvbbcadk..",
+      "..kaabcbvvgubbccdk..",
+      "..kbccccvvvuccccdk..",
+      "..kacabbvvvvcabcdk..",
+      "...kkkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "A": "#9cb4d8",
+      "B": "#6a86b8",
+      "C": "#48608e",
+      "D": "#2e3e62",
+      "G": "#f6dc7a",
+      "a": "#d8d0c0",
+      "b": "#b0a690",
+      "c": "#857c6c",
+      "d": "#5c5548",
+      "e": "#2e2832",
+      "f": "#4a5470",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "아치 창문으로 얼굴을 내밀고 멀리 내다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.65
+        ],
+        "m": "win"
+       },
+       "l": [
+        "망루 창문으로 얼굴을 내밀고 먼 데를 살폈다.",
+        "망루 창문에서 하품을 하다 들킬까 얼른 고개를 숙였다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 지붕 꼭지 둘레를 빙빙 돌아요",
+       "x": {
+        "at": "top",
+        "m": "circ"
+       },
+       "l": [
+        "날아올라 망루 꼭지 둘레를 빙빙 돌았다.",
+        "망루 지붕 위를 돌며 망보기 순찰을 했다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "망루 뒤에 숨었다가 옆으로 스르르 나타나요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "망루 뒤로 스르르 사라졌다가 옆에서 빼꼼 나타났다.",
+        "망루 뒤에서 오싹한 소리를 내며 지나가던 포켓몬을 놀래켰다."
+       ]
+      },
+      {
+       "w": "바위·땅 타입",
+       "a": "망루 돌벽에 기대 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "망루 돌벽에 기대 꾸벅꾸벅 졸았다.",
+        "차가운 돌벽에 등을 대고 편하게 잠들었다."
+       ]
+      }
+     ],
+     "fit": "성문 옆, 조금 높은 언덕"
+    },
+    {
+     "id": "cas-armor",
+     "n": "기사 갑옷 거치대",
+     "k": "성",
+     "d": "나무 받침대에 세워 둔 반짝이는 은빛 기사 갑옷이에요. 투구 위엔 빨간 깃털 장식이 달려 있어요.",
+     "px": [
+      ".......kkk......",
+      "......krrRk.....",
+      ".....krrrRqk....",
+      ".....kkMMkk.....",
+      "....kHMMMMNk....",
+      "....kHMMMMNk....",
+      "....kOOOOOOk....",
+      "....kMNNNNNk....",
+      "....kMMMMMNk....",
+      "..kkkkkMMkkkkk..",
+      ".kHHHMMMMMMNNNk.",
+      ".kMMMMMMMMMNNNk.",
+      ".kNNNMMMMMMOOOk.",
+      ".kMNHHMHNMNNNOk.",
+      ".kNNHHMHNMNNOOk.",
+      ".kNNHHMHNMNNOOk.",
+      ".kNNHHMHNMNNOOk.",
+      ".kNNHHMHNMNNOOk.",
+      ".kNNuuugGuuuOOk.",
+      "..kkkHMuuNNkkk..",
+      "....kMMuuNNk....",
+      "....kMNuuNOk....",
+      "....kMMuuNNk....",
+      "..kkkMMuuNNkkk..",
+      ".kwwwwwwwwwwwuk.",
+      ".kvvvvvvvvvvvuk.",
+      "..kttttttttttk..",
+      "...kkkkkkkkkk..."
+     ],
+     "pal": {
+      "G": "#f6dc7a",
+      "H": "#f4f6f8",
+      "M": "#c0c8d2",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "q": "#8c2c2c",
+      "r": "#e2705e",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "강철 타입",
+       "a": "갑옷 옆에 나란히 서서 똑같은 자세를 해요",
+       "x": {
+        "at": "side",
+        "m": "wobble"
+       },
+       "l": [
+        "기사 갑옷 옆에 나란히 서서 똑같이 가슴을 폈다.",
+        "갑옷과 키를 대 보고 자기가 더 반짝인다며 뿌듯해했다."
+       ]
+      },
+      {
+       "w": "작은 고스트 타입",
+       "a": "갑옷 속으로 스르르 들어갔다가 투구 틈으로 얼굴을 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.25
+        ],
+        "m": "hide win",
+        "back": true
+       },
+       "l": [
+        "갑옷 속으로 스르르 숨어들어 투구 틈으로 눈을 반짝였다.",
+        "갑옷을 덜컹 흔들어 기사가 살아난 척 장난을 쳤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "갑옷 앞에 서서 반짝이는 가슴판에 비친 얼굴을 봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "반짝이는 갑옷 가슴판에 비친 제 얼굴을 들여다봤다.",
+        "가슴판에 비친 얼굴이 길쭉해 보여 고개를 갸웃했다."
+       ]
+      }
+     ],
+     "fit": "성문 안쪽, 망루 옆"
+    },
+    {
+     "id": "cas-catapult",
+     "n": "나무 투석기",
+     "k": "성",
+     "d": "바퀴 달린 나무 투석기예요. 쇠 숟가락 끝에 빨간 열매가 하나 얹혀 있어 금방이라도 퐁 날아갈 것 같아요.",
+     "px": [
+      "............................",
+      "............................",
+      "............................",
+      "......................kkk...",
+      "....................kkwwwk..",
+      "...kk.......kkkk.kkkwwvvwk..",
+      "..keEk.....kwwwwkwwwvvvwk...",
+      "..krk......kwwwwwvvvwkkk....",
+      ".kHrrk....kvvvvvvwkkk.......",
+      ".krrRk..kkvvvvvvuuk.........",
+      "kMOrOOkkvvvvvqvuuuk.........",
+      "kOOOOOvvvvvvkqkkuuuk........",
+      "kNNNNOvvvvvkkqk.kuuuk.......",
+      ".kkkvvvvvvvkkqk.kuuuuk......",
+      ".kkkkkkvvvkkkqkkkkuuukkkkkk.",
+      "kwwwwwwwwwwwwwwwwwwwwwwwwwwk",
+      "kvvvvvvOvvvvvOvvvvvvOvvvvvvk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuuuk",
+      ".kkkuwvvukkkkkkkkkkuwvvukkk.",
+      "..kuvvOvvuk......kuvvOvvuk..",
+      "..kuvvvOvuk......kuvvvOvuk..",
+      "...kuvvvuk........kuvvvuk...",
+      "....kuuuk..........kuuuk....",
+      ".....kkk............kkk....."
+     ],
+     "pal": {
+      "E": "#9cc468",
+      "H": "#f4f6f8",
+      "M": "#c0c8d2",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "e": "#6a9e4a",
+      "k": "#20202c",
+      "q": "#d8c49a",
+      "r": "#e2705e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "격투·노말 타입",
+       "a": "투석기 팔을 힘껏 눌러 열매를 퐁 날려요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "투석기 팔을 힘껏 눌러 열매를 퐁 날려 보냈다.",
+        "날아간 열매를 찾으러 멀리까지 뛰어갔다가 돌아왔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "투석기 숟가락 위로 올라가 앉아 조심조심 균형을 잡아요",
+       "x": {
+        "at": [
+         0.1,
+         0.4
+        ],
+        "m": "climb wobble"
+       },
+       "l": [
+        "투석기 숟가락에 올라가 앉아 날아갈까 조마조마했다.",
+        "숟가락 위에서 균형을 잡으며 열매를 꼭 껴안았다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "투석기 바퀴 앞에 앉아 숟가락의 열매를 냠냠 먹어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "투석기에 얹힌 열매를 몰래 냠냠 먹었다.",
+        "날릴 열매를 다 먹어 버리고 시치미를 뗐다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 투석기 팔 끝에 앉아요",
+       "x": {
+        "at": [
+         0.8,
+         0.2
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 투석기 팔 끝에 사뿐 앉았다.",
+        "투석기 팔 끝에 앉아 출발 신호를 기다리는 척했다."
+       ]
+      }
+     ],
+     "fit": "성벽 앞 넓은 풀밭"
+    },
+    {
+     "id": "cas-crown-stand",
+     "n": "왕관 방석 받침대",
+     "k": "성",
+     "d": "돌 받침대 위 빨간 벨벳 방석에 금빛 왕관이 얹혀 있어요. 왕관 가운데 파란 보석이 반짝여요.",
+     "px": [
+      "........kk........",
+      ".....k.kGgk.k.....",
+      "....kGkkGGkkgk....",
+      "....kGkkWGkkgk....",
+      "....kGkGGGgkgk....",
+      "....kGGGGGgggk....",
+      "....kGGGPpGGGk....",
+      "....khrhhhhrhk....",
+      "..kkrrrrrrrrrRkk..",
+      ".krrXrrrrrrrrRRRk.",
+      ".kGrrrrrrrrrrRRgk.",
+      ".khkRRRRRRRRRqkhk.",
+      "..kkkkkkkkkkkkkk..",
+      "..kaaaaaaaaaaadk..",
+      "..kbbbbbbbbbbbdk..",
+      "...kkabbcbbcdkk...",
+      "....kabbcbbcdk....",
+      "....kabbcbbcdk....",
+      "...kkabbcbbcdkk...",
+      "..kaaaaaaaaaaadk..",
+      "..kcccccccccccdk..",
+      "...kkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "G": "#f6dc7a",
+      "P": "#4a78c0",
+      "R": "#b84a3e",
+      "W": "#ffffff",
+      "X": "#f2a090",
+      "a": "#d8d0c0",
+      "b": "#b0a690",
+      "c": "#857c6c",
+      "d": "#5c5548",
+      "g": "#e0b040",
+      "h": "#a8782a",
+      "k": "#20202c",
+      "p": "#7aa8e0",
+      "q": "#8c2c2c",
+      "r": "#e2705e"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "받침대 옆에서 왕관을 머리에 쓴 척 으쓱해요",
+       "x": {
+        "at": "side",
+        "m": "peek",
+        "fx": "glow"
+       },
+       "l": [
+        "왕관 받침대 옆에서 임금님이 된 듯 으쓱했다.",
+        "왕관을 써 보려다 너무 무거워 비틀거렸다."
+       ]
+      },
+      {
+       "w": "에스퍼·페어리 타입",
+       "a": "받침대 옆에서 기술을 써 왕관 보석을 반짝이게 해요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 왕관 보석을 반짝반짝 빛냈다.",
+        "보석이 빛나자 두 손을 모으고 소원을 빌었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "받침대 앞에 서서 반짝이는 왕관을 넋 놓고 바라봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "반짝이는 금빛 왕관을 넋 놓고 바라봤다.",
+        "왕관을 지키는 호위병처럼 받침대 앞에 꼿꼿이 섰다."
+       ]
+      }
+     ],
+     "fit": "왕좌 옆, 성 안뜰 가운데"
+    },
+    {
+     "id": "cas-banner",
+     "n": "성 깃발 기둥",
+     "k": "성",
+     "d": "돌 받침에 세운 나무 기둥에 파란 성 깃발이 걸려 있어요. 금빛 테두리 가운데 빨간 보석 문장이 있고, 바람이 불면 깃발이 살랑 흔들려요.",
+     "px": [
+      ".......kk.......",
+      "......kGGk......",
+      "......kGgk......",
+      "..kkkkkvukkkkk..",
+      ".kwvvvvvvvvvvuk.",
+      "..kAgAAAAAAhCk..",
+      "..kgggggggghhk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBGGBBhCk..",
+      "..kAgBGGGGBhCk..",
+      "..kAgBGrRGBhCk..",
+      "..kAgBGRqGBhCk..",
+      "..kAgBBGGBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBBBBBhCk..",
+      "..kAgBBvuBBhCk..",
+      "..kAgBkvukBhCk..",
+      "...kkkkvukkkk...",
+      "......kvuk......",
+      "......kvuk......",
+      "....kkkvukkk....",
+      "...kaaaaaaadk...",
+      "...kabbbbbbdk...",
+      "...kbbbbbbbdk...",
+      "...kcccccccck...",
+      "....kkkkkkkk...."
+     ],
+     "pal": {
+      "A": "#7aa8e0",
+      "B": "#4a78c0",
+      "C": "#2e4e8a",
+      "G": "#f6dc7a",
+      "R": "#b84a3e",
+      "a": "#d8d0c0",
+      "b": "#b0a690",
+      "c": "#857c6c",
+      "d": "#5c5548",
+      "g": "#e0b040",
+      "h": "#a8782a",
+      "k": "#20202c",
+      "q": "#8c2c2c",
+      "r": "#e2705e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 날갯짓으로 깃발을 펄럭이게 해요",
+       "x": {
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓으로 바람을 일으켜 성 깃발을 펄럭이게 했다.",
+        "깃발이 힘차게 펄럭이자 신이 나서 더 세게 날갯짓했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "깃발 앞에 서서 펄럭이는 깃발을 올려다보며 경례해요",
+       "x": {
+        "at": "front",
+        "m": "peek",
+        "fx": "swing"
+       },
+       "l": [
+        "펄럭이는 성 깃발을 올려다보며 씩씩하게 경례했다.",
+        "깃발 아래 꼿꼿이 서서 보초를 섰다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "깃발 뒤에 숨었다가 옆으로 얼굴을 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.6
+        ],
+        "m": "hide speek",
+        "back": true,
+        "fx": "swing"
+       },
+       "l": [
+        "깃발 뒤에 숨었다가 옆으로 빼꼼 얼굴을 내밀었다.",
+        "흔들리는 깃발 뒤에서 숨바꼭질을 했다."
+       ]
+      }
+     ],
+     "fit": "성문 앞 길 양옆",
+     "mv": {
+      "st": [
+       ".......kk.......",
+       "......kGGk......",
+       "......kGgk......",
+       "..kkkkkvukkkkk..",
+       ".kwvvvvvvvvvvuk.",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       ".......vu.......",
+       ".......vu.......",
+       "......kvuk......",
+       "......kvuk......",
+       "......kvuk......",
+       "....kkkvukkk....",
+       "...kaaaaaaadk...",
+       "...kabbbbbbdk...",
+       "...kbbbbbbbdk...",
+       "...kcccccccck...",
+       "....kkkkkkkk...."
+      ],
+      "mp": [
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "..kAgAAAAAAhCk..",
+       "..kgggggggghhk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBGGBBhCk..",
+       "..kAgBGGGGBhCk..",
+       "..kAgBGrRGBhCk..",
+       "..kAgBGRqGBhCk..",
+       "..kAgBBGGBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBBBBBBhCk..",
+       "..kAgBB..BBhCk..",
+       "..kAgBk..kBhCk..",
+       "...kkk....kkk...",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................",
+       "................"
+      ],
+      "o": [
+       7.5,
+       4.5
+      ],
+      "k": "swing",
+      "amp": 1.2
+     }
+    },
+    {
+     "id": "cas-quintain",
+     "n": "기사 연습 과녁",
+     "k": "성",
+     "d": "나무 기둥 위에 도는 팔이 달린 기사 연습 과녁이에요. 한쪽엔 빨강·하양 방패, 다른 쪽엔 모래주머니가 매달려 있어 치면 빙그르 흔들려요.",
+     "px": [
+      "........................",
+      "........................",
+      "...........kk...........",
+      "..........kwwk..........",
+      "..kkkkkkkkkwvkkkkkkkkk..",
+      ".kwwwwwwwwMOOOwwwwwwwwk.",
+      ".kvvvvvvvvOOOOvvvvvvvvk.",
+      "..kYkkkkkkOOONkkkkkkYk..",
+      ".kkYkkk...kwuk.....kYk..",
+      "kggggghk..kwuk....kkYkk.",
+      "krrrHHMk..kwuk...kSssTTk",
+      "krrrHHMk..kwuk..kSUUUUTk",
+      "krrrHHMk..kwuk..kSSssTTk",
+      "kHHHrrRk..kwuk..kSSssTTk",
+      "kHHHrrRk..kwuk..kSSUUTTk",
+      "kHHHrrRk..kwuk..kSSssTTk",
+      ".kHHrrk...kwuk..kSSssTTk",
+      "..kHrk....kwuk...kTTTTTk",
+      "...kk.....kwuk....kkkkk.",
+      "..........kwuk..........",
+      "..........kwuk..........",
+      "..........kwuk..........",
+      "..........kwuk..........",
+      ".........kvuuuk.........",
+      ".......kkkuuuukkk.......",
+      "......kwwwwwwwwwwk......",
+      "......kuuuuuuuuuuk......",
+      ".......kkkkkkkkkk......."
+     ],
+     "pal": {
+      "H": "#f4f6f8",
+      "M": "#c0c8d2",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "S": "#e8d4a0",
+      "T": "#9a7c48",
+      "U": "#7a5e34",
+      "Y": "#d8c49a",
+      "g": "#e0b040",
+      "h": "#a8782a",
+      "k": "#20202c",
+      "r": "#e2705e",
+      "s": "#c8aa70",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "방패를 힘껏 쳐서 과녁 팔을 빙그르 흔들어요",
+       "x": {
+        "at": [
+         0.1,
+         0.6
+        ],
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "과녁 방패를 힘껏 쳐서 팔을 빙그르 흔들었다.",
+        "방패를 치고 돌아온 모래주머니에 엉덩이를 맞았다."
+       ]
+      },
+      {
+       "w": "강철·노말 타입",
+       "a": "과녁 옆에서 기술을 써 모래주머니를 맞혀요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "기술을 써서 과녁 모래주머니를 정확히 맞혔다.",
+        "모래주머니가 흔들리자 한 번 더 맞히려고 자세를 잡았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "모래주머니에 매달려 오르내리며 흔들려요",
+       "x": {
+        "at": [
+         0.85,
+         0.55
+        ],
+        "m": "bob",
+        "fx": "swing"
+       },
+       "l": [
+        "과녁 모래주머니에 매달려 대롱대롱 흔들렸다.",
+        "모래주머니에 매달려 그네 타듯 신나게 흔들렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "흔들리는 과녁을 피해 다가갔다가 물러나요",
+       "x": {
+        "m": "avoid",
+        "fx": "swing"
+       },
+       "l": [
+        "빙그르 도는 과녁 팔을 아슬아슬하게 피했다.",
+        "과녁 팔이 다가오자 몸을 납작 숙여 피했다."
+       ]
+      }
+     ],
+     "fit": "성 마당 연습장, 넓은 곳",
+     "mv": {
+      "st": [
+       "........................",
+       "........................",
+       "...........kk...........",
+       "..........kwwk..........",
+       "...........wv...........",
+       "........................",
+       "........................",
+       "........................",
+       "...........wu...........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       "..........kwuk..........",
+       ".........kvuuuk.........",
+       ".......kkkuuuukkk.......",
+       "......kwwwwwwwwwwk......",
+       "......kuuuuuuuuuuk......",
+       ".......kkkkkkkkkk......."
+      ],
+      "mp": [
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "..kkkkkkkkk..kkkkkkkkk..",
+       ".kwwwwwwwwMOOOwwwwwwwwk.",
+       ".kvvvvvvvvOOOOvvvvvvvvk.",
+       "..kYkkkkkkOOONkkkkkkYk..",
+       ".kkYkkk...k..k.....kYk..",
+       "kggggghk..........kkYkk.",
+       "krrrHHMk.........kSssTTk",
+       "krrrHHMk........kSUUUUTk",
+       "krrrHHMk........kSSssTTk",
+       "kHHHrrRk........kSSssTTk",
+       "kHHHrrRk........kSSUUTTk",
+       "kHHHrrRk........kSSssTTk",
+       ".kHHrrk.........kSSssTTk",
+       "..kHrk...........kTTTTTk",
+       "...kk.............kkkkk.",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................"
+      ],
+      "o": [
+       11.5,
+       6
+      ],
+      "k": "swing",
+      "amp": 1.6
+     }
+    },
+    {
+     "id": "cas-treasure",
+     "n": "보물 상자",
+     "k": "성",
+     "d": "뚜껑이 열린 나무 보물 상자에 금화와 보석이 소복이 쌓여 있어요. 쇠띠와 금빛 자물쇠로 단단히 만든 상자예요.",
+     "px": [
+      "......................",
+      "...kkkkkkkkkkkkkkkk...",
+      "..kvvvvvvvvvvvvvvvuk..",
+      "..kvttttttttttttttuk..",
+      "..kvttttttttttttttuk..",
+      "..kvttGtgGWggGttttuk..",
+      "..kggGghgBgGgggrGggk..",
+      "..kghgggGggghgGhgggk..",
+      ".kwwwMwwwwwwwwwwMwwuk.",
+      ".kwvvOvvvGGGGvvvOvvuk.",
+      ".kwuvOuvvggghvvuOvuuk.",
+      ".kwvvOvvvgjjhvvvOvvuk.",
+      ".kwvvOvvvggghvvvOvvuk.",
+      ".kwuvOuvvuvvuvvuOvuuk.",
+      ".kwvvOvvvvvvvvvvOvvuk.",
+      ".kuuuOuuuuuuuuuuOuuuk.",
+      "..kkkkkkkkkkkkkkkkkk..",
+      "......................"
+     ],
+     "pal": {
+      "B": "#7aa8e0",
+      "G": "#f6dc7a",
+      "M": "#c0c8d2",
+      "O": "#5a6270",
+      "W": "#ffffff",
+      "g": "#e0b040",
+      "h": "#a8782a",
+      "j": "#6e4c1c",
+      "k": "#20202c",
+      "r": "#e2705e",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "보물 상자 위로 올라가 금화 더미에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "보물 상자에 올라가 금화 더미 위에 의기양양하게 앉았다.",
+        "금화 위에 앉아 부자가 된 기분을 냈다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "보물 상자 앞에 앉아 금화를 하나씩 세어요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "보물 상자 앞에 앉아 금화를 하나씩 셌다.",
+        "금화를 세다가 몇 개였는지 잊어버려 처음부터 다시 셌다."
+       ]
+      },
+      {
+       "w": "고스트·악 타입",
+       "a": "상자 뒤에 숨어 있다가 고개만 쏙 내밀어요",
+       "x": {
+        "at": [
+         0.5,
+         0.5
+        ],
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "보물 상자 뒤에 숨어 있다가 고개만 쏙 내밀었다.",
+        "보물을 지키는 척 상자 뒤에서 눈을 번뜩였다."
+       ]
+      },
+      {
+       "w": "에스퍼 타입",
+       "a": "상자 옆에서 기술을 써 보석을 반짝이게 해요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 상자 속 보석을 반짝반짝 빛냈다.",
+        "보석이 빛나자 금화 하나가 데구루루 굴러 나왔다."
+       ]
+      }
+     ],
+     "fit": "망루 아래, 성벽 구석"
+    },
+    {
+     "id": "cas-wall-torch",
+     "n": "성벽 횃불 기둥",
+     "k": "성",
+     "d": "돌을 쌓은 기둥 위 쇠 받침에서 횃불이 활활 타올라요. 밤이 되면 성 마당을 따뜻하게 밝혀요.",
+     "px": [
+      "......kk......",
+      ".....kFFk.....",
+      "....kFFFEk....",
+      "....kfFFEk....",
+      "...kFFffEEk...",
+      "...kFffffEk...",
+      "...kFfYYfEk...",
+      "...kFfYYfEk...",
+      "...kFFYYEEk...",
+      "..kMNNNNNNNk..",
+      "..kOOOOOOOOk..",
+      "..kkkOOOOkkk..",
+      ".kaaaaaaaaadk.",
+      ".kcccccccccck.",
+      "..kaaaaaaadk..",
+      "..kabbcbbbdk..",
+      "..kbccccccdk..",
+      "..kacabbcadk..",
+      "..kacbbbcbdk..",
+      "..kbccccccdk..",
+      "..kabbcabbdk..",
+      "..kabbcbbbdk..",
+      "..kbccccccdk..",
+      "..kacabbcadk..",
+      "..kacbbbcbdk..",
+      "..kbccccccdk..",
+      "..kabbcabbdk..",
+      "...kkkkkkkk..."
+     ],
+     "pal": {
+      "E": "#c04424",
+      "F": "#e86a2a",
+      "M": "#c0c8d2",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "Y": "#fff4a0",
+      "a": "#d8d0c0",
+      "b": "#b0a690",
+      "c": "#857c6c",
+      "d": "#5c5548",
+      "f": "#f8b030",
+      "k": "#20202c"
+     },
+     "acts": [
+      {
+       "w": "불꽃 타입",
+       "a": "횃불 옆에서 기술을 써 불꽃을 더 크게 키워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "기술을 써서 횃불을 활활 더 크게 키웠다.",
+        "커진 불꽃을 보며 뿌듯하게 꼬리를 흔들었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "횃불 기둥 앞에 앉아 따뜻한 불을 쬐어요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "횃불 기둥 앞에 앉아 따뜻한 불을 쬐며 졸았다.",
+        "불빛 아래 몸을 동그랗게 말고 꾸벅꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 횃불 둘레를 빙빙 돌아요",
+       "x": {
+        "at": "top",
+        "m": "circ"
+       },
+       "l": [
+        "날아올라 횃불 둘레를 빙글빙글 돌았다.",
+        "불빛을 따라 빙빙 돌다가 기둥 위에 살짝 내려앉았다."
+       ]
+      },
+      {
+       "w": "얼음 타입",
+       "a": "횃불 쪽으로 다가갔다가 뜨거워서 피해 가요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "횃불에 다가갔다가 뜨거워서 깜짝 놀라 물러났다.",
+        "횃불을 멀찍이 돌아 지나갔다."
+       ]
+      }
+     ],
+     "fit": "성문 양옆, 길가",
+     "glow": 1
+    },
+    {
+     "id": "cas-throne",
+     "n": "꼬마 왕좌",
+     "k": "성",
+     "d": "금빛 테두리에 빨간 벨벳을 댄 꼬마 왕좌예요. 등받이 꼭대기엔 왕관 모양 장식과 파란 보석이 박혀 있어요.",
+     "px": [
+      ".........kk.........",
+      ".....k..kGGk..k.....",
+      "....kGkkkWkkkkgk....",
+      "....kGkggggggkgk....",
+      ".....kggggggggk.....",
+      "....kgggrBbrgggk....",
+      "...kGgrrrrrrRRghk...",
+      "...kGgrrrrrrRRghk...",
+      "..kGGrrqrrrrqRRhhk..",
+      "..kGGrrrrrrrRRRhhk..",
+      "..kGGrrrrrrrRRRhhk..",
+      ".kkGGrrrrqrrRRRhhkk.",
+      "kGGGGrrrrrrrRRRhgggk",
+      "kGghGrrrrrrrRRRhhhjk",
+      "kgghGrrqrrrrqRRhhhjk",
+      "kgghGrrrrrrrRRRhhhjk",
+      "kgghXXXXXXXXXXXXhhjk",
+      "kgghrrrrrrrrrRRRhhjk",
+      "kgghRRRRRRRRRRRRhhjk",
+      "kgGGGGGGGGGGGGGGGGjk",
+      "kgggggggggggggghhhjk",
+      ".kkGgkkkkkkkkkkhhkk.",
+      "..kghk........khjk..",
+      "..kghk........khjk..",
+      "..kghk........khjk..",
+      "..kghk........khjk..",
+      ".khhhhk......kjjjjk.",
+      "..kkkk........kkkk.."
+     ],
+     "pal": {
+      "B": "#4a78c0",
+      "G": "#f6dc7a",
+      "R": "#b84a3e",
+      "W": "#ffffff",
+      "X": "#f2a090",
+      "b": "#7aa8e0",
+      "g": "#e0b040",
+      "h": "#a8782a",
+      "j": "#6e4c1c",
+      "k": "#20202c",
+      "q": "#8c2c2c",
+      "r": "#e2705e"
+     },
+     "acts": [
+      {
+       "w": "작은·보통 크기 포켓몬",
+       "a": "왕좌 방석 위에 올라가 앉아 임금님처럼 으쓱해요",
+       "x": {
+        "at": [
+         0.5,
+         0.62
+        ],
+        "m": "climb"
+       },
+       "l": [
+        "왕좌에 올라가 앉아 임금님처럼 턱을 치켜들었다.",
+        "왕좌에 앉아 신하들을 부르는 듯 손을 흔들었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "왕좌 앞에 서서 꾸벅 인사해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "빈 왕좌 앞에 서서 꾸벅 인사를 했다.",
+        "왕좌에 누가 앉을지 궁금한 듯 가만히 바라봤다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "왕좌 방석에 몸을 동그랗게 말고 낮잠을 자요",
+       "x": {
+        "at": [
+         0.5,
+         0.62
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "푹신한 왕좌 방석에 몸을 말고 새근새근 낮잠을 잤다.",
+        "왕좌에서 자다가 임금님 꿈을 꾸는지 웃었다."
+       ]
+      }
+     ],
+     "fit": "성 안뜰 맨 안쪽, 왕관 받침대 옆"
+    }
+   ]
+  },
+  {
    "at": 1795301251727,
    "theme": "숲속 꼬마 화석 박물관",
    "note": "오늘은 숲속 꼬마 화석 박물관이에요. 공룡 뼈대·매머드 엄니 아치·화석 알 둥지로 옛날 포켓몬 이야기를 꾸미고, 발굴 모래 상자에선 누구나 꼬마 발굴가가 돼요. 옛 문자 석판은 밤에 하늘빛으로 은은하게 빛나요.",
