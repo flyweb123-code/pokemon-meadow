@@ -373,7 +373,7 @@ function yardMon(P, e, i) {
   const m = { id: P.id, P, e, el: o, fl: o.querySelector('.ty-fl'), sp: o.querySelector('.ty-sp'), shd: o.querySelector('.ty-sh'), tag: o.querySelector('.ty-tag'), x, y, face: Math.random() < .5 ? 1 : -1, st: leftOf(e) <= 0 ? 'sleep' : 'rest', until: performance.now() / 1000 + (leftOf(e) <= 0 ? 99 : .5 + Math.random() * 2), at: 0,   /* v18.02 경완 '훈련 끝났는데 들어가면 다시 깨어 있고 코치가 갔다가 돌아감': 오늘 훈련 다 한 포켓몬은 처음부터 잠든 채 */
     swimmer: t.includes(11), fish, flyer: t.includes(3) || (GA.lift?.(P.sp) || 0) > 8, fighter: t.includes(2), shooter: t.some(x => TY_SHOT.has(x)), ty: t[0], air: 0, D: null };
   Y.mons.push(m); place(m); try { yTag(m); } catch (x) {}
-  (GA.pmdMx || GA.pmd)?.(P.sp, P.sex).then(D => { if (!Y.mons.includes(m)) return; m.D = D;   /* v20.81 펀치·킥·물기 같은 기술 동작 그림까지 */
+  (GA.pmdMx || GA.pmd)?.(P.sp, P.sex, P).then(D => { if (!Y.mons.includes(m)) return; m.D = D;   /* v28.68 경완 '춤추새 전기 폼으로 미니게임 넘어가면 스프라이트 불꽃폼': 상자 포켓몬 P 를 넘겨 폼 그림 */   /* v20.81 펀치·킥·물기 같은 기술 동작 그림까지 */
     if (D.P) { const [w, h] = D.wh, s = D.s; m.s = s; Object.assign(m.sp.style, { backgroundImage: `url("${D.P.i}")`, backgroundSize: `${w * s}px ${h * s}px` }); if (P.shiny) m.sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`; GA.shBg?.(m.sp, P, D.P.i); m.fk = '';
       const fw = Math.max(10, (D.P.fw || 14) * s * 1.05); Object.assign(m.shd.style, { width: fw + 'px', left: ((D.P.fx || 0) * s - fw / 2) + 'px', height: Math.max(6, fw * .3) + 'px', top: -Math.max(6, fw * .3) / 2 + 'px' }); }
     else { m.sp.classList.add('one'); m.sp.style.backgroundImage = `url("${D.img}")`; }

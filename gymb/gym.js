@@ -2412,7 +2412,7 @@ function palEnt(D) {
   const e = { prop: 1, x: D.leader[0] - .85, y: D.leader[1] - .35, w: 16, h: 16, el: document.createElement('i'), pal: 1 }; e.el.className = 'gy-pal tap';   // v13.07 경완: 관장 왼쪽 (오른쪽이면 머리가 가려짐)
   e.el.innerHTML = '<i class="gp-sh"></i><i class="gp-sp"></i>'; e.el.onclick = ev => { ev.stopPropagation(); sfx('tap'); palChoose(); };
   $g('.gy-ents').appendChild(e.el); ents.push(e); place(e); e.el.style.zIndex = Math.round(D.leader[1] * 10) + 8;   // 내 캐릭터보다 뒤
-  GA.pmd(P.sp, P.sex).then(M => { if (!e.el.isConnected) return; const sp = e.el.querySelector('.gp-sp'), k = sc / 2;
+  GA.pmd(P.sp, P.sex, P).then(M => { if (!e.el.isConnected) return; const sp = e.el.querySelector('.gp-sp'), k = sc / 2;   /* v28.68 경완 '춤추새 전기 폼으로 미니게임 넘어가면 스프라이트 불꽃폼': 상자 포켓몬 P 를 넘겨 폼 그림 */
     if (P.shiny) sp.style.filter = `hue-rotate(${GA.shinyHue(P.sp)}deg)`;
     if (!M.P) { sp.classList.add('one'); sp.style.backgroundImage = `url("${M.img}")`; return; }
     const s = M.s * k, A = M.P.a, a = A.Idle || Object.values(A)[0], durs = a[6], tot = durs.reduce((x, d) => x + d, 0) / 60, lift = (GA.lift?.(P.sp) || 0) * k;
@@ -4033,7 +4033,7 @@ const EV_API = { get root() { return root; }, st, save, dz: () => dzOf(st().d), 
   giveFit: k => { if (window.gymEvTest || !OUTFITS[k]) return; const g = st(); g.fits = g.fits || {}; g.fits[k] = 1; if (Array.isArray(S.fits) && !S.fits.includes(k)) S.fits.push(k); save(); },
   lv: () => myAvg(), evDone: id => evDone(id),
   // v19.18 로켓단 이벤트 '찾는 재미' (경완 2026-11-08): 따라다니는 관장 옆 포켓몬, 줍는 알·상점 물건. 운영자 시험이면 아무것도 안 줌
-  pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex) => (GA.pmdMx || GA.pmd)(sp, sex), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
+  pal: () => palPick(), luAll: () => luAll(), setPal: id => { if (!window.gymEvTest) { st().pal = id; save(); } }, monNm: P => SPECIES[P?.sp]?.n || '', pmd: (sp, sex, P) => (GA.pmdMx || GA.pmd)(sp, sex, P), shinyHue: sp => GA.shinyHue?.(sp) || 0, lift: sp => GA.lift?.(sp) || 0, shBg: (e, P, u) => GA.shBg?.(e, P, u),
   lus: () => { const g = st(); return (g.lu || []).map(ids => (ids || []).map(id => S.box.find(p => p.id === id)).filter(P => P && GA.pTy(P).includes(g.ty))); }, myFem: () => myOw() === 'pt_f',
   cry: sp => GA.cry?.(sp), ldB: () => loadJs('gymb/battle.js', 'GymBattle').then(() => GB().loadData?.()), luTab: (el, o) => loadJs('gymb/battle.js', 'GymBattle').then(() => GB().tab(el, o || {})), luN: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.filter(id => S.box.some(p => p.id === id)).length; }, luLead: () => { const g = st(), L = (g.lu || [])[g.luI | 0] || []; return L.map(id => S.box.find(p => p.id === id)).find(P => P && GA.pTy(P).includes(g.ty)) || luAll()[0] || null; }, palMv: P => { const B = GB(); if (!B?.D || !B.gm) return []; try { return (B.gm(P).mv || []).map(id => B.mvOf(id)).filter(Boolean); } catch (e) { return []; } }, thumb: P => GB()?.thumb?.(P) || '', fillTh: el => GB()?.fillTh?.(el), lvOf: P => GB()?.gm?.(P)?.lv || '',   // v19.61 경완: 이벤트 [포켓몬] = 체육관 라인업 화면, 같이 다니는 포켓몬 = 그 라인업 첫 번째   // v19.29 같이 다니는 포켓몬 고르기·울음소리
   jong, ty: () => st().ty, tyNm: () => TYPE_KO?.[st().ty] || '', tyAdj: () => GA.LT_ADJ?.[st().ty] || TYPE_KO?.[st().ty] || '', eggIco: g => GA.eggIcoG?.(g, st().ty) || '', eggGn: g => GA.EGG_GN?.(g) || '',
@@ -5229,7 +5229,7 @@ async function promoTut(gi, force) {
 }
 // 경완 2026-11-13 '메가진화 가능한 포켓몬': 가운데 판에 그림(멈춘 PMD 첫 장, 칸 안에 다 들어가게) 띄운 채로 강박사가 설명 → 설명 끝나면 걷음
 function pmdCell(P, box) { const cv = document.createElement('canvas'); cv.className = 'mgc-sp'; cv.width = 64; cv.height = 56; box.appendChild(cv); const x = cv.getContext('2d'); x.imageSmoothingEnabled = false;
-  GA.pmd(P.sp, P.sex).then(M => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok([M, im]); im.onerror = no; im.src = M.P ? M.P.i : M.img; })).then(([M, im]) => { if (!cv.isConnected) return;
+  GA.pmd(P.sp, P.sex, P).then(M => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok([M, im]); im.onerror = no; im.src = M.P ? M.P.i : M.img; })).then(([M, im]) => { if (!cv.isConnected) return;
     let sx = 0, sy = 0, sw = im.width, sh = im.height; if (M.P) { const A = M.P.a, a = A.Idle || Object.values(A)[0], k = im.width / M.wh[0]; sx = 0; sy = a[0] * k; sw = a[1] * k; sh = a[2] * k; }
     const t = document.createElement('canvas'); t.width = sw; t.height = sh; const tx = t.getContext('2d'); tx.drawImage(im, sx, sy, sw, sh, 0, 0, sw, sh);
     let x0 = sw, y0 = sh, x1 = -1, y1 = -1; try { const d = tx.getImageData(0, 0, sw, sh).data; for (let yy = 0; yy < sh; yy++) for (let xx = 0; xx < sw; xx++) if (d[(yy * sw + xx) * 4 + 3] > 20) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; } } catch (e) { x0 = 0; y0 = 0; x1 = sw - 1; y1 = sh - 1; }
