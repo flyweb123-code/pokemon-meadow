@@ -3133,7 +3133,8 @@ const ZC_ST = ['', 'normaliumz', 'fightiniumz', 'flyiniumz', 'poisoniumz', 'grou
 function zcAdd() { ZC_ST.forEach((id, t) => { if (!id || HOLD[id]) return; const k = TYPE_KO[t]; HOLD[id] = [`${k}Z`, 0, `${k} 타입 기술을 Z기술로 바꾼다. 한 배틀에 한 번 쓸 수 있다. 트레이너에게 Z링이 있어야 한다.`, 0]; }); }
 /* v28.56 테라피스 = 지니는 도구 (Z크리스탈처럼 타입마다 하나, 몇 번이든). 지니면 그 타입으로 테라스탈 (트레이너에게 테라스탈오브) */
 const TP_ST = TY_EN.map((t, i) => i ? 'tp' + t.toLowerCase() : ''), TP_T = Object.fromEntries(TP_ST.map((id, i) => [id, TY_EN[i]]).filter(([id]) => id));
-function tpAdd() { TP_ST.forEach((id, t) => { if (!id || HOLD[id]) return; const k = TYPE_KO[t]; HOLD[id] = [`${k} 테라피스`, 0, `지닌 포켓몬이 배틀 중 한 번 ${k} 타입으로 테라스탈할 수 있다. 트레이너에게 테라스탈오브가 있어야 한다.`, 0]; }); }
+TP_T.tpstellar = 'Stellar';   /* v28.65 경완 '체육관에서는 테라피스 다 모으면 강박사한테 받는걸로': 스텔라 테라피스 (TP_ST 18칸엔 안 넣음 — 타입 번호 표). 쇼다운 teraType 'Stellar' = 방어 타입 그대로, 기술 타입마다 처음 한 번 강화 */
+function tpAdd() { if (!HOLD.tpstellar) HOLD.tpstellar = ['스텔라 테라피스', 0, '지닌 포켓몬이 배틀 중 한 번 스텔라 타입으로 테라스탈할 수 있다. 원래 타입은 그대로이고, 기술 타입마다 처음 한 번 위력이 세진다. 트레이너에게 테라스탈오브가 있어야 한다.', 0]; TP_ST.forEach((id, t) => { if (!id || HOLD[id]) return; const k = TYPE_KO[t]; HOLD[id] = [`${k} 테라피스`, 0, `지닌 포켓몬이 배틀 중 한 번 ${k} 타입으로 테라스탈할 수 있다. 트레이너에게 테라스탈오브가 있어야 한다.`, 0]; }); }
 const itImg = id => TP_T[id] ? `${IMG}dbk/it/${TP_T[id].toUpperCase()}TERASHARD.png` : MEGA_ALL[id] ? `${IMG}dbk/it/${id}.png` : ZC_T[id] ? `${IMG}dbk/it/${id.toUpperCase()}.png` : `${IMG}item/${id}.png`;
 const itRow = (id, n, note) => { const x = HOLD[id]; return `<button type="button" class="sp-tm sp-it" data-it="${id}"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${esc(x[2])}</small>${note ? `<em class="it-note">${note}</em>` : ''}</span></button>`; };
 // 도구는 종류마다 하나만 (경완 2026-10-29): 창고에 있거나 누가 지니고 있으면 가진 것

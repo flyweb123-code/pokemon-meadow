@@ -2157,6 +2157,16 @@ const TERA_EN = ['', 'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK',
 const tpGmk = () => tutSeen('teraOrb') ? { tera: 1, tpOnly: 1 } : {};
 /* 테라피스 = 전설 체육관마다 그 타입 하나 (창고 도구, 지니는 도구). 전설 체육관 타입인데 창고에도 없고 아무도 안 지녔으면 넣음 (받은 창은 연출, 실제 넣기는 여기서) */
 function tpSync() { const g = st(), B = GB(); if (!g || !B?.TP_ST || !B.HOLD || window.gymSimOn || window.gymEvTest) return; let ch = 0; for (const x of gList()) { if ((x.gmax | 0) < GRADES.length - 1) continue; const id = B.TP_ST[x.ty]; if (!id || !B.HOLD[id] || B.itHave?.(id)) continue; g.itm = g.itm || {}; g.itm[id] = 1; ch = 1; } if (ch) save(); }
+/* v28.65 경완 '체육관에서는 테라피스 다 모으면 강박사한테 받는걸로 해야겠네': 18타입 테라피스를 다 가지면(창고·지닌 것) 들어올 때 강박사가 와서 스텔라 테라피스 (S.gym.tpStl 한 번) */
+const tpAllDue = () => { const g = st(), B = GB(); if (!g || g.tpStl || !B?.TP_ST || !B.itHave || window.gymSimOn || window.gymEvTest || gtOn || !tutSeen('teraOrb')) return false; return B.TP_ST.every(id => !id || B.itHave(id)); };
+function stlPop() { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
+    const p = pop(`<h4 class="gy-lock">스텔라 테라피스를 받았다!</h4><div class="le-get tp-get tp-stl" style="--tc:#9be3ff"><img class="tp-shard" alt="" src="${IMG}dbk/it/STELLARTERASHARD.png"></div><p class="gy-msg" style="text-align:center">포켓몬에게 지니게 하면<br>배틀에서 <b>스텔라</b>로 테라스탈할 수 있어요.<br><small>원래 타입은 그대로, 기술 타입마다<br>처음 한 번 위력이 세져요.</small></p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); ok(); }); confetti(); }); }
+async function tpAllGo() { if (!tpAllDue()) return; const g = st();
+  await kang([`${NK()}! 헉, 헉…\n소문 듣고 달려왔네!`, '테라피스를 18개 타입\n전부 모았다지?\n…정말 대단하구먼!', '나도 젊을 때 모아 보려다\n주머니에 구멍이 나서\n절반은 잃어버렸지 뭔가.', '그래서 오늘은 주머니 말고\n모자 속에 넣어 왔지!', '자, 모든 타입의 빛을 모은\n트레이너에게만 주는\n특별한 테라피스란다!']);
+  if (!open) return; g.tpStl = 1; g.itm = g.itm || {}; g.itm.tpstellar = (g.itm.tpstellar | 0) + 1; save();
+  await stlPop();
+  await kang(['스텔라 테라스탈은 타입이\n바뀌지 않는 대신, 기술 타입마다\n처음 한 번씩 확 세진단다.', '여러 타입 기술을 가진\n포켓몬에게 지니게 하면\n빛이 날 게야!', '…그럼 난 모자 속에 남은\n과자 부스러기나 털러\n가 보겠네. 허허!']);
+}
 function teraPop(t) { return new Promise(ok => { try { window.GymBGM?.fan ? window.GymBGM.fan('ME_FANFA3') : window.GymBGM?.se?.('ME_FANFA3'); } catch (e) {} GA.haptic?.(1);
     const p = pop(`<h4>${TYPE_KO[t]} 테라피스를 받았다!</h4><div class="le-get tp-get" style="--tc:${GA.TYPE_C?.[t] || '#8cf'}"><img class="tp-shard" alt="" src="${IMG}dbk/it/${TERA_EN[t]}TERASHARD.png"></div><p class="gy-msg" style="text-align:center">포켓몬에게 지니게 하면<br>배틀에서 <b>${TYPE_KO[t]} 타입</b>으로<br>테라스탈할 수 있어요.</p><div class="gy-btns one"><button class="main" data-a="x">좋아!</button></div>`, (a, close) => { close(); try { tpSync(); } catch (e) {} ok(); }); confetti(); }); }
 // 심사 진행 (test = 운영자 시험: 가상 체육관, 저장·알·골드 안 건드림)
@@ -4133,6 +4143,7 @@ async function later() {
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
   if (open && legFitDue()) await legFitPop();   /* v27.54: 이미 전설인 체육관은 들어올 때 한 번 받음 */
+  if (open) { try { tpSync(); } catch (e) {} if (tpAllDue()) await tpAllGo(); }   /* v28.65 테라피스 18개 → 스텔라 테라피스 */
   await unlockChk();
   if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
   /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
@@ -4938,8 +4949,8 @@ async function trReward(R, o, ids, boss, shop, first) {
         if (G.z && U.z) { const zt = id => [...new Set((m(id)?.mv || []).map(x => B_.mvOf?.(x)).filter(x => x && x[3] !== 2 && x[4] && B_.ZC_ST?.[x[2]]).map(x => x[2]))], L = live.filter(id => zt(id).length); if (L.length) { const t = pick(zt(pick(L))), kk = B_.ZC_ST[t];
           if (live.some(id => zt(id).includes(t) && m(id)?.it !== kk)) out.push([sc * 6 * .3, 1, trItNm(kk), trItD(kk), () => doFx(() => alv().filter(id => zt(id).includes(t) && m(id)?.it !== kk), `누구에게 ${eul(trItNm(kk))} 빌려줄까요?`, put(kk), B_.itImg(kk)), B_.itImg(kk), 0, '마리당 지닌 도구 1개']); } }
         if (G.dmax && U.dmax) { const L = () => alv().filter(id => B_.gmaxOk?.(P(id)) && !m(id)?.gmax); if (L().length) out.push([sc * 6 * .3, 2, '다이수프', '한 마리가 이번 도전 동안 다이맥스 대신 거다이맥스해요', () => doFx(L, '누구에게 다이수프를 먹일까요?', id => { m(id).gmax = 1; o.se?.('KAIFUKU'); return `${nm(id)}에게 다이수프를 먹였다!\n거다이맥스할 수 있게 됐다!`; }, B_.SOUP_IMG), B_.SOUP_IMG]); }
-        /* 경완 '수련탑에서 테라는 포켓로그 처럼 테라피스 소모품으로' → '그렇게 하자': 포켓로그 TERA_SHARD(울트라 아래 그레이트 = 우수, 무게 1, 오브 있을 때만, 18타입 무작위) — 먹이면 이번 도전 동안 그 포켓몬 테라 타입이 바뀌고 피스는 사라짐 (스텔라는 아직 없음) */
-        if (G.tera && U.tera) { const t = 1 + (Math.random() * 18 | 0), en = TR_TYEN[t], ko = TYPE_KO?.[t] || en, ic = B_.itImg?.(B_.TP_ST?.[t]) || IMG + 'dbk/it/TERAORB.png', L = () => alv().filter(id => m(id) && m(id).tera !== en);
+        /* 경완 '수련탑에서 테라는 포켓로그 처럼 테라피스 소모품으로' → '그렇게 하자': 포켓로그 TERA_SHARD(울트라 아래 그레이트 = 우수, 무게 1, 오브 있을 때만, 18타입 무작위) — 먹이면 이번 도전 동안 그 포켓몬 테라 타입이 바뀌고 피스는 사라짐. 경완 '스텔라… 엉 넣어주고': 포켓로그처럼 1/64 스텔라 */
+        if (G.tera && U.tera) { const sl = Math.random() < 1 / 64, t = 1 + (Math.random() * 18 | 0), en = sl ? 'Stellar' : TR_TYEN[t], ko = sl ? '스텔라' : TYPE_KO?.[t] || en, ic = sl ? IMG + 'dbk/it/STELLARTERASHARD.png' : B_.itImg?.(B_.TP_ST?.[t]) || IMG + 'dbk/it/TERAORB.png', L = () => alv().filter(id => m(id) && m(id).tera !== en);
           if (L().length) out.push([1 * .3, 1, `${ko} 테라피스`, `한 마리의 테라 타입이 이번 도전 동안 ${ko} 타입이 돼요 (쓰면 사라짐)`, () => doFx(L, `누구에게 ${ko} 테라피스를 쓸까요?`, id => { m(id).tera = en; o.se?.('KAIFUKU'); return `${nm(id)}의 테라 타입이\n${ko} 타입이 되었다!`; }, ic), ic]); }
       }
       const [k1, g1] = TR_IT1[Math.random() * TR_IT1.length | 0], ok1 = live.filter(id => m(id)?.it !== k1);
