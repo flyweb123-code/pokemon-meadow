@@ -4216,13 +4216,13 @@ const trDblP = f => f < 10 ? 0 : Math.min(.6, .1 + (f - 10) * .02);
    기준 = 체육관 포켓몬 레벨 상위 3 평균. 기준보다 TR.band(10) 이상 낮으면 경험치 TR.hi 배, 가까워질수록 줄어 기준에 닿으면 체육관 등급 배율 xpM() (그 뒤로는 체육관과 같은 속도) */
 const trXpF = () => { const L = Object.entries(st()?.mon || {}).filter(([id]) => { const P = GB().boxOf(+id); return P && !P.gTst; }).map(([, m]) => m?.lv | 0).filter(Boolean).sort((a, b) => b - a).slice(0, 3), tg = L.length ? L.reduce((a, b) => a + b, 0) / L.length : 0, lo = xpM();
   return lv => { const gap = tg - lv; return gap >= TR.band ? TR.hi : gap <= 0 ? lo : lo + (TR.hi - lo) * gap / TR.band; }; };
-const TR = { xp: 1, hi: 1, band: 10, lvUp: 12 /* 100층 뒤 12층마다 +1 더 (4층마다 +1 과 합쳐 3층마다, 포켓로그처럼 뒤가 가팔라짐) */, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 40, myst: .1 };
+const TR = { xp: 1, hi: 1, band: 10, lvUp: 12 /* 100층 뒤 12층마다 +1 더 (4층마다 +1 과 합쳐 3층마다, 포켓로그처럼 뒤가 가팔라짐) */, heal: .2, lvDiv: 4, top: 200, shiny: 1 / 100 /* 경완 '이로치 확률 낮추고 능력치 더 좋게' (1/40 → 1/100, TR_SHY 1.1 → 1.2) */, myst: .1 };
 const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
   [40, [398, 405, 407, 424, 429, 430, 450, 452, 454, 457, 460, 461, 462, 464, 466, 467, 469, 470, 471, 473, 475, 477, 478, 3, 6, 9, 59, 62, 65, 68, 76, 94, 112, 121, 130, 131, 134, 135, 136, 142, 143, 196, 197, 212, 229, 232, 248, 282, 306, 330, 334, 350, 365, 373, 376]]];
 const TR_BOSS = [445, 448, 248, 149, 373, 376, 466, 467, 473, 409, 411, 442, 130, 143, 212, 229, 306, 330, 350, 365, 464, 468, 475, 477, 479], TR_BIG = [483, 484, 487, 485, 486, 480, 481, 482];
 let trSaves = [];   /* 경완 '수련탑 이어 오르기 세이브는 3개까지 가능하게 해주고 … 이어오르기 슬롯 삭제할 수도 있게': 슬롯 TR_SLOT 개 (최근 멈춘 순) */
-const TR_SLOT = 3, TR_SHY = 1.1;   /* 경완 '수련탑 이로치에 능력치 혜택 줘': 색이 다른 포켓몬은 수련탑 배틀에서 모든 능력치 ×1.1 */
+const TR_SLOT = 3, TR_SHY = 1.2;   /* 경완 '수련탑 이로치에 능력치 혜택 줘': 색이 다른 포켓몬은 수련탑 배틀에서 모든 능력치 ×1.2 (경완 '이로치 확률 낮추고 능력치 더 좋게') */
 /* v23.16 경완 '배틀 배경 다 게임에 받아와줘': 10층마다 바뀌는 장소 (플래티넘 배경·발판). 바깥은 지금 시각으로 낮·저녁·밤. 50층 큰 우두머리는 깨어진 세계 */
 const TR_ENV = [['plain', 'grass'], ['forest', 'grass'], ['plain', 'sand'], ['water', 'water'], ['mountain', 'rocky'], ['cave1', 'cave'], ['city', 'path'], ['snow', 'snow'], ['cave2', 'cave'], ['plain', 'mud'], ['cave3', 'cave'], ['snow', 'ice']];
 const trEnv = (f, big) => { if (big) return { bg: 'distortion', pl: 'distortion_world' }; const [bg, pl] = TR_ENV[Math.floor((f - 1) / 10) % TR_ENV.length], h = new Date().getHours(), t = h >= 6 && h < 17 ? '' : h >= 17 && h < 20 ? '_e' : '_n', out = !/^cave/.test(bg);
@@ -4402,7 +4402,7 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
 #trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;z-index:3;left:4px;right:4px;top:4px;height:4px;background:#0005}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
 #trLobby .tsv-hd{display:flex;align-items:baseline;justify-content:space-between;padding:2px 4px 0;color:#fff}#trLobby .tsv-hd b{font-size:14px;letter-spacing:.04em;text-shadow:0 2px 0 #0008}#trLobby .tsv-hd small{font-size:11px;color:#ffd870}
-#trLobby .tsv-slot{position:relative;display:flex;flex-direction:column;gap:7px}#trLobby .tsv-slot.new1{box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff,0 0 0 3px #ffb83a}
+#trLobby .tsv-slot{position:relative;display:flex;flex-direction:column;gap:7px}#trLobby .tsv-slot.new1{border-color:#e0a020;box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff,inset 0 0 0 4px #ffd870}
 #trLobby .tsv-top{display:flex;align-items:center;gap:8px}#trLobby .tsv-no{flex:none;width:22px;height:22px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:#3a3a52;box-shadow:inset 0 -2px 0 #1c1c26}
 #trLobby .tsv-fl{flex:none;font-size:26px;line-height:1;color:#e04838}#trLobby .tsv-fl small{font-size:12px;color:var(--win-ink);margin-left:2px}
 #trLobby .tsv-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}#trLobby .tsv-meta .tl-gauge{flex:none;width:100%}#trLobby .tsv-meta small{font-size:10px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -4550,52 +4550,53 @@ const trHud = (R, k) => document.querySelectorAll('.bt .bt-fl').forEach(fl => { 
 const TR_PAY = false, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));
 /* 경완 '수련탑 기록창도 디자인 좀 해줘보고, 기록창은 그만두기 한 그 화면 위에 뜨도록 … 기록창에 선물 보상 받은 것도 나오게': 배틀 화면 위 어두운 무대에 뜨는 기록 카드 (trBoxPick 과 같은 층, 저절로 뜨는 창 = 팝업 모션·소리·버튼으로만 닫힘)
    맨 위 끝난 까닭 띠 → 층 메달(200층 막대) → 오른 층·코인·골드 칸 → 받은 층 선물(등급 색 칸) → 등반대 레벨·경험치 → 확인 */
-const TRS_CSS = `.trsx{position:fixed;inset:0;z-index:6100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,10,24,0);transition:background .3s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
-.trsx.on{background:rgba(8,10,24,.66)}.trsx.out{background:rgba(8,10,24,0);transition:background .22s}.trsx.out .trs-w{opacity:0;transition:opacity .2s}
-.trsx .trs-w{position:relative;width:min(100%,340px);max-height:calc(100% - 8px);display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border:3px solid var(--frame);box-shadow:0 5px 0 #0009,inset 0 0 0 2px #fff;animation:trsPop .32s steps(4,end) both}
-@keyframes trsPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none;opacity:1}}
-.trsx .trs-bn{position:relative;margin:-3px -3px 0;padding:9px 10px 8px;text-align:center;color:#fff;background:var(--bc,#3a3a52);border:3px solid var(--frame);box-shadow:inset 0 -4px 0 #0003,inset 0 2px 0 #fff3}
-.trsx .trs-bn b{display:block;font-size:17px;letter-spacing:.04em;text-shadow:2px 2px 0 #0007}.trsx .trs-bn small{display:block;margin-top:3px;font-size:11px;opacity:.9}
-.trsx .trs-quit{--bc:#4a6fb8}.trsx .trs-lose{--bc:#6a3a4a}.trsx .trs-top{--bc:#c88a10}
-.trsx .trs-in{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px 10px 4px}
+const TRS_CSS = `.trsx{position:fixed;inset:0;z-index:6100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:rgba(8,10,24,0);transition:background .35s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
+.trsx.on{background:rgba(8,10,24,.62)}.trsx.out{background:rgba(8,10,24,0);transition:background .25s}.trsx.out>*{opacity:0!important;transition:opacity .2s}
+.trsx h3{margin:0;color:#fff;font-size:17px;text-align:center;text-shadow:2px 2px 0 #000;opacity:0;transform:translateY(-8px);transition:opacity .3s .1s,transform .3s .1s}.trsx h3 small{display:block;margin-top:5px;font-size:11px;opacity:.85;text-shadow:1px 1px 0 #000}
+.trsx.on h3{opacity:1;transform:none}
+.trsx .trs-w{position:relative;width:min(100%,330px);min-height:0;max-height:calc(100% - 150px);display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border:3px solid var(--g2);box-shadow:0 4px 0 #0008,inset 0 0 0 2px #fff,inset 0 5px 0 var(--g1);filter:drop-shadow(0 0 8px var(--gl));opacity:0;transform:scale(.3)}
+.trsx.on .trs-w{animation:trsIn .3s cubic-bezier(.3,1.6,.5,1) .12s forwards}@keyframes trsIn{to{opacity:1;transform:none}}
+.trsx .trs-w>em{position:absolute;z-index:1;top:-3px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;color:#fff;background:var(--g2);padding:1px 8px;white-space:nowrap}
+.trsx .trs-in{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:16px 10px 10px}
 .trsx .trs-md{display:flex;align-items:center;gap:10px}
-.trsx .trs-fl{flex:none;width:74px;height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff6d0;border:3px solid #e0a020;box-shadow:inset 0 -4px 0 #f0d080,0 3px 0 #a87410}
-.trsx .trs-fl small{font-size:9px;opacity:.7}.trsx .trs-fl b{font-size:28px;line-height:1;color:#e04838}.trsx .trs-fl em{font-style:normal;font-size:11px}
+.trsx .trs-fl{flex:none;display:flex;align-items:baseline;gap:2px}.trsx .trs-fl b{font-size:34px;line-height:1;color:var(--g2)}.trsx .trs-fl em{font-style:normal;font-size:13px}
 .trsx .trs-gv{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-.trsx .trs-ga{height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}.trsx .trs-ga i{display:block;height:100%;width:0;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a;transition:width .8s cubic-bezier(.2,.8,.3,1) .25s}
+.trsx .trs-ga{height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}.trsx .trs-ga i{display:block;height:100%;width:0;background:var(--g1);box-shadow:inset 0 -2px 0 #0003,inset 0 2px 0 #fff6;transition:width .8s cubic-bezier(.2,.8,.3,1) .4s}
 .trsx .trs-gv small{font-size:10px;opacity:.7}
 .trsx .trs-c{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.trsx .trs-c span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;background:var(--inner);box-shadow:inset 0 -3px 0 #0001}
-.trsx .trs-c small{font-size:9px;opacity:.75}.trsx .trs-c b{display:flex;align-items:center;font-size:14px}
+.trsx .trs-c span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px 5px;background:#f0f0f6;border:2px solid #dcdce6}
+.trsx .trs-c small{font-size:9px;opacity:.7}.trsx .trs-c b{display:flex;align-items:center;font-size:14px}
 .trsx .trs-c b img{width:14px;height:auto;image-rendering:pixelated;margin-right:5px}.trsx .trs-c .coin{margin-right:6px}
-.trsx h5{display:flex;align-items:center;justify-content:space-between;margin:0;font-size:12px}.trsx h5 small{font-size:10px;opacity:.6}
-.trsx .trs-gf{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:5px}
-.trsx .trs-g{position:relative;display:flex;align-items:center;gap:5px;min-width:0;padding:5px 5px 5px 4px;background:#fff;border:2px solid var(--g2);box-shadow:inset 0 3px 0 var(--g1)}
-.trsx .trs-g img,.trsx .trs-g .trb-eg{flex:none;width:26px;height:26px;image-rendering:pixelated;object-fit:contain}
-.trsx .trs-g span{min-width:0;display:flex;flex-direction:column}.trsx .trs-g b{font-size:10px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all}
-.trsx .trs-g small{font-size:9px;opacity:.65}.trsx .trs-g em{position:absolute;right:-2px;top:-8px;padding:1px 4px;font-style:normal;font-size:8px;color:#fff;background:var(--g2)}
-.trsx .trs-no{margin:0;padding:8px;text-align:center;font-size:11px;opacity:.6;background:var(--inner)}
+.trsx h5{display:flex;align-items:center;gap:6px;margin:2px 0 0;font-size:12px}.trsx h5::after{content:'';flex:1;height:2px;background:#dcdce6}.trsx h5 small{order:2;font-size:10px;opacity:.6}
+.trsx .trs-gf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 6px;padding-top:3px}
+.trsx .trs-g{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;padding:10px 3px 5px;background:var(--win);border:2px solid var(--g2);box-shadow:inset 0 3px 0 var(--g1);filter:drop-shadow(0 0 4px var(--gl))}
+.trsx .trs-g img,.trsx .trs-g .trb-eg{flex:none;width:32px;height:32px;image-rendering:pixelated;object-fit:contain;display:flex;align-items:center;justify-content:center}.trsx .trs-g .trb-eg .egg{transform:scale(.5)}
+.trsx .trs-g span{min-width:0;display:flex;flex-direction:column;align-items:center}.trsx .trs-g b{font-size:10px;line-height:1.25;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all}
+.trsx .trs-g small{font-size:9px;opacity:.6}.trsx .trs-g em{position:absolute;top:-3px;left:50%;transform:translateX(-50%);padding:1px 5px;font-style:normal;font-size:8px;color:#fff;background:var(--g2);white-space:nowrap}
+.trsx .trs-no{margin:0;padding:8px;text-align:center;font-size:11px;opacity:.6;background:#f0f0f6}
 .trsx .trs-r{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
-.trsx .trs-r li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;padding:3px 6px;background:rgba(0,0,0,.05)}
+.trsx .trs-r li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;padding:3px 6px;background:#f0f0f6}
 .trsx .trs-r li>.rk-fr,.trsx .trs-r li>img{grid-row:1/3;position:relative;width:34px;height:34px}
 .trsx .trs-r li b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trsx .trs-r li b em{font-style:normal;margin-left:4px;padding:1px 4px;font-size:9px;color:#f2eaff;background:#4a2c94}
 .trsx .trs-r .lv{grid-column:2;font-size:10px;opacity:.85}.trsx .trs-r .lv i{font-style:normal;opacity:.5}.trsx .trs-r .lv strong{color:#e04838}
 .trsx .trs-r .xp{grid-column:3;grid-row:1/3;font-size:10px;color:#2f7cd0;white-space:nowrap}
-.trsx .trs-nt{margin:0;text-align:center;font-size:10px;opacity:.55}
-.trsx .trs-ok{margin:6px 10px 10px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:.45;transition:opacity .25s}
+.trsx .trs-nt{margin:0;color:#fff;font-size:12px;text-align:center;opacity:0;transition:opacity .3s}.trsx.ready .trs-nt{opacity:.8}
+.trsx .trs-ok{flex:none;min-width:140px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:0;transition:opacity .3s}
 .trsx.ready .trs-ok{opacity:1}.trsx.ready .trs-ok:active{transform:translateY(4px);box-shadow:inset 0 1px 0 #fff8}`;
 const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), m0 = R.m0 || {}, up = Math.max(0, R.floor - (R.f0 || 1)), coin = Math.max(0, (R.coin | 0) - (R.c0 | 0)), gold = Math.max(0, (R.gold | 0) - (R.g0 | 0));
   const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
   const rows = L.map(P => { const m = B.gm(P), [lv0, xp0] = m0[P.id] || [m.lv, m.xp | 0], dl = m.lv - lv0, dx = Math.max(0, (m.xp | 0) - xp0);
     return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em>동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
-  const gfs = (R.gfs || []).map(G => { const [g1, g2] = TR_RC[G.g].split(','); return `<div class="trs-g" style="--g1:${g1};--g2:${g2}"><em>${esc(G.gn)}</em>${/^</.test(G.ic || '') ? `<span class="trb-eg">${G.ic}</span>` : `<img alt="" src="${/[/:]/.test(G.ic || '') ? G.ic : `${IMG}item/${G.ic || trIc(G.nm)}.png`}">`}<span><b>${esc(G.nm)}</b><small>${G.f}층 선물</small></span></div>`; }).join('');
+  const gfs = (R.gfs || []).map(G => { const [g1, g2] = TR_RC[G.g].split(','); return `<div class="trs-g" style="--g1:${g1};--g2:${g2};--gl:${['transparent', 'transparent', 'rgba(80,150,235,.7)', 'rgba(170,120,240,.75)', '#ffd84a'][G.g]}"><em>${esc(G.gn)}</em>${/^</.test(G.ic || '') ? `<span class="trb-eg">${G.ic}</span>` : `<img alt="" src="${/[/:]/.test(G.ic || '') ? G.ic : `${IMG}item/${G.ic || trIc(G.nm)}.png`}">`}<span><b>${esc(G.nm)}</b><small>${G.f}층 선물</small></span></div>`; }).join('');
   if (!document.getElementById('trsCss')) { const st0 = document.createElement('style'); st0.id = 'trsCss'; document.head.appendChild(st0); } document.getElementById('trsCss').textContent = TRS_CSS;
   const el = document.createElement('div'); el.className = 'trsx';
-  el.innerHTML = `<div class="trs-w"><div class="trs-bn trs-${R.end || 'quit'}"><b>${T[0]}</b>${T[1] ? `<small>${T[1]}</small>` : ''}</div><div class="trs-in">
-      <div class="trs-md"><div class="trs-fl"><small>기록</small><b>${R.floor}</b><em>층</em></div><div class="trs-gv"><div class="trs-ga"><i data-w="${Math.max(2, R.floor / TR.top * 100)}"></i></div><small>200층까지 ${Math.max(0, TR.top - R.floor)}층 남음</small></div></div>
+  const EG = R.end === 'top' ? 4 : R.end === 'lose' ? 3 : 2, [e1, e2] = TR_RC[EG].split(','), GL = ['', '', 'rgba(80,150,235,.85)', 'rgba(170,120,240,.9)', '#ffd84a'];   /* 경완 '기록창 디자인 선물 창 디자인이랑 비슷하게': 어두운 무대 위 흰 제목 + 등급 색 테두리 카드(멈춤 파랑·쓰러짐 보라·꼭대기 금빛) + 아래 금빛 확인 */
+  el.style.cssText = `--g1:${e1};--g2:${e2};--gl:${GL[EG]}`;
+  el.innerHTML = `<h3>${T[0]}${T[1] ? `<small>${T[1]}</small>` : ''}</h3><div class="trs-w"><em>수련탑 기록</em><div class="trs-in">
+      <div class="trs-md"><div class="trs-fl"><b>${R.floor}</b><em>층</em></div><div class="trs-gv"><div class="trs-ga"><i data-w="${Math.max(2, R.floor / TR.top * 100)}"></i></div><small>200층까지 ${Math.max(0, TR.top - R.floor)}층 남음</small></div></div>
       <div class="trs-c"><span><small>오른 층</small><b>+${up}</b></span><span><small>코인</small><b><img alt="" src="${IMG}item/relicsilver.png">+${coin}</b></span><span><small>골드</small><b><i class="coin"></i>+${gold.toLocaleString()}</b></span></div>
       <h5>받은 층 선물 <small>${(R.gfs || []).length}개</small></h5>${gfs ? `<div class="trs-gf">${gfs}</div>` : '<p class="trs-no">이번엔 받은 층 선물이 없어요 · 10층마다 받아요</p>'}
-      <h5>등반대</h5><ul class="trs-r">${rows}</ul>${TR_PAY ? '' : '<p class="trs-nt">베타에선 경험치·보상을 실제로 받지 않아요</p>'}</div><button type="button" class="trs-ok">확인</button></div>`;
+      <h5>등반대</h5><ul class="trs-r">${rows}</ul></div></div>${TR_PAY ? '' : '<p class="trs-nt">베타에서는 경험치·보상을 실제로 받지 않아요</p>'}<button type="button" class="trs-ok">확인</button>`;
   document.body.appendChild(el); try { B.fillTh?.(el); } catch (e) {} void el.offsetWidth; el.classList.add('on');
   try { window.GymBGM?.se?.(R.end === 'top' ? 'DP_KIRAKIRA2' : 'DP_PINPON'); } catch (e) {} try { GA.haptic?.(1); } catch (e) {}
   requestAnimationFrame(() => el.querySelectorAll('.trs-ga i').forEach(i => { i.style.width = i.dataset.w + '%'; }));
