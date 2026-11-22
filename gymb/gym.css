@@ -4858,3 +4858,5 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bp-info.bp-ab p{top:46px;height:94px;padding:8px 10px}
 /* v28.37 경완 '정렬 무너짐' (추천 성격 칸 '공격▲ 특수공격▼' 가 한 글자씩 세로로): 창고 안내(.it-note)는 다음 줄로 내리고 줄바꿈 허용 */
 #gym .sp-tm .tm-meta{flex-wrap:wrap}#gym .sp-tm .tm-meta small{flex:none}#gym .sp-tm .tm-meta .it-note{flex:1 1 100%;white-space:normal;font-size:12px;line-height:1.35;color:#8a6a2a}
+/* v28.38 경완 '색이 다른 포켓몬 나올 때는 이로치 표시 이름 옆에': 배틀 체력 박스 이름 옆 본 게임 이로치 별 */
+.bt-hb .lv .shico{display:block;width:10px;height:10px;margin:0;flex:none;background-size:contain;image-rendering:pixelated;align-self:center}.bt-hb.shy .nm{transform-origin:0 50%}   /* 긴 이름은 별 앞까지 가로로 살짝 좁힘 (battle.js paintHb) */
