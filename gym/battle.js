@@ -3070,9 +3070,9 @@ function recTms(P, wantTR) {   // 상점 추천받기: 지금 기술 한 칸과 
 // 가진 도구 전부: [id, 지닌 포켓몬|null]. 창고에 있는 것 먼저
 const itAll = () => { const g = S.gym || {}, bag = Object.entries(g.itm || {}).filter(([id, n]) => n > 0 && HOLD[id]).map(([id]) => [id, null]), M = g.mon || {}, held = [];
   for (const k in M) { const id = M[k]?.it, P = id && HOLD[id] && boxOf(+k || k); if (P) held.push([id, P]); } return [...bag, ...held]; };
-// 지닌 도구 카드: 회색 + 지닌 포켓몬 그림 + 돌려받기 (어느 화면에서든)
+// 지닌 도구 카드: 회색 + 지닌 포켓몬 그림 + 돌려받기 (어느 화면에서든)   /* v28.47 경완 '지니고 있는 도구 포켓몬 스프라이트도 안 나오고, 도구 설명도 안 보임': 도구 설명 줄 it-hd 더함 */
 const itRowAll = ([id, P]) => { if (!P) return itRow(id); const x = HOLD[id];
-  return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-who"><span class="it-wth"><img alt="" data-th="${P.id}"></span><small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
+  return `<div class="sp-tm sp-it held"><img class="tm-ic it-ic" alt="" src="${itImg(id)}"><span class="tm-nm"><b>${esc(x[0])}</b></span><span class="tm-meta it-hd"><small>${esc(x[2])}</small></span><span class="tm-meta it-who"><span class="it-wth"><img alt="" data-th="${P.id}"></span><small>${esc(nmOf(P))}${jong(nmOf(P)) ? '이' : '가'} 지니고 있어요</small></span><button type="button" class="it-back" data-takeit="${P.id}">돌려받기</button></div>`; };
 // 도구 상세 카드: btn = [글자, 누르면] (없으면 닫기만)
 const bagN = n => `<i class="gy-own" aria-label="창고에 ${n | 0}개"><svg viewBox="0 0 16 16" width="15" height="15" shape-rendering="crispEdges" aria-hidden="true"><path fill="#20202c" d="M2 3h12v1H2zM1 4h1v3H1zM14 4h1v3h-1zM2 7h12v1H2zM2 8h1v6H2zM13 8h1v6h-1zM3 14h10v1H3zM6 9h4v1H6zM6 10h1v1H6zM9 10h1v1H9zM6 11h4v1H6z"/><path fill="#c8783c" d="M2 4h12v3H2zM3 8h10v6H3z"/><path fill="#e8a060" d="M2 4h12v1H2zM3 8h10v1H3z"/><path fill="#f0c040" d="M7 10h2v1H7z"/><path fill="#8a4a24" d="M3 13h10v1H3zM7 4h2v3H7z"/></svg><b>×${(n | 0).toLocaleString()}</b></i>`;   /* v17.03 경완 '체육관 상점도 이런식으로': 가진 개수는 슬롯 대신 구매 창 제목 줄 오른쪽에 가방 × N */
 function itInfo(id, lab, act, foot = '', own) {
