@@ -4881,3 +4881,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .bb.gkb.on .gk-mk{animation:gkMkSpin .8s cubic-bezier(.25,.7,.3,1) both,gkMkGlow 1.2s .8s ease-in-out infinite}
 @keyframes gkMkSpin{0%{transform:rotate(0) scale(1);filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) brightness(1)}35%{transform:rotate(160deg) scale(1.15);filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px var(--c1)) brightness(1.8)}100%{transform:rotate(360deg) scale(1);filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}}
 @keyframes gkMkGlow{0%,100%{filter:drop-shadow(0 0 4px #fff) drop-shadow(0 0 9px var(--c1)) brightness(1.2)}50%{filter:drop-shadow(0 0 7px #fff) drop-shadow(0 0 15px var(--c1)) brightness(1.45)}}
+/* v28.56 경완 '1등 박스 우상단 위치에 최고점·합산 토글, 토글 들어간만큼 랭킹 박스들 내려가고' */
+#gym .gy-rkw .rk-tg{align-self:flex-end;display:flex;gap:0;margin:0 0 -2px;padding:3px;border:3px solid #0c0d18;border-radius:6px;background:#2a1014;box-shadow:inset 0 0 0 1px rgba(255,220,200,.12),2px 2px 0 rgba(0,0,0,.4)}
+#gym .gy-rkw .rk-tg button{all:unset;box-sizing:border-box;min-width:62px;padding:5px 10px 6px;border-radius:3px;font-size:13px;font-weight:700;text-align:center;color:#c8a8a8;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .12s}
+#gym .gy-rkw .rk-tg button[aria-selected="true"]{color:#3a2600;background:linear-gradient(180deg,#ffe99a,#f0c040 60%,#d89a20);box-shadow:inset 0 0 0 1px #fff6c0,0 2px 0 #8a5a10}
+#gym .gy-rkw .rk-tg button:not([aria-selected="true"]):active{color:#fff}
