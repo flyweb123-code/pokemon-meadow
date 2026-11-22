@@ -860,7 +860,7 @@ function effTag(d) {
 const mvBox = (i, d, pp, maxpp, dis, eff = true) => { const ty = d[2] || 1; return `<div class="mvw"><button class="mvb" data-i="${i}" style="background-image:url(${IMG}bt/mv_${ty}.png);--tc:${TY_C[ty]}" ${dis ? 'disabled' : ''}><b${[...(d[1] || '')].length >= 8 ? ' class="l8"' : [...(d[1] || '')].length >= 7 ? ' class="l7"' : ''}>${esc(d[1])}</b><span class="pw">위력 <em>${d[4] || '—'}</em> 명중 <em>${d[5] && d[5] !== true ? d[5] : '—'}</em></span>${eff ? effTag(d) : ''}${tyTag(ty, d[3])}${pp == null ? '' : `<span class="pp">PP <em>${pp}/${maxpp}</em></span>`}</button><button class="mvi" data-info="${i}" aria-label="기술 설명">?</button></div>`; };
 // v21.89 [DBK] 기믹: 쓸 수 있으면 기술 칸 아래 버튼 (누르면 켜짐, 기술을 고르면 그 기술로 메가진화·Z기술·다이맥스·테라스탈)
 const GK_NM = { mega: '메가진화', zmove: 'Z기술', dynamax: '다이맥스', terastallize: '테라스탈' };
-function gkOpts(R) { const G = B?.gmk || {}, o = [];
+function gkOpts(R) { const G = B?.gmkMe || B?.gmk || {}, o = []; if (B?.gkOne && B.gkOneP) return o;   /* 수련탑: gmkMe = 내가 이번 도전에 얻은 열쇠 도구만, gkOne = 배틀 한 번에 기믹 하나 */
   if (G.mega && (R.canMegaEvo || R.canMegaEvoX || R.canMegaEvoY)) o.push(R.canMegaEvoX ? 'megax' : R.canMegaEvoY ? 'megay' : 'mega');
   if (G.z && R.canZMove) o.push('zmove'); if (G.dmax && R.canDynamax) o.push('dynamax'); if (G.tera && R.canTerastallize) o.push('terastallize'); const T = B?.gkTurn || []; return o.filter(k => !T.includes(k.replace(/^mega[xy]$/, 'mega'))); }   /* v26.43 더블: 한 턴에 같은 기믹은 한 자리만 (쇼다운도 두 번째는 거절) */
 // 기믹이 켜졌을 때 기술 칸: Z기술·다이맥스 기술 이름·위력으로
@@ -1190,8 +1190,9 @@ function foeUseItem(btl, ch) {
   else if (k === 'rev') { p.fainted = false; p.faintQueued = false; p.subFainted = false; p.status = ''; p.hp = 1; p.sethp(v >= 7 ? H : Math.floor(H / 2)); btl.add('-dxrevive', 'p2: ' + p.name); }
   else if (k === 'x') { const n = p.boostBy({ [v]: 2 }); btl.add('-boost', p, v, n); }
 }
-function aiGmk(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': k = 자리(더블), tk = 이번 턴에 이미 쓴 기믹 */
-  const G = B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[k], me = side.active[k], mt = /^move (\d+)( -?\d+)?$/.exec(c || ''), tn = mt?.[2] ? +mt[2] : 0, foe = (tn > 0 && btl.p1.active[tn - 1] && !btl.p1.active[tn - 1].fainted ? btl.p1.active[tn - 1] : btl.p1.active.find(q => q && !q.fainted));
+function aiGmk(btl, c, k = 0, tk = null) { if (B?.gkOne && B.gkOneE) return c; const r = aiGmk0(btl, c, k, tk); if (B?.gkOne && r !== c) B.gkOneE = 1; return r; }
+function aiGmk0(btl, c, k = 0, tk = null) {   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': k = 자리(더블), tk = 이번 턴에 이미 쓴 기믹 */
+  const G = B?.gmkE || B?.gmk, side = btl.p2, R = side.activeRequest?.active?.[k], me = side.active[k], mt = /^move (\d+)( -?\d+)?$/.exec(c || ''), tn = mt?.[2] ? +mt[2] : 0, foe = (tn > 0 && btl.p1.active[tn - 1] && !btl.p1.active[tn - 1].fainted ? btl.p1.active[tn - 1] : btl.p1.active.find(q => q && !q.fainted));
   if (!mt || !G || !R || !me) return c;
   const i = +mt[1] - 1, m = R.moves?.[i]; if (m) B.gmBase[k ? 'e2' : 'e'] = m.id;
   const ok = q => !tk || !tk.includes(q), put = q => { if (tk) tk.push(q); return c + ' ' + q; };
@@ -1601,7 +1602,7 @@ async function run(opts) {
   if (!opts.pre) twAp();
   foeT.forEach((o, i) => { const pk = btl.p2.pokemon[i]; if (o.hpX && pk) { pk.maxhp = pk.baseMaxhp = Math.round(pk.maxhp * o.hpX); pk.hp = pk.maxhp; } });
   const monSnap = opts.practice ? JSON.stringify(S.gym.mon || {}) : null;   // 연습 배틀: 연출은 다 보여 주고 경험치·레벨·기술은 끝나면 되돌림 (경완 2026-10-29)
-  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, top: opts.top ?? !!globalThis.gymAiTop?.() /* 전설 등급 체육관 = 2단계가 늘 1등 기술 */, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '', ptyIt: opts.ptyIt || null   /* 수련탑: 교체 화면 줄마다 지닌 도구 */ };
+  B = { btl, my, foe: foeT, o: { p: [...btl.p1.pokemon], e: [...btl.p2.pokemon] }, act: { p: null, e: null, p2: null, e2: null }, li: 0, dbl: !!opts.dbl, practice: !!opts.practice, onFoeMove: opts.onFoeMove, frw: opts.frw, noRun: !!opts.noRun, diff: opts.diff ?? 1, top: opts.top ?? !!globalThis.gymAiTop?.() /* 전설 등급 체육관 = 2단계가 늘 1등 기술 */, fast: false, tapWake: null, out: null, used: new Set(), vs: new Set(), xr: {}, gmk: opts.gmk || null, gmkMe: opts.gmkMe || null, gmkE: opts.gmkE || null, gkOne: !!opts.gkOne, gmx: { p: 0, e: 0, p2: 0, e2: 0 }, gmBase: {}, bag: [...(opts.foe.bag ?? FOE_BAG[Math.min(2, opts.foe.hold ?? opts.diff ?? 1) | 0] ?? [])], lastIt: null, train: opts.train || null, xpm: opts.xpm ?? 1   /* v23.49 체육관 등급별 경험치 배율 (gym.js XP_M) */, wild: !!opts.wild, chain: !!opts.chain, wildSay: opts.foe.appear || '', ptyIt: opts.ptyIt || null   /* 수련탑: 교체 화면 줄마다 지닌 도구 */ };
   frHooks(btl); try { erHooks(btl); } catch (e) {} { const sd = btl.p2, cp = sd.choosePass.bind(sd); sd.choosePass = function () { if (this.__ip) { this.__ip = 0; this.choice.actions.push({ choice: 'pass' }); return true; } return cp(); }; } B.picks = [];
   const meF = GA.trOf().sex === 'f';
   const music = opts.music || 'train'; const winM = opts.win || (music === 'train' ? 'winTrain' : music === 'champ' ? 'winChamp' : music === 'tenno' ? 'winTenno' : 'winGym'); M('prep', winM); if (opts.gmk?.mega) M('prep', 'shinka'); if (opts.gmk?.tera) M('prep', 'teraSv');   /* v16.89: 이름 있는 트레이너는 그 버전 승리 곡 (opts.win) */   // v16.88: 사천왕·챔피언은 그 승리 곡
@@ -1719,7 +1720,7 @@ async function choose(req) {
   B.gkUsed = null;   /* 이번 턴에 고른 기믹: 그 턴 메시지 동안은 바탕색 유지, 다음 턴엔 지금 포켓몬 모습으로 (경완 2026-11-12) */
   for (;;) {
     const a = await mainPanel(A); if (B) B.mainRes = null; if (a === 'skip') return 'skip';
-    if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
+    if (a === 'fight') { if (req.active[0].moves.every(m => m.disabled || m.pp <= 0)) return 'move 1'; B.gkSel = null; const i = await movePanel(req); if (i == null) continue; B.gmBase.p = req.active[0].moves[i]?.id; { const g = B.gkSel; B.gkSel = null; B.gkUsed = g; if (g && B.gkOne) B.gkOneP = 1; return 'move ' + (i + 1) + (g ? ' ' + g.replace(/^mega[xy]$/, m => m === 'megax' ? 'megax' : 'megay') : ''); } }   /* 고른 기믹은 이 턴에만: 남아 있으면 교체 뒤에도 메가 바탕색이 남음 (경완 2026-11-12) */
     if (a === 'mon') { const i = await partyPanel(req, false); if (i == null) continue; if (req.active[0].trapped || B.btl.p1.active[0]?.trapped) { await msg(`${eun(A.nm)} 교체할 수 없다!`); continue; }   /* 그림자밟기처럼 아직 안 드러난 특성으로 묶이면 요청엔 maybeTrapped 만 와서 교체를 보냈다가 배틀이 멈췄음 (경완 2026-11-04) */ return 'switch ' + (i + 1); }
     if (a === 'info') { await battlerInfo(); continue; }
     if (a === 'bag') { if (B.train && !B.wild) { await trBall(1); continue; }   /* v24.87 수련탑 트레이너 층 → v28.38 볼을 던지면 쳐내고 도둑 대사 */ if (B.train?.balls) { const r = await trBall(); if (r === true) return 'caught'; if (r === 'miss') { B.passP = 1; const M = req.active[0].moves, k = M.findIndex(m => !m.disabled && m.pp > 0); return 'move ' + (k < 0 ? 1 : k + 1); } continue; }   /* 놓치면 본가처럼 턴이 넘어감 (상대만 움직임) */ await msg('체육관 배틀에서는 가방을 쓸 수 없다!'); continue; }
@@ -1759,7 +1760,7 @@ async function chooseD(req) {
       if (a === 'fight') { if (R.moves.every(m => m.disabled || m.pp <= 0)) { ch.push('move 1'); break; } let i, n; for (;;) { B.gkSel = null; i = await movePanel(req, k); if (i == null) break;
           const md = PSim.Dex.moves.get(R.moves[i].id), mx = md?.category !== 'Status' && (/^(dynamax|zmove)$/.test(B.gkSel || '') || B.btl.p1.active[k]?.volatiles?.dynamax), tg = mx ? 'adjacentFoe' : R.moves[i].target || md?.target; n = NEED_T.has(tg) || SPREAD_T.has(tg) ? await tgtPick(tg, S2[k]) : ''; if (n !== null) break; $b('.bt-msg .t').textContent = `${X.nm}${jong(X.nm) ? '은' : '는'} 무엇을 할까?`; }   /* v25.07 경완 '그만두기 하면 다시 기술 선택 화면으로' */
         if (i == null) { B.gkSel = null; continue; }
-        { const g = B.gkSel; B.gkSel = null; B.gmBase[S2[k]] = R.moves[i]?.id; if (g) { B.gkTurn.push(g.replace(/^mega[xy]$/, 'mega')); if (!k) B.gkUsed = g; }   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': 고른 기믹을 그 자리 기술에 붙임 */
+        { const g = B.gkSel; B.gkSel = null; B.gmBase[S2[k]] = R.moves[i]?.id; if (g) { B.gkTurn.push(g.replace(/^mega[xy]$/, 'mega')); if (!k) B.gkUsed = g; if (B.gkOne) B.gkOneP = 1; }   /* v26.43 경완 '더블 배틀에서 왜 메가진화 안함': 고른 기믹을 그 자리 기술에 붙임 */
           ch.push('move ' + (i + 1) + (n !== '' ? ' ' + n : '') + (g ? ' ' + g : '')); } break; }
       if (a === 'mon') { const i = await partyPanel(req, false, used); if (i == null) continue; if (R.trapped || B.btl.p1.active[k]?.trapped) { await msg(`${eun(X.nm)} 교체할 수 없다!`); continue; } used.push(i); ch.push('switch ' + (i + 1)); break; }
       if (a === 'info') { await battlerInfo(); continue; }
