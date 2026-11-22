@@ -4221,7 +4221,8 @@ const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
   [40, [398, 405, 407, 424, 429, 430, 450, 452, 454, 457, 460, 461, 462, 464, 466, 467, 469, 470, 471, 473, 475, 477, 478, 3, 6, 9, 59, 62, 65, 68, 76, 94, 112, 121, 130, 131, 134, 135, 136, 142, 143, 196, 197, 212, 229, 232, 248, 282, 306, 330, 334, 350, 365, 373, 376]]];
 const TR_BOSS = [445, 448, 248, 149, 373, 376, 466, 467, 473, 409, 411, 442, 130, 143, 212, 229, 306, 330, 350, 365, 464, 468, 475, 477, 479], TR_BIG = [483, 484, 487, 485, 486, 480, 481, 482];
-let trSave = null;
+let trSaves = [];   /* 경완 '수련탑 이어 오르기 세이브는 3개까지 가능하게 해주고 … 이어오르기 슬롯 삭제할 수도 있게': 슬롯 TR_SLOT 개 (최근 멈춘 순) */
+const TR_SLOT = 3, TR_SHY = 1.1;   /* 경완 '수련탑 이로치에 능력치 혜택 줘': 색이 다른 포켓몬은 수련탑 배틀에서 모든 능력치 ×1.1 */
 /* v23.16 경완 '배틀 배경 다 게임에 받아와줘': 10층마다 바뀌는 장소 (플래티넘 배경·발판). 바깥은 지금 시각으로 낮·저녁·밤. 50층 큰 우두머리는 깨어진 세계 */
 const TR_ENV = [['plain', 'grass'], ['forest', 'grass'], ['plain', 'sand'], ['water', 'water'], ['mountain', 'rocky'], ['cave1', 'cave'], ['city', 'path'], ['snow', 'snow'], ['cave2', 'cave'], ['plain', 'mud'], ['cave3', 'cave'], ['snow', 'ice']];
 const trEnv = (f, big) => { if (big) return { bg: 'distortion', pl: 'distortion_world' }; const [bg, pl] = TR_ENV[Math.floor((f - 1) / 10) % TR_ENV.length], h = new Date().getHours(), t = h >= 6 && h < 17 ? '' : h >= 17 && h < 20 ? '_e' : '_n', out = !/^cave/.test(bg);
@@ -4299,7 +4300,7 @@ async function trItBack(R, o) { const lent = R.ids.some(id => GB().gm(GB().boxOf
   R.ids.forEach(id => { const m = GB().gm(GB().boxOf(id)); if (m) m.it = R.it0?.[id] || ''; }); R.xit = {}; R.tit = {};
   if (lent || kept) await o.msgTap(lent && kept ? '빌린 도구는 수련탑에 돌려주고\n맡겨 둔 도구를 돌려받았다!' : lent ? '빌린 도구는 수련탑에 돌려주었다!' : '맡겨 둔 도구를 돌려받았다!'); }
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 정산 기준점 (도전 시작·지난 그만두기 때 레벨·경험치·층·코인) */
-const trMark = R => { R.m0 = Object.fromEntries(R.ids.map(id => { const m = GB().gm(GB().boxOf(id)); return [id, [m.lv, m.xp | 0]]; })); R.f0 = R.floor; R.c0 = R.coin | 0; R.g0 = R.gold | 0; R.t = Date.now(); return R; };
+const trMark = R => { R.m0 = Object.fromEntries(R.ids.map(id => { const m = GB().gm(GB().boxOf(id)); return [id, [m.lv, m.xp | 0]]; })); R.f0 = R.floor; R.c0 = R.coin | 0; R.g0 = R.gold | 0; R.gfs = []; R.t = Date.now(); return R; };
 /* v24.61 경완 '첨부터 꼬마돌 나오니까 불타입은 천적': 낮은 층(1~19층, 큰 우두머리 빼고)은 내 포켓몬 타입에 효과가 굉장한 타입 포켓몬이 안 나옴 */
 const TR_SE = [[], [], [1, 6, 9, 15, 17], [2, 7, 12], [12, 18], [4, 6, 9, 10, 13], [3, 7, 10, 15], [12, 14, 17], [8, 14], [6, 15, 18], [7, 9, 12, 15], [5, 6, 10], [5, 6, 11], [3, 11], [2, 4], [3, 5, 12, 16], [16], [8, 14], [2, 16, 17]];
 const trThreat = (sp, my) => (SPECIES[sp]?.t || []).some(t => TR_SE[t].some(d => my.has(d)));
@@ -4400,6 +4401,15 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-sv{display:flex;align-items:center;gap:8px;margin:0 0 8px}#trLobby .tl-sv .fl{font-size:28px;line-height:1;color:#e04838}#trLobby .tl-sv .fl small{font-size:13px;color:var(--win-ink);margin-left:2px}#trLobby .tl-sv>small{font-size:10px;opacity:.7;white-space:nowrap}
 #trLobby .tl-gauge{flex:1;height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}#trLobby .tl-gauge i{display:block;height:100%;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a}
 #trLobby .tl-s em.lv{background:#383848}#trLobby .tl-s .hp{position:absolute;z-index:3;left:4px;right:4px;top:4px;height:4px;background:#0005}#trLobby .tl-s .hp::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--h);background:#5cc27a}#trLobby .tl-s.ko img{filter:grayscale(1) brightness(.7)}
+#trLobby .tsv-hd{display:flex;align-items:baseline;justify-content:space-between;padding:2px 4px 0;color:#fff}#trLobby .tsv-hd b{font-size:14px;letter-spacing:.04em;text-shadow:0 2px 0 #0008}#trLobby .tsv-hd small{font-size:11px;color:#ffd870}
+#trLobby .tsv-slot{position:relative;display:flex;flex-direction:column;gap:7px}#trLobby .tsv-slot.new1{box-shadow:0 3px 0 #1c1c26,inset 0 0 0 2px #fff,0 0 0 3px #ffb83a}
+#trLobby .tsv-top{display:flex;align-items:center;gap:8px}#trLobby .tsv-no{flex:none;width:22px;height:22px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:#3a3a52;box-shadow:inset 0 -2px 0 #1c1c26}
+#trLobby .tsv-fl{flex:none;font-size:26px;line-height:1;color:#e04838}#trLobby .tsv-fl small{font-size:12px;color:var(--win-ink);margin-left:2px}
+#trLobby .tsv-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}#trLobby .tsv-meta .tl-gauge{flex:none;width:100%}#trLobby .tsv-meta small{font-size:10px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#trLobby .tsv-ft{display:flex;align-items:center;gap:6px}#trLobby .tsv-res{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12px;font-weight:700;color:var(--win-ink)}#trLobby .tsv-res span{display:inline-flex;align-items:center;white-space:nowrap}#trLobby .tsv-res img{width:15px;height:auto;image-rendering:pixelated;margin-right:5px}
+#trLobby .tsv-ft .gy-key{min-height:36px;padding:0 12px;font-size:13px;flex:none}#trLobby .tsv-ft .tsv-del{min-width:64px;padding:0 8px}
+#trLobby .tsv-slot.emp{flex-direction:row;align-items:center;gap:10px;padding:14px 10px;border:3px dashed #5a5a78;background:#ffffff0a;color:#b8b8d0}#trLobby .tsv-slot.emp .tsv-no{background:#4a4a66;color:#b8b8d0}
+#trLobby .tsv-em{display:flex;flex-direction:column;gap:2px}#trLobby .tsv-em b{font-size:13px}#trLobby .tsv-em small{font-size:10px;opacity:.8}#trLobby .tl-ft .gy-key:disabled{opacity:.5}
 #trLobby .gy-key.sure{background:#e05050!important;color:#fff!important}
 #trLobby .tl-rh{text-align:center;padding:4px 0 8px}#trLobby .tl-rh b{display:block;font-size:18px}#trLobby .tl-rh small{font-size:11px;opacity:.7}#trLobby.top .tl-rh b{color:#e0a020}
 #trLobby .tl-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}#trLobby .tl-chips span{display:flex;flex-direction:column;align-items:center;padding:5px 2px;background:#e8e8f0;box-shadow:inset 2px 2px 0 #b8b8c8,inset -2px -2px 0 #fff}#trLobby .tl-chips small{font-size:10px;opacity:.7}#trLobby .tl-chips b{font-size:16px}
@@ -4508,24 +4518,29 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
   draw();
 });
 /* v24.02 기록 고르기 화면: 이어 오르기(기록 카드: 층·등반대·코인·멈춘 때) / 새로 시작(한 번 더 눌러야 지움) */
-const trScr = async (cls, body, ft) => { const h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
+const trScr = async (cls, body, ft, fc = 'two2') => { const h = new Date().getHours(), tod = h >= 6 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'eve' : 'night';
   if (!document.getElementById('trlCss')) { const st0 = document.createElement('style'); st0.id = 'trlCss'; document.head.appendChild(st0); } document.getElementById('trlCss').textContent = TRL_CSS;
   let me = ''; try { me = await fitSrc('tr'); } catch (e) {}
   const el = document.createElement('div'); el.id = 'trLobby'; el.className = `${tod} ${cls}`;
   el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:56%;animation-delay:-34s;animation-duration:84s"></i>${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
-    <div class="tl-hd"><h2><b>200</b>층 수련탑</h2></div></div><div class="tl-body tl-gb">${body}</div><div class="tl-ft two2">${ft}</div>`;
+    <div class="tl-hd"><h2><b>200</b>층 수련탑</h2></div></div><div class="tl-body tl-gb">${body}</div><div class="tl-ft ${fc}">${ft}</div>`;
   root.appendChild(el); GB().fillTh(el); return el; };
 const trAgo = t => { const m = Math.max(0, Math.round((Date.now() - (t || Date.now())) / 60000)); return m < 1 ? '방금' : m < 60 ? `${m}분 전` : m < 1440 ? `${Math.floor(m / 60)}시간 전` : `${Math.floor(m / 1440)}일 전`; };
-const trGate = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), alive = L.filter(P => (R.hp[P.id] ?? 1) > 0).length;
-  const el = await trScr('gate', `<div class="tl-win tl-save"><h3>이어 오르기 <small>${trAgo(R.t)} 멈춤</small></h3>
-      <div class="tl-sv"><b class="fl">${R.floor}<small>층</small></b><span class="tl-gauge"><i style="width:${Math.max(2, R.floor / TR.top * 100)}%"></i></span><small>200층까지 ${TR.top - R.floor}층</small></div>
-      <div class="tl-party">${[0, 1, 2, 3, 4, 5].map(i => { const P = L[i]; if (!P) return `<span class="tl-s">${TRL_PB}</span>`; const h = R.hp[P.id] ?? 1; return `<span class="tl-s on${h > 0 ? '' : ' ko'}">${B.thumb(P)}<em class="lv">${B.gm(P).lv}</em><i class="hp" style="--h:${Math.round(h * 100)}%"></i></span>`; }).join('')}</div>
-      <p class="tl-sm">골드 ${(R.gold | 0).toLocaleString()} · 코인 ${R.coin | 0} · 동료 볼 ${Object.values(R.balls || {}).reduce((a, b) => a + (b | 0), 0)}개 · 싸울 수 있는 포켓몬 ${alive}/${L.length}</p></div>
-    <div class="tl-win tl-new"><h3>새로 시작</h3><p class="tl-sm">1층부터 다시 오를 포켓몬을 골라요.<br>지금 기록은 사라져요.</p></div>`,
-    `<button class="gy-key" data-a="x">나가기</button><button class="gy-key" data-a="new">새로 시작<small>1층부터</small></button><button class="gy-key main" data-a="cont">이어 오르기<small>${R.floor}층부터</small></button>`);
-  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; sfx('tap'); const a = b.dataset.a;
-    if (a === 'new' && !b.classList.contains('sure')) { b.classList.add('sure'); b.innerHTML = '정말 새로?<small>기록이 지워져요</small>'; return; }
-    if (a) { if (a === 'cont') trLobOut(el); else el.remove(); ok(a === 'x' ? null : a); } };
+/* 경완 '수련탑 이어 오르기 세이브는 3개까지 가능하게 해주고 그 화면 디자인 좀 해줘봐' · '이어오르기 슬롯 삭제할 수도 있게': 슬롯 카드 3칸(번호 딱지·층·진행 막대·등반대·골드/코인), 카드마다 지우기(두 번 눌러 확인)·이어 오르기, 빈 칸은 점선 */
+const trGate = () => new Promise(async ok => { const B = GB();
+  const card = (R, i) => { const L = R.ids.map(B.boxOf).filter(Boolean), alive = L.filter(P => (R.hp[P.id] ?? 1) > 0).length, pc = Math.max(2, R.floor / TR.top * 100);
+    return `<div class="tl-win tsv-slot${i ? '' : ' new1'}"><div class="tsv-top"><span class="tsv-no">${i + 1}</span><b class="tsv-fl">${R.floor}<small>층</small></b><span class="tsv-meta"><span class="tl-gauge"><i style="width:${pc}%"></i></span><small>${trAgo(R.t)} 멈춤 · 싸울 수 있는 포켓몬 ${alive}/${L.length}</small></span></div>
+      <div class="tl-party">${[0, 1, 2, 3, 4, 5].map(k => { const P = L[k]; if (!P) return `<span class="tl-s">${TRL_PB}</span>`; const h = R.hp[P.id] ?? 1; return `<span class="tl-s on${h > 0 ? '' : ' ko'}">${B.thumb(P)}<em class="lv">${B.gm(P).lv}</em><i class="hp" style="--h:${Math.round(h * 100)}%"></i></span>`; }).join('')}</div>
+      <div class="tsv-ft"><span class="tsv-res"><span><i class="coin"></i>${(R.gold | 0).toLocaleString()}</span><span><img alt="" src="${IMG}item/relicsilver.png">${R.coin | 0}</span></span><button type="button" class="gy-key tsv-del" data-a="del" data-i="${i}">지우기</button><button type="button" class="gy-key main tsv-go" data-a="cont" data-i="${i}">이어 오르기</button></div></div>`; };
+  const body = () => `<div class="tsv-hd"><b>이어 오르기</b><small>슬롯 ${trSaves.length}/${TR_SLOT}</small></div>${trSaves.map(card).join('')}${Array.from({ length: Math.max(0, TR_SLOT - trSaves.length) }, (_, k) => `<div class="tsv-slot emp"><span class="tsv-no">${trSaves.length + k + 1}</span><span class="tsv-em"><b>빈 슬롯</b><small>도전을 멈추면 여기에 기록이 남아요</small></span></div>`).join('')}`;
+  const ft = () => { const full = trSaves.length >= TR_SLOT; return `<button class="gy-key" data-a="x">나가기</button><button class="gy-key main" data-a="new" ${full ? 'disabled' : ''}>새로 시작<small>${full ? '슬롯이 가득 찼어요 · 하나 지워 주세요' : '1층부터 새 등반대로'}</small></button>`; };
+  const el = await trScr('gate', body(), ft(), 'nr two'); const re = () => { el.querySelector('.tl-body').innerHTML = body(); el.querySelector('.tl-ft').innerHTML = ft(); GB().fillTh(el); };
+  el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const a = b.dataset.a, i = +b.dataset.i;
+    if (a === 'del') { if (!b.classList.contains('sure')) { el.querySelectorAll('.tsv-del.sure').forEach(x => { x.classList.remove('sure'); x.textContent = '지우기'; }); b.classList.add('sure'); b.textContent = '정말 지울까요?'; return; }
+      const R = trSaves[i]; if (R) { trDrop(R.ids); trSaves.splice(i, 1); } re(); return; }
+    if (a === 'cont') { trLobOut(el); ok({ cont: i }); return; }
+    if (a === 'new') { el.remove(); ok('new'); return; }
+    if (a === 'x') { el.remove(); ok(null); } };
 });
 /* v24.02 경완 '그만두면 거기까지 한 보상·경험치는 받게': 끝날 때(그만두기·쓰러짐·꼭대기) 정산 화면 — 지난 기준점부터 오른 층·레벨·경험치·코인·동료 */
 /* v26.91 경완 '배틀 끝날 때마다 골드 받게 해주고 … 얻는 골드 양은 밸런스 맞춰줘': 이기면 야생 15·트레이너(더블) 30·우두머리 60 G × (1 + 층/100).
@@ -4533,16 +4548,59 @@ const trGate = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.bo
 /* v26.94 경완 '골드 꾸러미 먹었는데 골드 안 올라가는 오류': 층 표시(.bt-fl)는 배틀 시작 때 한 번만 그려져 다음 배틀까지 숫자가 그대로였음 → 골드·코인이 바뀌는 곳마다 바로 고쳐 쓰고 살짝 튐 */
 const trHud = (R, k) => document.querySelectorAll('.bt .bt-fl').forEach(fl => { [['g', R.gold], ['c', R.coin]].forEach(([c, v]) => { const sp = fl.querySelector(`.${c} > span`); if (!sp) return; const t = (v | 0).toLocaleString(); if (sp.textContent === t) return; sp.textContent = t; if (c === k || !k) { sp.classList.remove('up'); void sp.offsetWidth; sp.classList.add('up'); } }); });
 const TR_PAY = false, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));
+/* 경완 '수련탑 기록창도 디자인 좀 해줘보고, 기록창은 그만두기 한 그 화면 위에 뜨도록 … 기록창에 선물 보상 받은 것도 나오게': 배틀 화면 위 어두운 무대에 뜨는 기록 카드 (trBoxPick 과 같은 층, 저절로 뜨는 창 = 팝업 모션·소리·버튼으로만 닫힘)
+   맨 위 끝난 까닭 띠 → 층 메달(200층 막대) → 오른 층·코인·골드 칸 → 받은 층 선물(등급 색 칸) → 등반대 레벨·경험치 → 확인 */
+const TRS_CSS = `.trsx{position:fixed;inset:0;z-index:6100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,10,24,0);transition:background .3s;font-family:var(--px);-webkit-tap-highlight-color:transparent}
+.trsx.on{background:rgba(8,10,24,.66)}.trsx.out{background:rgba(8,10,24,0);transition:background .22s}.trsx.out .trs-w{opacity:0;transition:opacity .2s}
+.trsx .trs-w{position:relative;width:min(100%,340px);max-height:calc(100% - 8px);display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border:3px solid var(--frame);box-shadow:0 5px 0 #0009,inset 0 0 0 2px #fff;animation:trsPop .32s steps(4,end) both}
+@keyframes trsPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none;opacity:1}}
+.trsx .trs-bn{position:relative;margin:-3px -3px 0;padding:9px 10px 8px;text-align:center;color:#fff;background:var(--bc,#3a3a52);border:3px solid var(--frame);box-shadow:inset 0 -4px 0 #0003,inset 0 2px 0 #fff3}
+.trsx .trs-bn b{display:block;font-size:17px;letter-spacing:.04em;text-shadow:2px 2px 0 #0007}.trsx .trs-bn small{display:block;margin-top:3px;font-size:11px;opacity:.9}
+.trsx .trs-quit{--bc:#4a6fb8}.trsx .trs-lose{--bc:#6a3a4a}.trsx .trs-top{--bc:#c88a10}
+.trsx .trs-in{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:10px 10px 4px}
+.trsx .trs-md{display:flex;align-items:center;gap:10px}
+.trsx .trs-fl{flex:none;width:74px;height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff6d0;border:3px solid #e0a020;box-shadow:inset 0 -4px 0 #f0d080,0 3px 0 #a87410}
+.trsx .trs-fl small{font-size:9px;opacity:.7}.trsx .trs-fl b{font-size:28px;line-height:1;color:#e04838}.trsx .trs-fl em{font-style:normal;font-size:11px}
+.trsx .trs-gv{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.trsx .trs-ga{height:10px;background:#d0d0dc;box-shadow:inset 0 -2px 0 #b0b0c0}.trsx .trs-ga i{display:block;height:100%;width:0;background:#ffb83a;box-shadow:inset 0 -2px 0 #d88a10,inset 0 2px 0 #ffe08a;transition:width .8s cubic-bezier(.2,.8,.3,1) .25s}
+.trsx .trs-gv small{font-size:10px;opacity:.7}
+.trsx .trs-c{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.trsx .trs-c span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;background:var(--inner);box-shadow:inset 0 -3px 0 #0001}
+.trsx .trs-c small{font-size:9px;opacity:.75}.trsx .trs-c b{display:flex;align-items:center;font-size:14px}
+.trsx .trs-c b img{width:14px;height:auto;image-rendering:pixelated;margin-right:5px}.trsx .trs-c .coin{margin-right:6px}
+.trsx h5{display:flex;align-items:center;justify-content:space-between;margin:0;font-size:12px}.trsx h5 small{font-size:10px;opacity:.6}
+.trsx .trs-gf{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:5px}
+.trsx .trs-g{position:relative;display:flex;align-items:center;gap:5px;min-width:0;padding:5px 5px 5px 4px;background:#fff;border:2px solid var(--g2);box-shadow:inset 0 3px 0 var(--g1)}
+.trsx .trs-g img,.trsx .trs-g .trb-eg{flex:none;width:26px;height:26px;image-rendering:pixelated;object-fit:contain}
+.trsx .trs-g span{min-width:0;display:flex;flex-direction:column}.trsx .trs-g b{font-size:10px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:keep-all}
+.trsx .trs-g small{font-size:9px;opacity:.65}.trsx .trs-g em{position:absolute;right:-2px;top:-8px;padding:1px 4px;font-style:normal;font-size:8px;color:#fff;background:var(--g2)}
+.trsx .trs-no{margin:0;padding:8px;text-align:center;font-size:11px;opacity:.6;background:var(--inner)}
+.trsx .trs-r{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.trsx .trs-r li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:6px;align-items:center;padding:3px 6px;background:rgba(0,0,0,.05)}
+.trsx .trs-r li>.rk-fr,.trsx .trs-r li>img{grid-row:1/3;position:relative;width:34px;height:34px}
+.trsx .trs-r li b{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trsx .trs-r li b em{font-style:normal;margin-left:4px;padding:1px 4px;font-size:9px;color:#f2eaff;background:#4a2c94}
+.trsx .trs-r .lv{grid-column:2;font-size:10px;opacity:.85}.trsx .trs-r .lv i{font-style:normal;opacity:.5}.trsx .trs-r .lv strong{color:#e04838}
+.trsx .trs-r .xp{grid-column:3;grid-row:1/3;font-size:10px;color:#2f7cd0;white-space:nowrap}
+.trsx .trs-nt{margin:0;text-align:center;font-size:10px;opacity:.55}
+.trsx .trs-ok{margin:6px 10px 10px;height:44px;border:0;border-radius:8px;font:inherit;font-size:16px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#f0b43c,#d0841c);box-shadow:inset 0 1px 0 #fff8,0 4px 0 #8a4c08;opacity:.45;transition:opacity .25s}
+.trsx.ready .trs-ok{opacity:1}.trsx.ready .trs-ok:active{transform:translateY(4px);box-shadow:inset 0 1px 0 #fff8}`;
 const trSettle = R => new Promise(async ok => { const B = GB(), L = R.ids.map(B.boxOf).filter(Boolean), m0 = R.m0 || {}, up = Math.max(0, R.floor - (R.f0 || 1)), coin = Math.max(0, (R.coin | 0) - (R.c0 | 0)), gold = Math.max(0, (R.gold | 0) - (R.g0 | 0));
   const T = { quit: ['도전을 멈췄다', `다음엔 ${R.floor}층부터 이어 오를 수 있어요`], lose: ['눈앞이 캄캄해졌다', `이번 기록 ${R.floor}층`], top: ['꼭대기에 올랐다!', '200층 수련탑을 다 올랐어요'] }[R.end] || ['도전 끝', ''];
   const rows = L.map(P => { const m = B.gm(P), [lv0, xp0] = m0[P.id] || [m.lv, m.xp | 0], dl = m.lv - lv0, dx = Math.max(0, (m.xp | 0) - xp0);
-    return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em class="mt">동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
-  /* v27.95 경완 '도전 멈추거나 끝났을 때 기록창은 팝업창으로': 화면 전체 대신 체육관 알림창(.gy-pop, gy-lock = 팝업 모션·소리, 버튼으로만 닫힘) */
-  const p = pop(`<div class="trs"><h4 class="trs-h trs-${R.end || ''}">${T[0]}</h4>${T[1] ? `<p class="trs-s">${T[1]}</p>` : ''}
-      <div class="trs-c"><span><small>오른 층</small><b>${up}</b></span><span><small>기록</small><b>${R.floor}층</b></span><span><small>코인</small><b>+${coin}</b></span><span><small>골드</small><b>+${gold.toLocaleString()}</b></span></div>
-      <ul class="trs-r">${rows}</ul><p class="trs-n">베타에선 경험치·보상을 실제로 받지 않아요</p></div><div class="gy-btns one"><button class="main" data-a="ok">확인</button></div>`, (a, close) => { close(); ok(); });
-  p.classList.add('trs-pop'); try { B.fillTh?.(p); } catch (e) {}
-  if (R.end === 'top') try { sfx('win'); } catch (e) {}
+    return `<li>${B.thumb(P)}<b>${esc(P.nm || SPECIES[P.sp]?.n || '')}${P.mate ? '<em>동료</em>' : ''}</b><span class="lv">Lv.${lv0}${dl > 0 ? ` <i>▶</i> <strong>Lv.${m.lv}</strong>` : ''}</span><span class="xp">+${dx.toLocaleString()} 경험치</span></li>`; }).join('');
+  const gfs = (R.gfs || []).map(G => { const [g1, g2] = TR_RC[G.g].split(','); return `<div class="trs-g" style="--g1:${g1};--g2:${g2}"><em>${esc(G.gn)}</em>${/^</.test(G.ic || '') ? `<span class="trb-eg">${G.ic}</span>` : `<img alt="" src="${/[/:]/.test(G.ic || '') ? G.ic : `${IMG}item/${G.ic || trIc(G.nm)}.png`}">`}<span><b>${esc(G.nm)}</b><small>${G.f}층 선물</small></span></div>`; }).join('');
+  if (!document.getElementById('trsCss')) { const st0 = document.createElement('style'); st0.id = 'trsCss'; document.head.appendChild(st0); } document.getElementById('trsCss').textContent = TRS_CSS;
+  const el = document.createElement('div'); el.className = 'trsx';
+  el.innerHTML = `<div class="trs-w"><div class="trs-bn trs-${R.end || 'quit'}"><b>${T[0]}</b>${T[1] ? `<small>${T[1]}</small>` : ''}</div><div class="trs-in">
+      <div class="trs-md"><div class="trs-fl"><small>기록</small><b>${R.floor}</b><em>층</em></div><div class="trs-gv"><div class="trs-ga"><i data-w="${Math.max(2, R.floor / TR.top * 100)}"></i></div><small>200층까지 ${Math.max(0, TR.top - R.floor)}층 남음</small></div></div>
+      <div class="trs-c"><span><small>오른 층</small><b>+${up}</b></span><span><small>코인</small><b><img alt="" src="${IMG}item/relicsilver.png">+${coin}</b></span><span><small>골드</small><b><i class="coin"></i>+${gold.toLocaleString()}</b></span></div>
+      <h5>받은 층 선물 <small>${(R.gfs || []).length}개</small></h5>${gfs ? `<div class="trs-gf">${gfs}</div>` : '<p class="trs-no">이번엔 받은 층 선물이 없어요 · 10층마다 받아요</p>'}
+      <h5>등반대</h5><ul class="trs-r">${rows}</ul>${TR_PAY ? '' : '<p class="trs-nt">베타에선 경험치·보상을 실제로 받지 않아요</p>'}</div><button type="button" class="trs-ok">확인</button></div>`;
+  document.body.appendChild(el); try { B.fillTh?.(el); } catch (e) {} void el.offsetWidth; el.classList.add('on');
+  try { window.GymBGM?.se?.(R.end === 'top' ? 'DP_KIRAKIRA2' : 'DP_PINPON'); } catch (e) {} try { GA.haptic?.(1); } catch (e) {}
+  requestAnimationFrame(() => el.querySelectorAll('.trs-ga i').forEach(i => { i.style.width = i.dataset.w + '%'; }));
+  let rdy = false; setTimeout(() => { rdy = true; el.classList.add('ready'); }, 700);   /* 저절로 뜨는 창: 막 누르다 넘어가지 않게 잠깐 잠금 */
+  el.querySelector('.trs-ok').onclick = () => { if (!rdy) return; rdy = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 240); ok(); };
 });
 /* v27.90 경완 '수련탑 포켓몬 메뉴 하단에 연습게임 버튼 대신 … 그 버튼 누르면 승급심사나 특훈 들어갈 때처럼 진입 연출 나오고 등반대 고르는 화면': 줄무늬가 화면을 가르며 '수련탑' (bsGo 와 같은 .bs-tr) → 닫힌 사이에 메뉴를 닫고 등반대 고르기(trainTest → trLineup) */
 /* v27.95 경완 '수련탑 시작할 때는 체육관 화면으로 돌아가서 시작하지 않고, 시작화면에서 시작하게. 시작할 때 효과음 추가': 오르기를 누르면 SE_DP_TB_START(배틀타워 시작) 를 내고, 등반대 화면은 배틀 화면(.bt)이 뜬 뒤에 치움 (늦어도 6초) */
@@ -4564,11 +4622,11 @@ async function trainTest(o0) {
   const back = () => { if (!o0?.back || !open) return; bgmPlay('gym'); openTab('battle'); };
   if (!open || !st()?.d) return;
   await loadJs('gymb/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gymb/bgm.js', 'GymBGM'); await loadNamed();   /* v24.87 관장·라이벌·사천왕 층 */
-  if (trSave?.keep) { const g = st(); g.mon = g.mon || {}; trSave.keep.forEach(([P, m]) => { if (!GB().boxOf(P.id)) { S.box.push(JSON.parse(JSON.stringify(P))); g.mon[P.id] = JSON.parse(JSON.stringify(m)); } }); }   /* v24.02 시연 사본은 시뮬을 나가면 상자에서 사라짐 → 멈출 때 떠 둔 걸로 되살려 이어 오르기 */
-  let R = trSave && trSave.ids.every(id => GB().boxOf(id)) ? trSave : null;
-  { const gv = R ? await trGate(R) : 'new'; if (!gv) return back();   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
-    if (gv === 'new') { if (R) { trDrop(R.ids); R = null; trSave = null; } const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return back(); R = trNew(v); } }
-  trSave = null; document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
+  trSaves.forEach(sv => sv.keep?.forEach(([P, m]) => { const g = st(); g.mon = g.mon || {}; if (!GB().boxOf(P.id)) { S.box.push(JSON.parse(JSON.stringify(P))); g.mon[P.id] = JSON.parse(JSON.stringify(m)); } }));   /* v24.02 시연 사본은 시뮬을 나가면 상자에서 사라짐 → 멈출 때 떠 둔 걸로 되살려 이어 오르기 (슬롯마다) */
+  trSaves = trSaves.filter(sv => sv.ids.every(id => GB().boxOf(id))); let R = null;
+  { const gv = trSaves.length ? await trGate() : 'new'; if (!gv) return back(); if (gv.cont != null) { R = trSaves[gv.cont]; trSaves.splice(gv.cont, 1); }   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
+    if (gv === 'new') { R = null; const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return back(); R = trNew(v); } }
+  document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   window.gymTrR = () => R;   /* 시험용: 지금 수련탑 기록 (운영자 시연 안에서만) */
   const meFrontUrl = await fitSrc('tr'), meBackUrl = await fitSrc('trb'); let first = true;
   try {
@@ -4582,32 +4640,35 @@ async function trainTest(o0) {
       R.balls = R.balls || {}; const T = { xp: TR.xp * (R.xpM || 1), xpF: trXpF(), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss, dbl };   /* v23.68 동료 볼 (가방) */
       const intro = f === 1 && !R.r0 ? async o => { R.r0 = 1; await trReward(R, o, ids, false, false, true); if (Object.keys(R.it0 || {}).length) await o.msgTap('원래 지닌 도구는 수련탑에 맡겨 두었다!\n도전이 끝나면 돌려받는다.'); }   /* 경완 '처음 시작할 때 배틀 대사창에 나오는 문구는 항상 보상 먼저 받은 후에 뜨게 해줘 그 전까진 빈 화면' */   /* v24.35 경완 '동료 몬스터볼 처음 5개 없애고 출발 보상에서 고르기' */ : null;   /* v24.14 경완 '1층 시작 전에 보상부터 고르고' */
       const music = big ? 'bossBig' : boss ? 'boss' : nmd ? nmd.music || 'gymBattle' : trn ? 'train' : trBioM(bio), keepM = !first && music === R.lastM; R.lastM = music;   /* v24.14 경완 'BGM 은 계속 이어지고 10층 단위로 바뀌게' */
-      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: !trn, dbl, chain: !first, train: T, pre: intro, twRe: () => ({ vit: R.vit, xit: R.xit, xitT: R.tit }), hp: R.hp, vit: R.vit, xit: R.xit, xitT: R.tit, ptyIt: trPtyIt(R), diff: boss || nmd ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: !trn, win: nmd ? nmd.win || undefined : trn ? 'winTrain' : 'winWild', meFrontUrl, meBackUrl,
+      const env = trEnv(f, big), res = await GB().run({ my, foe, wild: !trn, dbl, chain: !first, train: T, pre: intro, twRe: () => ({ vit: R.vit, xit: R.xit, xitT: R.tit }), hp: R.hp, vit: R.vit, xit: R.xit, xitT: R.tit, shyX: TR_SHY, ptyIt: trPtyIt(R), diff: boss || nmd ? 2 : 1, bg: env.bg, pl: env.pl, music, bgmKeep: keepM, noWin: !trn, win: nmd ? nmd.win || undefined : trn ? 'winTrain' : 'winWild', meFrontUrl, meBackUrl,
         items: trItHtml(R), badge: `<div class="bfl${boss || nmd ? ' bs' : ''}"><b class="f">${f}<em>층</em></b><span class="cr"><b class="g"><i class="coin"></i><span>${(R.gold | 0).toLocaleString()}</span></b><b class="c"><img alt="" src="${IMG}item/relicsilver.png"><span>${(R.coin | 0).toLocaleString()}</span></b></span></div>`,   /* v26.91 경완 '수련탑 코인 왼쪽에 우리 골드 아이콘으로 표시' · v26.92 경완 '고대의 은화로 가자 골드랑 헷갈리니까' */   /* v24.81 경완 '우상단, 박스 없이' → 체력 박스 글씨 그대로 A안, 코인은 금색 + 고대의 금화(1번) */ post: o => trPost(R, o, boss || !!nmd, ids, T, trn),
         /* v23.54 경완 '랜덤·우두머리 버튼이 아무 작용을 안 함': 누르면 지금 배틀을 바로 끝내고 넘어감 */
         tools: trOp() && [['🎲 랜덤', () => { R.roll = 1; GB().skipNow?.(); }], ['⏩ 우두머리', () => { R.skip = 1; GB().skipNow?.(); }], ['👥 더블', () => { R.dblNext = 1; GB().skipNow?.(); }], ['🧑 트레이너', () => { R.trNext = 1; GB().skipNow?.(); }]] });   /* v24.21 시험: 다음 층 더블 */
       first = false; if (!res?.keep) break;
     }
-    if (R?.end) { document.body.classList.remove('gymBattle'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; }
+    if (R?.end) { document.body.classList.remove('gymBattle'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; }   /* (배틀 밖에서 끝난 때만 — 보통은 trPost fin 이 배틀 화면 위에서 띄움) */
   } catch (err) { console.error(err); GA.toast?.('수련탑을 이어 가지 못했어요'); }
-  finally { document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSave?.ids?.includes(P.id)).map(P => P.id)); save(); bgmPlay('gym'); }
+  finally { document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSaves.some(sv => sv.ids.includes(P.id))).map(P => P.id)); save(); bgmPlay('gym'); if (R?.fin) { R.fin = 0; openTab('battle'); } }   /* 경완 '기록창 확인 누르면 포켓몬 메뉴 라인업 화면으로 돌아오게' */
 }
 async function trPost(R, o, boss, ids, T, trn) {
   Object.assign(R.hp, o.hp);
   if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
   if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
-  if (o.quit) { trSave = R; R.end = 'quit'; R.keep = R.ids.map(id => [GB().boxOf(id), GB().gm(GB().boxOf(id))]).filter(x => x[0]).map(([P, m]) => [JSON.parse(JSON.stringify(P)), JSON.parse(JSON.stringify(m))]); await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n여기까지 한 만큼 보상을 받는다.`); return false; }
-  if (!o.won) { trSave = null; R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); await trItBack(R, o); return false; }
+  const fin = async () => { await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; };   /* 경완 '기록창은 그만두기 한 그 화면 위에 뜨도록 해줘 체육관 홈화면에서 뜨는게 아니고': 배틀 화면이 남아 있는 동안 기록창 */
+  if (o.quit) { trSaves.unshift(R); while (trSaves.length > TR_SLOT) trDrop(trSaves.pop().ids); R.end = 'quit'; R.keep = R.ids.map(id => [GB().boxOf(id), GB().gm(GB().boxOf(id))]).filter(x => x[0]).map(([P, m]) => [JSON.parse(JSON.stringify(P)), JSON.parse(JSON.stringify(m))]); await o.msgTap(`${R.floor}층에서 수련탑 도전을 멈췄다!\n여기까지 한 만큼 보상을 받는다.`); await fin(); return false; }
+  if (!o.won) { R.end = 'lose'; await o.msgTap('눈앞이 캄캄해졌다…'); await o.msgTap(`이번 도전 기록: ${R.floor}층!`); await trItBack(R, o); await fin(); return false; }
   if (o.act) R.lead = o.act;
   if (T?.caught) await trMate(R, o, T.caught);
-  if (boss) { ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap(trn ? '승부를 마치고\n모두 기운을 되찾았다!' : '우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!'); }
+  if (boss) { if (!trn) { const m = trBioM(trBio(R.floor + 1)); R.lastM = m; try { window.GymBGM?.play(m, { fade: .05 }); } catch (e) {} }   /* 경완 '우두머리 이기자마자 bgm 바뀌게 해줘': 이긴 순간 다음 층 곡으로 (다음 층이 같은 곡이면 이어짐) */
+    const dn = ids.filter(id => (R.hp[id] ?? 1) <= 0 && GB().boxOf(id)); ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap(trn ? '승부를 마치고\n모두 기운을 되찾았다!' : '우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!');
+    if (dn.length) await o.msgTap((() => { const N = dn.map(id => { const P = GB().boxOf(id); return P?.nm || SPECIES[P?.sp]?.n || ''; }).filter(Boolean), L = N.join(', '); return `쓰러졌던 ${L}${jong(N[N.length - 1]) ? '은' : '는'}\n체력이 절반만 돌아왔다.`; })()); }   /* 경완 '체력 다 회복했는데 초염몽은 반피만 회복된건 뭐야': 쓰러졌던 포켓몬은 절반이라고 따로 알림 */
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
-  if (R.floor >= TR.top) { trSave = null; R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); await trItBack(R, o); return false; }
+  if (R.floor >= TR.top) { R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); await trItBack(R, o); await fin(); return false; }
   const cn = boss ? 40 : trn || T?.dbl ? 20 : 10;   /* v24.87 트레이너 20, 관장·라이벌·사천왕·챔피언 40 */ R.coin = (R.coin | 0) + cn; trHud(R, 'c');   /* v24.70 경완 '코인은 포켓몬 쓰러트릴 때마다': 한 마리 10 (더블 20), 우두머리 40 */
   const gd = trGold(R.floor, boss, trn || T?.dbl); R.gold = (R.gold | 0) + gd; if (TR_PAY) addG(gd, 'tower'); trHud(R); o.se?.('REGI');   /* v27.31 경완 '배틀 끝날 때마다 보상 받을 때도 골드랑 코인 올라가는 효과음' = 꾸러미·상점 구매와 같은 레지 소리 */
   await o.msg(`수련탑 코인 ${cn}개와\n${gd.toLocaleString()}골드를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
-  if (R.floor % 10 === 0) await trGift(R.floor);   /* v27.99 10층마다 선물 (주마다 한 번) */
+  if (R.floor % 10 === 0) { const G = await trGift(R.floor); if (G) (R.gfs = R.gfs || []).push(G); }   /* 경완 '기록창에 선물 보상 받은 것도 나오게' */   /* v27.99 10층마다 선물 (주마다 한 번) */
   R.floor++;
   /* v23.68 경완 '특별한 층': 5·15·25…층 = 수련탑 상점 (이번 판 코인), 가끔 수수께끼 상자 — 배틀 없이 다음 층으로 */
   /* v24.70 경완 '상점은 없애자': 5층마다 상점 층 없앰 — 매층 보상 창 아래 줄이 상점 (포켓로그처럼) */
@@ -4668,7 +4729,8 @@ const trGfSt = () => { const s = TR_GF_PAY ? (st().trGf = st().trGf || {}) : (tr
 /* v28.21 경완 '선물 받는 창에는 받기 버튼 만들어서 그거 눌러야만 닫히고 진행되게' → trBoxPick X.get */
 async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; const G = trGfPlan()[f]; s.got.push(f);
   const eg = f === 200, NM = eg ? TR_EGG_NM : TR_GF_NM;
-  await trBoxPick([[0, eg ? 0 : 2, G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, NM[0]]], `${f}층 ${f % 50 ? '' : '큰 '}선물!`, 0, TR_GF_PAY ? '' : '베타에서는 실제로 받지 않아요', { get: '받기', up: eg ? G.gi : G.tier, upNm: NM, box: `${IMG}yact/gift.png` }); }
+  await trBoxPick([[0, eg ? 0 : 2, G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, NM[0]]], `${f}층 ${f % 50 ? '' : '큰 '}선물!`, 0, TR_GF_PAY ? '' : '베타에서는 실제로 받지 않아요', { get: '받기', up: eg ? G.gi : G.tier, upNm: NM, box: `${IMG}yact/gift.png` });
+  const up = (eg ? G.gi : G.tier) | 0; return { f, nm: G.nm, ic: G.ic, g: Math.min(4, (eg ? 0 : 2) + up), gn: NM[up] || NM[0] }; }   /* 기록창 선물 줄 (R.gfs) */
 /* 수련탑 시작 화면 선물 아이콘: 이번 주 층별 선물 목록·받은 층 (경완 '수련탑 시작 화면에 층별 보상 목록 확인할 수 있는 아이콘도' · v28.21 '너무 길어지지 않게 스크롤') */
 function trGfList(el) { const s = trGfSt(), P = trGfPlan(), w = document.createElement('div'); w.className = 'tl-gfp';
   const n = s.got.length, row = f => { const G = P[f], got = s.got.includes(f), top = f === 200, nm = top ? TR_EGG_NM : TR_GF_NM, gi = top ? G.gi : G.tier;
@@ -4762,7 +4824,7 @@ const TRB_CSS = `.trbx{position:fixed;inset:0;z-index:6000;display:flex;flex-dir
 .trbx .trb-s:active:not([disabled]){transform:translateY(3px);box-shadow:0 0 0 2px #c8c8d8}.trbx .trb-s[disabled]{opacity:.4}
 .trbx .trb-rr{height:36px;border:0;border-radius:8px;font:inherit;font-size:13px;color:#fff;text-shadow:1px 1px 0 #0006;background:linear-gradient(#8a7ae0,#5a48b8);box-shadow:inset 0 1px 0 #fff6,0 3px 0 #2c2068}
 .trbx .trb-rr:active:not([disabled]){transform:translateY(3px);box-shadow:inset 0 1px 0 #fff6}.trbx .trb-rr[disabled]{opacity:.45}
-.trbx .trb-b.gb{width:76px;height:72px;margin:-36px 0 0 -38px;filter:drop-shadow(0 0 7px var(--g1)) drop-shadow(0 0 2px var(--g1)) drop-shadow(0 4px 0 #0006);transition:filter .2s}   /* v28.22 경완 '층 선물 아이콘은 몬스터볼 말고 선물 상자 아이콘으로': 단계 색 = 상자 둘레 빛 */
+.trbx .trb-c.rest .trb-b{transform:none;animation:none}.trbx .trb-c.shk .trb-b{transform:none;animation:trbShk var(--sp,.16s) ease-in-out infinite alternate}@keyframes trbShk{from{transform:rotate(calc(var(--sa,7deg) * -1)) translateY(-2px)}to{transform:rotate(var(--sa,7deg)) translateY(-2px)}}.trbx .trb-b.trb-gf{width:76px;height:72px;margin:-36px 0 0 -38px;padding:0;border:0;background:none;box-shadow:none;object-fit:contain;transform-origin:50% 85%;filter:drop-shadow(0 0 7px var(--g1)) drop-shadow(0 0 2px var(--g1)) drop-shadow(0 4px 0 #0006);transition:filter .2s}   /* v28.22 경완 '층 선물 아이콘은 몬스터볼 말고 선물 상자 아이콘으로': 단계 색 = 상자 둘레 빛 */
 .trbx .trb-c.up .trb-b{animation:trbUp .48s ease-out}.trbx .trb-c.up::after{content:'';position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle,var(--g1) 0,transparent 65%);opacity:0;animation:trbUpR .55s ease-out;pointer-events:none}
 @keyframes trbUp{0%{transform:scale(1)}35%{transform:scale(1.35);filter:brightness(2.2) drop-shadow(0 0 10px var(--g1))}100%{transform:scale(1)}}@keyframes trbUpR{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
 .trbx .trb-k .trb-eg{display:flex;align-items:center;justify-content:center;width:56px;height:56px;margin-top:6px}.trbx .trb-k .trb-eg .egg{transform:scale(.8)}
@@ -4773,15 +4835,18 @@ const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X
   if (!document.getElementById('trbCss')) { const st0 = document.createElement('style'); st0.id = 'trbCss'; document.head.appendChild(st0); } document.getElementById('trbCss').textContent = TRB_CSS;
   const se = n => { try { window.GymBGM?.se('DP_' + n); } catch (e) {} }, G = ['일반', '우수', '레어', '에픽', '전설'];   /* v26.82 경완 '보상 카드 등급은 일반, 우수, 레어' */
   const el = document.createElement('div'); el.className = 'trbx';
-  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b${X?.box ? ' gb' : ''}" alt="" src="${X?.box || `${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png`}"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em>${/^</.test(c[5] || '') ? `<span class="trb-eg">${c[5]}</span>` : `<img alt="" src="${/[/:]/.test(c[5] || '') ? c[5] : `${IMG}item/${c[5] || trIc(c[2])}.png`}">`}<b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X?.get ? `<button type="button" class="trb-get">${esc(X.get)}</button>` : ''}${X?.shop ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
+  el.innerHTML = `<h3>${esc(title)}</h3><div class="trb-row${L.length === 1 ? ' one' : ''}">${L.map((c, i) => { const [g1, g2] = TR_RC[c[1]].split(','); return `<button type="button" class="trb-c g${c[1]}${again ? ' now' : ''}" data-i="${i}" style="--d:${i * .08}s;--g1:${g1};--g2:${g2}">${again ? '' : `<img class="trb-b${X?.box ? ' trb-gf' : ''}" alt="" src="${X?.box || `${IMG}item/${TR_BX[c[1]] || 'pokeball'}.png`}"><i class="fl"></i>`}<span class="trb-k"><em>${esc(c[6] || G[c[1]])}</em>${/^</.test(c[5] || '') ? `<span class="trb-eg">${c[5]}</span>` : `<img alt="" src="${/[/:]/.test(c[5] || '') ? c[5] : `${IMG}item/${c[5] || trIc(c[2])}.png`}">`}<b>${esc(c[2])}</b><small${[...(c[3] || '')].length > 34 ? ' class="l"' : ''}>${esc(c[3])}</small>${c.bag != null ? `<i class="trb-n trb-bag">${TRB_BAG}<span>× ${c.bag}</span></i>` : c[7] ? `<i class="trb-n">${esc(c[7])}</i>` : ''}</span></button>`; }).join('')}</div>${tip ? `<p class="trb-tip">${esc(tip).replace(/\n/g, '<br>')}</p>` : ''}${X?.get ? `<button type="button" class="trb-get">${esc(X.get)}</button>` : ''}${X?.shop ? `<div class="trb-sh"><div class="trb-sh-hd"><b>상점</b><span><img class="trb-co" alt="" src="${IMG}item/relicsilver.png">${X.coin}</span></div><div class="trb-sh-l" style="grid-template-columns:repeat(${X.shop.length},minmax(0,1fr))">${X.shop.map(([n, pr, can, have], i) => `<button type="button" class="trb-s" data-s="${i}" ${can && X.coin >= pr ? '' : 'disabled'}>${have != null ? `<small class="trb-hv">×${have}</small>` : ''}<img alt="" src="${IMG}item/${trIc(n)}.png"><b>${esc(n)}</b><em>${pr}</em></button>`).join('')}</div><button type="button" class="trb-rr" ${X.coin >= X.rr ? '' : 'disabled'}>🎲 다시 뽑기 · ${X.rr}코인</button></div>` : ''}`;
   document.body.appendChild(el); void el.offsetWidth; el.classList.add('on');
   let ready = !!again; if (again) el.classList.add('ready');
   else (async () => { await wait(500);   /* v24.64 경완 '보상 나오는 연출 속도 좀만 더 빠르게': 떨어짐·흔들림·터짐 모두 약 1/3 빠르게 */ const C = [...el.querySelectorAll('.trb-c')];
-    C.forEach(c => c.classList.add('wob')); se('KON'); await wait(310);
-    for (let u = 0; u < (X?.up | 0); u++) { const c = C[0], g0 = +(c.className.match(/\bg(\d)/) || [0, 0])[1], g1 = Math.min(4, g0 + 1), [a1, a2] = TR_RC[g1].split(','); await wait(u ? 420 : 260);   /* v28.22 단계 오름: 색·볼·딱지 바뀌고 진동 */
-      c.classList.remove('wob', 'up', 'g' + g0); void c.offsetWidth; c.classList.add('g' + g1, 'up'); c.style.setProperty('--g1', a1); c.style.setProperty('--g2', a2); const bi = c.querySelector('.trb-b'); if (bi && !X.box) bi.src = `${IMG}item/${TR_BX[g1]}.png`; const em = c.querySelector('.trb-k em'); if (em && X.upNm) em.textContent = X.upNm[u + 1] || em.textContent;
-      se(u ? 'KON3' : 'KON2'); try { GA.haptic?.(u ? 2 : 1); } catch (e) {} await wait(480); }
-    for (const c of C) { c.classList.remove('wob'); c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(110); }
+    const upStep = async u => { const c = C[0], g0 = +(c.className.match(/\bg(\d)/) || [0, 0])[1], g1 = Math.min(4, g0 + 1), [a1, a2] = TR_RC[g1].split(',');   /* v28.22 단계 오름: 색·볼·딱지 바뀌고 진동 */
+      c.classList.remove('wob', 'shk', 'up', 'g' + g0); void c.offsetWidth; c.classList.add('g' + g1, 'up'); c.style.setProperty('--g1', a1); c.style.setProperty('--g2', a2); const bi = c.querySelector('.trb-b'); if (bi && !X.box) bi.src = `${IMG}item/${TR_BX[g1]}.png`; const em = c.querySelector('.trb-k em'); if (em && X.upNm) em.textContent = X.upNm[u + 1] || em.textContent;
+      se(u ? 'KON3' : 'KON2'); try { GA.haptic?.(u ? 2 : 1); } catch (e) {} await wait(480); };
+    if (X?.box) {   /* 경완 '오픈할 때 알 뽑기처럼 흔들리다가 나오게 해줘 확률 오픈 연출 지금 없는 것 같네': 선물은 매번 덜컹덜컹 두 번 흔들고, 등급이 오를 때마다 한 번 더 세게 흔든 뒤 오름 (알 뽑기 gaShake 처럼 갈수록 세게) */
+      const c = C[0], shake = async k => { c.classList.remove('up', 'shk'); c.style.setProperty('--sa', `${7 + k * 4}deg`); c.style.setProperty('--sp', `${Math.max(.1, .16 - k * .02)}s`); void c.offsetWidth; c.classList.add('shk'); const n = 4 + k; for (let t = 0; t < n; t++) { se(t === n - 1 ? 'KON2' : 'KON'); try { if (t % 2 || k) GA.haptic?.(k > 1 ? 2 : 1); } catch (e) {} await wait(Math.max(100, 160 - k * 20)); } c.classList.remove('shk'); await wait(260); };
+      c.classList.add('rest'); const up = X.up | 0; await shake(0); await shake(1); for (let u = 0; u < up; u++) { await shake(2 + u); await upStep(u); }
+    } else { C.forEach(c => c.classList.add('wob')); se('KON'); await wait(310); for (let u = 0; u < (X?.up | 0); u++) { await wait(u ? 420 : 260); await upStep(u); } }
+    for (const c of C) { c.classList.remove('wob', 'up', 'rest'); void c.offsetWidth; c.classList.add('op'); se('BOWA2'); try { navigator.vibrate?.(12); } catch (e) {} await wait(110); }
     await wait(240); ready = true; el.classList.add('ready'); })();
   el.onclick = e => { if (!ready) return; if (X?.get) { if (!e.target.closest('.trb-get')) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(0); } const sb = e.target.closest('.trb-s,.trb-rr'); if (sb) { if (sb.disabled) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); return ok(sb.classList.contains('trb-rr') ? { t: 'rr' } : { t: 'buy', i: +sb.dataset.s }); }
     const b = e.target.closest('.trb-c'); if (!b || !ready) return; ready = false; sfx('tap'); el.classList.add('out'); setTimeout(() => el.remove(), 260); ok(+b.dataset.i); };
