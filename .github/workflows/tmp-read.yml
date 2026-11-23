@@ -29,6 +29,8 @@ jobs:
           const r=require("/tmp/p.json")[0].results; const by={}; for(const x of r){(by[x.code]=by[x.code]||[]).push(x.data)}
           for(const [c,L] of Object.entries(by)){ let S; try{S=JSON.parse(L.join(""))}catch(e){console.log(c,"parse fail");continue}
             const box=S.box||[]; console.log("code",c,"box",box.length,"gym ty",S.gym&&S.gym.ty, "gyms", JSON.stringify((S.gyms||[]).map(g=>g.ty)));
-            for(const P of box) if([58,59,10229,10230].includes(+P.sp)) console.log(JSON.stringify({id:P.id,sp:P.sp,fm:P.fm,rf:P.rf,g:P.g,place:P.place,t:P.t,mgT:P.mgT,gTst:P.gTst,off:P.off,hide:P.hide}));
-            console.log("keys sample", Object.keys(S.gym||{}).slice(0,60).join(","));
+            const P=box.find(p=>+p.sp===10230); console.log("P", JSON.stringify(P)); console.log("mon", JSON.stringify(S.gym&&S.gym.mon&&S.gym.mon[P&&P.id]));
+            console.log("dup", box.filter(p=>p.id===(P&&P.id)).length, "idx", box.indexOf(P), "savedAt", S.savedAt, "ver", S.ver||S.appVer||S.v, "lu", JSON.stringify(S.gym.lu));
+            const sk=Object.keys(S).filter(k=>/ver|app|V$/i.test(k)); console.log("verkeys", JSON.stringify(sk.map(k=>[k,typeof S[k]==="object"?"obj":S[k]])));
+            console.log("unlocked has 59", (S.unlocked||[]).includes(59), (S.unlocked||[]).includes(10230));
           }'
