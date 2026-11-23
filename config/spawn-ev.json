@@ -22,25 +22,6 @@
    "src": "https://www.lwt.co.kr/ko/event/all.do?category=all"
   },
   {
-   "id": "2026w47-seokchon-lumi",
-   "n": "석촌호수 루미나리에",
-   "la": 37.5095,
-   "lo": 127.1026,
-   "r": 800,
-   "from": "2026-11-23",
-   "to": "2026-11-29",
-   "L": [
-    170,
-    313,
-    314
-   ],
-   "q": 0.3,
-   "why": "호숫가를 수놓은 불빛의 기운",
-   "msg": "석촌호수가 반짝이는 불빛으로 물들었어요!",
-   "at": "석촌호수 둘레길 일대 · 반경 800m",
-   "src": "https://www.songpa.go.kr/culture/detailInfo.do?key=3796&resrceCd=CT0155-1030773"
-  },
-  {
    "id": "2026w48-coex-dokkaebi",
    "n": "별마당도서관 도깨비 크리스마스",
    "la": 37.5101,
