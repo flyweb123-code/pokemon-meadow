@@ -4892,6 +4892,7 @@ const trItHtml = R => { const L = []; if (R.sh) L.push(['expshare', R.sh, '학�
   return L.map(([ic, c, n, id]) => `<i title="${n}"${id ? ' class="pm"' : ''}><img alt="" src="${IMG}item/${ic}.png">${id ? `<img class="pmi" alt="" data-th="${id}">` : ''}${c > 1 ? `<b>${c}</b>` : ''}</i>`).join(''); };
 const TR_VIT = [['맥스업', '체력'], ['타우린', '공격'], ['사포닌', '방어'], ['리보플라빈', '특수공격'], ['키토산', '특수방어'], ['알칼로이드', '스피드']];
 const trBallAdd = (R, k, n, nm) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; return `${eul(nm)} ${n}개 손에 넣었다!\n(가방에 ${R.balls[k]}개)`; };
+const TR_MYST = .08;   /* v28.81 경완 결정 '창마다 8% (12층에 한 번쯤)': 보상 창 하나에 강박사의 상자가 낄 확률 */
 const TR_RC = ['#7cd080,#4a9a50', '#f6b45a,#d07a1c', '#62a4ec,#2f6cbf', '#b07ce8,#7a44c0', '#f0c040,#c08410'];   /* v26.85 경완 '등급 색상은 알 색상이랑 동일하게': 알 무늬 색(.egg --es) 일반 초록·우수 주황·레어 파랑·에픽 보라·전설 금색 */   /* v26.86 경완 '레어 등급 위로는 에픽, 전설': 에픽 빨강·전설 보라 (포켓로그 로그볼·마스터볼 색 차례) */
 /* v24.14 보상 그림 = 본가 도구 (gym/img/item, 없던 것은 PokeAPI sprites/items 에서 받아 넣음) · 등급별 볼 (흔함 몬스터볼·좋음 슈퍼볼·귀함 하이퍼볼) */
 const TR_IC = [['상처약', 'potion'], ['좋은상처약', 'superpotion'], ['고급상처약', 'hyperpotion'], ['회복약', 'maxpotion'], ['기력의조각', 'revive'], ['기력의덩어리', 'maxrevive'], ['학습장치', 'expshare'], ['맥스업', 'hpup'], ['타우린', 'protein'], ['사포닌', 'iron'], ['리보플라빈', 'calcium'], ['키토산', 'zinc'], ['알칼로이드', 'carbos'], ['경험치 부적', 'expcharm'], ['동료 몬스터볼', 'pokeball'], ['동료 슈퍼볼', 'greatball'], ['동료 하이퍼볼', 'ultraball'], ['동료 마스터볼', 'masterball'], ['강박사 야식', 'bigmalasada'], ['골드 꾸러미', 'goldsack']];
@@ -5022,7 +5023,7 @@ async function trReward(R, o, ids, boss, shop, first) {
     [2, 1, '동료 슈퍼볼 ×2', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'great', 2, '동료 슈퍼볼')],
     [boss ? 2 : .6, 2, '동료 하이퍼볼', '이번 도전에만 함께할 동료를 잡는 볼', async () => trBallAdd(R, 'ultra', 1, '동료 하이퍼볼')],
     [boss ? .4 : 0, 4, '동료 마스터볼', '반드시 잡혀요 (이번 도전만)', async () => trBallAdd(R, 'master', 1, '동료 마스터볼')],
-    [first ? 0 : .6, 0, '강박사의 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'parcel', '???']];   /* 경완 '강박사의 상자 등급은 ??? 로 표시' */   /* v27.98 경완 '1번으로 해서 강박사의 상자 로 수정' = 본가 소포 그림 */   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
+    [0, 0, '강박사의 상자', '뭐가 들었을까?', async () => { await trMyst(R, o, true); return ''; }, 'parcel', '???']];   /* v28.81 경완 '강박사 상자 왤케 자주 나오는거 같냐' → 결정 카드 '창마다 8%': 무게로 섞으면 일반 카드가 다 뽑히고 남아 최대 61% 나왔음 → 무게 0, draw3 에서 창마다 따로 TR_MYST 로 굴려 한 장만 */   /* 경완 '강박사의 상자 등급은 ??? 로 표시' */   /* v27.98 경완 '1번으로 해서 강박사의 상자 로 수정' = 본가 소포 그림 */   /* v26.82 경완 '강박사 상자는 강박사 야식을 대체' */
   if (shop) { const PR = [30, 60, 120, 200, 400].map(v => Math.round(v * trCoinX(R.floor))),   /* v28.76 층 배율 */ L = C.filter(c => c[0] > 0 && !/강박사의 상자|경험치 부적|골드 꾸러미|메가링|Z링|다이맥스밴드|테라스탈오브/.test(c[2])).sort(() => Math.random() - .5).slice(0, 5);   /* 수련탑 상점: 흔함 30·좋음 60·귀함 120 코인, 한 번씩 */
     for (;;) { const i = await o.choose(`수련탑 상점 · 코인 ${R.coin | 0}`, [...L.map(c => [c[2], `${c[3]} · ${PR[c[1]]}코인`, TR_RC[c[1]]]), ['나가기', '', '#9aa0b4,#6c7288']]); const c = L[i]; if (!c) break;
       if ((R.coin | 0) < PR[c[1]]) { await o.msgTap('코인이 모자라다!'); continue; } const t = await c[4](); if (t === null) continue; R.coin -= PR[c[1]]; trHud(R); L.splice(i, 1); if (t) await o.msgTap(t); }
@@ -5039,7 +5040,8 @@ async function trReward(R, o, ids, boss, shop, first) {
   const trGrp = c => /상처약|회복약/.test(c[2]) ? 'h' : /기력의/.test(c[2]) ? 'r' : /골드 꾸러미/.test(c[2]) ? 'g' : '';
   const draw3 = () => { let pool = pool0.filter(gate); L.length = first ? 1 : 0; for (let i = 0; L.length < 3 && pool.length; i++) { let tq = GU[i] ?? tier(), C2 = [];
       for (; tq >= 0 && !(C2 = pool.filter(c => c[1] === tq)).length; tq--);   /* 그 등급이 비면 한 단계 아래 */ if (!C2.length) C2 = pool;
-      const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k] && !(trGrp(c) && trGrp(c) === trGrp(C2[k]))); } };
+      const t = C2.reduce((s, c) => s + c[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L.push(C2[k]); pool = pool.filter(c => c !== C2[k] && !(trGrp(c) && trGrp(c) === trGrp(C2[k]))); }
+      if (!first && L.length && Math.random() < TR_MYST) { const mc = C.find(c => c[2] === '강박사의 상자'), lo = L.reduce((a, c, i) => c[1] < L[a][1] ? i : a, L.length - 1); if (mc && !L.includes(mc)) L[lo] = mc; } };   /* 가장 낮은 등급 카드 자리에 (보장된 귀한 카드는 그대로) */
   draw3();
   const f = R.floor | 0, hl = f < 20 ? ['상처약', 15, 20] : f < 50 ? ['좋은상처약', 30, 60] : ['고급상처약', 50, 120];
   const SH = first ? null : [[hl[0], hl[1], 0, () => alv().some(id => hp(id) < .999), heal(hl[2])], ['기력의조각', 40, 0, () => ids.some(id => hp(id) <= 0), rev(.5)],
