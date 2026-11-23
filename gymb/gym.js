@@ -3645,7 +3645,7 @@ function kang(lines, { lit = false, nm = '강박사', pic = GA.KANG, ow = 0, ski
 const iconKeep = [];
 const preload = src => new Promise(ok => { const i = new Image(); i.onload = i.onerror = () => ok(); i.src = src; });
 async function prepare() {
-  yaWarm();
+  yaWarm(); twWarm();
   if (!root) build();
   const g = st(); const L = [preload(`${IMG}ow/${myOw()}.png`), preload(owSrc(GUY_OW))];
   if (g?.d) L.push(preload(`${IMG}map/${dzOf(g.d).id}.png${dzOf(g.d).iv ? `?v=${dzOf(g.d).iv}` : ""}`)); else { DESIGNS.forEach(D => L.push(preload(`${IMG}map/${D.id}.png`))); L.push(preload(`${IMG}map/${TOWN.img}.png`), preload(KANG_OW)); }
@@ -3938,6 +3938,19 @@ function yaNote() { return new Promise(ok => { const shot = (n, r) => `<div clas
     { c: '#b8860b', t: '보상을 받아요', im: shot('up4'), tx: `<p><em>경험치·노력치·친밀도·골드</em>를 받고<br>우두머리를 쓰러뜨리면 <em>보상 꾸러미</em>!</p><p class="on-sm">고른 능력치의 노력치가 올라요.</p>` }];
   noteWarm(P).then(() => { notePager(P, ok); try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }); }
 window.gymYaNote = yaNote;
+/* 경완 2026-11-24 '이거 수련탑 체육관 들어왔을 때 뜰 업데이트 알림창 만들어서 보여줘' → '응 본게임에 같이 배포해주고': 수련탑 공개 알림창 5장 (특훈 알림창과 같은 notePager 틀). 체육관 첫 입장 때 계정에 한 번(tutSeen('twN')), 수련탑 시작 화면 제목 옆 ? 로 다시 보기 */
+const TW_IM = ['tw1', 'tw2', 'tw3', 'tw4', 'tw5'];
+const twPages = () => { const shot = (n, r) => `<div class="on-shot"><img src="${IMG}tower/${n}.png" alt="">${r ? `<i class="on-ring" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;height:${r[3]}%"></i>` : ''}</div>`;
+  return [
+    { c: '#3b3a8a', t: '새 도전 · 수련탑', im: shot('tw1', [3, 68, 93, 31]), tx: '<p>포켓몬 메뉴에 <em>수련탑</em> 버튼이 생겼어요!<br>200층 탑에 도전해 봐요.</p>' },
+    { c: '#2f6fb0', t: '등반대를 꾸려요', im: shot('tw2'), tx: '<p>함께 오를 포켓몬을 <em>6마리</em>까지 골라요.</p><p class="on-sm">레벨이 낮은 포켓몬도 함께 오르면<br>쑥쑥 자라요.</p>' },
+    { c: '#c8781e', t: '한 층씩 올라가요', im: shot('tw3'), tx: '<p>층마다 야생 포켓몬·트레이너와 배틀!<br>10층마다 강한 <em>우두머리</em>가 기다려요.</p>' },
+    { c: '#2f8a4a', t: '보상을 골라요', im: shot('tw4'), tx: '<p>이기면 <em>보상 하나</em>를 골라요.<br>모은 코인으로 상점에서 살 수도 있어요.</p><p class="on-sm">도구는 이번 도전 동안 빌려줘요.</p>' },
+    { c: '#b8860b', t: '층 선물', im: shot('tw5', [85, 24, 13, 23]), tx: '<p>10층마다 <em>층 선물</em>을 받아요!<br>상자를 누르면 어떤 선물인지 볼 수 있어요.</p>' }]; };
+/* again = 시작 화면 ? 로 다시 볼 때 (직접 연 창: 효과음·진동 없이, 수련탑 화면 위에) */
+function twNote(again) { return new Promise(ok => { const P = twPages(); noteWarm(P, again ? 1500 : 4000).then(() => { const w = notePager(P, ok); if (again) { w.style.zIndex = 60; return; } try { GA.sfx('newdex'); } catch (e) { gse('DP_WIN_OPEN'); } GA.haptic?.(1); }); }); }
+window.gymTwNote = twNote;
+let twKeep = null; const twWarm = () => { try { if (twKeep || !st()?.d || tutSeen('twN')) return; twKeep = TW_IM.map(n => { const im = new Image(); im.src = `${IMG}tower/${n}.png`; im.decode?.().catch(() => {}); return im; }); } catch (e) {} };
 // 넘겨 보는 알림창 (개설 알림창 · 안내원 배틀 설명): P = [{ c 색, t 제목, im 그림, tx 글 }]
 /* 경완 2026-11-16 '업데이트 알림창 캡쳐 사진 지연 없이 바로바로 뜨게 해줘. 이건 업데이트 알림창 만들 때마다 규칙으로': 저절로 뜨는 넘겨 보는 알림창은 noteWarm(P) 로 모든 장 그림을 다 받아(디코드까지) 둔 뒤에 띄운다 (늦어도 4초).
    notePager 도 모든 장 그림을 안 보이는 칸(.on-pre)에 미리 넣어 둬서 넘길 때 바로 보인다 */
@@ -4146,7 +4159,8 @@ async function later() {
   if (open && legFitDue()) await legFitPop();   /* v27.54: 이미 전설인 체육관은 들어올 때 한 번 받음 */
   if (open) { try { tpSync(); } catch (e) {} if (tpAllDue()) await tpAllGo(); }   /* v28.65 테라피스 18개 → 스텔라 테라피스 */
   await unlockChk();
-  if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
+  if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('yaN') && !lockedT('train')) { st().yaN = 1; save(); await yaNote(); }
+  else if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && st()?.d && !tutSeen('twN')) { st().twN = 1; save(); await twNote(); }   /* 수련탑 공개 알림 — 특훈 알림을 본 뒤 들어올 때 한 번 */   /* 특훈 공개 알림 (v26.34) — 훈련장이 열린 체육관에서 한 번 */
   /* 경완 2026-11-13 '승급 순간이 지났는데 튜토리얼 못 본 사람은 승급 튜토리얼을 보게': 들어온 뒤 못 본 것 하나만 (다음 것은 다음에 들어올 때) */
   if (open && PROMO_ON && !window.gymSimOn && !gtOn) { const gm = st()?.gmax | 0; if (gm >= 1 && !tutSeen('trTut')) return promoTut(1); if (gm >= 2 && !tutSeen('evTB') && GB()?.evOn?.()) return promoTut(2); }
   if (open && MEGA_ON && !window.gymSimOn && (st()?.gmax | 0) >= 3 && !tutSeen('mgTut') && !gtOn) await promoTut(3);
@@ -4492,7 +4506,11 @@ const TRL_CSS = `#trLobby{position:fixed;inset:0;z-index:40;display:flex;flex-di
 #trLobby .tl-hd{background:linear-gradient(180deg,#45307a,#2c2a5a);border:3px solid #0b0e1c;border-radius:8px;box-shadow:0 3px 0 #0b0e1c,inset 0 0 0 2px #5a4a9a,inset 0 2px 0 #ffffff33}
 #trLobby .tl-hd h2{color:#ffe48a;text-shadow:0 2px 0 #000a}
 #trLobby .tl-hd h2 b{color:#ffb0d8}
-#trLobby .tl-hd small{color:#d6d0f0;opacity:.9}`;
+#trLobby .tl-hd small{color:#d6d0f0;opacity:.9}
+/* 경완 '아이콘 생겼다고 해서 텍스트 옆으로 밀지 말고 가운데 정렬': ? 는 제목 줄 오른쪽 끝에 떠 있어 제목 글자는 그대로 가운데 */
+#trLobby .tl-hd{padding-left:28px;padding-right:28px}
+#trLobby .tl-hq{position:absolute;right:5px;top:6px;width:19px;height:19px;padding:0;border:2px solid #0b0e1c;border-radius:50%;background:#ffe48a;color:#2c2a5a;font:inherit;font-size:12px;line-height:15px;font-weight:700;text-align:center;box-shadow:0 2px 0 #0b0e1c;cursor:pointer}
+#trLobby .tl-hq:active{transform:translateY(2px);box-shadow:none}`;
 const TRL_PB = '<svg class="pb" viewBox="0 0 12 12" shape-rendering="crispEdges"><path fill="#383848" d="M4 0h4v1H4zM2 1h2v1H2zM8 1h2v1H8zM1 2h1v2H1zM10 2h1v2h-1zM0 4h1v4H0zM11 4h1v4h-1zM1 8h1v2H1zM10 8h1v2h-1zM2 10h2v1H2zM8 10h2v1H8zM4 11h4v1H4zM1 5h3v2H1zM8 5h3v2H8zM4 4h4v1H4zM4 7h4v1H4zM4 5h1v2H4zM7 5h1v2H7z"/></svg>';
 /* 탑 그림 (도트, 가로 160): 아래 넓고 위로 좁아지는 8단 돌탑 */
 function trTowerSvg(tod) {
@@ -4524,7 +4542,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
   el.innerHTML = `<div class="tl-sky"><i class="tl-stars"></i><i class="tl-cl" style="top:22%;animation-delay:-8s"></i><i class="tl-cl" style="top:46%;animation-delay:-34s;animation-duration:84s"></i><i class="tl-cl" style="top:12%;animation-delay:-50s;animation-duration:72s;transform:scale(.7)"></i>
       ${trTowerSvg(tod)}${me ? `<img class="tl-me" alt="" src="${me}">` : ''}
       <div class="tl-rail">${[200, 150, 100, 50, 1].map(n => `<span class="${n % 50 === 0 ? 'b' : ''}${fl && (n === 1 ? fl < 50 : fl >= n && fl < n + 50) ? ' me' : ''}">${n === 1 ? '1층' : n + '층'}</span>`).join('')}</div>
-      <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><small>함께 오를 포켓몬을 골라요</small></div>
+      <div class="tl-hd"><h2><b>200</b>층 수련탑</h2><button type="button" class="tl-hq" data-a="hq" aria-label="수련탑 설명 다시 보기">?</button><small>함께 오를 포켓몬을 골라요</small></div>
       <button class="gy-key tl-x" data-a="x">나가기</button><button class="tl-gf" data-a="gf" aria-label="이번 주 층별 선물"><img alt="" src="${IMG}yact/gift.png"></button>${save ? `<span class="tl-tag">기록 ${fl}층</span>` : ''}</div>
     <div class="tl-body"><div class="tl-win"><h3>등반대 <small class="tl-n"></small></h3><div class="tl-party"></div><div class="tl-pips"></div></div>
       <div class="tl-lw"><div class="tl-fb"><div class="tl-fr"><span class="qw tl-q"><input type="search" placeholder="이름이나 번호" aria-label="포켓몬 이름이나 번호로 찾기" autocomplete="off"><svg class="qi" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 10l4.5 4.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg><button type="button" class="qx" data-q="x" aria-label="검색어 지우기">✕</button></span></div><div class="tl-fr"><span class="bag-sort tl-sort">${TRL_SORT.map(([k, n]) => `<button data-so="${k}">${n}</button>`).join('')}</span></div><div class="tl-fr"><span class="bag-sort"><button class="tl-tyb" data-f="ty"></button></span><span class="bag-sort"><button data-f="lu">라인업</button></span><span class="bag-sort"><button data-f="sh">이로치</button></span><span class="tl-cnt"></span></div></div><div class="tl-list"></div></div></div>
@@ -4555,6 +4573,7 @@ const trLineup = save => new Promise(async ok => { let sel = [], rnd = []; trlLu
     const a = b.dataset.a;
     if (a === 'x') { trDrop(rnd); end(null); return; }
     if (a === 'gf') { trGfList(el); return; }
+    if (a === 'hq') { twNote(1); return; }   /* 경완 '200층 수련탑 타이틀 텍스트 옆에 물음표 아이콘 만들고 그거 누르면 이 수련창 알림창 화면 다시 볼 수 있게' */
     if (a === 'rnd') { trDrop(rnd); rnd = trRollLu(); rnd.forEach(id => { const P = B.boxOf(id); if (P) P.rnd = 1; }); sel = [...rnd]; draw(); return; }
     if (a === 'cont') { trDrop(rnd); end('cont'); return; }
     if (a === 'go') { if (!sel.length) { GA.toast?.('함께 오를 포켓몬을 골라 주세요'); return; } if (sum() > B.TR_CAP) { GA.toast?.(`코스트가 넘쳐요 (${sum()}/${B.TR_CAP})`); return; }
