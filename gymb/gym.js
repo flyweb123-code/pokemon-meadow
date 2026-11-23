@@ -4245,6 +4245,10 @@ const TR = { xp: 1, hi: 1, band: 10, lvUp: 12 /* 100층 뒤 12층마다 +1 더 (
 const TR_WILD = [[0, [396, 399, 401, 403, 406, 412, 415, 418, 420, 422, 425, 431, 433, 434, 436, 438, 10, 13, 16, 19, 21, 41, 43, 46, 48, 54, 60, 63, 66, 69, 72, 74, 77, 81, 92, 129, 163, 165, 167, 179, 183, 187, 190, 194, 263, 265, 270, 273, 280, 285, 293, 300, 304]],
   [22, [397, 400, 402, 404, 419, 421, 423, 426, 428, 432, 435, 437, 442, 453, 455, 456, 459, 42, 44, 47, 49, 55, 58, 64, 67, 70, 75, 82, 93, 95, 111, 123, 125, 126, 127, 164, 166, 168, 178, 195, 203, 207, 214, 215, 227, 241, 264, 281, 286, 288, 294, 301, 305, 315, 333, 352, 357]],
   [40, [398, 405, 407, 424, 429, 430, 450, 452, 454, 457, 460, 461, 462, 464, 466, 467, 469, 470, 471, 473, 475, 477, 478, 3, 6, 9, 59, 62, 65, 68, 76, 94, 112, 121, 130, 131, 134, 135, 136, 142, 143, 196, 197, 212, 229, 232, 248, 282, 306, 330, 334, 350, 365, 373, 376]]];
+/* v28.75 경완 '뉴비만 넣은 라인업도 좀 오래 갔으면, 고렙 반드시 섞는건 의도가 아님': 10·20층 우두머리가 Lv10 마기라스·한카리아스(종족값 600)라 뉴비 라인업이 95% 끝남
+   → 포켓로그처럼 레벨에 맞는 진화 단계 (wild 와 같은 문턱 22·40): 22 아래는 첫 단계, 40 아래는 중간 단계, 그 뒤는 아래 TR_BOSS */
+const TR_BOSS_LV = [[0, [443, 246, 147, 371, 447, 408, 410, 66, 92, 304, 280, 179, 403, 58, 1, 4, 7, 152, 155, 158, 387, 390, 393, 133]],
+  [22, [444, 247, 148, 372, 375, 448, 409, 411, 67, 93, 305, 281, 180, 404, 2, 5, 8, 153, 156, 159, 388, 391, 394, 130, 143]]];
 const TR_BOSS = [445, 448, 248, 149, 373, 376, 466, 467, 473, 409, 411, 442, 130, 143, 212, 229, 306, 330, 350, 365, 464, 468, 475, 477, 479], TR_BIG = [483, 484, 487, 485, 486, 480, 481, 482];
 let trSaves = [];   /* 경완 '수련탑 이어 오르기 세이브는 3개까지 가능하게 해주고 … 이어오르기 슬롯 삭제할 수도 있게': 슬롯 TR_SLOT 개 (최근 멈춘 순) */
 const TR_SLOT = 3, TR_SHY = 1.2;   /* 경완 '수련탑 이로치에 능력치 혜택 줘': 색이 다른 포켓몬은 수련탑 배틀에서 모든 능력치 ×1.2 (경완 '이로치 확률 낮추고 능력치 더 좋게') */
@@ -4277,8 +4281,8 @@ function trNm0(R, k, f, by) {
   return by(TR_LG[R.lg][k === 'champ' ? 4 : (f - 182) / 2]) || null; }
 /* 트레이너 팀: 이름 있는 트레이너 = 본가 단계 팀을 층 레벨로 옮기고 뒤(에이스 쪽)부터 2+층/40 마리(3~6), 일반 트레이너 = 지역·트레이너 종류 타입으로 2~5마리 */
 function trTeam(nmd, k, lv, f, myT) {
-  if (nmd) { const T = nmTeam(nmd, lv) || [], n = clampN(2 + Math.floor(f / 40), 3, 6);
-    return T.slice(-n).map(([sp, l, mv]) => { const o = GB().foeEntry(sp, l, 2); if (mv && mv.length) o.mv = mv; o.iv = o.iv.map(() => rndI(20, 31)); return o; }); }
+  if (nmd) { const T = nmTeam(nmd, lv) || [], n = clampN(2 + Math.floor(f / 40), f < 40 ? 2 : 3, 6);   /* v28.75 뉴비 라인업이 20층 첫 관장에서 6할 끝남 → 40층 전 이름 있는 트레이너는 2마리 */
+    return T.slice(-n).map(([sp, l, mv]) => { const o = GB().foeEntry(sp, l, f >= 50 ? 2 : 1); if (mv && mv.length && f >= 50) o.mv = mv;   /* v28.75 경완 '뉴비만 넣은 라인업도 좀 오래': 50층 전엔 레벨로 배우는 기술만 (기술머신·본가 고레벨 기술 없이) */ o.iv = o.iv.map(() => rndI(20, 31)); return o; }); }
   const C = CLS[k], bt = trBio(f).ty, ty = C.t.filter(t => bt.includes(t)), T = ty.length ? ty : C.t.length ? C.t : bt, n = clampN(2 + Math.floor(f / 50) + rndI(0, 1), 2, 5);
   return Array.from({ length: n }, (_, i) => { const l = clampN(lv - 1 + rndI(-1, 0) + (i === n - 1 ? 1 : 0), 2, 100); let sp = pickSp([pick(T)], l);
     for (let j = 0; j < 6 && myT?.size && trThreat(sp, myT); j++) sp = pickSp([pick(T)], l);   /* 낮은 층은 천적 타입 빼기 (야생과 같게) */
@@ -4324,7 +4328,7 @@ const TR_TYEN = ['', 'Normal', 'Fighting', 'Flying', 'Poison', 'Ground', 'Rock',
 const trTeraTy = P => TR_TYEN[((P?.id && GA.pTy?.(P)) || SPECIES[P?.sp]?.t || [])[0]] || '';
 const trTeraSet = R => R.ids.forEach(id => { const P = GB().boxOf(id), mm = P && GB().gm(P); if (mm && !mm.tera) mm.tera = trTeraTy(P); });
 /* 상대: 트레이너 층만 (야생·우두머리 X), 내가 체육관에서 해금한 기믹 중 하나. 이름 있는 트레이너는 늘, 일반 트레이너는 층/150 */
-function trFoeGk(team, f, named) { const U = trGkU(), K = Object.keys(U).filter(k => U[k] && (k !== 'mega' || team.some(o => GB().mgSt?.(o.sp)?.length))); if (!K.length || Math.random() >= (named ? 1 : Math.min(1, f / 150))) return {};
+function trFoeGk(team, f, named) { const U = trGkU(), K = Object.keys(U).filter(k => U[k] && (k !== 'mega' || team.some(o => GB().mgSt?.(o.sp)?.length))); if (!K.length || !named || f < 50) return {};   /* v28.75 경완 시뮬 '나머지는 다 반영': 기믹 연 계정이 오히려 50층 일찍 끝남(145→95층) → 상대 기믹은 50층부터, 관장·라이벌·사천왕 같은 이름 있는 트레이너만 */
   const k = pick(K); if (k === 'mega' && !foeMega({}, team, true)) return {}; if (k === 'z' && !foeZ({}, team, true)) return {}; if (k === 'tera') { const o = team[team.length - 1]; o.tera = TR_TYEN[(SPECIES[o.sp]?.t || [])[0]] || 'Normal'; } return { [k]: 1 }; }
 const trItNm = k => TR_NM[k]?.[0] || GB().HOLD?.[k]?.[0] || k, trItD = k => TR_NM[k]?.[1] || GB().HOLD?.[k]?.[2] || '';
 /* 교체 화면 줄 안 도구 아이콘 (본가 도구 1칸 + 쌓이는 도구 ×개수 + 영양제 ×개수) */
@@ -4341,7 +4345,7 @@ const TR_SE = [[], [], [1, 6, 9, 15, 17], [2, 7, 12], [12, 18], [4, 6, 9, 10, 13
 const trThreat = (sp, my) => (SPECIES[sp]?.t || []).some(t => TR_SE[t].some(d => my.has(d)));
 const trMyTy = ids => new Set(ids.flatMap(id => SPECIES[GB().boxOf(id)?.sp]?.t || []));
 const trLvOff = f => -Math.max(0, 2 - Math.floor((f - 1) / TR.lvDiv));   /* v24.61 1~4층 -2, 5~8층 -1 레벨 */
-function trPickSp(lv, boss, big, my, bio) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? TR_BOSS : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; let ok = L.filter(has);
+function trPickSp(lv, boss, big, my, bio) { const has = sp => GB().D.sp[sp]; const L = big ? TR_BIG : boss ? (lv < 40 ? TR_BOSS_LV.filter(([m]) => lv >= m).pop()[1] : TR_BOSS) : (TR_WILD.filter(([m]) => lv >= m).pop() || TR_WILD[0])[1]; let ok = L.filter(has);
   if (bio && !big) { const b = ok.filter(sp => (SPECIES[sp]?.t || []).some(t => bio.ty.includes(t))); if (b.length >= (boss ? 3 : 6)) ok = b; }   /* v24.87 지역 타입 포켓몬 (모자라면 전체에서) */
   if (my?.size) { const safe = ok.filter(sp => !trThreat(sp, my)); if (safe.length) ok = safe; else { const w = TR_WILD[0][1].filter(sp => has(sp) && !trThreat(sp, my)); if (w.length && !boss) ok = w; } }
   return pick(ok.length ? ok : TR_WILD[0][1].filter(has)); }
@@ -4675,7 +4679,7 @@ async function trainTest(o0) {
       if (R.roll) { trDrop(R.ids); R = trNew(trRollLu()); }   /* 시험: 랜덤 라인업으로 1층부터 */
       const ids = R.ids, f = R.floor, amb = R.amb && f % 10 !== 0 && !TR_FIX(f), fk = amb ? '' : trKind(R, f), nmd = fk && fk !== 'tr' ? trNm(R, fk, f) : null, trn = fk === 'tr' || !!nmd, bio = trBio(f), boss = (f % 10 === 0 && !trn) || !!amb, big = f % 50 === 0, alive = ids.filter(id => (R.hp[id] ?? 1) > 0 && GB().boxOf(id)); if (!alive.length) break;
       const my = [...[R.lead, ...alive.filter(x => x !== R.lead)].filter(x => alive.includes(x)), ...ids.filter(id => !alive.includes(id) && GB().boxOf(id))].map(GB().boxOf);   /* v26.82 경완 '기절한 포켓몬 사라지는 오류': 기절한 포켓몬도 뒤에 (교체 화면에 기절로) */
-      R.amb = 0; const myT = f < 20 && !big ? trMyTy(ids) : null, lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + Math.max(0, Math.floor((f - 100) / TR.lvUp)) + trLvOff(f) + (boss ? (big ? 5 : amb ? 2 : 3) : nmd ? (f % 10 ? 2 : 3) : 0), 2, 100), e = trn ? null : GB().foeEntry(trPickSp(lv, boss, big, myT, bio), lv, boss ? 2 : 0); if (!e) { /* 트레이너 층 */ } else if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
+      R.amb = 0; const myT = f < 20 && !big ? trMyTy(ids) : null, lv = clampN(R.lv1 + Math.floor((f - 1) / TR.lvDiv) + Math.max(0, Math.floor((f - 100) / TR.lvUp)) + trLvOff(f) + (boss ? (big ? 5 : amb ? 2 : 3) : nmd ? (f < 50 ? 1 : f % 10 ? 2 : 3) : 0), 2, 100), e = trn ? null : GB().foeEntry(trPickSp(lv, boss, big, myT, bio), lv, boss ? (lv >= 30 ? 2 : 1) : 0);   /* v28.75 우두머리도 30레벨 전엔 레벨 기술만 (Lv10 이브이가 기술머신 기술로 6마리를 다 쓰러뜨렸음) */ if (!e) { /* 트레이너 층 */ } else if (boss) e.hpX = big ? 2.5 : amb ? 1.5 : 1.8; else if (Math.random() < TR.shiny) e.shiny = true;   /* v23.68 가끔 색이 다른 야생 포켓몬 */
       const tk = fk === 'tr' ? trCls(f, bio) : '', dbl = !trn && !boss && !e.shiny && alive.length >= 2 && (R.dblNext || Math.random() < trDblP(f)), team = trn ? trTeam(nmd, tk, lv, f, myT) : [e]; if (trn) R.lastTr = f; R.dblNext = 0; if (dbl) { const e2 = GB().foeEntry(trPickSp(lv, false, false, myT, bio), lv, 0); team.push(e2); }
       const me = trName() || '관장', foe = nmd ? { tr: nmd.tr, cls: nmd.cls, nm: nmd.nm, team, hold: 2, say: { win: (nmd.ln?.[1] || '').replace('{me}', me), lose: (nmd.ln?.[2] || '').replace('{me}', me) } } : tk ? { tr: tk, cls: GB().TR_KO[tk] || '트레이너', nm: pick(CLS[tk].f ? GB().NAMES_F || ['영희'] : GB().NAMES_M || ['철수']), team, hold: f >= 60 ? 1 : 0 } : { tr: '', cls: '', nm: boss ? `우두머리 ${e.nm}` : `야생 ${e.nm}`, team, appear: amb ? `상자에서 튀어나온 ${iga(e.nm)}\n덤벼든다!` : boss ? `${f}층의 우두머리 ${iga(e.nm)}\n앞을 막아섰다!` : dbl ? '' : e.shiny ? `앗! 색이 다른 야생 ${e.nm}${jong(e.nm) ? '이' : ''}다!\n동료 볼을 던져 볼까?` : '' };
       R.balls = R.balls || {}; const T = { xp: TR.xp * (R.xpM || 1), xpF: trXpF(), sh: Math.min(5, R.sh | 0) * .2, balls: R.balls, boss, dbl };   /* v23.68 동료 볼 (가방) */
@@ -4991,12 +4995,16 @@ async function trReward(R, o, ids, boss, shop, first) {
   /* v24.90 경완 '보상 고를 때 내가 몬스터볼 몇 개 가졌는지도 포켓로그처럼': 포켓로그는 볼 보상 설명에 '(가방: N)' → 볼 카드 설명·상점 볼 칸에 지금 가진 개수 */
   const BK = n => /몬스터볼/.test(n) ? 'mon' : /슈퍼볼/.test(n) ? 'great' : /하이퍼볼/.test(n) ? 'ultra' : /마스터볼/.test(n) ? 'master' : '', bagN = k => (R.balls || {})[k] | 0;
   const balLive = () => L.forEach(c => { const k = BK(c[2]); if (!k) return; c.bag = bagN(k); });   /* v27.31 경완 '동료 몬스터볼 가방 개수 표시할 때는 마리당 최대 3개 딱지 붙어 있는 그 행에 가방 아이콘 x N 으로' — 설명 글 '(가방에 N개)' 대신 아래 딱지 줄 */
+  /* v28.75 시뮬에서 찾음: 카드는 창을 열 때 정해져서, 같은 창 상점에서 기력의조각·상처약을 산 뒤엔 쓸 데 없는 회복 카드가 남았음 → 그 칸만 같은 등급 다른 카드로 */
+  const dead = c => (trGrp(c) === 'h' && !alv().some(id => hp(id) < .999)) || (trGrp(c) === 'r' && !ids.some(id => hp(id) <= 0));
+  const fixDead = () => L.forEach((c, j) => { if (!dead(c)) return; const pool = pool0.filter(x => gate(x) && !L.includes(x) && !dead(x) && !L.some(y => y !== c && trGrp(y) && trGrp(y) === trGrp(x))); if (!pool.length) return;
+    let C2 = pool.filter(x => x[1] === c[1]); if (!C2.length) C2 = pool; const t = C2.reduce((s, x) => s + x[0], 0); let r = Math.random() * t, k = 0; while (r > C2[k][0] && k < C2.length - 1) r -= C2[k++][0]; L[j] = C2[k]; });
   let rr = 0;
   for (let again = 0; ; again = again < 0 ? 0 : 1) { balLive();   /* 다시 뽑기(-1) 는 떨어지는 연출부터 */
     const X = SH && { coin: R.coin | 0, rr: 10 * (rr + 1), shop: SH.map(([n, pr, , ok]) => [n, pr, ok(), BK(n) ? bagN(BK(n)) : null]) };
     const a = await trBoxPick(L, boss ? '우두머리가 귀한 보상을 떨어뜨렸다!' : first ? '출발 선물! 하나만 골라요' : '보상을 하나 골라요', again, [X ? '' : '하나만 가져갈 수 있어요', L.some(c => /^마리당/.test(c[7] || '')) ? '도구는 이번 도전 동안 빌려줘요 · 끝나면 돌려받아요' : ''].filter(Boolean).join('\n'), X);   /* v26.87 경완 '위 카드 하나는 공짜 아래는 코인으로 이 문구는 없애줘도 될듯' */
     if (a && a.t === 'rr') { const c = 10 * (rr + 1); if ((R.coin | 0) < c) continue; R.coin -= c; trHud(R); rr++; draw3(); again = -1; continue; }
-    if (a && a.t === 'buy') { const S0 = SH[a.i]; if (!S0 || (R.coin | 0) < S0[1] || !S0[3]()) continue; const t = await S0[4](); if (t === null) continue; R.coin -= S0[1]; trHud(R); if (BK(S0[0])) o.se?.('KAIFUKU'); continue; }   /* v28.35 상처약·기력의조각은 고른 칸에서 이미 회복 소리 → 두 번 겹쳐 울리던 것 */
+    if (a && a.t === 'buy') { const S0 = SH[a.i]; if (!S0 || (R.coin | 0) < S0[1] || !S0[3]()) continue; const t = await S0[4](); if (t === null) continue; R.coin -= S0[1]; trHud(R); if (BK(S0[0])) o.se?.('KAIFUKU'); fixDead(); continue; }   /* v28.35 상처약·기력의조각은 고른 칸에서 이미 회복 소리 → 두 번 겹쳐 울리던 것 */
     const t = await L[a]?.[4]?.(); if (t === null) continue; break; }   /* 포켓몬 고르기에서 그만두면 보상 다시 고르기 */
 }
 /* v23.19 경완 '도전자 배틀 배경도 도전자에 따라 어울리는 체육관 배경으로': 플래티넘 실내 배경 (tools/gym/mkbattlebg.py)
