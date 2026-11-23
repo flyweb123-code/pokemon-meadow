@@ -1,30 +1,13 @@
-# 임시: 알 주운 지역 읽기 (읽기만, 결과 암호화). 끝나면 지움
+# 임시: 이벤트 자리 좌표 찾기 (OpenStreetMap). 끝나면 지움
 name: tmp read
 on:
   push:
     branches: [claude/project-thread-53n8vv]
-    paths: ['.github/workflows/tmp-read.yml', 'tools/tmp/**']
+    paths: ['.github/workflows/tmp-read.yml']
 jobs:
-  read:
+  geo:
     runs-on: ubuntu-latest
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-    defaults:
-      run:
-        working-directory: server
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - name: Set D1 id
-        run: |
-          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
-          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
-      - name: Read
-        run: |
-          now=$(date +%s000); since=$((now - 30*86400000))
-          npx wrangler d1 execute pokegrow --remote --json --command "SELECT code, t, d FROM bal WHERE kind='egg' AND t > $since" > /tmp/e.json
-          node ../tools/tmp/where.js /tmp/e.json
+      - run: pip install requests pillow numpy >/dev/null 2>&1 || true
+      - run: python3 tools/ev-map.py --geo '별마당도서관' '스타필드 코엑스몰' 'T팩토리 성수' '석촌호수' '롯데월드타워' || true
