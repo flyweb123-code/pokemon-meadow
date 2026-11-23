@@ -4305,6 +4305,10 @@ const trCls = (f, bio) => { const K = Object.keys(CLS).filter(x => GB()?.TR_KO?.
 // 시험용 랜덤 라인업 (경완 '6마리 기준 랜덤'): 뉴비 1~3마리(Lv5~15) + 키운 포켓몬(Lv38~52). 시험 포켓몬(gTst)이라 끝나면 상자에서 지움
 const TR_NEWB = [7, 1, 4, 25, 133, 152, 155, 158, 252, 255, 258, 387, 390, 393, 447, 374, 246, 147, 443, 280], TR_VET = [130, 131, 350, 6, 9, 3, 445, 448, 149, 248, 373, 376, 94, 65, 68, 59, 197, 196, 212, 409];
 let trTid = 991000;
+/* 경완 2026-11-24 '남게 해' (이어 오르기 슬롯이 앱을 끄면 사라지던 것): 슬롯을 체육관 저장 st().trSv 에 넣고, 수련탑을 열 때 거기서 다시 읽음 (사본은 R.keep 에 들어 있어 trainTest 가 상자에 되살림) */
+const trSvPut = () => { try { if (window.gymSimOn) return; const g = st(); if (!g) return; g.trSv = trSaves.map(R => JSON.parse(JSON.stringify(R))); save(); } catch (e) { console.error(e); } };
+const trSvLoad = () => { try { if (window.gymSimOn) return; const L = st()?.trSv; if (!Array.isArray(L)) return; trSaves = L.map(R => JSON.parse(JSON.stringify(R))).filter(R => R?.ids?.length && R.keep?.length).slice(0, TR_SLOT);
+  trSaves.forEach(R => R.keep.forEach(([P]) => { if (P?.id > trTid) trTid = P.id; })); } catch (e) { console.error(e); } };
 function trRollLu() { const g = st(); g.mon = g.mon || {}; const has = sp => GB().D.sp[sp], sh = L => L.filter(has).sort(() => Math.random() - .5), n = 1 + Math.floor(Math.random() * 3);
   return [...sh(TR_NEWB).slice(0, n).map(sp => [sp, 5 + Math.floor(Math.random() * 11)]), ...sh(TR_VET).slice(0, 6 - n).map(sp => [sp, 38 + Math.floor(Math.random() * 15)])].map(([sp, lv]) => {
     const P = { id: ++trTid, sp, iv: Array.from({ length: 6 }, () => 10 + Math.floor(Math.random() * 22)), fr: 70, gTst: 1 }; S.box.push(P); GB().gm(P); const e = GB().foeEntry(sp, lv);
@@ -4617,7 +4621,7 @@ const trGate = () => new Promise(async ok => { const B = GB();
   el.onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; sfx('tap'); const a = b.dataset.a, i = +b.dataset.i;
     if (a === 'del') { const R = trSaves[i]; if (!R) return;   /* 경완 '정말 지울까요? 는 팝업창으로 물어보게 해줘': 직접 누른 확인 알림창(.gy-pop, 바깥 눌러도 닫힘) */
       const q = document.createElement('div'); q.className = 'gy-pop tsv-ask'; q.innerHTML = `<div class="win" role="dialog"><h4>${i + 1}번 슬롯을 지울까요?</h4><p class="gy-msg" style="text-align:center">${R.floor}층 기록이 사라지고<br>되돌릴 수 없어요.</p><div class="gy-btns"><button type="button" data-q="no">아니요</button><button type="button" class="main tsv-rm" data-q="yes">지우기</button></div></div>`;
-      q.onclick = e => { e.stopPropagation(); const k = e.target === q ? 'no' : e.target.closest('[data-q]')?.dataset.q; if (!k) return; sfx('tap'); q.remove(); if (k === 'yes') { trDrop(R.ids); const j = trSaves.indexOf(R); if (j >= 0) trSaves.splice(j, 1); re(); } };
+      q.onclick = e => { e.stopPropagation(); const k = e.target === q ? 'no' : e.target.closest('[data-q]')?.dataset.q; if (!k) return; sfx('tap'); q.remove(); if (k === 'yes') { trDrop(R.ids); const j = trSaves.indexOf(R); if (j >= 0) trSaves.splice(j, 1); trSvPut(); re(); } };
       el.appendChild(q); return; }
     if (a === 'cont') { trLobOut(el); ok({ cont: i }); return; }
     if (a === 'new') { el.remove(); ok('new'); return; }
@@ -4702,9 +4706,10 @@ async function trainTest(o0) {
   const back = () => { if (!o0?.back || !open) return; bgmPlay('gym'); openTab('battle'); };
   if (!open || !st()?.d) return;
   await loadJs('gym/battle.js', 'GymBattle'); await GB()?.loadData(); await loadJs('gym/bgm.js', 'GymBGM'); await loadNamed();   /* v24.87 관장·라이벌·사천왕 층 */
+  trSvLoad();
   trSaves.forEach(sv => sv.keep?.forEach(([P, m]) => { const g = st(); g.mon = g.mon || {}; if (!GB().boxOf(P.id)) { S.box.push(JSON.parse(JSON.stringify(P))); g.mon[P.id] = JSON.parse(JSON.stringify(m)); } }));   /* v24.02 시연 사본은 시뮬을 나가면 상자에서 사라짐 → 멈출 때 떠 둔 걸로 되살려 이어 오르기 (슬롯마다) */
   trSaves = trSaves.filter(sv => sv.ids.every(id => GB().boxOf(id))); let R = null;
-  { const gv = trSaves.length ? await trGate() : 'new'; if (!gv) return back(); if (gv.cont != null) { R = trSaves[gv.cont]; trSaves.splice(gv.cont, 1); }   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
+  { const gv = trSaves.length ? await trGate() : 'new'; if (!gv) return back(); if (gv.cont != null) { R = trSaves[gv.cont]; trSaves.splice(gv.cont, 1); trSvPut(); }   /* v24.02 경완 '수련탑 버튼 누르면 대기 화면 전에 기록 고르기·새로 시작 화면' */
     if (gv === 'new') { R = null; const v = await trLineup(null); if (!Array.isArray(v) || !v.length) return back(); R = trNew(v); } }
   document.body.classList.add('gymBattle'); dlg(''); root.classList.add('dhide');
   window.gymTrR = () => R;   /* 시험용: 지금 수련탑 기록 (운영자 시연 안에서만) */
@@ -4729,7 +4734,7 @@ async function trainTest(o0) {
     }
     if (R?.end) { document.body.classList.remove('gymBattle'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; }   /* (배틀 밖에서 끝난 때만 — 보통은 trPost fin 이 배틀 화면 위에서 띄움) */
   } catch (err) { console.error(err); GA.toast?.('수련탑을 이어 가지 못했어요'); }
-  finally { try { trSync(R); } catch (e) {} document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSaves.some(sv => sv.ids.includes(P.id))).map(P => P.id)); save(); bgmPlay('gym'); if (R?.fin) { R.fin = 0; openTab('battle'); } }   /* 경완 '기록창 확인 누르면 포켓몬 메뉴 라인업 화면으로 돌아오게' */
+  finally { try { trSync(R); } catch (e) {} trSvPut(); document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSaves.some(sv => sv.ids.includes(P.id))).map(P => P.id)); save(); bgmPlay('gym'); if (R?.fin) { R.fin = 0; openTab('battle'); } }   /* 경완 '기록창 확인 누르면 포켓몬 메뉴 라인업 화면으로 돌아오게' */
 }
 async function trPost(R, o, boss, ids, T, trn) {
   Object.assign(R.hp, o.hp);
