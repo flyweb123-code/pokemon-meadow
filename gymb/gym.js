@@ -4850,7 +4850,7 @@ async function trMyst(R, o, card) {
      경완 '대박이면 동료 마스터볼 하고 코인 100개 정도', '강박사 상자에서 배틀은 빼줘', '강박사 상자 대박에 기믹 도구 같은거 넣어놔도': 대박 12 · 좋음 44 · 꽝 44 (꽝 중 17 은 잃는 것 없는 개그).
      값 기준 = 수련탑 상점 코인 (몬스터볼 15·슈퍼볼 30·하이퍼볼 60), 상자 한 번 평균 ≈ 코인 30 = 일반 보상 카드쯤 */
   const show = (g, nm, d, ic, lb, regi) => trBoxPick([[0, 0, nm, d, null, ic, lb]], '강박사의 상자를 열었다!', 0, '눌러서 닫기', { up: g, box: `${IMG}item/parcel.png`, regi });   /* 경완 '강박사의 상자 오픈할 때 확률 연출 아직도 반영 안함?', '몬스터볼 말고 상자 아이콘 오픈하는걸로 해달라니깐': 층 선물처럼 소포 그림이 흔들리고, 좋을수록 빛이 오른 뒤 열림 (꽝 0번·좋음/배틀 1번·대박 2번) */
-  const coin = async (n, g, d) => { R.coin = (R.coin | 0) + n; trHud(R, 'c'); await show(g, `수련탑 코인 ${n}개`, d, 'nugget', g > 1 ? '대박' : '좋음', 1); };
+  const coin = async (n, g, d) => { R.coin = (R.coin | 0) + n; trHud(R, 'c'); await show(g, `수련탑 코인 ${n}개`, d, 'relicsilver', /* 경완 '강박사 열었을 때 수련탑 코인 아이콘 통일해주고' — 금덩이 말고 배틀 위·상점과 같은 고대의 은화 */ g > 1 ? '대박' : '좋음', 1); };
   const ball = async (k, n, nm, ic, g, d) => { R.balls = R.balls || {}; R.balls[k] = (R.balls[k] | 0) + n; await show(g, n > 1 ? `${nm} ×${n}` : nm, d, ic, g > 1 ? '대박' : '좋음'); };
   const gkL = (U => TR_GK.filter(([k]) => U[k] && !R.gk?.[k]))(trGkU());
   if (r < 2) await ball('master', 1, '동료 마스터볼', 'masterball', 2, '쪽지: "연구용. 진짜로 쓰지 마. -강박사"');
