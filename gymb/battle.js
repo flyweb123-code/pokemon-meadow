@@ -425,6 +425,23 @@ const hpPx = (hp, mhp) => hp <= 0 || !mhp ? 0 : Math.max(1, Math.ceil(hp / mhp *
 /* v28.38 이로치 별이 Lv 줄 앞에 붙으면 긴 이름(6글자)이 별에 닿음 → 별 앞까지 이름을 가로로 살짝 좁힘 (박스가 화면에 그려진 뒤에 잼) */
 function shyFit(hb, n = 0) { const nm = hb.querySelector('.nm'), lw = hb.querySelector('.lv'); if (!nm || !lw || !hb.classList.contains('shy')) return; if (!lw.offsetLeft) { if (n < 40) requestAnimationFrame(() => shyFit(hb, n + 1)); return; }
   nm.style.transform = ''; nm.style.maxWidth = 'none'; const av = lw.offsetLeft - nm.offsetLeft - 2, w = nm.scrollWidth; if (w > av && av > 0) nm.style.transform = `scaleX(${Math.max(.7, av / w).toFixed(3)})`; else nm.style.maxWidth = ''; }
+/* v28.81 경완 '포켓몬 능력 변화 … 작게 띄우고 싶은데 시안 좀 보여줘' → '딱지는 a로 가자': 체력 박스 바깥에 랭크 변화 색 딱지(오르면 빨강 '공격▲2', 내리면 파랑). 상대는 박스 아래, 나는 박스 위, 더블은 박스 옆.
+   기록 줄을 읽으며 바로 고치고(B.bst), 턴이 시작할 때마다 엔진 값으로 맞춤(바통터치·자기암시 같은 복사도). 많으면 크게 바뀐 3개 + '+N' */
+const BST_KO = { atk: '공격', def: '방어', spa: '특공', spd: '특방', spe: '스피드', accuracy: '명중', evasion: '회피' };
+function bstPaint(s) { if (!B) return; const hb = $b(SEL('hb', s)); if (!hb) return; let w = hb.querySelector('.bst'); const o = B.bst?.[s] || {};
+  const L = Object.entries(o).filter(([k, v]) => v && BST_KO[k]).sort((x, y) => Math.abs(y[1]) - Math.abs(x[1])), M = L.slice(0, 3);
+  const h = M.map(([k, v]) => `<i class="${v > 0 ? 'u' : 'd'}">${BST_KO[k]}${v > 0 ? '▲' : '▼'}${Math.abs(v)}</i>`).join('') + (L.length > 3 ? `<i class="m">+${L.length - 3}</i>` : '');
+  if (!h) { w?.remove(); return; } if (!w) { w = document.createElement('span'); w.className = 'bst'; hb.appendChild(w); } if (w.innerHTML !== h) w.innerHTML = h; }
+function bstLine(a) { if (!B) return; const k = a[1], S = B.bst = B.bst || {}, sd = id => id ? sideOf(id) : '', all = ['p', 'p2', 'e', 'e2'];
+  const put = (s, f) => { if (!s) return; S[s] = f({ ...(S[s] || {}) }); bstPaint(s); };
+  if (k === '-boost' || k === '-unboost') put(sd(a[2]), o => { o[a[3]] = Math.max(-6, Math.min(6, (o[a[3]] | 0) + (k === '-boost' ? 1 : -1) * (+a[4] || 0))); return o; });
+  else if (k === '-setboost') put(sd(a[2]), o => { o[a[3]] = +a[4] || 0; return o; });
+  else if (k === '-clearboost' || k === 'switch' || k === 'drag' || k === 'replace' || k === 'faint') put(sd(a[2]), () => ({}));
+  else if (k === '-clearallboost') all.forEach(s => put(s, () => ({})));
+  else if (k === '-clearnegativeboost') put(sd(a[2]), o => { for (const x in o) if (o[x] < 0) o[x] = 0; return o; });
+  else if (k === '-clearpositiveboost') put(sd(a[2]), o => { for (const x in o) if (o[x] > 0) o[x] = 0; return o; });
+  else if (k === '-invertboost') put(sd(a[2]), o => { for (const x in o) o[x] = -o[x]; return o; });
+  else if (k === 'turn') { try { const btl = B.btl; [['p', btl.p1, 0], ['p2', btl.p1, 1], ['e', btl.p2, 0], ['e2', btl.p2, 1]].forEach(([s, sd2, i]) => { const pk = sd2?.active?.[i]; S[s] = pk && !pk.fainted ? { ...pk.boosts } : {}; bstPaint(s); }); } catch (e) {} } }
 function paintHb(side, A) {
   const hb = $b(SEL('hb', side)); if (!A) { hb.classList.remove('on'); return; }
   { const nm = hb.querySelector('.nm'), mg = isMegaFm(A.fm); nm.textContent = A.nm; { const lw = hb.querySelector('.lv'); let si = lw.querySelector('.shico'); if (A.shiny && !si) { si = document.createElement('i'); si.className = 'shico'; si.setAttribute('aria-label', '이로치'); lw.prepend(si); } else if (!A.shiny && si) si.remove(); hb.classList.toggle('shy', !!A.shiny); nm.style.transform = nm.style.maxWidth = ''; if (A.shiny) requestAnimationFrame(() => shyFit(hb)); }   /* v28.38 경완 '색이 다른 포켓몬 나올 때는 이로치 표시 이름 옆에': 본 게임 이로치 별(.shico)을 이름과 ♂♀ 사이 (이름 칸 안에 넣으면 긴 이름에 잘려서 Lv 줄 앞에) */ hb.classList.toggle('gkm', mg); if (mg) { const i = document.createElement('i'); i.className = 'gkm-ic'; nm.appendChild(i); } { const dx = !!B?.gmx?.[side]; hb.classList.toggle('gkd', dx); if (dx) { const i = document.createElement('i'); i.className = 'gkd-ic'; nm.appendChild(i); } }   /* 경완 2026-11-15 '다이맥스 도트 아이콘 포켓몬 이름 옆에도' (DBK icon_dynamax) */ /* v23.78 경완 '테라스탈 후 배틀박스 이름 옆에 테라 아이콘' */ if (A.tera && TERA_I[A.tera]) { const i = document.createElement('i'); i.className = 'tera-ic'; i.style.backgroundImage = `url(${IMG}dbk/Tera/ty/${TERA_I[A.tera]}.png)`; nm.appendChild(i); } } hb.querySelector('.lvn').textContent = A.lv;   /* 경완 2026-11-12: 메가진화하면 이름 옆에 메가 구슬 (DBK UI icon_mega) */
@@ -1958,6 +1975,7 @@ async function handle(a) {
     await abPop(a[2], nab); const t = AB_ANN[nab]?.(n, a[2]); if (t) await msg(t); return; }
   if (fa) await abPop(of ? of.slice(5) : a[2], toID(fa.replace('[from] ability: ', '')));
   else B.abLast = '';
+  try { bstLine(a); } catch (e) {}
   switch (k) {
     case 'switch': case 'drag': {
       const s = sideOf(a[2]), i = partyIdx(s, a), det = a[3].split(', '), [hp, mhp] = hpOf(a[4]);

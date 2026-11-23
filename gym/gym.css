@@ -4894,3 +4894,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .gk-row .bb.gkb.dynamax .gk-mk{width:46px;height:27px;left:12px;margin-top:-13.5px}.bt.mob .gk-row .bb.gkb.dynamax:has(.gk-mk){padding-left:29px}.bt.mob .gk-row .bb.gkb.dynamax:has(.gk-mk) span{font-size:13px}
 .bt.mob .gk-row:not(:has(>button:nth-child(3))) .bb.gkb.terastallize .gk-ti{width:36px;height:37px;left:15px;margin-top:-19.5px}.bt.mob .gk-row:not(:has(>button:nth-child(3))) .bb.gkb.terastallize:has(.gk-ti){padding-left:34px}.bt.mob .gk-row:not(:has(>button:nth-child(3))) .bb.gkb.terastallize:has(.gk-ti) span{font-size:13px}.bt.mob .gk-row:not(:has(>button:nth-child(3))) .bb.gkb.terastallize:has(.gk-ti) small{font-size:11px}
 .bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize .gk-ti{width:36px;height:37px;left:2px;margin-top:-19.5px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti){padding-left:36px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti) span{font-size:13px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti) small{font-size:11px}
+.bt-hb .bst{position:absolute;display:flex;gap:2px;pointer-events:none;white-space:nowrap;text-shadow:none}   /* v28.81 경완 '딱지는 a로 가자': 능력 변화 딱지 (battle.js bstPaint) */
+.bt-hb.e .bst{left:12px;top:45px}.bt-hb.p .bst{right:6px;top:1px}
+.bt.dbl .bt-hb.e .bst{left:calc(100% - 2px);top:14px}.bt.dbl .bt-hb.p .bst{right:calc(100% + 2px);top:16px}
+.bt-hb .bst i{display:block;height:8px;padding:0 3px;font-style:normal;font-size:7px;line-height:8px;color:#fff;border-radius:1px;box-shadow:0 1px 0 rgba(0,0,0,.45)}
+.bt-hb .bst i.u{background:#e0503a}.bt-hb .bst i.d{background:#3a72d8}.bt-hb .bst i.m{background:#606878}
