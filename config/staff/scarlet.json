@@ -1,6 +1,1097 @@
 {
  "days": [
   {
+   "at": 1795474088010,
+   "theme": "숲속 꼬마 닌자 수련장",
+   "note": "오늘은 숲속 꼬마 닌자 수련장이에요. 짚 타격대·수리검 과녁·외나무다리처럼 직접 몸을 쓰는 수련 기구로 채웠고, 비밀 벽·비법서·징은 밀거나 날갯짓하면 흔들려요. 숨기·기어오르기·뛰어넘기 동작이 골고루 들어가 여러 포켓몬이 놀 수 있어요.",
+   "items": [
+    {
+     "id": "nin-makiwara",
+     "n": "짚 타격대",
+     "k": "닌자 수련장",
+     "d": "나무 기둥에 짚을 두툼하게 감고 새끼줄로 네 번 묶은 타격 연습대예요. 맞은 자리 짚이 살짝 눌려 반들반들해요.",
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "짚 뭉치를 주먹으로 팡팡 쳐요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "짚 타격대를 주먹으로 팡팡 두드렸다.",
+        "타격대에 정권 지르기를 백 번 하고 숨을 골랐다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "기둥을 타고 올라가 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "짚 타격대를 타고 올라가 꼭대기에 앉았다.",
+        "타격대 꼭대기에 올라 수련하는 친구들을 내려다봤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "푹신한 짚에 등을 기대 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "푹신한 짚 타격대에 등을 기대 꾸벅꾸벅 졸았다.",
+        "수련은 잠깐 쉬고 짚 냄새를 맡으며 낮잠을 잤다."
+       ]
+      }
+     ],
+     "fit": "수련장 가운데, 흙바닥",
+     "px": [
+      ".....kkkk.....",
+      "....kwwwwk....",
+      "....kwvutk....",
+      "....kwvutk....",
+      "....kwvutk....",
+      "....kwvutk....",
+      "...kkwvutkk...",
+      "..kYyyyyzzZk..",
+      "..kzZZZZZZZk..",
+      "..kYyYyyzzZk..",
+      "..kYyyYyzzZk..",
+      "..kzZZZZZZZk..",
+      "..kYyYyyzzZk..",
+      "..kYyyyYzzZk..",
+      "..kzZZZZZZZk..",
+      "..kYyYyyzzZk..",
+      "..kYyYyyzzZk..",
+      "..kzZZZZZZZk..",
+      "..kYyyyyzzZk..",
+      "...kkwvutkk...",
+      "....kwvutk....",
+      "....kwvutk....",
+      "....kwvutk....",
+      ".kkkkwvutkkkk.",
+      "kwwwwwwwwwwwwk",
+      "ktttuttttutttk",
+      "kttttttttttttk",
+      ".kkkkkkkkkkkk."
+     ],
+     "pal": {
+      "Y": "#f0d890",
+      "Z": "#76602c",
+      "k": "#20202c",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a",
+      "y": "#d4b460",
+      "z": "#a88a40"
+     }
+    },
+    {
+     "id": "nin-shuriken-target",
+     "n": "수리검 과녁",
+     "k": "닌자 수련장",
+     "d": "나무 다리 두 개로 세운 둥근 과녁이에요. 빨강·하양 동심원 판에 은빛 수리검 세 개가 꽂혀 있어요.",
+     "acts": [
+      {
+       "w": "강철·악 타입",
+       "a": "조금 떨어진 곳에서 과녁을 향해 기술을 날려요",
+       "x": {
+        "at": "far",
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "멀리서 과녁 한가운데를 노리고 기술을 날렸다.",
+        "과녁을 향해 기술을 쏘고 가운데 맞았는지 실눈으로 확인했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "과녁 앞에 서서 꽂힌 수리검을 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "과녁 앞에 서서 꽂힌 수리검을 신기하게 올려다봤다.",
+        "과녁 가운데 빨간 점을 한참 노려보며 마음을 가다듬었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 과녁 윗테두리에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 과녁 윗테두리에 사뿐히 앉았다.",
+        "과녁 위에 앉아 수리검 날아오는 쪽을 태연하게 바라봤다."
+       ]
+      }
+     ],
+     "fit": "수련장 끝, 길게 트인 곳",
+     "px": [
+      ".......kkkkk.......",
+      ".....kkuuuuukk.....",
+      "....kuuuwwwuuuk....",
+      "...kuuwwwwwwwuuk...",
+      "..kuwwrrrrrrrwwuk..",
+      ".kuuwrrppppprrwuuk.",
+      ".kuwrHppRRRpprrwuk.",
+      "kuuwNMHRpppRpprwuuk",
+      "kuwwrORppqppRprwwuk",
+      "kuwwrpRpqqqpRprwwuk",
+      "kuwwrpRppqppRHrwwuk",
+      "kuuwrppRpppRNMHwuuk",
+      ".kuwrrppRRRppOrwuk.",
+      ".kuuwrrppppprrwuuk.",
+      ".kvuwwrrrrrrrwwuk..",
+      ".kvuuuwwwwwwwuuuk..",
+      ".kvukuuuwwwuuuvuk..",
+      ".kvukkkuuuuukkvuk..",
+      ".kvuk..kkkkk.kvuk..",
+      ".kvuk........kvuk..",
+      ".kvuk........kvuk..",
+      ".kvuk........kvuk..",
+      ".kvuk........kvuk..",
+      "kttttk......kttttk.",
+      ".kkkk........kkkk.."
+     ],
+     "pal": {
+      "H": "#f4f6f8",
+      "M": "#c0c8d2",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "k": "#20202c",
+      "p": "#f4ecd8",
+      "q": "#8c2c2c",
+      "r": "#e2705e",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     }
+    },
+    {
+     "id": "nin-bamboo-hurdles",
+     "n": "대나무 허들",
+     "k": "닌자 수련장",
+     "d": "높이가 다른 대나무 허들 세 개를 나란히 세웠어요. 마디마다 진한 초록 띠가 있고 발엔 나무 받침을 박았어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "끝에서 끝까지 허들을 차례로 뛰어넘어요",
+       "x": {
+        "at": "top",
+        "m": "walk"
+       },
+       "l": [
+        "대나무 허들 세 개를 차례로 폴짝폴짝 뛰어넘었다.",
+        "제일 높은 허들 앞에서 숨을 고르고 힘껏 뛰어넘었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "허들 밑으로 납작 엎드려 기어서 지나가요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "허들을 넘는 대신 밑으로 납작 엎드려 쏙쏙 지나갔다.",
+        "허들 밑을 기어 지나가며 이것도 닌자 수련이라고 우겼다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "대나무 허들 옆에 기대 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "대나무 허들에 기대 바람 소리를 들으며 졸았다.",
+        "시원한 대나무 옆에 누워 잎사귀를 살랑이며 쉬었다."
+       ]
+      }
+     ],
+     "fit": "수련장 길목, 평평한 땅",
+     "px": [
+      "...........kkkkkkkkk...........",
+      "..........kbbbbbbbbbk..........",
+      ".kkkkkkkkkkccccccccck..........",
+      "kbbbbbbbbbkkbcZkkZck...........",
+      "kccccccccckkbck.kbck.kkkkkkkkk.",
+      ".kbcZkkZck.kbck.kbckkbbbbbbbbbk",
+      ".kbck.kbck.kCCk.kCCkkccccccccck",
+      ".kbck.kbck.kbck.kbck.kbcZkkZck.",
+      ".kCCk.kCCk.kbck.kbck.kbck.kbck.",
+      ".kbck.kbck.kbck.kbck.kbck.kbck.",
+      ".kbck.kbck.kbck.kbck.kCCk.kCCk.",
+      ".kttk.kttk.kttk.kttk.kttk.kttk.",
+      "..kk...kk...kk...kk...kk...kk.."
+     ],
+     "pal": {
+      "C": "#3a6030",
+      "Z": "#76602c",
+      "b": "#84b050",
+      "c": "#5a8838",
+      "k": "#20202c",
+      "t": "#5e3a1e"
+     }
+    },
+    {
+     "id": "nin-spin-wall",
+     "n": "뒤집히는 비밀 벽",
+     "k": "닌자 수련장",
+     "d": "나무 틀 가운데 널빤지 벽이 걸려 있어 밀면 빙글 뒤집혀요. 벽 가운데엔 밖을 엿보는 작은 틈이 있어요.",
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+       "kwwwwwwwwwwwwwwwwwwwwwwwwk",
+       "kuuuuuuuuuuuuuuuuuuuuuuuuk",
+       "kttttttttttttttttttttttttk",
+       ".kwutkkkkkkkkkkkkkkkkwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutt..............twutk.",
+       ".kwutt..............twutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       ".kwutk..............kwutk.",
+       "ktttttk............ktttttk",
+       ".kkkkk..............kkkkk."
+      ],
+      "mp": [
+       "..........................",
+       "..........................",
+       "..........................",
+       "..........................",
+       "..........................",
+       ".......kkkkkkkkkkkk.......",
+       "......kttttttttttttk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwwvuwvuwvuwuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvueeevvuvuk......",
+       "......kwvvuenevvuvuk......",
+       "......kwvvuenevvuvuk......",
+       "......kwvvuenevvuvuk......",
+       "......kwwvueeewvuwuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       "......kwvvuvvuvvuvuk......",
+       ".......kkkkkkkkkkkk.......",
+       ".........................."
+      ],
+      "o": [
+       12.5,
+       15.5
+      ],
+      "k": "swing",
+      "amp": 1.2
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "벽 뒤로 숨었다가 옆으로 빼꼼 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "비밀 벽 뒤로 쏙 숨었다가 옆으로 빼꼼 고개를 내밀었다.",
+        "벽 뒤에 숨어 숨소리도 안 내고 술래를 기다렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "벽 가운데 틈으로 눈만 내밀고 밖을 엿봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.5
+        ],
+        "m": "win",
+        "back": true
+       },
+       "l": [
+        "비밀 벽 틈으로 눈만 빼꼼 내밀고 밖을 엿봤다.",
+        "벽 틈으로 바깥을 엿보다 눈이 마주쳐 깜짝 놀랐다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "벽 뒤에서 스르르 사라졌다가 반대편에 나타나요",
+       "x": {
+        "m": "blink",
+        "back": true
+       },
+       "l": [
+        "비밀 벽 뒤에서 스르르 사라졌다가 반대편에 나타났다.",
+        "벽이 뒤집힌 것도 아닌데 어느새 건너편에 서 있었다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "널빤지 벽을 손으로 밀어 빙글 돌려요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "널빤지 벽을 힘껏 밀어 빙글 뒤집었다.",
+        "비밀 벽을 돌려 보고는 저쪽에도 아무도 없어 시무룩했다."
+       ]
+      }
+     ],
+     "fit": "수련장 구석, 덤불 옆",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kwwwwwwwwwwwwwwwwwwwwwwwwk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuk",
+      "kttttttttttttttttttttttttk",
+      ".kwutkkkkkkkkkkkkkkkkwutk.",
+      ".kwutk.kkkkkkkkkkkk.kwutk.",
+      ".kwutkkttttttttttttkkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwwvuwvuwvuwukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvueeevvuvukkwutk.",
+      ".kwutkkwvvuenevvuvukkwutk.",
+      ".kwuttkwvvuenevvuvuktwutk.",
+      ".kwuttkwvvuenevvuvuktwutk.",
+      ".kwutkkwwvueeewvuwukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      ".kwutkkwvvuvvuvvuvukkwutk.",
+      "ktttttkkkkkkkkkkkkkktttttk",
+      ".kkkkk..............kkkkk."
+     ],
+     "pal": {
+      "e": "#262a40",
+      "k": "#20202c",
+      "n": "#5a6a9a",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     }
+    },
+    {
+     "id": "nin-smoke-barrel",
+     "n": "연막탄 통",
+     "k": "닌자 수련장",
+     "d": "쇠테를 두른 나무통에 까만 연막탄이 소복이 담겨 있어요. 맨 위 연막탄 심지엔 불똥 하나가 반짝여요.",
+     "acts": [
+      {
+       "w": "독 타입",
+       "a": "통 옆에서 연막 기술을 펑 터뜨리고 사라져요",
+       "x": {
+        "at": "side",
+        "m": "skill blink"
+       },
+       "l": [
+        "연막탄 통 옆에서 연막을 펑 터뜨리고 감쪽같이 사라졌다.",
+        "연막을 피우고 사라졌는데 꼬리가 다 보였다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "통 뒤에 쏙 숨어 위로 고개만 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "연막탄 통 뒤에 쏙 숨어 위로 고개만 내밀었다.",
+        "통 뒤에 숨어 있다가 연막탄 냄새에 재채기를 했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "통 앞에서 연막탄을 신기하게 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "연막탄 통을 들여다보고 하나 만져 볼까 망설였다.",
+        "까만 연막탄을 세어 보다 헷갈려 처음부터 다시 셌다."
+       ]
+      }
+     ],
+     "fit": "수련장 창고 옆",
+     "px": [
+      ".....kkkk..k..",
+      "....keeRgkkGk.",
+      "...kenmmekzk..",
+      "..keemmmeeek..",
+      ".kenemmmemmek.",
+      ".kemmeeemmmek.",
+      ".kemmmeemmmek.",
+      "ktteeetteeettk",
+      "kttttttttttttk",
+      "kwvvuvvuvuuutk",
+      "kNOOuOOuOOuOOk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kNOOuOOuOOuOOk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kwvvuvvuvuuutk",
+      "kNOOuOOuOOuOOk",
+      "kwvvuvvuvuuutk",
+      ".kkkkkkkkkkkk."
+     ],
+     "pal": {
+      "G": "#f6dc7a",
+      "N": "#8a94a0",
+      "O": "#5a6270",
+      "R": "#b84a3e",
+      "e": "#262a40",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "m": "#3a4672",
+      "n": "#5a6a9a",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a",
+      "z": "#a88a40"
+     }
+    },
+    {
+     "id": "nin-scroll-stand",
+     "n": "비법서 두루마리 걸이",
+     "k": "닌자 수련장",
+     "d": "나무 틀에 걸어 둔 닌자 비법서 두루마리예요. 금빛 막대 사이에 먹글씨와 빨간 도장이 있고 끝엔 빨간 술이 달랑거려요.",
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkkkkkkkkk.",
+       "kwvvvvvvvvvvvvvvvvvvwk",
+       "kuuuuuuuuuuuuuuuuuuuuk",
+       ".kkvukk........kkvukk.",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       "..kvuk..........kvuk..",
+       ".kttttk........kttttk.",
+       "..kkkk..........kkkk.."
+      ],
+      "mp": [
+       "......................",
+       "......................",
+       "......................",
+       ".......kkykkzkk.......",
+       "......kggggggggk......",
+       "......kooooooook......",
+       ".......kPPPPPPk.......",
+       ".......kppppPQk.......",
+       ".......kpeepPQk.......",
+       ".......kpppqPQk.......",
+       ".......kpepqPQk.......",
+       ".......kpppqPQk.......",
+       ".......kpeeqPQk.......",
+       ".......kppppPQk.......",
+       ".......kpepqPQk.......",
+       ".......kpppqPQk.......",
+       ".......kpeeqPQk.......",
+       ".......kpppqPQk.......",
+       ".......kpeppPQk.......",
+       ".......kppppPQk.......",
+       ".......kppppPQk.......",
+       "......kggggggggk......",
+       "......kooooooook......",
+       ".......kkkRRkkk.......",
+       ".........kqRk.........",
+       "..........kk..........",
+       "......................",
+       "......................"
+      ],
+      "o": [
+       10.5,
+       3
+      ],
+      "k": "swing",
+      "amp": 1.4
+     },
+     "acts": [
+      {
+       "w": "에스퍼 타입",
+       "a": "두루마리 앞에 서서 비법을 골똘히 읽어요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "비법서 두루마리를 골똘히 읽으며 고개를 끄덕였다.",
+        "두루마리를 읽다가 거꾸로 걸린 걸 알아채고 머리를 긁었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 떠올라 날갯짓으로 두루마리를 펄럭여요",
+       "x": {
+        "at": "side",
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓 바람으로 두루마리를 펄럭펄럭 흔들었다.",
+        "두루마리를 펄럭이게 하고는 다음 장을 넘겼다며 뿌듯해했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "두루마리 걸이 아래 기대 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "비법서를 읽다 말고 걸이 아래 기대 잠들었다.",
+        "두루마리 아래에서 꿈속 수련을 하는지 발을 꼼지락댔다."
+       ]
+      }
+     ],
+     "fit": "수련장 안쪽, 조용한 곳",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkk.",
+      "kwvvvvvvvvvvvvvvvvvvwk",
+      "kuuuuuuuuuuuuuuuuuuuuk",
+      ".kkvukkkkykkzkkkkvukk.",
+      "..kvukkggggggggkkvuk..",
+      "..kvukkooooooookkvuk..",
+      "..kvuk.kPPPPPPk.kvuk..",
+      "..kvuk.kppppPQk.kvuk..",
+      "..kvuk.kpeepPQk.kvuk..",
+      "..kvuk.kpppqPQk.kvuk..",
+      "..kvuk.kpepqPQk.kvuk..",
+      "..kvuk.kpppqPQk.kvuk..",
+      "..kvuk.kpeeqPQk.kvuk..",
+      "..kvuk.kppppPQk.kvuk..",
+      "..kvuk.kpepqPQk.kvuk..",
+      "..kvuk.kpppqPQk.kvuk..",
+      "..kvuk.kpeeqPQk.kvuk..",
+      "..kvuk.kpppqPQk.kvuk..",
+      "..kvuk.kpeppPQk.kvuk..",
+      "..kvuk.kppppPQk.kvuk..",
+      "..kvuk.kppppPQk.kvuk..",
+      "..kvukkggggggggkkvuk..",
+      "..kvukkooooooookkvuk..",
+      "..kvuk.kkkRRkkk.kvuk..",
+      "..kvuk...kqRk...kvuk..",
+      "..kvuk....kk....kvuk..",
+      ".kttttk........kttttk.",
+      "..kkkk..........kkkk.."
+     ],
+     "pal": {
+      "P": "#d8ccb0",
+      "Q": "#a8987a",
+      "R": "#b84a3e",
+      "e": "#262a40",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "o": "#b8862a",
+      "p": "#f4ecd8",
+      "q": "#8c2c2c",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a",
+      "y": "#d4b460",
+      "z": "#a88a40"
+     }
+    },
+    {
+     "id": "nin-log-beam",
+     "n": "통나무 외나무다리",
+     "k": "닌자 수련장",
+     "d": "짧은 기둥 두 개 위에 통나무를 눕혀 새끼줄로 묶은 균형 잡기 다리예요. 가운데엔 매달리기용 밧줄이 늘어져 있어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "통나무 위를 두 팔 벌리고 끝에서 끝까지 걸어요",
+       "x": {
+        "at": "top",
+        "m": "walk wobble"
+       },
+       "l": [
+        "외나무다리 위를 비틀비틀 끝까지 건넜다.",
+        "통나무 위에서 균형을 잡다가 한 바퀴 휘청이고 버텼다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "가운데 밧줄에 매달려 오르내려요",
+       "x": {
+        "at": [
+         0.5,
+         0.7
+        ],
+        "m": "bob"
+       },
+       "l": [
+        "통나무 가운데 밧줄에 매달려 대롱대롱 오르내렸다.",
+        "밧줄에 매달려 그네 타듯 흔들거렸다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "기둥을 밀어 통나무를 흔들어요",
+       "x": {
+        "at": "side",
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "외나무다리 기둥을 쿵 밀어 통나무를 흔들었다.",
+        "통나무를 흔들어 놓고 위에 있던 친구에게 미안해했다."
+       ]
+      }
+     ],
+     "fit": "수련장 가운데, 넓은 곳",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.",
+      "kYwwwwwwwwwwwwwwwwwwwwwwwwwwwwwk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuuuuuutk",
+      "kttYyyyyttttttttttttttttYyyyyttk",
+      ".kkyyyyZkkkkkkkyzkkkkkkkyyyyZkk.",
+      "...kwutk......kyzk......kwutk...",
+      "...kwutk......kyzk......kwutk...",
+      "...kwutk......kyzk......kwutk...",
+      "...kwutk......kyk.......kwutk...",
+      "...kwutk......kZk.......kwutk...",
+      "...kwutk.......k........kwutk...",
+      "...kwutkk...............kwutkk..",
+      "..kttttttk.............kttttttk.",
+      "...kkkkkk...............kkkkkk.."
+     ],
+     "pal": {
+      "Y": "#f0d890",
+      "Z": "#76602c",
+      "k": "#20202c",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "w": "#d8a46a",
+      "y": "#d4b460",
+      "z": "#a88a40"
+     }
+    },
+    {
+     "id": "nin-climb-wall",
+     "n": "오르기 수련 벽",
+     "k": "닌자 수련장",
+     "d": "널빤지 벽에 빨강·노랑·파랑 손잡이 돌을 박은 오르기 벽이에요. 양쪽 기둥이 벽보다 조금 높게 솟아 있어요.",
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "손잡이를 잡고 벽 꼭대기까지 기어올라요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "손잡이 돌을 하나씩 잡고 벽 꼭대기까지 기어올랐다.",
+        "오르기 벽 꼭대기에 올라 승리의 포즈를 취했다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 벽 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "기어오르는 대신 날아올라 벽 꼭대기에 앉았다.",
+        "벽 꼭대기에 먼저 앉아 올라오는 친구를 응원했다."
+       ]
+      },
+      {
+       "w": "바위·땅 타입",
+       "a": "벽 아래 기대 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "오르기 벽 아래 기대 꾸벅꾸벅 졸았다.",
+        "손잡이 돌을 보더니 친척 같다며 옆에 붙어 잠들었다."
+       ]
+      }
+     ],
+     "fit": "수련장 뒤쪽, 나무 앞",
+     "px": [
+      ".kkkkk................kkkkk.",
+      "ktttttk..............ktttttk",
+      ".kwutkkkkkkkkkkkkkkkkkkwutk.",
+      ".kwutttttttttttttttttttwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwpguwvvuwutk.",
+      ".kwutwwvprwvvvuggoowvvuwutk.",
+      ".kwutwwrrqqvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvHnuwvvuwvvuwutk.",
+      ".kwutwwvvuwnnmmwvvuprvuwutk.",
+      ".kwutwwvvuwvvvuwvvrrqquwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwpguwvvvuwvvuwvvuwutk.",
+      ".kwutwggoowvvvuHnvuwvvuwutk.",
+      ".kwutwwvvuwvvvnnmmuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuprvvuwvvuwvvuwutk.",
+      ".kwutwwvvrrqqvuwvvpgvvuwutk.",
+      ".kwutwwvvuwvvvuwvggoovuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwwvvuwvvvuwvvuwvvuwutk.",
+      ".kwutwvvvuvvvvuvvvuvvvuwutk.",
+      "ktttttkkkkkkkkkkkkkkkktttttk",
+      ".kkkkk................kkkkk."
+     ],
+     "pal": {
+      "H": "#f4f6f8",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "m": "#3a4672",
+      "n": "#5a6a9a",
+      "o": "#b8862a",
+      "p": "#f4ecd8",
+      "q": "#8c2c2c",
+      "r": "#e2705e",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "v": "#b07a44",
+      "w": "#d8a46a"
+     }
+    },
+    {
+     "id": "nin-gong",
+     "n": "수련 시작 징",
+     "k": "닌자 수련장",
+     "d": "나무 틀에 새끼줄로 매단 금빛 징이에요. 한 번 치면 수련 시작, 두 번 치면 밥 먹을 시간이에요.",
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkkkkkkkkkkk.",
+       "kwwwwwwwwwwwwwwwwwwwwwwk",
+       "kuuuuuuuuuuuuuuuuuuuuuuk",
+       "kttttttttttttttttttttttk",
+       ".kwutkkkkk....kkkkkwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       ".kwutk............kwutk.",
+       "ktttttk..........ktttttk",
+       ".kkkkk............kkkkk."
+      ],
+      "mp": [
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "..........kyzk..........",
+       "..........kyzk..........",
+       "..........kyzk..........",
+       ".........kooook.........",
+       "........kooooook........",
+       ".......koGgggggok.......",
+       "......koGpGGGGgook......",
+       "......koggGooGggok......",
+       "......kogGGooGGgok......",
+       "......koggGooGggok......",
+       "......koogGGGGgook......",
+       ".......koggggggok.......",
+       "........kooooook........",
+       ".........kooook.........",
+       "..........kkkk..........",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................"
+      ],
+      "o": [
+       11.5,
+       4
+      ],
+      "k": "swing",
+      "amp": 1.3
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "징을 주먹으로 쾅 쳐요",
+       "x": {
+        "at": "front",
+        "m": "push",
+        "an": "Attack",
+        "fx": "swing"
+       },
+       "l": [
+        "징을 쾅 쳐서 수련 시작을 알렸다.",
+        "징을 두 번 쳤더니 다들 밥 먹으러 모여들었다."
+       ]
+      },
+      {
+       "w": "노말·에스퍼 타입",
+       "a": "징 앞에 서서 울리는 소리에 귀를 기울여요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "징 앞에 서서 웅웅 울리는 소리에 귀를 기울였다.",
+        "징에 비친 제 얼굴을 보고 표정을 지어 봤다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "징 뒤에 숨었다가 옆으로 빼꼼 나와요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "징 뒤에 쏙 숨었다가 옆으로 빼꼼 나왔다.",
+        "징 뒤에 숨어 있다가 누가 징을 쳐서 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "수련장 입구",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkkk.",
+      "kwwwwwwwwwwwwwwwwwwwwwwk",
+      "kuuuuuuuuuuuuuuuuuuuuuuk",
+      "kttttttttttttttttttttttk",
+      ".kwutkkkkkkyzkkkkkkwutk.",
+      ".kwutk....kyzk....kwutk.",
+      ".kwutk....kyzk....kwutk.",
+      ".kwutk...kooook...kwutk.",
+      ".kwutk..kooooook..kwutk.",
+      ".kwutk.koGgggggok.kwutk.",
+      ".kwutkkoGpGGGGgookkwutk.",
+      ".kwutkkoggGooGggokkwutk.",
+      ".kwutkkogGGooGGgokkwutk.",
+      ".kwutkkoggGooGggokkwutk.",
+      ".kwutkkoogGGGGgookkwutk.",
+      ".kwutk.koggggggok.kwutk.",
+      ".kwutk..kooooook..kwutk.",
+      ".kwutk...kooook...kwutk.",
+      ".kwutk....kkkk....kwutk.",
+      ".kwutk............kwutk.",
+      ".kwutk............kwutk.",
+      ".kwutk............kwutk.",
+      ".kwutk............kwutk.",
+      ".kwutk............kwutk.",
+      ".kwutk............kwutk.",
+      "ktttttk..........ktttttk",
+      ".kkkkk............kkkkk."
+     ],
+     "pal": {
+      "G": "#f6dc7a",
+      "g": "#e0b040",
+      "k": "#20202c",
+      "o": "#b8862a",
+      "p": "#f4ecd8",
+      "t": "#5e3a1e",
+      "u": "#85562e",
+      "w": "#d8a46a",
+      "y": "#d4b460",
+      "z": "#a88a40"
+     }
+    },
+    {
+     "id": "nin-bamboo-poles",
+     "n": "대나무 기둥 뛰기",
+     "k": "닌자 수련장",
+     "d": "높이가 다른 굵은 대나무 기둥 세 개를 박아 둔 뛰어오르기 수련대예요. 마디 사이로 작은 잎이 돋아 있어요.",
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 제일 높은 기둥 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 제일 높은 대나무 기둥 꼭대기에 앉았다.",
+        "대나무 꼭대기에 앉아 한쪽 발로 균형을 잡았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "낮은 기둥부터 차례로 기어올라요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "낮은 대나무 기둥부터 차례로 기어올랐다.",
+        "대나무 꼭대기에서 비틀대며 닌자처럼 한 발로 섰다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "대나무 기둥에 기대 잎을 살랑이며 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "대나무 기둥에 기대 잎을 살랑이며 쉬었다.",
+        "대나무 그늘 아래에서 바람 소리를 들으며 잠들었다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "대나무 기둥 옆에서 발차기 기술을 연습해요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "대나무 기둥 옆에서 발차기 기술을 연습했다.",
+        "대나무를 차려다 너무 단단해서 발을 동동 굴렀다."
+       ]
+      }
+     ],
+     "fit": "수련장 가장자리, 대숲 옆",
+     "px": [
+      "........kkkk..........",
+      ".......kcBcck.........",
+      "......kBBbcCk.........",
+      ".....kbcBbcCk.........",
+      "......kkBbcCk..kkkk...",
+      ".......kBbcCk.kcBcck..",
+      ".......kCCCCk.kBbcCk..",
+      ".......kBbcCkkBBbcCk..",
+      ".kkkk..kBbcCkbcBbcCk..",
+      "kcBcck.kBbcCkkkBbcCkk.",
+      "kBbcCk.kBbcCk.kCCCCkBk",
+      "kBbcCk.kBbcCk.kBbcCbck",
+      "kBbcCk.kCCCCk.kBbcCkk.",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kCCCCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kCCCCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kCCCCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kCCCCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kCCCCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kCCCCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kCCCCk.kBbcCk.kBbcCk..",
+      "kBbcCk.kBbcCk.kBbcCk..",
+      "kuuuuk.kuuuuk.kuuuuk..",
+      "kttttk.kttttk.kttttk..",
+      ".kkkk...kkkk...kkkk..."
+     ],
+     "pal": {
+      "B": "#b4d47a",
+      "C": "#3a6030",
+      "b": "#84b050",
+      "c": "#5a8838",
+      "k": "#20202c",
+      "t": "#5e3a1e",
+      "u": "#85562e"
+     }
+    }
+   ]
+  },
+  {
    "at": 1795387659784,
    "theme": "숲속 꼬마 기사의 성",
    "note": "오늘은 숲속 꼬마 기사의 성이에요. 돌탑 성문과 파란 지붕 망루로 성의 모양을 잡고, 기사 연습 과녁과 깃발은 치거나 바람이 불면 흔들려요. 성벽 횃불은 밤에 성 마당을 따뜻하게 밝혀요.",
