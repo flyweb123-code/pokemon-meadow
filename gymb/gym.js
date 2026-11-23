@@ -4382,7 +4382,22 @@ async function yaTest(fx) {
 /* v23.54 경완 '라인업 고르는 화면부터, 거기서 랜덤 라인업도, 내 계정엔 아무 영향 없이': 실제 라인업 화면(시뮬 안이라 나가면 되돌아감)에서 고르고,
    내 포켓몬은 시험용 사본(gTst)으로 떠서 배틀 — 진짜 포켓몬·저장은 그대로 */
 function trClone(ids) { const g = st(); g.mon = g.mon || {};
-  return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); return C.id; }).filter(Boolean); }
+  return ids.map(id => { const P = GB().boxOf(id); if (!P) return null; if (P.gTst) return id; const m = GB().gm(P), C = JSON.parse(JSON.stringify(P)); C.id = ++trTid; C.gTst = 1; C.src = P.id; S.box.push(C); g.mon[C.id] = JSON.parse(JSON.stringify(m)); trSnap(C); return C.id; }).filter(Boolean); }
+/* 경완 2026-11-24 '응 본게임에 같이 배포해주고' + 결정 카드 '실제 보상까지 켜고 공개': 수련탑은 사본(gTst)으로 오르고, 층을 마칠 때마다 사본이 오른 만큼만 진짜 포켓몬(C.src)에 더한다.
+   더하는 것 = 경험치(gainXp 'keep': 새 기술은 빈 칸이 없으면 익혀만 둠)·노력치(evAdd, 한도 그대로)·수련탑에서 고른 기술(진짜 포켓몬 기술이 그사이 안 바뀌었을 때만 그대로, 아니면 익혀 둠).
+   수련탑에서 빌린 도구·테라·다이수프·영양제·잡은 동료는 이번 도전만이라 안 더함. C.sy = 지난번 더한 때의 사본 값 (차이만 더해서 이어 오르기 사이에 다른 데서 키운 것도 안 덮음) */
+const TR_REAL = true;
+function trSnap(C) { const c = GB().gm(C); C.sy = { xp: c.xp | 0, ev: [...GB().evArr(c)], mv: [...(c.mv || [])], kn: [...(c.kn || [])] }; }
+function trSync(R) { if (!TR_REAL || window.gymSimOn || !R?.ids) return; const B = GB(); let ch = 0;
+  for (const id of R.ids) { const C = B.boxOf(id), O = C?.src != null ? B.boxOf(C.src) : null; if (!C || !O || O.gTst || O.sp !== C.sp) continue; if (!C.sy) trSnap(C);
+    try { const c = B.gm(C), o = B.gm(O), s = C.sy, dx = (c.xp | 0) - s.xp;
+      if (dx > 0) { B.gainXp(O, dx, 'keep'); ch = 1; }
+      B.evArr(c).forEach((v, i) => { const d = (v | 0) - (s.ev[i] | 0); if (d > 0 && B.evAdd(o, i, d)) ch = 1; });
+      const nw = (c.mv || []).filter(x => !s.mv.includes(x)), kn = (c.kn || []).filter(x => !s.kn.includes(x));
+      if (nw.length || kn.length) { o.kn = o.kn || []; if (nw.length && (o.mv || []).join() === s.mv.join()) { o.mv.filter(x => !c.mv.includes(x)).forEach(x => { if (!o.kn.includes(x)) o.kn.push(x); }); o.mv = [...c.mv]; o.kn = o.kn.filter(x => !o.mv.includes(x)); }
+        else nw.forEach(x => { if (!o.mv.includes(x) && !o.kn.includes(x)) o.kn.push(x); }); kn.forEach(x => { if (!o.mv.includes(x) && !o.kn.includes(x)) o.kn.push(x); }); ch = 1; }
+      trSnap(C); } catch (e) { console.error(e); } }
+  if (ch) save(); }
 /* v23.84 경완 '디자인 퀄 높여서 다시': 게임 픽셀 RPG 창 모양(네모 테두리·Galmuri·입체 버튼 눌림)에 맞춘 수련탑 대기 화면.
    위 = 지금 시각 하늘(낮·저녁·밤 별) + 도트 돌탑(벽돌 무늬·층 처마·아치 창·현수막·횃불·지붕 깃발) + 탑 앞 관장·첫 번째 포켓몬, 왼쪽 층 눈금(50·100·150 큰 우두머리 왕관)
    가운데 = '등반대' 창 6칸 + 코스트 칸 막대, 아래 = 내 포켓몬 카드(타입 색 띠), 맨 아래 = 게임 입체 버튼 */
@@ -4613,7 +4628,7 @@ const trGate = () => new Promise(async ok => { const B = GB();
    1분 기준 ≈ 미니게임(장애물 넘기 33G)과 비슷하게 — 야생 한 판 ≈ 30초, 트레이너 ≈ 1분, 우두머리 ≈ 2분. 수련탑이 아직 시연이라 TR_PAY 를 켜기 전엔 화면 표시만 (본 계정 골드는 안 건드림) */
 /* v26.94 경완 '골드 꾸러미 먹었는데 골드 안 올라가는 오류': 층 표시(.bt-fl)는 배틀 시작 때 한 번만 그려져 다음 배틀까지 숫자가 그대로였음 → 골드·코인이 바뀌는 곳마다 바로 고쳐 쓰고 살짝 튐 */
 const trHud = (R, k) => document.querySelectorAll('.bt .bt-fl').forEach(fl => { [['g', R.gold], ['c', R.coin]].forEach(([c, v]) => { const sp = fl.querySelector(`.${c} > span`); if (!sp) return; const t = (v | 0).toLocaleString(); if (sp.textContent === t) return; sp.textContent = t; if (c === k || !k) { sp.classList.remove('up'); void sp.offsetWidth; sp.classList.add('up'); } }); });
-const TR_PAY = false, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));
+const TR_PAY = true, trGold = (fl, boss, trn) => Math.round((boss ? 60 : trn ? 30 : 15) * (1 + (fl | 0) / 100));   /* 경완 2026-11-24 '실제 보상까지 켜고 공개' */
 /* 경완 '수련탑 기록창도 디자인 좀 해줘보고, 기록창은 그만두기 한 그 화면 위에 뜨도록 … 기록창에 선물 보상 받은 것도 나오게' → '선물창이 그 시작화면에서 선물 아이콘 눌렀을 때 나오는 선물창 말한거였음':
    시작 화면 '이번 주 층별 선물' 창(trGfList .tl-gfw)과 같은 남색 창 — 보라 머리(아이콘·금빛 제목) → 진행 줄 → 오른 층·코인·골드 칸 → 받은 층 선물 줄(층 딱지·등급 색) → 등반대 줄 → 아래 띠 확인.
    배틀 화면 위 body 에 붙음(저절로 뜨는 창 = 팝업 모션·소리·버튼으로만 닫힘) */
@@ -4714,10 +4729,11 @@ async function trainTest(o0) {
     }
     if (R?.end) { document.body.classList.remove('gymBattle'); await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; }   /* (배틀 밖에서 끝난 때만 — 보통은 trPost fin 이 배틀 화면 위에서 띄움) */
   } catch (err) { console.error(err); GA.toast?.('수련탑을 이어 가지 못했어요'); }
-  finally { document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSaves.some(sv => sv.ids.includes(P.id))).map(P => P.id)); save(); bgmPlay('gym'); if (R?.fin) { R.fin = 0; openTab('battle'); } }   /* 경완 '기록창 확인 누르면 포켓몬 메뉴 라인업 화면으로 돌아오게' */
+  finally { try { trSync(R); } catch (e) {} document.body.classList.remove('gymBattle'); { /* v27.95 경완 '수련탑 끝내고 나왔을 때 빈 대사창이 도전자 받기 버튼 뒤에 떠있는 오류': 대사창이 비어 있으면 숨긴 채 둔다 (yaTest 와 같은 방식) */ const dl = root.querySelector('.gy-dlg'); root.classList.toggle('dhide', !dl || !dl.innerHTML.trim()); } trDrop(S.box.filter(P => P.gTst && P.id > 991000 && !trSaves.some(sv => sv.ids.includes(P.id))).map(P => P.id)); save(); bgmPlay('gym'); if (R?.fin) { R.fin = 0; openTab('battle'); } }   /* 경완 '기록창 확인 누르면 포켓몬 메뉴 라인업 화면으로 돌아오게' */
 }
 async function trPost(R, o, boss, ids, T, trn) {
   Object.assign(R.hp, o.hp);
+  trSync(R);   /* 진짜 포켓몬에 경험치·노력치 더함 (이기든 지든 그만두든) */
   if (R.roll) { await o.msg('랜덤 라인업으로 1층부터!', 500); return true; }
   if (R.skip) { R.skip = 0; const nb = Math.floor(R.floor / 10) * 10 + 10; R.floor = nb; await o.msg(`${nb}층 우두머리 앞으로!`, 500); return true; }   /* 시험: 다음 우두머리 층으로 바로 */
   const fin = async () => { await trSettle(R); if (R.end === 'quit') trMark(R); R.end = ''; R.fin = 1; openTab('battle'); };   /* 경완 '수련탑 그만두고 나왔을 때 체육관 홈 화면 잠깐 보였다가 라인업 화면으로 넘어가는 오류': 배틀 화면이 덮고 있는 동안 밑을 라인업으로 먼저 바꿔 둠 */   /* 경완 '기록창은 그만두기 한 그 화면 위에 뜨도록 해줘 체육관 홈화면에서 뜨는게 아니고': 배틀 화면이 남아 있는 동안 기록창 */
@@ -4747,7 +4763,18 @@ async function trPost(R, o, boss, ids, T, trn) {
 /* v27.99 경완 '10층 단위, 50층 단위 … 선물. 본게임 창고나 가방에 들어가는 선물' · '주마다 한번 좋아' · '선물도 일단 베타에 받지는 않는걸로 배포해'
    값 = 상점 값 기준 (이상한사탕·영양제 300, 향로 900, 뽑기권 점수×50, 기술머신 tmPrice, 민트 3,000, 빛나는 부적 5,000) → 100층까지 약 5,500G·200층 약 20,300G (배틀 골드 200층 약 10,900G 따로)
    TR_GF_PAY = false: 창만 보여 주고 실제로 넣지 않음, 받은 층 기록도 저장 안 함 (공개 때 켜고 gyGive 처럼 넣기) */
-const TR_GF_PAY = false;
+const TR_GF_PAY = true;   /* 경완 2026-11-24 '실제 보상까지 켜고 공개' (본 게임 공개) */
+/* 층 선물 실제로 넣기: 가방(이상한사탕·향로·빛나는 부적·뽑기권) = S.items, 창고(영양제·민트·기술머신) = 체육관 g.vit·g.mint·g.tms, 200층 이로치 알 = 알 가방 */
+function trGfGive(G) { if (window.gymSimOn || !G?.id) return; const B = GB(), g = st(), I = GA.fOwn?.();
+  const one = id => { let m;
+    if (id === 'big') { one('tk0'); one('rcandy'); one('rcandy'); one('rcandy'); return; }
+    if ((m = /^v(\d)$/.exec(id))) { const k = B.EV_VIT?.[+m[1]]?.[0]; if (k) { g.vit = g.vit || {}; g.vit[k] = (g.vit[k] | 0) + 1; } return; }
+    if (id.startsWith('mint')) { const k = id.slice(4); g.mint = g.mint || {}; g.mint[k] = (g.mint[k] | 0) + 1; return; }
+    if (id.startsWith('tm')) { const k = id.slice(2); g.tms = g.tms || {}; g.tms[k] = B.isTR?.(k) ? (g.tms[k] | 0) + 1 : 1; return; }
+    if (id.startsWith('she')) { const [gr, ty] = G.egg || []; const es = GA.tyEggs?.(ty, gr, 1, '수련탑') || []; es.forEach(e => { e.sh = 1; }); return; }
+    if (I) I[id] = (I[id] | 0) + 1; };
+  try { String(G.id).split('+').forEach(one); } catch (e) { console.error(e); } save(); GA.save?.(); }
+window.gymTrGfGive = trGfGive;   /* 시험용 */
 /* v28.21 경완 '층별 선물은 매주 미니게임 보상처럼 매주 랜덤으로 유저한테 필요한게 정해지도록': 주마다 층별 선물을 한 번 정함 (주·닉네임 씨앗이라 다시 켜도 같음)
    필요한 것 = 라인업 포켓몬 추천 성격 민트(아직 없는 것)·추천 능력치 영양제, 체육관 타입 포켓몬이 배울 수 있고 없는 기술머신(라인업이 배우면 3배), 체육관 타입 뽑기권 4배 */
 /* v28.22 경완 '알 뽑기 처럼 확률을 3단계 정도로 나눠서 좋은 선물이 나오게, 단계 올라갈 때마다 진동 + 색 바뀌는 연출' → 층마다 단계 레어 70%·에픽 25%·전설 5% (주마다 정함)
@@ -4793,7 +4820,7 @@ let trGfMem = null;
 const trGfWk = () => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };   /* 월요일 0시에 새로 (미니게임 기록 선물과 같은 주) */
 const trGfSt = () => { const s = TR_GF_PAY ? (st().trGf = st().trGf || {}) : (trGfMem = trGfMem || {}), wk = trGfWk(); if (s.wk !== wk) { s.wk = wk; s.got = []; s.plan = null; } return s; };
 /* v28.21 경완 '선물 받는 창에는 받기 버튼 만들어서 그거 눌러야만 닫히고 진행되게' → trBoxPick X.get */
-async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; const G = trGfPlan()[f]; s.got.push(f);
+async function trGift(f) { const s = trGfSt(); if (s.got.includes(f)) return; const G = trGfPlan()[f]; s.got.push(f); if (TR_GF_PAY) trGfGive(G);
   const eg = f === 200, NM = eg ? TR_EGG_NM : TR_GF_NM;
   await trBoxPick([[0, eg ? 0 : 2, G.nm, TR_GF_PAY ? `${G.at}에 넣었다!` : `${G.at}에 들어가는 선물`, null, G.ic, NM[0]]], `${f}층 ${f % 50 ? '' : '큰 '}선물!`, 0, TR_GF_PAY ? '' : '베타에서는 실제로 받지 않아요', { get: '받기', up: eg ? G.gi : G.tier, upNm: NM, box: `${IMG}yact/gift.png` });
   const up = (eg ? G.gi : G.tier) | 0; return { f, nm: G.nm, ic: G.ic, g: Math.min(4, (eg ? 0 : 2) + up), gn: NM[up] || NM[0] }; }   /* 기록창 선물 줄 (R.gfs) */
