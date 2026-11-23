@@ -9,5 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip install requests pillow numpy >/dev/null 2>&1 || true
-      - run: python3 tools/ev-map.py --geo 'T 팩토리 성수' 'T팩토리 성수' 'T 팩토리' 'T팩토리' '성수역' || true
+      - run: |
+          cd tools && python3 -c "
+          import importlib.util as u; s=u.spec_from_file_location('m','ev-map.py'); m=u.module_from_spec(s); s.loader.exec_module(m)
+          for q in ['nwr[\"addr:street\"=\"연무장1길\"]', 'nwr[\"name\"~\"팩토리\"]', 'nwr[\"name\"=\"성수\"][\"railway\"]']:
+              d=m.overpass('[out:json][timeout:60];area[\"ISO3166-1\"=\"KR\"]->.k;('+q+'(area.k););out center 20;')
+              for el in d.get('elements',[]): c=el.get('center') or el; t=el.get('tags',{}); print('R', c.get('lat'), c.get('lon'), t.get('name'), t.get('addr:street'), t.get('addr:housenumber'))
+          " || true
