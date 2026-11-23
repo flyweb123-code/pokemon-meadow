@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: pip install requests pillow numpy >/dev/null 2>&1 || true
-      - run: python3 tools/ev-map.py --geo '별마당도서관' '스타필드 코엑스몰' 'T팩토리 성수' '석촌호수' '롯데월드타워' || true
+      - run: python3 tools/ev-map.py --geo 'T 팩토리 성수' 'T팩토리 성수' 'T 팩토리' 'T팩토리' '성수역' || true
