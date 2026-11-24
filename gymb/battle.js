@@ -45,6 +45,7 @@ function loadData() {
   ]).then(([d, fem, an, fx, ds, fm, rf, fa, eg, bw, off, gmj]) => { BWA = bw || {}; GMJ = gmj && !gmj.then ? gmj : {}; SOFF = off || {}; EGG = eg || {}; FA = fa || {}; FMA = fm || {}; RFA = rf || {}; for (const [k, v] of Object.entries(RFA)) FMA[k] = [v[2], v[3], 0, v[4] ? [[1, 15, 0, 0]] : [], 0, []]; D = d; AB_D = { ...AB_D2, ...(ds?.ab || {}) }; MVI = new Map(d.mv.map((m, i) => [m[0], i])); FEM = new Set(fem || []); ANIM = an || {}; MFX = fx || {}; mfxAdd(); mgStAdd(); zcAdd(); tpAdd(); mgthLoad(); try { fmMig(); } catch (e) {} }).catch(e => { dataP = null; throw e; }));
 }
 let simP = null;
+let TW_BST = null;   /* 경완 '포켓로그처럼 바꿔주고 바로 본게임 배포해': 수련탑 지난 층이 끝날 때 나와 있던 내 포켓몬의 능력치 변화(랭크) {p|p2: {pid, b}} — 다음 층에 같은 포켓몬이 내보낸 채로 이어지면 그대로, 교체·기절이면 없어짐 */
 const loadSim = () => window.PSim ? Promise.resolve() : simP || (simP = new Promise((ok, no) => { const s = document.createElement('script'); s.src = `gym/psim.js?v=${VER}`; s.onload = () => window.PSim ? ok() : no(new Error('sim')); s.onerror = () => { simP = null; no(new Error('sim')); }; document.head.appendChild(s); }));
 let splP = null;   // 기술 파티클 엔진 (gymb/spl.js)
 let essP = null;   // 5세대 이후 기술 연출 재생기 (gymb/essfx.js)
@@ -1673,9 +1674,12 @@ async function run(opts) {
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
+  if (opts.chain && TW_BST) ['p', 'p2'].forEach((s, i) => { const v = TW_BST[s], pk = btl.p1.active[i], A = my[i]; if (!v || !pk || !A || !B?.pG?.[s] || v.pid !== A.pid) return; for (const k in v.b) pk.boosts[k] = v.b[k]; });   /* 이어지는 층: 발판에 그대로 둔 포켓몬(keepP)만 랭크 이어 받음, 'turn' 줄에서 딱지도 그려짐 */
+  TW_BST = null;
   if (opts.xit) try { xitStart(btl); } catch (e) { console.error(e); }
   try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
   const won = btl.winner === '관장', out = B?.out, cut = !btl.ended && out !== 'quit';   /* 오류로 중간에 멈춘 배틀은 없던 배틀 (경완 2026-11-04 '질 상황이 아니었는데 진 걸로') */
+  try { if (won && B) ['p', 'p2'].forEach((s, i) => { const pk = btl.p1.active[i], A = pk && !pk.fainted && B.my[B.o.p.indexOf(pk)]; if (!A) return; const b = {}; let n = 0; for (const k in pk.boosts) if (pk.boosts[k]) { b[k] = pk.boosts[k]; n++; } if (n) (TW_BST = TW_BST || {})[s] = { pid: A.pid, b }; }); } catch (e) {}   /* 다음 층에 넘길 랭크 */
   try { blogSave(opts, my, foeT, won, out || (cut ? 'cut' : undefined)); } catch (e) {}
   try { if (!cut) erEnd(); } catch (e) {}
   try { if (B && !B.practice && !B.train && !cut && out !== 'quit') { frBattle(won); wsBattle(won); } } catch (e) { console.error(e); }
