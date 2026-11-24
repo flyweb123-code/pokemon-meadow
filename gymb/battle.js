@@ -2409,7 +2409,7 @@ function lvApply(pk, X, lv, a, b) {
 // 상대를 쓰러뜨리면 나왔던 내 포켓몬(쓰러지지 않은)이 경험치를 받고, 나머지 라인업은 학습장치로 절반. 나와 있는 포켓몬은 경험치 막대가 차오르고 레벨업
 async function expGain(X) {
   const foe = B.foe[X.i]; if (!foe || B.practice) return;
-  for (const pid of B.vs) { const i = B.my.findIndex(o => o.pid === pid), P = boxOf(pid); if (P && B.o.p[i] && !B.o.p[i].fainted) { if (B.train) evTrain(P, foe.sp); else evBattle(P, foe.sp); } }   // v20.45 노력치: 싸운 포켓몬이 쓰러뜨린 종의 노력치를 (동네 체육관부터)
+  for (const pid of B.vs) { const i = B.my.findIndex(o => o.pid === pid), P = boxOf(pid); if (P && B.o.p[i] && !B.o.p[i].fainted) { evBattle(P, foe.sp);   /* 경완 '수련탑에서 노력치가 안 쌓이는 느낌… 포인트로 쌓이는게 아니고 능력치로 쌓이네' → 수련탑도 체육관처럼 남은 노력치 포인트로 (예전 evTrain 은 안 나눈 포인트 몫을 비워 둬서 막혔음) */ } }   // v20.45 노력치: 싸운 포켓몬이 쓰러뜨린 종의 노력치를 (동네 체육관부터)
   // v13.04 경완: 연습 배틀은 경험치 연출도 없음
   // 학습장치 (본가 6세대~처럼 늘 켜짐, 경완 2026-10-30): 나오지 않은 라인업 포켓몬도 절반을 받는다. 얻은 경험치 글은 한 번에
   const SH = [];   // 학습장치로 받은 포켓몬: 나와 싸운 포켓몬이 다 받은 뒤 한 창에 미니 그림 + 경험치 막대로 한꺼번에 (경완 2026-10-30)

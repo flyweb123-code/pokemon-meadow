@@ -4393,12 +4393,13 @@ function trClone(ids) { const g = st(); g.mon = g.mon || {};
    더하는 것 = 경험치(gainXp 'keep': 새 기술은 빈 칸이 없으면 익혀만 둠)·노력치(evAdd, 한도 그대로)·수련탑에서 고른 기술(진짜 포켓몬 기술이 그사이 안 바뀌었을 때만 그대로, 아니면 익혀 둠).
    수련탑에서 빌린 도구·테라·다이수프·영양제·잡은 동료는 이번 도전만이라 안 더함. C.sy = 지난번 더한 때의 사본 값 (차이만 더해서 이어 오르기 사이에 다른 데서 키운 것도 안 덮음) */
 const TR_REAL = true;
-function trSnap(C) { const c = GB().gm(C); C.sy = { xp: c.xp | 0, ev: [...GB().evArr(c)], mv: [...(c.mv || [])], kn: [...(c.kn || [])] }; }
+function trSnap(C) { const c = GB().gm(C); C.sy = { xp: c.xp | 0, evp: c.evp | 0, ev: [...GB().evArr(c)], mv: [...(c.mv || [])], kn: [...(c.kn || [])] }; }
 function trSync(R) { if (!TR_REAL || window.gymSimOn || !R?.ids) return; const B = GB(); let ch = 0;
   for (const id of R.ids) { const C = B.boxOf(id), O = C?.src != null ? B.boxOf(C.src) : null; if (!C || !O || O.gTst || O.sp !== C.sp) continue; if (!C.sy) trSnap(C);
     try { const c = B.gm(C), o = B.gm(O), s = C.sy, dx = (c.xp | 0) - s.xp;
       if (dx > 0) { B.gainXp(O, dx, 'keep'); ch = 1; }
       B.evArr(c).forEach((v, i) => { const d = (v | 0) - (s.ev[i] | 0); if (d > 0 && B.evAdd(o, i, d)) ch = 1; });
+      { const d = s.evp == null ? 0 : (c.evp | 0) - s.evp, room = Math.max(0, 510 - B.evArr(o).reduce((a, v) => a + (v | 0), 0) - (o.evp | 0)), k = Math.min(Math.max(0, d), room); if (k > 0) { o.evp = (o.evp | 0) + k; ch = 1; } }   /* 수련탑에서 받은 남은 노력치 포인트 (체육관처럼) */
       const nw = (c.mv || []).filter(x => !s.mv.includes(x)), kn = (c.kn || []).filter(x => !s.kn.includes(x));
       if (nw.length || kn.length) { o.kn = o.kn || []; if (nw.length && (o.mv || []).join() === s.mv.join()) { o.mv.filter(x => !c.mv.includes(x)).forEach(x => { if (!o.kn.includes(x)) o.kn.push(x); }); o.mv = [...c.mv]; o.kn = o.kn.filter(x => !o.mv.includes(x)); }
         else nw.forEach(x => { if (!o.mv.includes(x) && !o.kn.includes(x)) o.kn.push(x); }); kn.forEach(x => { if (!o.mv.includes(x) && !o.kn.includes(x)) o.kn.push(x); }); ch = 1; }
