@@ -633,7 +633,7 @@ function stPat(side, st) { if (!DBK_ON) return; const img = monEl(side)?.querySe
 // 위치는 DS 화면 좌표: 상대 80x80 칸 왼쪽 위 (136, E_Y+보정), 내 쪽 (40, P_Y+보정)
 const E_Y = 8, P_Y = 64;
 const SEL = (k, s) => `.bt-${k}.${s[0]}${s[1] ? '.s2' : ':not(.s2)'}`;   /* v24.21 더블 배틀: 자리 p·p2·e·e2 (두 번째 자리 = .s2, 화면 자리는 data-sl) */
-const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: 4, e: -14, e2: -6 } /* v27.24 경완 '상대방 포켓몬 두번째에 나온 포켓몬 (오른쪽에 있는 포켓몬이) 처음 나온 포켓몬보다 앞쪽에 있어야': 오른쪽(e2)이 앞(아래·위에 그림) */, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
+const DBL_X = { p: -30, p2: 40, e: -34, e2: 30 }, DBL_Y = { p: 0, p2: 4, e: -14, e2: 0 } /* v27.24 경완 '상대방 포켓몬 두번째에 나온 포켓몬 (오른쪽에 있는 포켓몬이) 처음 나온 포켓몬보다 앞쪽에 있어야': 오른쪽(e2)이 앞(아래·위에 그림) */, slx = s => B?.dbl ? DBL_X[s] || 0 : 0, sly = s => B?.dbl ? DBL_Y[s] || 0 : 0;
 function monEl(side) { return $b(SEL('mon', side)); }
 /* 경완 2026-11-13: Z파워를 몸에 두른 뒤 Z기술을 쓸 때까지 포켓몬 둘레에 금빛 기운이 계속 일렁임 */
 /* v24.51 경완 'Z파워 두를 때 불꽃 효과 타입별로': 원본(Gen 9 팩 zpower·기운 불꽃)은 주황 → 타입별 색 필터 (그림 자체엔 안 걸고 효과 칸에만) */
@@ -1645,11 +1645,12 @@ async function run(opts) {
   // 곡이 준비된 뒤에 연출 시작 (경완 2026-10-28 '시작 연출이랑 BGM 타이밍이 안 맞음'): 처음 만드는 곡이면 기다림, 최대 4초
   if (!opts.bgmKeep) await Promise.race([(async () => { try { await window.GymBGM?.play(music, { fade: .05 }); } catch (e) {} })(), wait(4000)]);   /* v24.14 수련탑: 같은 곡이면 이어지는 배틀에서 곡을 다시 틀지 않음 */
   const encDone = opts.chain ? () => {} : await encounter(opts);   /* v23.10 훈련하기: 다음 층은 배틀 화면 그대로 상대만 바뀜 */
-  el.classList.remove('off'); el.hidden = false; el.className = (opts.chain ? 'bt open' : 'bt intro now') + (opts.dbl ? ' dbl' : ''); fit();
+  const dIn = opts.chain && el.classList.contains('dbl') !== !!opts.dbl;   /* 이어지는 층에서 한 마리↔두 마리 배틀 바뀜 → 자리 옮김을 미끄럽게 (gym.css .bt.dblIn) */
+  el.classList.remove('off'); el.hidden = false; el.className = (opts.chain ? 'bt open' : 'bt intro now') + (opts.dbl ? ' dbl' : '') + (dIn ? ' dblIn' : ''); fit(); if (dIn) setTimeout(() => el?.classList.remove('dblIn'), 900);
   ['e', 'p'].forEach(k => { if (opts.pl) el.style.setProperty('--pl' + k, `url(${new URL(`${IMG}bt/pl_${k}_${opts.pl}.png`, location.href).href})`); else el.style.removeProperty('--pl' + k); });   /* v23.16 지형별 발판 (플래티넘, tools/gym/mkbattlebg.py) */
   { let tb = $b('.bt-tools'); if (opts.tools) { if (!tb) { tb = document.createElement('div'); tb.className = 'bt-tools'; el.appendChild(tb); } tb.innerHTML = opts.tools.map(([t], i) => `<button type="button" data-i="${i}">${t}</button>`).join(''); tb.hidden = false; tb.onclick = e => { const b = e.target.closest('button'); if (!b) return; e.stopPropagation(); tapSe(); opts.tools[+b.dataset.i]?.[1]?.(); }; } else if (tb) tb.hidden = true; }   /* v23.10 경완: 시험용 버튼은 배틀 화면 위 반투명 오버레이 */
   { let fb = $b('.bt-fl'); if (opts.badge) { if (!fb) { fb = document.createElement('div'); fb.className = 'bt-fl'; $b('.bt-top').appendChild(fb); } fb.innerHTML = opts.badge; fb.hidden = false; } else if (fb) fb.hidden = true; }   /* 훈련하기 층 표시 */
-  { let fi = $b('.bt-its'); if (opts.items) { if (!fi) { fi = document.createElement('div'); fi.className = 'bt-its'; $b('.bt-top').appendChild(fi); } fi.innerHTML = opts.items; fillTh(fi); fi.hidden = false; } else if (fi) fi.hidden = true; }   /* v24.73 수련탑 얻은 도구 아이콘 (좌상단, 포켓로그처럼) */   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
+  { let fi = $b('.bt-its'); if (opts.items) { if (!fi) { fi = document.createElement('div'); fi.className = 'bt-its'; $b('.bt-bot').appendChild(fi); } fi.innerHTML = opts.items; fillTh(fi); fi.hidden = false; } else if (fi) fi.hidden = true; el.classList.toggle('has-its', !!opts.items && !!fi?.innerHTML.trim()); }   /* v24.73 수련탑 얻은 도구 아이콘 (좌상단, 포켓로그처럼) */   // className 을 새로 쓰면 mob·msgmid 가 지워져 대화창이 사라졌음 (경완 2026-10-27 '배틀 상태창이 없어졌네')
   $b('.bt-bg').style.backgroundImage = `url(${IMG}bt/bg_${opts.bg || 'in1'}.png)`; el.style.setProperty('--bgi', `url(${new URL(`${IMG}bt/bg_${opts.bg || 'in1'}.png`, location.href).href})`);   /* CSS 변수 속 주소는 gym.css 기준으로 풀려서 절대 주소로 */   /* 위 상태 막대 자리도 배틀 배경으로 채움 */
   // 지난 배틀의 away·back·throw 가 남아 있으면 트레이너가 미끄러져 들어오지 않고 제자리에 있었다 (경완 2026-10-28 '발판만 움직이고 캐릭터는 안 움직임')
   const trE = $b('.bt-tr.e'), trP = $b('.bt-tr.p'), uE = opts.wild ? '' : trSrc(opts.foe.tr), uP = opts.meBackUrl || `${IMG}trb/${meF ? 'pt_f' : 'pt_m'}.png`;

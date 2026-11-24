@@ -4540,15 +4540,16 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.21 더블 배틀 (수련탑): 한 쪽 두 자리 — 첫 자리 data-sl=0, 두 번째 data-sl=1 (.s2 는 역할 이름표라 기술 연출 동안 바뀔 수 있음) */
 .bt:not(.dbl) .bt-mw[data-sl="1"],.bt:not(.dbl) .bt-hb.s2{display:none}
 .bt.dbl .bt-mw.e[data-sl="0"]{left:-26px;top:-6px}
-.bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-14px;height:104px}
+.bt.dbl .bt-mw.e[data-sl="1"]{left:38px;top:-8px;height:104px}   /* 경완 '더블배틀에서 상대편 오른쪽에 있는 애가 왼쪽에 있는애보다 레이어 앞으로 오고 위치도 살짝 앞쪽에': 발 밑 98 (왼쪽 92 보다 6px 앞), 그리는 차례는 판 순서대로 오른쪽이 뒤(=앞에 보임) */
 .bt.dbl .bt-pl.e{top:48px}.bt.dbl .bt-tr.e{margin-top:-8px}   /* v25.13 경완 '배틀 박스 두개된만큼 상대 포켓몬 가려지지 않게 발판 살짝 올려': 더블은 상대 발판·포켓몬·트레이너 8px 위 (battle.js DBL_Y 도) + 내 두 번째 체력 박스 4px 아래 (아래 박스는 대화창에 걸려 그대로) */
 .bt.dbl .bt-mw.p[data-sl="0"]{left:-36px}   /* v25.14 경완 '이상해씨 하단 잘림선': 뒷모습 그림은 아래가 반듯하게 잘려 있어 화면 아래(144)에 숨겨야 함 — 첫 자리는 올리지 않음 */
 .bt.dbl .bt-mw.p[data-sl="1"]{left:24px;top:4px;height:148px}   /* v25.11 경완 '내 포켓몬 두번째에 나온 애 스프라이트가 처음 나온 애보다 앞쪽에': 두 번째 자리(오른쪽)가 앞 — 그리는 차례(battle.js 판 순서)도 뒤로, 조금 아래 */
 .bt.dbl .bt-hb{scale:.75;transform-origin:0 0}
 .bt.dbl .bt-hb.e:not(.s2){left:-5px;top:3px}
 .bt.dbl .bt-hb.e.s2{left:-5px;top:28px}   /* v26.41 경완 '더블 배틀할 때 상대 체력박스들 왼쪽 여백 생기는거 없애줘' — 한 마리 배틀(-6px)처럼 몸통을 화면 끝에 */   /* v25.16 볼 줄은 위 박스에만 → 화면 위에 안 잘리게 두 박스 조금 아래로 */
-.bt.dbl .bt-hb.p.s2{left:160px;top:74px}
-.bt.dbl .bt-hb.p:not(.s2){left:160px;top:103px}
+.bt.dbl .bt-hb.p:not(.s2){left:160px;top:74px}
+.bt.dbl .bt-hb.p.s2{left:160px;top:103px}   /* 경완 '더블배틀 할 때 우리팀쪽 체력박스 위치 위아래 바꿔줘 왼쪽에 있는 애가 위로 오게' */
+.bt.dblIn .bt-mw.p,.bt.dblIn .bt-hb.p{transition:left .6s ease-in-out,top .6s ease-in-out,scale .6s ease-in-out,transform .35s ease-out,opacity .2s}   /* 경완 '배틀 후 더블배틀 넘어갈 때 포켓몬 위치 자연스럽게': 이어지는 층에서 한 마리↔두 마리 배틀이 바뀌면 남아 있는 내 포켓몬·체력 상자가 새 자리로 미끄러짐 (battle.js dblIn) */
 .bt .pty.tg-p.off{opacity:.4;filter:grayscale(1)}.bt .bp-tgp.tg-all .cancel{grid-column:1!important}.bt .bp-tgp.tg-all .tg-go{grid-column:2;--c1:#f4706a;--c2:#d93a3c}   /* v25.11 쓰기 버튼 (그만두기 오른쪽) */
 .bt .bp-tgp.tg-all .pty.tg-p:not(.off){animation:tgAll 1s steps(2,end) infinite}@keyframes tgAll{50%{filter:brightness(1.25)}}   /* v25.05 범위 기술: 맞을 칸 다 같이 깜빡 */
 .bt .pty.tg-p.e{background:linear-gradient(#f07868,#c8403c);box-shadow:inset 0 0 0 1px #f8c0b0,0 0 0 1px #581c1c}   /* v25.03 더블 배틀 목표 고르기 = 도구 대상 목록과 같은 칸 */
@@ -4611,7 +4612,7 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 /* v24.63 이름 있는 심사관: '승급 심사' 제목이 사라지고 그 사람 썬문식 배경·얼굴 띠 (battle.js encounter smx) */
 .bt-enc.ex.smx :is(.ex-pn,.ex-ln,.ex-fl,.ex-band){transition:opacity .25s;opacity:0!important}
 /* v24.73 수련탑 얻은 도구 아이콘 줄 (좌상단, 포켓로그처럼 개수는 오른쪽 아래) */
-.bt .bt-its{position:absolute;left:3px;top:2px;z-index:4;display:flex;flex-wrap:wrap;gap:2px;max-width:46%;pointer-events:none}   /* v24.81 배틀 무대(.bt-top) 안, 무대 도트 크기 */
+.bt .bt-its{position:absolute;left:4px;right:4px;top:3px;height:17px;z-index:2;display:flex;flex-wrap:nowrap;align-items:center;gap:3px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 1px}.bt .bt-its::-webkit-scrollbar{display:none}.bt.has-its .bt-panel{top:20px}.bt .bt-its i{flex:none}   /* 경완 '지금까지 받은 도구들 배틀 화면 말고 하단 화면 상단에 표시하자': 아래 화면(.bt-bot) 맨 위 한 줄, 많아지면 옆으로 밀어 봄 — 버튼 판은 그만큼 아래로 */   /* v24.81 배틀 무대(.bt-top) 안, 무대 도트 크기 */
 .bt .bt-its:empty{display:none}
 .bt .bt-its i{position:relative;width:15px;height:15px;display:flex;align-items:center;justify-content:center}   /* v24.74 경완 '아이템은 뒤 박스 없이' */
 .bt .bt-its img{width:15px;height:15px;image-rendering:pixelated;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4))}
@@ -4896,6 +4897,6 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 .bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize .gk-ti{width:36px;height:37px;left:2px;margin-top:-19.5px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti){padding-left:36px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti) span{font-size:13px}.bt.mob .gk-row:has(>button:nth-child(3)) .bb.gkb.terastallize:has(.gk-ti) small{font-size:11px}
 .bt-hb .bst{position:absolute;display:flex;gap:2px;pointer-events:none;white-space:nowrap;text-shadow:none}   /* v28.81 경완 '딱지는 a로 가자': 능력 변화 딱지 (battle.js bstPaint) */
 .bt-hb.e .bst{left:12px;top:45px}.bt-hb.p .bst{right:6px;top:1px}
-.bt.dbl .bt-hb.e .bst{left:calc(100% - 2px);top:14px}.bt.dbl .bt-hb.p .bst{right:calc(100% + 2px);top:16px}
+.bt.dbl .bt-hb .bst{flex-direction:column;flex-wrap:wrap;max-height:32px;gap:2px}.bt.dbl .bt-hb.e .bst{left:calc(100% - 2px);top:2px;align-items:flex-start;align-content:flex-start}.bt.dbl .bt-hb.p .bst{right:calc(100% + 2px);top:2px;align-items:flex-end;align-content:flex-end;flex-wrap:wrap-reverse}   /* 경완 '더블 배틀에서 능력 변화 표시 딱지는 체력박스 좌측에 세로로 나열': 내 편은 상자 왼쪽에 세로로(세 개 넘으면 왼쪽으로 한 줄 더), 상대 상자는 왼쪽이 화면 끝이라 오른쪽에 세로로 */
 .bt-hb .bst i{display:block;height:8px;padding:0 3px;font-style:normal;font-size:7px;line-height:8px;color:#fff;border-radius:1px;box-shadow:0 1px 0 rgba(0,0,0,.45)}
 .bt-hb .bst i.u{background:#e0503a}.bt-hb .bst i.d{background:#3a72d8}.bt-hb .bst i.m{background:#606878}
