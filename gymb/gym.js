@@ -4750,11 +4750,13 @@ async function trPost(R, o, boss, ids, T, trn) {
     const dn = ids.filter(id => (R.hp[id] ?? 1) <= 0 && GB().boxOf(id)); ids.forEach(id => { R.hp[id] = (R.hp[id] ?? 1) > 0 ? 1 : .5; }); await o.msgTap(trn ? '승부를 마치고\n모두 기운을 되찾았다!' : '우두머리를 쓰러뜨렸다!\n모두 기운을 되찾았다!');
     if (dn.length) await o.msgTap((() => { const N = dn.map(id => { const P = GB().boxOf(id); return P?.nm || SPECIES[P?.sp]?.n || ''; }).filter(Boolean), L = N.join(', '); return `쓰러졌던 ${L}${jong(N[N.length - 1]) ? '은' : '는'}\n체력이 절반만 돌아왔다.`; })()); }   /* 경완 '체력 다 회복했는데 초염몽은 반피만 회복된건 뭐야': 쓰러졌던 포켓몬은 절반이라고 따로 알림 */
   else ids.forEach(id => { const h = R.hp[id] ?? 1; if (h > 0) R.hp[id] = Math.min(1, h + TR.heal); });
+  await trHbSync(R, o);   /* 경완 '교체창 체력이랑 체력박스 체력이랑 다른 이유': 층 사이 회복(TR.heal)·우두머리 회복과 이번 층 노력치로 오른 최대 HP 를 체력 상자에도 바로 (전엔 교체창만 바뀌고 상자는 다음 층에서야) */
   if (R.floor >= TR.top) { R.end = 'top'; await o.msgTap('200층 수련탑 꼭대기에 올랐다!'); await o.msgTap('(멀리서) 강박사: "나도 가는 중이란다!\n길을 잃었을 뿐이야!"'); await trItBack(R, o); await fin(); return false; }
   const cn = Math.round((boss ? 40 : trn || T?.dbl ? 20 : 10) * trCoinX(R.floor));   /* v28.76 경완 '해줘'(포켓로그 돈 경제): 층이 오를수록 코인·상점 값 같이 (trCoinX) */   /* v24.87 트레이너 20, 관장·라이벌·사천왕·챔피언 40 */ R.coin = (R.coin | 0) + cn; trHud(R, 'c');   /* v24.70 경완 '코인은 포켓몬 쓰러트릴 때마다': 한 마리 10 (더블 20), 우두머리 40 */
   const gd = trGold(R.floor, boss, trn || T?.dbl); R.gold = (R.gold | 0) + gd; if (TR_PAY) addG(gd, 'tower'); trHud(R); o.se?.('REGI');   /* v27.31 경완 '배틀 끝날 때마다 보상 받을 때도 골드랑 코인 올라가는 효과음' = 꾸러미·상점 구매와 같은 레지 소리 */
   await o.msg(`수련탑 코인 ${cn}개와\n${gd.toLocaleString()}골드를 얻었다!`, 300);
   await trReward(R, o, ids, boss);
+  await trHbSync(R, o);   /* 보상 창에서 쓴 상처약·기력의조각도 */
   if (R.floor % 10 === 0) { const G = await trGift(R.floor); if (G) (R.gfs = R.gfs || []).push(G); }   /* 경완 '기록창에 선물 보상 받은 것도 나오게' */   /* v27.99 10층마다 선물 (주마다 한 번) */
   R.floor++;
   /* v23.68 경완 '특별한 층': 5·15·25…층 = 수련탑 상점 (이번 판 코인), 가끔 수수께끼 상자 — 배틀 없이 다음 층으로 */
@@ -4768,6 +4770,8 @@ async function trPost(R, o, boss, ids, T, trn) {
 /* v27.99 경완 '10층 단위, 50층 단위 … 선물. 본게임 창고나 가방에 들어가는 선물' · '주마다 한번 좋아' · '선물도 일단 베타에 받지는 않는걸로 배포해'
    값 = 상점 값 기준 (이상한사탕·영양제 300, 향로 900, 뽑기권 점수×50, 기술머신 tmPrice, 민트 3,000, 빛나는 부적 5,000) → 100층까지 약 5,500G·200층 약 20,300G (배틀 골드 200층 약 10,900G 따로)
    TR_GF_PAY = false: 창만 보여 주고 실제로 넣지 않음, 받은 층 기록도 저장 안 함 (공개 때 켜고 gyGive 처럼 넣기) */
+const trMxHp = (R, id) => { const p = GB().boxOf(id); if (!p) return 100; const mm = GB().gm(p); try { let M = GB().statsOf(p, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0]; if (p.shiny && TR_SHY > 1) M = Math.round(M * TR_SHY); const v = (R.vit?.[id] || [])[0] | 0; if (v > 0) M = Math.round(M * (1 + .1 * v)); return Math.max(1, M); } catch (e) { return 100; } };   /* 배틀(battle.js shyX·영양제)과 똑같은 최대 HP — 이로치 ×1.2 가 빠져서 교체창 최대 HP 가 배틀보다 작던 것도 */
+const trHbSync = async (R, o) => { if (!o?.hbSet) return; for (const id of R.ids) { if (!GB().boxOf(id)) continue; const M = trMxHp(R, id); try { await o.hbSet(id, Math.round(Math.max(0, R.hp[id] ?? 1) * M), M); } catch (e) {} } };   /* 수련탑 지금 체력(R.hp)·최대 HP(trReward mx 와 같은 셈)를 배틀 체력 상자에 */
 const TR_GF_PAY = true;   /* 경완 2026-11-24 '실제 보상까지 켜고 공개' (본 게임 공개) */
 /* 층 선물 실제로 넣기: 가방(이상한사탕·향로·빛나는 부적·뽑기권) = S.items, 창고(영양제·민트·기술머신) = 체육관 g.vit·g.mint·g.tms, 200층 이로치 알 = 알 가방 */
 function trGfGive(G) { if (window.gymSimOn || !G?.id) return; const B = GB(), g = st(), I = GA.fOwn?.();
@@ -4876,7 +4880,7 @@ async function trMate(R, o, c) { const g = st(); g.mon = g.mon || {};
   R.ids.push(P.id); R.hp[P.id] = Math.max(.01, Math.min(1, c.hp || 1));
   if (R.ids.length > 6) { const B_ = id => GB().boxOf(id), nm = id => B_(id)?.nm || SPECIES[B_(id)?.sp]?.n || '';
     /* v25.17 경완 '포켓몬 꽉 찼을 때 동료 포켓몬 잡으면 쉬게 할 포켓몬 고를 수 있게 해줘 포켓몬 교체창이랑 동일하게. 텍스트는 쉬게 할 포켓몬을 고르라는 말 뜨고 내 포켓몬 누르면 박스로 돌아갔다 하고 동료 포켓몬 누르면 야생으로 돌아갔다고 하기' */
-    const mx = id => { const p = B_(id), mm = GB().gm(p); try { return Math.max(1, GB().statsOf(p, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) + .5 | 0); } catch (e) { return 100; } };   /* v28.35 배틀(battle.js 영양제 Math.round)과 같은 최대 HP */
+    const mx = id => trMxHp(R, id);   /* v28.35 배틀(battle.js 영양제 Math.round)과 같은 최대 HP */
     /* v25.18 경완 '왜 칸이 7개지' → 본가처럼 원래 6마리만 칸에, 새로 잡은 포켓몬은 대사창에. 그만두기 = 새 포켓몬을 놓아줌 */
     const T6 = R.ids.filter(id => id !== P.id), q = `${eul(nm(P.id))} 데려가려면\n쉬게 할 포켓몬을 골라 주세요.`; await o.msgTap('포켓몬이 가득 찼다!');   /* 세 줄은 대사창을 넘쳐서 둘로 나눔 */
     const out = (o.pickMon ? await o.pickMon(q, T6.map(id => { const h = mx(id); return { id, hp: Math.round(Math.max(0, R.hp[id] ?? 1) * h), mhp: h, ok: true }; })) : T6[await o.choose(q, [...T6.map(id => [nm(id) + (B_(id)?.mate ? ' (동료)' : ''), `Lv.${GB().gm(B_(id)).lv}`, '']), ['그만두기', `${nm(P.id)}${jong(nm(P.id)) ? '을' : '를'} 놓아줘요`, '#9aa0b4,#6c7288']])]) ?? P.id;
@@ -4983,7 +4987,7 @@ const trBoxPick = (L, title, again, tip = '하나만 가져갈 수 있어요', X
 async function trReward(R, o, ids, boss, shop, first) {
   const hp = id => R.hp[id] ?? 1, live = ids.filter(id => hp(id) > 0), down = ids.filter(id => hp(id) <= 0), hurt = live.filter(id => hp(id) < .999);
   const P = id => GB().boxOf(id), nm = id => P(id)?.nm || SPECIES[P(id)?.sp]?.n || '', m = id => GB().gm(P(id));
-  const mx = id => { const p = P(id), mm = m(id); try { return Math.max(1, GB().statsOf(p, mm.lv, p.iv || [0, 0, 0, 0, 0, 0], mm.nat || 'hardy', GB().evArr?.(mm))[0] * (1 + .1 * ((R.vit?.[id] || [])[0] | 0)) + .5 | 0); } catch (e) { return 100; } };   /* v28.35 배틀(battle.js 영양제 Math.round)과 같은 최대 HP */   /* 맥스업 먹은 만큼 최대 HP 도 */
+  const mx = id => trMxHp(R, id);   /* v28.35 배틀(battle.js 영양제 Math.round)과 같은 최대 HP */   /* 맥스업 먹은 만큼 최대 HP 도 */
   const cur = id => Math.round(hp(id) * mx(id));
   /* v28.38 경완 '기력의 조각 써서 살린 포켓몬한테 상처약 못 쓰는 오류': 보상 창을 열 때 살아 있던 목록(live)을 그대로 써서, 같은 창 상점에서 살린 포켓몬은 상처약·도구 대상에서 빠졌음 → 고를 때마다 지금 체력으로 다시 셈 */
   const alv = () => ids.filter(id => hp(id) > 0);

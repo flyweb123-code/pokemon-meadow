@@ -1707,7 +1707,7 @@ async function run(opts) {
   /* v23.10 훈련하기: 끝난 뒤 남은 체력(hp)·보급 고르기(opts.post). post 가 true 면 배틀 화면을 닫지 않고 다음 층으로 */
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
   if (opts.post && B) lowHp(false);   /* v28.35 배틀이 끝난 뒤(보상 고르기·그만두기 문구) 체력 경고음 멈춤 — 다음 층은 체력 상자를 다시 그릴 때 다시 판단 */
-  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
+  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, hbSet: async (pid, hp, mhp) => { for (const s of ['p', 'p2']) { const A = B?.act?.[s]; if (!A || A.pid !== pid || A.fnt || !$b(SEL('hb', s)).classList.contains('on')) continue; A.mhp = mhp; setHp(s, A.hp, mhp); if (Math.round(A.hp) !== hp) await drainHp(s, A, hp); } } /* 경완 '교체창 체력이랑 체력박스 체력이랑 다른 이유': 층 사이 회복·노력치로 오른 최대 HP·보상 도구를 발판 위 체력 상자에도 */, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
   if (keep && B) { lowHp(false); const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
