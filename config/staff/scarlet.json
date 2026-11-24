@@ -1,6 +1,1168 @@
 {
  "days": [
   {
+   "at": 1795560528919,
+   "theme": "숲속 꼬마 꽃집",
+   "note": "오늘은 숲속 꼬마 꽃집이에요. 화분 탑·유리 온실·장미 아치·꽃 양동이 진열대처럼 꽃집 앞뒤를 채우는 소품 10개를 그렸고, 걸이 화분은 바람에 흔들리고 튤립밭 풍차는 날갯짓하면 날개가 돌아가요. 숨기·기어오르기·날아와 앉기·꿀 먹기·낮잠을 고루 넣어 여러 포켓몬이 놀 수 있게 했어요.",
+   "items": [
+    {
+     "id": "flo-pot-tower",
+     "n": "화분 탑",
+     "k": "꽃집",
+     "d": "크기가 다른 토분 세 개를 차곡차곡 쌓고 맨 위에 빨간 튤립 한 송이를 꽂은 꽃집 앞 장식이에요. 토분 테두리마다 햇빛이 반들반들 비쳐요.",
+     "px": [
+      "......kkk.......",
+      ".....kRqrk......",
+      ".....kRrqk......",
+      "......kekek.....",
+      ".....kEenek.....",
+      "....kHHHAAak....",
+      "....kAaaaaBk....",
+      ".....kHAaBk.....",
+      ".....kHAaBk.....",
+      "...kkkkkkkkkk...",
+      "..kHHHHHHAAaak..",
+      "..kAAaaaaaaBBk..",
+      "...kHHAAAaaBk...",
+      "...kHHAAAaaBk...",
+      "...kHHAAAaaBk...",
+      "....kHAAaaBk....",
+      ".kkkkkkkkkkkkkk.",
+      "kHHHHHHHHAAAAaak",
+      "kAAAaaaaaaaaaBBk",
+      ".kHHAAAAAaaaBBk.",
+      ".kHHAAAAAaaaBBk.",
+      ".kHHAAAAAaaaBBk.",
+      "..kHHAAAAaaBBk..",
+      "..kHHAAAAaaBBk..",
+      "..kHHAAAAaaBBk..",
+      "...kkkkkkkkkk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "H": "#f4b48a",
+      "A": "#d8784a",
+      "a": "#b05a34",
+      "B": "#7e3c24",
+      "E": "#9cc468",
+      "e": "#6a9e4a",
+      "n": "#3e6e36",
+      "R": "#f49a9a",
+      "r": "#d04a54",
+      "q": "#9a2c3c"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "화분 테두리를 하나씩 밟고 맨 위까지 올라가요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "화분 테두리를 하나씩 밟고 화분 탑 꼭대기까지 올라갔다.",
+        "화분 탑 위에서 튤립을 꼭 붙잡고 균형을 잡았다."
+       ]
+      },
+      {
+       "w": "작은 벌레·풀 타입",
+       "a": "맨 위 튤립에 날아와 앉아 꽃향기를 맡아요",
+       "x": {
+        "at": [
+         0.5,
+         0.15
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "화분 탑 맨 위 튤립에 살포시 앉아 꽃향기를 맡았다.",
+        "튤립 꽃잎 사이에 얼굴을 묻고 꿀을 조금 맛봤다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "화분 탑을 건드렸다가 흔들리자 깜짝 놀라 두 손으로 붙잡아요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "화분 탑을 건드렸다가 흔들흔들해서 깜짝 놀라 붙잡았다.",
+        "화분 탑이 넘어질까 봐 조심조심 바로 세웠다."
+       ]
+      }
+     ],
+     "fit": "꽃집 문 앞, 길가"
+    },
+    {
+     "id": "flo-greenhouse",
+     "n": "작은 유리 온실",
+     "k": "꽃집",
+     "d": "붉은 벽돌 받침 위에 나무 틀 유리판을 끼운 꽃집 뒤뜰 온실이에요. 김 서린 유리 너머로 포기 큰 화초와 분홍 꽃봉오리가 비쳐요.",
+     "px": [
+      ".............kkkk.............",
+      "............kwwwwk............",
+      "............kwwvuk............",
+      "..........kkwgwvjukk..........",
+      "........kkwGggwvjjJukk........",
+      ".......kwGGgggwvjjjjJuk.......",
+      ".....kkwGGggggwvjjjjJJukk.....",
+      "...kkwGGGgggggwvgjjjjjJJukk...",
+      ".kkwGGGGggggggwvgjjjjjjJJJukk.",
+      "kwGGGGggggggggwvggjjjjjjjJJJuk",
+      ".kkwwwwwwwwwwwwwwwwwwwwwwwwkk.",
+      "..kvGGGGgvggQwwwwwjjvjGJJJvk..",
+      "..kvGGGGgvgQQvjjjujjvjjGJJvk..",
+      "..kvGQGqqvgQqvjjjuQQvqjJGJvk..",
+      "..kvQQqGqvgqqvjjjuQqvqiJJJvk..",
+      "..kvQqqqivgqqvjjYuqqviiQqJvk..",
+      "..kvqqqiivgqivjjjuqqviQqqivk..",
+      "..kvqqiiivgqivjjjuqiviqqiivk..",
+      "..kuuuuuuuuuuvjjjuuuuuuuuuuk..",
+      ".kHHHHHHHHHHHHHHHHHHHHHHHHAAk.",
+      ".kAAAasaaaaasaaaaasaaaaasBBBk.",
+      ".kSSSSSSSSSSSSSSSSSSSSSSSSssk.",
+      ".kAsAaaaasaaaaasaaaaasaaBBBsk.",
+      ".kSSSSSSSSSSSSSSSSSSSSSSSSssk.",
+      ".kAAAasaaaaasaaaaasaaaaasBBBk.",
+      ".kSSSSSSSSSSSSSSSSSSSSSSSSssk.",
+      "..kkkkkkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "G": "#eaf8f4",
+      "g": "#b4dcd8",
+      "j": "#86b4bc",
+      "J": "#5a8896",
+      "Q": "#8cbc8a",
+      "q": "#5e9470",
+      "i": "#46766a",
+      "p": "#e89ab4",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "H": "#e8a07a",
+      "A": "#c4664a",
+      "a": "#a04e3a",
+      "B": "#743628",
+      "S": "#d8c8b0",
+      "s": "#a89880",
+      "Y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "유리문을 살짝 밀고 온실 안 화초 사이에 쏙 들어가 숨어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "유리 온실 문을 살짝 밀고 화초 사이로 쏙 숨었다.",
+        "온실 유리창에 코를 붙이고 바깥을 빼꼼 내다봤다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "유리 벽 앞에 앉아 따뜻하게 데워진 햇빛을 쬐며 졸아요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "온실 유리 벽 앞에서 따뜻한 햇빛을 쬐며 꾸벅꾸벅 졸았다.",
+        "온실에서 새어 나온 훈훈한 공기에 잎을 활짝 폈다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 온실 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 유리 온실 지붕 꼭대기에 앉았다.",
+        "온실 지붕 위에서 유리에 비친 제 모습을 갸웃거리며 봤다."
+       ]
+      },
+      {
+       "w": "물 타입",
+       "a": "온실 옆에서 물 기술을 뿌려 유리를 반짝반짝 닦아요",
+       "x": {
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "온실 옆에서 물을 뿌려 유리를 반짝반짝 닦았다.",
+        "물을 너무 세게 뿌려 온실 유리에 무지개가 떴다."
+       ]
+      }
+     ],
+     "fit": "꽃밭 뒤, 햇볕 잘 드는 곳"
+    },
+    {
+     "id": "flo-rose-arch",
+     "n": "장미 아치",
+     "k": "꽃집",
+     "d": "격자 나무 기둥 두 개 위로 둥근 아치를 올리고 덩굴장미를 감아 올린 꽃집 입구예요. 빨간 장미가 아치 위에 점점이 피어 있어요.",
+     "px": [
+      ".........kkkkkkk..........",
+      ".....k.kkneERrEekk........",
+      "....knkueRrnrqnRrukk......",
+      "...keuueerqnenvrqeRrkk....",
+      "..knueeeEvkkkkkveErquek...",
+      ".knueEEvkk.....kkvnERrek..",
+      "kneERrkk.........kkerqnk..",
+      ".kunrqk...........kvEweek.",
+      "kEEwek.............kvwuuk.",
+      "knevvuk............kveEek.",
+      "kuwevuk............kwvRrk.",
+      "kERrkvk............kwerqk.",
+      "kurqevk............kvvwenk",
+      "kewvkuk............kevkuk.",
+      "kenkvuk............kekvuk.",
+      ".kwkkvk...........knwRrenk",
+      ".kvvvRrk...........kvrqvk.",
+      ".knvkrqk...........kwveuek",
+      ".keknuek..........kewkvuek",
+      "keekkeek...........knekvk.",
+      "kneRrvk............kevvenk",
+      ".kwrquk...........kenvRrek",
+      "knwnvuk............kekrqk.",
+      ".knkkvnk...........keennek",
+      ".kvvvvk............kvvvvk.",
+      ".kwvkuk............kwvkuk.",
+      ".kwkvuk............kwkvuk.",
+      ".kwkkvk............kwkkvk.",
+      ".kvvvvk............kvvvvk.",
+      "..kkkk..............kkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "E": "#9cc468",
+      "e": "#6a9e4a",
+      "n": "#3e6e36",
+      "R": "#f49a9a",
+      "r": "#d04a54",
+      "q": "#9a2c3c"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "장미 아치 밑을 천천히 지나가며 꽃향기를 맡아요",
+       "x": {
+        "at": "front",
+        "m": "through"
+       },
+       "l": [
+        "장미 아치 밑을 천천히 걸어 지나가며 꽃향기를 맡았다.",
+        "장미 아치 아래를 지나다 꽃잎 한 장이 머리에 내려앉았다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 아치 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 장미 아치 꼭대기에 앉았다.",
+        "장미 아치 꼭대기에서 날개를 접고 노래를 불렀다."
+       ]
+      },
+      {
+       "w": "벌레·페어리 타입",
+       "a": "아치 둘레를 맴돌며 장미꽃 꿀을 찾아다녀요",
+       "x": {
+        "at": [
+         0.3,
+         0.3
+        ],
+        "m": "flap circ"
+       },
+       "l": [
+        "장미 아치 둘레를 맴돌며 장미꽃 꿀을 찾아다녔다.",
+        "장미 한 송이에 매달려 꿀을 쪽쪽 빨았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "격자 기둥 뒤에 숨어 덩굴 사이로 고개만 빼꼼 내밀어요",
+       "x": {
+        "at": [
+         0.12,
+         0.95
+        ],
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "장미 아치 기둥 뒤에 숨어 덩굴 사이로 빼꼼 내다봤다.",
+        "덩굴 사이에 숨었다가 장미 가시에 놀라 쏙 나왔다."
+       ]
+      }
+     ],
+     "fit": "꽃밭 들머리, 길이 시작되는 곳"
+    },
+    {
+     "id": "flo-flower-bucket",
+     "n": "꽃 양동이 진열대",
+     "k": "꽃집",
+     "d": "두 칸 나무 계단 진열대에 함석 양동이 세 개를 올리고 노랑·빨강·흰 꽃다발을 꽂아 둔 꽃집 진열대예요.",
+     "px": [
+      "..........kkkkk...........",
+      ".........kYYyYyk..........",
+      "........kEyyYyYyk.........",
+      ".........keYyoyok.........",
+      "....kk...kMyommlk..kk.....",
+      "..kkPpkk.kMmmllLkkkYykk...",
+      ".kRrpbPpkkMmmllLkWwyoYyk..",
+      "kErQePpbnwwwwwwwEwPeYyonk.",
+      ".keRrpbnwwwwwwwwweWwyonk..",
+      ".kMrQnmmluuuuuuuuMwPnmmlk.",
+      ".kMMmmllLkkkkkkkkMMmmllLk.",
+      ".kMMmmllLk......kMMmmllLk.",
+      ".kkMmmlLkkkkkkkkkkMmmlLkk.",
+      "kwvwwwvwwwvwwwvwwwvwwwvwwk",
+      "kwwwwwwwwwwwwwwwwwwwwwwwwk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuk",
+      ".kvukkkkkkkkkkkkkkkkkkuvk.",
+      ".kvk..................kvk.",
+      ".kvk..................kvk.",
+      ".kvk..................kvk.",
+      "..k....................k.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "M": "#e8eef2",
+      "m": "#a8b4c0",
+      "l": "#7a8696",
+      "L": "#56606e",
+      "E": "#9cc468",
+      "e": "#6a9e4a",
+      "n": "#3e6e36",
+      "Y": "#ffe27a",
+      "y": "#e0b030",
+      "o": "#b87a1e",
+      "R": "#f49a9a",
+      "r": "#d04a54",
+      "Q": "#9a2c3c",
+      "P": "#e8b4e0",
+      "p": "#c88ac8",
+      "b": "#a46aa8",
+      "W": "#f8f4ea"
+     },
+     "acts": [
+      {
+       "w": "벌레·페어리 타입",
+       "a": "꽃다발 위로 날아와 앉아 꽃마다 꿀을 맛봐요",
+       "x": {
+        "at": "top",
+        "m": "fly",
+        "an": "Eat"
+       },
+       "l": [
+        "꽃 양동이 위에 날아와 앉아 꽃마다 꿀을 조금씩 맛봤다.",
+        "노란 꽃다발에 얼굴을 묻었다가 꽃가루를 잔뜩 묻혔다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "진열대 아래 칸에 쏙 들어가 꽃다발 뒤로 숨어요",
+       "x": {
+        "at": "under",
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "꽃 진열대 아래에 쏙 들어가 꽃다발 뒤로 숨었다.",
+        "꽃다발 사이로 고개를 내밀어 손님인 척 두리번거렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "진열대 앞에 서서 꽃다발을 하나하나 구경해요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "꽃 진열대 앞에 서서 꽃다발을 하나하나 구경했다.",
+        "빨간 꽃다발 앞에서 한참 고민하다 흰 꽃에 코를 댔다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "양동이 옆에 앉아 꽃들과 나란히 꽃 시늉을 해요",
+       "x": {
+        "at": "side",
+        "an": "Sleep"
+       },
+       "l": [
+        "꽃 양동이 옆에 나란히 앉아 꽃인 척 가만히 있었다.",
+        "꽃 시늉을 하다가 햇볕이 좋아 그대로 잠들었다."
+       ]
+      }
+     ],
+     "fit": "꽃집 입구 옆, 길가"
+    },
+    {
+     "id": "flo-cactus-pot",
+     "n": "큰 선인장 화분",
+     "k": "꽃집",
+     "d": "양팔을 번쩍 든 기둥 선인장을 토분에 심었어요. 머리와 오른팔 끝에 분홍 꽃이 피었고 하얀 가시가 군데군데 반짝여요.",
+     "px": [
+      ".......kkk.......",
+      "......kPpPk......",
+      "......kpYpk...k..",
+      "......kEezk..kpk.",
+      ".....kEennzk.kPk.",
+      ".....kEeenWk.kEk.",
+      ".....kWennzkkEezk",
+      "..k..kEeenzkkEezk",
+      ".kEk.kEennzkkEeWk",
+      "kEezkkEeenWkkEezk",
+      "kEezkkEennzkkWezk",
+      "kWezkkEeenzkkEezk",
+      "kEezkkWennzkkEezk",
+      "kEeWkkEeenzEeenzk",
+      "kEezkkEennzEenzk.",
+      "kEeenzEeenWkkkk..",
+      ".kEenzEennzk.....",
+      "..kkkkEeenzk.....",
+      ".....kWennzk.....",
+      ".....kEeenzk.....",
+      ".....kWennzk.....",
+      "...kkkEeenzkkk...",
+      "..kHHHHHHAAAaak..",
+      "..kAAaaaaaaaBBk..",
+      "...kHHAAAaaBBk...",
+      "...kHHAAAaaBBk...",
+      "...kHHAAAaaBBk...",
+      "....kHHAAaaBk....",
+      "....kHHAAaaBk....",
+      ".....kkkkkkk....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "H": "#f4b48a",
+      "A": "#d8784a",
+      "a": "#b05a34",
+      "B": "#7e3c24",
+      "E": "#a8cc78",
+      "e": "#6ea456",
+      "n": "#46784a",
+      "z": "#2e5236",
+      "W": "#f8f4e6",
+      "P": "#f4a8c8",
+      "p": "#d86a9a",
+      "Y": "#ffe27a"
+     },
+     "acts": [
+      {
+       "w": "풀·땅 타입",
+       "a": "선인장 옆에 나란히 서서 두 팔을 똑같이 들어 흉내 내요",
+       "x": {
+        "at": "side",
+        "m": "wobble"
+       },
+       "l": [
+        "선인장 옆에 서서 두 팔을 번쩍 들고 선인장 흉내를 냈다.",
+        "선인장 흉내를 내다 팔이 아파 슬그머니 내렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "선인장에 다가갔다가 가시에 따끔해서 깜짝 놀라 물러나요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "선인장에 코를 댔다가 가시에 따끔해서 펄쩍 물러났다.",
+        "선인장 가시를 피해 빙 돌아서 지나갔다."
+       ]
+      },
+      {
+       "w": "작은 날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 선인장 꼭대기 꽃 옆에 살짝 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 선인장 꼭대기 분홍 꽃 옆에 살짝 앉았다.",
+        "가시를 피해 선인장 꽃 위에 조심조심 내려앉았다."
+       ]
+      }
+     ],
+     "fit": "꽃집 창가, 모래땅 옆"
+    },
+    {
+     "id": "flo-potting-bench",
+     "n": "분갈이 작업대",
+     "k": "꽃집",
+     "d": "꽃삽과 쇠스랑을 등판에 걸어 두고, 위에는 흙 자루와 새싹 화분, 아래 칸에는 빈 토분을 줄지어 둔 꽃집 작업대예요.",
+     "px": [
+      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+      ".kwwwwwwwwwwwwwwwwwwwwwwwwk.",
+      ".kwwwwwwwwwwwwwwwwSsswwwwwk.",
+      ".kuuuuuuuuuuuuuuSxxxxxSuuuk.",
+      "..kukEemkkEevkkkWWSSSSskuk..",
+      "..kukEemkkEevk.kSSSDssxkuk..",
+      "..kuHHAaMHHAalkkSSssssxkuk..",
+      ".kkuHAaBlHAaBlkkssssxxxkukk.",
+      "kwwwwwwwwwwwwwwwwwwwwwwwwwwk",
+      "kvvvvvvvvvvvvvvvvvvvvvvvvvvk",
+      "kuuuuuuuuuuuuuuuuuuuuuuuuuuk",
+      ".kvukkkkkkkkkkkkkkkkkkkkuvk.",
+      ".kvuk.kDxk..kDxk..kDxk.kuvk.",
+      ".kvukkHHAakkHHAakkHHAakkuvk.",
+      ".kvukkHAaBkkHAaBkkHAaBkkuvk.",
+      ".kvuvvvvvvvvvvvvvvvvvvvvuvk.",
+      ".kvuttttttttttttttttttttuvk.",
+      ".kvukkkkkkkkkkkkkkkkkkkkuvk.",
+      ".kvuk..................kuvk.",
+      ".kvuk..................kuvk.",
+      "..kk....................kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "H": "#f4b48a",
+      "A": "#d8784a",
+      "a": "#b05a34",
+      "B": "#7e3c24",
+      "M": "#e8eef2",
+      "m": "#a8b4c0",
+      "l": "#6e7a88",
+      "S": "#e2d4b4",
+      "W": "#f6eedc",
+      "s": "#b8a684",
+      "x": "#8a7a5e",
+      "D": "#6a4a32",
+      "E": "#9cc468",
+      "e": "#6a9e4a"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "작업대 밑 그늘에 들어가 엎드려 낮잠을 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep",
+        "back": true
+       },
+       "l": [
+        "분갈이 작업대 밑 그늘에 엎드려 낮잠을 잤다.",
+        "작업대 아래 빈 토분 사이에 끼어 새근새근 잠들었다."
+       ]
+      },
+      {
+       "w": "땅 타입",
+       "a": "작업대 앞에서 흙을 파고 다지며 분갈이를 돕는 시늉을 해요",
+       "x": {
+        "at": "front",
+        "an": "Attack"
+       },
+       "l": [
+        "분갈이 작업대 앞에서 흙을 파서 토분에 꾹꾹 담았다.",
+        "흙을 너무 신나게 파다가 온몸이 흙투성이가 됐다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "작업대 위로 올라가 흙 자루에 기대 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "작업대 위로 올라가 흙 자루에 등을 기대고 앉았다.",
+        "작업대 위 새싹 화분을 들여다보며 고개를 갸웃했다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "새싹 화분 옆에서 기술을 써서 새싹을 쑥쑥 키워요",
+       "x": {
+        "at": "side",
+        "m": "skill",
+        "an": "Attack"
+       },
+       "l": [
+        "새싹 화분 옆에서 기운을 불어넣어 새싹을 쑥 키웠다.",
+        "새싹에게 힘을 주다 제 머리 잎이 더 자라 버렸다."
+       ]
+      }
+     ],
+     "fit": "온실 옆, 꽃집 뒤뜰"
+    },
+    {
+     "id": "flo-bonsai",
+     "n": "소나무 분재",
+     "k": "꽃집",
+     "d": "꾸불꾸불 휜 줄기에 구름 같은 잎 뭉치 네 개를 단 소나무 분재예요. 파란 유약 사발에 심어 낮은 나무 받침에 올려 두었어요.",
+     "px": [
+      "......kkkk..........",
+      ".....kEEeekkkkkk....",
+      ".....keennEEeeenk...",
+      "..kkkkenzzeeeennzk..",
+      ".kEEeeenkkeennzzk...",
+      ".keeennnk.kvukkEkk..",
+      ".keennzzkkvvkEeeenk.",
+      "..kkkkvukvkukeennzk.",
+      "......kvvuvk.kkzkk..",
+      ".......kvuk....k....",
+      "........kvuk........",
+      "......kkkvukkk......",
+      "...kkkDDDDDxxxkkk...",
+      "..kOOOOOOOOoooobbk..",
+      "...kooooooobbbddk...",
+      ".kkkkoobbbbbbddkkkk.",
+      "kwwwwwwwwwwwwwwwwwwk",
+      "kuuuuuuuuuuuuuuuuuuk",
+      ".kvukkkkkkkkkkkkvvk.",
+      "..kk............kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "O": "#8ab8e0",
+      "o": "#4a80c0",
+      "b": "#2e5a98",
+      "d": "#1e3c6c",
+      "D": "#6a4a32",
+      "x": "#4a3424",
+      "E": "#9cc468",
+      "e": "#6a9e4a",
+      "n": "#3e6e36",
+      "z": "#2c4a28"
+     },
+     "acts": [
+      {
+       "w": "작은 날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 분재 잎 뭉치 위에 살짝 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 소나무 분재 잎 뭉치 위에 살짝 앉았다.",
+        "분재 위에 앉아 작은 소나무 숲의 주인이 된 듯 뽐냈다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "분재 앞에 앉아 꾸불꾸불한 줄기를 한참 바라봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "소나무 분재 앞에 앉아 꾸불꾸불한 줄기를 한참 바라봤다.",
+        "분재를 따라 고개를 갸웃갸웃 꺾어 봤다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "분재 옆에서 같은 자세로 몸을 비틀어 따라 해요",
+       "x": {
+        "at": "side",
+        "m": "wobble"
+       },
+       "l": [
+        "분재 옆에서 줄기 모양을 따라 몸을 비틀어 봤다.",
+        "분재 흉내를 내다 중심을 잃고 콩 넘어졌다."
+       ]
+      }
+     ],
+     "fit": "꽃집 진열창 앞, 돌길 옆"
+    },
+    {
+     "id": "flo-hanging-basket",
+     "n": "걸이 화분 기둥",
+     "k": "꽃집",
+     "d": "나무 기둥에 팔을 내고 사슬로 엮은 바구니 화분을 매단 꽃집 간판 기둥이에요. 분홍 꽃이 바구니 밖으로 늘어져 바람에 살랑 흔들려요.",
+     "px": [
+      "..kkk................",
+      ".kwwukkkkkkkkkkkkk...",
+      ".kwwwwwwwwwwwwwwwvk..",
+      ".kuuuuuuuuuuuuuuuuk..",
+      ".kwvtvkkkkkkkkkkkk...",
+      ".kwvtuvk.....klk.....",
+      ".kwvtkuvk....kmk.....",
+      ".kwvtkkuvk...klk.....",
+      ".kwvtk.kukkkkkmkkk...",
+      ".kwvtk..kkEEEPpeeekk.",
+      ".kwvtk..kEPpeeeePpPpk",
+      ".kwvtk..kweePpennnttk",
+      ".kwvtk..kwtvtvtututtk",
+      ".kwvtk...kwwvvvuuttk.",
+      ".kwvtk...ktwtvtutttk.",
+      ".kwvtk....kwwvvuutk..",
+      ".kwvtk...kekkkekkkek.",
+      ".kwvtk...knk.kPk.knk.",
+      ".kwvtk...kek..k..kPk.",
+      ".kwvtk...kPk.....knk.",
+      ".kwvtk....k......kek.",
+      ".kwvtk...........kPk.",
+      ".kwvtk............k..",
+      ".kwvtk...............",
+      ".kwvtk...............",
+      ".kwvtk...............",
+      ".kwvtk...............",
+      ".kwvtk...............",
+      "kwvvutk..............",
+      "kvuuttk..............",
+      ".kkkkk..............."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "m": "#b4bec8",
+      "l": "#6e7a88",
+      "E": "#9cc468",
+      "e": "#6a9e4a",
+      "n": "#3e6e36",
+      "P": "#f6b0d0",
+      "p": "#d8689a"
+     },
+     "mv": {
+      "st": [
+       "..kkk................",
+       ".kwwukkkkkkkkkkkkk...",
+       ".kwwwwwwwwwwwwwwwvk..",
+       ".kuuuuuuuuuuuuuuuuk..",
+       ".kwvtvkkkkkkkklkkk...",
+       ".kwvtuvk......k......",
+       ".kwvtkuvk............",
+       ".kwvtkkuvk...........",
+       ".kwvtk.kuk...........",
+       ".kwvtk..k............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       ".kwvtk...............",
+       "kwvvutk..............",
+       "kvuuttk..............",
+       ".kkkkk..............."
+      ],
+      "mp": [
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "..............k......",
+       ".............klk.....",
+       ".............kmk.....",
+       ".............klk.....",
+       "..........kkkkmkkk...",
+       ".........kEEEPpeeekk.",
+       "........kEPpeeeePpPpk",
+       "........kweePpennnttk",
+       "........kwtvtvtututtk",
+       ".........kwwvvvuuttk.",
+       ".........ktwtvtutttk.",
+       "..........kwwvvuutk..",
+       ".........kekkkekkkek.",
+       ".........knk.kPk.knk.",
+       ".........kek..k..kPk.",
+       ".........kPk.....knk.",
+       "..........k......kek.",
+       ".................kPk.",
+       "..................k..",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "....................."
+      ],
+      "o": [
+       14,
+       4
+      ],
+      "k": "swing",
+      "amp": 1.4
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 기둥 팔 위에 앉아요",
+       "x": {
+        "at": [
+         0.5,
+         0.1
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 걸이 화분 기둥의 팔 위에 앉았다.",
+        "기둥 팔 위에 앉아 흔들리는 바구니를 내려다봤다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "늘어진 꽃 덩굴에 매달려 바구니와 함께 흔들흔들 오르내려요",
+       "x": {
+        "at": [
+         0.7,
+         0.6
+        ],
+        "m": "bob",
+        "fx": "swing"
+       },
+       "l": [
+        "걸이 화분 꽃 덩굴에 매달려 흔들흔들 놀았다.",
+        "꽃 덩굴에 매달렸다가 바구니가 흔들려 깔깔 웃었다."
+       ]
+      },
+      {
+       "w": "벌레·페어리 타입",
+       "a": "흔들리는 바구니 둘레를 맴돌며 분홍 꽃 꿀을 찾아요",
+       "x": {
+        "at": [
+         0.7,
+         0.45
+        ],
+        "m": "flap circ",
+        "fx": "swing"
+       },
+       "l": [
+        "걸이 화분 둘레를 맴돌며 분홍 꽃 꿀을 찾았다.",
+        "바구니 속 꽃에 매달려 꿀을 맛보고 기분 좋게 날갯짓했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "나무 기둥에 등을 기대고 앉아 쉬어요",
+       "x": {
+        "at": [
+         0.2,
+         0.95
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "걸이 화분 기둥에 등을 기대고 앉아 쉬었다.",
+        "머리 위에서 흔들리는 꽃 그림자를 보다 스르르 잠들었다."
+       ]
+      }
+     ],
+     "fit": "꽃집 문 옆, 길가"
+    },
+    {
+     "id": "flo-chalk-sign",
+     "n": "꽃집 칠판 입간판",
+     "k": "꽃집",
+     "d": "나무 사다리꼴 틀에 칠판을 끼운 꽃집 입간판이에요. 분필로 꽃 한 송이와 오늘의 꽃 이름을 써 두었고 아래 받침에 분필 몇 자루가 놓여 있어요.",
+     "px": [
+      "....kkkkkkkkkk....",
+      "...kwwwwwwwwwwk...",
+      "...kvvvvvvvvvvk...",
+      "...kwvDDDDDDutk...",
+      "...kwvDDDDDDutk...",
+      "...kwvDDPPDDutk...",
+      "...kwvDPYYPDutk...",
+      "...kwvDDPPDDutk...",
+      "..kwvkDDDGDDkutk..",
+      "..kwvDDGGDDDDutk..",
+      "..kwvDDDDGDDDutk..",
+      "..kwvDDDDDDDDutk..",
+      "..kwvWDWWWWDWutk..",
+      "..kwvDDDDDDDDutk..",
+      ".kwvWWWWDWWWWWutk.",
+      ".kwvDDDDDDDDDDutk.",
+      ".kwvDWWWWWWYYDutk.",
+      ".kwvDDDDDDDDDDutk.",
+      ".kwvDDDDDDDDDDutk.",
+      ".kwvDWWDDDDPDDutk.",
+      "kwvvvvvvvvvvvvvutk",
+      "kwvttttttttttttutk",
+      "kwvkkkkkkkkkkkkutk",
+      "kwvk..........kutk",
+      ".kk............kk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "D": "#3e4e48",
+      "W": "#eeeee4",
+      "P": "#f4a8c8",
+      "Y": "#f8e08a",
+      "G": "#a8d8a0"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "칠판 앞에 서서 분필 그림을 들여다봐요",
+       "x": {
+        "at": "front"
+       },
+       "l": [
+        "꽃집 칠판 앞에 서서 분필 꽃 그림을 들여다봤다.",
+        "칠판에 적힌 오늘의 꽃 이름을 읽는 척 고개를 끄덕였다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "입간판 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "at": "side",
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "꽃집 입간판 뒤에 숨었다가 옆으로 빼꼼 내다봤다.",
+        "입간판 뒤에서 몰래 지켜보다 들켜 쏙 숨었다."
+       ]
+      },
+      {
+       "w": "큰 포켓몬",
+       "a": "입간판을 몸으로 툭 건드려 흔들리게 해요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "꽃집 입간판을 툭 건드려 흔들흔들하게 만들었다.",
+        "입간판을 건드렸다가 분필이 굴러떨어져 허둥지둥 주웠다."
+       ]
+      }
+     ],
+     "fit": "꽃집 문 앞, 길가"
+    },
+    {
+     "id": "flo-tulip-windmill",
+     "n": "튤립밭 풍차",
+     "k": "꽃집",
+     "d": "하얀 돌벽에 빨간 고깔 지붕을 얹은 작은 풍차예요. 나무 살에 천을 덧댄 날개 네 장이 바람이 불면 천천히 돌아가요.",
+     "px": [
+      "................k....",
+      "....k..........kvk...",
+      "...kWkk.......kvvWk..",
+      ".kkWwWWk......kvkWWk.",
+      "kvvWWwWWkk...kvkwWwWk",
+      ".kvvwWwWWwkkkvvwWwWk.",
+      "..kkvvWWWWkrkvkWwWWk.",
+      "....kvvWwkrkvkWWWWk..",
+      ".....kkvvkkvvkwWWk...",
+      "....kRRkvvtvkrkWwk...",
+      "...kRRRrktvtkrrkkqk..",
+      "....kkkSkvtvvkXXkk...",
+      "....kwWkvvkkvvkkk....",
+      "....kWWwvksskkvvk....",
+      "...kWWWvkssskwWvvkk..",
+      "..kWWwvvksskWWWWwvvk.",
+      "..kWwWvkxxxkwWWwWwvvk",
+      ".kWwWvkssssskkWWwWWWk",
+      "..kWvvksssGBxxkWWwWk.",
+      "...kvkSsssBBxxxkkWk..",
+      "....kSSsssBBxxxXXk...",
+      "...kSSSsssssxxxxXXk..",
+      "...kSSSsssssxxxxXXk..",
+      "...kxxxxxxxxxxxxXXk..",
+      "...kSSSsssssxxxxXXk..",
+      "...kSSSsssuuxxxxXXk..",
+      "..kSSSssstuutxxxXXXk.",
+      "..kSSSssstuutxxxXXXk.",
+      "..kSSSssstuutxxxXXXk.",
+      "..kxxxxxxtuYtxxxXXXk.",
+      "..kSSSssstuutxxxXXXk.",
+      ".kSSSSssstuutxxxxXXXk",
+      ".kSSSSssstuutxxxxXXXk",
+      "..kkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "w": "#d8a46a",
+      "v": "#b07a44",
+      "u": "#85562e",
+      "t": "#5e3a1e",
+      "S": "#f2ece0",
+      "s": "#d6ccbc",
+      "x": "#aa9e8c",
+      "X": "#7e7466",
+      "R": "#e8766a",
+      "r": "#c04a46",
+      "q": "#8a2e34",
+      "B": "#4e6a8a",
+      "G": "#b8d8e8",
+      "Y": "#f0c850",
+      "W": "#f8f2e4"
+     },
+     "mv": {
+      "st": [
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".........kkkk........",
+       ".......kkRrrqkk......",
+       "......kRRrrrrrqk.....",
+       ".....kRRrrrrrrqqk....",
+       "....kRRrrrrrrrrqqk...",
+       "...kRRRrrrrrrrrrqqk..",
+       "....kkSSssssxxXXkk...",
+       ".....kSSssssxxXXk....",
+       ".....kSSssssxxXXk....",
+       ".....kSSssssxxXXk....",
+       ".....kSSssssxxXXk....",
+       "....kxxxxxxxxxxXXk...",
+       "....kSSsssssxxxXXk...",
+       "....kSSsssGBxxxXXk...",
+       "....kSSsssBBxxxXXk...",
+       "....kSSsssBBxxxXXk...",
+       "...kSSSsssssxxxxXXk..",
+       "...kSSSsssssxxxxXXk..",
+       "...kxxxxxxxxxxxxXXk..",
+       "...kSSSsssssxxxxXXk..",
+       "...kSSSsssuuxxxxXXk..",
+       "..kSSSssstuutxxxXXXk.",
+       "..kSSSssstuutxxxXXXk.",
+       "..kSSSssstuutxxxXXXk.",
+       "..kxxxxxxtuYtxxxXXXk.",
+       "..kSSSssstuutxxxXXXk.",
+       ".kSSSSssstuutxxxxXXXk",
+       ".kSSSSssstuutxxxxXXXk",
+       "..kkkkkkkkkkkkkkkkkk."
+      ],
+      "mp": [
+       "................k....",
+       "....k..........kvk...",
+       "...kWkk.......kvvWk..",
+       ".kkWwWWk......kvkWWk.",
+       "kvvWWwWWkk...kvkwWwWk",
+       ".kvvwWwWWwk.kvvwWwWk.",
+       "..kkvvWWWWk.kvkWwWWk.",
+       "....kvvWwk.kvkWWWWk..",
+       ".....kkvvkkvvkwWWk...",
+       ".......kvvtvk.kWwk...",
+       "........ktvtk..kk....",
+       ".....kk.kvtvvk.......",
+       "....kwWkvvkkvvkk.....",
+       "....kWWwvk..kkvvk....",
+       "...kWWWvk...kwWvvkk..",
+       "..kWWwvvk..kWWWWwvvk.",
+       "..kWwWvk...kwWWwWwvvk",
+       ".kWwWvk.....kkWWwWWWk",
+       "..kWvvk.......kWWwWk.",
+       "...kvk.........kkWk..",
+       "....k............k...",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "....................."
+      ],
+      "o": [
+       10.5,
+       10.5
+      ],
+      "k": "spin"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "풍차 앞에서 힘껏 날갯짓해 날개를 빙글빙글 돌려요",
+       "x": {
+        "at": "front",
+        "m": "flap",
+        "fx": "spin"
+       },
+       "l": [
+        "풍차 앞에서 힘껏 날갯짓해 날개를 빙글빙글 돌렸다.",
+        "날갯짓으로 풍차를 돌리고 뿌듯하게 가슴을 폈다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "풍차 문 앞에 들어가 앉아 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": [
+         0.5,
+         0.95
+        ],
+        "an": "Sleep"
+       },
+       "l": [
+        "풍차 문 앞에 들어가 앉아 꾸벅꾸벅 졸았다.",
+        "돌아가는 풍차 날개 소리를 자장가 삼아 잠들었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "풍차 둘레를 한 바퀴 돌며 돌아가는 날개를 올려다봐요",
+       "x": {
+        "m": "circ peek",
+        "fx": "spin"
+       },
+       "l": [
+        "풍차 둘레를 한 바퀴 돌며 돌아가는 날개를 올려다봤다.",
+        "풍차 날개를 따라 고개를 빙글빙글 돌리다 어질어질했다."
+       ]
+      },
+      {
+       "w": "비행 타입 / 날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 풍차 빨간 지붕 꼭대기에 앉았다.",
+        "풍차 지붕 위에서 튤립밭을 한눈에 내려다봤다."
+       ]
+      }
+     ],
+     "fit": "꽃밭 한가운데, 넓은 풀밭"
+    }
+   ]
+  },
+  {
    "at": 1795474088010,
    "theme": "숲속 꼬마 닌자 수련장",
    "note": "오늘은 숲속 꼬마 닌자 수련장이에요. 짚 타격대·수리검 과녁·외나무다리처럼 직접 몸을 쓰는 수련 기구로 채웠고, 비밀 벽·비법서·징은 밀거나 날갯짓하면 흔들려요. 숨기·기어오르기·뛰어넘기 동작이 골고루 들어가 여러 포켓몬이 놀 수 있어요.",
