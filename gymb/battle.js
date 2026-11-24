@@ -1675,7 +1675,7 @@ async function run(opts) {
   if (!opts.wild) { tray(); await msg(`${iga(foeNm)} 승부를 걸어왔다!`, 900); }
   my.forEach(o => gifLoad(gifUrl(o.sp, true, o.shiny, o.g === 'F', o.fm))); foeT.forEach(o => gifLoad(gifUrl(o.sp, false, o.shiny, o.g === 'F')));   // 미리 받기
   btl.makeChoices('default', 'default');   // 팀 미리보기: 라인업 순서 그대로
-  if (opts.chain && TW_BST) ['p', 'p2'].forEach((s, i) => { const v = TW_BST[s], pk = btl.p1.active[i], A = my[i]; if (!v || !pk || !A || !B?.pG?.[s] || v.pid !== A.pid) return; for (const k in v.b) pk.boosts[k] = v.b[k]; });   /* 이어지는 층: 발판에 그대로 둔 포켓몬(keepP)만 랭크 이어 받음, 'turn' 줄에서 딱지도 그려짐 */
+  if (opts.chain && TW_BST) ['p', 'p2'].forEach((s, i) => { const pk = btl.p1.active[i], A = my[i], v = A && Object.values(TW_BST).find(x => x.pid === A.pid); if (!v || !pk || !B?.pG?.[s]) return;   /* 자리 말고 포켓몬으로 찾음 (더블 오른쪽에 있던 포켓몬이 다음 층 왼쪽에 나와도) */ for (const k in v.b) pk.boosts[k] = v.b[k]; });   /* 이어지는 층: 발판에 그대로 둔 포켓몬(keepP)만 랭크 이어 받음, 'turn' 줄에서 딱지도 그려짐 */
   TW_BST = null;
   if (opts.xit) try { xitStart(btl); } catch (e) { console.error(e); }
   try { await play(); } catch (e) { console.error(e); if (B) B.err = e; try { window.pkErr?.('battle: ' + (e?.message || e), e?.stack); } catch (e2) {} }
@@ -1708,7 +1708,7 @@ async function run(opts) {
   /* v23.10 훈련하기: 끝난 뒤 남은 체력(hp)·보급 고르기(opts.post). post 가 true 면 배틀 화면을 닫지 않고 다음 층으로 */
   const hpNow = {}; if (B) B.o.p.forEach((pk, i) => { const e = B.my[i]; if (e) hpNow[e.pid] = pk.fainted || pk.hp <= 0 ? 0 : pk.hp / pk.maxhp; });
   if (opts.post && B) lowHp(false);   /* v28.35 배틀이 끝난 뒤(보상 고르기·그만두기 문구) 체력 경고음 멈춤 — 다음 층은 체력 상자를 다시 그릴 때 다시 판단 */
-  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, hbSet: async (pid, hp, mhp) => { for (const s of ['p', 'p2']) { const A = B?.act?.[s]; if (!A || A.pid !== pid || A.fnt || !$b(SEL('hb', s)).classList.contains('on')) continue; A.mhp = mhp; setHp(s, A.hp, mhp); if (Math.round(A.hp) !== hp) await drainHp(s, A, hp); } } /* 경완 '교체창 체력이랑 체력박스 체력이랑 다른 이유': 층 사이 회복·노력치로 오른 최대 HP·보상 도구를 발판 위 체력 상자에도 */, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
+  let keep = false; if (opts.post && B && !cut) try { keep = !!(await opts.post({ won, quit: out === 'quit', hp: hpNow, my: B.my, act: [B.act.p, B.act.p2].find(a => a && !a.fnt)?.pid || null, act2: [B.act.p, B.act.p2].filter(a => a && !a.fnt)[1]?.pid || null, hbSet: async (pid, hp, mhp) => { for (const s of ['p', 'p2']) { const A = B?.act?.[s]; if (!A || A.pid !== pid || A.fnt || !$b(SEL('hb', s)).classList.contains('on')) continue; A.mhp = mhp; setHp(s, A.hp, mhp); if (Math.round(A.hp) !== hp) await drainHp(s, A, hp); } } /* 경완 '교체창 체력이랑 체력박스 체력이랑 다른 이유': 층 사이 회복·노력치로 오른 최대 HP·보상 도구를 발판 위 체력 상자에도 */, msg, msgTap, choose: trChoose, pickMon: trPickMon, se })); } catch (e) { console.error(e); }
   if (!keep) { const tb = $b('.bt-tools'); if (tb) tb.hidden = true; }
   if (keep && B) { lowHp(false); const res = { won, cut, quit: false, turns: btl.turn, my: B.my, hp: hpNow, keep: true }; B = null; return res; }
   lowHp(false); M('play', 'gym', { fade: 1.2 });
