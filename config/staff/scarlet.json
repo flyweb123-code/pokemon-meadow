@@ -1,6 +1,1062 @@
 {
  "days": [
   {
+   "at": 1795646930264,
+   "theme": "숲속 꼬마 곤충 관찰원",
+   "note": "오늘은 숲속 꼬마 곤충 관찰원이에요. 곤충 호텔·잠자리채 꽂이·밤에 켜지는 채집 등·수액 그루터기·나비 온실처럼 벌레 포켓몬이 좋아할 소품 10개를 그렸고, 나뭇잎 해먹과 무당벌레 놀이기구는 잎·몸통만 흔들려요. 벌레 타입 말고도 모든 포켓몬·격투·전기·땅 타입이 할 동작을 고루 넣었어요.",
+   "items": [
+    {
+     "id": "ins-bug-hotel",
+     "n": "곤충 호텔",
+     "k": "곤충 관찰원",
+     "d": "빨간 지붕 아래 통나무 토막·대나무 대롱·솔방울·짚단을 칸칸이 채운 나무 집이에요. 구멍마다 작은 벌레 포켓몬이 쏙 들어가 쉴 수 있어요.",
+     "px": [
+      ".........kkkk.........",
+      "........kkRrkk........",
+      ".......kkRrrqkk.......",
+      ".....kkkrrrrqqkkk.....",
+      "....kkrrrrrrqqqqkk....",
+      "..kkkrrrrrrrqqqqqkkk..",
+      "kkkrRRrrrrrrqqqqqQQkkk",
+      "kqqqqqqqqqqqqqqqqqQQQk",
+      "kkkwvvvvvvvvvvvvvvukkk",
+      "..kwUUUUUUUvSSsSSsuk..",
+      "..kwUCxUCxxvSusSusuk..",
+      "..kwUcxUcxUvssssssuk..",
+      "..kwCcUcUUUvtSSsSSsk..",
+      "..kwCxCxxCxvtSusSusk..",
+      "..kwcxUxxcxvtssssssk..",
+      "..kwwwwwwwwwwwwwwwuk..",
+      "..kwUvwUUvUvYyYyYyuk..",
+      "..kwUWvwvwvvYyYyYyuk..",
+      "..kwWvwvWvwvoooooouk..",
+      "..kwUWvwvwvvYyYyYyuk..",
+      "..kwUvwUUvUvYyYyYyuk..",
+      "..kwwwwwwwwwwwwwwwuk..",
+      "..kwRqRRRRqRRRRqRRuk..",
+      "..kwrrUrqrrUrqrUrruk..",
+      "..kwrqrrrrqrrrrqrruk..",
+      "..kwvvvvvvvvvvvvvvuk..",
+      "..kkwukkkkkkkkkkwukk..",
+      "...kwuk........kwuk...",
+      "...kkkk........kkkk..."
+     ],
+     "pal": {
+      "C": "#f8f2e2",
+      "Q": "#6a1e28",
+      "R": "#f0866e",
+      "S": "#f2dca4",
+      "U": "#3e2618",
+      "W": "#e6b878",
+      "Y": "#fff4a8",
+      "c": "#ddd2b8",
+      "k": "#20202c",
+      "o": "#e8963c",
+      "q": "#982e34",
+      "r": "#d04c44",
+      "s": "#d6b67c",
+      "t": "#a8844e",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "x": "#b0a288",
+      "y": "#f4cc58"
+     },
+     "acts": [
+      {
+       "w": "작은 벌레 타입",
+       "a": "대나무 대롱 구멍 속으로 쏙 숨어 더듬이만 내놓아요",
+       "x": {
+        "at": [
+         0.68,
+         0.4
+        ],
+        "m": "hide"
+       },
+       "l": [
+        "곤충 호텔 대나무 대롱 속으로 쏙 숨어 더듬이만 내놓았다.",
+        "곤충 호텔 칸칸을 기웃거리다 마음에 드는 구멍에 쏙 들어갔다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 곤충 호텔 빨간 지붕 꼭대기에 앉았다.",
+        "곤충 호텔 지붕 위에서 날개를 접고 쉬었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "칸마다 얼굴을 대고 누가 사는지 옆으로 고개를 내밀어 들여다봐요",
+       "x": {
+        "at": "front",
+        "m": "speek"
+       },
+       "l": [
+        "곤충 호텔 칸마다 얼굴을 대고 누가 사는지 들여다봤다.",
+        "곤충 호텔 솔방울 칸을 들여다보다 코를 킁킁거렸다."
+       ]
+      }
+     ],
+     "fit": "나무 그늘, 꽃밭 옆"
+    },
+    {
+     "id": "ins-net-stand",
+     "n": "잠자리채 꽂이",
+     "k": "곤충 관찰원",
+     "d": "나무 물통에 초록·빨강·노랑 잠자리채 세 자루를 꽂아 둔 채집 도구 꽂이예요. 둥근 그물이 바람에 살랑여요.",
+     "px": [
+      ".....kkkkkkk......",
+      ".....krrrrrkk.....",
+      ".....krcCcrrk.....",
+      ".kkkkkrCcCcrk.....",
+      "kkggggrcCcrrkkkkk.",
+      "kgcCcCrrrrrkyyyykk",
+      "kgCcCcgkukkyCcCyyk",
+      "kgcCcCgkukkycCcCyk",
+      "kgCcCcgkukkyCcCcyk",
+      "kkggggkkukkycCcyyk",
+      ".kccwkkkukkkyyyykk",
+      ".kkvckkkuk.kccwkk.",
+      "..kkvwkkuk.kkvck..",
+      "...kvwkkuk.kvwkk..",
+      "...kvwkkuk.kvwk...",
+      "...kkwkkukkkvwk...",
+      "....kvwkukkvwkk...",
+      "....kvwkukkvwk....",
+      "....kvwkukkvwk....",
+      "..kkkkvwukvwkkk...",
+      ".kkWUuUUuUUuUukk..",
+      ".kWWWwwwwvvvuuuk..",
+      ".kMMMmmmmmmddddk..",
+      ".kWWWvwwwvvvUuuk..",
+      ".kWWWvwwwvvvUuuk..",
+      ".kWWWvwwwvvvUuuk..",
+      ".kWWWvwwwvvvUuuk..",
+      ".kMMMmmmmmmddddk..",
+      ".kWWWwwwwvvvuuuk..",
+      ".kWWWwwwwvvvuuuk..",
+      ".kkWWwwwwvvvuukk..",
+      "..kkkkkkkkkkkkk..."
+     ],
+     "pal": {
+      "C": "#f8f2e2",
+      "M": "#d0d6e0",
+      "U": "#3e2618",
+      "W": "#e6b878",
+      "c": "#ddd2b8",
+      "d": "#5c6476",
+      "g": "#72a44c",
+      "k": "#20202c",
+      "m": "#9098aa",
+      "r": "#d04c44",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f4cc58"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "잠자리채 그물 둘레를 빙빙 날며 그물에 안 걸리게 요리조리 피해요",
+       "x": {
+        "at": [
+         0.5,
+         0.15
+        ],
+        "m": "flap circ"
+       },
+       "l": [
+        "잠자리채 그물 둘레를 빙빙 날며 요리조리 피해 다녔다.",
+        "잠자리채 그물을 아슬아슬하게 피해 날아다니며 신나했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "물통 뒤에 숨었다가 고개만 빼꼼 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "잠자리채 꽂이 물통 뒤에 숨었다가 고개만 빼꼼 내밀었다.",
+        "잠자리채 꽂이 뒤에 숨어 술래가 지나가길 기다렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "물통을 톡 건드려 잠자리채가 흔들리는 걸 구경해요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "잠자리채 꽂이를 톡 건드려 그물이 흔들리는 걸 구경했다.",
+        "잠자리채 꽂이를 건드렸다가 그물이 휘청하자 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "곤충 호텔 옆, 풀밭 가장자리"
+    },
+    {
+     "id": "ins-light-trap",
+     "n": "곤충 채집 등",
+     "k": "곤충 관찰원",
+     "d": "나무 기둥 두 개 사이에 하얀 천을 걸고 가운데에 등을 매단 밤 곤충 관찰 장치예요. 밤이 되면 등이 환하게 켜지고 천에 작은 나방들이 모여 앉아요.",
+     "px": [
+      "kkkk......kkkk.......kkkk",
+      "kWWk.....kkddkk......kWWk",
+      "kwvkkkkkkkMmddkkkkkkkkwvk",
+      "kwvxxxxxxxMmddxxxxxxxkwvk",
+      "kwvkccccccdyydcccccckkwvk",
+      "kwvkCCCcxCyYYyCCCcxCkkwvk",
+      "kwvkCCCcxCyYYyCCCcxCkkwvk",
+      "kwvkCCCcxCyYYyCCCcxCkkwvk",
+      "kwvkCCCcxCyyooCCCcxCkkwvk",
+      "kwvkCCCcxCdyyduCucxCkkwvk",
+      "kwvkCCCcxCddddCuCcxCkkwvk",
+      "kwvkCCvcvCCmmxCCCcxCkkwvk",
+      "kwvkCCCvxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCvCvxCkkwvk",
+      "kwvkCCCcxCCCcxCCvcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkCCCcxCCCcxCCCcxCkkwvk",
+      "kwvkkxkkkkxkkkkxkkkkkkwvk",
+      "kwvkkkk..kkk..kkk....kwvk",
+      "kwvk.................kwvk",
+      "kwvk.................kwvk",
+      "kwvk.................kwvk",
+      "kuuk.................kuuk",
+      "kkkk.................kkkk"
+     ],
+     "pal": {
+      "C": "#f8f2e2",
+      "M": "#d0d6e0",
+      "W": "#e6b878",
+      "Y": "#fff4a8",
+      "c": "#ddd2b8",
+      "d": "#5c6476",
+      "k": "#20202c",
+      "m": "#9098aa",
+      "o": "#e8963c",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "x": "#b0a288",
+      "y": "#f4cc58"
+     },
+     "acts": [
+      {
+       "w": "나는 벌레 타입 / 날갯짓하는 포켓몬",
+       "a": "환한 등 둘레를 빙빙 날아다녀요",
+       "x": {
+        "at": [
+         0.5,
+         0.25
+        ],
+        "m": "circ",
+        "fx": "glow"
+       },
+       "l": [
+        "곤충 채집 등 둘레를 빙빙 날아다녔다.",
+        "환한 등불에 이끌려 하얀 천 앞을 맴돌았다."
+       ]
+      },
+      {
+       "w": "작은 벌레 타입",
+       "a": "하얀 천에 날아와 붙어 가만히 쉬어요",
+       "x": {
+        "at": [
+         0.3,
+         0.5
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "곤충 채집 등 하얀 천에 날아와 붙어 가만히 쉬었다.",
+        "하얀 천에 붙어 있는 나방 그림자를 따라 앉았다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "기둥에 기대 전기를 보내 등을 더 밝게 켜요",
+       "x": {
+        "at": "under",
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "곤충 채집 등에 전기를 보내 등을 더 환하게 켰다.",
+        "등이 번쩍 밝아지자 뿌듯하게 볼을 찌릿였다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "천 앞에 앉아 등불에 모여드는 벌레들을 올려다봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "곤충 채집 등 앞에 앉아 모여드는 벌레들을 올려다봤다.",
+        "하얀 천에 비친 그림자를 보며 눈을 반짝였다."
+       ]
+      }
+     ],
+     "fit": "풀밭 가운데, 밤",
+     "glow": 1
+    },
+    {
+     "id": "ins-sap-stump",
+     "n": "수액 그루터기",
+     "k": "곤충 관찰원",
+     "d": "나이테가 선명한 그루터기 옆구리에서 달콤한 호박색 수액이 졸졸 흘러내려요. 이끼가 살짝 끼어 오래된 숲 냄새가 나요.",
+     "px": [
+      "......kkkkkkkkkkk......",
+      "....kkkwwwwwwwwwkkk....",
+      "...kkwwSSSSSSSSSvvkk...",
+      "..kkwSSsssssssssSSvkk..",
+      "..kwSSsSSStttSSSsSSuk..",
+      "..kwWSSsssssssssSSvuk..",
+      "..kkwWSSSSSSSSSSSvukk..",
+      "...kkWWwwwwwwwwwvukk...",
+      "...kWWOowvovuvvvuuukkk.",
+      "...kWWOYwvOvuvvuuuuwsk.",
+      "...kWWwowwovuvvuuuuwuk.",
+      "...kWWwywvwvvvvuuuukkk.",
+      "...kWWwYwvwvuvvvuuuk...",
+      "...kWWWowvwvuvvuuuuk...",
+      "...kWWOYowwvuvvGguuk...",
+      "...kWWwwwvwvvvggguuk...",
+      "..kkWWwwwvwvuvvvuuukk..",
+      "kkkwwwvvvvvvuuuuuuUUkkk",
+      "kvwwwwvvvvvvuuuuuuUUUuk",
+      "kvvvvkkkkvvvvkkkkuuuuuk",
+      "kkkkkk..kkkkkk..kkkkkkk"
+     ],
+     "pal": {
+      "G": "#a6cc6e",
+      "O": "#b8682a",
+      "S": "#f2dca4",
+      "U": "#3e2618",
+      "W": "#e6b878",
+      "Y": "#fff4a8",
+      "g": "#72a44c",
+      "k": "#20202c",
+      "o": "#e8963c",
+      "s": "#d6b67c",
+      "t": "#a8844e",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f4cc58"
+     },
+     "acts": [
+      {
+       "w": "벌레 타입",
+       "a": "그루터기 옆구리에 매달려 흘러내리는 수액을 쪽쪽 먹어요",
+       "x": {
+        "at": [
+         0.33,
+         0.6
+        ],
+        "an": "Eat"
+       },
+       "l": [
+        "수액 그루터기에 매달려 달콤한 수액을 쪽쪽 먹었다.",
+        "수액 그루터기에서 흘러내리는 수액을 핥아 먹고 행복해했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "나이테 위에 올라가 동그랗게 몸을 말고 낮잠을 자요",
+       "x": {
+        "at": "top",
+        "m": "climb",
+        "an": "Sleep"
+       },
+       "l": [
+        "수액 그루터기 나이테 위에 올라가 동그랗게 낮잠을 잤다.",
+        "수액 그루터기 위에서 나이테를 세다가 꾸벅 졸았다."
+       ]
+      },
+      {
+       "w": "격투·노말 타입",
+       "a": "그루터기를 쿵 들이받아 위에 붙은 벌레가 떨어지나 살펴봐요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "수액 그루터기를 쿵 들이받고 떨어지는 게 있나 살폈다.",
+        "수액 그루터기를 밀어 보다 꿈쩍도 안 하자 머쓱해했다."
+       ]
+      }
+     ],
+     "fit": "나무 그늘, 숲 쪽"
+    },
+    {
+     "id": "ins-butterfly-dome",
+     "n": "나비 온실",
+     "k": "곤충 관찰원",
+     "d": "둥근 그물 지붕 안에 작은 꽃들을 심은 나비 온실이에요. 가운데 나무 문이 있고, 꼭대기엔 주황 나비 한 마리가 앉아 있어요.",
+     "px": [
+      "...........kkkkkkk...........",
+      "...........koOkOok...........",
+      "...........kkoKokk...........",
+      "..........kkkkkkkkk..........",
+      "........kkkzzzzzzzkkk........",
+      ".......kkzzzzzzzzzzzkk.......",
+      ".....kkkzzzzbbbbbzzzzkkk.....",
+      ".....kzzzzbBBBbBBBbzzzzk.....",
+      "....kkzzCBbBBBbBBBbBBzzkk....",
+      "...kkzzbbbbbbbbbbbbbbbzzkk...",
+      "...kzzbBBBbwWWWWwBbBBBbzzk...",
+      "..kkzzbBBBbwbbbbwBbBBBbzzkk..",
+      "..kzzbbbbbbwBBBBwbbbbbbbzzk..",
+      "..kzzBbBBBbwbbbbwBbBBBbBzzk..",
+      "..kzBBbBYBbwBBBywBPBBBbBBzk..",
+      ".kkzbPbbgbbwbbbbwbgbbPbbbzkk.",
+      ".kzzBgbBnBbwBBBBwBnBBgbyBzzk.",
+      "kkzzBngBBgbwbbbbwBbBgnggBzzkk",
+      "kWWWWwwwwwwwwwwwwvvvvvvvuuuuk",
+      "kWWWWwwwwwwwwwwwwvvvvvvvuuuuk",
+      "kkvvvvvvvvvvvvvvvvvvvvvvvvvkk",
+      ".kkkkkkkkkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#d6eef4",
+      "C": "#f8f2e2",
+      "K": "#34303a",
+      "O": "#b8682a",
+      "P": "#f6a0b8",
+      "W": "#e6b878",
+      "Y": "#fff4a8",
+      "b": "#9cc4d4",
+      "g": "#72a44c",
+      "k": "#20202c",
+      "n": "#467a3a",
+      "o": "#e8963c",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f4cc58",
+      "z": "#6a94aa"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 벌레 타입",
+       "a": "온실 안 꽃 위를 팔랑팔랑 날아다녀요",
+       "x": {
+        "at": "in",
+        "m": "flap",
+        "back": true
+       },
+       "l": [
+        "나비 온실 안 꽃 위를 팔랑팔랑 날아다녔다.",
+        "나비 온실 꽃밭 사이를 날며 꿀 냄새를 맡았다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "그물 문 앞에 서서 안을 들여다봐요",
+       "x": {
+        "at": [
+         0.5,
+         0.7
+        ],
+        "m": "win"
+       },
+       "l": [
+        "나비 온실 문에 얼굴을 대고 안을 들여다봤다.",
+        "나비 온실 안을 들여다보다 코끝이 그물에 닿았다."
+       ]
+      },
+      {
+       "w": "날개 있는 포켓몬",
+       "a": "서 있던 자리에서 날아올라 둥근 지붕 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 나비 온실 지붕 꼭대기에 앉았다.",
+        "나비 온실 꼭대기 주황 나비 옆에 나란히 앉았다."
+       ]
+      },
+      {
+       "w": "작은 풀·페어리 타입",
+       "a": "온실 앞 꽃 사이에 누워 햇볕을 받으며 잠들어요",
+       "x": {
+        "at": "front",
+        "an": "Sleep"
+       },
+       "l": [
+        "나비 온실 앞 꽃 사이에 누워 햇볕을 받으며 잠들었다.",
+        "나비 온실 앞에서 꽃향기에 취해 스르르 잠들었다."
+       ]
+      }
+     ],
+     "fit": "꽃밭 옆, 햇볕 좋은 곳"
+    },
+    {
+     "id": "ins-ant-farm",
+     "n": "개미 관찰통",
+     "k": "곤충 관찰원",
+     "d": "나무 뚜껑과 받침 사이에 모래를 채운 유리 관찰통이에요. 꼬불꼬불한 굴 속을 빨간 개미들이 줄지어 오가요.",
+     "px": [
+      "...kkkkkkkk...",
+      "kkkkvwwwwvkkkk",
+      "kWWwwwwwvvvuuk",
+      "kWWwwwwwvvvuuk",
+      "kWWwwwwwvvvuuk",
+      "kuuuuuuuuuuuuk",
+      "kkwBCBBBBBBvkk",
+      ".kwCBBBBBBBvk.",
+      ".kwsstustssvk.",
+      ".kwCssrssusvk.",
+      ".kwsuuuuuusvk.",
+      ".kwsrssssusvk.",
+      ".kwSuuuuuSSvk.",
+      ".kwSSSSSuSSvk.",
+      ".kwSSSSSrSSvk.",
+      ".kwssuuuussvk.",
+      ".kwuuusssssvk.",
+      ".kwurrssuuuvk.",
+      ".kwuSSSSuruvk.",
+      "kkwSSSSSSSSvkk",
+      "kWWwwwwwvvvuuk",
+      "kWWwwwwwvvvuuk",
+      "kkuukkkkkkuukk",
+      ".kkkk....kkkk."
+     ],
+     "pal": {
+      "B": "#d6eef4",
+      "C": "#f8f2e2",
+      "S": "#f2dca4",
+      "W": "#e6b878",
+      "k": "#20202c",
+      "r": "#d04c44",
+      "s": "#d6b67c",
+      "t": "#a8844e",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "관찰통 옆에 바짝 붙어 고개를 갸웃거리며 개미굴을 들여다봐요",
+       "x": {
+        "at": "side",
+        "m": "speek"
+       },
+       "l": [
+        "개미 관찰통에 바짝 붙어 개미굴을 들여다봤다.",
+        "개미 관찰통 속 개미를 따라 고개를 갸웃갸웃했다."
+       ]
+      },
+      {
+       "w": "작은 벌레 타입",
+       "a": "나무 뚜껑 위로 기어올라 앉아 아래를 내려다봐요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "개미 관찰통 뚜껑 위로 기어올라 아래를 내려다봤다.",
+        "개미 관찰통 뚜껑 위에 앉아 개미들을 응원했다."
+       ]
+      },
+      {
+       "w": "땅 타입",
+       "a": "관찰통 앞 땅을 파서 개미처럼 굴을 만들어 봐요",
+       "x": {
+        "at": "front",
+        "m": "skill"
+       },
+       "l": [
+        "개미 관찰통 앞 땅을 파서 개미처럼 굴을 만들었다.",
+        "개미굴을 흉내 내 땅을 파다 흙투성이가 되었다."
+       ]
+      }
+     ],
+     "fit": "곤충 호텔 옆, 그늘"
+    },
+    {
+     "id": "ins-bug-cage",
+     "n": "채집통",
+     "k": "곤충 관찰원",
+     "d": "초록 뚜껑에 손잡이가 달린 투명 채집통이에요. 안에 나뭇가지와 잎을 깔아 두어 작은 벌레가 쉬어 가기 좋아요.",
+     "px": [
+      ".....kkkkkkkkk.....",
+      "....kkmMMMMMdkk....",
+      "kkkkkmkkkkkkkdkkkkk",
+      "kGGGgggggggGGGGGNNk",
+      "kGGGNgNgNgNnNnNNNNk",
+      "kGGGgggggggnnnnNNNk",
+      "kgbbbbbbbbbbbbbbbnk",
+      "kgBBBBCCBBBBBBBCCnk",
+      "kgBBBBBCCBBBBBBBCnk",
+      "kgBBBBBBgCBBBvBBBnk",
+      "kgBBBBgGgngvvvBBBnk",
+      "kgCBBBvvgvvCBBBBBnk",
+      "kgBvvvBBBBBBBBBBBnk",
+      "kgcccxcccccxcccccnk",
+      "kgzzzzzzzzzzzzzzznk",
+      "kzzzzzzzzzzzzzzzzzk",
+      "kkkkkkkkkkkkkkkkkkk"
+     ],
+     "pal": {
+      "B": "#d6eef4",
+      "C": "#f8f2e2",
+      "G": "#a6cc6e",
+      "M": "#d0d6e0",
+      "N": "#2e5430",
+      "b": "#9cc4d4",
+      "c": "#ddd2b8",
+      "d": "#5c6476",
+      "g": "#72a44c",
+      "k": "#20202c",
+      "m": "#9098aa",
+      "n": "#467a3a",
+      "v": "#8a5a30",
+      "x": "#b0a288",
+      "z": "#6a94aa"
+     },
+     "acts": [
+      {
+       "w": "작은 벌레 타입",
+       "a": "채집통 뒤로 쏙 숨어 나뭇잎 사이로 고개만 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "채집통 뒤로 쏙 숨어 고개만 내밀었다.",
+        "채집통 뒤에 숨어 나뭇잎 그림자인 척했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "채집통 뚜껑을 톡톡 두드려 보고 안을 들여다봐요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "채집통 뚜껑을 톡톡 두드리고 안을 들여다봤다.",
+        "채집통을 건드렸다가 안의 나뭇잎이 흔들리자 신기해했다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "손잡이 위에 날아와 앉아 날개를 고르게 펴요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "채집통 손잡이 위에 날아와 앉아 날개를 폈다.",
+        "채집통 손잡이에 앉아 꾸벅꾸벅 졸았다."
+       ]
+      }
+     ],
+     "fit": "풀밭 가장자리, 곤충 호텔 옆"
+    },
+    {
+     "id": "ins-leaf-hammock",
+     "n": "나뭇잎 해먹",
+     "k": "곤충 관찰원",
+     "d": "나뭇가지 기둥 두 개 사이에 커다란 잎 한 장을 덩굴로 매단 해먹이에요. 바람이 불면 잎 해먹만 살랑살랑 흔들려요.",
+     "px": [
+      ".kkkk.....................kkkk.",
+      ".kvwk.....................kvwk.",
+      ".kwvkk...................kkwvk.",
+      ".kwvxkk.................kkxwvk.",
+      "kkwvcxk.................kxcwvk.",
+      "gkwvcxkk...............kkxcwvk.",
+      "kvwvkcxk...............kxckwvkk",
+      "kkwvkkckk.............kkckkwvkg",
+      ".kwvkkcxkkkkkkkkkkkkkkkxckkwvvk",
+      ".kwvkkcxkGgGGGGgGGGGgGkxckkwvkk",
+      ".kwvkkGGGGgGGGGgGGGGgGGGGkkwvk.",
+      ".kwvkgGGGGgGGGGgGGGGgGGGGgkwvk.",
+      ".kwvnnnnnnnnnnnnnnnnnnnnnnkwvk.",
+      ".kwvkkgggggggggggggggggggkkwvk.",
+      ".kwvkkkkkgnnnngnnnngnnkkkkkwvk.",
+      ".kwvk...kkkkkkkkkkkkkkk...kwvk.",
+      ".kwvk.....................kwvk.",
+      ".kwvk.....................kwvk.",
+      ".kwvk.....................kwvk.",
+      ".kwvk.....................kwvk.",
+      ".kkkk.....................kkkk."
+     ],
+     "pal": {
+      "G": "#a6cc6e",
+      "c": "#ddd2b8",
+      "g": "#72a44c",
+      "k": "#20202c",
+      "n": "#467a3a",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "x": "#b0a288"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬 / 벌레·풀 타입",
+       "a": "나뭇잎 해먹에 올라타 누워 흔들흔들 낮잠을 자요",
+       "x": {
+        "at": [
+         0.5,
+         0.5
+        ],
+        "m": "ride",
+        "an": "Sleep",
+        "fx": "swing"
+       },
+       "l": [
+        "나뭇잎 해먹에 올라타 흔들흔들 낮잠을 잤다.",
+        "나뭇잎 해먹에 누워 바람 따라 살랑살랑 흔들렸다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "해먹을 밀어 흔들어 줘요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "나뭇잎 해먹을 힘껏 밀어 흔들어 주었다.",
+        "나뭇잎 해먹을 흔들어 주며 같이 웃었다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 기둥 꼭대기에 앉아요",
+       "x": {
+        "at": [
+         0.08,
+         0
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 나뭇잎 해먹 기둥 꼭대기에 앉았다.",
+        "나뭇잎 해먹 기둥 위에서 흔들리는 잎을 내려다봤다."
+       ]
+      }
+     ],
+     "fit": "나무 사이, 그늘진 곳",
+     "mv": {
+      "st": [
+       ".kkkk.....................kkkk.",
+       ".kvwk.....................kvwk.",
+       ".kwvk.....................kwvk.",
+       ".kwvx.....................xwvk.",
+       "kkwvc.....................cwvk.",
+       "gkwvc.....................cwvk.",
+       "kvwvk.....................kwvkk",
+       "kkwvk.....................kwvkg",
+       ".kwvk.....................kwvvk",
+       ".kwvk.....................kwvkk",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvn.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kwvk.....................kwvk.",
+       ".kkkk.....................kkkk."
+      ],
+      "mp": [
+       "...............................",
+       "...............................",
+       ".....k...................k.....",
+       ".....kk.................kk.....",
+       ".....xk.................kx.....",
+       ".....xkk...............kkx.....",
+       ".....cxk...............kxc.....",
+       ".....kckk.............kkck.....",
+       ".....kcxkkkkkkkkkkkkkkkxck.....",
+       ".....kcxkGgGGGGgGGGGgGkxck.....",
+       ".....kGGGGgGGGGgGGGGgGGGGk.....",
+       ".....gGGGGgGGGGgGGGGgGGGGg.....",
+       ".....nnnnnnnnnnnnnnnnnnnnn.....",
+       ".....kgggggggggggggggggggk.....",
+       ".....kkkkgnnnngnnnngnnkkkk.....",
+       "........kkkkkkkkkkkkkkk........",
+       "...............................",
+       "...............................",
+       "...............................",
+       "...............................",
+       "..............................."
+      ],
+      "o": [
+       15,
+       3
+      ],
+      "k": "swing",
+      "amp": 1.6
+     }
+    },
+    {
+     "id": "ins-snail-house",
+     "n": "달팽이 껍데기 집",
+     "k": "곤충 관찰원",
+     "d": "빙글빙글 소용돌이 무늬가 있는 커다란 달팽이 껍데기에 작은 나무 문과 둥근 창을 낸 집이에요.",
+     "px": [
+      "........kkkkk........",
+      ".....kkkkHHhkkkk.....",
+      "....kkHHHHhhhhhkk....",
+      "...kkHHHHhhhhhhhkk...",
+      "..kkHHHHHJJJJJjhhkk..",
+      ".kkHHHHJJhhhhhJJhjkk.",
+      ".kHHHHJJhhhhhhhjJjjk.",
+      ".kHHHHJhhhJJJhhjJJjk.",
+      "kkHHHJJhhJJhJJjjjJjkk",
+      "kHHHhJhhhJhhhJJjjJjjk",
+      "kHHHhJhhhJJJhjJjjJjjk",
+      "kHHhwwwwhJJJjjJjjJjJk",
+      "kkhWwUUwvhhjjjJjjJJkk",
+      ".khWUUUUvhjjjBbjjJJk.",
+      ".khWUUUUvJJJJbbbJJJk.",
+      ".kkWUUUUvjjjjjbJJJkk.",
+      "..kWUUyUvjjjjjJJJkk..",
+      ".kkWUUUUvjjjJJJJkkkk.",
+      ".kSWUUUUvssssstttttk.",
+      ".ktttttttttttttttttk.",
+      ".kkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#d6eef4",
+      "H": "#f6cc94",
+      "J": "#703e22",
+      "S": "#f2dca4",
+      "U": "#3e2618",
+      "W": "#e6b878",
+      "b": "#9cc4d4",
+      "h": "#dc9e5e",
+      "j": "#ac6a3a",
+      "k": "#20202c",
+      "s": "#d6b67c",
+      "t": "#a8844e",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f4cc58"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "나무 문 안으로 쏙 들어가 숨었다가 빼꼼 고개를 내밀어요",
+       "x": {
+        "at": [
+         0.38,
+         0.95
+        ],
+        "m": "hide peek"
+       },
+       "l": [
+        "달팽이 껍데기 집 문 안으로 쏙 숨었다가 빼꼼 고개를 내밀었다.",
+        "달팽이 껍데기 집에 숨어 술래를 기다렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "껍데기 둘레를 소용돌이 무늬 따라 한 바퀴 빙 돌아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "달팽이 껍데기 집 둘레를 소용돌이 무늬 따라 한 바퀴 돌았다.",
+        "달팽이 껍데기 무늬를 따라 돌다 어질어질했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "껍데기 꼭대기로 기어올라 균형을 잡아요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "달팽이 껍데기 꼭대기로 기어올라 균형을 잡았다.",
+        "달팽이 껍데기 위에서 미끄러질 뻔하다 버텼다."
+       ]
+      },
+      {
+       "w": "물·벌레 타입",
+       "a": "둥근 창에 얼굴을 대고 안을 들여다봐요",
+       "x": {
+        "at": [
+         0.6,
+         0.6
+        ],
+        "m": "win"
+       },
+       "l": [
+        "달팽이 껍데기 집 둥근 창으로 안을 들여다봤다.",
+        "달팽이 껍데기 집 창에 얼굴을 대고 똑똑 두드렸다."
+       ]
+      }
+     ],
+     "fit": "연못 가까운 풀밭"
+    },
+    {
+     "id": "ins-ladybug-rider",
+     "n": "무당벌레 흔들 놀이기구",
+     "k": "곤충 관찰원",
+     "d": "빨간 등에 까만 점 다섯 개가 박힌 무당벌레가 용수철 위에 얹혀 앞뒤로 흔들리는 놀이기구예요.",
+     "px": [
+      ".........kkkkkkkk....",
+      ".......kkkRrrrdKkk...",
+      "kkk.kkkkRdKrrrKKrkk..",
+      "kKkkkKkRRKKrrrrrrqkk.",
+      "kkKkKkRRRrrrrrrrqqqkk",
+      ".kkKKRRRrrrKKrrqKKqqk",
+      "kkCKCKKKrrrKKrqqKKqqk",
+      "kKKKKKKKrrrrrrqqqqqQk",
+      "kkKpKKKKKKKKKKKKKKKKk",
+      ".kkKKKKKKKKKKKKKKKKkk",
+      "..kkkkkKkddddddkKkkk.",
+      "......kkMMMMMMmkkk...",
+      ".......kdddddddk.....",
+      ".......kMMMMMMmk.....",
+      ".......kdddddddk.....",
+      ".......kMMMMMMmk.....",
+      ".......kdddddddk.....",
+      "....kkkkMMMMMMmkkkk..",
+      "....kMMMmmmmmdddddk..",
+      "...kkMMMmmmmmdddddkk.",
+      "...kdddddddddddddddk.",
+      "...kkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "C": "#f8f2e2",
+      "K": "#34303a",
+      "M": "#d0d6e0",
+      "Q": "#6a1e28",
+      "R": "#f0866e",
+      "d": "#5c6476",
+      "k": "#20202c",
+      "m": "#9098aa",
+      "p": "#d0607e",
+      "q": "#982e34",
+      "r": "#d04c44"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "무당벌레 등 위에 올라타 앞뒤로 흔들흔들 놀아요",
+       "x": {
+        "at": [
+         0.55,
+         0.15
+        ],
+        "m": "ride",
+        "fx": "swing"
+       },
+       "l": [
+        "무당벌레 흔들 놀이기구에 올라타 앞뒤로 흔들흔들 놀았다.",
+        "무당벌레 등 위에서 신나게 흔들리며 소리를 질렀다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "무당벌레를 톡 밀어 흔들어 줘요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "무당벌레 흔들 놀이기구를 밀어 흔들어 주었다.",
+        "무당벌레 놀이기구를 너무 세게 밀어 같이 휘청했다."
+       ]
+      },
+      {
+       "w": "벌레 타입",
+       "a": "무당벌레 앞에 마주 서서 더듬이를 맞대고 인사해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "무당벌레 놀이기구 앞에 서서 더듬이를 맞대고 인사했다.",
+        "무당벌레 놀이기구를 친구로 착각하고 말을 걸었다."
+       ]
+      }
+     ],
+     "fit": "놀이터 쪽, 꽃밭 옆",
+     "mv": {
+      "st": [
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "..kkkkkKkddddddkKkkk.",
+       "......kkMMMMMMmkkk...",
+       ".......kdddddddk.....",
+       ".......kMMMMMMmk.....",
+       ".......kdddddddk.....",
+       ".......kMMMMMMmk.....",
+       ".......kdddddddk.....",
+       "....kkkkMMMMMMmkkkk..",
+       "....kMMMmmmmmdddddk..",
+       "...kkMMMmmmmmdddddkk.",
+       "...kdddddddddddddddk.",
+       "...kkkkkkkkkkkkkkkkk."
+      ],
+      "mp": [
+       ".........kkkkkkkk....",
+       ".......kkkRrrrdKkk...",
+       "kkk.kkkkRdKrrrKKrkk..",
+       "kKkkkKkRRKKrrrrrrqkk.",
+       "kkKkKkRRRrrrrrrrqqqkk",
+       ".kkKKRRRrrrKKrrqKKqqk",
+       "kkCKCKKKrrrKKrqqKKqqk",
+       "kKKKKKKKrrrrrrqqqqqQk",
+       "kkKpKKKKKKKKKKKKKKKKk",
+       ".kkKKKKKKKKKKKKKKKKkk",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       ".....................",
+       "....................."
+      ],
+      "o": [
+       10.5,
+       17
+      ],
+      "k": "swing",
+      "amp": 1.4
+     }
+    }
+   ]
+  },
+  {
    "at": 1795560528919,
    "theme": "숲속 꼬마 꽃집",
    "note": "오늘은 숲속 꼬마 꽃집이에요. 화분 탑·유리 온실·장미 아치·꽃 양동이 진열대처럼 꽃집 앞뒤를 채우는 소품 10개를 그렸고, 걸이 화분은 바람에 흔들리고 튤립밭 풍차는 날갯짓하면 날개가 돌아가요. 숨기·기어오르기·날아와 앉기·꿀 먹기·낮잠을 고루 넣어 여러 포켓몬이 놀 수 있게 했어요.",
