@@ -3491,7 +3491,7 @@ async function gtu(T) {
       { const e = gtEl(st.t), r = e && e.getBoundingClientRect(); placeBox(r && r.width ? r : null, wasHid); }
       cancelAnimationFrame(raf); track(); stT = performance.now();
       const s = typeof st.s === 'function' ? st.s() : st.s;
-      if (st.snap) { const tk = () => { const e = gtEl(st.snap[1]), q = gtEl(st.snap[2] || st.t); const S = snapOf(e?.sv || e, q); if (S) gtSnap[st.snap[0]] = S; }; tk(); setTimeout(tk, 1300); }   /* 움직이던 게 멈춘 뒤 한 번 더 찍음 */
+      if (st.snap) { const tk = re => { const e = gtEl(st.snap[1]), q = gtEl(st.snap[2] || st.t); if (re && (cur !== st || !q)) return; const S = snapOf(e?.sv || e, q); if (S) gtSnap[st.snap[0]] = S; }; tk(); setTimeout(() => tk(1), 1300); }   /* 움직이던 게 멈춘 뒤 한 번 더 찍음 — v28.95 경완 '다이맥스 설명 끝나고 나오는 알림창에 캡쳐 화면 없음': 그새 눌러 넘어갔으면(먹었다! 창·다이맥스 연출) 다시 찍지 않음 */
       if (st.tap) {
         if (!st.quiet) await say(s); lock = true; ov.classList.add('tapon'); await wait(300); lock = false; ov.classList.add('do'); tapped = false; allow = st.tap; ov.dataset.tap = typeof st.tap === 'string' ? st.tap : '';
         for (let gone = 0; ; ) { await wait(100); if (!open) break; if (st.until ? st.until() : tapped) break; gone = gtEl(st.tap) || (st.until && tapped) ? 0 : gone + 1; if (gone > 40) break; }   // 누를 곳이 4초 넘게 사라지면 풀어 준다 (갇히지 않게)
