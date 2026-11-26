@@ -1,6 +1,1306 @@
 {
  "days": [
   {
+   "at": 1795733237844,
+   "theme": "숲속 꼬마 시계 공방",
+   "note": "오늘은 숲속 꼬마 시계 공방이에요. 뻐꾸기 시계·괘종시계·모래시계·왕 자명종·꼬마 시계탑처럼 똑딱똑딱 소리가 나는 소품 10개를 그렸고, 뻐꾸기 시계·괘종시계 추와 회중시계·메트로놈 바늘은 그 부분만 흔들려요. 시계공 작업대 등은 밤에 둘레를 밝혀요. 전기·에스퍼·강철·격투 타입부터 모든 포켓몬까지 고루 놀 수 있게 동작을 넣었어요.",
+   "items": [
+    {
+     "id": "clk-cuckoo",
+     "n": "뻐꾸기 시계",
+     "k": "시계 공방",
+     "d": "빨간 지붕 아래 나무 집 모양 시계예요. 꼭대기 작은 문에서 노란 뻐꾸기가 고개를 내밀고, 아래에서 금빛 추가 똑딱똑딱 흔들려요.",
+     "px": [
+      "..........kGgkk.........",
+      "........kkRRrqqk........",
+      ".......kRRRrrrqqk.......",
+      ".....kkRRRrrrRrqqkk.....",
+      "....kRRRRrrrRrrrRqqk....",
+      "..kkRRRRrrrRrrrRrrqqkk..",
+      ".kRRRrRrrrRrrrRrrrRrqqk.",
+      "kRRRrRrrrRrrrRrrrRrrrqqk",
+      "RRrrRrrrRrrrRrrrRrrrRrrq",
+      "kqqqqqqqqqqqqqqqqqqqqqqk",
+      ".kqkWWWWWWWWWWWWWWWvqkk.",
+      "..kkWwvwwvuuuuwvwwwvk...",
+      "...kWwwwwvuyYowvwwvvk...",
+      "...kWwvwwwuuuuwvwwvvk...",
+      "...kWwvwwvCCxCwvwwvvk...",
+      "...kWwvwwCCCCCCwwwvvk...",
+      "...kWwvwCCCCUCCCwwwvk...",
+      "...kWwwwCCCCUCCcwwvvk...",
+      "...kWwvwxCCCqCCxwwvvk...",
+      "...kWwvwCCCCUUccwwvvk...",
+      "...kWwvwCCCCccUcwwvvk...",
+      "...kWwvwwccccccvwwwvk...",
+      "...kWwwwwvccxcwvwwvvk...",
+      "...kvvvvvvvvvvvvvvvuk...",
+      "..kvwwwwwwwwkwwwwwwwvk..",
+      "...kkkkxkkkkokkkxkkkk...",
+      "......kxk..kok.kxk......",
+      "......kxk..kok.kxk......",
+      ".....kwvvk.kok.kxk......",
+      ".....kvwvkkYYk.kkk......",
+      ".....kwvvkYYyokwvvk.....",
+      ".....kvuukyyyokvwvk.....",
+      "......kkk.kookkwvvk.....",
+      "...........kk.kvuuk....."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "R": "#f0866e",
+      "r": "#c8574a",
+      "q": "#8a3a34",
+      "U": "#3e2618",
+      "x": "#9a8c78",
+      "g": "#5e8a3c",
+      "G": "#8cbc5a"
+     },
+     "mv": {
+      "st": [
+       "..........kGgkk.........",
+       "........kkRRrqqk........",
+       ".......kRRRrrrqqk.......",
+       ".....kkRRRrrrRrqqkk.....",
+       "....kRRRRrrrRrrrRqqk....",
+       "..kkRRRRrrrRrrrRrrqqkk..",
+       ".kRRRrRrrrRrrrRrrrRrqqk.",
+       "kRRRrRrrrRrrrRrrrRrrrqqk",
+       "RRrrRrrrRrrrRrrrRrrrRrrq",
+       "kqqqqqqqqqqqqqqqqqqqqqqk",
+       ".kqkWWWWWWWWWWWWWWWvqkk.",
+       "..kkWwvwwvuuuuwvwwwvk...",
+       "...kWwwwwvuyYowvwwvvk...",
+       "...kWwvwwwuuuuwvwwvvk...",
+       "...kWwvwwvCCxCwvwwvvk...",
+       "...kWwvwwCCCCCCwwwvvk...",
+       "...kWwvwCCCCUCCCwwwvk...",
+       "...kWwwwCCCCUCCcwwvvk...",
+       "...kWwvwxCCCqCCxwwvvk...",
+       "...kWwvwCCCCUUccwwvvk...",
+       "...kWwvwCCCCccUcwwvvk...",
+       "...kWwvwwccccccvwwwvk...",
+       "...kWwwwwvccxcwvwwvvk...",
+       "...kvvvvvvvvvvvvvvvuk...",
+       "..kvwwwwwwwwwwwwwwwwvk..",
+       "...kkkkxkkkkkkkkxkkkk...",
+       "......kxk......kxk......",
+       "......kxk......kxk......",
+       ".....kwvvk.....kxk......",
+       ".....kvwvk.....kkk......",
+       ".....kwvvk....kwvvk.....",
+       ".....kvuuk....kvwvk.....",
+       "......kkk.....kwvvk.....",
+       "..............kvuuk....."
+      ],
+      "mp": [
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "........................",
+       "............k...........",
+       "...........kok..........",
+       "...........kok..........",
+       "...........kok..........",
+       "...........kok..........",
+       "..........kYYk..........",
+       ".........kYYyok.........",
+       ".........kyyyok.........",
+       "..........kook..........",
+       "...........kk..........."
+      ],
+      "o": [
+       11.5,
+       25
+      ],
+      "k": "swing",
+      "amp": 1.6
+     },
+     "acts": [
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 빨간 지붕 꼭대기에 앉아 뻐꾸기 흉내를 내요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 뻐꾸기 시계 지붕 꼭대기에 앉아 뻐꾹뻐꾹 흉내를 냈다.",
+        "뻐꾸기 시계 지붕 위에서 뻐꾸기가 나오길 기다렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "흔들리는 금빛 추 앞에 앉아 고개를 좌우로 따라 움직여요",
+       "x": {
+        "at": "front",
+        "m": "speek",
+        "fx": "swing"
+       },
+       "l": [
+        "뻐꾸기 시계 추를 따라 고개를 똑딱똑딱 좌우로 흔들었다.",
+        "뻐꾸기 시계 추를 한참 따라 보다 눈이 핑핑 돌았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "시계 뒤에 숨었다가 뻐꾸기 문처럼 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "뻐꾸기 시계 뒤에 숨었다가 뻐꾸기처럼 고개를 빼꼼 내밀었다.",
+        "뻐꾸기 시계 뒤에서 '뻐꾹!' 하고 튀어나와 친구를 놀래켰다."
+       ]
+      }
+     ],
+     "fit": "나무 그늘, 벤치 옆"
+    },
+    {
+     "id": "clk-grandfather",
+     "n": "괘종시계",
+     "k": "시계 공방",
+     "d": "금빛 둥근 문자판과 유리창 속 커다란 추가 달린 키 큰 괘종시계예요. 유리 너머로 추가 느릿느릿 흔들려요.",
+     "px": [
+      ".......kYok.......",
+      ".......kyyk.......",
+      ".....kkwwwwkk.....",
+      "...kkWWwwwwwvkk...",
+      "..kWWWWwwwwwvvvk..",
+      ".kWWWWWWWWWWWWWvk.",
+      ".kWwwwooCCoowwwvk.",
+      ".kWwwoCCxCCCowwvk.",
+      ".kWwwoCUCCCCowwvk.",
+      ".kWwwCCCUCCccwwvk.",
+      ".kWwwCxCqUUUcwwvk.",
+      ".kWwwoCCCCccowwvk.",
+      ".kWwwoccxcccowwvk.",
+      ".kWwwwooccoowwwvk.",
+      ".kvvvvvvvvvvvvvuk.",
+      ".kuuuuuuuuuuuuuuk.",
+      "..kWWWWWWWWWWWvk..",
+      "..kWwbbBoBBBBwvk..",
+      "..kWwbBBoBBHBwvk..",
+      "..kWwbbBoBBHBwvk..",
+      "..kWwbbBoBBHBwvk..",
+      "..kWwbBBoBBHBwvk..",
+      "..kWwbbBoBBBBwvk..",
+      "..kWwbbBoBBBBwvk..",
+      "..kWwbBBoBBBBwvk..",
+      "..kWwbbBYYBBBwvk..",
+      "..kWwbbYYyoBBwvk..",
+      "..kWwbBBooBBBwvk..",
+      "..kWwbbBBBBBBwvk..",
+      "..kWwvwwvwwvwwvk..",
+      ".kkvvvvvvvvvvvukk.",
+      "kWWWWWWWWWWWWWWWWk",
+      "kwwwwwwwwwwwwwwuuk",
+      "kvvvvvvvvvvvvvvuuk",
+      ".kuukkkkkkkkkkuuk.",
+      "..kk..........kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "U": "#3e2618",
+      "x": "#9a8c78",
+      "q": "#8a3a34",
+      "B": "#3a3048",
+      "b": "#5a5070",
+      "H": "#8a84a0"
+     },
+     "mv": {
+      "st": [
+       ".......kYok.......",
+       ".......kyyk.......",
+       ".....kkwwwwkk.....",
+       "...kkWWwwwwwvkk...",
+       "..kWWWWwwwwwvvvk..",
+       ".kWWWWWWWWWWWWWvk.",
+       ".kWwwwooCCoowwwvk.",
+       ".kWwwoCCxCCCowwvk.",
+       ".kWwwoCUCCCCowwvk.",
+       ".kWwwCCCUCCccwwvk.",
+       ".kWwwCxCqUUUcwwvk.",
+       ".kWwwoCCCCccowwvk.",
+       ".kWwwoccxcccowwvk.",
+       ".kWwwwooccoowwwvk.",
+       ".kvvvvvvvvvvvvvuk.",
+       ".kuuuuuuuuuuuuuuk.",
+       "..kWWWWWWWWWWWvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwbBBBBBHBwvk..",
+       "..kWwbbBBBBHBwvk..",
+       "..kWwbbBBBBHBwvk..",
+       "..kWwbBBBBBHBwvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwbBBBBBBBwvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwbBBBBBBBwvk..",
+       "..kWwbbBBBBBBwvk..",
+       "..kWwvwwvwwvwwvk..",
+       ".kkvvvvvvvvvvvukk.",
+       "kWWWWWWWWWWWWWWWWk",
+       "kwwwwwwwwwwwwwwuuk",
+       "kvvvvvvvvvvvvvvuuk",
+       ".kuukkkkkkkkkkuuk.",
+       "..kk..........kk.."
+      ],
+      "mp": [
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........o.........",
+       "........YY........",
+       ".......YYyo.......",
+       "........oo........",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       ".................."
+      ],
+      "o": [
+       8.5,
+       17
+      ],
+      "k": "swing",
+      "amp": 1.2
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "괘종시계 옆에 기대 앉아 똑딱 소리를 들으며 꾸벅꾸벅 졸아요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "괘종시계에 기대어 똑딱 소리를 들으며 꾸벅꾸벅 졸았다.",
+        "괘종시계 곁에서 추 소리에 맞춰 숨을 고르다 잠들었다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 금빛 꼭대기 장식 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 괘종시계 꼭대기 장식 위에 앉았다.",
+        "괘종시계 꼭대기에서 필드를 내려다봤다."
+       ]
+      },
+      {
+       "w": "고스트 타입",
+       "a": "시계 앞에서 스르르 사라졌다가 유리창 속 추 옆에서 다시 나타나요",
+       "x": {
+        "at": [
+         0.5,
+         0.6
+        ],
+        "m": "blink"
+       },
+       "l": [
+        "괘종시계 앞에서 스르르 사라졌다가 다시 나타났다.",
+        "괘종시계 유리창에 얼굴을 비추며 장난스럽게 깜빡였다."
+       ]
+      }
+     ],
+     "fit": "필드 가장자리, 집 소품 옆"
+    },
+    {
+     "id": "clk-hourglass",
+     "n": "큰 모래시계",
+     "k": "시계 공방",
+     "d": "나무 틀에 끼운 커다란 모래시계예요. 위 유리에서 금빛 모래가 가늘게 흘러내려 아래에 소복이 쌓여요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkk.",
+      "kWWWWWWWWWWWWWWWWWvk",
+      "kWwwwwwwwwwwwwwwwwvk",
+      "kvvvvvvvvvvvvvvvvvuk",
+      ".kWwGhhhhhhhhhhgvuk.",
+      ".kWwGhhhhhhhhhhgvuk.",
+      ".kWwGhChhhhhhhhgvuk.",
+      ".kWwGGChhhhhhhggvuk.",
+      ".kWwGSSSSSsssssgvuk.",
+      ".kWwjGSSSSssssgJvuk.",
+      ".kWwjjGSSSsssgJJvuk.",
+      ".kWwjjGSSSsssgJJvuk.",
+      ".kWwjjjGGSsggJJJvuk.",
+      ".kWwjjjjjSgJJJJJvuk.",
+      ".kWwjjjGGShggJJJvuk.",
+      ".kWwjjGGhShhggJJvuk.",
+      ".kWwjjGhhShhhgJJvuk.",
+      ".kWwjGGhhShhhggJvuk.",
+      ".kWwGGhhhSshhhggvuk.",
+      ".kWwGGhCSSssshggvuk.",
+      ".kWwGhSSSSsssshgvuk.",
+      ".kWwSSSSSSssssssvuk.",
+      ".kWwSSSSSSssssssvuk.",
+      "kWWWWWWWWWWWWWWWWWvk",
+      "kWwwwwwwwwwwwwwwwwvk",
+      "kvvvvvvvvvvvvvvvvvuk",
+      ".kuukkkkkkkkkkkkuuk.",
+      "..kk............kk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "C": "#f8f2e2",
+      "G": "#e4f4f6",
+      "h": "#bfe0ea",
+      "g": "#8ab8cc",
+      "S": "#f2dca4",
+      "s": "#d6b67c",
+      "j": "#8a6a48",
+      "J": "#6e5038"
+     },
+     "acts": [
+      {
+       "w": "땅·바위 타입",
+       "a": "모래시계 앞에 앉아 흘러내리는 모래를 가만히 바라봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "모래시계 앞에 앉아 흘러내리는 모래를 가만히 바라봤다.",
+        "모래시계 모래가 다 떨어질 때까지 꼼짝 않고 지켜봤다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "모래시계 나무 틀을 힘껏 밀어 빙글 뒤집으려 해요",
+       "x": {
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "모래시계 나무 틀을 힘껏 밀어 뒤집으려 낑낑댔다.",
+        "모래시계를 뒤집으려 밀다가 꿈쩍도 안 해서 머리를 긁었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "모래시계 둘레를 빙 돌며 유리 속 모래를 이쪽저쪽에서 들여다봐요",
+       "x": {
+        "m": "circ speek"
+       },
+       "l": [
+        "모래시계 둘레를 빙 돌며 유리 속 모래를 들여다봤다.",
+        "모래시계 유리에 코를 대고 떨어지는 모래알을 셌다."
+       ]
+      }
+     ],
+     "fit": "모래밭·바위 옆"
+    },
+    {
+     "id": "clk-giant-alarm",
+     "n": "왕 자명종",
+     "k": "시계 공방",
+     "d": "금빛 종 두 개를 머리에 단 빨간 왕 자명종이에요. 작은 망치가 종을 때리면 따르릉 하고 필드 전체가 깨어날 것 같아요.",
+     "px": [
+      "..kkkk.kmxxxxxk.kkkk..",
+      ".kxYYYkkxxxxxxkkYYYxk.",
+      ".kYYYyykkkXXkkkYYYyyk.",
+      "kYYYyyookkXXkkYYYyyook",
+      "kYyyyooOkkXXkkYyyyooOk",
+      "kyyoooOOkRRRRkyyoooOOk",
+      ".koooORRRRRRrrrrooOOk.",
+      "..kOOCRRRoooorrrrOOk..",
+      "...kCRRoCCCxCCorrrk...",
+      "..kRRRoCCCCUCCCorrqk..",
+      "..kRRoCCCCCUCCCCoqqk..",
+      ".kRRoCCCCCCUCCCCcoqqk.",
+      ".kRRoCCCUCCUCCCCcoqqk.",
+      ".krrCCCCCUUUCCCCccqqk.",
+      ".krrCxCCCCCqCCCcxcqQk.",
+      ".krrCCCCCCCCCCccccQQk.",
+      ".krroCCCCCCCCccccoQQk.",
+      ".krroCCCCCCCcccccoQQk.",
+      "..krroCCCcccccccoQQk..",
+      "..krqqoccccccccoQQQk..",
+      "...kqqqocccxccoQQQk...",
+      "....kXxqqooooQQxXk....",
+      "...kXxqqQQQQQQQxxXk...",
+      "..kXkxkkkQQQQkkkkxk...",
+      "..kXxk...kkkk...kxXk..",
+      "...kk............kk..."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "R": "#f08a72",
+      "r": "#d0584a",
+      "q": "#9a3a36",
+      "Q": "#6a2228",
+      "U": "#3e2618",
+      "x": "#9a8c78",
+      "m": "#d8d4cc",
+      "X": "#5c5866"
+     },
+     "acts": [
+      {
+       "w": "전기 타입",
+       "a": "자명종에 전기를 톡 흘려 종을 따르릉 울리고 깜짝 놀라 뒤로 물러나요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "왕 자명종에 전기를 흘려 따르릉 울리고 깜짝 놀라 물러났다.",
+        "왕 자명종을 따르릉 울려 낮잠 자던 친구들을 깨웠다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "자명종 다리 사이에 기대 누워 쿨쿨 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "왕 자명종에 기대 누워 알람도 모른 채 쿨쿨 잤다.",
+        "왕 자명종 곁에서 '5분만 더…' 하며 뒹굴었다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 금빛 종 위에 앉아요",
+       "x": {
+        "at": [
+         0.2,
+         0.15
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 왕 자명종 금빛 종 위에 앉았다.",
+        "왕 자명종 종 위에 앉았다가 종이 떨려 화들짝 날아올랐다."
+       ]
+      }
+     ],
+     "fit": "필드 가운데, 잠자는 자리 옆"
+    },
+    {
+     "id": "clk-pocket-watch",
+     "n": "회중시계 걸이",
+     "k": "시계 공방",
+     "d": "나무 받침대에 금빛 회중시계를 줄에 매달아 둔 걸이예요. 바람이 불면 시계가 최면처럼 살랑살랑 흔들려요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkkk.",
+      "kwWWWWWWWWWWWWWWWWWWWvk",
+      "kWWWWWWWWWWWWWWWWWWWWvk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kvvvvvvvvvvvvvvvvvvvvuk",
+      ".kkWvkkkvkkkkkvkkkWvkk.",
+      "..kWvkkvk.kok.kvkkWvk..",
+      "..kWvkvvk.kyk.kvvkWvk..",
+      "..kWvkvk..kok..kvkWvk..",
+      "..kWvvk...kyk...kvWvk..",
+      "..kWvk...koYok...kWvk..",
+      "..kWvk...koook...kWvk..",
+      "..kWvk..kYYYYyk..kWvk..",
+      "..kWvk.kYYYCyyyk.kWvk..",
+      "..kWvkkYYCUxCCyykkWvk..",
+      "..kWvkYYYCCUUCCookWvk..",
+      "..kWvkYYCCCUUCcoOkWvk..",
+      "..kWvkYCxCCqCCxcOkWvk..",
+      "..kWvkyyCCCCCccOOkWvk..",
+      "..kWvkyyCCCCcccOOkWvk..",
+      "..kWvkkyoccxccOOkkWvk..",
+      "..kWvk.kooocOOOk.kWvk..",
+      "..kWvk..kOOOOOk..kWvk..",
+      "..kWvk...kkkkk...kWvk..",
+      "..kWvk...........kWvk..",
+      "..kWvk...........kWvk..",
+      ".kkvukk.........kkvukk.",
+      "kWWWWWvk.......kWWWWWvk",
+      "kvvvvvuk.......kvvvvvuk",
+      ".kkkkkk.........kkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "U": "#3e2618",
+      "x": "#9a8c78",
+      "q": "#8a3a34"
+     },
+     "mv": {
+      "st": [
+       ".kkkkkkkkkkkkkkkkkkkkk.",
+       "kwWWWWWWWWWWWWWWWWWWWvk",
+       "kWWWWWWWWWWWWWWWWWWWWvk",
+       "kWwwwwwwwwwwwwwwwwwwwvk",
+       "kvvvvvvvvvvvvvvvvvvvvuk",
+       ".kkWvkkkvkkokkvkkkWvkk.",
+       "..kWvkkvk..k..kvkkWvk..",
+       "..kWvkvvk.....kvvkWvk..",
+       "..kWvkvk.......kvkWvk..",
+       "..kWvvk.........kvWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       "..kWvk...........kWvk..",
+       ".kkvukk.........kkvukk.",
+       "kWWWWWvk.......kWWWWWvk",
+       "kvvvvvuk.......kvvvvvuk",
+       ".kkkkkk.........kkkkkk."
+      ],
+      "mp": [
+       ".......................",
+       ".......................",
+       ".......................",
+       ".......................",
+       ".......................",
+       "...........k...........",
+       "..........kok..........",
+       "..........kyk..........",
+       "..........kok..........",
+       "..........kyk..........",
+       ".........koYok.........",
+       ".........koook.........",
+       "........kYYYYyk........",
+       ".......kYYYCyyyk.......",
+       "......kYYCUxCCyyk......",
+       ".....kYYYCCUUCCook.....",
+       ".....kYYCCCUUCcoOk.....",
+       ".....kYCxCCqCCxcOk.....",
+       ".....kyyCCCCCccOOk.....",
+       ".....kyyCCCCcccOOk.....",
+       "......kyoccxccOOk......",
+       ".......kooocOOOk.......",
+       "........kOOOOOk........",
+       ".........kkkkk.........",
+       ".......................",
+       ".......................",
+       ".......................",
+       ".......................",
+       ".......................",
+       "......................."
+      ],
+      "o": [
+       11,
+       5
+      ],
+      "k": "swing",
+      "amp": 1.4
+     },
+     "acts": [
+      {
+       "w": "에스퍼 타입",
+       "a": "흔들리는 회중시계 앞에 서서 최면술 기술을 써요",
+       "x": {
+        "at": "front",
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "흔들리는 회중시계 앞에서 최면술을 연습했다.",
+        "회중시계를 흔들며 친구에게 최면술을 걸어 보려 했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "흔들리는 시계를 따라 고개를 흔들다 스르르 잠들어요",
+       "x": {
+        "at": "front",
+        "an": "Sleep",
+        "fx": "swing"
+       },
+       "l": [
+        "흔들리는 회중시계를 따라 보다 스르르 잠들었다.",
+        "회중시계 앞에서 '졸리다… 졸리다…' 하다 정말로 잠들었다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 받침대 가로대 위에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 회중시계 걸이 가로대 위에 앉았다.",
+        "회중시계 걸이 위에 앉아 흔들리는 시계를 내려다봤다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "시계를 톡 밀어 그네처럼 흔들어 줘요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "회중시계를 톡 밀어 그네처럼 흔들어 줬다.",
+        "회중시계를 밀었다가 되돌아오는 시계에 이마를 콩 부딪쳤다."
+       ]
+      }
+     ],
+     "fit": "꽃밭 옆, 벤치 앞"
+    },
+    {
+     "id": "clk-mini-tower",
+     "n": "꼬마 시계탑",
+     "k": "시계 공방",
+     "d": "청록 뾰족 지붕 아래 금빛 종이 걸린 벽돌 시계탑이에요. 문자판 아래 작은 나무 문이 달려 있어요.",
+     "px": [
+      "........kyok........",
+      "........kTTk........",
+      ".......kTTtdk.......",
+      "......kTTddddk......",
+      ".....kTTttttddk.....",
+      "....kTTttttttddk....",
+      "...kTTddddddddddk...",
+      "..kTTttttttttttddk..",
+      ".kTTttttttttttttddk.",
+      "kTTddddddddddddddddk",
+      "kSSSSSSSSSSSSSSSSSSk",
+      ".kkSSsBBBYYBBBszzkk.",
+      "..kSSsBBYYyoBBszzk..",
+      "..kSSsBByyoOBBszzk..",
+      "..kSSsBByooOBBszzk..",
+      "..kSSsBBBOOBBBszzk..",
+      ".kSSSSSSSSSSSSSSSSk.",
+      "..kSSsssoooossszzk..",
+      "..kSSssoCCxCosszzk..",
+      "..kSSsoCCCUCCoszzk..",
+      "..kSSsoCCCUUCoszzk..",
+      "..kSSsCxCCqCxcszzk..",
+      "..kSSsoCCCCccoszzk..",
+      "..kSSsoCCccccoszzk..",
+      "..kSSssoccxcosszzk..",
+      "..kSSsssoooossszzk..",
+      "..kPPPepppepppEeek..",
+      "..keeeeeeeeeeeEEEk..",
+      "..kPePppepppepeeEk..",
+      "..keeeeeeeeeeeEEEk..",
+      "..kPPPepuuuuppEeek..",
+      "..keeeevuuuuueEEEk..",
+      "..kPePpvuuuuupeeEk..",
+      "..keeeevuuuyueEEEk..",
+      "..kPPPevuuuuupEeek..",
+      "..keeeevuuuuueEEEk..",
+      ".ksssszzzzzzzzzzzzk.",
+      "..kkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "U": "#3e2618",
+      "x": "#9a8c78",
+      "q": "#8a3a34",
+      "T": "#7ac0b0",
+      "t": "#4a948a",
+      "d": "#2e6a66",
+      "S": "#efe6d2",
+      "s": "#cfc2a6",
+      "z": "#9a8c74",
+      "B": "#3a3048",
+      "P": "#e09a74",
+      "p": "#c4704e",
+      "e": "#94503a",
+      "E": "#6a3628",
+      "v": "#8a5a30",
+      "u": "#5a3820"
+     },
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "시계탑 종 둘레를 빙빙 날며 날갯짓으로 종을 흔들어요",
+       "x": {
+        "at": [
+         0.5,
+         0.35
+        ],
+        "m": "flap circ"
+       },
+       "l": [
+        "시계탑 종 둘레를 빙빙 날며 날갯짓으로 종을 울렸다.",
+        "시계탑 꼭대기를 맴돌며 댕댕 종소리를 냈다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "시계탑 작은 나무 문 앞에서 문을 두드리고 고개를 기웃거려요",
+       "x": {
+        "at": [
+         0.5,
+         1
+        ],
+        "m": "peek"
+       },
+       "l": [
+        "시계탑 작은 문을 똑똑 두드리고 고개를 기웃거렸다.",
+        "시계탑 문 앞에서 안에 누가 사는지 궁금해했다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "시계탑 벽에 기대 앉아 문자판을 올려다봐요",
+       "x": {
+        "at": "under"
+       },
+       "l": [
+        "시계탑 벽에 기대 앉아 문자판을 올려다봤다.",
+        "시계탑 그늘에 앉아 바늘이 움직이길 기다렸다."
+       ]
+      }
+     ],
+     "fit": "필드 한쪽 끝, 길가"
+    },
+    {
+     "id": "clk-metronome",
+     "n": "메트로놈",
+     "k": "시계 공방",
+     "d": "나무 삼각 몸통에 금빛 추가 달린 메트로놈이에요. 바늘이 똑딱똑딱 좌우로 흔들리며 박자를 맞춰 줘요.",
+     "px": [
+      "........k.........",
+      ".......kXk........",
+      ".......kXk........",
+      "......kkXkk.......",
+      ".....kWkXkvk......",
+      ".....kWkXkvvk.....",
+      ".....kWkXkkvk.....",
+      ".....kkYYYYkk.....",
+      "....kWkyyyykvk....",
+      "....kWkooookvk....",
+      "....kWWkXkkvvk....",
+      "...kWWwkXkcwvvk...",
+      "...kWWwkXkcwvvk...",
+      "...kWWCkXkccvvk...",
+      "...kWwCkXkccwvvk..",
+      "..kWWwCkXkccwvvk..",
+      "..kWWwCkXkccwvvk..",
+      "..kWWwCkXkccwvvk..",
+      ".kWWwCCkXkcccwvvk.",
+      ".kWWwCCkyykccwvvk.",
+      ".kWWwwwkyokwwwvvk.",
+      "kWWwwwwkookwwwwvvk",
+      "kWWwwwwwkkwwwwwvvk",
+      "kWWwwwwwwwwwwwwvvk",
+      "kWWWWWWWWWWWWWWWvk",
+      "kWwwwwwwwwwwwwwwvk",
+      "kvvvvvvvvvvvvvvvuk",
+      ".kkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "X": "#5c5866"
+     },
+     "mv": {
+      "st": [
+       "..................",
+       "..................",
+       "........kk........",
+       "......kkook.......",
+       ".....kWWwwvk......",
+       ".....kWWwwvvk.....",
+       ".....kWWwwvvk.....",
+       ".....kWWCcvvk.....",
+       "....kWWxCccvvk....",
+       "....kWWCCccvvk....",
+       "....kWWxCccvvk....",
+       "...kWWwCCccwvvk...",
+       "...kWWwxCccwvvk...",
+       "...kWWCCCcccvvk...",
+       "...kWwCxCcccwvvk..",
+       "..kWWwCCCcccwvvk..",
+       "..kWWwCxCcccwvvk..",
+       "..kWWwCCCcccwvvk..",
+       ".kWWwCCxCccccwvvk.",
+       ".kWWwCCCCccccwvvk.",
+       ".kWWwwwwwwwwwwvvk.",
+       "kWWwwwwwwwwwwwwvvk",
+       "kWWwwwwwwwwwwwwvvk",
+       "kWWwwwwwwwwwwwwvvk",
+       "kWWWWWWWWWWWWWWWvk",
+       "kWwwwwwwwwwwwwwwvk",
+       "kvvvvvvvvvvvvvvvuk",
+       ".kkkkkkkkkkkkkkkk."
+      ],
+      "mp": [
+       "........k.........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXkk.......",
+       "......kYYYYk......",
+       "......kyyyyk......",
+       "......kooook......",
+       ".......kXkk.......",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kXk........",
+       ".......kyyk.......",
+       ".......kyok.......",
+       ".......kook.......",
+       "........kk........",
+       "..................",
+       "..................",
+       "..................",
+       "..................",
+       ".................."
+      ],
+      "o": [
+       8.5,
+       20
+      ],
+      "k": "swing",
+      "amp": 2.2
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "메트로놈 박자에 맞춰 그 자리에서 깡충깡충 춤을 춰요",
+       "x": {
+        "at": "front",
+        "m": "wobble",
+        "fx": "swing"
+       },
+       "l": [
+        "메트로놈 박자에 맞춰 깡충깡충 춤을 췄다.",
+        "메트로놈 똑딱 소리에 맞춰 몸을 좌우로 흔들었다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 페어리 타입",
+       "a": "메트로놈 앞에서 손가락흔들기처럼 기술을 써요",
+       "x": {
+        "m": "skill",
+        "fx": "swing"
+       },
+       "l": [
+        "메트로놈 앞에서 박자에 맞춰 손가락흔들기를 했다.",
+        "메트로놈 바늘을 따라 손을 흔들다 무슨 기술이 나올지 두근거렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "메트로놈 뒤에 숨었다가 바늘이 지나갈 때마다 옆으로 고개를 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "메트로놈 뒤에 숨어 바늘이 지나갈 때마다 고개를 내밀었다.",
+        "메트로놈 바늘과 숨바꼭질하듯 고개를 넣었다 뺐다."
+       ]
+      }
+     ],
+     "fit": "음악회 소품 옆, 무대 앞"
+    },
+    {
+     "id": "clk-gear-pile",
+     "n": "톱니바퀴 더미",
+     "k": "시계 공방",
+     "d": "금빛·은빛·구릿빛 톱니바퀴를 쌓아 둔 더미예요. 큰 톱니 위에 작은 톱니가 맞물려 있어 금방이라도 돌아갈 것 같아요.",
+     "px": [
+      ".................kkk.........",
+      "...............kkRRRkk.......",
+      "..............kRkkRkkrk......",
+      ".............kRRRQQQrrqk.....",
+      ".......kk.....kRQrrrQqk......",
+      "......kYYk..kkkRrXXXqqk......",
+      "....k.kYYkkkyyrrrXXXqqQk.....",
+      "...kYkYYYYYyyyrkQqqqQkQk.....",
+      "..kYYYYYYYyyyykkqQQQQkk......",
+      "..kYYYYOOOOOyyykqQkQQk.......",
+      ".kkYYYOYyyyyOyooookkk.kk.....",
+      "kYkYYOYyyyyyyOoookkMkkMMk....",
+      "kYYYYyyyyXyyyooookMMMMMmkkk..",
+      "kYYyyyyyXXXyoooookkMNNNNmmnk.",
+      ".kyyyyyyXXXoooooOOMNMmmmNnnk.",
+      ".kyyyyyyyXoooooOMMMmmXXmnnkk.",
+      ".kyyyOyooooooOOOMmNmmXXnnNNNk",
+      "kyyyyoOoooooOOOOkkmmmXXnnnNNk",
+      ".kykoooOOOOOOOOOkmmNnnnnNNkk.",
+      "..k.koooooOOOOOOkmnnNNNNNk...",
+      "....koooOOOOOkOk.kkknnNNNNk..",
+      "....kOOkkkOOk.k....kNNkkNk...",
+      ".....kk..kOOk.......kk..k...."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "R": "#f0a07c",
+      "r": "#d07850",
+      "q": "#a0523a",
+      "Q": "#6a3428",
+      "M": "#dfe4ec",
+      "m": "#a8b0c0",
+      "n": "#727a8e",
+      "N": "#4a5062",
+      "X": "#2e2c38"
+     },
+     "acts": [
+      {
+       "w": "강철 타입",
+       "a": "톱니바퀴 더미에 기대 앉아 반짝이는 톱니를 쓰다듬으며 쉬어요",
+       "x": {
+        "at": "under"
+       },
+       "l": [
+        "톱니바퀴 더미에 기대 앉아 반짝이는 톱니를 쓰다듬었다.",
+        "톱니바퀴 더미 곁에서 친구라도 만난 듯 편히 쉬었다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "톱니바퀴 더미 꼭대기로 기어 올라가 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "톱니바퀴 더미를 기어 올라가 꼭대기에 앉았다.",
+        "톱니바퀴 톱니를 발판 삼아 영차영차 올라갔다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "큰 톱니를 톡 밀어 보고 꿈쩍 않자 고개를 갸웃해요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "큰 톱니바퀴를 톡 밀어 보고 꿈쩍 않자 고개를 갸웃했다.",
+        "톱니바퀴를 굴려 보려다 무거워서 포기했다."
+       ]
+      }
+     ],
+     "fit": "작업대 옆, 바위 옆"
+    },
+    {
+     "id": "clk-workbench-lamp",
+     "n": "시계공 작업대 등",
+     "k": "시계 공방",
+     "d": "시계공이 쓰는 나무 작업대예요. 초록 갓 스탠드 등이 작은 시계와 톱니를 비추고, 밤에는 둘레를 따뜻하게 밝혀요.",
+     "px": [
+      "..................kk..........",
+      ".................kGGk.........",
+      "................kGGGmk........",
+      "...............kggHHkmkk......",
+      "..............kgggHk.kmmk.....",
+      ".............kggggk...kkmk....",
+      "..............kYYLLk...kmk....",
+      ".......kkk...kllllllk..kmk....",
+      "......kyyyk...kkkkkk...kmk....",
+      ".....kyCCCok........k..kmk....",
+      ".....kyCUcOk.kk..k.kmk.kmkk...",
+      ".....kocccOkkmmkkykkXXkXmXXk..",
+      ".kkkkkkOOOkkknnkyyokXXkXXXXkk.",
+      "kWWWWWWWWWWWWnnWWoWWWWWWWWWWvk",
+      "kWwwwwwwwwwwwwwwwwwwwwwwwwwwvk",
+      "kvvvvvvvvvvvvvvvvvvvvvvvvvvvuk",
+      ".kWWvkWWWWWWWWWvkkkkkkkkkWWvk.",
+      ".kWwvkWwwwyywwwvk.......kWwvk.",
+      ".kWwvkWwwwwwwwwvk.......kWwvk.",
+      ".kWwvkvvvvvvvvvuk.......kWwvk.",
+      ".kWwvkkkkkkkkkkk........kWwvk.",
+      ".kWwvk..................kWwvk.",
+      ".kWwvkkkkkkkkkkkkkkkkkkkkWwvk.",
+      ".kWwvvvvvvvvvvvvvvvvvvvvvWwvk.",
+      ".kWwvkkkkkkkkkkkkkkkkkkkkWwvk.",
+      ".kWwvk..................kWwvk.",
+      ".kWwvk..................kWwvk.",
+      ".kvvuk..................kvvuk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "u": "#5a3820",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "C": "#f8f2e2",
+      "c": "#ddd2b8",
+      "U": "#3e2618",
+      "X": "#4a5062",
+      "m": "#a8b0c0",
+      "n": "#727a8e",
+      "G": "#8cbc8a",
+      "g": "#5e9a6c",
+      "H": "#3e6e52",
+      "L": "#fff8c8",
+      "l": "#ffe27a"
+     },
+     "glow": 1,
+     "acts": [
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "스탠드 등 불빛 둘레를 빙빙 날아요",
+       "x": {
+        "at": [
+         0.55,
+         0.25
+        ],
+        "m": "flap circ",
+        "fx": "glow"
+       },
+       "l": [
+        "시계공 작업대 등 불빛 둘레를 빙빙 날았다.",
+        "시계공 작업대 등불에 이끌려 날아와 맴돌았다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "작업대 아래 들어가 등불 아래에서 웅크리고 자요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "시계공 작업대 아래에 들어가 웅크리고 잠들었다.",
+        "시계공 작업대 밑에서 똑딱 소리를 자장가 삼아 잤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "작업대 앞에 서서 작은 시계와 톱니를 고개를 내밀어 구경해요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "시계공 작업대 위 작은 시계를 고개를 내밀어 구경했다.",
+        "시계공 작업대 톱니를 만지작거리다 하나를 떨어뜨렸다."
+       ]
+      }
+     ],
+     "fit": "시계탑 옆, 밤에 어두운 곳"
+    },
+    {
+     "id": "clk-windup-box",
+     "n": "태엽 장난감 상자",
+     "k": "시계 공방",
+     "d": "빨강·파랑 줄무늬 상자 위에 커다란 금빛 태엽이 꽂힌 장난감 상자예요. 태엽을 감으면 무언가 튀어나올 것만 같아요.",
+     "px": [
+      ".....kkkk.....kkkk....",
+      "....kYYYyk...kYYYyk...",
+      "...kYYYyyykkkYYYyyyk..",
+      "..kYYYkkyYYYYYYkkyook.",
+      "..kYYk..kyyyyyk..koOk.",
+      "..kyyk..kyyyyyk..koOk.",
+      "..kyyokkoooooookkoOOk.",
+      "...kooooOOyooooooOOk..",
+      "....kOOOOkyookOOOOk...",
+      ".....kkkkOOOOOkkkk....",
+      ".........kyook........",
+      ".........kyook........",
+      ".kkkkkkkkkyookkkkkkkk.",
+      "kWWWWWWWWWWWWWWWWWvvvk",
+      "kwwwwwwwwwwwwwwwwwvvvk",
+      "kBbbrrrbbbrrrbbbrrrbnk",
+      "kBbbrrrbbbyrrbbbrrrbnk",
+      "kBbbrrrbbyYyrbbbrrrbnk",
+      "kBbbrryyyYYyyyobrrrbnk",
+      "kBbbrrryyYyyyobbrrrbnk",
+      "kBbbrrrbyyyyobbbrrrbnk",
+      "kBbbrrryyoryoobbrrrbnk",
+      "kBbbrryobbrrroobrrrbnk",
+      "kBbbrrrbbbrrrbbbrrrbnk",
+      "kBbbrrrbbbrrrbbbrrrbnk",
+      "kBbbrrrbbbrrrbbbrrrbnk",
+      "knnnqqqnnnqqqnnnqqqnnk",
+      ".kkkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "k": "#20202c",
+      "W": "#e6b878",
+      "w": "#bc8850",
+      "v": "#8a5a30",
+      "Y": "#fff0a0",
+      "y": "#f0c850",
+      "o": "#c8902c",
+      "O": "#8a5a1c",
+      "r": "#d0584a",
+      "q": "#9a3a36",
+      "B": "#9cc8ee",
+      "b": "#5c94cc",
+      "n": "#3a6494"
+     },
+     "acts": [
+      {
+       "w": "격투 타입",
+       "a": "상자 위 큰 태엽을 힘껏 밀어 감아요",
+       "x": {
+        "m": "push",
+        "an": "Attack"
+       },
+       "l": [
+        "장난감 상자 큰 태엽을 힘껏 밀어 끼릭끼릭 감았다.",
+        "태엽을 끝까지 감고 무엇이 튀어나올지 숨죽여 기다렸다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "상자 위로 올라가 태엽 옆에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "장난감 상자 위로 올라가 태엽 옆에 앉았다.",
+        "장난감 상자 위에서 태엽에 몸을 기대고 쉬었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "상자 뒤에 숨었다가 깜짝 상자처럼 튀어나와요",
+       "x": {
+        "m": "hide peek",
+        "back": true
+       },
+       "l": [
+        "장난감 상자 뒤에 숨었다가 깜짝 상자처럼 튀어나왔다.",
+        "장난감 상자 뒤에서 '짠!' 하고 튀어나와 친구를 놀래켰다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 태엽 고리 위에 앉아요",
+       "x": {
+        "at": [
+         0.3,
+         0.1
+        ],
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 장난감 상자 태엽 고리 위에 앉았다.",
+        "태엽 고리 위에 앉아 날개를 다듬었다."
+       ]
+      }
+     ],
+     "fit": "놀이터 옆, 필드 가운데"
+    }
+   ]
+  },
+  {
    "at": 1795646930264,
    "theme": "숲속 꼬마 곤충 관찰원",
    "note": "오늘은 숲속 꼬마 곤충 관찰원이에요. 곤충 호텔·잠자리채 꽂이·밤에 켜지는 채집 등·수액 그루터기·나비 온실처럼 벌레 포켓몬이 좋아할 소품 10개를 그렸고, 나뭇잎 해먹과 무당벌레 놀이기구는 잎·몸통만 흔들려요. 벌레 타입 말고도 모든 포켓몬·격투·전기·땅 타입이 할 동작을 고루 넣었어요.",
