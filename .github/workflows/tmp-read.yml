@@ -1,0 +1,43 @@
+# 임시 (2026-11-26 경완 '읽어도 돼'): 유찬님(NDN66BNL) 친구 필드 기록·저장 요약 읽기만. 끝나면 지움.
+name: tmp read
+on:
+  push:
+    branches: [claude/project-thread-7bljtv]
+    paths: ['.github/workflows/tmp-read.yml']
+jobs:
+  r:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Set D1 id
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name=="pokegrow") | .uuid')
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+      - name: read
+        run: |
+          q() { npx wrangler d1 execute pokegrow --remote -y --json --command "$1"; }
+          q "SELECT code, at, length(data) AS len, length(fr) AS frl, instr(fr,'2X392NYD') AS hasK FROM field WHERE code IN ('NDN66BNL','2X392NYD')"
+          q "SELECT data FROM field WHERE code = 'NDN66BNL'" > f.json
+          q "SELECT acct, code, saved, parts, at FROM save WHERE code = 'NDN66BNL'"
+          q "SELECT i, data FROM save_part WHERE code = 'NDN66BNL' ORDER BY acct, i" > s.json
+          node -e '
+            const fs=require("fs");
+            const sum=(tag,d)=>{ console.log("==",tag,"keys",Object.keys(d).join(","));
+              console.log(tag,"v",d.v,"th",d.th,"thL",JSON.stringify(d.thL),"mons",(d.mons||[]).length,"box",(d.box||[]).length,"savedAt",d.savedAt&&new Date(d.savedAt).toISOString());
+              for (const [k,t] of Object.entries(d.thF||{})) console.log(tag,"thF",k,"mons",(t.mons||[]).length,"t",t.t&&new Date(t.t).toISOString());
+              console.log(tag,"mon0",JSON.stringify((d.mons||[])[0]||null).slice(0,500));
+              console.log(tag,"monsSp",(d.mons||[]).map(m=>m.sp+"@"+Math.round(m.x)+","+Math.round(m.y)+(m.pid!=null?"p"+m.pid:"")).join(" "));
+              const B=new Set((d.box||[]).map(P=>P.id)); console.log(tag,"monsNoBox",(d.mons||[]).filter(m=>m.pid!=null&&!B.has(m.pid)).length); };
+            try { const r=JSON.parse(fs.readFileSync("f.json"))[0].results[0]; sum("field",JSON.parse(r.data)); } catch(e){ console.log("field err",e.message); }
+            try { const rs=JSON.parse(fs.readFileSync("s.json"))[0].results; sum("save",JSON.parse(rs.map(x=>x.data).join(""))); } catch(e){ console.log("save err",e.message); }
+          '
