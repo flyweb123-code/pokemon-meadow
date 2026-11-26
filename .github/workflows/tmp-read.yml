@@ -26,18 +26,17 @@ jobs:
       - name: read
         run: |
           q() { npx wrangler d1 execute pokegrow --remote -y --json --command "$1"; }
-          q "SELECT code, at, length(data) AS len, length(fr) AS frl, instr(fr,'2X392NYD') AS hasK FROM field WHERE code IN ('NDN66BNL','2X392NYD')"
-          q "SELECT data FROM field WHERE code = 'NDN66BNL'" > f.json
-          q "SELECT acct, code, saved, parts, at FROM save WHERE code = 'NDN66BNL'"
+          q "SELECT slot, saved, dex, box, at FROM bak WHERE acct = 'u_chany' ORDER BY at DESC" | jq -c '.[0].results[]'
+          q "SELECT slot, i, data FROM bak_part WHERE acct = 'u_chany' ORDER BY slot, i" > b.json
           q "SELECT i, data FROM save_part WHERE code = 'NDN66BNL' ORDER BY acct, i" > s.json
           node -e '
-            const fs=require("fs");
-            const sum=(tag,d)=>{ console.log("==",tag,"keys",Object.keys(d).join(","));
-              console.log(tag,"v",d.v,"th",d.th,"thL",JSON.stringify(d.thL),"mons",(d.mons||[]).length,"box",(d.box||[]).length,"savedAt",d.savedAt&&new Date(d.savedAt).toISOString());
-              for (const [k,t] of Object.entries(d.thF||{})) console.log(tag,"thF",k,"mons",(t.mons||[]).length,"t",t.t&&new Date(t.t).toISOString());
-              console.log(tag,"mon0",JSON.stringify((d.mons||[])[0]||null).slice(0,500));
-              console.log(tag,"monsSp",(d.mons||[]).map(m=>m.sp+"@"+Math.round(m.x)+","+Math.round(m.y)+(m.pid!=null?"p"+m.pid:"")).join(" "));
-              const B=new Set((d.box||[]).map(P=>P.id)); console.log(tag,"monsNoBox",(d.mons||[]).filter(m=>m.pid!=null&&!B.has(m.pid)).length); };
-            try { const r=JSON.parse(fs.readFileSync("f.json"))[0].results[0]; sum("field",JSON.parse(r.data)); } catch(e){ console.log("field err",e.message); }
-            try { const rs=JSON.parse(fs.readFileSync("s.json"))[0].results; sum("save",JSON.parse(rs.map(x=>x.data).join(""))); } catch(e){ console.log("save err",e.message); }
+            const fs=require("fs"); const T=t=>t?new Date(t+9*3600e3).toISOString().slice(5,16):"-";
+            const sum=(tag,d)=>{ console.log(tag,"saved",T(d.savedAt),"th",d.th,"mons",(d.mons||[]).length,"thF",Object.entries(d.thF||{}).map(([k,t])=>k+":"+(t.mons||[]).length+"@"+T(t.t)).join(" "),"box",(d.box||[]).length,"lay",JSON.stringify(d.lay||{}).length); };
+            const rs=JSON.parse(fs.readFileSync("b.json"))[0].results, by={}; for (const r of rs) (by[r.slot] ||= []).push(r.data);
+            for (const k of Object.keys(by).sort()) { try { sum("bak "+k, JSON.parse(by[k].join(""))); } catch(e){ console.log(k,"err",e.message); } }
+            const d=JSON.parse(JSON.parse(fs.readFileSync("s.json"))[0].results.map(x=>x.data).join(""));
+            sum("now",d);
+            console.log("log:"); for (const e of (d.log||[]).slice(0,40)) console.log(T(e.t||e.at), String(e.html||"").replace(/<[^>]+>/g,"").slice(0,120));
+            console.log("errs", JSON.stringify(d.errs||[]).slice(0,1500));
+            console.log("fbag", JSON.stringify(d.fbag||null).slice(0,400), "fbagT", JSON.stringify(d.fbagT||null).slice(0,600));
           '
