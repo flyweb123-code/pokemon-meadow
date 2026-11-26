@@ -23,12 +23,23 @@ async function run(page, b, port) {
   await pg.reload(); await wait(6000);
   const after = JSON.parse(await E(`JSON.stringify(S.box.map(p => p.id + ':' + p.sp).sort())`));
   const rep = JSON.parse(await E(`JSON.stringify(S.errs.filter(e => /빈 포켓몬/.test(e[2])).map(e => e[2]))`));
+  /* v28.95 경완 '이런 일 없도록 해 앞으로' (유찬님 필드 포켓몬 다 사라짐 v28.94): 테마를 바꾸는 도중에 저장이 되고 앱이 꺼져도 필드 포켓몬이 남는지 —
+     초원에 3마리 → 항구 → 초원으로 바꾸는 순간 save() 를 부르고 그 저장(과 옛 테마 값)만 남긴 채 다시 켬 */
+  await E(`tutOn = false; saveFrozen = false; window.__fl = []; (async () => { for (const sp of [25, 1, 4]) { const p = newPoke(sp, { shiny: false, g: 1, place: '시험' }); unlock(sp); __fl.push(p.id); await spawn(sp, { pid: p.id }); } save(); })(); 1`); await wait(3000);
+  const fl = +await E(`S.mons.filter(m => __fl.includes(m.pid)).length`);
+  await E(`thGo('h'); 1`); await wait(5000);
+  await E(`thGo('m'); save(); window.__snap = localStorage.getItem(KEY); window.__th = localStorage.getItem(TH_KEY); 1`); await wait(3000);
+  await E(`saveFrozen = true; localStorage.setItem(KEY, __snap); localStorage.setItem(TH_KEY, __th); 1`);
+  await pg.reload(); await wait(6000);
+  const thKeep = +await E(`[...S.mons, ...Object.values(S.thF || {}).flatMap(t => t.mons || [])].filter(m => S.box.some(P => P.id === m.pid)).length`);   /* 앞 시험의 비둘기 1마리 + 3마리 */
   await ctx.close();
   const bad = [];
   if (!before.includes(before.find(x => x.endsWith(':61')))) bad.push('발챙이가 슈륙챙이로 진화하지 않음');
   if (before.some(x => x.endsWith(':63'))) bad.push('놓아준 캐이시가 상자에 남음');
   if (JSON.stringify(before) !== JSON.stringify(after)) bad.push(`다시 켠 뒤 상자가 바뀜 ${JSON.stringify(before)} → ${JSON.stringify(after)}`);
   if (rep.length) bad.push('빈 포켓몬 보고: ' + rep.join(', '));
+  if (fl !== 3) bad.push(`시험 포켓몬을 필드에 못 내보냄 (${fl}마리)`);
+  else if (thKeep < 4) bad.push(`테마 바꾸는 중 꺼진 뒤 필드 포켓몬이 사라짐 (필드 전체 ${thKeep}마리, 4마리여야)`);
   if (errs.length) bad.push('페이지 오류: ' + errs.slice(0, 3).join(' / '));
   console.log(`${page}: ${bad.length ? '실패\n  - ' + bad.join('\n  - ') : '통과'} (상자 ${after.join(' ')})`);
   return !bad.length;
