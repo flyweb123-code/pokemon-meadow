@@ -26,17 +26,15 @@ jobs:
       - name: read
         run: |
           q() { npx wrangler d1 execute pokegrow --remote -y --json --command "$1"; }
-          q "SELECT slot, saved, dex, box, at FROM bak WHERE acct = 'u_chany' ORDER BY at DESC" | jq -c '.[0].results[]'
-          q "SELECT slot, i, data FROM bak_part WHERE acct = 'u_chany' ORDER BY slot, i" > b.json
           q "SELECT i, data FROM save_part WHERE code = 'NDN66BNL' ORDER BY acct, i" > s.json
+          q "SELECT slot, i, data FROM bak_part WHERE acct = 'u_chany' AND slot IN ('d2026-11-26','d2026-11-24') ORDER BY slot, i" > b.json
           node -e '
-            const fs=require("fs"); const T=t=>t?new Date(t+9*3600e3).toISOString().slice(5,16):"-";
-            const sum=(tag,d)=>{ console.log(tag,"saved",T(d.savedAt),"th",d.th,"mons",(d.mons||[]).length,"thF",Object.entries(d.thF||{}).map(([k,t])=>k+":"+(t.mons||[]).length+"@"+T(t.t)).join(" "),"box",(d.box||[]).length,"lay",JSON.stringify(d.lay||{}).length); };
-            const rs=JSON.parse(fs.readFileSync("b.json"))[0].results, by={}; for (const r of rs) (by[r.slot] ||= []).push(r.data);
-            for (const k of Object.keys(by).sort()) { try { sum("bak "+k, JSON.parse(by[k].join(""))); } catch(e){ console.log(k,"err",e.message); } }
+            const fs=require("fs");
             const d=JSON.parse(JSON.parse(fs.readFileSync("s.json"))[0].results.map(x=>x.data).join(""));
-            sum("now",d);
-            console.log("log:"); for (const e of (d.log||[]).slice(0,40)) console.log(T(e.t||e.at), String(e.html||"").replace(/<[^>]+>/g,"").slice(0,120));
-            console.log("errs", JSON.stringify(d.errs||[]).slice(0,1500));
-            console.log("fbag", JSON.stringify(d.fbag||null).slice(0,400), "fbagT", JSON.stringify(d.fbagT||null).slice(0,600));
+            console.log("logkeys", JSON.stringify(d.log[0]));
+            for (const e of (d.log||[]).slice(0,70)) console.log(JSON.stringify(e).replace(/<[^>]+>/g,"").slice(0,200));
+            console.log("thF", JSON.stringify(d.thF).slice(0,800));
+            console.log("version", d.ver, d.appV, Object.keys(d.noti||{}).join(","));
+            const rs=JSON.parse(fs.readFileSync("b.json"))[0].results, by={}; for (const r of rs) (by[r.slot] ||= []).push(r.data);
+            for (const k in by) { const b=JSON.parse(by[k].join("")); console.log(k, "mons", JSON.stringify((b.mons||[]).map(m=>[m.sp,m.pid])), "thF.m", JSON.stringify(((b.thF||{}).m||{}).mons?.map(m=>[m.sp,m.pid]))); const B=new Set(d.box.map(P=>P.id)); const L=[...(b.mons||[]),...(((b.thF||{}).m||{}).mons||[])]; console.log(k,"still in box now", L.filter(m=>B.has(m.pid)).length, "/", L.length); }
           '
