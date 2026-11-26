@@ -192,7 +192,8 @@ async function make(name) {
   return p;
 }
 const bufs = new Map();   // 곡 → 오디오 버퍼(만든 PCM 은 버퍼로 옮기고 버린다)
-function trim(keep) { for (const m of [pcm, bufs]) for (const k of [...m.keys()]) if (k !== 'gym' && !keep.includes(k)) m.delete(k); }
+const held = new Set();   /* v28.96 경완 '다이맥스 연출 시작하자마자 bgm 바껴야한다니까': 배틀 중 바로 틀 곡(다이맥스·메가·테라·승리 곡)은 hold 로 붙잡아 둠 — 전엔 prep 해 둔 곡을 배틀 곡 틀 때 trim 이 버려서 다이맥스 곡(2.8MB)을 그때 받고 풀어 몇 초 늦게 바뀜 */
+function trim(keep) { for (const m of [pcm, bufs]) for (const k of [...m.keys()]) if (k !== 'gym' && !keep.includes(k) && !held.has(k)) m.delete(k); }
 async function bufOf(ctx, name) {
   const b = bufs.get(name); if (b && b.ctx === ctx) return b;
   let r = await make(name);
@@ -292,8 +293,9 @@ const GymBGM = {
   stop(fade = .6) { cur.want = null; cur.name = null; stopSrc(fade); clearInterval(tick); tick = 0; },
   // 다음에 틀 곡을 미리 만들어 둔다 (배틀 시작하면 승리 곡)
   prep(name) { if (SONG[name]) make(name).catch(() => {}); },
+  hold(L) { held.clear(); (L || []).forEach(n => { if (SONG[n]) { held.add(n); make(n).catch(() => {}); } }); },   /* 붙잡아 둘 곡 목록 (빈 목록이면 놓아줌) */
   // 체육관에서 나가면 메모리를 비운다
-  free() { this.stop(.3); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } if (gworker) { try { gworker.terminate(); } catch (e) {} gworker = null; } },
+  free() { this.stop(.3); held.clear(); pcm.clear(); bufs.clear(); seBuf.clear(); if (worker) { try { worker.terminate(); } catch (e) {} worker = null; sent.clear(); } if (gworker) { try { gworker.terminate(); } catch (e) {} gworker = null; } },
   // 효과음: 미리 만들어 두기 / 틀기
   sePrep(L) { let ctx = null; try { ctx = GA.audio(); } catch (e) {} return ctx ? Promise.all(L.map(n => seGet(ctx, n).catch(() => {}))) : Promise.resolve(); },   // 다 만들어지면 풀림 (v19.73)
   se: (nm, o) => { window.GymBGM && (window.GymBGM.seT = performance.now()); return sePlay(nm, o).catch(() => {}); },   // seT: v18.99 저절로 뜨는 알림창이 소리를 냈는지 보려고
