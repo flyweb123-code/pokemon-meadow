@@ -42,7 +42,7 @@ for (const s of sv) {
       since: S.since || 0, seenAt: S.seenAt || 0, useH: (S.useH || []).reduce((a, b) => a + (+b || 0), 0), useHD: S.useHD || 0,
       dex: N(S.unlocked), box: N(S.box), eggs: N(S.eggs), bag: N(S.bag), km: Math.round(S.totalKm || 0), walkKm: Math.round(S.walkKm || 0), gold: S.gold | 0,
       hatchN: (S.box || []).filter(p => p && p.place).length, runs: N(S.runs), fr: N(S.friends), mons: N(S.mons), log: N(S.log),
-      gym: g ? { rep: g.rep | 0, gmax: g.gmax ?? null, tut: g.tut ? 1 : 0, d: g.d || 0, days: g.days ? Object.keys(g.days) : [], keys: N(g) } : null,
+      gym: g ? { rep: g.rep | 0, gmax: g.gmax ?? null, tut: g.tut ? 1 : 0, d: g.d || 0, days: g.days ? Object.keys(g.days) : [], keys: N(g), shelf: (g.shelf || []).map(x => ({ rep: x.rep | 0, gmax: x.gmax ?? null, off: x.off || 0 })) } : null,
       mgK: S.mg ? Object.keys(S.mg) : [], trRw: S.trRw ?? null, tr: S.tr ? (S.tr.lv ?? S.tr.g ?? N(S.tr)) : null,
       fedDays: Array.isArray(S.fedLog) ? S.fedLog.map(x => Array.isArray(x) ? x[0] : x?.d).filter(Boolean) : [],
       dorm: S.dorm ? 1 : 0, sound: S.tracks ? N(S.tracks) : 0, lay: N(S.lay), fits: N(S.fits), unl: N(S.unlocked),
