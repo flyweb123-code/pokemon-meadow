@@ -1094,7 +1094,7 @@ function soupShop() { const B = GB(); if (!B.dmOn?.()) return '';
   return `<p class="sp-sub">다이수프 · 먹이면 거다이맥스할 수 있게 돼요</p><div class="sp-list">${B.soupRow(0).replace('</button>', `<em>${gold(B.SOUP_P)}</em></button>`)}</div>`; }
 /* 특성캡슐 (경완 2026-11-28 A안 '캡슐은 상점, 패치는 보상'): 민트 밑, 민트와 같은 값 ABC_P 3,000G, 여러 개 살 수 있음, 창고 g.abc. 특성패치는 상점에 없음 (수련탑 큰 선물·특훈 꾸러미·트레이너 등급 보상) */
 function abcShop() { const B = GB(); if (!B.abRow) return '';
-  return `<p class="sp-sub">특성캡슐 · 먹이면 다른 보통 특성으로 바뀌어요</p><div class="sp-list">${B.abRow('abc', 0).replace('</button>', `<em>${gold(B.ABC_P)}</em></button>`)}</div>`; }
+  return `<p class="sp-sub">특성캡슐 · 특성을 다른 특성으로 바꿔줘요</p><div class="sp-list">${B.abRow('abc', 0).replace('</button>', `<em>${gold(B.ABC_P)}</em></button>`)}</div>`; }
 function abcBuy() { const B = GB(), g = st(), P = B.ABC_P;
   B.abItInfo('abc', `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
     g.abc = (g.abc | 0) + 1; K.newMark?.('abc', 0); K.glog('tr', '도구 <b>특성캡슐</b>을 샀다.'); K.save(); redraw(); say('특성캡슐을 창고에 넣었어요.'); }, B.abN('abc')); }
