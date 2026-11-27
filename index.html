@@ -14913,7 +14913,7 @@ const GRADE = [null,
 let MAX_EGGS = 15;
 /* v20.04 경완: 알 뽑기 타입 알은 뽑기 점수 가중치만큼 부화거리도 (모든 타입·노말·벌레 10점 = 그대로). GA_COST 와 같은 표 (그건 뒤에 선언돼서 따로 둠) */
 const EGG_TYC = { 0: 10, 1: 10, 7: 10, 4: 12, 6: 12, 3: 13, 12: 13, 11: 13, 13: 13, 14: 13, 2: 14, 15: 14, 5: 15, 8: 17, 10: 18, 9: 19, 17: 19, 18: 20, 16: 35 };   /* GA_COST 와 같게 (v20.14) */
-const eggNeed = e => { const b = GRADE[e.g]?.km || 0, t = e.gk ? e.ct || e.lt : 0, c = t ? EGG_TYC[t] || 10 : 10, nx = GRADE[e.g + 1]?.km, r = nx && b ? nx / b : 0, f = r ? Math.min(r, 1 + (c / 10 - 1) * Math.min(1, (r - 1) / (EGG_TYC[18] / 10 - 1))) : c / 10; return Math.round(b * f * 100) / 100; };   /* v29.01 경완 '타입알 거리 보정이 붙어도 다음 등급 알보다는 많이 걷지 않게' → 안 2: 등급마다 배수 폭을 줄여 가장 먼 페어리(20점)가 다음 등급 기본 거리와 같게, 드래곤은 다음 등급 거리에서 멈춤. 전설은 위 등급이 없어 그대로. 가진 알은 bag = 늘 eggNeed, 부화기 = 켤 때 syncNeed 가 다시 셈 */
+const eggNeed = e => { const b = GRADE[e.g]?.km || 0, t = e.gk ? e.ct || e.lt : 0, c = t ? EGG_TYC[t] || 10 : 10, nx = GRADE[e.g + 1]?.km, pv = GRADE[e.g - 1]?.km, r = b ? nx ? nx / b : pv ? b / pv : 0 : 0, f = r ? Math.min(r, 1 + (c / 10 - 1) * Math.min(1, (r - 1) / (EGG_TYC[18] / 10 - 1))) : c / 10; return Math.round(b * f * 100) / 100; };   /* v29.01 경완 '타입알 거리 보정이 붙어도 다음 등급 알보다는 많이 걷지 않게' → 안 2: 등급마다 배수 폭을 줄여 가장 먼 페어리(20점)가 다음 등급 기본 거리와 같게, 드래곤은 다음 등급 거리에서 멈춤. 경완 '안 2로 바뀐 배수 정도 수준으로 전설 타입 알도' → 전설은 위 등급이 없어 에픽→전설 폭(×1.5)을 그대로 씀 (페어리·드래곤 22.5km). 가진 알은 bag = 늘 eggNeed, 부화기 = 켤 때 syncNeed 가 다시 셈 */
 const gradeOf = sp => { const d = SPECIES[sp]; if (d.leg || d.my) return 5; const c = d.cr ?? 45; return c >= 190 ? 1 : c >= 120 ? 2 : c >= 45 ? 3 : 4; };
 const baseOf = sp => { let s = sp; while (SPECIES[s] && SPECIES[s].fr) s = SPECIES[s].fr; return s; };
 const POOL = [[], [], [], [], [], []], COMMON = new Set();
