@@ -1,0 +1,202 @@
+<!-- 유저 지표판 Artifact https://claude.ai/artifact/Az4RsmntFRwBjQ8CJpA32u 의 페이지(files/index.html) 사본. 데이터는 build.py 가 만든 파일을 올림. 내려받아 활용하는 사람이 그 책임을 진다. -->
+<meta name="dash-one-writer">
+<meta name="dash-form" content="dashboard">
+<style>
+.pe-wrap{display:flex;flex-direction:column;gap:var(--cds-gap-xl);font-family:var(--font-anthropic-sans);color:var(--color-fg)}
+.pe-h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;text-wrap:balance}
+.pe-lead{margin:var(--cds-gap-sm) 0 0;color:var(--color-fg);max-width:62ch;line-height:1.55}
+.pe-sub{margin:var(--cds-gap-xs) 0 0;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.pe-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--cds-gap-md)}
+.pe-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);min-width:0}
+.pe-k{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);letter-spacing:.02em}
+.pe-v{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;margin-top:var(--cds-gap-xs);line-height:1.15}
+.pe-note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-top:var(--cds-gap-xs);line-height:1.45}
+.pe-bad{color:var(--color-bad)}.pe-ok{color:var(--color-ok)}.pe-warn{color:var(--color-warn)}
+.pe-sec h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0 0 var(--cds-gap-xs)}
+.pe-sec>p{margin:0 0 var(--cds-gap-md);color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);max-width:70ch;line-height:1.5}
+.pe-chart{position:relative;min-height:220px}
+.pe-chart.pe-heat{min-height:200px}
+.pe-chart.pe-fun{min-height:210px}
+.pe-chart svg{display:block;width:100%;overflow:visible}
+.pe-chart text{fill:var(--cds-text-secondary);font-size:var(--cds-font-size-caption)}
+.pe-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);box-shadow:var(--cds-shadow-popover);border-radius:var(--cds-radius);padding:var(--cds-pad-sm) var(--cds-pad-md);font-size:var(--cds-font-size-caption);color:var(--color-fg);white-space:nowrap;z-index:2}
+.pe-leg{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-bottom:var(--cds-gap-sm)}
+.pe-leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.pe-tw{overflow-x:auto}
+.pe-tb{border-collapse:collapse;width:100%;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums}
+.pe-tb th,.pe-tb td{text-align:left;padding:var(--cds-pad-sm) var(--cds-pad-md) var(--cds-pad-sm) 0;border-bottom:1px solid var(--color-border-line);vertical-align:top}
+.pe-tb th{color:var(--color-fg-muted);font-weight:var(--cds-font-weight-medium);white-space:nowrap}
+.pe-tb td.n{text-align:right;white-space:nowrap}.pe-tb th.n{text-align:right}
+.pe-tb td.stop{min-width:220px;line-height:1.45}
+.pe-pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:var(--cds-font-size-caption);border:1px solid currentColor;white-space:nowrap}
+.pe-miss{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--cds-gap-md)}
+.pe-miss h3{font-size:var(--cds-font-size-body);font-weight:var(--cds-font-weight-medium);margin:0 0 var(--cds-gap-xs)}
+.pe-miss p{margin:0;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);line-height:1.5}
+.pe-wrap details{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);line-height:1.55}
+.pe-wrap details summary{cursor:pointer;color:var(--color-fg)}
+</style>
+<div class="pe-wrap" data-read lang="ko">
+  <header id="top">
+    <h1 class="pe-h1">포켓에그 유저 지표판</h1>
+    <p class="pe-lead">지난 14일(11-14~11-27) 실제 유저 <b data-draw="nReal" data-source="users">—</b>명 가운데 <b data-draw="nDaily" data-source="users">—</b>명이 하루도 빠짐없이 들어왔어요. 다만 관장 배틀은 마지막 3일 동안 <b data-draw="gym3" data-source="gymLast3">—</b>판이에요.</p>
+    <p class="pe-sub">경완 계정과 백업 칸은 뺐어요. 하루 = 한국 시간.</p>
+  </header>
+
+  <section class="pe-tiles" id="tiles">
+    <div class="pe-card" id="t-dau">
+      <div class="pe-k">하루 평균 접속 유저 · 최근 14일</div>
+      <div class="pe-v" data-draw="dau" data-source="dauAvg">—</div>
+      <div class="pe-note">게임을 켠 날 = 그날 저장 백업이나 판 기록이 있는 날</div>
+    </div>
+    <div class="pe-card" id="t-ret">
+      <div class="pe-k">지난주 → 이번주 다시 옴</div>
+      <div class="pe-v" data-draw="ret" data-source="weekRet">—</div>
+      <div class="pe-note">11-14~20에 들어온 유저 가운데 11-21~27에도 들어온 비율</div>
+    </div>
+    <div class="pe-card" id="t-min">
+      <div class="pe-k">하루 플레이 시간 (추정, 가운데 값)</div>
+      <div class="pe-v" data-draw="minMed" data-source="minMedian">—</div>
+      <div class="pe-note">하루 접속 기록이 있으면 실제 분, 없으면 켜 둔 분 기록(하루 0.9배씩 줄어듦)으로 어림한 값. 표에서 '약'이 붙은 건 어림값이에요</div>
+    </div>
+    <div class="pe-card" id="t-d1">
+      <div class="pe-k">첫날 · 7일 잔존율 · 새 유저</div>
+      <div class="pe-v" data-draw="d1" data-source="retRate">—</div>
+      <div class="pe-note" data-draw="d1n" data-source="ret">—</div>
+    </div>
+  </section>
+
+  <section class="pe-sec" id="heat">
+    <h2>누가 언제 들어왔나</h2>
+    <p>칸 하나 = 유저 하루. 색이 진할수록 그날 한 판(알 줍기·관장 배틀·미니게임)이 많아요. 빈 칸은 안 들어온 날.</p>
+    <div class="pe-chart pe-heat" data-draw="heat" data-source="heat"></div>
+  </section>
+
+  <section class="pe-sec" id="daily">
+    <h2>날마다 무엇을 했나</h2>
+    <p>실제 유저 전체의 하루 판 수. 고용 트레이너가 혼자 막는 배틀(자동)은 뺐어요.</p>
+    <div class="pe-leg" id="daily-leg"><span><i data-leg="0"></i>알 줍기</span><span><i data-leg="1"></i>관장 배틀</span><span><i data-leg="2"></i>미니게임</span></div>
+    <div class="pe-chart" data-draw="daily" data-source="daily"></div>
+  </section>
+
+  <section class="pe-sec" id="funnel">
+    <h2>어디까지 왔나</h2>
+    <p>실제 유저가 단계마다 몇 명 남는지. 가장 크게 빠지는 곳은 체육관이에요.</p>
+    <div class="pe-chart pe-fun" data-draw="funnel" data-source="funnel"></div>
+  </section>
+
+  <section class="pe-sec" id="players">
+    <h2>유저별로 어디서 멈췄나</h2>
+    <p>'멈춘 곳'은 판 기록과 저장을 보고 제가 읽은 내용이에요.</p>
+    <div class="pe-tw">
+      <table class="pe-tb" data-source="users" data-row-key="player">
+        <thead><tr><th data-field="player">유저</th><th data-field="status">상태</th><th class="n" data-field="days14">14일 중 들어온 날</th><th class="n" data-field="minDay">하루 분</th><th class="n" data-field="mgMin14">미니게임 분(14일)</th><th class="n" data-field="dex">도감</th><th class="n" data-field="gold">가진 골드</th><th data-field="gym">체육관 등급</th><th data-field="stop">멈춘 곳</th></tr></thead>
+        <tbody data-draw="utable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="pe-sec" id="missing">
+    <h2>새로 모으는 기록</h2>
+    <p>경완님 OK 뒤 게임에 넣은 기록이에요. 앱을 새 버전으로 켠 유저부터 쌓이고, 매주 월요일 이 판에 같이 나와요.</p>
+    <div class="pe-miss">
+      <div class="pe-card"><h3>하루 접속 기록</h3><p>유저마다 하루 한 줄: 켠 횟수, 화면을 본 분(필드·체육관·미니게임·배틀·특훈·친구 필드). 쌓이면 '하루 분' 칸이 어림값 대신 실제 분이 돼요.</p></div>
+      <div class="pe-card"><h3>첫 시작 시각</h3><p>새 버전에서 처음 시작한 유저는 시작한 날을 서버로 보내요. 그 유저들로 첫날·7일 잔존율을 세요.</p></div>
+      <div class="pe-card"><h3>단계 도착 시각</h3><p>첫 알, 첫 부화, 10마리 부화, 체육관 열기, 첫 관장 배틀, 첫 미니게임에 처음 닿은 때. 어느 단계 앞에서 나갔는지 보여요.</p></div>
+      <div class="pe-card"><h3>앱을 끌 때 보던 화면</h3><p>앱이 내려갈 때 어느 화면이었는지 하루치로 세요. '멈춘 곳' 칸에 "앱을 주로 ○○ 화면에서 끔"으로 나와요.</p></div>
+    </div>
+  </section>
+
+  <details id="notes">
+    <summary>숫자를 어떻게 셌나</summary>
+    <p>서버 D1의 세 표를 2026-11-28 04:11(한국 시간)에 읽었어요. 판 기록(bal, 120일 보관)은 알 줍기·관장 배틀·고용 트레이너 배틀·미니게임 한 판마다 한 줄이고, 저장 백업(bak)은 하루 첫 저장이 14일만 남아요. 그래서 '들어온 날'은 최근 14일만 정확해요. 계정은 7개로, 경완 계정 2개(같은 친구 코드)와 저장 복구용 칸 하나를 빼면 실제 유저는 5명이에요.</p>
+  </details>
+</div>
+<script>
+const KR = d3.utcFormat('%m-%d');
+const pd = s => new Date(s + 'T00:00:00Z');
+dash.calc('dauAvg', { title: '하루 평균 접속 유저', description: '최근 14일 하루 접속 유저 수의 평균',
+  inputs: ['daily'], fn: (daily) => Math.round(d3.mean(daily, r => +r.active) * 10) / 10 });
+dash.calc('weekRet', { title: '지난주 → 이번주 다시 온 비율', description: '11-14~20 접속 유저 중 11-21~27에도 접속한 비율(%)',
+  inputs: ['heat'], fn: (heat) => { const w1 = new Set(heat.filter(r => +r.on && r.date <= '2026-11-20').map(r => r.player)); const w2 = new Set(heat.filter(r => +r.on && r.date >= '2026-11-21').map(r => r.player)); return w1.size ? Math.round([...w1].filter(p => w2.has(p)).length / w1.size * 100) : 0; } });
+dash.calc('minMedian', { title: '하루 플레이 시간 가운데 값', description: '게임을 시작한 유저의 하루 추정 분(useH÷10) 가운데 값',
+  inputs: ['users'], fn: (users) => d3.median(users.filter(u => +u.minDay > 0), u => +u.minDay) });
+dash.calc('retRate', { title: '새 유저 첫날·7일 잔존율', description: '새 버전에서 처음 시작한 유저 중 다음 날·7일째에 들어온 비율(%)',
+  inputs: ['ret'], fn: (ret) => { const a = ret.filter(r => r.d1 !== null && r.d1 !== undefined), b = ret.filter(r => r.d7 !== null && r.d7 !== undefined); return [{ n: ret.length, d1: a.length ? Math.round(d3.mean(a, r => +r.d1) * 100) : null, d7: b.length ? Math.round(d3.mean(b, r => +r.d7) * 100) : null }]; } });
+dash.calc('gymLast3', { title: '마지막 3일 관장 배틀 판 수', description: '11-25~27 실제 유저 관장 배틀 합',
+  inputs: ['daily'], fn: (daily) => d3.sum(daily.filter(r => r.date >= '2026-11-25'), r => +r.gym) });
+
+function num(el, id, f) { const s = dash.data(id); if (s.status !== 'ok' || s.data == null) { el.textContent = '—'; return; } el.classList.remove('dash-skeleton'); el.textContent = f(s.data); }
+dash.draw('dau', el => num(el, 'dauAvg', v => v + '명'));
+dash.draw('ret', el => num(el, 'weekRet', v => v + '%'));
+dash.draw('minMed', el => num(el, 'minMedian', v => '약 ' + Math.round(v) + '분'));
+dash.draw('d1', el => { const s = dash.data('retRate'); if (s.status !== 'ok' || !s.data) { el.textContent = '—'; return; } el.classList.remove('dash-skeleton'); const r = s.data[0]; el.classList.toggle('pe-warn', r.d1 == null); el.textContent = r.d1 == null ? '아직 못 셈' : `${r.d1}% · ${r.d7 == null ? '—' : r.d7 + '%'}`; });
+dash.draw('d1n', el => { const s = dash.data('ret'); if (s.status !== 'ok') { el.textContent = '—'; return; } const n = s.data.length; el.textContent = n ? `새 버전에서 처음 시작한 유저 ${n}명 기준. 7일이 안 지난 유저는 7일 잔존에서 빠져요` : '새 버전(v29.06)부터 처음 시작한 유저가 아직 없어요. 지금 유저 5명은 서버 기록이 생기기 전에 가입해서 못 세요'; });
+dash.draw('gym3', el => num(el, 'gymLast3', v => v));
+dash.draw('nReal', el => num(el, 'users', d => d.length));
+dash.draw('nDaily', el => num(el, 'users', d => d.filter(u => +u.days14 >= 14).length));
+
+function tipBox(el) { const t = document.createElement('div'); t.className = 'pe-tip'; t.hidden = true; el.appendChild(t); return t; }
+function showTip(el, t, ev, html) { t.replaceChildren(); html.forEach((s, i) => { const d = document.createElement('div'); d.textContent = s; if (!i) d.style.fontWeight = '600'; t.appendChild(d); }); t.hidden = false; const r = el.getBoundingClientRect(); let x = ev.clientX - r.left + 12, y = ev.clientY - r.top + 12; const w = t.offsetWidth; if (x + w > r.width) x = Math.max(0, ev.clientX - r.left - w - 12); t.style.left = x + 'px'; t.style.top = y + 'px'; }
+function failMsg(el, s) { el.replaceChildren(); const p = document.createElement('p'); p.className = 'pe-note'; p.textContent = s.status === 'error' ? '이 표를 불러오지 못했어요.' : '—'; el.appendChild(p); }
+
+dash.draw('heat', el => {
+  const s = dash.data('heat'); if (s.status !== 'ok') return failMsg(el, s);
+  el.replaceChildren(); const rows = s.data; const P = [...new Set(rows.map(r => r.player))], D = [...new Set(rows.map(r => r.date))].sort();
+  const W = el.clientWidth || 600, L = 52, T = 6, B = 22, cw = Math.max(10, (W - L) / D.length), ch = Math.min(30, Math.max(18, cw * .8)), H = T + P.length * ch + B;
+  const mx = d3.max(rows, r => +r.egg + +r.gym + +r.mg) || 1;
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', '유저별 날마다 접속 여부와 판 수 칸 그림');
+  const tip = tipBox(el);
+  svg.append('g').selectAll('text').data(P).join('text').attr('x', 0).attr('y', (p, i) => T + i * ch + ch / 2 + 4).text(p => p);
+  svg.append('g').selectAll('text').data(D).join('text').attr('x', (d, i) => L + i * cw + cw / 2).attr('y', H - 6).attr('text-anchor', 'middle').text((d, i) => (i % (cw < 26 ? 3 : 1) === 0 || i === D.length - 1) ? KR(pd(d)) : '');
+  svg.append('g').selectAll('rect').data(rows).join('rect')
+    .attr('x', r => L + D.indexOf(r.date) * cw + 1.5).attr('y', r => T + P.indexOf(r.player) * ch + 1.5).attr('width', cw - 3).attr('height', ch - 3).attr('rx', 3)
+    .style('fill', r => +r.on ? dash.colors[0] : 'var(--color-bg)').style('stroke', 'var(--color-border-line)')
+    .style('fill-opacity', r => +r.on ? .28 + .72 * Math.sqrt((+r.egg + +r.gym + +r.mg) / mx) : 1)
+    .on('pointermove', (ev, r) => showTip(el, tip, ev, [`${r.player} · ${KR(pd(r.date))}`, +r.on ? `알 줍기 ${r.egg} · 관장 배틀 ${r.gym} · 미니게임 ${r.mg}` : '안 들어옴']))
+    .on('pointerleave', () => tip.hidden = true);
+});
+
+dash.draw('daily', el => {
+  const s = dash.data('daily'); if (s.status !== 'ok') return failMsg(el, s);
+  document.querySelectorAll('#daily-leg [data-leg]').forEach(i => i.style.background = dash.colors[+i.dataset.leg]);
+  el.replaceChildren(); const rows = s.data.map(r => ({ ...r, d: pd(r.date) })); const S = [['egg', '알 줍기'], ['gym', '관장 배틀'], ['mg', '미니게임']];
+  const W = el.clientWidth || 600, H = 220, m = { l: 34, r: 10, t: 10, b: 24 };
+  const x = d3.scaleUtc().domain(d3.extent(rows, r => r.d)).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, d3.max(rows, r => Math.max(+r.egg, +r.gym, +r.mg)) || 1]).nice().range([H - m.b, m.t]);
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', '날마다 알 줍기, 관장 배틀, 미니게임 판 수 꺾은선');
+  svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(y.ticks(4)).join('text').attr('x', m.l - 6).attr('y', v => y(v) + 4).attr('text-anchor', 'end').text(v => v);
+  const xt = rows.filter((r, i) => i % (W < 480 ? 4 : 2) === 0 || i === rows.length - 1);
+  svg.append('g').selectAll('text').data(xt).join('text').attr('x', r => x(r.d)).attr('y', H - 6).attr('text-anchor', (r, i) => i === 0 ? 'start' : i === xt.length - 1 ? 'end' : 'middle').text(r => KR(r.d));
+  S.forEach(([k], i) => {
+    svg.append('path').datum(rows).attr('d', d3.line().x(r => x(r.d)).y(r => y(+r[k]))).style('fill', 'none').style('stroke', dash.colors[i]).style('stroke-width', 2);
+    svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', r => x(r.d)).attr('cy', r => y(+r[k])).attr('r', 2.5).style('fill', dash.colors[i]);
+  });
+  const tip = tipBox(el), guide = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('opacity', 0);
+  svg.append('rect').attr('x', m.l).attr('y', 0).attr('width', W - m.l - m.r).attr('height', H).style('fill', 'transparent')
+    .on('pointermove', ev => { const [px] = d3.pointer(ev); const t = x.invert(px); const r = rows[d3.minIndex(rows, q => Math.abs(q.d - t))]; guide.attr('x1', x(r.d)).attr('x2', x(r.d)).style('opacity', 1); showTip(el, tip, ev, [KR(r.d) + ` · 접속 ${r.active}명`, ...S.map(([k, n]) => `${n} ${r[k]}`), `미니게임 ${Math.round(r.mgMin)}분`]); })
+    .on('pointerleave', () => { tip.hidden = true; guide.style('opacity', 0); });
+});
+
+dash.draw('funnel', el => {
+  const s = dash.data('funnel'); if (s.status !== 'ok') return failMsg(el, s);
+  el.replaceChildren(); const rows = s.data, top = +rows[0].n || 1;
+  const W = el.clientWidth || 600, bh = 26, gap = 8, L = Math.min(170, W * .42), H = rows.length * (bh + gap);
+  const x = d3.scaleLinear().domain([0, top]).range([0, W - L - 44]);
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', '단계별 남은 유저 수 막대');
+  const g = svg.selectAll('g').data(rows).join('g').attr('transform', (r, i) => `translate(0,${i * (bh + gap)})`);
+  g.append('text').attr('x', 0).attr('y', bh / 2 + 4).text(r => r.step);
+  g.append('rect').attr('x', L).attr('y', 0).attr('height', bh).attr('rx', 3).attr('width', r => Math.max(2, x(+r.n))).style('fill', (r, i) => i && +r.n < +rows[i - 1].n ? 'var(--cds-chart-status-critical)' : dash.colors[0]);
+  g.append('text').attr('x', r => L + x(+r.n) + 8).attr('y', bh / 2 + 4).style('fill', 'var(--color-fg)').text(r => `${r.n}명`);
+});
+
+dash.draw('utable', tb => {
+  const s = dash.data('users'); tb.replaceChildren(); if (s.status !== 'ok') return;
+  const cls = { '매일': 'pe-ok', '띄엄띄엄': 'pe-warn', '떠남': 'pe-bad' }, f = d3.format(',');
+  for (const u of s.data) { const tr = document.createElement('tr');
+    const cell = (v, c) => { const td = document.createElement('td'); if (c) td.className = c; td.textContent = v; tr.appendChild(td); return td; };
+    cell(u.player); const st = cell(''); const p = document.createElement('span'); p.className = 'pe-pill ' + (cls[u.status] || ''); p.textContent = u.status; st.appendChild(p);
+    cell(u.days14 + '일', 'n'); cell(+u.minDay ? (+u.minReal ? '' : '약 ') + u.minDay + '분' : '—', 'n'); cell(u.mgMin14 + '분', 'n'); cell(u.dex, 'n'); cell(f(+u.gold) + 'G', 'n'); cell(u.gym); cell(u.stop, 'stop');
+    tb.appendChild(tr); }
+});
+</script>
