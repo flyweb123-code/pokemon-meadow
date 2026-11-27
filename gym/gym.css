@@ -4133,6 +4133,8 @@ h4.ul-t{display:flex;flex-direction:column;align-items:center;gap:2px;text-align
 
 /* 관장 카드: 무대 줄 세우기가 끝날 때까지 가려 둠 */
 #gym .gy-pop .win.mec-wait{visibility:hidden}
+#gym .gy-pop.mec-sw{background:none;-webkit-backdrop-filter:none;backdrop-filter:none}   /* 배지로 다른 체육관 카드로 바꾸는 동안 뒤 카드 배경이 두 겹으로 어두워지지 않게 */
+#gym .me-bdgs .mec-go{cursor:pointer;-webkit-tap-highlight-color:transparent}#gym .me-bdgs .mec-go:active .bdw{transform:scale(.9)}
 
 /* v22.30 경완: 비기 카드 = 등급 카드와 같은 폭·여백, 해금한 건 지나간 등급 카드와 같은 색 */
 #gym .gy-perk .pk-tc{margin:0;padding:8px 10px}
