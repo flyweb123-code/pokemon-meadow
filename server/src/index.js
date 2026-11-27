@@ -242,11 +242,11 @@ async function handle(env, b) {
         await db.prepare('UPDATE err SET n = n + 1, codes = ?, ver = ?, ctx = ?, where_ = ?, at = ?, st = CASE WHEN st = 2 THEN 0 ELSE st END WHERE k = ?').bind(cs.join(','), ver, ctx, where, now, k).run(); }   // 고친 뒤(st 2) 다시 나면 새로
       return k;
     }
-    case 'balLog': {   // 밸런스 기록 (경완 2026-11-05): 게임이 모아 둔 판 기록 {ev:[{k,t,v,d}]} 최대 50개. 매주 bal-report.yml 이 모아 'auto-bal' 이슈로
+    case 'balLog': {   // 밸런스 기록 (경완 2026-11-05) · day(하루 접속)·ms(단계 처음 닿은 때)는 유저 지표판용 (경완 2026-11-28 '둘 다 해 줘'): 게임이 모아 둔 판 기록 {ev:[{k,t,v,d}]} 최대 50개. 매주 bal-report.yml 이 모아 'auto-bal' 이슈로
       const ev = Array.isArray(b.ev) ? b.ev.slice(0, 50) : []; if (!ev.length) return 0;
       const st = [];
       for (const e of ev) {
-        const k = ['gym', 'sf', 'mg', 'gold', 'egg'].includes(e?.k) ? e.k : null, d = JSON.stringify(e?.d ?? null), t = +e?.t || now;
+        const k = ['gym', 'sf', 'mg', 'gold', 'egg', 'day', 'ms'].includes(e?.k) ? e.k : null, d = JSON.stringify(e?.d ?? null), t = +e?.t || now;
         if (!k || d.length > 2000) continue;
         st.push(db.prepare('INSERT INTO bal (code, kind, ver, beta, t, at, d) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(me, k, str(e.v, 20) || '', b.beta ? 1 : 0, Math.min(t, now), now, d));
       }
