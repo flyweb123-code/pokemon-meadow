@@ -2765,7 +2765,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   if (under !== null && String(under?.dataset?.pid) !== String(P.id)) { try { GA.cry?.(P.sp, 0, 1, CRY_K); } catch (e) {} }   // v20.66 경완: 상세카드를 열 때(넘길 때도) 본게임처럼 울음소리. 작은 창을 닫고 카드만 다시 그릴 땐(null) 안 남
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
-  const abShow = (k, hid, hk, rec, cl) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button>${rec && S.gym ? '<button type="button" class="ab-recb" data-a="arec"><i aria-hidden="true">★</i>추천 특성</button>' : ''}<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); if (b === 'arec') { c2(); return abRecPop(P, () => { cl?.(); monPop(P.id, fromBox, null, lst); }); } c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
+  const abShow = (k, hid, hk, rec, cl) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button>${rec && S.gym ? `<button type="button" class="ab-recb${window.PSim?.Dex ? '' : ' ab-wait'}" data-a="arec"><i aria-hidden="true">★</i>추천 특성</button>` : ''}<h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); if (b === 'arec') { c2(); return abRecPop(P, () => { cl?.(); monPop(P.id, fromBox, null, lst); }); } c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   let mvH = null;
   const p = gymPop(monHtml(P, fromBox),
@@ -2777,7 +2777,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
         if (b2 === 'ngive') { c2(); msgTop(() => mintUse(P, rn), () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
         if (b2 === 'nbuy') { c2(); recBuyMint(P, rn, () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
         if (b2 === 'x') c2(); }); return; }   // 성격 효과도 눌러서 (경완 2026-10-29)
-      if (a === 'ab') return abShow(m.ab, m.ha, null, abNorm(P.sp).length > 1, close);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
+      if (a === 'ab') { const rq = abNorm(P.sp).length > 1, w = abShow(m.ab, m.ha, null, rq, close); if (rq && w) { const go = () => { if (recAb(P, m) === m.ab) w.querySelector('.ab-recb')?.remove(); else w.querySelector('.ab-recb')?.classList.remove('ab-wait'); }; window.PSim?.Dex ? go() : loadSim().then(go).catch(() => {}); } return; }   /* 경완 2026-11-28 '이미 추천특성이면 추천특성 버튼 안 나오게' */   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
       if (a === 'mv') { movesPop(P, () => monPop(P.id, fromBox, p, lst)); return; }   // v14.42 경완: 기술 창이 떠 있는 동안 뒤에 상세 카드는 그대로, 닫으면 바뀐 기술로 카드만 바꿔 끼움
       if (a === 'tm') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
