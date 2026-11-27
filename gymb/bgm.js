@@ -176,7 +176,7 @@ async function make(name) {
   if (S.gba) { const p = makeGba(S); pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
   if (S.file) { const p = (async () => {   /* 파일 곡(m4a): 풀어서 반복 끝(le)까지 자르고 반복 시작(ls) */
     const r = await fetch(`${S.file}?v=${VER}`); if (!r.ok) throw new Error('http ' + r.status); const ab = await r.arrayBuffer();
-    /* v29.05 배틀 중 앱이 다시 켜짐(#2575, 아이폰 화면이 메모리 부족으로 죽음): 다이맥스 곡(3분 19초)을 44.1kHz 로 통째 풀고 또 잘라 복사·버퍼로 또 복사해서 한 곡에 67MB×2~3, v28.96 부터는 배틀마다 미리 받아 둠 →
+    /* v29.07 배틀 중 앱이 다시 켜짐(#2575, 아이폰 화면이 메모리 부족으로 죽음): 다이맥스 곡(3분 19초)을 44.1kHz 로 통째 풀고 또 잘라 복사·버퍼로 또 복사해서 한 곡에 67MB×2~3, v28.96 부터는 배틀마다 미리 받아 둠 →
        32kHz 로 풀고(체육관 곡들과 같은 음질) 푼 버퍼를 복사 없이 그대로 틀고 반복 끝(le)은 loopEnd 로 = 약 51MB 한 벌 */
     const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext, dec = rate => new Promise((ok, no) => { const ac = new OC(2, rate, rate), q = ac.decodeAudioData(ab.slice(0), ok, no); if (q && q.then) q.then(ok, no); });
     const b = await dec(32000).catch(() => dec(44100));

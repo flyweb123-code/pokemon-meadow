@@ -239,7 +239,7 @@ async function handle(env, b) {
       const o = await db.prepare('SELECT n, codes, st FROM err WHERE k = ?').bind(k).first();
       if (!o) await db.prepare('INSERT INTO err (k, msg, where_, ver, beta, ctx, n, codes, at0, at, st) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, 0)').bind(k, msg, where, ver, b.beta ? 1 : 0, ctx, me, now, now).run();
       else { const cs = o.codes ? o.codes.split(',') : []; if (!cs.includes(me) && cs.length < 50) cs.push(me);
-        await db.prepare('UPDATE err SET n = n + 1, codes = ?, ver = ?, ctx = ?, where_ = ?, at = ?, st = CASE WHEN st IN (1, 2) THEN 0 ELSE st END WHERE k = ?').bind(cs.join(','), ver, ctx, where, now, k).run(); }   /* 고친 뒤(st 2) 다시 나면 새로. v29.05: 이슈가 열려 있는(st 1) 오류가 또 나도 st 0 으로 — 전엔 횟수만 늘고 이슈엔 안 알려서 #2575 가 9일 동안 6번 더 난 걸 몰랐음 (err-report 가 같은 이슈에 댓글) */
+        await db.prepare('UPDATE err SET n = n + 1, codes = ?, ver = ?, ctx = ?, where_ = ?, at = ?, st = CASE WHEN st IN (1, 2) THEN 0 ELSE st END WHERE k = ?').bind(cs.join(','), ver, ctx, where, now, k).run(); }   /* 고친 뒤(st 2) 다시 나면 새로. v29.07: 이슈가 열려 있는(st 1) 오류가 또 나도 st 0 으로 — 전엔 횟수만 늘고 이슈엔 안 알려서 #2575 가 9일 동안 6번 더 난 걸 몰랐음 (err-report 가 같은 이슈에 댓글) */
       return k;
     }
     case 'balLog': {   // 밸런스 기록 (경완 2026-11-05) · day(하루 접속)·ms(단계 처음 닿은 때)는 유저 지표판용 (경완 2026-11-28 '둘 다 해 줘'): 게임이 모아 둔 판 기록 {ev:[{k,t,v,d}]} 최대 50개. 매주 bal-report.yml 이 모아 'auto-bal' 이슈로
