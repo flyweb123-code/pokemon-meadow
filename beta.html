@@ -16323,11 +16323,11 @@ function trRwPay(gs, R) { abpCatch(); const I = itemsOf(), add = (k, n) => { if 
   save(); try { renderBag.sig = ''; renderRun(); menuDots(); } catch (e) {} }
 function trRwHtml(R) {
   const c = (img, n, lab, cls = '') => `<div class="trw-it ${cls}"><span class="trw-pic">${img}</span><b>${n}</b><small>${lab}</small></div>`;
-  const it = [c('<i class="trw-coin"></i>', R.g.toLocaleString() + 'G', '골드', R.g >= 100000 ? 'trw-wide' : '')];
+  const it = R.g ? [c('<i class="trw-coin"></i>', R.g.toLocaleString() + 'G', '골드', R.g >= 100000 ? 'trw-wide' : '')] : [];   /* 골드 없는 창(지난 등급 특성패치)은 골드 칸 없음 */
   if (R.inc) it.push(c(`<img src="${ITEM_ART.incense}" alt="">`, '×' + R.inc, '향로'));
   if (R.cdy) it.push(c(`<img src="${ITEM_ART.rcandy}" alt="">`, '×' + R.cdy, '이상한사탕'));
   if (R.chm) it.push(c(`<img src="${ITEM_ART.charm}" alt="">`, '×' + R.chm, '빛나는 부적'));
-  if (R.abp) it.push(c('<img src="gym/img/item/abilitypatch.png" alt="" style="image-rendering:pixelated">', '×' + R.abp, '특성패치'));
+  if (R.abp) it.push(c('<img src="gym/img/item/abilitypatch.png" alt="" style="image-rendering:pixelated;width:48px;height:auto">', '×' + R.abp, '특성패치'));
   const n = it.length; if (R.tk.length) it.push(`<div class="trw-it trw-tks"><small>알 뽑기권 ${R.tk.length}장</small><div class="trw-tl">${R.tk.map(t => `<span><img src="${ITEM_ART['tk' + t]}" alt=""><i>${TYPE_KO[t]}</i></span>`).join('')}</div></div>`);
   return `<div class="trw"><div class="trw-h">등급 보상</div><div class="trw-g c${n === 4 ? 2 : Math.min(n, 3)}">${it.join('')}</div></div>`;   /* 경완 '한 행에 3칸일 때는 여백 없이 크기 좀 맞춰줘': 3칸이면 3열, 4칸이면 2열 */
 }
@@ -16353,8 +16353,15 @@ function trRwBack() { if (trRwOn) return true; if (frMaxOpen) return false; cons
 /* 경완 2026-11-28 '엉 등급 수만큼 챙겨줘': 특성패치 등급 보상이 생기기 전에 베테랑 위 등급 보상을 받은 유저 → 받은 등급 수만큼 한 번 (깃발 S.abpBk, 앱 켤 때 알림창) */
 function abpCatch() { if (S.abpBk) return 0; S.abpBk = 1; const n = (S.trRw || []).filter(i => TRG_RW[i]?.[5]).length; if (n) S.abpQ = (S.abpQ | 0) + n; return n; }
 let abpOn = false;
-function abpBack() { if (abpOn) return true; if (S.abpBk || frMaxOpen) return false; const n = abpCatch(); save(); if (!n) return false; abpOn = true;
-  sayPop(`지난 트레이너 등급 보상으로\n특성패치 ${n}개를 챙겨 왔어요!\n체육관 창고에서 쓸 수 있어요.`, { c: 1 }).then(() => { abpOn = false; notiSoon(400); }); return true; }
+/* 경완 2026-11-28 '9번은 보상 알림창으로 보여주는거 아니었나?': 등급 보상 창(#frMax, trRwShow 와 같은 틀)에 받은 등급 배지 + 특성패치 칸, '보상 받기' 1초 잠금. 누를 때 넣음 (앱을 그냥 끄면 다음에 다시) */
+function abpBack() { if (abpOn) return true; if (S.abpBk || frMaxOpen) return false; const gs = (S.trRw || []).filter(i => TRG_RW[i]?.[5]); if (!gs.length) { S.abpBk = 1; save(); return false; }
+  abpOn = true; frMaxOpen = true; const fm = $('#frMax'), R = { g: 0, inc: 0, cdy: 0, chm: 0, abp: gs.length, tk: [] };
+  fm.classList.remove('gyop', 'trm'); fm.classList.add('trup'); $('#frMaxT').textContent = '등급 보상 도착!'; fm.querySelector('.win').setAttribute('aria-label', '트레이너 등급 보상');
+  $('#frMaxBody').innerHTML = `<div class="ns trw-top"><p>특성패치가 새로 생겼어요!</p><div class="trw-bd">${gs.map(i => `<div class="tr-card r${i} tu-bwrap"><div class="tr-badge"><b>${esc(TR_LV[i][1])}</b></div></div>`).join('')}</div><div class="small">받은 등급 ${gs.length}개만큼 한 번에 드려요.</div></div>${trRwHtml(R)}`;
+  const ok = $('#frMaxOk'); ok.textContent = '보상 받기'; ok.disabled = true; ok.classList.add('trw-lock');
+  trFmPop(); setTimeout(() => { ok.disabled = false; ok.classList.remove('trw-lock'); }, 1000);
+  ok.onclick = () => { if (ok.disabled) return; ok.onclick = null; abpCatch(); log(`지난 트레이너 등급 보상으로 특성패치 ${gs.length}개를 받았다!`, [], true); save(); fm.hidden = true; ok.textContent = '확인'; frMaxOpen = false; sfx('tap'); abpOn = false; notiSoon(400); };
+  return true; }
 window.__trRw = { show: trRwShow, due: trRwDue, sum: trRwSum, back: trRwBack };   // 시험용
 // v12.49 경완 '체육관 열렸다는 창 퀄 높이고 폭죽 계속': 등급 업 창을 닫지 않고 같은 틀(폭죽 그대로)에서 체육관 개방 창으로 바뀐다
 function gymOpenWin() { const b = $('#btnGym'), H = document.documentElement.classList, fm = $('#frMax'); if (!b) return false;
