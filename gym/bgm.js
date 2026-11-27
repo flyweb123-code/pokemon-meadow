@@ -176,10 +176,11 @@ async function make(name) {
   if (S.gba) { const p = makeGba(S); pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
   if (S.file) { const p = (async () => {   /* 파일 곡(m4a): 풀어서 반복 끝(le)까지 자르고 반복 시작(ls) */
     const r = await fetch(`${S.file}?v=${VER}`); if (!r.ok) throw new Error('http ' + r.status); const ab = await r.arrayBuffer();
-    const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext, ac = new OC(2, 44100, 44100);
-    const b = await new Promise((ok, no) => { const q = ac.decodeAudioData(ab, ok, no); if (q && q.then) q.then(ok, no); });
-    const n = Math.min(b.length, Math.round(S.le * b.sampleRate)), c0 = b.getChannelData(0), c1 = b.numberOfChannels > 1 ? b.getChannelData(1) : c0;
-    return { L: c0.slice(0, n), R: c1.slice(0, n), rate: b.sampleRate, loop: true, loopStart: Math.round(S.ls * b.sampleRate) }; })();
+    /* v29.07 배틀 중 앱이 다시 켜짐(#2575, 아이폰 화면이 메모리 부족으로 죽음): 다이맥스 곡(3분 19초)을 44.1kHz 로 통째 풀고 또 잘라 복사·버퍼로 또 복사해서 한 곡에 67MB×2~3, v28.96 부터는 배틀마다 미리 받아 둠 →
+       32kHz 로 풀고(체육관 곡들과 같은 음질) 푼 버퍼를 복사 없이 그대로 틀고 반복 끝(le)은 loopEnd 로 = 약 51MB 한 벌 */
+    const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext, dec = rate => new Promise((ok, no) => { const ac = new OC(2, rate, rate), q = ac.decodeAudioData(ab.slice(0), ok, no); if (q && q.then) q.then(ok, no); });
+    const b = await dec(32000).catch(() => dec(44100));
+    return { buf: b, n: Math.min(b.length, Math.round(S.le * b.sampleRate)), rate: b.sampleRate, loop: true, loopStart: Math.round(S.ls * b.sampleRate) }; })();
     pcm.set(name, p); p.catch(() => pcm.delete(name)); return p; }
   const p = (async () => {
     const [seq, bank, ...wars] = await Promise.all([part(S.s), part(B.b), ...B.w.map(part)]);
@@ -197,11 +198,12 @@ function trim(keep) { for (const m of [pcm, bufs]) for (const k of [...m.keys()]
 async function bufOf(ctx, name) {
   const b = bufs.get(name); if (b && b.ctx === ctx) return b;
   let r = await make(name);
-  if (!r.L) { pcm.delete(name); r = await make(name); }
+  if (!r.L && !r.buf) { pcm.delete(name); r = await make(name); }
   /* v19.38 경완 'bgm 음량 효과음이랑 밸런스': 곡마다 크기(RMS)가 달라 GBA 곡(전당 등)이 훨씬 크게 들림 → 체육관 곡 크기(-19dB)보다 큰 곡만 그만큼 줄인다 */
-  let ss = 0, sn = 0; for (let i = 0; i < r.L.length; i += 7) { ss += r.L[i] * r.L[i] + r.R[i] * r.R[i]; sn += 2; }
+  const L = r.L || r.buf.getChannelData(0), R = r.R || (r.buf.numberOfChannels > 1 ? r.buf.getChannelData(1) : L), N = r.L ? L.length : r.n;
+  let ss = 0, sn = 0; for (let i = 0; i < N; i += 7) { ss += L[i] * L[i] + R[i] * R[i]; sn += 2; }
   const db = sn ? 10 * Math.log10(ss / sn + 1e-12) : -99, lg = Math.max(.35, Math.min(1, Math.pow(10, (-19 - db) / 20))) * (SONG[name]?.boost || 1);
-  const x = { ctx, buf: toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate, lg };
+  const x = { ctx, buf: r.buf || toBuf(ctx, r), loop: r.loop, ls: r.loopStart / r.rate, le: r.buf ? r.n / r.rate : 0, lg };   /* 파일 곡은 푼 버퍼 그대로 (복사 없음) */
   r.L = r.R = null; bufs.set(name, x); return x;
 }
 
@@ -215,7 +217,7 @@ function toBuf(ctx, r) {
 }
 // 끊긴 자리 (경완 2026-10-28 '배틀 중 나갔다 오면 끊긴 부분부터'): 앱을 나갔다 와서 다시 틀 때만 이어서, 새로 고른 곡은 처음부터
 const pos = {};
-function posNow() { const { src, ctx, name } = cur; if (!src || !ctx || !name || cur.t0 == null) return; const d = src.buffer.duration; let p = ctx.currentTime - cur.t0;
+function posNow() { const { src, ctx, name } = cur; if (!src || !ctx || !name || cur.t0 == null) return; const d = src.loop && src.loopEnd ? src.loopEnd : src.buffer.duration; let p = ctx.currentTime - cur.t0;
   if (src.loop && p > d) { const ls = src.loopStart; p = ls + (p - ls) % Math.max(.01, d - ls); } pos[name] = clampP(p, d); }
 const clampP = (p, d) => Math.max(0, Math.min(p, d - .05));
 function stopSrc(fade = .4) {
@@ -231,7 +233,7 @@ async function start(name, { fade = .6 } = {}) {
   stopSrc(.3);
   const src = ctx.createBufferSource(), g = ctx.createGain();
   src.buffer = B.buf; src.loop = B.loop;
-  if (B.loop) { src.loopStart = B.ls; src.loopEnd = B.buf.duration; }
+  if (B.loop) { src.loopStart = B.ls; src.loopEnd = B.le || B.buf.duration; }
   const t = ctx.currentTime, off = pos[name] || 0; delete pos[name]; cur.lg = B.lg || 1; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(cur.lg, t + fade);
   src.connect(g); g.connect(out); src.start(0, off); cur.t0 = t - off;
   src.onended = () => { if (cur.src === src) { cur.src = null; cur.name = null; if (!B.loop) cur.fin = name; } };   // 한 번만 도는 곡(승리 곡)이 끝나면 다시 틀지 않는다
