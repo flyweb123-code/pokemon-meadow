@@ -39,7 +39,6 @@ for (const s of sv) {
       hatchN: (S.box || []).filter(p => p && p.place).length, runs: N(S.runs), fr: N(S.friends), mons: N(S.mons), log: N(S.log),
       gym: g ? { rep: g.rep | 0, gmax: g.gmax ?? null, tut: g.tut ? 1 : 0, d: g.d || 0, days: g.days ? Object.keys(g.days) : [], keys: N(g), shelf: (g.shelf || []).map(x => ({ rep: x.rep | 0, gmax: x.gmax ?? null, off: x.off || 0 })) } : null,
       mgK: S.mg ? Object.keys(S.mg) : [], trRw: S.trRw ?? null, tr: S.tr ? (S.tr.lv ?? S.tr.g ?? N(S.tr)) : null,
-      fedDays: Array.isArray(S.fedLog) ? S.fedLog.map(x => Array.isArray(x) ? x[0] : x?.d).filter(Boolean) : [],
       dorm: S.dorm ? 1 : 0, sound: S.tracks ? N(S.tracks) : 0, lay: N(S.lay), fits: N(S.fits), unl: N(S.unlocked),
       gymUnlk: S.gymUnlk ?? null, noti: N(S.noti), th: S.th || '',
     });
@@ -48,3 +47,5 @@ for (const s of sv) {
 const out = { now: Date.now(), n: { acc: acc.length, save: sv.length, tr: tr.length, bal: bal.length, bak: bk.length }, users: [...users.values()] };
 writeFileSync(process.argv[2] || 'metrics.json', JSON.stringify(out));
 console.log('metrics', JSON.stringify(out.n), 'users', out.users.length);
+// 예약 작업이 로그로 받는다 (산출물 내려받기가 막힐 때 대비). 친구 코드·아이디 없이 해시·닉네임만
+const t = JSON.stringify(out); console.log('=====METRICS BEGIN ' + t.length); for (let i = 0; i < t.length; i += 4000) console.log('M|' + t.slice(i, i + 4000)); console.log('=====METRICS END');

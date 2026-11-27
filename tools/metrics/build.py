@@ -1,15 +1,15 @@
 # 유저 지표판 데이터 만들기 (경완 2026-11-28 '1 반영' · '둘 다 해 줘')
 # 입력: tools/metrics/extract.mjs 가 만든 metrics.json (metrics-report.yml 산출물). 출력: 지표판 Artifact 에 올릴 daily·heat·users·funnel·ret.json
-# 쓰는 법: python3 tools/metrics/build.py metrics.json 출력폴더
-# 이름: 경완 '유저 알파벳으로 표시하지말고 그냥 이름으로 해' → NAME(친구 코드 해시 → 이름), 없으면 트레이너 카드 닉네임
+# 쓰는 법: python3 tools/metrics/build.py metrics.json 출력폴더 [이름표.json]
+# 이름: 경완 '유저 알파벳으로 표시하지말고 그냥 이름으로 해' → 이름표({코드 해시: 이름}, 저장소엔 안 둠 — 프로젝트 메모 pokemon-meadow-user-metrics), 없으면 트레이너 카드 닉네임
 import json, sys, os, datetime as dt
 from collections import Counter
 
-NAME = {'d6e02698': '동혁', 'f377c987': '미니뿡', '41f8aca7': '유찬', 'b50517ec': '똥빵귀', '7f4bfef8': 'centerr'}
 GR = ['새내기', '동네', '떠오르는', '이름난', '인기', '명문', '전설']
 SC = {'f': '필드', 'gym': '체육관', 'mg': '미니게임', 'bt': '배틀', 'ya': '특훈', 'fr': '친구 필드'}
 KST = dt.timedelta(hours=9)
 src_path, out = sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else '.'
+NAME = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else {}
 d = json.load(open(src_path))
 code = open(__file__).read()
 K = lambda t: (dt.datetime.fromtimestamp(t / 1000, dt.UTC) + KST).date()
