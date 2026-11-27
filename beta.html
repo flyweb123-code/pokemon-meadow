@@ -3685,7 +3685,7 @@ const pondVal = (x, y) => pondV1(nearPond(x, y), x, y);
 /* v18.77 경완 '호수 위 그림자 옅게, 모든 그림자에': 소품 그림자(v18.11 castL)와 같은 비율 — 연못 타원(가로 .94·세로 .9) 안 85% 까지 .3, 가장자리로 갈수록 1 */
 const pondShK = (x, y) => { let k = 1; for (const o of ALLP('pond')) { if (!o || !o.rx) continue; const dx = (x - o.x) / (o.rx * .94), dy = (y - o.y) / (o.ry * .9), d = Math.sqrt(dx * dx + dy * dy); if (d < 1) k = Math.min(k, d <= .85 ? .3 : .3 + .7 * (d - .85) / .15); } return Math.round(k * 20) / 20; };
 function pshPond() { for (const e of document.querySelectorAll('.psh')) { const k = pondShK(parseFloat(e.style.left) || 0, parseFloat(e.style.top) || 0); if (e.shW !== k) { e.shW = k; if (k === 1) e.style.removeProperty('--shw'); else e.style.setProperty('--shw', k); } } }
-setInterval(() => { if (!document.hidden) try { pshPond(); } catch (e) {} }, 800);
+setInterval(() => { if (!document.hidden && !window.Gym?.isOpen?.()) try { pshPond(); } catch (e) {} }, 800);   /* v29.05: 체육관 안에선 필드 그림자를 안 셈 */
 /* v18.12 경완 '육지 포켓몬이 호수 가장자리에 설 때 호수 위에 있는 것처럼': 몸 가운데(발)만 물 밖이라 옆 물가에선 몸 반쪽이 물 위에 떠 보였다 → 걷는 포켓몬은 몸 폭만큼 연못을 넓혀 본다 */
 const pondPad = m => m && m.el && m.sp != null && pondWalk(m) ? Math.min(36, (m.w || 32) * .42) : 0;
 const pondValM = (m, x, y) => { const P = nearPond(x, y), e = pondPad(m), dx = (x - P.x) / (P.rx + e), dy = (y - P.y) / (P.ry + e * .12); return dx * dx + dy * dy; };
@@ -18472,9 +18472,11 @@ let fLast = 0, fCov = false, fCost = 0, fHold = 0; document.addEventListener('po
 const fGap = () => VISIT ? 31 : S.mons.length >= 6 || fCost > 9 ? 48 : 31;   /* v21.38 경완 '동혁 필드 놀러갔는데 프레임 끊김': 놀러 간 화면은 마릿수 상관없이 1초에 30번 */
 /* v6.07 경완: 발열 — 폰에서 창(포켓몬·알·상점·도감·미니게임 등)이 필드를 다 덮고 있으면 필드는 그리지 않고(시간은 흐름) 꽃 흔들림 같은 CSS 움직임도 멈춘다 */
 const fieldCovered = () => document.body.classList.contains('gymMode') || document.body.classList.contains('visiting') || narrow.matches && !!document.querySelector('body > .sheet:not([hidden]):not(.off)') || !!document.querySelector('#noti:not([hidden]),#pdPop:not([hidden]),#news:not([hidden]),#frMax:not([hidden])');   /* v21.40: 새 소식·업데이트·친밀도 만점 알림창이 뜬 동안도 (흐린 뒤 필드를 계속 그리면 느린 폰에서 확인이 늦게 먹음) */
+let fCovAt = -1e9;   /* v29.05 오래된 폰 버벅임: fieldCovered 의 querySelector 두 번을 매 프레임(초당 60~120번, 체육관 안에서도) 하던 것 → 0.12초마다만 다시 봄 (필드 가만히 있을 때 스크립트 시간의 가장 큰 몫이었음) */
 function frame(now) {
   requestAnimationFrame(frame);
-  const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); }
+  if (now - fCovAt >= 120 || now < fCovAt) { fCovAt = now; const cov = fieldCovered(); if (cov !== fCov) { fCov = cov; document.body.classList.toggle('fcov', cov); } }
+  const cov = fCov;
   if (inGym()) { last = now; return; }   // 체육관에 있는 동안 필드는 멈춤
   if (document.body.classList.contains('visiting') && !Visit.hosting?.()) { last = now; return; }   /* v27.47 경완 '친구 필드 놀러갔을 때 내 필드 끄는게 낫지 않아? 용량 너무 잡아 먹을 것 같은데': 놀러가 있는 동안 내 필드는 체육관에 있을 때처럼 멈춤 (손님이 내 필드를 보고 있을 때만 계속) */
   const host = cov && Visit.hosting?.();   /* v21.38: 손님이 보는 중이면 덮여 있어도 움직임·그림은 평소대로 (손님에게 보낼 모습) — 0.3~0.9초마다 뚝뚝 끊겨 보이던 것 */

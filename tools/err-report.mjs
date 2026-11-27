@@ -21,7 +21,7 @@ for (const r of rows) {
     '<details><summary>마지막 상황</summary>', '', '```json', JSON.stringify(ctx, null, 1).slice(0, 55000), '```', '</details>'].join('\n');
   writeFileSync('/tmp/body.md', body);
   let num = r.issue;
-  if (num) { try { gh('issue', 'reopen', String(num)); gh('issue', 'comment', String(num), '--body-file', '/tmp/body.md'); } catch (e) { num = 0; } }
+  if (num) { try { gh('issue', 'reopen', String(num)); } catch (e) {} try { gh('issue', 'comment', String(num), '--body-file', '/tmp/body.md'); } catch (e) { num = 0; } }   // 열린 이슈면 reopen 은 실패해도 됨, 댓글만 (v29.05)
   if (!num) { const url = gh('issue', 'create', '--title', `[자동 오류] ${r.msg.slice(0, 80)}`, '--label', 'auto-err', '--body-file', '/tmp/body.md'); num = +url.split('/').pop(); }
   d1(`UPDATE err SET st = 1, issue = ${num | 0} WHERE k = '${hexk(r.k)}'`);
   console.log('issue', num, r.msg);
