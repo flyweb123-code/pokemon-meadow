@@ -120,8 +120,9 @@ const S = stats(cur), P = stats(prev);
 
 // ---------- 골드 쌓임 (경완 2026-11-27 '3는 주기적으로 하는 예약 점검에 추가'): 오래 한 사람에게 골드가 쌓이기만 하는지 ----------
 // 하루 한 줄 골드 기록(kind gold) 전체 기간(서버는 120일 보관)을 사람마다 이어 본다. 런닝은 골드를 안 주므로 셈에 없음.
-// ACC = '살펴보라'는 띠 (내가 잡은 값, 바꿀지는 경완이 정함): 기록 minD 일 이상 = 오래 한 사람, 잔액이 그 사람 하루 수입의 dayX 일치 넘음, 길게 본 쓴 비율 use % 아래, 최근 4주 중 잔액이 오른 주 up 주 이상
-const ACC = { minD: 14, dayX: 30, use: 50, up: 3 };
+// ACC = '살펴보라'는 띠 (내가 잡은 값, 바꿀지는 경완이 정함): 기록 minD 일 이상 = 오래 한 사람 가운데 잔액이 그 사람 하루 수입의 dayX 일치 넘고, 길게 본 쓴 비율 use % 아래, 첫 기록보다 잔액이 늘었으면 '쌓이기만'
+// (11-27 첫 실행: 한 명이 16일 동안 번 골드의 6.5%만 쓰고 잔액 9배 = 하루 수입 12.6일치 → dayX 10)
+const ACC = { minD: 14, dayX: 10, use: 50 };
 const GdAll = dry > 0 ? rows.filter(r => r.kind === 'gold') : (() => { try { const L = d1(`SELECT code, kind, ver, beta, t, d FROM bal WHERE kind = 'gold' ORDER BY t LIMIT 100000`); for (const r of L) { try { r.d = typeof r.d === 'string' ? JSON.parse(r.d) : r.d || {}; } catch (e) { r.d = {}; } } return L; } catch (e) { return rows.filter(r => r.kind === 'gold'); } })();
 function accOf(Gd) {
   const ymd = t => new Date(t + KST).toISOString().slice(0, 10), spOf = d => Object.values(d.sp || {}).reduce((a, b) => a + (+b || 0), 0), dk = r => r.d.day ? String(r.d.day) : ymd(r.t).replace(/-/g, '');
@@ -135,7 +136,7 @@ function accOf(Gd) {
     return { code, days: D.length, span, act, from: f.n, to: l.n, b0: f.b0, b1: l.b1, grow: l.b1 - f.b0, perDay: Math.round((l.b1 - f.b0) / span), E, Sp, use: pct(Sp, E), eDay: Math.round(eDay), xDay: eDay ? Math.round(l.b1 / eDay * 10) / 10 : null, up, wks: W.length, gap: (l.b1 - f.b0) - (E - Sp) };
   });
   const old = per.filter(p => p.days >= ACC.minD).sort((a, b) => b.days - a.days);
-  const pile = old.filter(p => (p.xDay != null && p.xDay > ACC.dayX) && (p.use == null || p.use < ACC.use) && p.up >= Math.min(ACC.up, p.wks - 1));
+  const pile = old.filter(p => p.xDay != null && p.xDay > ACC.dayX && (p.use == null || p.use < ACC.use) && p.grow > 0);
   // 주별: 그 주에 기록 있는 사람들의 주 끝 잔액 중앙·번 합·쓴 합 (오래 한 사람만)
   const oc = new Set(old.map(p => p.code)), wkM = new Map();
   for (const r of Gd.filter(r => oc.has(r.code))) { const w = wk(dnum(dk(r))), c = wkM.get(w) || { who: new Map(), e: 0, s: 0 }; c.e += r.d.ern | 0; c.s += spOf(r.d); const pv = c.who.get(r.code); if (!pv || pv.t < r.t) c.who.set(r.code, { t: r.t, b: r.d.b1 | 0 }); wkM.set(w, c); }
@@ -153,7 +154,7 @@ for (const c of S.gym.cats) if (c.n >= FLAG.minN) {
 }
 if (S.sf.n >= FLAG.minN && (S.sf.block > FLAG.sfHi || S.sf.block < FLAG.sfLo)) flags.push(`트레이너가 도전자를 막는 비율 ${S.sf.block}%`);
 if (S.mg.n >= FLAG.minN && S.mg.dayGold.p50 > FLAG.mgDayG) flags.push(`미니게임 하루 골드 중앙값 ${S.mg.dayGold.p50}G (출퇴근 하루 골드 약 ${FLAG.mgDayG}G 보다 많음)`);
-if (AC.pile.length) flags.push(`골드 쌓임: 오래 한 ${AC.old.length}명 중 ${AC.pile.length}명이 잔액 = 하루 수입 ${ACC.dayX}일치 넘고 쓴 비율 ${ACC.use}% 아래·잔액이 계속 오름 (쓸 곳 살펴보기)`);
+if (AC.pile.length) flags.push(`골드 쌓임: 오래 한 ${AC.old.length}명 중 ${AC.pile.length}명이 잔액 = 하루 수입 ${ACC.dayX}일치 넘고 쓴 비율 ${ACC.use}% 아래·잔액 늘어남 (쓸 곳 살펴보기)`);
 if (S.gold.n >= FLAG.minN && S.gold.useRate != null && S.gold.useRate < FLAG.goldUse) flags.push(`번 골드의 ${S.gold.useRate}%만 씀 — 골드가 쌓이기만? (쓸 곳 살펴보기)`);
 { const D = S.diffNew.n >= FLAG.minN ? S.diffNew : S.diff, tag = D === S.diffNew ? `v${DIFF_VER}~` : '지난 7일';
   for (const c of D.cells) if (c.kd === '보통' && c.n >= FLAG.minN) { const [lo, hi] = DIFF_TG[c.gi] || [35, 85]; if (c.win > hi) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 쉬움?`); else if (c.win < lo) flags.push(`[난이도 ${tag}] ${GR[c.gi]} 보통 도전자 상대 승률 ${c.win}% (목표 ${lo}~${hi}%) — 너무 어려움?`); }
@@ -225,7 +226,7 @@ const body = [
   '## 골드 (한 사람 하루, 다음 날 올라옴)',
   `${v(S.gold.n)}일치 · ${S.gold.people}명 · 번 골드 중앙 ${v(S.gold.ern.p50)}G (상위 10% ${v(S.gold.ern.p90)}G) · 쓴 골드 중앙 ${v(S.gold.sp.p50)}G (상위 10% ${v(S.gold.sp.p90)}G)`,
   `골드를 쓴 날 ${v(S.gold.spDays)}% · 번 골드 중 쓴 비율 ${v(S.gold.useRate)}%${dlt(S.gold.useRate, P.gold.useRate)} · 하루 끝 잔액 중앙 ${v(S.gold.bal.p50)}G · 상위 10% ${v(S.gold.bal.p90)}G · 최고 ${v(S.gold.bal.max)}G`, '',
-  ...(S.gold.src?.length ? [`번 곳 (번 곳 기록이 있는 ${v(S.gold.srcN)}일치 합)`, '', tbl(['번 곳', '골드', '%', '명'], (T => S.gold.src.map(c => [({ mg: '장애물 넘기', drop: '진화구슬 키우기', stack: '탑 쌓기', yact: '특훈', mission: '미니게임 미션', gym: '체육관 도전자 배틀', sf: '체육관 트레이너', promo: '체육관 승급 보상', trgr: '트레이너 등급 보상', ret: '복귀 선물', event: '체육관 이벤트', egg: '알 부화', dex: '도감 새 포켓몬', move: '움직인 거리', etc: '그 밖' })[c.k] || c.k, c.g, T ? Math.round(c.g / T * 1000) / 10 : '-', c.people]))(S.gold.src.reduce((a, c) => a + c.g, 0))), ''] : []),
+  ...(S.gold.src?.length ? [`번 곳 (번 곳 기록이 있는 ${v(S.gold.srcN)}일치 합)`, '', tbl(['번 곳', '골드', '%', '명'], (T => S.gold.src.map(c => [({ mg: '장애물 넘기', drop: '진화구슬 키우기', stack: '탑 쌓기', yact: '특훈', tower: '수련탑', mission: '미니게임 미션', gym: '체육관 도전자 배틀', sf: '체육관 트레이너', promo: '체육관 승급 보상', trgr: '트레이너 등급 보상', ret: '복귀 선물', event: '체육관 이벤트', egg: '알 부화', dex: '도감 새 포켓몬', move: '움직인 거리', etc: '그 밖' })[c.k] || c.k, c.g, T ? Math.round(c.g / T * 1000) / 10 : '-', c.people]))(S.gold.src.reduce((a, c) => a + c.g, 0))), ''] : []),
   tbl(['쓴 곳', '골드', '명'], S.gold.cats.map(c => [({ item: '진화 도구·아이템', field: '필드 소품', fit: '의상', bgm: '배경 음악', gym: '체육관 상점', wage: '트레이너 월급·수당' })[c.k] || c.k, c.g, c.people])), '',
   `많이 산 것: ${S.gold.items.map(([k, n]) => `${k} ${n}`).join(' · ') || '-'}`, '',
   '## 골드 쌓임 (오래 한 사람 — 기록 전체 기간)',
@@ -233,7 +234,7 @@ const body = [
   tbl(['사람', '기록 일', '첫 잔액', '지금 잔액', '하루 늘어남', '번 골드', '쓴 골드', '쓴 %', '하루 수입 N일치', '최근 4주 오른 주', '기록 밖 차이'], AC.old.map((p, i) => ['사람 ' + String.fromCharCode(65 + i), p.days, p.b0, p.b1, p.perDay, p.E, p.Sp, p.use, p.xDay, `${p.up}/${Math.min(4, p.wks - 1)}`, p.gap])), '',
   '주별 (오래 한 사람만, 주 = 월요일 시작):', '',
   tbl(['주', '명', '주 끝 잔액 중앙', '번 골드 합', '쓴 골드 합', '쓴 %'], AC.weeks.map(w => [w.w, w.people, w.bal, w.e, w.s, w.use])), '',
-  AC.pile.length ? `쌓이기만 하는 사람: ${AC.pile.length}명 (잔액 > 하루 수입 ${ACC.dayX}일치 · 쓴 비율 < ${ACC.use}% · 최근 주마다 잔액 오름)` : `쌓이기만 하는 사람: 없음 (기준: 잔액 > 하루 수입 ${ACC.dayX}일치 · 쓴 비율 < ${ACC.use}% · 최근 주마다 잔액 오름)`, '',
+  AC.pile.length ? `쌓이기만 하는 사람: ${AC.pile.length}명 (잔액 > 하루 수입 ${ACC.dayX}일치 · 쓴 비율 < ${ACC.use}% · 잔액 늘어남)` : `쌓이기만 하는 사람: 없음 (기준: 잔액 > 하루 수입 ${ACC.dayX}일치 · 쓴 비율 < ${ACC.use}% · 잔액 늘어남)`, '',
   '## 지역 알 (주운 곳 — 시·군 이름만, 좌표 없음)',
   `${v(S.egg.n)}개 · ${S.egg.people}명 · 어디서: ${S.egg.src.map(([k, n, p]) => `${k} ${v(n)}(${p}%)`).join(' · ') || '-'}`,
   '토박이 % = 그 알 가운데 시·군·도 토박이로 나온 비율 (목표: 낯선 곳 약 30%, 평소 약 5%).', '',
