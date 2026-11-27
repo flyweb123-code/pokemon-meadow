@@ -252,7 +252,7 @@ function gm(P) {
   const h = D.sp[P.sp]?.h, nm = abNorm(P.sp);
   if (!m.haK5) { if (!m.ha && hiddenRoll('ha' + P.id)) m.ha = 1; m.haK5 = 1; }   // v12.10: 2% 때 빠진 숨겨진 특성을 5% 기준으로 되돌림 (같은 씨앗이라 그때 가졌던 개체만)
   if (m.ha) { if (h && m.ab !== h) m.ab = h; else if (!h) { m.ha = 0; m.ab = nm[0] || m.ab; } }
-  else if (!nm.includes(m.ab)) m.ab = nm[0] || m.ab;
+  else if (!nm.includes(m.ab)) m.ab = nm[m.abI | 0] || nm[0] || m.ab;   /* 특성캡슐로 고른 자리(m.abI)는 진화해도 그 자리 (경완 2026-11-28 특성캡슐) */
   // v14.41 경완: 진화했는데 본가 진화 레벨보다 낮으면 그 레벨로 올린다 (그 사이 레벨에서 배우는 기술도). 이미 넘었으면 그대로
   const ev = EVO_LV[P.sp];
   if (ev && m.lv < ev) { const L = D.sp[P.sp]?.lv || []; for (let l = m.lv + 1; l <= ev; l++) for (let i = 0; i < L.length; i += 2) if (L[i] === l) teach(m, D.mv[L[i + 1]][0], null, true); m.lv = ev; m.xp = Math.max(m.xp, xpAt(growth(P.sp), ev)); }
@@ -2765,7 +2765,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
   const P = boxOf(+id || id); if (!P) return; const m = gm(P), nt = D.nt[m.nat] || ['', '', ''], h = D.sp[P.sp]?.h;
   if (under !== null && String(under?.dataset?.pid) !== String(P.id)) { try { GA.cry?.(P.sp, 0, 1, CRY_K); } catch (e) {} }   // v20.66 경완: 상세카드를 열 때(넘길 때도) 본게임처럼 울음소리. 작은 창을 닫고 카드만 다시 그릴 땐(null) 안 남
   // 특성 팝업: 숨겨진 특성은 안내 문구 대신 눌러서 효과 (경완 2026-10-29)
-  const abShow = (k, hid, hk) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
+  const abShow = (k, hid, hk, rec, cl) => gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4>${abKo(k)}${hid ? ' <em class="ha-tag">숨겨진 특성</em>' : ''}</h4><p class="gy-msg ab-d">${esc(AB_D?.[k] || '효과 설명이 아직 없어요.')}</p>${hk ? `<button type="button" class="ab-hid" data-a="hab"><small>이 종의 숨겨진 특성</small><b>${abKo(hk)}</b><i>›</i></button>` : ''}${rec && S.gym ? '<button type="button" class="ab-recb" data-a="arec"><i aria-hidden="true">★</i>추천 특성 보기</button>' : ''}<div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (b, c2) => { if (b === 'hab') return abShow(hk, true); if (b === 'arec') { c2(); return abRecPop(P, () => { cl?.(); monPop(P.id, fromBox, null, lst); }); } c2(); });   // v20.64 경완: 성격·특성 창 우상단 ✕
   // 정보 카드 (경완 2026-10-29): 이름 밑 타입·레벨·경험치 왼쪽 맞춤, 경험치 막대는 끝까지 / 성격·특성 한 줄(눌러서 효과) / 개체값 › / 기술(누르면 상세, 위에 '기술 바꾸기') / 기술 가르치기
   let mvH = null;
   const p = gymPop(monHtml(P, fromBox),
@@ -2777,7 +2777,7 @@ function monPop(id, fromBox, under, lst) {   // lst: 넘겨 볼 목록 (함수).
         if (b2 === 'ngive') { c2(); msgTop(() => mintUse(P, rn), () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
         if (b2 === 'nbuy') { c2(); recBuyMint(P, rn, () => { close(); monPop(P.id, fromBox, null, lst); }); return; }
         if (b2 === 'x') c2(); }); return; }   // 성격 효과도 눌러서 (경완 2026-10-29)
-      if (a === 'ab') return abShow(m.ab, m.ha, null);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
+      if (a === 'ab') return abShow(m.ab, m.ha, null, abNorm(P.sp).length > 1, close);   // 특성 효과는 눌러서 팝업 (경완 2026-10-29). v12.10 경완: 숨특은 진짜 가진 개체만 (종의 숨특 칸 없앰)
       if (a === 'mv') { movesPop(P, () => monPop(P.id, fromBox, p, lst)); return; }   // v14.42 경완: 기술 창이 떠 있는 동안 뒤에 상세 카드는 그대로, 닫으면 바뀐 기술로 카드만 바꿔 끼움
       if (a === 'tm') { close(); usePop(P, () => monPop(P.id, fromBox, null, lst)); return; }
       // 프로필 그림을 누르면 지닌 도구 정보 + 돌려받기 (경완 2026-10-29)
@@ -3269,11 +3269,11 @@ function usePop(P, done) {
   const el = document.createElement('section'); el.className = 'gy-setup gy-infos gy-storew tm-teach';
   const draw = () => { const m = gm(P), it = m.it;
     const TL = Object.entries(g.tms).filter(([, n]) => n > 0).map(([id, n]) => [mvOf(id), n, id]).filter(([x]) => x).map(r => [...r, tmCan(P, r[2])]).sort((a, b) => (b[3] - a[3]) || ((b[0][4] || 0) - (a[0][4] || 0)));
-    const IL = itAll(), ML = mintAll(), VL = vitAll(), SL = soupAll();
-    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0) + SL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
+    const IL = itAll(), ML = mintAll(), VL = vitAll(), SL = soupAll(), AL = abAll();
+    const T = [['it', '도구', IL.length + ML.reduce((a, r) => a + r[1], 0) + VL.reduce((a, r) => a + r[1], 0) + SL.reduce((a, r) => a + r[1], 0) + AL.reduce((a, r) => a + r[1], 0)], ['tm', '기술머신', TL.filter(r => !isTR(r[2])).length], ['tr', '기술레코드', TL.reduce((a, r) => a + (isTR(r[2]) ? r[1] : 0), 0)]];
     const TT = TL.filter(r => isTR(r[2]) === (useT === 'tr'));   /* v15.75 기술머신·기술레코드 탭 따로 */
     const body = useT !== 'it' ? (TT.length ? `<div class="sp-list">${TT.map(([x, n, id, ok]) => tmRow(x, n, id, !ok, ok ? '' : (egKn(m, id) ? '이미 앎' : '못 배움'))).join('')}</div>` : `<p class="sf-none">가진 ${useT === 'tr' ? '기술레코드가' : '기술머신이'} 없어요. 상점에서 살 수 있어요.</p>`)
-      : (IL.length + ML.length + VL.length + SL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}${SL.map(([, n]) => soupRow(n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
+      : (IL.length + ML.length + VL.length + SL.length + AL.length ? `<div class="sp-list">${IL.map(itRowAll).join('')}${ML.map(([k, n]) => mintRow(k, n, P)).join('')}${AL.map(([k, n]) => abRow(k, n, P)).join('')}${VL.map(([i, n]) => vitRow(i, n, P)).join('')}${SL.map(([, n]) => soupRow(n, P)).join('')}</div>` : '<p class="sf-none">가진 도구가 없어요. 상점에서 살 수 있어요.</p>');
     el.innerHTML = `<div class="gy-sh"><button class="gy-back" type="button" data-a="x" aria-label="뒤로">◀</button><b class="if-t">도구 사용</b></div>
       <div class="gy-body"><p class="tt-who">${thumb(P)}<span><b>${esc(nmOf(P))}</b>${it && HOLD[it] ? `<small class="it-hold">지닌 도구 · ${esc(HOLD[it][0])}</small>` : '<small class="it-hold">지닌 도구 없음</small>'}</span><span class="it-hbtn"><button type="button" class="it-recbtn" data-recit><i aria-hidden="true">★</i>${useT === 'it' ? '추천 도구' : '추천 기술'}</button>${it ? '<button type="button" class="it-take" data-take>돌려받기</button>' : ''}</span></p>
       <div class="sp-tabs st-tabs" role="tablist">${T.map(([k, n, c]) => `<button type="button" role="tab" data-ut="${k}" aria-selected="${useT === k}">${n} <small>${c}</small></button>`).join('')}</div>${body}</div>`;
@@ -3302,7 +3302,8 @@ function usePop(P, done) {
     if (b.dataset.it) { const id = b.dataset.it; return itInfo(id, '지니게 하기', () => { giveIt(P, id); draw(); }); }
     if (b.dataset.mint) { const k = b.dataset.mint; return mintInfo(k, '먹이기', () => { mintUse(P, k); draw(); }); }
     if (b.dataset.vit != null) { const i = +b.dataset.vit; return vitInfo(i, '먹이기', () => { vitUse(P, i); draw(); }, S.gym.vit?.[EV_VIT[i][0]] | 0, P); }
-    if (b.dataset.soup) return soupInfo('먹이기', () => soupUse(P, draw), S.gym.soup | 0, P); };
+    if (b.dataset.soup) return soupInfo('먹이기', () => soupUse(P, draw), S.gym.soup | 0, P);
+    if (b.dataset.abit) { const k = b.dataset.abit; return abItInfo(k, '쓰기', () => abUse(k, P, draw), abN(k), P); } };
 }
 // 창고 도구 → 지니게 하기 → 포켓몬 박스에서 고르기
 function itPick(id, done) {
@@ -3562,12 +3563,52 @@ function soupPick(done) {
   boxWin(false, null, done, { title: () => '다이수프 먹이기', tip: '거다이맥스 모습이 있는 포켓몬만 보여요', list: () => S.box.filter(P => tyOk(P) && gmaxOk(P)), ok: () => true, first: P => curLu().includes(P.id),
     tag: P => gm(P).gmax ? '거다이맥스' : '', pick: (P, w) => { w.close(); soupUse(P, done); } });
 }
+/* 특성캡슐·특성패치 (경완 2026-11-28 '우리 게임에 적용한다면 어떻게 줘야할까?' → A안 '캡슐은 상점, 패치는 보상'):
+   특성캡슐 = 보통 특성 둘 사이 바꾸기 (체육관 상점 ABC_P, 창고 S.gym.abc), 특성패치 = 보통 특성 ↔ 숨겨진 특성 (상점에 없음 — 수련탑 100·150층 큰 선물·200층·특훈 꾸러미 에픽·트레이너 등급 보상, 창고 S.gym.abp).
+   등급 보상은 체육관을 세우기 전에도 오니 S.abpQ 에 먼저 쌓였다가 같이 셈 (abN). 먹으면 없어지고, 바꾼 자리는 m.abI 로 남아 진화해도 그 자리 특성 */
+const ABC_P = 3000, AB_IT = { abc: ['특성캡슐', `${IMG}item/abilitycapsule.png`], abp: ['특성패치', `${IMG}item/abilitypatch.png`] };
+const AB_D3 = { abc: '포켓몬의 특성을 바꾸는 신기한 캡슐. 보통 특성이 두 개인 포켓몬이 먹으면 다른 보통 특성으로 바뀐다.', abp: '포켓몬의 특성을 바꾸는 신기한 패치. 먹으면 보통 특성이 숨겨진 특성으로, 숨겨진 특성은 보통 특성으로 바뀐다.' };
+const abN = k => (S.gym?.[k] | 0) + (k === 'abp' ? S.abpQ | 0 : 0);
+const abAll = () => ['abc', 'abp'].filter(k => abN(k) > 0).map(k => [k, abN(k)]);
+const abTo = (k, P) => { if (!P || !D?.sp?.[P.sp]) return ''; const m = gm(P), nm = abNorm(P.sp).slice(0, 2), h = D.sp[P.sp].h;
+  if (k === 'abc') return !m.ha && nm.length > 1 && nm[0] !== nm[1] ? nm.find(a => a !== m.ab) || '' : '';
+  return h && h !== 'noability' ? (m.ha ? nm[m.abI | 0] || nm[0] || '' : h) : ''; };
+const abWhy = (k, P) => { const m = gm(P); return k === 'abc' ? (m.ha ? '숨겨진 특성은 특성캡슐로 못 바꿔요' : '보통 특성이 하나뿐인 포켓몬이에요') : '숨겨진 특성이 없는 포켓몬이에요'; };
+const abRow = (k, n, P) => { const to = abTo(k, P), ok = !P || !!to;
+  return `<button type="button" class="sp-tm sp-it sp-ab${ok ? '' : ' off'}" data-abit="${k}" ${ok ? '' : 'disabled'}><img class="tm-ic it-ic" alt="" src="${AB_IT[k][1]}"><span class="tm-nm"><b>${AB_IT[k][0]}</b>${n ? `<i class="tm-own">×${n}</i>` : ''}</span><span class="tm-meta"><small>${!P ? (k === 'abc' ? '보통 특성 둘 사이를 바꿔요' : '보통 특성 ↔ 숨겨진 특성') : !ok ? abWhy(k, P) : `먹이면 ${esc(abKo(to))}${ro(abKo(to))}`}</small></span></button>`; };
+function abItInfo(k, lab, act, own, P, foot = '') { const to = P ? abTo(k, P) : 'x', ok = !!to;
+  gymPop(`<h4 class="mi-h${own != null ? ' has-own' : ''}"><img class="tm-ic it-ic" alt="" src="${AB_IT[k][1]}">${AB_IT[k][0]}${own != null ? bagN(own | 0) : ''}</h4>${foot}<p class="gy-msg mi-d">${AB_D3[k]}</p>${P ? `<p class="gy-msg" style="text-align:center"><small>${ok ? `${esc(abKo(gm(P).ab))} → <b>${esc(abKo(to))}</b>` : `${esc(nmOf(P))}: ${abWhy(k, P)}`}</small></p>` : ''}<div class="gy-btns${act && ok ? '' : ' one'}"><button data-a="x">닫기</button>${act && ok ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
+    (a, close) => { close(); if (a === 't') act?.(); }); }
+function abUse(k, P, done) { const g = S.gym, to = abTo(k, P); if (!g || !to || !(abN(k) > 0)) return; const m = gm(P), from = m.ab, nm = abNorm(P.sp).slice(0, 2);
+  if (k === 'abp' && (S.abpQ | 0) > 0) { if (!--S.abpQ) delete S.abpQ; } else if (!--g[k]) delete g[k];
+  if (k === 'abp' && !m.ha) { m.ha = 1; m.ab = to; } else { if (k === 'abp') m.ha = 0; m.ab = to; m.abI = Math.max(0, nm.indexOf(to)); }
+  GA.save(); se('DECIDE'); GA.haptic?.(1);
+  gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${AB_IT[k][0]}${k === 'abc' ? '을' : '를'} 썼다!<br>특성이 ${esc(abKo(from))}에서<br><b>${esc(abKo(to))}</b>${ro(abKo(to))} 바뀌었다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); }
+/* 추천 특성 (경완 2026-11-28 '특성 상세창에서 추천 특성 볼 수 있는 버튼 … 추천특성이랑 다르면 특성캡슐 창고에 있으면 바로 쓰거나 없으면 상점에서 구매해서 바로 쓸 수 있게끔 … 특성패치는 그냥 따로 도구 사용해서 … 추천특성에 숨특은 넣어놓지 말고'):
+   보통 특성 둘(abNorm 앞 두 칸) 중에서만. 점수 = 쇼다운 특성 rating(-1~5) + 이 개체 기술에 맞는지(AB_MV: 철주먹·옹골찬턱·테크니션 등은 그런 기술이 없으면 -2, 있으면 개수만큼 조금 +). 같으면 지금 특성 그대로 */
+const AB_MV = { ironfist: x => x.flags.punch, strongjaw: x => x.flags.bite, megalauncher: x => x.flags.pulse, sharpness: x => x.flags.slicing, toughclaws: x => x.flags.contact && x.category !== 'Status', technician: x => x.category !== 'Status' && x.basePower > 0 && x.basePower <= 60, skilllink: x => !!x.multihit, sheerforce: x => !!(x.secondary || x.secondaries?.length), reckless: x => !!(x.recoil || x.hasCrashDamage), punkdrain: 0 };
+function recAb(P, m = gm(P)) { const dx = window.PSim?.Dex; if (!dx || !P) return ''; const nm = [...new Set(abNorm(P.sp).slice(0, 2))].filter(a => a && a !== 'noability'); if (nm.length < 2) return '';
+  const mv = (m.mv || []).map(i => dx.moves.get(i)).filter(x => x?.exists);
+  const sc = a => { const A = dx.abilities.get(a); let v = A?.exists ? +A.rating || 0 : 0; const f = AB_MV[a]; if (f) { const n = mv.filter(f).length; v += n ? Math.min(1, n * .35) : -2; } return v; };
+  const cur = m.ha ? nm[m.abI | 0] || nm[0] : m.ab, oth = nm.find(a => a !== cur) || nm[0]; return sc(oth) > sc(cur) + .01 ? oth : cur; }
+function abRecPop(P, ok) { loadSim().then(() => { const m = gm(P), r = recAb(P, m); if (!r) return gymPop(`<h4>추천 특성</h4><p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 보통 특성이 하나뿐이라<br>특성캡슐로 바꿀 수 없어요.</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (a, c) => c());
+    const same = r === m.ab, own = abN('abc'), can = !same && !m.ha, ev = window.gymEvLu;
+    const btn = !can ? '' : `<button type="button" class="sp-tm sp-it sp-ab it-recgo" data-a="${own ? 'agive' : 'abuy'}"${!own && ev ? ' disabled' : ''}><img class="tm-ic it-ic" alt="" src="${AB_IT.abc[1]}"><span class="tm-nm"><b>특성캡슐</b></span><span class="tm-meta"><small>${own ? '창고에 있는 걸 바로 써요' : '사서 바로 써요'}</small></span>${own ? `<em class="it-recp it-recown">${bagN(own)}</em>` : `<em class="it-recp"><i class="coin"></i>${ABC_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
+    const note = same ? '<small class="it-recw">지금 특성이 추천 특성이에요</small>' : m.ha ? '<small class="it-recw">지금은 숨겨진 특성이라 특성캡슐로는 못 바꿔요.<br>특성패치를 쓰면 보통 특성으로 돌아가요.</small>' : '';
+    gymPop(`<button class="mp-x" data-a="x" aria-label="닫기">✕</button><h4><span class="ab-rst">★</span> 추천 특성</h4><p class="gy-msg ab-rn"><b>${esc(abKo(r))}</b></p><p class="gy-msg ab-d">${esc(AB_D?.[r] || '효과 설명이 아직 없어요.')}</p><div class="it-rec"><div class="it-recb">${note}${btn}</div></div><div class="gy-btns one"><button class="main" data-a="x">닫기</button></div>`, (a, c) => {
+      if (a === 'agive') { c(); msgTop(() => abUse('abc', P), ok); return; }
+      if (a === 'abuy') { c(); abItInfo('abc', `<i class="coin"></i>${ABC_P.toLocaleString()}G 사기`, () => { if (!recPay(ABC_P, '특성캡슐')) return; const g = S.gym; g.abc = (g.abc | 0) + 1; msgTop(() => abUse('abc', P), ok); }, null, P, `<p class="gy-msg it-own">사면 ${esc(nmOf(P))}에게 바로 써요</p>`); return; }
+      c(); }); }).catch(() => {}); }
+function abPick(k, done) {
+  boxWin(false, null, done, { title: () => `${AB_IT[k][0]} 쓰기`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => !!abTo(k, P), first: P => curLu().includes(P.id),
+    tag: P => abKo(gm(P).ab), pick: (P, w) => { w.close(); abUse(k, P, done); } });
+}
 function vitPick(i, done) {
   boxWin(false, null, done, { title: () => `영양제 먹이기 · ${EV_VIT[i][1]}`, tip: `${TYPE_KO[S.gym.ty]} 타입 포켓몬만 보여요`, list: () => S.box.filter(tyOk), ok: P => vitRoom(P, i) > 0, first: P => curLu().includes(P.id),
     pick: (P, w) => { w.close(); vitUse(P, i); done?.(); } });   // v20.81 경완: 노력치 딱지 없이 (라인업·훈련장 딱지는 그대로)
 }
 const skipNow = () => { if (!B) return; B.skipNow = 1; B.mainRes?.('skip'); };
-window.GymBattle = { bsOf, fmId, TP_ST, TP_T, MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, FM_IT, fmSync, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
+window.GymBattle = { recAb, abRecPop, bsOf, fmId, TP_ST, TP_T, MEGA_ST, SOUP_P, SOUP_IMG, SOUP_D, dmOn, gmaxOk, soupAll, soupRow, soupInfo, soupUse, soupPick, ABC_P, AB_IT, abN, abAll, abRow, abItInfo, abUse, abPick, abTo, ZC_ST, ZC_T, itWho, zFoeLv, foeHp, skipNow, trCost, TR_CAP, thumb, fillTh, statsOf, xpFor, evyLoad, get EVY() { return EVY; }, trChoose, itAi: { aiItem, foeUseItem, setB: v => { B = v; } }, mvCard, hitPop, evMig, vitAll, vitRow, vitInfo, vitUse, vitPick, foeEvs, evOn, evAdd, evArr, evSumOf, evPop, evPlan, EV_N, EV_VIT, EV_VD, EV_PW, EV_PP, EV_VP, EV_ONE, EV_MAX, recIts, recTms, recNat, recMoves, recSlot, setScore, bagN, egList, egKn, egOpen, egFocus, egAdd, tmHead, tmBody, mvBoxHtml, isTR, tmKind, HOLD, get IT_CAT() { return itCatL(); }, FM_IT, fmSync, MEGA_ST, mgSt, mgOn, MINT, MINT_P, mintNm, mintImg, mintD, mintAll, mintRow, mintInfo, mintPick, itImg, itRow, itAll, itRowAll, itHave, takeIt, itInfo, itPick, giveIt, usePop, tab, run, loadData, loadSim, gm, lus, gainXp, teach, movesPop, tmPop, mvCands, mvOf, mvKo, foeEntry, xpAt, growth, curLu, boxOf, thumb, fillTh, gymPop, tyTag, gifUrl, pkSrc, mvRow, TR_KO, NAMES_M, NAMES_F, LV_MAX, get D() { return D; }, get EGG() { return EGG; }, _xpAt: xpAt, _psSet: psSet, _stFx: (s, t, h) => stFx(s, t, h), _confFx: s => confFx(s), _monPop: (i, b, u, l) => monPop(i, b, u, l), mvInfo, mvHdTools, mvEmpty, mvCardOrd, foePop, teachPick, tmRow, teachTm, tmCan, tmOf, learnFan, boxWin, _abPop: (i, a) => abPop(i, a), _foeEntry: foeEntry, _ai: aiChoice, get _B() { return B; }, _fg: (L, n) => forgetPanel(L, n) };
   /* v27.21 경완 '미니뿡 배틀하다가 필드로 팅겼는데 왜': 오류 기록 없이 앱이 다시 켜짐(아이폰 게임 화면이 죽어 다시 불러옴) → 배틀 중·끝난 직후 상태를 pk-btl 에 적어 두고, 숨겨지지 않은 채 다시 켜지면 index.html 이 서버 오류 기록으로 보냄 */
   { const R0 = window.GymBattle.run, K = 'pk-btl', put = o => { try { localStorage.setItem(K, JSON.stringify(o)); } catch (e) {} };
     window.GymBattle.run = async o => { const me = (o?.my || []).map(p => p?.sp | 0), fo = (o?.foe?.team || []).map(p => p?.sp | 0), b0 = { t0: Date.now(), dbl: o?.dbl ? 1 : 0, gk: Object.keys(o?.gmk || {}).join(','), pr: o?.practice ? 1 : 0, me, fo, nm: String(o?.foe?.nm || '').slice(0, 20) }; put(b0);

@@ -1048,7 +1048,7 @@ function buyTm(id, can) {
 }
 // 지니는 도구 (경완 2026-10-29): 계속 효과 있는 것만. 사면 창고(g.itm)로, 지니게 하기는 창고·도구 사용에서
 let itCat = -1;   // v20.80 도구 탭 항목 필터 (-1 = 모든 항목)
-const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ...(window.GA?.fTools ? [['fevo', '진화 도구'], ['fform', '폼 도구']] : []), ['mint', '민트'], ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
+const itCats = () => [...GB().IT_CAT.map(([k, n]) => [k, n]), ...(window.GA?.fTools ? [['fevo', '진화 도구'], ['fform', '폼 도구']] : []), ['mint', '민트'], ...(GB().abAll ? [['abc', '특성캡슐']] : []), ...(GB().evOn?.() ? [['vit', '영양제']] : []), ...(GB().dmOn?.() ? [['soup', '다이수프']] : [])];
 /* v26.89 경완 '필드 상점에 있는 것들 체육관 상점에도 넣어주고 둘 중 하나라도 구매하면 체육관 창고에도 들어가고 필드 가방에도': 필드 도구(진화·폼)는 필드 가방 주머니(S.items)에 들어가고 창고에도 보임 */
 const fRow = (o, own) => { const A = window.GA; return `<button type="button" class="sp-tm sp-it" data-ft="${o.id}"><img class="tm-ic it-ic" alt="" src="${A.fArt(o)}"><span class="tm-nm"><b>${esc(o.n)}</b>${own ? `<i class="tm-own">×${own}</i>` : ''}</span><span class="tm-meta"><small>${esc(A.fDesc(o))}</small></span></button>`; };
 const fSec = fm => { const A = window.GA; if (!A?.fTools) return ''; const L = A.fTools().filter(o => !!o.fm === fm).sort((a, b) => (A.fPrice(a.id) - A.fPrice(b.id)) * shopPr);
@@ -1072,11 +1072,12 @@ function shopIt(body) {
   } else
   { const IC = itCats(); if (!IC[itCat]) itCat = -1; const on = k => itCat === -1 || IC[itCat][0] === k;   /* fPop 은 숫자 값만 → 칸 번호 */   /* v20.80 경완 '도구 탭 가격 필터 있는 행 좌측에 항목 필터' */
   body.innerHTML = `<div class="tm-row sp-prr sp-itr"><button class="fsel${itCat !== -1 ? ' on' : ''}" data-f="ic">${itCat === -1 ? '모든 항목' : IC[itCat][1]}</button>${prBtn()}</div>${GB().IT_CAT.filter(([k]) => on(k)).map(sec).join('')}
-    ${on('fevo') ? fSec(false) : ''}${on('fform') ? fSec(true) : ''}${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
+    ${on('fevo') ? fSec(false) : ''}${on('fform') ? fSec(true) : ''}${on('mint') ? `<p class="sp-sub">민트 · 먹이면 성격이 바뀌어요</p><div class="sp-list">${GB().MINT.map(k => GB().mintRow(k, 0).replace('</button>', `<em>${gold(GB().MINT_P)}</em></button>`)).join('')}</div>` : ''}${on('abc') ? abcShop() : ''}${on('vit') ? evShop() : ''}${on('soup') ? soupShop() : ''}`; }   // 민트 (경완 2026-10-30): 여러 개 살 수 있음
   body.onclick = (e, b) => { const mk = b.dataset.mint;
     if (b.dataset.f === 'ic') { sfx('tap'); return K.fPop('항목', [[-1, '모든 항목'], ...itCats().map(([, n], i) => [i, n])], itCat, v => { itCat = v; redraw(); }); }
     if (b.dataset.vit != null) { sfx('tap'); return vitBuy(+b.dataset.vit); }
     if (b.dataset.soup) { sfx('tap'); return soupBuy(); }
+    if (b.dataset.abit === 'abc') { sfx('tap'); return abcBuy(); }
     if (b.dataset.ft) { sfx('tap'); return fBuy(b.dataset.ft); }
     if (mk) { sfx('tap'); const n = g.mint?.[mk] || 0, P = GB().MINT_P, nm = GB().mintNm(mk);
       return GB().mintInfo(mk, `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
@@ -1091,6 +1092,12 @@ function evShop() { if (!GB().evOn?.()) return ''; const B = GB();
 /* v25.80 경완 '다이수프는 상점에서 파는 방향으로': 다이맥스밴드를 받은 관장만 (dmOn), 도구 탭 영양제 밑. 여러 개 살 수 있음, 창고 g.soup */
 function soupShop() { const B = GB(); if (!B.dmOn?.()) return '';
   return `<p class="sp-sub">다이수프 · 먹이면 거다이맥스할 수 있게 돼요</p><div class="sp-list">${B.soupRow(0).replace('</button>', `<em>${gold(B.SOUP_P)}</em></button>`)}</div>`; }
+/* 특성캡슐 (경완 2026-11-28 A안 '캡슐은 상점, 패치는 보상'): 민트 밑, 민트와 같은 값 ABC_P 3,000G, 여러 개 살 수 있음, 창고 g.abc. 특성패치는 상점에 없음 (수련탑 큰 선물·특훈 꾸러미·트레이너 등급 보상) */
+function abcShop() { const B = GB(); if (!B.abRow) return '';
+  return `<p class="sp-sub">특성캡슐 · 먹이면 다른 보통 특성으로 바뀌어요</p><div class="sp-list">${B.abRow('abc', 0).replace('</button>', `<em>${gold(B.ABC_P)}</em></button>`)}</div>`; }
+function abcBuy() { const B = GB(), g = st(), P = B.ABC_P;
+  B.abItInfo('abc', `${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
+    g.abc = (g.abc | 0) + 1; K.newMark?.('abc', 0); K.glog('tr', '도구 <b>특성캡슐</b>을 샀다.'); K.save(); redraw(); say('특성캡슐을 창고에 넣었어요.'); }, B.abN('abc')); }
 function soupBuy() { const B = GB(), g = st(), P = B.SOUP_P;
   B.soupInfo(`${gold(P)} 사기`, () => { if (!buy(P)) return say(`골드가 모자라요. ${P.toLocaleString()}G가 필요해요.`);
     g.soup = (g.soup | 0) + 1; K.newMark?.('soup', 0); K.glog('tr', '도구 <b>다이수프</b>를 샀다.'); K.save(); redraw(); say('다이수프를 창고에 넣었어요.'); }, g.soup | 0); }
