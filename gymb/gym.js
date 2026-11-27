@@ -4176,6 +4176,7 @@ async function later() {
   if (g.rpt && !g.rpt.seen && g.rpt.k === wkOf(Date.now()) - 7 * DAY) await reportPop();   // v19.26: 지난주 것만 (v19.08 전에 쌓인 옛 보고서는 안 띄움)   // v19.08 경완: 월요일 지난주 보고서 (예전엔 시뮬레이터에서만 열렸음)
   if (!open) return; if (g.newBdg) await badgeGet(g.newBdg);
   await awayPop();
+  if (open && !window.gymSimOn && !window.gymEvTest && !gtOn && window.__gbk?.go) await window.__gbk.go();   /* 경완 2026-11-28 '이건 체육관 들어갔을 때 뜨게 해야겠다': 못 받은 승급 보상(특성패치 등) 창 */
   if (open && legFitDue()) await legFitPop();   /* v27.54: 이미 전설인 체육관은 들어올 때 한 번 받음 */
   if (open) { try { tpSync(); } catch (e) {} if (tpAllDue()) await tpAllGo(); }   /* v28.65 테라피스 18개 → 스텔라 테라피스 */
   await unlockChk();

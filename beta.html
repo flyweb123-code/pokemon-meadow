@@ -10804,7 +10804,7 @@ function gbkPop({ rows, gold, abp }, done) { const apI = n => `<span class="gbk-
   return box; }
 let gbkOn = false;
 function gbkShow() { if (gbkOn) return true; const P = gbkPay(); if (!P) return false; gbkOn = true; gbkPop(P, () => { gbkOn = false; notiSoon(400); }); return true; }
-window.__gbk = { show: gbkShow, due: gbkDue, pop: gbkPop };   // 시험용
+window.__gbk = { show: gbkShow, due: gbkDue, pop: gbkPop, go: () => new Promise(ok => { if (gbkOn) return ok(); const P = gbkPay(); if (!P) return ok(); gbkOn = true; gbkPop(P, () => { gbkOn = false; ok(); }); }) };   // 시험용
 function frThxPop(L) { if (document.body.classList.contains('inTitle') || $('#intro') && !$('#intro').hidden || !$('#noti').hidden || document.querySelector('.fr-gpop')) return setTimeout(() => frThxPop(L), 3000);
   const nm = [...new Set(L.map(x => x.nm))], who = nm.length > 1 ? `<b>${esc(nm[0])}</b> 외 ${nm.length - 1}명` : `<b>${esc(nm[0])}</b>`;
   const box = frGPop(`<h4 class="frg-t">고마워!</h4><p class="frg-m frt-m">${who}${nm.length > 1 || hasBat(nm[0]) ? '이' : '가'} ${L.length > 1 ? `알 선물 ${L.length}개를` : esc(L[0].g) + ' 선물을'} 고마워했어요</p><button type="button" class="lk-btn main frg-ok" data-a="x">확인</button>`);
@@ -17606,7 +17606,7 @@ function notiSoon(ms = 500) { clearTimeout(notiT); notiT = setTimeout(notiShow, 
 function notiShow(force) {
   if (notiOpen || document.hidden || inGym() || (tutOn && !force)) return;   // v5.39 경완: 튜토리얼 중엔 튜토리얼이 부를 때만 (알이 먼저 받아지던 것)
   if (hatching || evolving) { notiSoon(2000); return; }
-  if (!$('#news').hidden) return; if (!tutOn && newsDue()) { newsShow(); return; } if (gbkOn || trRwOn || retRwOn || abpOn || document.querySelector('.fr-gpop')) return; if (!tutOn && !document.body.classList.contains('inTitle') && retRwShow()) return;   /* v28.32 (베타) 복귀 선물 */ if (!tutOn && !document.body.classList.contains('inTitle') && gbkShow()) return; if (!tutOn && !document.body.classList.contains('inTitle') && abpBack()) return;   /* 특성패치 지난 등급 몫 (한 번) */ if (!tutOn && !document.body.classList.contains('inTitle') && trRwBack()) return;   /* v28.31 밀린 트레이너 등급 보상 */ if (pdOpen) return; if (!tutOn && !document.body.classList.contains('inTitle') && pdDue()) { pdShow(); return; }   /* v18.96 업데이트 알림창 다음, 알 알림 전에 밀린 체육관 승급 보상 */   /* v14.36 경완: 처음 시작한 사람도 최신 알림창 (튜토리얼 끝난 뒤) */   /* v7.44 경완: 업데이트 알림창이 먼저, 닫으면 알 알림이 이어서 */
+  if (!$('#news').hidden) return; if (!tutOn && newsDue()) { newsShow(); return; } if (gbkOn || trRwOn || retRwOn || abpOn || document.querySelector('.fr-gpop')) return; if (!tutOn && !document.body.classList.contains('inTitle') && retRwShow()) return;   /* v28.32 (베타) 복귀 선물 */ /* 경완 2026-11-28 '이건 체육관 들어갔을 때 뜨게 해야겠다': 못 받은 승급 보상 창은 필드 말고 체육관 들어갈 때 (gym.js later → __gbk.go) */ if (!tutOn && !document.body.classList.contains('inTitle') && abpBack()) return;   /* 특성패치 지난 등급 몫 (한 번) */ if (!tutOn && !document.body.classList.contains('inTitle') && trRwBack()) return;   /* v28.31 밀린 트레이너 등급 보상 */ if (pdOpen) return; if (!tutOn && !document.body.classList.contains('inTitle') && pdDue()) { pdShow(); return; }   /* v18.96 업데이트 알림창 다음, 알 알림 전에 밀린 체육관 승급 보상 */   /* v14.36 경완: 처음 시작한 사람도 최신 알림창 (튜토리얼 끝난 뒤) */   /* v7.44 경완: 업데이트 알림창이 먼저, 닫으면 알 알림이 이어서 */
   const got = [...S.bag.filter(e => e.isNew && !e.nt), ...S.eggs.filter(e => e.nq && !e.nt)], rdy = S.eggs.filter(e => e.km >= e.need && !e.rn), evo = S.buds.filter(b => b.en === false && budReady(b));
   const bf = S.bagFull && S.bagFull.n > 0 && S.bagFull.d !== dayKey() ? S.bagFull.n : 0;
   const wb = retWb();
