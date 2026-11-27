@@ -3252,9 +3252,11 @@ function natRec(rn, m) {
     : `<button type="button" class="sp-tm sp-it sp-mint it-recgo" data-a="${own ? 'ngive' : 'nbuy'}"><img class="tm-ic it-ic" alt="" src="${mintImg(rn)}"><span class="tm-nm"><b>${esc(natKo(rn))}</b></span><span class="tm-meta"><small>${STAT_KO[nt[1]]}▲ ${STAT_KO[nt[2]]}▼</small></span>${own ? `<em class="it-recp it-recown">${bagN(g.mint[rn])}</em>` : `<em class="it-recp"><i class="coin"></i>${MINT_P.toLocaleString()}G</em>`}<i class="it-arr" aria-hidden="true">›</i></button>`;
   return `<div class="it-rec"><span class="it-recl">추천 성격</span><div class="it-recb">${body}</div></div>`;
 }
+/* 경완 2026-11-28 '민트 써서 성격 바뀔 때나, 특성 아이템 써서 바뀔 때 등 뭔가 바뀔 때는 효과음 추가': 본가 도구 쓸 때 회복음(KAIFUKU) + 반짝(KIRAKIRA2) — 민트·특성캡슐/패치·영양제·다이수프 */
+const chgSe = () => { se('KAIFUKU'); setTimeout(() => se('KIRAKIRA2'), 320); GA.haptic?.(1); };
 function mintUse(P, k) {
   const g = S.gym, m = gm(P); g.mint = g.mint || {}; if (!(g.mint[k] > 0) || m.nat === k) return;
-  if (!--g.mint[k]) delete g.mint[k]; m.nat = k; GA.save(); se('DECIDE');
+  if (!--g.mint[k]) delete g.mint[k]; m.nat = k; GA.save(); chgSe();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${esc(mintNm(k))}${jong(mintNm(k)) ? '을' : '를'} 먹었다!<br>성격이 ${esc(natKo(k))}${ro(natKo(k))} 바뀌었다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c());
 }
 // 창고 민트 → 먹이기 → 포켓몬 박스에서 고르기
@@ -3543,7 +3545,7 @@ function vitInfo(i, lab, act, own, P) { const r = P ? vitRoom(P, i) : 10;
   gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${itImg(EV_VIT[i][0])}">${EV_VIT[i][1]}${bagN(own | 0)}</h4><p class="gy-msg mi-d">${EV_VD[i]}. 먹이면 ${EV_N[i]} 노력치가 10 올라간다.</p>${P && !r ? `<p class="gy-msg" style="text-align:center"><small>${esc(nmOf(P))}의 노력치가 더 들어갈 자리가 없어요.</small></p>` : ''}<div class="gy-btns${r ? '' : ' one'}"><button data-a="x">닫기</button>${r ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); }); }
 function vitUse(P, i) { const g = S.gym, k = EV_VIT[i][0]; if (!(g.vit?.[k] > 0)) return; const n = evAdd(gm(P), i, 10); if (!n) return;
-  if (!--g.vit[k]) delete g.vit[k]; GA.save(); se('DECIDE');
+  if (!--g.vit[k]) delete g.vit[k]; GA.save(); chgSe();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${EV_VIT[i][1]}${jong(EV_VIT[i][1]) ? '을' : '를'} 먹었다!<br>${EV_N[i]} 노력치가 ${n} 올랐다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => c()); }
 /* v25.80 경완 '다이수프는 상점에서 파는 방향으로 해서 명문체육관 튜토리얼': 다이수프 = 먹이면 거다이맥스 인자(gm(P).gmax)가 붙고, 이미 있으면 빠짐 (본가처럼). 거다이맥스 모습이 있는 34종만. 창고 S.gym.soup, 상점(다이맥스밴드 받은 관장만, dmOn) SOUP_P */
 const SOUP_P = 5000, SOUP_IMG = 'gym/img/dbk/it/MAXSOUP.png?v=2';
@@ -3557,7 +3559,7 @@ function soupInfo(lab, act, own, P) { const ok = !P || gmaxOk(P);
   gymPop(`<h4 class="mi-h has-own"><img class="tm-ic it-ic" alt="" src="${SOUP_IMG}">다이수프${bagN(own | 0)}</h4><p class="gy-msg mi-d">${SOUP_D}</p>${P && !ok ? `<p class="gy-msg" style="text-align:center"><small>${esc(nmOf(P))}에게는 거다이맥스 모습이 없어요.</small></p>` : ''}<div class="gy-btns${act && ok ? '' : ' one'}"><button data-a="x">닫기</button>${act && ok ? `<button class="main" data-a="t">${lab}</button>` : ''}</div>`,
     (a, close) => { close(); if (a === 't') act?.(); }); }
 function soupUse(P, done) { const g = S.gym; if (!((g.soup | 0) > 0) || !gmaxOk(P)) return; const m = gm(P), on = !m.gmax;
-  if (on) m.gmax = 1; else delete m.gmax; if (!--g.soup) delete g.soup; GA.save(); se('DECIDE');
+  if (on) m.gmax = 1; else delete m.gmax; if (!--g.soup) delete g.soup; GA.save(); chgSe();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} 다이수프를 먹었다!<br>${on ? '<b>거다이맥스</b>할 수 있게 되었다!' : '거다이맥스 인자가 빠졌다.'}</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); }
 function soupPick(done) {
   boxWin(false, null, done, { title: () => '다이수프 먹이기', tip: '거다이맥스 모습이 있는 포켓몬만 보여요', list: () => S.box.filter(P => tyOk(P) && gmaxOk(P)), ok: () => true, first: P => curLu().includes(P.id),
@@ -3586,7 +3588,7 @@ function abItInfo(k, lab, act, own, P, foot = '') { const to = P ? abTo(k, P) : 
 function abUse(k, P, done) { const g = S.gym, to = abTo(k, P); if (!g || !to || !(abN(k) > 0)) return; const m = gm(P), from = m.ab, nm = abNorm(P.sp).slice(0, 2);
   if (k === 'abp' && (S.abpQ | 0) > 0) { if (!--S.abpQ) delete S.abpQ; } else if (!--g[k]) delete g[k];
   if (k === 'abp' && !m.ha) { m.ha = 1; m.ab = to; } else { if (k === 'abp') m.ha = 0; m.ab = to; m.abI = Math.max(0, nm.indexOf(to)); }
-  GA.save(); se('DECIDE'); GA.haptic?.(1);
+  GA.save(); chgSe();
   gymPop(`<p class="gy-msg" style="text-align:center">${esc(nmOf(P))}${jong(nmOf(P)) ? '은' : '는'} ${AB_IT[k][0]}${k === 'abc' ? '을' : '를'} 썼다!<br>특성이 ${esc(abKo(from))}에서<br><b>${esc(abKo(to))}</b>${ro(abKo(to))} 바뀌었다!</p><div class="gy-btns one"><button class="main" data-a="x">확인</button></div>`, (b, c) => { c(); done?.(); }); }
 /* 추천 특성 (경완 2026-11-28 '특성 상세창에서 추천 특성 볼 수 있는 버튼 … 추천특성이랑 다르면 특성캡슐 창고에 있으면 바로 쓰거나 없으면 상점에서 구매해서 바로 쓸 수 있게끔 … 특성패치는 그냥 따로 도구 사용해서 … 추천특성에 숨특은 넣어놓지 말고'):
    보통 특성 둘(abNorm 앞 두 칸) 중에서만. 점수 = 쇼다운 특성 rating(-1~5) + 이 개체 기술에 맞는지(AB_MV: 철주먹·옹골찬턱·테크니션 등은 그런 기술이 없으면 -2, 있으면 개수만큼 조금 +). 같으면 지금 특성 그대로 */
