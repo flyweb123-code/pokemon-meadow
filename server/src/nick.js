@@ -89,7 +89,7 @@ export function maskCard(card) {
   if (!c || typeof c !== 'object') return card;
   let ch = false;
   const fix = (o, k) => { if (o && typeof o[k] === 'string') { const m = maskNick(o[k]); if (m !== o[k]) { o[k] = m; ch = true; } } };
-  fix(c, 'n'); fix(c, 'bn'); fix(c.rp, 'nm'); fix(c.rp?.p, 'nm');
+  fix(c, 'n'); fix(c, 'bn'); fix(c.rp, 'nm'); fix(c.rp?.p, 'nm'); if (Array.isArray(c.gs)) c.gs.forEach(x => fix(x, 3));   // 관장 카드의 다른 체육관 이름
   return ch ? JSON.stringify(c) : card;
 }
 

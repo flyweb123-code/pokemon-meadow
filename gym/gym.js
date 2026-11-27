@@ -2793,10 +2793,19 @@ function mtfOn(win, ty, g) {
 const rkBest = () => gList().reduce((a, x) => !a || (x.rep | 0) > (a.rep | 0) ? x : a, null);   // 관리 중인 체육관 중 평판이 가장 높은 곳
 function rkCard(g0) { const me = st(), g = g0 || rkBest(); if (!me || !g) return null;
   const lu = ((g.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '', GA.rankOf?.(P) || '']);
-  return { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: gWL(g)[0], l: gWL(g)[1], sum: gList().reduce((a, x) => a + (x.rep | 0), 0), lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') }; }
+  const luOf = x => ((x.lu || [])[0] || []).map(id => S.box.find(P => P.id === id)).filter(Boolean).slice(0, 6).map(P => [P.sp, P.shiny ? 1 : 0, P.sex || '', GA.rankOf?.(P) || '']);
+  const D = { v: 1, n: trName() || '', sx: myF() ? 'f' : 'm', fit: me.fit || '', dex: S.unlocked?.size || 0, ty: g.ty | 0, rep: g.rep | 0, gm: g.gmax ?? 99, bn: g.nm || '', w: gWL(g)[0], l: gWL(g)[1], sum: gList().reduce((a, x) => a + (x.rep | 0), 0), lu, bd: TYPE_KO.slice(1).map((_, i) => Math.min(9, bdLv(me, i + 1))).join('') };
+  /* 경완 '왜 다른 사람 관장카드에서는 적용이 안되냐': 랭킹에 올리는 카드에 운영 중인 다른 체육관도 [타입, 평판, 등급, 이름, 승, 패, 라인업] 으로 같이 (gs) → 남의 카드에서도 배지로 그 체육관 카드. 서버 카드 5,000자 안으로 평판 낮은 체육관부터 뺌 */
+  D.gs = gList().filter(x => x !== g && x.ty).sort((a, b) => (b.rep | 0) - (a.rep | 0)).map(x => [x.ty | 0, x.rep | 0, x.gmax ?? 99, x.nm || '', gWL(x)[0], gWL(x)[1], luOf(x)]);
+  while (D.gs.length && JSON.stringify(D).length > 4800) D.gs.pop();
+  return D; }
 const rkClean = D => { D = D || {}; const ty = clampN(D.ty | 0, 1, 18), sx = D.sx === 'f' ? 'f' : 'm';
   return { n: String(D.n || '').slice(0, 12), sx, fit: typeof D.fit === 'string' && OUTFITS[D.fit]?.sx.includes(sx) ? D.fit : '', ty, rep: Math.max(0, +D.rep || 0), gm: D.gm ?? 99, bn: String(D.bn || '').slice(0, 14), w: Math.max(0, D.w | 0), l: Math.max(0, D.l | 0), dex: Math.max(0, D.dex | 0), sum: Math.max(0, +D.sum || 0),
-    lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18) }; };
+    lu: (Array.isArray(D.lu) ? D.lu : []).filter(x => Array.isArray(x) && SPECIES[x[0]]).slice(0, 6), bd: String(D.bd || '').replace(/[^0-9]/g, '').slice(0, 18),
+    gs: (Array.isArray(D.gs) ? D.gs : []).filter(x => Array.isArray(x) && (x[0] | 0) >= 1 && (x[0] | 0) <= 18 && (x[0] | 0) !== ty).slice(0, 17) }; };
+/* 카드 D 의 다른 체육관(gs) 중 타입 t 체육관 카드 — 지금 체육관은 gs 로 옮겨 다시 돌아올 수 있게 */
+const rkSwap = (D, t) => { const x = D.gs.find(y => (y[0] | 0) === t); if (!x) return null;
+  return { ...D, ty: t, rep: +x[1] || 0, gm: x[2] ?? 99, bn: String(x[3] || ''), w: x[4] | 0, l: x[5] | 0, lu: Array.isArray(x[6]) ? x[6] : [], gs: [[D.ty, D.rep, D.gm, D.bn, D.w, D.l, D.lu], ...D.gs.filter(y => y !== x)] }; };
 const meCard = () => meCardOf(rkCard(st()), true);
 // v22.27 경완 '관장 카드 지연 더 줄여': 카드에 쓸 그림(포켓몬 앞모습 png·gif, 관장 옷, 얼굴 자리)을 미리 받아 둠 — 체육관 들어올 때 내 카드, 랭킹 열 때 위 10줄, 줄을 누르기 시작할 때 그 줄
 const mecPreS = new Set();
@@ -2804,22 +2813,22 @@ async function mecPre(D0, mine) { try { const D = rkClean(D0), key = JSON.string
   const src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`; new Image().src = src;
   D.lu.forEach(P => { try { GA.pkFront?.(document.createElement('span'), { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (e) {} }); } catch (e) {} }
 async function meCardOf(D0, mine, old) { const D = rkClean(D0), G = gradeOf(D.rep, D.gm), src = mine ? await fitSrc('tr') : D.fit ? `${IMG}fit/${D.fit}_${D.sx}.png` : `${IMG}tr/pt_${D.sx}.png`;   /* v21.62 경완: 넓은 무대 + 라인업 1 포켓몬이 관장 뒤에 쫙, 타입 배경 */ const lu1 = D.lu;   /* v16.52 경완 '테두리 얇게, 상단 타이틀 박스 빼고 배경 그라데이션으로 통일' */
-  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = +D.bd[t - 1] || 0; const go = mine && D.ty !== t && gList().some(x => x.ty === t); return `<div class="${L ? 'on' : ''}${D.ty === t ? ' cur' : ''}${go ? ' mec-go' : ''}"${go ? ` data-t="${t}"` : ''}>${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;   /* 경완 '관장 상세카드 열었을 때 다른 체육관 배지 누르면 해당 체육관 상세카드로 바뀌게': 내 카드에서 운영 중인 다른 타입 체육관 배지(mec-go)를 누르면 그 체육관 카드로 */
+  const bd = `<div class="gy-bdgs me-bdgs">${TYPE_KO.map((nm, t) => { if (!t) return ''; const L = +D.bd[t - 1] || 0; const go = D.gs.some(x => (x[0] | 0) === t); return `<div class="${L ? 'on' : ''}${D.ty === t ? ' cur' : ''}${go ? ' mec-go' : ''}"${go ? ` data-t="${t}"` : ''}>${bdHtml(t, L)}<b>${nm}</b></div>`; }).join('')}</div>`;   /* 경완 '관장 상세카드 열었을 때 다른 체육관 배지 누르면 해당 체육관 상세카드로 바뀌게': 카드에 실린 운영 중인 다른 타입 체육관(gs) 배지(mec-go)를 누르면 그 체육관 카드로 — 내 카드·남의 카드 둘 다 */
   const p = pop(`<div class="gy-body mec" style="--tc:${GA.TYPE_C?.[D.ty] || '#5a6a9a'}">
     <div class="bd-pic mec-stg mecT${D.ty}"><i class="mec-bg" aria-hidden="true"></i>${lu1.map(P => `<span class="mec-pk${P[3] === 'S' || P[3] === 'A' ? ' rk' + P[3] : ''}" data-sp="${P[0]}" data-h="${SPECIES[P[0]]?.h || 10}" data-st="${mecSt(P[0]) ? 1 : 0}"><span></span>${P[1] ? `<span class="tcv-tw sm">${[[30, 22, .4], [70, 34, 1.5], [62, 74, 2.3], [26, 62, 1.1]].map(([x, y, d]) => `<b style="--x:${x}%;--y:${y}%;--dl:${d}s"></b>`).join('')}</span>` : ''}</span>`).join('')}<i class="mec-pf" aria-hidden="true"></i><img class="mec-tr" alt="" src="${src}"></div>
     <div class="mec-id"><span class="mec-ty">${tyIcon(D.ty).replace(/ data-tip="[^"]*"/, '')}${TYPE_KO[D.ty] || ''} 타입 관장</span><h4 class="mec-h">${esc(D.n || (mine ? '나' : '트레이너'))}</h4><p class="mec-wl"><b>${D.w + D.l}</b>전 <b>${D.w}</b>승 <b>${D.l}</b>패</p></div>${bd}</div><p class="mec-gn"><em class="gr-tag" data-g="${G.i}">${G.n}</em>${D.bn ? `<b>${esc(D.bn)}</b>` : ''}</p>${mine ? `<button type="button" class="mec-fit" data-a="fit" aria-label="옷 갈아입기">${CLOSET_SVG}</button>` : ''}<div class="gy-btns one"><button data-a="x">닫기</button></div>`, (a, close) => { if (a === 'x') close(); if (a === 'fit') { close(); fitPick(); } });
-  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); mecGo(p, old); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
+  p.classList.add('mec-wrap'); const w = p.querySelector('.win'); mecGo(p, old, D, mine); if (w) { w.dataset.g = G.i; mtfOn(w, MTF_ORD[D.ty - 1], G.i); }
   p.querySelectorAll('.mec-pk>span:first-child').forEach((e, n) => { const P = lu1[n]; try { GA.pkFront?.(e, { sp: P[0], sh: P[1] ? 1 : 0, sx: P[2] }); } catch (x) {} });
   const stg = p.querySelector('.mec-stg'); if (stg) {
     /* 경완 2026-11-12 '관장 카드 켤 때 잠깐 박스 레이아웃 무너졌다가 카드 뜸': 포켓몬 그림·여백 읽기·얼굴 자리·무대 높이가 다 맞춰질 때까지 카드를 가려 둠 (늦어도 1.5초 뒤엔 보임) */
     mecWait(stg, w, 'mec-wait'); }
   return p; }
 /* 관장 카드 배지로 다른 체육관 카드 바꾸기: 직접 연 창이라 팝업 모션 없이, 새 카드가 다 그려질 때까지 앞 카드를 그대로 두었다가(새 카드 배경은 그동안 투명) 한 번에 바꿈 */
-function mecGo(p, old) {
+function mecGo(p, old, D, mine) {
   if (old?.isConnected) { p.classList.add('mec-sw'); const w = p.querySelector('.win'), done = () => { if (!p.isConnected) return; mo.disconnect(); old.remove(); p.classList.remove('mec-sw'); }, mo = new MutationObserver(() => { if (!w?.classList.contains('mec-wait')) done(); }); if (w) mo.observe(w, { attributes: true, attributeFilter: ['class'] }); setTimeout(done, 1600); requestAnimationFrame(() => { if (!w?.classList.contains('mec-wait')) done(); }); }
   p.querySelectorAll('.me-bdgs .mec-go').forEach(b => {
-    b.addEventListener('pointerdown', () => { const g = gList().find(x => x.ty === +b.dataset.t); if (g) mecPre(rkCard(g), true); }, { passive: true });
-    b.addEventListener('click', e => { e.stopPropagation(); if (p.classList.contains('mec-sw') || p._go) return; const g = gList().find(x => x.ty === +b.dataset.t); if (!g) return; p._go = 1; sfx('tap'); meCardOf(rkCard(g), true, p).finally(() => { p._go = 0; }); }); }); }
+    b.addEventListener('pointerdown', () => { const N = rkSwap(D, +b.dataset.t); if (N) mecPre(N, mine); }, { passive: true });
+    b.addEventListener('click', e => { e.stopPropagation(); if (p.classList.contains('mec-sw') || p._go) return; const N = rkSwap(D, +b.dataset.t); if (!N) return; p._go = 1; sfx('tap'); meCardOf(N, mine, p).finally(() => { p._go = 0; }); }); }); }
 /* 무대(포켓몬 그림·여백 읽기·얼굴 자리·무대 높이)가 다 맞춰질 때까지 hid 를 cls 로 가려 두고, 자리가 0.2초 동안 그대로면 보여 줌 (늦어도 1.5초 뒤엔 보임). 관장 카드·체육관 정보 화면이 같이 씀 */
 function mecWait(stg, hid, cls) { let q = 0;
     const show = () => hid?.classList.remove(cls); hid?.classList.add(cls); setTimeout(show, 1500);
