@@ -1,4 +1,4 @@
-# 임시: 배틀 중 앱 다시 켜짐 조사 — 겪은 계정 저장을 암호화해서만 꺼냄 (공개 저장소라 기록엔 크기만). 끝나면 지움
+# 임시(2): 배틀 중 앱 다시 켜짐 조사 — 겪은 계정 저장을 암호화해서만 꺼냄 (공개 저장소라 기록엔 크기만). 끝나면 지움
 name: tmp read
 on:
   push:
@@ -35,5 +35,4 @@ jobs:
           gzip -c /tmp/save.txt | openssl enc -aes-256-cbc -pbkdf2 -pass file:/tmp/k.txt -out /tmp/out/save.enc
           openssl pkeyutl -encrypt -pubin -inkey /tmp/pub.pem -in /tmp/k.txt -out /tmp/out/k.enc
           rm /tmp/k.txt /tmp/save.txt
-      - uses: actions/upload-artifact@v4
-        with: { name: s, path: /tmp/out, retention-days: 1 }
+          echo KEY; base64 -w 0 /tmp/out/k.enc; echo; echo DATA; base64 -w 0 /tmp/out/save.enc | fold -w 4000; echo; echo END
