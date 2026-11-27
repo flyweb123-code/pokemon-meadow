@@ -1,6 +1,1009 @@
 {
  "days": [
   {
+   "at": 1795819627081,
+   "theme": "숲속 꼬마 옷 수선집",
+   "note": "오늘은 숲속 꼬마 옷 수선집이에요. 재봉틀·마네킹·다리미판·옷걸이 행거·드럼 세탁기처럼 옷을 짓고 빠는 소품 10개를 그렸고, 행거에 걸린 옷들은 그 부분만 바람에 살랑 흔들려요. 단추 깡통·빨래통·털실 바구니는 작은 포켓몬이 들어가 앉을 수 있고, 벌레·불꽃·전기·풀·강철·에스퍼 타입부터 모든 포켓몬까지 고루 놀 수 있게 동작을 넣었어요.",
+   "items": [
+    {
+     "id": "sew-machine",
+     "n": "빨간 재봉틀",
+     "k": "옷 수선집",
+     "d": "나무 받침 위에 놓인 빨간 재봉틀이에요. 금빛 띠를 두른 몸통 위에 노란 실패가 꽂혀 있고, 오른쪽 은빛 손 바퀴를 돌리면 바늘이 드르륵 오르내려요.",
+     "px": [
+      ".........kmk...............",
+      "........kYYyk..............",
+      "........kYyok..............",
+      "....kkkkkyookkkkkkkkkk.....",
+      "...kRRRRRRRRRRRRRRRRRrk....",
+      "..kRrrrrrrrrrrrrrrrrrqkk...",
+      "..kRrrrYYYYYYYYrrrrrqMMmk..",
+      "..kRrrroooooooorrrrqMmmmmk.",
+      "..kRrrrqqqqqqqqqrrrqMmmmnk.",
+      "..kRrrqkkkkkkkkkRrqMmmnmmnk",
+      "..kRrrqk.......kRrrrMmmnnk.",
+      "..kRrrqk.......kRrrqmmmmnk.",
+      "..krqqqk.......kRrrrrmnnk..",
+      "...kMkk........kRrrrrrkk...",
+      "...kmk.........kRrrrrqk....",
+      "..kkCkkkkkkkkkkkRrrrrqkk...",
+      ".kRRRRRRRRRRRRRRrrrrrrRrk..",
+      ".krqqqqqqqqqqqqqqqqqqqqqk..",
+      "kWWWWWWWWWWWWWWWWWWWWWWWwk.",
+      "kWwwwuwwwwwuwwwwwwuwwwwwvk.",
+      "kWwwwwwwwwwwwwwwwwwwwwwwvk.",
+      "kwvvvvvvvvvvvvvvvvvvvvvvuk.",
+      ".kkkkkkkkkkkkkkkkkkkkkkkk.."
+     ],
+     "pal": {
+      "C": "#f8f2e2",
+      "M": "#eef2f4",
+      "R": "#f0866e",
+      "W": "#e6b878",
+      "Y": "#fff0a0",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "재봉틀 앞에 앉아 은빛 손 바퀴를 앞발로 드르륵 돌려요",
+       "x": {
+        "at": "front",
+        "an": "Attack"
+       },
+       "l": [
+        "재봉틀 손 바퀴를 드르륵드르륵 돌렸다.",
+        "재봉틀 바늘이 오르내리는 걸 신기한 듯 따라 봤다."
+       ]
+      },
+      {
+       "w": "벌레 타입",
+       "a": "재봉틀 옆에서 실뿜기를 써 노란 실패에 실을 감아 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "재봉틀 실패에 실뿜기로 실을 칭칭 감아 줬다.",
+        "재봉틀 옆에서 실을 뽑아 바늘에 꿰어 주려 애썼다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 재봉틀 윗팔에 앉아 실패를 콕콕 쪼아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 재봉틀 위에 앉아 실패를 콕콕 쪼았다.",
+        "재봉틀 위에 앉아 실 끝을 물고 잡아당겼다."
+       ]
+      }
+     ],
+     "fit": "옷 수선집 소품 가운데, 나무 탁자 옆"
+    },
+    {
+     "id": "sew-dress-form",
+     "n": "분홍 옷 마네킹",
+     "k": "옷 수선집",
+     "d": "나무 다리 셋으로 선 분홍 몸통 마네킹이에요. 허리에 노란 줄자를 두르고 가슴에 단추 두 개가 달려 있어요.",
+     "px": [
+      "......kk......",
+      ".....kWwk.....",
+      "...kkPwuPkk...",
+      "..kPPpPPpPpk..",
+      "..kPpppppppk..",
+      ".kPpppppppppk.",
+      "..kPpppipppk..",
+      "..kPpppppppk..",
+      "..kPpppipppk..",
+      "..kPpppppppk..",
+      "..kPpppppppk..",
+      "..kyoyoyoyoyk.",
+      "..kkPpppppkyk.",
+      ".kPPppppppPyk.",
+      ".kPppppppppok.",
+      ".kPpppppppppk.",
+      ".kpppppppppik.",
+      "..kkpppppikk..",
+      "....kkWwkk....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      ".....kWvk.....",
+      "...kkWwwvkk...",
+      "..kWvkWvkWvk..",
+      ".kwkkkWvkkkwk.",
+      "kwk..kwuk..kwk",
+      ".k....kk....k."
+     ],
+     "pal": {
+      "P": "#f8b8c8",
+      "W": "#e6b878",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "o": "#c8902c",
+      "p": "#e080a0",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "마네킹 앞에 서서 줄자 길이를 재듯 몸을 쭉 펴고 키를 대 봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "마네킹 옆에 서서 몸을 쭉 펴고 키를 대 봤다.",
+        "마네킹 줄자에 몸을 대고 허리둘레를 재 봤다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "마네킹 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀어요",
+       "x": {
+        "m": "hide speek",
+        "back": true
+       },
+       "l": [
+        "마네킹 뒤에 숨었다가 옆으로 고개를 빼꼼 내밀었다.",
+        "마네킹 뒤에 숨어 옷 입은 척 친구를 놀래켰다."
+       ]
+      },
+      {
+       "w": "격투 타입",
+       "a": "마네킹을 상대 삼아 가볍게 툭툭 밀어 연습해요",
+       "x": {
+        "m": "push"
+       },
+       "l": [
+        "마네킹을 상대 삼아 툭툭 밀며 연습했다.",
+        "마네킹과 팔씨름하듯 어깨를 맞대고 밀었다."
+       ]
+      }
+     ],
+     "fit": "행거와 재봉틀 사이"
+    },
+    {
+     "id": "sew-iron-board",
+     "n": "다리미판과 다리미",
+     "k": "옷 수선집",
+     "d": "줄무늬 파란 천을 씌운 기다란 다리미판이에요. 은빛 X 다리 위에 빨간 손잡이 다리미가 놓여 있어요.",
+     "px": [
+      "....................kRRRRrk......",
+      "..................kkkrqqqqk......",
+      ".................kMMMMMMMMmk.....",
+      "...........kkkkkkMmmmmmmmmnk.....",
+      "....kkkkkkkBBBBBbmmmnnnnnnnkkkkk.",
+      ".kkkBBBBBBBbbbbbbbmnBBBBBBBBBBBbk",
+      "kBBBCbbCbbCbbCbbCbBCbbCbbCbbCbbdk",
+      "kbddbbbbbbbbbbbbbbbbbbbbbbbbbbbdk",
+      ".kkkbddddddbbbbbbbbbbbbbbbbbbbbdk",
+      "....kkkkkkkbddddddddddddddddddddk",
+      ".......kMmkkkkkkkkkkkkMnkkkkkkkk.",
+      "........kmmmk......kMmnk.........",
+      ".........kkmmk....kMnkk..........",
+      "...........kmmkkkkMnk............",
+      "............kmmMMmnk.............",
+      ".............kkMnkk..............",
+      "............kMmnnmmk.............",
+      "...........kMnkkkkmmk............",
+      ".........kkMnk....kmmkk..........",
+      "........kMmnk......kmmmk.........",
+      ".......kMnkk........kkmnk........",
+      "........kk............kk........."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "C": "#f8f2e2",
+      "M": "#eef2f4",
+      "R": "#f0866e",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "q": "#8a3a34",
+      "r": "#c8574a"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "다리미판 위에 올라가 납작 엎드려 따뜻하게 쉬어요",
+       "x": {
+        "at": "top",
+        "an": "Sleep"
+       },
+       "l": [
+        "다리미판 위에 올라가 납작 엎드려 낮잠을 잤다.",
+        "다리미판 위에 엎드려 따뜻한 천에 볼을 비볐다."
+       ]
+      },
+      {
+       "w": "불꽃 타입",
+       "a": "다리미 옆에서 불꽃을 살짝 뿜어 다리미를 데워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "다리미에 불꽃을 살짝 뿜어 따끈하게 데워 줬다.",
+        "다리미판 옆에서 불씨로 다리미를 데우다 김이 폴폴 났다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "다리미판 X 다리 밑으로 기어 들어가 반대편으로 빠져나와요",
+       "x": {
+        "m": "through"
+       },
+       "l": [
+        "다리미판 다리 밑을 기어서 지나갔다.",
+        "다리미판 밑을 터널처럼 빠져나가며 놀았다."
+       ]
+      }
+     ],
+     "fit": "빨래통 옆, 햇볕 드는 자리"
+    },
+    {
+     "id": "sew-clothes-rack",
+     "n": "바퀴 달린 옷걸이 행거",
+     "k": "옷 수선집",
+     "d": "은빛 봉에 빨간 셔츠·파란 원피스·노란 바지가 걸린 바퀴 달린 행거예요. 바람이 불면 걸린 옷들이 살랑살랑 흔들려요.",
+     "px": [
+      "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+      ".kMMMMMMMMMMMMMMMMMMMMMMMmk.",
+      ".kMmnnnnnnnnnnnnnnnnnnnnmnk.",
+      ".kMnkkkknkkkkknkkkkknkkkMnk.",
+      ".kMnkkknkkkkknkk..kknkkkMnk.",
+      ".kMnRRRRRRRrBBBbkkYYYYykMnk.",
+      ".kMnRrrrrrrqBbbdkkYyyyokMnk.",
+      ".kMnRrrrrrrqBbbdkkYyyyokMnk.",
+      ".kMnRrrCrrrqBbbdkkYyyyokMnk.",
+      ".kMnrrrrrrrqBbbdkkYyoyokMnk.",
+      ".kMnkRrrrrqBbbbbbkYokYokMnk.",
+      ".kMnkRrCrrqBbbbbdkYokYokMnk.",
+      ".kMnkRrrrrqBbbbbdkYokYokMnk.",
+      ".kMnkRrrrrqBbbbbdkYokYokMnk.",
+      ".kMnkRrCrrqBbbbbdkYokYokMnk.",
+      ".kMnkRrrrrqBbbbbdkYokYokMnk.",
+      ".kMnkRrrrrqBbbbbdkYokYokMnk.",
+      ".kMnkrqqqqBbbbbbbbYokYokMnk.",
+      ".kMnkkkkkkBbbbbbbdYokYokMnk.",
+      ".kMnk....kBbbbbbbdyokyokMnk.",
+      ".kMnk....kBbBbBbBdkk.kkkMnk.",
+      ".kMnk....kbdddddddk....kMnk.",
+      ".kMnk.....kkkkkkkk.....kMnk.",
+      ".kMnk..................kMnk.",
+      ".kMnk..................kMnk.",
+      ".kMnk..................kMnk.",
+      ".kMnkk................kkMnk.",
+      "kMnmMmk..............kMMnnmk",
+      "knnmnnk..............kmnnnnk",
+      "knNkkk................kknNk.",
+      "knNk...................knNk."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "C": "#f8f2e2",
+      "M": "#eef2f4",
+      "N": "#444c5c",
+      "R": "#f0866e",
+      "Y": "#fff0a0",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "y": "#f0c850"
+     },
+     "mv": {
+      "st": [
+       "..kkkkkkkkkkkkkkkkkkkkkkkk..",
+       ".kMMMMMMMMMMMMMMMMMMMMMMMmk.",
+       ".kMmnnnn.nnnnn.nnnnn.nnnmnk.",
+       ".kMnkkk...kkk...kkk...kkMnk.",
+       ".kMn...................kMnk.",
+       ".kM.....................Mnk.",
+       ".kM.....................Mnk.",
+       ".kM.....................Mnk.",
+       ".kM.....................Mnk.",
+       ".kM.....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMn....................Mnk.",
+       ".kMnk...................Mnk.",
+       ".kMnk...................Mnk.",
+       ".kMnk..................kMnk.",
+       ".kMnk..................kMnk.",
+       ".kMnk..................kMnk.",
+       ".kMnk..................kMnk.",
+       ".kMnk..................kMnk.",
+       ".kMnk..................kMnk.",
+       ".kMnkk................kkMnk.",
+       "kMnmMmk..............kMMnnmk",
+       "knnmnnk..............kmnnnnk",
+       "knNkkk................kknNk.",
+       "knNk...................knNk."
+      ],
+      "mp": [
+       "............................",
+       "............................",
+       "........n.....n.....n.......",
+       ".......knk...knk...knk......",
+       "....kkknkkkkknkk..kknkk.....",
+       "...nRRRRRRRrBBBbkkYYYYyk....",
+       "...nRrrrrrrqBbbdkkYyyyok....",
+       "...nRrrrrrrqBbbdkkYyyyok....",
+       "...nRrrCrrrqBbbdkkYyyyok....",
+       "...nrrrrrrrqBbbdkkYyoyok....",
+       "....kRrrrrqBbbbbbkYokYok....",
+       "....kRrCrrqBbbbbdkYokYok....",
+       "....kRrrrrqBbbbbdkYokYok....",
+       "....kRrrrrqBbbbbdkYokYok....",
+       "....kRrCrrqBbbbbdkYokYok....",
+       "....kRrrrrqBbbbbdkYokYok....",
+       "....kRrrrrqBbbbbdkYokYok....",
+       "....krqqqqBbbbbbbbYokYok....",
+       ".....kkkkkBbbbbbbdYokYok....",
+       ".........kBbbbbbbdyokyok....",
+       ".........kBbBbBbBdkk.kk.....",
+       ".........kbdddddddk.........",
+       "..........kkkkkkkk..........",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................",
+       "............................"
+      ],
+      "o": [
+       14,
+       2
+      ],
+      "k": "swing",
+      "amp": 1.3
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "걸린 옷 사이로 들어가 숨었다가 옷자락 밑으로 고개를 내밀어요",
+       "x": {
+        "at": "in",
+        "m": "hide peek",
+        "back": true,
+        "fx": "swing"
+       },
+       "l": [
+        "행거에 걸린 옷 사이에 숨었다가 고개를 쏙 내밀었다.",
+        "옷자락 사이에 숨어 옷이 흔들릴 때마다 꼼지락거렸다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "행거 앞에서 날갯짓으로 바람을 일으켜 걸린 옷을 흔들어요",
+       "x": {
+        "m": "flap",
+        "fx": "swing"
+       },
+       "l": [
+        "날갯짓으로 바람을 일으켜 행거의 옷을 살랑살랑 흔들었다.",
+        "행거 앞에서 날갯짓해 젖은 옷을 말려 줬다."
+       ]
+      },
+      {
+       "w": "날개 있는 작은 포켓몬",
+       "a": "서 있던 자리에서 날아올라 행거 윗봉에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "fly"
+       },
+       "l": [
+        "날아올라 옷걸이 행거 봉 위에 앉았다.",
+        "행거 봉 위에 앉아 옷들이 흔들리는 걸 내려다봤다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "행거를 앞발로 밀어 바퀴를 드르륵 굴려 봐요",
+       "x": {
+        "m": "push",
+        "fx": "swing"
+       },
+       "l": [
+        "옷걸이 행거를 밀어 바퀴를 드르륵 굴렸다.",
+        "행거를 밀었다가 옷이 흔들려 깜짝 놀랐다."
+       ]
+      }
+     ],
+     "fit": "마네킹 옆, 수선집 벽 쪽"
+    },
+    {
+     "id": "sew-spool-tower",
+     "n": "왕 실패 탑",
+     "k": "옷 수선집",
+     "d": "분홍·파랑·빨강 실이 감긴 나무 실패 세 개를 크기대로 쌓아 올린 탑이에요. 실 감긴 결이 줄줄이 보여요.",
+     "px": [
+      ".....kkkkWwkkkkk.....",
+      "....kWWWWwwWWWWwk....",
+      "....kwvvvvvvvvvuk....",
+      ".....kPPPPPPPPpk.....",
+      ".....kPipipipppk.....",
+      ".....kPppppppppk.....",
+      ".....kPppppppppk.....",
+      ".....kppppppppik.....",
+      "....kWWWWWWWWWWwk....",
+      "...kkWwwwwwwwwwvkk...",
+      "..kWWwwwwwwwwwwwWwk..",
+      "..kwvvvvvvvvvvvvvuk..",
+      "...kBBBBBBBBBBBBbk...",
+      "...kBdbdbdbdbdbbdk...",
+      "...kBbbbbbbbbbbbdk...",
+      "...kBbbbbbbbbbbbdk...",
+      "...kbddddddddddddk...",
+      "..kWWWWWWWWWWWWWWwk..",
+      ".kkWwwwwwwwwwwwwwvkk.",
+      "kWWwwwwwwwwwwwwwwwWwk",
+      "kwvvvvvvvvvvvvvvvvvuk",
+      ".kRRRRRRRRRRRRRRRRrk.",
+      ".kRqrqrqrqrqrqrqrrqk.",
+      ".kRrrrrrrrrrrrrrrrqk.",
+      ".kRqrqrqrqrqrqrqrrqk.",
+      ".kRrrrrrrrrrrrrrrrqk.",
+      ".krqqqqqqqqqqqqqqqqk.",
+      "kWWWWWWWWWWWWWWWWWWwk",
+      "kwvvvvvvvvvvvvvvvvvuk",
+      ".kkkkkkkkkkkkkkkkkkk."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "P": "#f8b8c8",
+      "R": "#f0866e",
+      "W": "#e6b878",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "p": "#e080a0",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "실패 탑 맨 위로 차례차례 올라가 꼭대기에 앉아요",
+       "x": {
+        "at": "top",
+        "m": "climb"
+       },
+       "l": [
+        "실패 탑을 한 칸씩 기어올라 꼭대기에 앉았다.",
+        "실패 탑 꼭대기에 올라가 의기양양하게 둘러봤다."
+       ]
+      },
+      {
+       "w": "벌레 타입",
+       "a": "실패 탑 둘레를 빙빙 돌며 실을 뽑아 칭칭 감아요",
+       "x": {
+        "m": "circ"
+       },
+       "l": [
+        "실패 탑 둘레를 빙빙 돌며 실을 칭칭 감았다.",
+        "실패 탑에 실을 감다가 자기 몸까지 칭칭 감겼다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "실패 탑에 등을 기대고 앉아 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "실패 탑에 등을 기대고 앉아 꾸벅꾸벅 졸았다.",
+        "실패 탑에 기대 앉아 실 냄새를 맡았다."
+       ]
+      }
+     ],
+     "fit": "재봉틀 옆, 털실 바구니 근처"
+    },
+    {
+     "id": "sew-button-tin",
+     "n": "단추 깡통",
+     "k": "옷 수선집",
+     "d": "빨강·노랑·파랑·분홍·초록 단추가 가득 담긴 둥근 양철 깡통이에요. 단추마다 구멍 두 개가 콕콕 나 있어요.",
+     "px": [
+      ".........kGGNNgk........",
+      ".....kkkkkggggHkkk.k....",
+      "...kkRMnYYYygMnBMnkPkk..",
+      ".kkRRrRrYyNNyBBbbPPpPpk.",
+      "kMnRrNNqyoyooBbNNPpNNpMk",
+      "kmnrqrqqnnonnbdbdppppimk",
+      "kMmnNqnnnnnnnnndnnNpnMnk",
+      "kMmMMmnNNNNNNNNnNNMMMmnk",
+      "kMmmmmMMMMMMMMMMMMmmmmnk",
+      "kMmmmmmmmmmmmmmmmmmmmmnk",
+      "kMmRrmmRrmmRrmmRrmmRrmnk",
+      "kMmmmmmmmmmmmmmmmmmmmmnk",
+      "kMqmqmqmqmqmqmqmqmqmqmnk",
+      "kMmmmmmmmmmmmmmmmmmmmmnk",
+      "kmmmmmmmmmmmmmmmmmmmmmnk",
+      ".kmnmmmmmmmmmmmmmmmmnnk.",
+      "..kkmnnnnnnnnnnnnnnnkk..",
+      "....kkkkkkkkkkkkkkkk...."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "G": "#8cbc5a",
+      "H": "#3e6a2c",
+      "M": "#eef2f4",
+      "N": "#444c5c",
+      "P": "#f8b8c8",
+      "R": "#f0866e",
+      "Y": "#fff0a0",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "g": "#5e8a3c",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "p": "#e080a0",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "깡통 안으로 들어가 앉아 단추 사이에 쏙 파묻혀요",
+       "x": {
+        "at": "in",
+        "m": "hide"
+       },
+       "l": [
+        "단추 깡통에 들어가 앉아 단추 사이에 쏙 파묻혔다.",
+        "단추 깡통 안에서 단추를 뒤적이며 보물찾기를 했다."
+       ],
+       "li": [
+        "단추 깡통 안에 쏙 들어가 단추에 파묻혀 앉았다.",
+        "단추 깡통 속에서 고개만 내밀고 단추를 굴렸다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "깡통 앞에 앉아 단추를 하나씩 꺼내 색깔별로 늘어놓아요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "단추 깡통에서 단추를 꺼내 색깔별로 늘어놓았다.",
+        "단추 깡통 앞에서 제일 반짝이는 단추를 골랐다."
+       ]
+      },
+      {
+       "w": "강철 타입 / 에스퍼 타입",
+       "a": "깡통 앞에서 기술을 써 단추들을 둥실 띄워요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "단추 깡통 위로 단추들을 둥실둥실 띄웠다.",
+        "단추 깡통 단추를 줄줄이 띄워 목걸이처럼 엮었다."
+       ]
+      }
+     ],
+     "fit": "재봉틀 앞, 작은 소품 사이"
+    },
+    {
+     "id": "sew-wash-tub",
+     "n": "나무 빨래통",
+     "k": "옷 수선집",
+     "d": "쇠띠 두 줄을 두른 나무 빨래통에 비눗물이 찰랑이고, 빨래판이 비스듬히 꽂혀 있어요. 비누 거품이 몽글몽글 떠올라요.",
+     "px": [
+      ".....kCk...kk.kWWWWWwk.",
+      "...kkkckkkkCckkWvvvvvk.",
+      "..kCCkkkCCkkk.kWwwwwvk.",
+      ".kCMCCkCMCckkkkWvvvvvk.",
+      ".kCCCxkkCxWwwwwwwwwwvk.",
+      ".kkCxBBBBBBBBBbWvvvvvk.",
+      "kWBBBbbbbbbbbbdWwwwwwwk",
+      "kwbdSbbSbbSbbbdWvvvvwvk",
+      "kWWWwbdddddddddWwwwwwvk",
+      "kwvvvwwwwwwwwwwvvvvvvuk",
+      "kMmmmmmmmmmmmmmmmmmmmnk",
+      "kWWWWWWWWWWWWWWWWWWWWwk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kWwwwvwwwvwwwvwwwvwwwvk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kWwwwvwwwvwwwvwwwvwwwvk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kwvvvvvvvvvvvvvvvvvvvuk",
+      "kMmmmmmmmmmmmmmmmmmmmnk",
+      "kWWWWWWWWWWWWWWWWWWWWwk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kWwwwwwwwwwwwwwwwwwwwvk",
+      "kwvwwwwwwwwwwwwwwwwwvuk",
+      ".kkwvvvvvvvwvvvvvvvukk.",
+      "...kkkkkkkkvkkkkkkkk...",
+      "...........k..........."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "C": "#f8f2e2",
+      "M": "#eef2f4",
+      "S": "#c8e8f0",
+      "W": "#e6b878",
+      "b": "#5a8ac0",
+      "c": "#ddd2b8",
+      "d": "#3a5a8a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "x": "#9a8c78"
+     },
+     "acts": [
+      {
+       "w": "물 타입 / 헤엄치는 작은 포켓몬",
+       "a": "빨래통 안으로 들어가 앉아 비눗물에 몸을 담그고 거품을 불어요",
+       "x": {
+        "at": "in",
+        "m": "ride"
+       },
+       "l": [
+        "빨래통에 들어가 앉아 비눗물에 몸을 담갔다.",
+        "빨래통 비눗물 속에서 거품을 보글보글 불었다."
+       ],
+       "li": [
+        "빨래통 안에 쏙 들어가 앉아 거품 목욕을 했다.",
+        "빨래통 속에서 거품을 머리에 얹고 고개만 내밀었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "빨래판에 앞발을 대고 쓱쓱 빨래하는 흉내를 내요",
+       "x": {
+        "at": "side",
+        "an": "Attack"
+       },
+       "l": [
+        "빨래판에 대고 쓱쓱싹싹 빨래하는 흉내를 냈다.",
+        "빨래통 앞에서 빨래를 비비다 거품이 코에 묻었다."
+       ]
+      },
+      {
+       "w": "날갯짓하는 포켓몬",
+       "a": "빨래통 위를 날갯짓하며 떠다니는 비누 거품을 쫓아요",
+       "x": {
+        "m": "flap circ"
+       },
+       "l": [
+        "빨래통 위 비누 거품을 날갯짓하며 쫓아다녔다.",
+        "빨래통 둘레를 날며 비누 거품을 톡톡 터뜨렸다."
+       ]
+      }
+     ],
+     "fit": "우물·빗물 통 근처, 다리미판 옆"
+    },
+    {
+     "id": "sew-drum-washer",
+     "n": "꼬마 드럼 세탁기",
+     "k": "옷 수선집",
+     "d": "크림색 꼬마 드럼 세탁기예요. 둥근 유리문 안에서 분홍 빨래가 돌고, 위쪽엔 빨강·노랑 손잡이가 달려 있어요.",
+     "px": [
+      ".kkkkkkkkkkkkkkkkkkkk.",
+      "kCCCCCCCCCCCCCCCCCCCCk",
+      "kCxRrCxYyCCCCCCCCCCCck",
+      "kCRrrqYyyoCCTTTTTTTCck",
+      "kCCrqCCyoCCCCCCCCCCCck",
+      "kCCCCCCCCCCCCCCCCCCCck",
+      "kCxxxxxxxxxxxxxxxxxxck",
+      "kCCCCCCCCCCCCCCCCCCCck",
+      "kCCCCCCccccccccCCCCCck",
+      "kCCCCCxMMmmmmMmCCCCCck",
+      "kCCCCxMmnBBBbmmmCCCCck",
+      "kCCCcMmnBddddbmmmCCCck",
+      "kCCCxMnBdPSPpbbmnCCCck",
+      "kCCcMnBdPSppppBbMmCCck",
+      "kCCcMnBdSpppppbdMnCCck",
+      "kCCcMnbPpppppppbMnNCck",
+      "kCCcMnBbPpppppBdMnNCck",
+      "kCCcmnbdpppppiBdMnCCck",
+      "kCCCCMmbbpppiBdMnCCCck",
+      "kCCCcmmmbBBBBdMmnCCCck",
+      "kCCCCCmmmbdddMmnCCCCck",
+      "kCCCCCCmnmmmmnnCCCCCck",
+      "kCCCCCCCCCCCCCCCCCCCck",
+      "kCCCCCCCCCCCCCCCCCCCck",
+      "kCccccccccccccccccccxk",
+      ".knnNkkkkkkkkkkkknnNk.",
+      "..kkk............kkk.."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "C": "#f8f2e2",
+      "M": "#eef2f4",
+      "N": "#444c5c",
+      "P": "#f8b8c8",
+      "R": "#f0866e",
+      "S": "#c8e8f0",
+      "T": "#78b0d0",
+      "Y": "#fff0a0",
+      "b": "#5a8ac0",
+      "c": "#ddd2b8",
+      "d": "#3a5a8a",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "p": "#e080a0",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "x": "#9a8c78",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "모든 포켓몬",
+       "a": "세탁기 유리문 앞에 앉아 빙글빙글 도는 빨래를 넋 놓고 바라봐요",
+       "x": {
+        "at": "front",
+        "m": "peek"
+       },
+       "l": [
+        "세탁기 유리문 앞에 앉아 도는 빨래를 넋 놓고 바라봤다.",
+        "세탁기 속 빨래를 따라 고개를 빙글빙글 돌리다 어지러워했다."
+       ]
+      },
+      {
+       "w": "전기 타입",
+       "a": "세탁기 옆에서 찌릿 전기를 넣어 세탁기를 돌려요",
+       "x": {
+        "m": "skill",
+        "fx": "glow"
+       },
+       "l": [
+        "세탁기에 전기를 찌릿 넣어 빨래를 돌렸다.",
+        "세탁기에 전기를 너무 세게 넣어 덜덜 흔들리게 했다."
+       ]
+      },
+      {
+       "w": "작은 포켓몬",
+       "a": "세탁기 위에 올라가 덜덜 떨리는 진동에 맞춰 같이 흔들려요",
+       "x": {
+        "at": "top",
+        "m": "climb wobble"
+       },
+       "l": [
+        "세탁기 위에 올라가 덜덜 떨리는 진동에 몸을 맡겼다.",
+        "세탁기 위에서 진동에 맞춰 엉덩이를 들썩였다."
+       ]
+      }
+     ],
+     "fit": "빨래통 옆, 수선집 벽 쪽"
+    },
+    {
+     "id": "sew-tomato-pincushion",
+     "n": "토마토 바늘꽂이",
+     "k": "옷 수선집",
+     "d": "빨갛게 잘 익은 토마토 모양의 큰 바늘꽂이예요. 초록 꼭지 둘레에 노랑·파랑·분홍 머리 시침핀이 꽂혀 있어요.",
+     "px": [
+      ".......kkk....kkk.....",
+      "...kkkkBBbk..kPPpk....",
+      "..kYYykbddkk.kppikkk..",
+      "..kyookkMkGgkkkMkYYyk.",
+      "...kMk.kmGggGgkmkyook.",
+      "...kmkkgmGgggggmkkMk..",
+      "...kmRRgnggggHRgRkmk..",
+      "...knRrrRRRRRRrRrrmk..",
+      "..kRRrrrrrrrrrrrrqnk..",
+      ".kRrrrqrrrrqrrrrqrRrk.",
+      "kRrrrrqrrrrqrrrrqrrrrk",
+      "kRrrrrqrrrrqrrrrqrrrqk",
+      "kRrrrrqrrrrqrrrrqrrrqk",
+      "kRrrrrqrrrrqrrrrqrrrqk",
+      "krrrrrqrrrrqrrrrqrrrqk",
+      ".krrrrqrrrrqrrrrqrrqk.",
+      "..krrrqrrrrqrrrrqrqk..",
+      "...kRrrrrrrrrrrrrqk...",
+      "...kRqqrrrrrrrrqqqk...",
+      "...kqkkrqqqqqqqkkqk...",
+      "....k..kkkkkkkk..k...."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "G": "#8cbc5a",
+      "H": "#3e6a2c",
+      "M": "#eef2f4",
+      "P": "#f8b8c8",
+      "R": "#f0866e",
+      "Y": "#fff0a0",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "g": "#5e8a3c",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "p": "#e080a0",
+      "q": "#8a3a34",
+      "r": "#c8574a",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "바늘꽂이에 등을 기대고 앉아 폭신함을 느끼며 쉬어요",
+       "x": {
+        "at": "under",
+        "an": "Sleep"
+       },
+       "l": [
+        "토마토 바늘꽂이에 등을 기대고 폭신하게 쉬었다.",
+        "토마토 바늘꽂이에 기댔다가 핀에 깜짝 놀라 펄쩍 뛰었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "진짜 토마토인 줄 알고 다가와 냄새를 맡다가 고개를 갸웃해요",
+       "x": {
+        "m": "avoid"
+       },
+       "l": [
+        "토마토 바늘꽂이를 진짜 토마토인 줄 알고 다가갔다.",
+        "토마토 바늘꽂이 냄새를 맡더니 고개를 갸웃했다."
+       ]
+      },
+      {
+       "w": "풀 타입",
+       "a": "초록 꼭지 옆에서 잎을 흔들며 기술을 써 꼭지를 쑥쑥 키워 줘요",
+       "x": {
+        "m": "skill"
+       },
+       "l": [
+        "토마토 바늘꽂이 꼭지에 잎을 흔들어 기운을 불어넣었다.",
+        "토마토 바늘꽂이 꼭지를 진짜 새싹처럼 키워 보려 했다."
+       ]
+      }
+     ],
+     "fit": "재봉틀 앞, 단추 깡통 옆"
+    },
+    {
+     "id": "sew-yarn-basket",
+     "n": "털실 바구니",
+     "k": "옷 수선집",
+     "d": "엮은 나무 바구니에 분홍·파랑·노랑 털실 뭉치가 담겨 있고, 은빛 뜨개바늘 두 개가 꽂혀 있어요. 분홍 실 한 가닥이 바구니 밖으로 늘어져 있어요.",
+     "px": [
+      "...................kRkkRk...",
+      "..........kkkkkk....kMmk....",
+      "....kkkk.kBBBBBbk.kkkMnk....",
+      "...kPPPpkBbbbbbbbkYYomnk....",
+      "..kPpppppBbbbbbbdYyoMYnk....",
+      ".kPppppppBbbbbbdYyyonYymk...",
+      ".kPppppppBbbbbbdYyoMYyyyMk..",
+      ".kPppppppBbbbbbdYyonYyyonk..",
+      ".kppppppibddddddyomYooookmk.",
+      "kWWWWWWWWWWWWWWWWWWWWWWWWwk.",
+      "kwvvvvvvvvvvvvvvvvvvvvvvvuk.",
+      "kWWWWWWWWWWWWWWWWWWWWWWWWwk.",
+      "kWvwvwvwvwvwvwvwvwvwvwvwvvk.",
+      "kWwwwwwwwwwwwwwwwwwwwwwwwuk.",
+      "kWwvwvwvwvwvwvwvwvwvwvwvvPk.",
+      "kWwwwwwwwwwwwwwwwwwwwwwwvpk.",
+      "kWvwvwvwvwvwvwvwvwvwvwvwvpk.",
+      "kWwwwwwwwwwwwwwwwwwwwwwwwwPk",
+      "kWwvwvwvwvwvwvwvwvwvwvwvwvpk",
+      "kWwwwwwwwwwwwwwwwwwwwwwwwvpk",
+      "kWvwvwvwvwvwvwvwvwvwvwvwvvpk",
+      "kwvvvwwwwwwwwwwwwwwwwvvvvuk.",
+      ".kkkkwvvvvvvvvvvvvvvukkkkk..",
+      ".....kkkkkkkkkkkkkkkk......."
+     ],
+     "pal": {
+      "B": "#9cc8e8",
+      "M": "#eef2f4",
+      "P": "#f8b8c8",
+      "R": "#f0866e",
+      "W": "#e6b878",
+      "Y": "#fff0a0",
+      "b": "#5a8ac0",
+      "d": "#3a5a8a",
+      "i": "#a8507a",
+      "k": "#20202c",
+      "m": "#a8b4c0",
+      "n": "#6c7888",
+      "o": "#c8902c",
+      "p": "#e080a0",
+      "u": "#5a3820",
+      "v": "#8a5a30",
+      "w": "#bc8850",
+      "y": "#f0c850"
+     },
+     "acts": [
+      {
+       "w": "작은 포켓몬",
+       "a": "바구니 안으로 들어가 앉아 털실 뭉치 사이에 동그랗게 몸을 말아요",
+       "x": {
+        "at": "in",
+        "an": "Sleep"
+       },
+       "l": [
+        "털실 바구니에 들어가 털실 사이에서 동그랗게 잠들었다.",
+        "털실 바구니 속에서 털실을 끌어안고 뒹굴었다."
+       ],
+       "li": [
+        "털실 바구니에 쏙 들어가 앉아 털실에 파묻혔다.",
+        "털실 바구니 안에 들어가 고개만 빼꼼 내밀었다."
+       ]
+      },
+      {
+       "w": "모든 포켓몬",
+       "a": "늘어진 분홍 실을 앞발로 툭툭 건드리며 장난쳐요",
+       "x": {
+        "at": "side",
+        "an": "Attack"
+       },
+       "l": [
+        "털실 바구니에서 늘어진 실을 툭툭 건드리며 놀았다.",
+        "털실 바구니 실을 잡아당겼다가 실 뭉치가 데굴데굴 굴러갔다."
+       ]
+      },
+      {
+       "w": "노말 타입 / 페어리 타입",
+       "a": "바구니 앞에 앉아 털실을 굴리며 뜨개질 흉내를 내요",
+       "x": {
+        "at": "front",
+        "an": "Eat"
+       },
+       "l": [
+        "털실 바구니 앞에 앉아 뜨개질 흉내를 냈다.",
+        "털실 바구니 앞에서 목도리를 뜨겠다며 실을 엉키게 했다."
+       ]
+      }
+     ],
+     "fit": "독서 의자·재봉틀 옆, 아늑한 구석"
+    }
+   ]
+  },
+  {
    "at": 1795733237844,
    "theme": "숲속 꼬마 시계 공방",
    "note": "오늘은 숲속 꼬마 시계 공방이에요. 뻐꾸기 시계·괘종시계·모래시계·왕 자명종·꼬마 시계탑처럼 똑딱똑딱 소리가 나는 소품 10개를 그렸고, 뻐꾸기 시계·괘종시계 추와 회중시계·메트로놈 바늘은 그 부분만 흔들려요. 시계공 작업대 등은 밤에 둘레를 밝혀요. 전기·에스퍼·강철·격투 타입부터 모든 포켓몬까지 고루 놀 수 있게 동작을 넣었어요.",
